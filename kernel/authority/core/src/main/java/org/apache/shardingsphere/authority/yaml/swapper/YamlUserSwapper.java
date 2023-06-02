@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
-import java.util.Objects;
-
 /**
  * YAML user swapper.
  */
@@ -33,7 +31,7 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
     
     @Override
     public YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
-        if (Objects.isNull(data)) {
+        if (null == data) {
             return null;
         }
         YamlUserConfiguration result = new YamlUserConfiguration();
@@ -45,7 +43,7 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
     
     @Override
     public ShardingSphereUser swapToObject(final YamlUserConfiguration yamlConfig) {
-        if (Objects.isNull(yamlConfig)) {
+        if (null == yamlConfig) {
             return null;
         }
         Grantee grantee = convertYamlUserToGrantee(yamlConfig.getUser());
@@ -56,8 +54,8 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
         if (!yamlUser.contains("@")) {
             return new Grantee(yamlUser, "");
         }
-        String username = yamlUser.substring(0, yamlUser.indexOf("@"));
-        String hostname = yamlUser.substring(yamlUser.indexOf("@") + 1);
+        String username = yamlUser.substring(0, yamlUser.indexOf('@'));
+        String hostname = yamlUser.substring(yamlUser.indexOf('@') + 1);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(username), "user configuration `%s` is invalid, the legal format is `username@hostname`", yamlUser);
         return new Grantee(username, hostname);
     }

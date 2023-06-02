@@ -18,63 +18,33 @@
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SQLTokenGeneratorsTest {
+class SQLTokenGeneratorsTest {
     
     @Test
-    public void assertAddAllWithList() throws ReflectiveOperationException {
-        SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
-        Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSQLTokenGeneratorsMap(sqlTokenGenerators);
-        SQLTokenGenerator mockSqlTokenGenerator = mock(SQLTokenGenerator.class);
-        sqlTokenGenerators.addAll(Collections.singleton(mockSqlTokenGenerator));
-        assertThat(actualSqlTokenGeneratorsMap.size(), is(1));
-        assertTrue(actualSqlTokenGeneratorsMap.containsKey(mockSqlTokenGenerator.getClass()));
-        assertThat(actualSqlTokenGeneratorsMap.get(mockSqlTokenGenerator.getClass()), is(mockSqlTokenGenerator));
-    }
-    
-    @Test
-    public void assertAddAllWithSameClass() throws ReflectiveOperationException {
-        SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
-        SQLTokenGenerator expectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
-        SQLTokenGenerator unexpectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
-        Collection<SQLTokenGenerator> collection = new LinkedList<>();
-        collection.add(expectedSqlTokenGenerator);
-        collection.add(unexpectedSqlTokenGenerator);
-        sqlTokenGenerators.addAll(collection);
-        Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSQLTokenGeneratorsMap(sqlTokenGenerators);
-        assertThat(actualSqlTokenGeneratorsMap.size(), is(1));
-        SQLTokenGenerator actualSqlTokenGenerator = actualSqlTokenGeneratorsMap.get(expectedSqlTokenGenerator.getClass());
-        assertThat(actualSqlTokenGenerator, is(expectedSqlTokenGenerator));
-    }
-    
-    @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public void assertGenerateSQLTokensWithOptionalSQLTokenGenerator() {
-        OptionalSQLTokenGenerator<SQLStatementContext> optionalSQLTokenGenerator = mock(OptionalSQLTokenGenerator.class);
-        SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
-        sqlTokenGenerators.addAll(Collections.singleton(optionalSQLTokenGenerator));
+    @SuppressWarnings("unchecked")
+    void assertGenerateSQLTokensWithOptionalSQLTokenGenerator() {
+        OptionalSQLTokenGenerator<SQLStatementContext> generator = mock(OptionalSQLTokenGenerator.class);
         SQLToken expectedToken = mock(SQLToken.class);
-        when(optionalSQLTokenGenerator.generateSQLToken(any(SQLStatementContext.class))).thenReturn(expectedToken);
-        Collection<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(
+        when(generator.generateSQLToken(any(SQLStatementContext.class))).thenReturn(expectedToken);
+        SQLTokenGenerators generators = new SQLTokenGenerators();
+        generators.addAll(Collections.singleton(generator));
+        Collection<SQLToken> actualSqlTokens = generators.generateSQLTokens(
                 "sharding_db", Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), Collections.emptyList(), mock(ConnectionContext.class));
         assertThat(actualSqlTokens.size(), is(1));
         assertThat(actualSqlTokens.iterator().next(), is(expectedToken));
@@ -82,20 +52,15 @@ public final class SQLTokenGeneratorsTest {
     
     @Test
     @SuppressWarnings("unchecked")
-    public void assertGenerateSQLTokensWithCollectionSQLTokenGenerator() {
-        CollectionSQLTokenGenerator<SQLStatementContext<?>> collectionSQLTokenGenerator = mock(CollectionSQLTokenGenerator.class);
-        SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
-        sqlTokenGenerators.addAll(Collections.singleton(collectionSQLTokenGenerator));
-        Collection<SQLToken> expectedSQLTokens = Arrays.asList(mock(SQLToken.class), mock(SQLToken.class));
-        doReturn(expectedSQLTokens).when(collectionSQLTokenGenerator).generateSQLTokens(any());
-        Collection<SQLToken> actualSQLTokens = sqlTokenGenerators.generateSQLTokens(
+    void assertGenerateSQLTokensWithCollectionSQLTokenGenerator() {
+        CollectionSQLTokenGenerator<SQLStatementContext> generator = mock(CollectionSQLTokenGenerator.class);
+        Collection<SQLToken> expectedTokens = Arrays.asList(mock(SQLToken.class), mock(SQLToken.class));
+        doReturn(expectedTokens).when(generator).generateSQLTokens(any());
+        SQLTokenGenerators generators = new SQLTokenGenerators();
+        generators.addAll(Collections.singleton(generator));
+        Collection<SQLToken> actualSQLTokens = generators.generateSQLTokens(
                 "sharding_db", Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), Collections.emptyList(), mock(ConnectionContext.class));
         assertThat(actualSQLTokens.size(), is(2));
-        assertThat(actualSQLTokens, is(expectedSQLTokens));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Map<Class<?>, SQLTokenGenerator> getSQLTokenGeneratorsMap(final SQLTokenGenerators sqlTokenGenerators) throws ReflectiveOperationException {
-        return (Map<Class<?>, SQLTokenGenerator>) Plugins.getMemberAccessor().get(sqlTokenGenerators.getClass().getDeclaredField("sqlTokenGenerators"), sqlTokenGenerators);
+        assertThat(actualSQLTokens, is(expectedTokens));
     }
 }

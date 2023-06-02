@@ -34,6 +34,8 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
     
     private static final int DEFAULT_PORT = 1433;
     
+    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?(\\d*);\\S*(DatabaseName|database)=([\\w\\-\\.]+);?", Pattern.CASE_INSENSITIVE);
+    
     private final String hostname;
     
     private final int port;
@@ -42,12 +44,10 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
     
     private final String schema;
     
-    private final Pattern pattern = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?([0-9]*);\\S*(DatabaseName|database)=([\\w\\-\\.]+);?", Pattern.CASE_INSENSITIVE);
-    
     public SQLServerDataSourceMetaData(final String url) {
-        Matcher matcher = pattern.matcher(url);
+        Matcher matcher = URL_PATTERN.matcher(url);
         if (!matcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
+            throw new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern());
         }
         hostname = matcher.group(2);
         port = Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3));

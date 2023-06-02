@@ -24,10 +24,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OpenGaussXADataSourceDefinitionTest {
+class OpenGaussXADataSourceDefinitionTest {
     
     @Test
-    public void assertGetXADriverClassName() {
+    void assertGetXADriverClassName() {
         assertThat(new OpenGaussXADataSourceDefinition().getXADriverClassNames(), is(Collections.singletonList("org.opengauss.xa.PGXADataSource")));
     }
 }

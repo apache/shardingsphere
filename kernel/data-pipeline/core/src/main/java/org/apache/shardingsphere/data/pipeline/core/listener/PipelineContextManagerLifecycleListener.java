@@ -19,8 +19,14 @@ package org.apache.shardingsphere.data.pipeline.core.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobWorker;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNodeWatcher;
+import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
+import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
@@ -31,16 +37,24 @@ import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleLi
 public final class PipelineContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
-    public void onInitialized(final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        if (null == modeConfig) {
-            return;
-        }
+    public void onInitialized(final String databaseName, final ContextManager contextManager) {
+        ModeConfiguration modeConfig = contextManager.getInstanceContext().getModeConfiguration();
         if (!contextManager.getInstanceContext().isCluster()) {
             log.info("mode type is not Cluster, mode type='{}', ignore", modeConfig.getType());
             return;
         }
-        PipelineContext.initModeConfig(modeConfig);
-        PipelineContext.initContextManager(contextManager);
-        PipelineJobWorker.initialize();
+        // TODO When StandalonePersistRepository is equivalent with ClusterPersistRepository, use STANDALONE mode in pipeline IT and remove this check.
+        if (DefaultDatabase.LOGIC_NAME.equals(databaseName)) {
+            return;
+        }
+        PipelineContextKey contextKey = PipelineContextKey.build(databaseName, contextManager.getInstanceContext().getInstance().getMetaData().getType());
+        PipelineContextManager.putContext(contextKey, new PipelineContext(modeConfig, contextManager));
+        PipelineMetaDataNodeWatcher.getInstance(contextKey);
+        ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
+    }
+    
+    @Override
+    public void onDestroyed(final String databaseName, final InstanceType instanceType) {
+        PipelineContextManager.removeContext(PipelineContextKey.build(databaseName, instanceType));
     }
 }

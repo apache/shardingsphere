@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -39,19 +37,19 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ReadwriteSplittingRuleConfigurationImportCheckerTest {
+class ReadwriteSplittingRuleConfigurationImportCheckerTest {
     
     private final ReadwriteSplittingRuleConfigurationImportChecker importChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
     
     @Test
-    public void assertCheckDataSources() {
+    void assertCheckDataSources() {
         ShardingSphereDatabase database = mockDatabaseWithDataSource();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = getRuleConfigWithNotExistedDataSources();
         assertThrows(MissingRequiredStorageUnitsException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
     @Test
-    public void assertCheckLoadBalancers() {
+    void assertCheckLoadBalancers() {
         ShardingSphereDatabase database = mockDatabase();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = createInvalidLoadBalancerRuleConfig();
         assertThrows(ServiceProviderNotFoundServerException.class, () -> importChecker.check(database, currentRuleConfig));
@@ -67,9 +65,8 @@ public final class ReadwriteSplittingRuleConfigurationImportCheckerTest {
     }
     
     private ReadwriteSplittingRuleConfiguration getRuleConfigWithNotExistedDataSources() {
-        StaticReadwriteSplittingStrategyConfiguration staticStrategy = new StaticReadwriteSplittingStrategyConfiguration("write_ds", Collections.emptyList());
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("data_source", staticStrategy,
-                mock(DynamicReadwriteSplittingStrategyConfiguration.class), "load_balancer");
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
+                new ReadwriteSplittingDataSourceRuleConfiguration("data_source", "write_ds", Collections.emptyList(), "load_balancer");
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         dataSources.add(dataSourceRuleConfig);
         return new ReadwriteSplittingRuleConfiguration(dataSources, Collections.emptyMap());
@@ -85,6 +82,6 @@ public final class ReadwriteSplittingRuleConfigurationImportCheckerTest {
     private ReadwriteSplittingRuleConfiguration createInvalidLoadBalancerRuleConfig() {
         Map<String, AlgorithmConfiguration> loadBalancer = new HashMap<>();
         loadBalancer.put("invalid_load_balancer", mock(AlgorithmConfiguration.class));
-        return new ReadwriteSplittingRuleConfiguration(mock(Collection.class), loadBalancer);
+        return new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), loadBalancer);
     }
 }

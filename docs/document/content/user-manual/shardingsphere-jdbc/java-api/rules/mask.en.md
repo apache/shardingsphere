@@ -1,6 +1,6 @@
 +++
 title = "Data Masking"
-weight = 10
+weight = 5
 +++
 
 ## Background
@@ -15,10 +15,10 @@ Class name: org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration
 
 Attributes:
 
-| *Name*                    | *DataType*                                  | *Description*                                                                                  | *Default Value* |
-| ------------------------- | ------------------------------------------- |------------------------------------------------------------------------------------------------| --------------- |
-| tables (+)                | Collection\<MaskTableRuleConfiguration\> | Mask table rule configurations                                                                 |                 |
-| maskAlgorithms (+)            | Map\<String, AlgorithmConfiguration\>       | Mask algorithm name and configurations                                                         |                 |
+| *Name*             | *DataType*                               | *Description*                          | *Default Value* |
+|--------------------|------------------------------------------|----------------------------------------|-----------------|
+| tables (+)         | Collection\<MaskTableRuleConfiguration\> | Mask table rule configurations         |                 |
+| maskAlgorithms (+) | Map\<String, AlgorithmConfiguration\>    | Mask algorithm name and configurations |                 |
 
 ### Mask Table Rule Configuration
 
@@ -26,10 +26,10 @@ Class name: org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfigur
 
 Attributes:
 
-| *Name*                    | *DataType*                                   | *Description*                   |
-| ------------------------- | -------------------------------------------- |---------------------------------|
-| name                      | String                                       | Table name                      |
-| columns (+)               | Collection\<MaskColumnRuleConfiguration\> | Mask column rule configurations |
+| *Name*      | *DataType*                                | *Description*                   |
+|-------------|-------------------------------------------|---------------------------------|
+| name        | String                                    | Table name                      |
+| columns (+) | Collection\<MaskColumnRuleConfiguration\> | Mask column rule configurations |
 
 ### Mask Column Rule Configuration
 
@@ -37,10 +37,10 @@ Class name: org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfigu
 
 Attributes:
 
-| *Name*                     | *DataType* | *Description*       |
-|----------------------------| ---------- |---------------------|
-| logicColumn                | String     | Logic column name   |
-| maskAlgorithm              | String     | Mask algorithm name |
+| *Name*        | *DataType* | *Description*       |
+|---------------|------------|---------------------|
+| logicColumn   | String     | Logic column name   |
+| maskAlgorithm | String     | Mask algorithm name |
 
 ### Mask Algorithm Configuration
 
@@ -48,10 +48,10 @@ Class name: org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfigurat
 
 Attributes:
 
-| *Name*     | *DataType* | *Description*                |
-| ---------- | ---------- |------------------------------|
-| name       | String     | Mask algorithm name          |
-| type       | String     | Mask algorithm type          |
+| *Name*     | *DataType* | *Description*             |
+|------------|------------|---------------------------|
+| name       | String     | Mask algorithm name       |
+| type       | String     | Mask algorithm type       |
 | properties | Properties | Mask algorithm properties |
 
 Please refer to [Built-in Data Masking Algorithm List](/en/user-manual/common-config/builtin-algorithm/mask) for more details about type of algorithm.
@@ -59,8 +59,8 @@ Please refer to [Built-in Data Masking Algorithm List](/en/user-manual/common-co
 ## Procedure
 
 1. Create a real data source mapping relationship, where key is the logical name of the data source and value is the datasource object.
-1. Create the data masking rule object MaskRuleConfiguration, and initialize the mask table object MaskTableRuleConfiguration, mask algorithm and other parameters in the object.
-1. Call createDataSource of ShardingSphereDataSourceFactory to create  ShardingSphereDataSource.
+2. Create the data masking rule object MaskRuleConfiguration, and initialize the mask table object MaskTableRuleConfiguration, mask algorithm and other parameters in the object.
+3. Call createDataSource of ShardingSphereDataSourceFactory to create  ShardingSphereDataSource.
 
 ## Sample
 
@@ -69,10 +69,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
-public final class MaskDatabasesConfiguration implements ExampleConfiguration {
+public final class MaskDatabasesConfiguration {
     
     @Override
-    public DataSource getDataSource() {
+    public DataSource getDataSource() throws SQLException {
         MaskColumnRuleConfiguration passwordColumn = new MaskColumnRuleConfiguration("password", "md5_mask");
         MaskColumnRuleConfiguration emailColumn = new MaskColumnRuleConfiguration("email", "mask_before_special_chars_mask");
         MaskColumnRuleConfiguration telephoneColumn = new MaskColumnRuleConfiguration("telephone", "keep_first_n_last_m_mask");
@@ -89,12 +89,7 @@ public final class MaskDatabasesConfiguration implements ExampleConfiguration {
         keepFirstNLastMProps.put("replace-char", "*");
         maskAlgorithmConfigs.put("keep_first_n_last_m_mask", new AlgorithmConfiguration("KEEP_FIRST_N_LAST_M", keepFirstNLastMProps));
         MaskRuleConfiguration maskRuleConfig = new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), maskAlgorithmConfigs);
-        try {
-            return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(maskRuleConfig), new Properties());
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(maskRuleConfig), new Properties());
     }
 }
 ```

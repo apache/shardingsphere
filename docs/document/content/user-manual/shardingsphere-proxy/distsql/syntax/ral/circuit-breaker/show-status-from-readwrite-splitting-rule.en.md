@@ -1,11 +1,11 @@
 +++
 title = "SHOW STATUS FROM READWRITE_SPLITTING RULE"
-weight = 3
+weight = 2
 +++
 
 ### Description
 
-The `SHOW STATUS FROM READWRITE_SPLITTING RULE` syntax is used to query readwrite splitting storage unit status for specified readwrite splitting rule in specified database.
+The `SHOW STATUS FROM READWRITE_SPLITTING RULE` syntax is used to query readwrite-splitting storage unit status for specified readwrite-splitting rule in specified database.
 
 ### Syntax
 
@@ -37,11 +37,10 @@ databaseName ::=
 |----------------|---------------------|
 | resource       | storage unit name   |
 | status         | storage unit status |
-| delay_time(ms) | delay time          |
 
 ### Example
 
-- Query readwrite splitting storage unit status for specified readwrite splitting rule in specified database.
+- Query readwrite-splitting storage unit status for specified readwrite-splitting rule in specified database.
 
 ```sql
 SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
@@ -49,18 +48,18 @@ SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
-+----------+---------+----------------+
-| resource | status  | delay_time(ms) |
-+----------+---------+----------------+
-| ds_0     | enabled | 0              |
-| ds_1     | enabled | 0              |
-| ds_2     | enabled | 0              |
-| ds_3     | enabled | 0              |
-+----------+---------+----------------+
++----------+---------+
+| resource | status  |
++----------+---------+
+| ds_0     | enabled |
+| ds_1     | enabled |
+| ds_2     | enabled |
+| ds_3     | enabled |
++----------+---------+
 4 rows in set (0.01 sec)
 ```
 
-- Query all readwrite splitting storage unit from specified database
+- Query all readwrite-splitting storage unit from specified database
 
 ```sql
 SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
@@ -68,18 +67,18 @@ SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
-+----------+---------+----------------+
-| resource | status  | delay_time(ms) |
-+----------+---------+----------------+
-| ds_0     | enabled | 0              |
-| ds_1     | enabled | 0              |
-| ds_2     | enabled | 0              |
-| ds_3     | enabled | 0              |
-+----------+---------+----------------+
++----------+---------+
+| resource | status  |
++----------+---------+
+| ds_0     | enabled |
+| ds_1     | enabled |
+| ds_2     | enabled |
+| ds_3     | enabled |
++----------+---------+
 4 rows in set (0.00 sec)
 ```
 
-- Query readwrite splitting storage unit status for specified readwrite splitting rule in current database
+- Query readwrite-splitting storage unit status for specified readwrite-splitting rule in current database
 
 ```sql
 SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
@@ -87,18 +86,18 @@ SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
-+----------+---------+----------------+
-| resource | status  | delay_time(ms) |
-+----------+---------+----------------+
-| ds_0     | enabled | 0              |
-| ds_1     | enabled | 0              |
-| ds_2     | enabled | 0              |
-| ds_3     | enabled | 0              |
-+----------+---------+----------------+
++----------+---------+
+| resource | status  |
++----------+---------+
+| ds_0     | enabled |
+| ds_1     | enabled |
+| ds_2     | enabled |
+| ds_3     | enabled |
++----------+---------+
 4 rows in set (0.01 sec)
 ```
 
-- Query all readwrite splitting storage unit from current database
+- Query all readwrite-splitting storage unit from current database
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
@@ -106,14 +105,14 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
-+----------+---------+----------------+
-| resource | status  | delay_time(ms) |
-+----------+---------+----------------+
-| ds_0     | enabled | 0              |
-| ds_1     | enabled | 0              |
-| ds_2     | enabled | 0              |
-| ds_3     | enabled | 0              |
-+----------+---------+----------------+
++----------+---------+
+| resource | status  |
++----------+---------+
+| ds_0     | enabled |
+| ds_1     | enabled |
+| ds_2     | enabled |
+| ds_3     | enabled |
++----------+---------+
 4 rows in set (0.01 sec)
 ```
 

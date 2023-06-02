@@ -26,7 +26,7 @@ import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 /**
  * Open telemetry tracing plugin lifecycle service.
  */
-public class OpenTelemetryTracingPluginLifecycleService implements PluginLifecycleService {
+public final class OpenTelemetryTracingPluginLifecycleService implements PluginLifecycleService {
     
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
@@ -38,11 +38,6 @@ public class OpenTelemetryTracingPluginLifecycleService implements PluginLifecyc
     private void setSystemProperty(final String key, final String value) {
         String propertyKey = key.replaceAll("-", ".");
         System.setProperty(propertyKey, String.valueOf(value));
-    }
-    
-    @Override
-    public void close() {
-        
     }
     
     @Override

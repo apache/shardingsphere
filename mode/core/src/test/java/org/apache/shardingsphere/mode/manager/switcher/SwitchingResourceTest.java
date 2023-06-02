@@ -26,10 +26,10 @@ import java.util.Collections;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class SwitchingResourceTest {
+class SwitchingResourceTest {
     
     @Test
-    public void assertCloseStaleDataSources() {
+    void assertCloseStaleDataSources() {
         MockedDataSource staleDataSource = new MockedDataSource();
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         new SwitchingResource(resourceMetaData, Collections.singletonMap("new_ds", new MockedDataSource()), Collections.singletonMap("stale_ds", staleDataSource)).closeStaleDataSources();

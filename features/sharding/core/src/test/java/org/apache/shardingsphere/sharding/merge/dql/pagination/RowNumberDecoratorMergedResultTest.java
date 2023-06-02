@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.pagination;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -54,10 +54,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RowNumberDecoratorMergedResultTest {
+class RowNumberDecoratorMergedResultTest {
     
     @Test
-    public void assertNextForSkipAll() throws SQLException {
+    void assertNextForSkipAll() throws SQLException {
         OracleSelectStatement selectStatement = new OracleSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         WhereSegment whereSegment = mock(WhereSegment.class);
@@ -88,7 +88,7 @@ public final class RowNumberDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
+    void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "Oracle"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         OracleSelectStatement selectStatement = new OracleSelectStatement();
@@ -104,7 +104,7 @@ public final class RowNumberDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextForRowCountBoundOpenedFalse() throws SQLException {
+    void assertNextForRowCountBoundOpenedFalse() throws SQLException {
         OracleSelectStatement selectStatement = new OracleSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         WhereSegment whereSegment = mock(WhereSegment.class);
@@ -138,7 +138,7 @@ public final class RowNumberDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextForRowCountBoundOpenedTrue() throws SQLException {
+    void assertNextForRowCountBoundOpenedTrue() throws SQLException {
         OracleSelectStatement selectStatement = new OracleSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         WhereSegment whereSegment = mock(WhereSegment.class);

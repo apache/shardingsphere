@@ -32,11 +32,11 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.util.stream.Stream;
 
 @ExtendWith(AgentTestActionExtension.class)
-public final class ZipkinPluginE2EIT {
+class ZipkinPluginE2EIT {
     
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertProxyWithAgent(final SpanTestCase spanTestCase) {
+    void assertWithAgent(final SpanTestCase spanTestCase) {
         SpanAssert.assertIs(E2ETestEnvironment.getInstance().getProps().getProperty("zipkin.url"), spanTestCase);
     }
     
@@ -44,7 +44,7 @@ public final class ZipkinPluginE2EIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases().stream().map(Arguments::of);
+            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
         }
     }
 }

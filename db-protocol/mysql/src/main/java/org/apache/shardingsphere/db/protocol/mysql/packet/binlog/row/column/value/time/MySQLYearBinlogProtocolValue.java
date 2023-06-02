@@ -25,14 +25,15 @@ import java.io.Serializable;
 
 /**
  * YEAR type value of MySQL binlog protocol.
+ * 1 byte integer (year = value + 1900)
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/field__types_8h.html">field type</a>
  */
 public final class MySQLYearBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int result = payload.readInt1();
-        return 0 == result ? MySQLTimeValueUtil.YEAR_OF_ZERO : Integer.toString(result + 1900);
+        return 0 == result ? MySQLTimeValueUtils.YEAR_OF_ZERO : Integer.toString(result + 1900);
     }
 }

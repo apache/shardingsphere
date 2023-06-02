@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
 
@@ -79,9 +80,7 @@ public final class ProxyContext {
      * @return got database
      */
     public ShardingSphereDatabase getDatabase(final String name) {
-        if (Strings.isNullOrEmpty(name) || !contextManager.getMetaDataContexts().getMetaData().containsDatabase(name)) {
-            throw new NoDatabaseSelectedException();
-        }
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(name) && contextManager.getMetaDataContexts().getMetaData().containsDatabase(name), NoDatabaseSelectedException::new);
         return contextManager.getMetaDataContexts().getMetaData().getDatabase(name);
     }
     

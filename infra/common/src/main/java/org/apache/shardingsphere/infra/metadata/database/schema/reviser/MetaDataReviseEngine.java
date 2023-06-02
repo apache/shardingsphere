@@ -46,7 +46,7 @@ public final class MetaDataReviseEngine {
      * @return revised meta data
      */
     public Map<String, SchemaMetaData> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
-        Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap.size(), 1);
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap.size(), 1F);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             // TODO establish a corresponding relationship between tables and data sources
             DatabaseType databaseType = material.getStorageTypes().values().stream().findFirst().orElse(null);

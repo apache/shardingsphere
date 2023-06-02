@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.metadata.persist.node;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 import java.util.regex.Matcher;
@@ -25,6 +27,7 @@ import java.util.regex.Pattern;
 /**
  * Compute node.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ComputeNode {
     
     private static final String ROOT_NODE = "nodes";
@@ -35,9 +38,9 @@ public final class ComputeNode {
     
     private static final String LABELS_NODE = "labels";
     
-    private static final String PROCESS_TRIGGER = "process_trigger";
+    private static final String SHOW_PROCESS_LIST_TRIGGER = "show_process_list_trigger";
     
-    private static final String PROCESS_KILL = "process_kill";
+    private static final String KILL_PROCESS_TRIGGER = "kill_process_trigger";
     
     private static final String STATUS_NODE = "status";
     
@@ -74,43 +77,43 @@ public final class ComputeNode {
     }
     
     /**
-     * Get process trigger node path.
+     * Get show process list trigger node path.
      * 
-     * @return path of process trigger node path
+     * @return show process list trigger node path
      */
-    public static String getProcessTriggerNodePatch() {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER);
+    public static String getShowProcessListTriggerNodePath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, SHOW_PROCESS_LIST_TRIGGER);
     }
     
     /**
-     * Get process kill node path.
+     * Get kill process trigger node path.
      *
-     * @return path of process kill node path
+     * @return kill process trigger node path
      */
-    public static String getProcessKillNodePatch() {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_KILL);
+    public static String getKillProcessTriggerNodePath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, KILL_PROCESS_TRIGGER);
     }
     
     /**
-     * Get process trigger instance process list id node path.
+     * Get process trigger instance node path.
      *
      * @param instanceId instance id
-     * @param processListId process list id
+     * @param taskId show process list task id
      * @return path of process trigger instance node path
      */
-    public static String getProcessTriggerInstanceIdNodePath(final String instanceId, final String processListId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, String.join(":", instanceId, processListId));
+    public static String getProcessTriggerInstanceNodePath(final String instanceId, final String taskId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, SHOW_PROCESS_LIST_TRIGGER, String.join(":", instanceId, taskId));
     }
     
     /**
      * Get process kill instance id node path.
      *
      * @param instanceId instance id
-     * @param processListId process list id
+     * @param processId process id
      * @return path of process kill instance id node path
      */
-    public static String getProcessKillInstanceIdNodePath(final String instanceId, final String processListId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_KILL, String.join(":", instanceId, processListId));
+    public static String getProcessKillInstanceIdNodePath(final String instanceId, final String processId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, KILL_PROCESS_TRIGGER, String.join(":", instanceId, processId));
     }
     
     /**

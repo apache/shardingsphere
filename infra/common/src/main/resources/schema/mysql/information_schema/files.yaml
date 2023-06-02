@@ -19,7 +19,7 @@ name: FILES
 columns:
   file_id:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: FILE_ID
     primaryKey: false
@@ -83,7 +83,7 @@ columns:
     visible: true
   logfile_group_number:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: LOGFILE_GROUP_NUMBER
     primaryKey: false
@@ -107,7 +107,7 @@ columns:
     visible: true
   deleted_rows:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: DELETED_ROWS
     primaryKey: false
@@ -115,7 +115,7 @@ columns:
     visible: true
   update_count:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: UPDATE_COUNT
     primaryKey: false
@@ -123,7 +123,7 @@ columns:
     visible: true
   free_extents:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: FREE_EXTENTS
     primaryKey: false
@@ -131,7 +131,7 @@ columns:
     visible: true
   total_extents:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: TOTAL_EXTENTS
     primaryKey: false
@@ -139,7 +139,7 @@ columns:
     visible: true
   extent_size:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: EXTENT_SIZE
     primaryKey: false
@@ -147,7 +147,7 @@ columns:
     visible: true
   initial_size:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: INITIAL_SIZE
     primaryKey: false
@@ -155,7 +155,7 @@ columns:
     visible: true
   maximum_size:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: MAXIMUM_SIZE
     primaryKey: false
@@ -163,7 +163,7 @@ columns:
     visible: true
   autoextend_size:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: AUTOEXTEND_SIZE
     primaryKey: false
@@ -195,7 +195,7 @@ columns:
     visible: true
   recover_time:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: RECOVER_TIME
     primaryKey: false
@@ -203,7 +203,7 @@ columns:
     visible: true
   transaction_counter:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: TRANSACTION_COUNTER
     primaryKey: false
@@ -211,7 +211,7 @@ columns:
     visible: true
   version:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: VERSION
     primaryKey: false
@@ -227,7 +227,7 @@ columns:
     visible: true
   table_rows:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: TABLE_ROWS
     primaryKey: false
@@ -235,7 +235,7 @@ columns:
     visible: true
   avg_row_length:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: AVG_ROW_LENGTH
     primaryKey: false
@@ -243,7 +243,7 @@ columns:
     visible: true
   data_length:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: DATA_LENGTH
     primaryKey: false
@@ -251,7 +251,7 @@ columns:
     visible: true
   max_data_length:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: MAX_DATA_LENGTH
     primaryKey: false
@@ -259,7 +259,7 @@ columns:
     visible: true
   index_length:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: INDEX_LENGTH
     primaryKey: false
@@ -267,7 +267,7 @@ columns:
     visible: true
   data_free:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: DATA_FREE
     primaryKey: false
@@ -299,7 +299,7 @@ columns:
     visible: true
   checksum:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: CHECKSUM
     primaryKey: false

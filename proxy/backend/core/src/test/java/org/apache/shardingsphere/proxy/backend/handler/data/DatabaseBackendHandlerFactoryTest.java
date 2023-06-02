@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.data;
 
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
@@ -49,30 +49,30 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 @ConstructionMockSettings(DatabaseConnector.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class DatabaseBackendHandlerFactoryTest {
+class DatabaseBackendHandlerFactoryTest {
     
     @Test
-    public void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithDAL() {
+    void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithDAL() {
         String sql = "DESC tbl";
-        SQLStatementContext<DALStatement> sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class));
         DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList()), mock(ConnectionSession.class), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithQueryWithoutFrom() {
+    void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithQueryWithoutFrom() {
         String sql = "SELECT 1";
-        SQLStatementContext<SelectStatement> sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList()), mock(ConnectionSession.class), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceReturnedSchemaAssignedDatabaseBackendHandler() {
+    void assertNewInstanceReturnedSchemaAssignedDatabaseBackendHandler() {
         String sql = "SELECT 1 FROM user WHERE id = 1";
-        SQLStatementContext<SQLStatement> sqlStatementContext = mockSQLStatementContext();
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext();
         ConnectionSession connectionSession = mockConnectionSession();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -80,8 +80,8 @@ public final class DatabaseBackendHandlerFactoryTest {
         assertThat(actual, instanceOf(DatabaseConnector.class));
     }
     
-    private static SQLStatementContext<SQLStatement> mockSQLStatementContext() {
-        SQLStatementContext<SQLStatement> result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+    private SQLStatementContext mockSQLStatementContext() {
+        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(SQLStatement.class));
         when(result.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         return result;
@@ -97,11 +97,11 @@ public final class DatabaseBackendHandlerFactoryTest {
         return result;
     }
     
-    private static ConnectionSession mockConnectionSession() {
+    private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getDatabaseName()).thenReturn("foo_db");
-        when(result.getBackendConnection()).thenReturn(mock(BackendConnection.class));
-        when(result.getBackendConnection().getConnectionSession()).thenReturn(result);
+        when(result.getDatabaseConnectionManager()).thenReturn(mock(ProxyDatabaseConnectionManager.class));
+        when(result.getDatabaseConnectionManager().getConnectionSession()).thenReturn(result);
         return result;
     }
 }

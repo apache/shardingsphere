@@ -320,7 +320,7 @@
         <table>t_2</table>
     </create-broadcast-table-rule>
     
-    <create-readwrite-splitting-rule sql-case-id="create-static-readwrite-splitting-rule">
+    <create-readwrite-splitting-rule sql-case-id="create-readwrite-splitting-rule">
         <rule name="ms_group_0" write-data-source="primary_ds">
             <read-data-source>replica_ds_0</read-data-source>
             <read-data-source>replica_ds_1</read-data-source>
@@ -328,14 +328,22 @@
         </rule>
     </create-readwrite-splitting-rule>
     
-    <create-readwrite-splitting-rule sql-case-id="create-static-readwrite-splitting-rule-if-not-exists" if-not-exists="true">
+    <create-readwrite-splitting-rule sql-case-id="create-readwrite-splitting-rule-if-not-exists" if-not-exists="true">
         <rule name="ms_group_0" write-data-source="primary_ds">
             <read-data-source>replica_ds_0</read-data-source>
             <read-data-source>replica_ds_1</read-data-source>
             <load-balancer algorithm-name="random" />
         </rule>
     </create-readwrite-splitting-rule>
-
+    
+    <create-readwrite-splitting-rule sql-case-id="create-readwrite-splitting-rule-with-transactional-read-query-strategy">
+        <rule name="ms_group_0" write-data-source="primary_ds" transactional-read-query-strategy="DYNAMIC">
+            <read-data-source>replica_ds_0</read-data-source>
+            <read-data-source>replica_ds_1</read-data-source>
+            <load-balancer algorithm-name="random" />
+        </rule>
+    </create-readwrite-splitting-rule>
+    
     <create-readwrite-splitting-rule sql-case-id="create-readwrite-splitting-rule-with-quota">
         <rule name="ms_group_0" write-data-source="primary_ds">
             <read-data-source>replica_ds_0</read-data-source>
@@ -362,66 +370,9 @@
         </rule>
     </create-readwrite-splitting-rule>
     
-    <create-database-discovery-rule sql-case-id="create-database-discovery-rule">
-        <rule name="ha_group_0" type="mgr">
-            <data-source>ds_0</data-source>
-            <data-source>ds_1</data-source>
-            <discovery-type algorithm-name="mgr">
-                <property key="groupName" value="92504d5b-6dec" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/5 * * * * ?" />
-        </rule>
-        <rule name="ha_group_1" type="mgr2">
-            <data-source>ds_2</data-source>
-            <data-source>ds_3</data-source>
-            <discovery-type algorithm-name="mgr2">
-                <property key="groupName" value="92504d5b-6dec-2" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/6 * * * * ?" />
-        </rule>
-    </create-database-discovery-rule>
-    
-    <create-database-discovery-rule sql-case-id="create-database-discovery-rule-if-not-exists" if-not-exists="true">
-        <rule name="ha_group_0" type="mgr">
-            <data-source>ds_0</data-source>
-            <data-source>ds_1</data-source>
-            <discovery-type algorithm-name="mgr">
-                <property key="groupName" value="92504d5b-6dec" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/5 * * * * ?" />
-        </rule>
-        <rule name="ha_group_1" type="mgr2">
-            <data-source>ds_2</data-source>
-            <data-source>ds_3</data-source>
-            <discovery-type algorithm-name="mgr2">
-                <property key="groupName" value="92504d5b-6dec-2" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/6 * * * * ?" />
-        </rule>
-    </create-database-discovery-rule>
-
-    <create-database-discovery-rule sql-case-id="create-database-discovery-rule-with-quota">
-        <rule name="ha_group_0" type="mgr">
-            <data-source>ds_0</data-source>
-            <data-source>ds_1</data-source>
-            <discovery-type algorithm-name="mgr">
-                <property key="groupName" value="92504d5b-6dec" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/5 * * * * ?" />
-        </rule>
-        <rule name="ha_group_1" type="mgr2">
-            <data-source>ds_2</data-source>
-            <data-source>ds_3</data-source>
-            <discovery-type algorithm-name="mgr2">
-                <property key="groupName" value="92504d5b-6dec-2" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/6 * * * * ?" />
-        </rule>
-    </create-database-discovery-rule>
-    
     <create-encrypt-rule sql-case-id="create-encrypt-rule">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+            <column name="user_id" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -434,7 +385,7 @@
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-if-not-exists" if-not-exists="true">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+            <column name="user_id" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -447,7 +398,7 @@
 
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-quota">
         <rule name="encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+            <column name="user_id" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -460,7 +411,7 @@
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-assisted-query-column">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column="assisted_column">
+            <column name="user_id" cipher-column="user_cipher" assisted-query-column="assisted_column">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -474,7 +425,7 @@
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-like-query-column">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" like-query-column="like_column">
+            <column name="user_id" cipher-column="user_cipher" like-query-column="like_column">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -488,7 +439,7 @@
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-query-with-cipher-column">
         <rule name="encrypt" query-with-cipher-column="false">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+            <column name="user_id" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -687,7 +638,7 @@
 
     <create-encrypt-rule sql-case-id="create-encrypt-rule-without-quote-on-build-in-algorithm-type-name">
         <rule name="t_encrypt" query-with-cipher-column="true">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+            <column name="user_id" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -704,17 +655,6 @@
             <read-data-source>read_ds_1</read-data-source>
         </rule>
     </create-readwrite-splitting-rule>
-
-    <create-database-discovery-rule sql-case-id="create-db-discovery-rule-without-quote-on-build-in-db-discovery-type-name">
-        <rule name="db_discovery_group_0" type="MYSQL.MGR">
-            <data-source>ds_0</data-source>
-            <data-source>ds_1</data-source>
-            <discovery-type algorithm-name="MYSQL.MGR">
-                <property key="group-name" value="92504d5b-6dec" />
-            </discovery-type>
-            <property key="keep-alive-cron" value="0/5 * * * * ?" />
-        </rule>
-    </create-database-discovery-rule>
 
     <create-shadow-rule sql-case-id="create-shadow-rule-without-quote-on-build-in-shadow-algorithm-name">
         <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">

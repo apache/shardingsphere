@@ -44,7 +44,7 @@ public final class HBaseDescribeResultSet implements HBaseQueryResultSet {
      * @param sqlStatementContext SQL statement context
      */
     @Override
-    public void init(final SQLStatementContext<?> sqlStatementContext) {
+    public void init(final SQLStatementContext sqlStatementContext) {
         ShowCreateTableStatementContext statementContext = (ShowCreateTableStatementContext) sqlStatementContext;
         String tableName = statementContext.getTablesContext().getTableNames().iterator().next();
         boolean isExists = HBaseExecutor.executeAdmin(HBaseContext.getInstance().getConnection(tableName), admin -> admin.tableExists(TableName.valueOf(tableName)));

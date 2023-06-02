@@ -32,12 +32,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlAuthorityRuleConfigurationSwapperTest {
+class YamlAuthorityRuleConfigurationSwapperTest {
     
     private final YamlAuthorityRuleConfigurationSwapper swapper = new YamlAuthorityRuleConfigurationSwapper();
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new AlgorithmConfiguration("type", new Properties()), null);
         YamlAuthorityRuleConfiguration actual = swapper.swapToYamlConfiguration(authorityRuleConfig);
         assertTrue(actual.getUsers().isEmpty());
@@ -45,17 +45,19 @@ public final class YamlAuthorityRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlAuthorityRuleConfiguration authorityRuleConfig = new YamlAuthorityRuleConfiguration();
         authorityRuleConfig.setUsers(Collections.singletonList(getYamlUser()));
-        authorityRuleConfig.setPrivilege(new YamlAlgorithmConfiguration("type", new Properties()));
+        YamlAlgorithmConfiguration yamlAlgorithmConfig = new YamlAlgorithmConfiguration();
+        yamlAlgorithmConfig.setType("type");
+        authorityRuleConfig.setPrivilege(yamlAlgorithmConfig);
         AuthorityRuleConfiguration actual = swapper.swapToObject(authorityRuleConfig);
         assertThat(actual.getUsers().size(), is(1));
         assertNotNull(actual.getAuthorityProvider());
     }
     
     @Test
-    public void assertSwapToObjectWithDefaultProvider() {
+    void assertSwapToObjectWithDefaultProvider() {
         YamlAuthorityRuleConfiguration authorityRuleConfig = new YamlAuthorityRuleConfiguration();
         authorityRuleConfig.setUsers(Collections.singletonList(getYamlUser()));
         AuthorityRuleConfiguration actual = swapper.swapToObject(authorityRuleConfig);

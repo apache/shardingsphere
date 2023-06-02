@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -73,9 +72,8 @@ public final class DataSetEnvironmentManager {
      * Fill data.
      *
      * @throws SQLException SQL exception
-     * @throws ParseException parse exception
      */
-    public void fillData() throws SQLException, ParseException {
+    public void fillData() throws SQLException {
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         List<Callable<Void>> fillDataTasks = new LinkedList<>();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
@@ -96,13 +94,13 @@ public final class DataSetEnvironmentManager {
         try {
             EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final Exception ignored) {
             // CHECKSTYLE:ON
         }
     }
     
     private Map<DataNode, List<DataSetRow>> getDataSetRowMap() {
-        Map<DataNode, List<DataSetRow>> result = new LinkedHashMap<>(dataSet.getRows().size(), 1);
+        Map<DataNode, List<DataSetRow>> result = new LinkedHashMap<>(dataSet.getRows().size(), 1F);
         for (DataSetRow each : dataSet.getRows()) {
             DataNode dataNode = new DataNode(each.getDataNode());
             if (!result.containsKey(dataNode)) {
@@ -144,7 +142,7 @@ public final class DataSetEnvironmentManager {
         try {
             EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final Exception ignored) {
             // CHECKSTYLE:ON
         }
     }
@@ -164,7 +162,7 @@ public final class DataSetEnvironmentManager {
     
     private Map<String, Collection<String>> getDataNodeMap(final DataSetMetaData dataSetMetaData) {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (String each : new InlineExpressionParser(dataSetMetaData.getDataNodes()).splitAndEvaluate()) {
+        for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(dataSetMetaData.getDataNodes())) {
             DataNode dataNode = new DataNode(each);
             if (!result.containsKey(dataNode.getDataSourceName())) {
                 result.put(dataNode.getDataSourceName(), new LinkedList<>());

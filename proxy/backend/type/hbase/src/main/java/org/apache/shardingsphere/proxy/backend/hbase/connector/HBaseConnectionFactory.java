@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.hbase.connector;
 
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Connection;
@@ -34,8 +36,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * HBase connection factory.
+ * Connection factory of HBase.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HBaseConnectionFactory {
     
     /**
@@ -45,7 +48,7 @@ public final class HBaseConnectionFactory {
      * @return A connection for per HBase cluster
      */
     public static Map<String, Connection> createHBaseConnections(final YamlHBaseConfiguration yamlProxyHBaseConfiguration) {
-        Map<String, Connection> result = new LinkedHashMap<>(yamlProxyHBaseConfiguration.getDataSources().size());
+        Map<String, Connection> result = new LinkedHashMap<>(yamlProxyHBaseConfiguration.getDataSources().size(), 1F);
         for (Entry<String, YamlHBaseParameter> entry : yamlProxyHBaseConfiguration.getDataSources().entrySet()) {
             result.put(entry.getKey(), createConnection(entry.getValue()));
         }

@@ -25,10 +25,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MariaDBXADataSourceDefinitionTest {
+class MariaDBXADataSourceDefinitionTest {
     
     @Test
-    public void assertGetXADriverClassName() {
+    void assertGetXADriverClassName() {
         assertThat(new MariaDBXADataSourceDefinition().getXADriverClassNames(), is(Collections.singletonList(MariaDbDataSource.class.getName())));
     }
 }

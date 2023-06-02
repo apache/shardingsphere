@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.globalclock.core.rule.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Global clock order.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlobalClockOrder {
     
     /**

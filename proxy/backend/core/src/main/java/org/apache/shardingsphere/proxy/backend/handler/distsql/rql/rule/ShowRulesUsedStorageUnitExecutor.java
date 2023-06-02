@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -53,8 +52,6 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
     
     private static final String READWRITE_SPLITTING = "readwrite_splitting";
     
-    private static final String DB_DISCOVERY = "db_discovery";
-    
     private static final String ENCRYPT = "encrypt";
     
     private static final String SHADOW = "shadow";
@@ -68,7 +65,6 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
         if (database.getResourceMetaData().getDataSources().containsKey(resourceName)) {
             result.addAll(getShardingData(database));
             result.addAll(getReadwriteSplittingData(database, resourceName));
-            result.addAll(getDatabaseDiscoveryData(database, resourceName));
             result.addAll(getEncryptData(database));
             result.addAll(getShadowData(database, resourceName));
             result.addAll(getMaskData(database));
@@ -100,25 +96,14 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : config.getDataSources()) {
-            if (null != each.getStaticStrategy()) {
-                if (each.getStaticStrategy().getWriteDataSourceName().equalsIgnoreCase(resourceName)) {
-                    result.add(buildRow(READWRITE_SPLITTING, each.getName()));
-                }
-                if (each.getStaticStrategy().getReadDataSourceNames().contains(resourceName)) {
-                    result.add(buildRow(READWRITE_SPLITTING, each.getName()));
-                }
+            if (each.getWriteDataSourceName().equalsIgnoreCase(resourceName)) {
+                result.add(buildRow(READWRITE_SPLITTING, each.getName()));
+            }
+            if (each.getReadDataSourceNames().contains(resourceName)) {
+                result.add(buildRow(READWRITE_SPLITTING, each.getName()));
             }
         }
         return result;
-    }
-    
-    private Collection<LocalDataQueryResultRow> getDatabaseDiscoveryData(final ShardingSphereDatabase database, final String resourceName) {
-        Optional<DatabaseDiscoveryRule> rule = database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class);
-        if (!rule.isPresent()) {
-            return Collections.emptyList();
-        }
-        DatabaseDiscoveryRuleConfiguration config = (DatabaseDiscoveryRuleConfiguration) rule.get().getConfiguration();
-        return config.getDataSources().stream().filter(each -> each.getDataSourceNames().contains(resourceName)).map(each -> buildRow(DB_DISCOVERY, each.getGroupName())).collect(Collectors.toList());
     }
     
     private Collection<LocalDataQueryResultRow> getEncryptData(final ShardingSphereDatabase database) {
@@ -126,8 +111,10 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
         if (!rule.isPresent()) {
             return Collections.emptyList();
         }
-        EncryptRuleConfiguration config = (EncryptRuleConfiguration) rule.get().getConfiguration();
-        return config.getTables().stream().map(each -> buildRow(ENCRYPT, each.getName())).collect(Collectors.toList());
+        EncryptRuleConfiguration ruleConfig =
+                rule.get().getConfiguration() instanceof CompatibleEncryptRuleConfiguration ? ((CompatibleEncryptRuleConfiguration) rule.get().getConfiguration()).convertToEncryptRuleConfiguration()
+                        : (EncryptRuleConfiguration) rule.get().getConfiguration();
+        return ruleConfig.getTables().stream().map(each -> buildRow(ENCRYPT, each.getName())).collect(Collectors.toList());
     }
     
     private Collection<LocalDataQueryResultRow> getShadowData(final ShardingSphereDatabase database, final String resourceName) {

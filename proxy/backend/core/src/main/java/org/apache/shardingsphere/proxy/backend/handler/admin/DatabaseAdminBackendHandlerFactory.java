@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -44,7 +45,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param connectionSession connection session
      * @return created instance
      */
-    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession) {
+    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext sqlStatementContext, final ConnectionSession connectionSession) {
         Optional<DatabaseAdminExecutorCreator> executorCreator = TypedSPILoader.findService(DatabaseAdminExecutorCreator.class, databaseType.getType());
         if (!executorCreator.isPresent()) {
             return Optional.empty();
@@ -60,19 +61,20 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param sqlStatementContext SQL statement context
      * @param connectionSession connection session
      * @param sql SQL being executed
+     * @param parameters parameters
      * @return created instance
      */
-    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType,
-                                                            final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession, final String sql) {
+    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext sqlStatementContext,
+                                                            final ConnectionSession connectionSession, final String sql, final List<Object> parameters) {
         Optional<DatabaseAdminExecutorCreator> executorCreator = TypedSPILoader.findService(DatabaseAdminExecutorCreator.class, databaseType.getType());
         if (!executorCreator.isPresent()) {
             return Optional.empty();
         }
-        Optional<DatabaseAdminExecutor> executor = executorCreator.get().create(sqlStatementContext, sql, connectionSession.getDatabaseName());
+        Optional<DatabaseAdminExecutor> executor = executorCreator.get().create(sqlStatementContext, sql, connectionSession.getDatabaseName(), parameters);
         return executor.map(optional -> createProxyBackendHandler(sqlStatementContext, connectionSession, optional));
     }
     
-    private static ProxyBackendHandler createProxyBackendHandler(final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
+    private static ProxyBackendHandler createProxyBackendHandler(final SQLStatementContext sqlStatementContext, final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
         return executor instanceof DatabaseAdminQueryExecutor
                 ? new DatabaseAdminQueryBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor)
                 : new DatabaseAdminUpdateBackendHandler(connectionSession, sqlStatementContext.getSqlStatement(), executor);

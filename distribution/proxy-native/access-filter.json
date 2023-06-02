@@ -1,0 +1,14 @@
+{
+  "rules": [
+    {"includeClasses": "**"},
+    {"excludeClasses": "org.junit.platform.launcher.**"},
+    {"excludeClasses": "org.mariadb.jdbc.**"},
+    {"excludeClasses": "com.mysql.jdbc.**"},
+    {"excludeClasses": "org.apache.commons.dbcp2.**"},
+    {"excludeClasses": "org.apache.shardingsphere.test.fixture.jdbc.**"},
+    {"excludeClasses": "org.apache.shardingsphere.data.pipeline.core.sqlbuilder.H2PipelineSQLBuilder"}
+  ],
+  "regexRules": [
+    {"excludeClasses": ".*Fixture*.*"}
+  ]
+}

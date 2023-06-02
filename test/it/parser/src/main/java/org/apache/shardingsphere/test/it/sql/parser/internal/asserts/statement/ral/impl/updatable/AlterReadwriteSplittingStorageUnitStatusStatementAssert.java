@@ -22,32 +22,28 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterReadwriteSplittingStorageUnitStatusStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterReadwriteSplittingStorageUnitStatusStatementAssert {
     
     /**
-     * Alter readwrite splitting storage unit status statement is correct with expected parser result.
+     * Alter readwrite-splitting storage unit status statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual alter readwrite splitting storage unit status statement
-     * @param expected expected alter readwrite splitting storage unit status statement test case
+     * @param actual actual alter readwrite-splitting storage unit status statement
+     * @param expected expected alter readwrite-splitting storage unit status statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterReadwriteSplittingStorageUnitStatusStatement actual,
                                 final AlterReadwriteSplittingStorageUnitStatusStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertThat(actual.getGroupName(), is(expected.getGroupName()));
             assertThat(actual.getStorageUnitName(), is(expected.getStorageUnitName()));
             assertThat(actual.getStatus(), is(expected.getStatus()));

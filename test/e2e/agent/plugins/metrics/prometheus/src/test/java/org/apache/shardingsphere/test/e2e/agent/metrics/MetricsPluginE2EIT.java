@@ -42,11 +42,11 @@ import java.util.stream.Stream;
 
 @ExtendWith(AgentTestActionExtension.class)
 @Slf4j
-public final class MetricsPluginE2EIT {
+class MetricsPluginE2EIT {
     
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertProxyWithAgent(final MetricTestCase metricTestCase) {
+    void assertWithAgent(final MetricTestCase metricTestCase) {
         Properties props = E2ETestEnvironment.getInstance().getProps();
         String metaDataURL = props.getProperty("prometheus.metadata.url");
         String queryURL = props.getProperty("prometheus.query.url");
@@ -81,7 +81,7 @@ public final class MetricsPluginE2EIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases().stream().map(Arguments::of);
+            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
         }
     }
 }

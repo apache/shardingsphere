@@ -35,32 +35,32 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class CachedDatabaseMetaDataTest {
+class CachedDatabaseMetaDataTest {
     
     @Mock
     private DatabaseMetaData databaseMetaData;
     
     @Test
-    public void assertGetRowIdLifetimeFromOriginMetaData() throws SQLException {
+    void assertGetRowIdLifetimeFromOriginMetaData() throws SQLException {
         RowIdLifetime rowIdLifetime = mock(RowIdLifetime.class);
         when(databaseMetaData.getRowIdLifetime()).thenReturn(rowIdLifetime);
         assertThat(new CachedDatabaseMetaData(databaseMetaData).getRowIdLifetime(), is(rowIdLifetime));
     }
     
     @Test
-    public void assertGetRowIdLifetimeFromOriginMetaDataWhenNotSupported() throws SQLException {
+    void assertGetRowIdLifetimeFromOriginMetaDataWhenNotSupported() throws SQLException {
         when(databaseMetaData.getRowIdLifetime()).thenThrow(SQLFeatureNotSupportedException.class);
         assertThat(new CachedDatabaseMetaData(databaseMetaData).getRowIdLifetime(), is(RowIdLifetime.ROWID_UNSUPPORTED));
     }
     
     @Test
-    public void assertIsGeneratedKeyAlwaysReturned() throws SQLException {
+    void assertIsGeneratedKeyAlwaysReturned() throws SQLException {
         when(databaseMetaData.generatedKeyAlwaysReturned()).thenReturn(true);
         assertTrue(new CachedDatabaseMetaData(databaseMetaData).isGeneratedKeyAlwaysReturned());
     }
     
     @Test
-    public void assertIsGeneratedKeyAlwaysReturnedWhenNotSupported() throws SQLException {
+    void assertIsGeneratedKeyAlwaysReturnedWhenNotSupported() throws SQLException {
         when(databaseMetaData.generatedKeyAlwaysReturned()).thenThrow(AbstractMethodError.class);
         assertFalse(new CachedDatabaseMetaData(databaseMetaData).isGeneratedKeyAlwaysReturned());
     }

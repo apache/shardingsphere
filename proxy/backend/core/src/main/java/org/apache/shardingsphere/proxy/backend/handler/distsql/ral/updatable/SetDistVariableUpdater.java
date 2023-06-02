@@ -20,25 +20,21 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
-import org.apache.shardingsphere.logging.utils.LoggingUtils;
+import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater.ConnectionSessionRequiredRALUpdater;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
@@ -53,8 +49,6 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
         Enum<?> enumType = getEnumType(sqlStatement.getName());
         if (enumType instanceof TypedPropertyKey) {
             handleConfigurationProperty((TypedPropertyKey) enumType, sqlStatement.getValue());
-        } else if (enumType instanceof VariableEnum) {
-            handleVariables(connectionSession, sqlStatement);
         } else {
             throw new UnsupportedVariableException(sqlStatement.getName());
         }
@@ -65,9 +59,9 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
             return ConfigurationPropertyKey.valueOf(name.toUpperCase());
         } catch (final IllegalArgumentException ex) {
             try {
-                return InternalConfigurationPropertyKey.valueOf(name.toUpperCase());
+                return TemporaryConfigurationPropertyKey.valueOf(name.toUpperCase());
             } catch (final IllegalArgumentException exception) {
-                return VariableEnum.getValueOf(name);
+                throw new UnsupportedVariableException(name);
             }
         }
     }
@@ -77,7 +71,7 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         Properties props = new Properties();
         props.putAll(metaDataContexts.getMetaData().getProps().getProps());
-        props.putAll(metaDataContexts.getMetaData().getInternalProps().getProps());
+        props.putAll(metaDataContexts.getMetaData().getTemporaryProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.getInstanceContext().getModeContextManager().alterProperties(props);
         refreshRootLogger(props);
@@ -89,7 +83,7 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
         try {
             Object propertyValue = new TypedPropertyValue(propertyKey, value).getValue();
             return Enum.class.isAssignableFrom(propertyKey.getType()) ? propertyValue.toString() : propertyValue;
-        } catch (final TypedPropertyValueException ex) {
+        } catch (final TypedPropertyValueException ignored) {
             throw new InvalidValueException(value);
         }
     }
@@ -119,29 +113,6 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_SIMPLE, value);
                 metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
             });
-        }
-    }
-    
-    private void handleVariables(final ConnectionSession connectionSession, final SetDistVariableStatement sqlStatement) {
-        VariableEnum variable = VariableEnum.getValueOf(sqlStatement.getName());
-        switch (variable) {
-            case AGENT_PLUGINS_ENABLED:
-                Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(sqlStatement.getValue());
-                SystemPropertyUtil.setSystemProperty(variable.name(), null == agentPluginsEnabled ? Boolean.FALSE.toString() : agentPluginsEnabled.toString());
-                break;
-            case TRANSACTION_TYPE:
-                connectionSession.getTransactionStatus().setTransactionType(getTransactionType(sqlStatement.getValue()));
-                break;
-            default:
-                throw new UnsupportedVariableException(sqlStatement.getName());
-        }
-    }
-    
-    private TransactionType getTransactionType(final String transactionTypeName) throws UnsupportedVariableException {
-        try {
-            return TransactionType.valueOf(transactionTypeName.toUpperCase());
-        } catch (final IllegalArgumentException ex) {
-            throw new UnsupportedVariableException(transactionTypeName);
         }
     }
     

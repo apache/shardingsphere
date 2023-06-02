@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.handshake;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,20 +33,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLHandshakeResponse41PacketTest {
+class MySQLHandshakeResponse41PacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNewWithPayloadWithDatabase() {
-        when(payload.readInt1()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId());
+    void assertNewWithPayloadWithDatabase() {
+        when(payload.readInt1()).thenReturn(MySQLConstants.DEFAULT_CHARSET.getId());
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root", "sharding_db");
         when(payload.readStringNulByBytes()).thenReturn(new byte[]{1});
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(payload);
         assertThat(actual.getMaxPacketSize(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
+        assertThat(actual.getCharacterSet(), is(MySQLConstants.DEFAULT_CHARSET.getId()));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getAuthResponse(), is(new byte[]{1}));
         assertThat(actual.getCapabilityFlags(), is(MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue()));
@@ -56,14 +56,14 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertNewWithPayloadWithAuthPluginName() {
-        when(payload.readInt1()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId());
+    void assertNewWithPayloadWithAuthPluginName() {
+        when(payload.readInt1()).thenReturn(MySQLConstants.DEFAULT_CHARSET.getId());
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root", MySQLAuthenticationMethod.NATIVE.getMethodName());
         when(payload.readStringNulByBytes()).thenReturn(new byte[]{1});
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(payload);
         assertThat(actual.getMaxPacketSize(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
+        assertThat(actual.getCharacterSet(), is(MySQLConstants.DEFAULT_CHARSET.getId()));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getAuthResponse(), is(new byte[]{1}));
         assertThat(actual.getCapabilityFlags(), is(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue()));
@@ -73,14 +73,14 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertNewWithPayloadWithClientPluginAuthLenencClientData() {
-        when(payload.readInt1()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId());
+    void assertNewWithPayloadWithClientPluginAuthLenencClientData() {
+        when(payload.readInt1()).thenReturn(MySQLConstants.DEFAULT_CHARSET.getId());
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringLenencByBytes()).thenReturn(new byte[]{1});
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(payload);
         assertThat(actual.getMaxPacketSize(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
+        assertThat(actual.getCharacterSet(), is(MySQLConstants.DEFAULT_CHARSET.getId()));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getAuthResponse(), is(new byte[]{1}));
         assertThat(actual.getCapabilityFlags(), is(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue()));
@@ -90,14 +90,14 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertNewWithPayloadWithClientSecureConnection() {
-        when(payload.readInt1()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId(), 1);
+    void assertNewWithPayloadWithClientSecureConnection() {
+        when(payload.readInt1()).thenReturn(MySQLConstants.DEFAULT_CHARSET.getId(), 1);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringFixByBytes(1)).thenReturn(new byte[]{1});
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(payload);
         assertThat(actual.getMaxPacketSize(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
+        assertThat(actual.getCharacterSet(), is(MySQLConstants.DEFAULT_CHARSET.getId()));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getAuthResponse(), is(new byte[]{1}));
         assertThat(actual.getCapabilityFlags(), is(MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue()));
@@ -107,14 +107,14 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertWriteWithDatabase() {
-        MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLServerInfo.DEFAULT_CHARSET.getId(), "root");
+    void assertWriteWithDatabase() {
+        MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLConstants.DEFAULT_CHARSET.getId(), "root");
         actual.setAuthResponse(new byte[]{1});
         actual.setDatabase("sharding_db");
         actual.write(payload);
         verify(payload).writeInt4(MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue());
         verify(payload).writeInt4(100);
-        verify(payload).writeInt1(MySQLServerInfo.DEFAULT_CHARSET.getId());
+        verify(payload).writeInt1(MySQLConstants.DEFAULT_CHARSET.getId());
         verify(payload).writeReserved(23);
         verify(payload).writeStringNul("root");
         verify(payload).writeStringNul(new String(new byte[]{1}));
@@ -122,14 +122,14 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertWriteWithAuthPluginName() {
-        MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLServerInfo.DEFAULT_CHARSET.getId(), "root");
+    void assertWriteWithAuthPluginName() {
+        MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLConstants.DEFAULT_CHARSET.getId(), "root");
         actual.setAuthResponse(new byte[]{1});
         actual.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
         actual.write(payload);
         verify(payload).writeInt4(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
         verify(payload).writeInt4(100);
-        verify(payload).writeInt1(MySQLServerInfo.DEFAULT_CHARSET.getId());
+        verify(payload).writeInt1(MySQLConstants.DEFAULT_CHARSET.getId());
         verify(payload).writeReserved(23);
         verify(payload).writeStringNul("root");
         verify(payload).writeStringNul(new String(new byte[]{1}));
@@ -137,28 +137,28 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertWriteWithClientPluginAuthLenencClientData() {
-        MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLServerInfo.DEFAULT_CHARSET.getId(), "root");
+    void assertWriteWithClientPluginAuthLenencClientData() {
+        MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLConstants.DEFAULT_CHARSET.getId(), "root");
         actual.setCapabilityFlags(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue());
         actual.setAuthResponse(new byte[]{1});
         actual.write(payload);
         verify(payload).writeInt4(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue());
         verify(payload).writeInt4(100);
-        verify(payload).writeInt1(MySQLServerInfo.DEFAULT_CHARSET.getId());
+        verify(payload).writeInt1(MySQLConstants.DEFAULT_CHARSET.getId());
         verify(payload).writeReserved(23);
         verify(payload).writeStringNul("root");
         verify(payload).writeStringLenenc(new String(new byte[]{1}));
     }
     
     @Test
-    public void assertWriteWithClientSecureConnection() {
-        MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLServerInfo.DEFAULT_CHARSET.getId(), "root");
+    void assertWriteWithClientSecureConnection() {
+        MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLConstants.DEFAULT_CHARSET.getId(), "root");
         actual.setCapabilityFlags(MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue());
         actual.setAuthResponse(new byte[]{1});
         actual.write(payload);
         verify(payload).writeInt4(MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue());
         verify(payload).writeInt4(100);
-        verify(payload).writeInt1(MySQLServerInfo.DEFAULT_CHARSET.getId());
+        verify(payload).writeInt1(MySQLConstants.DEFAULT_CHARSET.getId());
         verify(payload).writeReserved(23);
         verify(payload).writeStringNul("root");
         verify(payload).writeInt1(1);

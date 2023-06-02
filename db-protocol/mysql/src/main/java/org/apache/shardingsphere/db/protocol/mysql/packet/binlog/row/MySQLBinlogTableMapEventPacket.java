@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * MySQL binlog table map event packet.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/table-map-event.html">TABLE_MAP_EVENT</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/classbinary__log_1_1Table__map__event.html">TABLE_MAP_EVENT</a>
  */
 @Getter
 public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEventPacket {
@@ -87,23 +87,23 @@ public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEve
     
     private int readColumnMetaDef(final MySQLBinaryColumnType columnType, final MySQLPacketPayload payload) {
         switch (columnType) {
-            case MYSQL_TYPE_STRING:
-            case MYSQL_TYPE_DECIMAL:
-            case MYSQL_TYPE_NEWDECIMAL:
+            case STRING:
+            case DECIMAL:
+            case NEWDECIMAL:
                 return payload.getByteBuf().readUnsignedShort();
-            case MYSQL_TYPE_BIT:
-            case MYSQL_TYPE_VAR_STRING:
-            case MYSQL_TYPE_VARCHAR:
-            case MYSQL_TYPE_ENUM:
+            case BIT:
+            case VAR_STRING:
+            case VARCHAR:
+            case ENUM:
                 return payload.readInt2();
-            case MYSQL_TYPE_BLOB:
-            case MYSQL_TYPE_TINY_BLOB:
-            case MYSQL_TYPE_DOUBLE:
-            case MYSQL_TYPE_FLOAT:
-            case MYSQL_TYPE_TIME2:
-            case MYSQL_TYPE_TIMESTAMP2:
-            case MYSQL_TYPE_DATETIME2:
-            case MySQL_TYPE_JSON:
+            case BLOB:
+            case TINY_BLOB:
+            case DOUBLE:
+            case FLOAT:
+            case TIME2:
+            case TIMESTAMP2:
+            case DATETIME2:
+            case JSON:
                 return payload.readInt1();
             default:
                 return 0;

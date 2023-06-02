@@ -17,30 +17,21 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project.vo.response;
 
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Http result.
+ * 
+ * @param <T> type of data
  */
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
-public class HttpResult<T> implements Serializable {
+public class HttpResult<T> {
     
-    private int code;
+    private final int code;
     
-    private String message;
+    private final String message;
     
-    private T data;
-    
-    @Builder(toBuilder = true)
-    public HttpResult(final int code, final String message, final T data) {
-        this.code = code;
-        this.message = message;
-        this.data = data;
-    }
-    
+    private final T data;
 }

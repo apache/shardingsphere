@@ -42,10 +42,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLQueryHeaderBuilderTest {
+class MySQLQueryHeaderBuilderTest {
     
     @Test
-    public void assertBuild() throws SQLException {
+    void assertBuild() throws SQLException {
         QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
         QueryHeader actual = new MySQLQueryHeaderBuilder().build(queryResultMetaData, createDatabase(), queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1);
         assertThat(actual.getSchema(), is(DefaultDatabase.LOGIC_NAME));
@@ -62,13 +62,13 @@ public final class MySQLQueryHeaderBuilderTest {
     }
     
     @Test
-    public void assertBuildWithoutPrimaryKeyColumn() throws SQLException {
+    void assertBuildWithoutPrimaryKeyColumn() throws SQLException {
         QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
         assertFalse(new MySQLQueryHeaderBuilder().build(queryResultMetaData, createDatabase(), queryResultMetaData.getColumnName(2), queryResultMetaData.getColumnLabel(2), 2).isPrimaryKey());
     }
     
     @Test
-    public void assertBuildWithNullDatabase() throws SQLException {
+    void assertBuildWithNullDatabase() throws SQLException {
         QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
         QueryHeader actual = new MySQLQueryHeaderBuilder().build(queryResultMetaData, null, queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1);
         assertFalse(actual.isPrimaryKey());
@@ -76,7 +76,7 @@ public final class MySQLQueryHeaderBuilderTest {
     }
     
     @Test
-    public void assertBuildWithNullSchema() throws SQLException {
+    void assertBuildWithNullSchema() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchemas()).thenReturn(Collections.emptyMap());
         DataNodeContainedRule containedRule = mock(DataNodeContainedRule.class);
@@ -89,7 +89,7 @@ public final class MySQLQueryHeaderBuilderTest {
     }
     
     @Test
-    public void assertBuildWithoutDataNodeContainedRule() throws SQLException {
+    void assertBuildWithoutDataNodeContainedRule() throws SQLException {
         QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
         QueryHeader actual = new MySQLQueryHeaderBuilder().build(
                 queryResultMetaData, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1);

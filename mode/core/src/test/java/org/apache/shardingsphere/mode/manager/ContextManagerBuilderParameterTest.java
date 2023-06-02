@@ -39,35 +39,35 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ContextManagerBuilderParameterTest {
+class ContextManagerBuilderParameterTest {
     
     @Test
-    public void assertIsEmptyWithoutAllParameters() {
+    void assertIsEmptyWithoutAllParameters() {
         assertTrue(new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false).isEmpty());
     }
     
     @Test
-    public void assertIsEmptyWithDatabaseAndWithoutConfigurations() {
+    void assertIsEmptyWithDatabaseAndWithoutConfigurations() {
         assertTrue(new ContextManagerBuilderParameter(null, mockDatabaseConfigurations(true, true), Collections.emptyList(), new Properties(), null, null, false).isEmpty());
     }
     
     @Test
-    public void assertIsNotEmptyWhenGlobalRuleIsNotEmpty() {
+    void assertIsNotEmptyWhenGlobalRuleIsNotEmpty() {
         assertFalse(new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.singleton(mock(RuleConfiguration.class)), new Properties(), null, null, false).isEmpty());
     }
     
     @Test
-    public void assertIsNotEmptyWhenPropsIsNotEmpty() {
+    void assertIsNotEmptyWhenPropsIsNotEmpty() {
         assertFalse(new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyList(), PropertiesBuilder.build(new Property("foo", "foo_value")), null, null, false).isEmpty());
     }
     
     @Test
-    public void assertIsEmptyWhenDataSourceIsNotEmpty() {
+    void assertIsEmptyWhenDataSourceIsNotEmpty() {
         assertFalse(new ContextManagerBuilderParameter(null, mockDatabaseConfigurations(false, true), Collections.emptyList(), new Properties(), null, null, false).isEmpty());
     }
     
     @Test
-    public void assertIsEmptyWhenDatabaseRuleIsNotEmpty() {
+    void assertIsEmptyWhenDatabaseRuleIsNotEmpty() {
         assertFalse(new ContextManagerBuilderParameter(null, mockDatabaseConfigurations(true, false), Collections.emptyList(), new Properties(), null, null, false).isEmpty());
     }
     
@@ -79,14 +79,14 @@ public final class ContextManagerBuilderParameterTest {
     }
     
     @Test
-    public void assertGetDefaultModeConfiguration() {
+    void assertGetDefaultModeConfiguration() {
         ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false);
         assertThat(param.getModeConfiguration().getType(), is("Standalone"));
         assertNull(param.getModeConfiguration().getRepository());
     }
     
     @Test
-    public void assertGetModeConfiguration() {
+    void assertGetModeConfiguration() {
         ModeConfiguration modeConfig = new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class));
         ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false);
         assertThat(param.getModeConfiguration().getType(), is("Cluster"));

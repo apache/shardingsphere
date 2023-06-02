@@ -40,23 +40,12 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     private final PersistRepository repository;
     
     @Override
-    public void conditionalPersist(final String databaseName, final Collection<RuleConfiguration> configs) {
-        if (!configs.isEmpty() && !isExisted(databaseName)) {
-            persist(databaseName, configs);
-        }
-    }
-    
-    @Override
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
         if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
             repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
         }
-        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName)), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
-    }
-    
-    @Override
-    public void persist(final String databaseName, final String version, final Collection<RuleConfiguration> configs) {
-        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, version), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName)),
+                YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
@@ -81,8 +70,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
                         .getRulePath(databaseName, getDatabaseActiveVersion(databaseName))), Collection.class, true));
     }
     
-    @Override
-    public boolean isExisted(final String databaseName) {
+    private boolean isExisted(final String databaseName) {
         return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))
                 && !Strings.isNullOrEmpty(repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName))));
     }

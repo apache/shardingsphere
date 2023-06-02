@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTable
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
@@ -64,7 +65,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
         try {
             loadTableMetaData(schemaName, tableName);
         } catch (final SQLException ex) {
-            throw new RuntimeException(String.format("Load meta data for schema '%s' and table '%s' failed", schemaName, tableName), ex);
+            throw new PipelineInternalException(String.format("Load meta data for schema '%s' and table '%s' failed", schemaName, tableName), ex);
         }
         result = tableMetaDataMap.get(new TableName(tableName));
         if (null == result) {

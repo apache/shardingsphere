@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
@@ -48,25 +48,14 @@ public final class EncryptAlgorithmMetaData {
     private final SelectStatementContext selectStatementContext;
     
     /**
-     * Find encryptor.
+     * Find standard encryptor.
      * 
      * @param tableName table name
      * @param columnName column name
-     * @return encryptor
+     * @return standard encryptor
      */
-    public Optional<StandardEncryptAlgorithm> findEncryptor(final String tableName, final String columnName) {
-        return encryptRule.findEncryptor(tableName, columnName);
-    }
-    
-    /**
-     * Judge whether column is support QueryWithCipherColumn or not.
-     *
-     * @param tableName table name
-     * @param columnName column name
-     * @return whether column is support QueryWithCipherColumn or not
-     */
-    public boolean isQueryWithCipherColumn(final String tableName, final String columnName) {
-        return encryptRule.isQueryWithCipherColumn(tableName, columnName);
+    public Optional<StandardEncryptAlgorithm> findStandardEncryptor(final String tableName, final String columnName) {
+        return encryptRule.findStandardEncryptor(tableName, columnName);
     }
     
     /**
@@ -103,7 +92,7 @@ public final class EncryptAlgorithmMetaData {
             return Optional.of(tableName);
         }
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            if (encryptRule.findEncryptor(each, columnProjection.getName()).isPresent()) {
+            if (encryptRule.findStandardEncryptor(each, columnProjection.getName()).isPresent()) {
                 return Optional.of(each);
             }
         }

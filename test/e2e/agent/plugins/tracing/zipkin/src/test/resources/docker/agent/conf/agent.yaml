@@ -21,5 +21,5 @@ plugins:
       props:
         otel.service.name: "shardingsphere"
         otel.traces.exporter: "zipkin"
-        otel.exporter.zipkin.endpoint: "http://zipkin.agent.tracing.zipkin.host:9411/api/v2/spans"
+        otel.exporter.zipkin.endpoint: "http://zipkin.host:9411/api/v2/spans"
         otel.traces.sampler: "always_on"

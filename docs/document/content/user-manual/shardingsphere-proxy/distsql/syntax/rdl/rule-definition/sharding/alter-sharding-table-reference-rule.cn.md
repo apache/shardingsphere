@@ -1,11 +1,11 @@
 +++
 title = "ALTER SHARDING TABLE REFERENCE RULE"
-weight = 14
+weight = 13
 +++
 
 ## 描述
 
-`ALTER SHARDING TABLE REFERENCE RULE` 语法用于修改分片表关联关系
+`ALTER SHARDING TABLE REFERENCE RULE` 语法用于修改分片表关联关系。
 
 ### 语法定义
 

@@ -1,11 +1,11 @@
 +++
-title = "SHOW SHADOW ALGORITHM"
-weight = 4
+title = "SHOW SHADOW ALGORITHMS"
+weight = 3
 +++
 
 ### Description
 
-The `SHOW SHADOW ALGORITHM` syntax is used to query shadow algorithms for specified database.
+The `SHOW SHADOW ALGORITHMS` syntax is used to query shadow algorithms for specified database.
 
 ### Syntax
 
@@ -31,7 +31,7 @@ databaseName ::=
 ### Return value description
 
 | Column                | Description                 |
-| --------------------- | --------------------------- |
+|-----------------------|-----------------------------|
 | shadow_algorithm_name | Shadow algorithm name       |
 | type                  | Shadow algorithm type       |
 | props                 | Shadow algorithm properties |

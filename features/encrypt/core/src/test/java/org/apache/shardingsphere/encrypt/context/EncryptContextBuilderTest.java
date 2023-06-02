@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.context;
 
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class EncryptContextBuilderTest {
+class EncryptContextBuilderTest {
     
     @Test
-    public void assertBuildWhenNotConfigDateType() {
+    void assertBuildWhenNotConfigDateType() {
         EncryptContext actual = EncryptContextBuilder.build("encrypt_db", "encrypt_db", "test", "cipher");
         assertThat(actual.getDatabaseName(), is("encrypt_db"));
         assertThat(actual.getTableName(), is("test"));

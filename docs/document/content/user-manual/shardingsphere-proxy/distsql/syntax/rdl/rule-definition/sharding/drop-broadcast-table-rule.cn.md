@@ -1,11 +1,11 @@
 +++
 title = "DROP BROADCAST TABLE RULE"
-weight = 17
+weight = 16
 +++
 
 ## 描述
 
-`DROP BROADCAST TABLE RULE` 语法用于为指定的广播表删除广播规则
+`DROP BROADCAST TABLE RULE` 语法用于为指定的广播表删除广播规则。
 
 ### 语法定义
 

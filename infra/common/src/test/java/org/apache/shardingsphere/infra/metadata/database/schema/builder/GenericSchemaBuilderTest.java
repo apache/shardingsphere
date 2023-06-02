@@ -51,33 +51,33 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(SchemaMetaDataLoaderEngine.class)
-public final class GenericSchemaBuilderTest {
+class GenericSchemaBuilderTest {
     
     private GenericSchemaBuilderMaterial material;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         DatabaseType databaseType = mock(DatabaseType.class);
         material = new GenericSchemaBuilderMaterial(databaseType, Collections.emptyMap(), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(DataSource.class)),
                 Collections.singleton(new TableContainedFixtureRule()), new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
     }
     
     @Test
-    public void assertLoadWithExistedTableName() throws SQLException {
+    void assertLoadWithExistedTableName() throws SQLException {
         Collection<String> tableNames = Collections.singletonList("data_node_routed_table1");
         when(SchemaMetaDataLoaderEngine.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
         assertFalse(GenericSchemaBuilder.build(tableNames, material).get(DefaultDatabase.LOGIC_NAME).getTables().isEmpty());
     }
     
     @Test
-    public void assertLoadWithNotExistedTableName() throws SQLException {
+    void assertLoadWithNotExistedTableName() throws SQLException {
         Collection<String> tableNames = Collections.singletonList("invalid_table");
         when(SchemaMetaDataLoaderEngine.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
         assertTrue(GenericSchemaBuilder.build(tableNames, material).get(DefaultDatabase.LOGIC_NAME).getTables().isEmpty());
     }
     
     @Test
-    public void assertLoadAllTables() throws SQLException {
+    void assertLoadAllTables() throws SQLException {
         Collection<String> tableNames = Arrays.asList("data_node_routed_table1", "data_node_routed_table2");
         when(SchemaMetaDataLoaderEngine.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, material);

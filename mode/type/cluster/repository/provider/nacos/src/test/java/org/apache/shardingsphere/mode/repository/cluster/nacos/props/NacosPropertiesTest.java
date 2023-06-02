@@ -26,10 +26,10 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class NacosPropertiesTest {
+class NacosPropertiesTest {
     
     @Test
-    public void assertGetValue() {
+    void assertGetValue() {
         NacosProperties actual = new NacosProperties(createProperties());
         assertThat(actual.getValue(NacosPropertyKey.CLUSTER_IP), is("127.0.0.1"));
         assertThat(actual.getValue(NacosPropertyKey.RETRY_INTERVAL_MILLISECONDS), is(1000L));
@@ -46,7 +46,7 @@ public final class NacosPropertiesTest {
     }
     
     @Test
-    public void assertGetDefaultValue() {
+    void assertGetDefaultValue() {
         NacosProperties actual = new NacosProperties(new Properties());
         assertThat(actual.getValue(NacosPropertyKey.CLUSTER_IP), is(""));
         assertThat(actual.getValue(NacosPropertyKey.RETRY_INTERVAL_MILLISECONDS), is(500L));

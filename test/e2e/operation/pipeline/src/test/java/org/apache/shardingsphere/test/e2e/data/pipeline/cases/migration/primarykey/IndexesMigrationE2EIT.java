@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.primarykey;
 
+import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -56,7 +57,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @PipelineE2ESettings(fetchSingle = true, database = {
         @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"),
         @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/common/none.xml")})
-public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
+class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String ORDER_TABLE_SHARDING_RULE_FORMAT = "CREATE SHARDING TABLE RULE t_order(\n"
             + "STORAGE_UNITS(ds_2,ds_3,ds_4),\n"
@@ -71,7 +72,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    public void assertNoUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertNoUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             String sql;
             String consistencyCheckAlgorithmType;
@@ -86,17 +87,33 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
                 return;
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-            Object uniqueKey = keyGenerateAlgorithm.generateKey();
-            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
-                insertOneOrder(containerComposer, uniqueKey);
-                containerComposer.assertProxyOrderRecordExist("t_order", uniqueKey);
+            // TODO PostgreSQL update delete events not support if table without unique keys at increment task.
+            final Callable<Void> incrementalTaskFn = () -> {
+                Object orderId = keyGenerateAlgorithm.generateKey();
+                insertOneOrder(containerComposer, orderId);
+                if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
+                    updateOneOrder(containerComposer, orderId, "updated");
+                    deleteOneOrder(containerComposer, orderId, "updated");
+                    insertOneOrder(containerComposer, keyGenerateAlgorithm.generateKey());
+                }
                 return null;
-            });
+            };
+            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, incrementalTaskFn);
         }
     }
     
+    @SneakyThrows
+    private void doCreateUpdateDelete(final PipelineContainerComposer containerComposer, final Object orderId) {
+        String updatedStatus = "updated" + System.currentTimeMillis();
+        insertOneOrder(containerComposer, orderId);
+        updateOneOrder(containerComposer, orderId, updatedStatus);
+        deleteOneOrder(containerComposer, orderId, updatedStatus);
+    }
+    
     private void insertOneOrder(final PipelineContainerComposer containerComposer, final Object uniqueKey) throws SQLException {
-        try (PreparedStatement preparedStatement = containerComposer.getSourceDataSource().getConnection().prepareStatement("INSERT INTO t_order (order_id,user_id,status) VALUES (?,?,?)")) {
+        try (
+                Connection connection = containerComposer.getSourceDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (order_id,user_id,status) VALUES (?,?,?)")) {
             preparedStatement.setObject(1, uniqueKey);
             preparedStatement.setObject(2, 1);
             preparedStatement.setObject(3, "OK");
@@ -105,10 +122,37 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         }
     }
     
+    private void updateOneOrder(final PipelineContainerComposer containerComposer, final Object uniqueKey, final String updatedStatus) throws SQLException {
+        try (
+                Connection connection = containerComposer.getSourceDataSource().getConnection();
+                PreparedStatement preparedStatement = connection
+                        .prepareStatement("UPDATE t_order SET status=? WHERE order_id = ? AND user_id = ? AND status = ?")) {
+            preparedStatement.setObject(1, updatedStatus);
+            preparedStatement.setObject(2, uniqueKey);
+            preparedStatement.setObject(3, 1);
+            preparedStatement.setObject(4, "OK");
+            int actualCount = preparedStatement.executeUpdate();
+            assertThat(actualCount, is(1));
+        }
+    }
+    
+    private void deleteOneOrder(final PipelineContainerComposer containerComposer, final Object uniqueKey, final String updatedStatus) throws SQLException {
+        try (
+                Connection connection = containerComposer.getSourceDataSource().getConnection();
+                PreparedStatement preparedStatement = connection
+                        .prepareStatement("DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status = ?")) {
+            preparedStatement.setObject(1, uniqueKey);
+            preparedStatement.setObject(2, 1);
+            preparedStatement.setObject(3, updatedStatus);
+            int actualCount = preparedStatement.executeUpdate();
+            assertThat(actualCount, is(1));
+        }
+    }
+    
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    public void assertMultiPrimaryKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertMultiPrimaryKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             String sql;
             String consistencyCheckAlgorithmType;
@@ -122,6 +166,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             Object uniqueKey = keyGenerateAlgorithm.generateKey();
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
                 insertOneOrder(containerComposer, uniqueKey);
+                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
                 containerComposer.assertProxyOrderRecordExist("t_order", uniqueKey);
                 return null;
             });
@@ -131,7 +176,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    public void assertMultiUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertMultiUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             String sql;
             String consistencyCheckAlgorithmType;
@@ -145,6 +190,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             Object uniqueKey = keyGenerateAlgorithm.generateKey();
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
                 insertOneOrder(containerComposer, uniqueKey);
+                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
                 containerComposer.assertProxyOrderRecordExist("t_order", uniqueKey);
                 return null;
             });
@@ -154,7 +200,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    public void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             String sql;
             String consistencyCheckAlgorithmType;

@@ -30,13 +30,18 @@ import java.util.Collection;
  * Optimize table statement context.
  */
 @Getter
-public final class OptimizeTableStatementContext extends CommonSQLStatementContext<MySQLOptimizeTableStatement> implements TableAvailable {
+public final class OptimizeTableStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public OptimizeTableStatementContext(final MySQLOptimizeTableStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
+    }
+    
+    @Override
+    public MySQLOptimizeTableStatement getSqlStatement() {
+        return (MySQLOptimizeTableStatement) super.getSqlStatement();
     }
     
     @Override

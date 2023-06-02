@@ -75,13 +75,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class DistSQLBackendHandlerFactoryTest {
+class DistSQLBackendHandlerFactoryTest {
     
     @Mock
     private ConnectionSession connectionSession;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ShardingSphereDatabase database = mockDatabase();
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -113,46 +113,46 @@ public final class DistSQLBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertExecuteDataSourcesContext() throws SQLException {
+    void assertExecuteDataSourcesContext() throws SQLException {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(RegisterStorageUnitStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteShardingTableRuleContext() throws SQLException {
+    void assertExecuteShardingTableRuleContext() throws SQLException {
         when(ProxyContext.getInstance().getDatabase("foo_db").getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         assertThat(RDLBackendHandlerFactory.newInstance(mock(CreateShardingTableRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteAddResourceContext() throws SQLException {
+    void assertExecuteAddResourceContext() throws SQLException {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(RegisterStorageUnitStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteAlterResourceContext() throws SQLException {
+    void assertExecuteAlterResourceContext() throws SQLException {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(AlterStorageUnitStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteAlterShadowRuleContext() throws SQLException {
+    void assertExecuteAlterShadowRuleContext() throws SQLException {
         mockShardingSphereRuleMetaData();
         assertThat(RDLBackendHandlerFactory.newInstance(mock(AlterShadowRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteCreateShadowRuleContext() throws SQLException {
+    void assertExecuteCreateShadowRuleContext() throws SQLException {
         mockShardingSphereRuleMetaData();
         assertThat(RDLBackendHandlerFactory.newInstance(mock(CreateShadowRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteDropShadowRuleContext() throws SQLException {
+    void assertExecuteDropShadowRuleContext() throws SQLException {
         mockShardingSphereRuleMetaData();
         assertThat(RDLBackendHandlerFactory.newInstance(mock(DropShadowRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteAlterDefaultShadowAlgorithm() throws SQLException {
+    void assertExecuteAlterDefaultShadowAlgorithm() throws SQLException {
         mockShardingSphereRuleMetaData();
         AlterDefaultShadowAlgorithmStatement statement = new AlterDefaultShadowAlgorithmStatement(
                 new ShadowAlgorithmSegment("foo", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
@@ -160,51 +160,51 @@ public final class DistSQLBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertExecuteShowShadowRulesContext() throws SQLException {
+    void assertExecuteShowShadowRulesContext() throws SQLException {
         mockShardingSphereRuleMetaData();
         assertThat(RQLBackendHandlerFactory.newInstance(mock(ShowShadowRulesStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteShowShadowTableRulesContext() throws SQLException {
+    void assertExecuteShowShadowTableRulesContext() throws SQLException {
         mockShardingSphereRuleMetaData();
         assertThat(RQLBackendHandlerFactory.newInstance(mock(ShowShadowTableRulesStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteShowShadowAlgorithmsContext() throws SQLException {
+    void assertExecuteShowShadowAlgorithmsContext() throws SQLException {
         mockShardingSphereRuleMetaData();
         assertThat(RQLBackendHandlerFactory.newInstance(mock(ShowShadowAlgorithmsStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteDropShadowAlgorithmContext() throws SQLException {
+    void assertExecuteDropShadowAlgorithmContext() throws SQLException {
         mockShardingSphereRuleMetaData();
         assertThat(RDLBackendHandlerFactory.newInstance(mock(DropShadowAlgorithmStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteDropResourceContext() throws SQLException {
+    void assertExecuteDropResourceContext() throws SQLException {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(UnregisterStorageUnitStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteDropReadwriteSplittingRuleContext() {
+    void assertExecuteDropReadwriteSplittingRuleContext() {
         assertThrows(MissingRequiredRuleException.class, () -> RDLBackendHandlerFactory.newInstance(mock(DropReadwriteSplittingRuleStatement.class), connectionSession).execute());
     }
     
     @Test
-    public void assertExecuteCreateReadwriteSplittingRuleContext() throws SQLException {
+    void assertExecuteCreateReadwriteSplittingRuleContext() throws SQLException {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(CreateReadwriteSplittingRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
-    public void assertExecuteAlterReadwriteSplittingRuleContext() {
+    void assertExecuteAlterReadwriteSplittingRuleContext() {
         assertThrows(MissingRequiredRuleException.class, () -> RDLBackendHandlerFactory.newInstance(mock(AlterReadwriteSplittingRuleStatement.class), connectionSession).execute());
     }
     
     @Test
-    public void assertExecuteShowResourceContext() throws SQLException {
+    void assertExecuteShowResourceContext() throws SQLException {
         assertThat(RQLBackendHandlerFactory.newInstance(mock(ShowStorageUnitsStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     

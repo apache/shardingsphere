@@ -50,14 +50,14 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
         return Optional.of(new SqlJoin(SqlParserPos.ZERO, left, SqlLiteral.createBoolean(segment.isNatural(), SqlParserPos.ZERO), joinType, right, conditionType, condition.orElse(null)));
     }
     
-    private static SqlLiteral convertConditionType(final JoinTableSegment segment) {
+    private SqlLiteral convertConditionType(final JoinTableSegment segment) {
         if (!segment.getUsing().isEmpty()) {
             return JoinConditionType.USING.symbol(SqlParserPos.ZERO);
         }
         return null != segment.getCondition() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO) : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
     }
     
-    private static Optional<SqlNode> convertJoinCondition(final JoinTableSegment segment) {
+    private Optional<SqlNode> convertJoinCondition(final JoinTableSegment segment) {
         if (null != segment.getCondition()) {
             return new ExpressionConverter().convert(segment.getCondition());
         }

@@ -26,10 +26,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlAlgorithmConfigurationSwapperTest {
+class YamlAlgorithmConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYaml() {
+    void assertSwapToYaml() {
         YamlAlgorithmConfiguration actual = new YamlAlgorithmConfigurationSwapper().swapToYamlConfiguration(
                 new AlgorithmConfiguration("TEST", PropertiesBuilder.build(new Property("key", "value"))));
         assertThat(actual.getType(), is("TEST"));
@@ -37,8 +37,10 @@ public final class YamlAlgorithmConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
-        YamlAlgorithmConfiguration yamlConfig = new YamlAlgorithmConfiguration("TEST", PropertiesBuilder.build(new Property("key", "value")));
+    void assertSwapToObject() {
+        YamlAlgorithmConfiguration yamlConfig = new YamlAlgorithmConfiguration();
+        yamlConfig.setType("TEST");
+        yamlConfig.setProps(PropertiesBuilder.build(new Property("key", "value")));
         AlgorithmConfiguration actual = new YamlAlgorithmConfigurationSwapper().swapToObject(yamlConfig);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProps().getProperty("key"), is("value"));

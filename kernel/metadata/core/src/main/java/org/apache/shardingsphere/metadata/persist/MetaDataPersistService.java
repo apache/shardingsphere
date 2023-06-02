@@ -24,9 +24,10 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.DatabaseMetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.MetaDataVersionPersistService;
+import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourcePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
@@ -44,7 +45,7 @@ import java.util.Properties;
  * Meta data persist service.
  */
 @Getter
-public final class MetaDataPersistService {
+public final class MetaDataPersistService implements MetaDataBasedPersistService {
     
     private final PersistRepository repository;
     
@@ -74,30 +75,39 @@ public final class MetaDataPersistService {
     }
     
     /**
-     * Persist configurations.
+     * Persist global rule configurations.
      *
-     * @param databaseConfigs database configurations
      * @param globalRuleConfigs global rule configurations
      * @param props properties
      */
-    public void persistConfigurations(final Map<String, ? extends DatabaseConfiguration> databaseConfigs,
-                                      final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
-        globalRuleService.conditionalPersist(globalRuleConfigs);
-        propsService.conditionalPersist(props);
-        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
-            String databaseName = entry.getKey();
-            Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(entry.getValue().getDataSources());
-            if (dataSourcePropertiesMap.isEmpty() && entry.getValue().getRuleConfigurations().isEmpty()) {
-                databaseMetaDataService.addDatabase(databaseName);
-            } else {
-                dataSourceService.conditionalPersist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()));
-                databaseRulePersistService.conditionalPersist(databaseName, entry.getValue().getRuleConfigurations());
-            }
+    @Override
+    public void persistGlobalRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
+        globalRuleService.persist(globalRuleConfigs);
+        propsService.persist(props);
+    }
+    
+    /**
+     * Persist configurations.
+     *
+     * @param databaseName database name
+     * @param databaseConfigs database configurations
+     * @param dataSources data sources
+     * @param rules rules
+     */
+    @Override
+    public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs,
+                                      final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
+        Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(databaseConfigs.getDataSources());
+        if (dataSourcePropertiesMap.isEmpty() && databaseConfigs.getRuleConfigurations().isEmpty()) {
+            databaseMetaDataService.addDatabase(databaseName);
+        } else {
+            dataSourceService.persist(databaseName, getDataSourcePropertiesMap(databaseConfigs.getDataSources()));
+            databaseRulePersistService.persist(databaseName, databaseConfigs.getRuleConfigurations());
         }
     }
     
     private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceMap.size(), 1F);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             result.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
         }
@@ -111,6 +121,7 @@ public final class MetaDataPersistService {
      * @param databaseConfigs database configurations
      * @return effective data sources
      */
+    @Override
     public Map<String, DataSource> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(databaseName);
         return databaseConfigs.containsKey(databaseName)
@@ -119,7 +130,7 @@ public final class MetaDataPersistService {
     }
     
     private Map<String, DataSource> mergeEffectiveDataSources(final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) {
-        Map<String, DataSource> result = new LinkedHashMap<>(persistedDataSourcePropsMap.size(), 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(persistedDataSourcePropsMap.size(), 1F);
         for (Entry<String, DataSourceProperties> entry : persistedDataSourcePropsMap.entrySet()) {
             String dataSourceName = entry.getKey();
             DataSourceProperties persistedDataSourceProps = entry.getValue();

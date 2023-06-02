@@ -34,10 +34,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MySQLComStmtExecutePacketTest {
+class MySQLComStmtExecutePacketTest {
     
     @Test
-    public void assertNewWithoutParameter() {
+    void assertNewWithoutParameter() {
         byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00};
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 0);
@@ -47,7 +47,7 @@ public final class MySQLComStmtExecutePacketTest {
     }
     
     @Test
-    public void assertNewParameterBoundWithNotNullParameters() throws SQLException {
+    void assertNewParameterBoundWithNotNullParameters() throws SQLException {
         byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00};
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
@@ -55,13 +55,13 @@ public final class MySQLComStmtExecutePacketTest {
         assertThat(actual.getNewParametersBoundFlag(), is(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST));
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
         assertThat(parameterTypes.size(), is(1));
-        assertThat(parameterTypes.get(0).getColumnType(), is(MySQLBinaryColumnType.MYSQL_TYPE_LONG));
+        assertThat(parameterTypes.get(0).getColumnType(), is(MySQLBinaryColumnType.LONG));
         assertThat(parameterTypes.get(0).getUnsignedFlag(), is(0));
         assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(0)), is(Collections.<Object>singletonList(1)));
     }
     
     @Test
-    public void assertNewWithNullParameters() throws SQLException {
+    void assertNewWithNullParameters() throws SQLException {
         byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x01, 0x01, 0x03, 0x00};
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
@@ -69,13 +69,13 @@ public final class MySQLComStmtExecutePacketTest {
         assertThat(actual.getNewParametersBoundFlag(), is(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST));
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
         assertThat(parameterTypes.size(), is(1));
-        assertThat(parameterTypes.get(0).getColumnType(), is(MySQLBinaryColumnType.MYSQL_TYPE_LONG));
+        assertThat(parameterTypes.get(0).getColumnType(), is(MySQLBinaryColumnType.LONG));
         assertThat(parameterTypes.get(0).getUnsignedFlag(), is(0));
         assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.emptyList()), is(Collections.singletonList(null)));
     }
     
     @Test
-    public void assertNewWithLongDataParameter() throws SQLException {
+    void assertNewWithLongDataParameter() throws SQLException {
         byte[] data = {0x02, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, (byte) 0xfc, 0x00};
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
@@ -83,9 +83,8 @@ public final class MySQLComStmtExecutePacketTest {
         assertThat(actual.getNewParametersBoundFlag(), is(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST));
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
         assertThat(parameterTypes.size(), is(1));
-        assertThat(parameterTypes.get(0).getColumnType(), is(MySQLBinaryColumnType.MYSQL_TYPE_BLOB));
+        assertThat(parameterTypes.get(0).getColumnType(), is(MySQLBinaryColumnType.BLOB));
         assertThat(parameterTypes.get(0).getUnsignedFlag(), is(0));
         assertThat(actual.readParameters(parameterTypes, Collections.singleton(0), Collections.emptyList()), is(Collections.singletonList(null)));
-        assertThat(actual.toString(), is("MySQLComStmtExecutePacket(statementId=2)"));
     }
 }

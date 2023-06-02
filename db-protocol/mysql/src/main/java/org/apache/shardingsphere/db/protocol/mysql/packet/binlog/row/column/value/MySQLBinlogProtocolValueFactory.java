@@ -43,7 +43,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.valu
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.time.MySQLTimestampBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.time.MySQLYearBinlogProtocolValue;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -52,7 +52,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLBinlogProtocolValueFactory {
     
-    private static final Map<MySQLBinaryColumnType, MySQLBinlogProtocolValue> BINLOG_PROTOCOL_VALUES = new HashMap<>();
+    private static final Map<MySQLBinaryColumnType, MySQLBinlogProtocolValue> BINLOG_PROTOCOL_VALUES = new EnumMap<>(MySQLBinaryColumnType.class);
     
     static {
         registerIntegerTypeValue();
@@ -63,40 +63,40 @@ public final class MySQLBinlogProtocolValueFactory {
     }
     
     private static void registerIntegerTypeValue() {
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_BIT, new MySQLBitBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_TINY, new MySQLTinyBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_SHORT, new MySQLShortBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_INT24, new MySQLInt24BinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_LONG, new MySQLLongBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_LONGLONG, new MySQLLongLongBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.BIT, new MySQLBitBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.TINY, new MySQLTinyBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.SHORT, new MySQLShortBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.INT24, new MySQLInt24BinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.LONG, new MySQLLongBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.LONGLONG, new MySQLLongLongBinlogProtocolValue());
     }
     
     private static void registerDecimalTypeValue() {
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL, new MySQLDecimalBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_DOUBLE, new MySQLDoubleBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_FLOAT, new MySQLFloatBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.NEWDECIMAL, new MySQLDecimalBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.DOUBLE, new MySQLDoubleBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.FLOAT, new MySQLFloatBinlogProtocolValue());
     }
     
     private static void registerTimeTypeValue() {
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_YEAR, new MySQLYearBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_DATE, new MySQLDateBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_TIME, new MySQLTimeBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_TIME2, new MySQLTime2BinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_TIMESTAMP, new MySQLTimestampBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_TIMESTAMP2, new MySQLTimestamp2BinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_DATETIME, new MySQLDatetimeBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_DATETIME2, new MySQLDatetime2BinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.YEAR, new MySQLYearBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.DATE, new MySQLDateBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.TIME, new MySQLTimeBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.TIME2, new MySQLTime2BinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.TIMESTAMP, new MySQLTimestampBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.TIMESTAMP2, new MySQLTimestamp2BinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.DATETIME, new MySQLDatetimeBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.DATETIME2, new MySQLDatetime2BinlogProtocolValue());
     }
     
     private static void registerStringTypeValue() {
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_STRING, new MySQLStringBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, new MySQLVarcharBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, new MySQLVarcharBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MySQL_TYPE_JSON, new MySQLJsonBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.STRING, new MySQLStringBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.VARCHAR, new MySQLVarcharBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.VAR_STRING, new MySQLVarcharBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.JSON, new MySQLJsonBinlogProtocolValue());
     }
     
     private static void registerBlobTypeValue() {
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_BLOB, new MySQLBlobBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.BLOB, new MySQLBlobBinlogProtocolValue());
     }
     
     /**

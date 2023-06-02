@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.parser.segment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
  * Shadow algorithms segment.
@@ -32,12 +32,4 @@ public final class ShadowAlgorithmSegment implements ASTNode {
     private final String algorithmName;
     
     private final AlgorithmSegment algorithmSegment;
-    
-    /**
-     * Check for completeness.
-     * @return complete or not
-     */
-    public boolean isComplete() {
-        return !getAlgorithmName().isEmpty() && !getAlgorithmSegment().getName().isEmpty() && !getAlgorithmSegment().getProps().isEmpty();
-    }
 }

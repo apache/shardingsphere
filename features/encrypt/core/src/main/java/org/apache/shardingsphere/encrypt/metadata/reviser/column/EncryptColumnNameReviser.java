@@ -20,8 +20,6 @@ package org.apache.shardingsphere.encrypt.metadata.reviser.column;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnNameReviser;
 
-import java.util.Collection;
-
 /**
  * Encrypt column name reviser.
  */
@@ -29,18 +27,12 @@ public final class EncryptColumnNameReviser implements ColumnNameReviser {
     
     private final EncryptTable encryptTable;
     
-    private final Collection<String> plainColumns;
-    
     public EncryptColumnNameReviser(final EncryptTable encryptTable) {
         this.encryptTable = encryptTable;
-        plainColumns = encryptTable.getPlainColumns();
     }
     
     @Override
     public String revise(final String originalName) {
-        if (plainColumns.contains(originalName)) {
-            return encryptTable.getLogicColumnByPlainColumn(originalName);
-        }
         if (encryptTable.isCipherColumn(originalName)) {
             return encryptTable.getLogicColumnByCipherColumn(originalName);
         }

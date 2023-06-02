@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.Properties;
 
 /**
- * SQL hint utils.
+ * SQL hint utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLHintUtils {

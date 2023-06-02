@@ -25,20 +25,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PostgreSQLPasswordAuthenticatorTest {
+class PostgreSQLPasswordAuthenticatorTest {
     
     @Test
-    public void assertAuthenticationMethodName() {
+    void assertAuthenticationMethodName() {
         assertThat(new PostgreSQLPasswordAuthenticator().getAuthenticationMethod().getMethodName(), is("password"));
     }
     
     @Test
-    public void assertAuthenticateSuccess() {
+    void assertAuthenticateSuccess() {
         assertTrue(new PostgreSQLPasswordAuthenticator().authenticate(new ShardingSphereUser("root", "password", ""), new Object[]{"password", null}));
     }
     
     @Test
-    public void assertAuthenticateFailed() {
+    void assertAuthenticateFailed() {
         assertFalse(new PostgreSQLPasswordAuthenticator().authenticate(new ShardingSphereUser("root", "password", ""), new Object[]{"wrong", null}));
     }
 }

@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.shadow.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -41,12 +38,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CountShadowRuleExecutorTest {
+class CountShadowRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
-        RQLExecutor<CountShadowRuleStatement> executor = new CountShadowRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountShadowRuleStatement.class));
+    void assertGetRowData() {
+        Collection<LocalDataQueryResultRow> actual = new CountShadowRuleExecutor().getRows(mockDatabase(), mock(CountShadowRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -56,9 +52,8 @@ public final class CountShadowRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
-        RQLExecutor<CountShadowRuleStatement> executor = new CountShadowRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
+    void assertGetColumnNames() {
+        Collection<String> columns = new CountShadowRuleExecutor().getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("rule_name"));
@@ -76,9 +71,9 @@ public final class CountShadowRuleExecutorTest {
     
     private ShadowRule mockShadowRule() {
         ShadowRule result = mock(ShadowRule.class);
-        Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = new LinkedHashMap<>();
-        dataSourceMapper.put("shadow-data-source-0", Arrays.asList(new DataSourceRoleInfo("ds", DataSourceRole.PRODUCTION), new DataSourceRoleInfo("ds_shadow", DataSourceRole.SHADOW)));
-        dataSourceMapper.put("shadow-data-source-1", Arrays.asList(new DataSourceRoleInfo("ds1", DataSourceRole.PRODUCTION), new DataSourceRoleInfo("ds1_shadow", DataSourceRole.SHADOW)));
+        Map<String, Collection<String>> dataSourceMapper = new LinkedHashMap<>();
+        dataSourceMapper.put("shadow-data-source-0", Arrays.asList("ds", "ds_shadow"));
+        dataSourceMapper.put("shadow-data-source-1", Arrays.asList("ds1", "ds1_shadow"));
         when(result.getDataSourceMapper()).thenReturn(dataSourceMapper);
         return result;
     }

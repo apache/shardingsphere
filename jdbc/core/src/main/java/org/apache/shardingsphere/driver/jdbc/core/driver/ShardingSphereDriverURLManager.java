@@ -17,19 +17,23 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.DriverURLProviderNotFoundException;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 /**
  * ShardingSphere driver URL manager.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereDriverURLManager {
     
     /**
-     * Get config content from url.
+     * Get config content from URL.
      * 
-     * @param url the driver url
-     * @return the config content
+     * @param url driver URL
+     * @return configuration content
+     * @throws DriverURLProviderNotFoundException driver URL provider not found exception
      */
     public static byte[] getContent(final String url) {
         for (ShardingSphereDriverURLProvider each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDriverURLProvider.class)) {

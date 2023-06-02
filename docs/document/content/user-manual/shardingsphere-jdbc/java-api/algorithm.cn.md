@@ -40,14 +40,6 @@ Map<String, AlgorithmConfiguration> algorithmConfigs = new HashMap<>();
 algorithmConfigs.put("shadowAlgorithmName", new AlgorithmConfiguration("xxx", new Properties()));
 ```
 
-## 高可用
-
-```java
-// discoveryTypeName 由用户指定，需要和数据库发现规则中的 discoveryTypeName 属性一致
-Map<String, AlgorithmConfiguration> algorithmConfigs = new HashMap<>();
-algorithmConfigs.put("discoveryTypeName", new AlgorithmConfiguration("xxx", new Properties()));
-```
-
 ## 脱敏算法
 
 ```java

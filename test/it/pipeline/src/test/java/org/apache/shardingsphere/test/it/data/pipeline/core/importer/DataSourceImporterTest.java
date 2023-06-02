@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.importer.DataSourceImporter;
 import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +45,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,7 +58,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class DataSourceImporterTest {
+class DataSourceImporterTest {
     
     private static final String TABLE_NAME = "test_table";
     
@@ -84,7 +83,7 @@ public final class DataSourceImporterTest {
     private DataSourceImporter jdbcImporter;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         ImporterConnector importerConnector = new DataSourceImporterConnector(dataSourceManager);
         jdbcImporter = new DataSourceImporter(mockImporterConfiguration(), importerConnector, channel, new FixtureInventoryIncrementalJobItemContext());
         when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
@@ -92,10 +91,10 @@ public final class DataSourceImporterTest {
     }
     
     @Test
-    public void assertWriteInsertDataRecord() throws SQLException {
+    void assertWriteInsertDataRecord() throws SQLException {
         DataRecord insertRecord = getDataRecord("INSERT");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(insertRecord));
+        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(insertRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
@@ -104,10 +103,11 @@ public final class DataSourceImporterTest {
     }
     
     @Test
-    public void assertDeleteDataRecord() throws SQLException {
+    void assertDeleteDataRecord() throws SQLException {
         DataRecord deleteRecord = getDataRecord("DELETE");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(deleteRecord));
+        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(deleteRecord));
+        when(preparedStatement.executeBatch()).thenReturn(new int[]{1});
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
@@ -115,12 +115,12 @@ public final class DataSourceImporterTest {
     }
     
     @Test
-    public void assertUpdateDataRecord() throws SQLException {
+    void assertUpdateDataRecord() throws SQLException {
         DataRecord updateRecord = getDataRecord("UPDATE");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
+        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(updateRecord));
         jdbcImporter.run();
-        verify(preparedStatement).setObject(1, 10);
+        verify(preparedStatement).setObject(1, 20);
         verify(preparedStatement).setObject(2, "UPDATE");
         verify(preparedStatement).setObject(3, 1);
         verify(preparedStatement).setObject(4, 10);
@@ -128,17 +128,17 @@ public final class DataSourceImporterTest {
     }
     
     @Test
-    public void assertUpdatePrimaryKeyDataRecord() throws SQLException {
+    void assertUpdatePrimaryKeyDataRecord() throws SQLException {
         DataRecord updateRecord = getUpdatePrimaryKeyDataRecord();
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
+        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(updateRecord));
         jdbcImporter.run();
         InOrder inOrder = inOrder(preparedStatement);
         inOrder.verify(preparedStatement).setObject(1, 2);
         inOrder.verify(preparedStatement).setObject(2, 10);
         inOrder.verify(preparedStatement).setObject(3, "UPDATE");
         inOrder.verify(preparedStatement).setObject(4, 1);
-        inOrder.verify(preparedStatement).setObject(5, 10);
+        inOrder.verify(preparedStatement).setObject(5, 0);
         inOrder.verify(preparedStatement).executeUpdate();
     }
     
@@ -147,19 +147,15 @@ public final class DataSourceImporterTest {
         result.setTableName(TABLE_NAME);
         result.setType("UPDATE");
         result.addColumn(new Column("id", 1, 2, true, true));
-        result.addColumn(new Column("user", 10, true, false));
-        result.addColumn(new Column("status", "UPDATE", true, false));
+        result.addColumn(new Column("user", 0, 10, true, false));
+        result.addColumn(new Column("status", null, "UPDATE", true, false));
         return result;
-    }
-    
-    private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {
-        return RecordUtil.extractConditionColumns(dataRecord, Collections.singleton("user"));
     }
     
     private List<Record> mockRecords(final DataRecord dataRecord) {
         List<Record> result = new LinkedList<>();
         result.add(dataRecord);
-        result.add(new FinishedRecord(new PlaceholderPosition()));
+        result.add(new FinishedRecord(new FinishedPosition()));
         return result;
     }
     
@@ -167,9 +163,32 @@ public final class DataSourceImporterTest {
         DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
         result.setTableName(TABLE_NAME);
         result.setType(recordType);
-        result.addColumn(new Column("id", 1, false, true));
-        result.addColumn(new Column("user", 10, true, false));
-        result.addColumn(new Column("status", recordType, true, false));
+        Integer idOldValue = null;
+        Integer userOldValue = null;
+        Integer idValue = null;
+        Integer userValue = null;
+        String statusOldValue = null;
+        String statusValue = null;
+        if ("INSERT".equals(recordType)) {
+            idValue = 1;
+            userValue = 10;
+            statusValue = recordType;
+        }
+        if ("UPDATE".equals(recordType)) {
+            idOldValue = 1;
+            idValue = idOldValue;
+            userOldValue = 10;
+            userValue = 20;
+            statusValue = recordType;
+        }
+        if ("DELETE".equals(recordType)) {
+            idOldValue = 1;
+            userOldValue = 10;
+            statusOldValue = recordType;
+        }
+        result.addColumn(new Column("id", idOldValue, idValue, false, true));
+        result.addColumn(new Column("user", userOldValue, userValue, true, false));
+        result.addColumn(new Column("status", statusOldValue, statusValue, true, false));
         return result;
     }
     

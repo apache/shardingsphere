@@ -40,7 +40,7 @@ public final class MySQLComStmtResetExecutor implements CommandExecutor {
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
+    public Collection<DatabasePacket> execute() {
         connectionSession.getServerPreparedStatementRegistry().<MySQLServerPreparedStatement>getPreparedStatement(packet.getStatementId()).getLongData().clear();
         return Collections.singleton(new MySQLOKPacket(ServerStatusFlagCalculator.calculateFor(connectionSession)));
     }

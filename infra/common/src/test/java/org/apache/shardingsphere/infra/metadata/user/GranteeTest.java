@@ -23,43 +23,43 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class GranteeTest {
+class GranteeTest {
     
     @Test
-    public void assertGetUsername() {
+    void assertGetUsername() {
         assertThat(new Grantee("foo", "").getUsername(), is("foo"));
     }
     
     @Test
-    public void assertGetHostname() {
+    void assertGetHostname() {
         assertThat(new Grantee("name", "%").getHostname(), is("%"));
         assertThat(new Grantee("name", "").getHostname(), is("%"));
     }
     
     @Test
-    public void assertEquals() {
+    void assertEquals() {
         Grantee grantee = new Grantee("name", "%");
         assertThat(grantee, is(new Grantee("name", "")));
         assertThat(grantee, is(new Grantee("name", "127.0.0.1")));
     }
     
     @Test
-    public void assertNotEquals() {
+    void assertNotEquals() {
         assertThat(new Grantee("name", "%"), not(new Object()));
     }
     
     @Test
-    public void assertSameHashCode() {
+    void assertSameHashCode() {
         assertThat(new Grantee("name", "%").hashCode(), is(new Grantee("name", "").hashCode()));
     }
     
     @Test
-    public void assertDifferentHashCode() {
+    void assertDifferentHashCode() {
         assertThat(new Grantee("name", "").hashCode(), not(new Grantee("name", "127.0.0.1").hashCode()));
     }
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         assertThat(new Grantee("name", "127.0.0.1").toString(), is("name@127.0.0.1"));
         assertThat(new Grantee("name", "%").toString(), is("name@%"));
         assertThat(new Grantee("name", "").toString(), is("name@"));

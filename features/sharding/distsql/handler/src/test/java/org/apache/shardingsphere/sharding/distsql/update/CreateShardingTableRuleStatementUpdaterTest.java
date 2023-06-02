@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import lombok.SneakyThrows;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
 import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -44,6 +42,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractT
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
@@ -75,7 +74,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class CreateShardingTableRuleStatementUpdaterTest {
+class CreateShardingTableRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -85,7 +84,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     private final CreateShardingTableRuleStatementUpdater updater = new CreateShardingTableRuleStatementUpdater();
     
     @BeforeEach
-    public void before() {
+    void before() {
         when(database.getName()).thenReturn("schema");
         ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSource());
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
@@ -93,7 +92,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdate() {
+    void assertUpdate() {
         CreateShardingTableRuleStatement statement = new CreateShardingTableRuleStatement(false, Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
         updater.checkSQLStatement(database, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
@@ -133,7 +132,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckCreateShardingStatement() {
+    void assertCheckCreateShardingStatement() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
                 + "STORAGE_UNITS(ds_0,ds_1),"
                 + "SHARDING_COLUMN=order_id,"
@@ -144,7 +143,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckCreateShardingStatementThrows() {
+    void assertCheckCreateShardingStatementThrows() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
                 + "STORAGE_UNITS(ds_0,ds_1),"
                 + "SHARDING_COLUMN=order_id,"
@@ -155,7 +154,51 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateWithIfNotExistsStatement() {
+    void assertCheckCreateShardingStatementWithNoneDatabaseStrategy() {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "DATANODES('ds_0.t_order_${0..1}'),"
+                + "DATABASE_STRATEGY(TYPE='NONE'),"
+                + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"
+                + ");";
+        CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        updater.checkSQLStatement(database, distSQLStatement, null);
+    }
+    
+    @Test
+    void assertCheckCreateShardingStatementWithNoneDatabaseStrategyThrows() {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "DATANODES('ds_${0..1}.t_order_${0..1}'),"
+                + "DATABASE_STRATEGY(TYPE='NONE'),"
+                + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"
+                + ");";
+        CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
+    }
+    
+    @Test
+    void assertCheckCreateShardingStatementWithNoneTableStrategy() {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "DATANODES('ds_${0..1}.t_order_0'),"
+                + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 2}')))),"
+                + "TABLE_STRATEGY(TYPE='NONE')"
+                + ");";
+        CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        updater.checkSQLStatement(database, distSQLStatement, null);
+    }
+    
+    @Test
+    void assertCheckCreateShardingStatementWithNoneTableStrategyThrows() {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "DATANODES('ds_${0..1}.t_order_${0..1}'),"
+                + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 2}')))),"
+                + "TABLE_STRATEGY(TYPE='NONE')"
+                + ");";
+        CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
+    }
+    
+    @Test
+    void assertUpdateWithIfNotExistsStatement() {
         Collection<AbstractTableRuleSegment> segments = new LinkedList<>();
         segments.add(createCompleteAutoTableRule());
         segments.add(createCompleteTableRule());
@@ -236,7 +279,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     private Map<String, DataSource> createDataSource() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
+        Map<String, DataSource> result = new HashMap<>(2, 1F);
         result.put("ds_0", new MockedDataSource());
         result.put("ds_1", new MockedDataSource());
         return result;
@@ -248,7 +291,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         ShardingDistSQLStatementParserFacade facade = new ShardingDistSQLStatementParserFacade();
         ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, facade.getLexerClass(), facade.getParserClass()).parse();
         SQLVisitor visitor = TypedSPILoader.getService(FeaturedDistSQLStatementParserFacade.class, facade.getType()).getVisitorClass().getDeclaredConstructor().newInstance();
-        return (DistSQLStatement) ((ParseTreeVisitor) visitor).visit(parseASTNode.getRootNode());
+        return (DistSQLStatement) visitor.visit(parseASTNode.getRootNode());
     }
     
     private static class MockDataSourceContainedRule implements DataSourceContainedRule {
@@ -259,8 +302,8 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         }
         
         @Override
-        public Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper() {
-            return Collections.singletonMap("logic_ds", Collections.emptyList());
+        public Map<String, Collection<String>> getDataSourceMapper() {
+            return Collections.singletonMap("logic_ds", null);
         }
         
         @Override

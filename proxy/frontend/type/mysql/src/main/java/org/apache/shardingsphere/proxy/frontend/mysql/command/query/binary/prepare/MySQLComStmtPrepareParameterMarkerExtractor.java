@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -27,18 +29,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.Parameter
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
  * Parameter marker extractor for MySQL COM_STMT_PREPARE.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLComStmtPrepareParameterMarkerExtractor {
     
     /**
@@ -56,9 +57,7 @@ public final class MySQLComStmtPrepareParameterMarkerExtractor {
     private static Map<ParameterMarkerSegment, ShardingSphereColumn> findColumnsOfParameterMarkersForInsert(final InsertStatement insertStatement, final ShardingSphereSchema schema) {
         ShardingSphereTable table = schema.getTable(insertStatement.getTable().getTableName().getIdentifier().getValue());
         List<String> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
-        Map<String, ShardingSphereColumn> columnsOfTable = table.getColumns();
-        Map<String, ShardingSphereColumn> caseInsensitiveColumnsOfTable = convertToCaseInsensitiveColumnsOfTable(columnsOfTable);
-        Map<ParameterMarkerSegment, ShardingSphereColumn> result = new LinkedHashMap<>(insertStatement.getParameterMarkerSegments().size(), 1);
+        Map<ParameterMarkerSegment, ShardingSphereColumn> result = new LinkedHashMap<>(insertStatement.getParameterMarkerSegments().size(), 1F);
         for (InsertValuesSegment each : insertStatement.getValues()) {
             ListIterator<ExpressionSegment> listIterator = each.getValues().listIterator();
             for (int columnIndex = listIterator.nextIndex(); listIterator.hasNext(); columnIndex = listIterator.nextIndex()) {
@@ -67,7 +66,7 @@ public final class MySQLComStmtPrepareParameterMarkerExtractor {
                     continue;
                 }
                 String columnName = columnNamesOfInsert.get(columnIndex);
-                ShardingSphereColumn column = columnsOfTable.getOrDefault(columnName, caseInsensitiveColumnsOfTable.get(columnName));
+                ShardingSphereColumn column = table.getColumn(columnName);
                 if (null != column) {
                     result.put((ParameterMarkerSegment) value, column);
                 }
@@ -77,13 +76,6 @@ public final class MySQLComStmtPrepareParameterMarkerExtractor {
     }
     
     private static List<String> getColumnNamesOfInsertStatement(final InsertStatement insertStatement, final ShardingSphereTable table) {
-        return insertStatement.getColumns().isEmpty() ? new ArrayList<>(table.getColumns().keySet())
-                : insertStatement.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
-    }
-    
-    private static Map<String, ShardingSphereColumn> convertToCaseInsensitiveColumnsOfTable(final Map<String, ShardingSphereColumn> columns) {
-        Map<String, ShardingSphereColumn> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        result.putAll(columns);
-        return result;
+        return insertStatement.getColumns().isEmpty() ? table.getColumnNames() : insertStatement.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
     }
 }

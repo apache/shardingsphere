@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
 @Slf4j
@@ -47,14 +48,19 @@ public final class E2ETestEnvironment {
     
     private DataSource dataSource;
     
-    private boolean initializationFailed;
+    private boolean isInitialized;
     
     private boolean isAdaptedProxy;
+    
+    private String adapter;
+    
+    private final AtomicBoolean prepareFlag = new AtomicBoolean();
     
     private E2ETestEnvironment() {
         props = EnvironmentProperties.loadProperties("env/engine-env.properties");
         isEnvironmentPrepared = props.getProperty("it.env.value").equals(props.getProperty("it.env.type"));
-        isAdaptedProxy = "proxy".equalsIgnoreCase(props.getProperty("it.env.adapter", "proxy"));
+        adapter = props.getProperty("it.env.adapter", "proxy");
+        isAdaptedProxy = "proxy".equalsIgnoreCase(adapter);
     }
     
     /**
@@ -70,12 +76,14 @@ public final class E2ETestEnvironment {
      * Prepare environment.
      */
     public void prepareEnvironment() {
-        if (isAdaptedProxy()) {
-            createDataSource();
+        if (!prepareFlag.compareAndSet(false, true)) {
             return;
         }
-        if (isEnvironmentPrepared && !initializationFailed) {
-            initializationFailed = !waitForJdbcEnvironmentReady();
+        if (isAdaptedProxy()) {
+            createDataSource();
+            isInitialized = null != dataSource;
+        } else {
+            isInitialized = waitForJdbcEnvironmentReady();
         }
     }
     
@@ -83,8 +91,6 @@ public final class E2ETestEnvironment {
         if (isEnvironmentPrepared && null == dataSource) {
             if (waitForProxyEnvironmentReady(props)) {
                 dataSource = createHikariCP(props);
-            } else {
-                initializationFailed = true;
             }
         }
     }
@@ -92,7 +98,7 @@ public final class E2ETestEnvironment {
     private boolean waitForProxyEnvironmentReady(final Properties props) {
         log.info("Proxy with agent environment initializing ...");
         try {
-            Awaitility.await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> isProxyReady(props));
+            Awaitility.await().atMost(2L, TimeUnit.MINUTES).pollInterval(5L, TimeUnit.SECONDS).until(() -> isProxyReady(props));
         } catch (final ConditionTimeoutException ignored) {
             log.info("Proxy with agent environment initialization failed ...");
             return false;
@@ -130,7 +136,7 @@ public final class E2ETestEnvironment {
     private boolean waitForJdbcEnvironmentReady() {
         log.info("Jdbc project with agent environment initializing ...");
         try {
-            Awaitility.await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> isJdbcReady(props));
+            Awaitility.await().atMost(2L, TimeUnit.MINUTES).pollInterval(5L, TimeUnit.SECONDS).until(() -> isJdbcReady(props));
         } catch (final ConditionTimeoutException ignored) {
             log.info("Jdbc project with agent environment initialization failed ...");
             return false;
@@ -145,6 +151,7 @@ public final class E2ETestEnvironment {
         String selectAllUrl = props.getProperty("jdbc.path.select.all");
         try {
             Response response = OkHttpUtils.getInstance().getResponse(String.join("", baseUrl, selectAllUrl));
+            response.close();
             return response.isSuccessful();
         } catch (final IOException ignored) {
         }

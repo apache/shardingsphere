@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
-import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
+import org.apache.shardingsphere.db.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 
 /**
  * Command packet for PostgreSQL.
  */
-public abstract class PostgreSQLCommandPacket implements PostgreSQLIdentifierPacket, CommandPacket {
+public abstract class PostgreSQLCommandPacket extends PostgreSQLIdentifierPacket implements CommandPacket {
 }

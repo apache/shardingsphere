@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class CreateMaskRuleStatementUpdaterTest {
+class CreateMaskRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -52,17 +52,17 @@ public final class CreateMaskRuleStatementUpdaterTest {
     private final CreateMaskRuleStatementUpdater updater = new CreateMaskRuleStatementUpdater();
     
     @Test
-    public void assertCheckSQLStatementWithDuplicateMaskRule() {
+    void assertCheckSQLStatementWithDuplicateMaskRule() {
         assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createDuplicatedSQLStatement(false, "MD5"), getCurrentRuleConfig()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithInvalidAlgorithm() {
+    void assertCheckSQLStatementWithInvalidAlgorithm() {
         assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
     }
     
     @Test
-    public void assertCreateMaskRule() {
+    void assertCreateMaskRule() {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
@@ -74,7 +74,7 @@ public final class CreateMaskRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCreateMaskRuleWithIfNotExists() {
+    void assertCreateMaskRuleWithIfNotExists() {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);

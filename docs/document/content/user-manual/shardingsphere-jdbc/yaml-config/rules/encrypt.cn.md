@@ -1,6 +1,6 @@
 +++
 title = "数据加密"
-weight = 5
+weight = 4
 +++
 
 ## 背景信息
@@ -16,14 +16,15 @@ rules:
     <table_name> (+): # 加密表名称
       columns:
         <column_name> (+): # 加密列名称
-          plainColumn (?): # 原文列名称
-          cipherColumn: # 密文列名称
-          encryptorName: # 密文列加密算法名称
-          assistedQueryColumn (?):  # 查询辅助列名称
-          assistedQueryEncryptorName:  # 查询辅助列加密算法名称
-          likeQueryColumn (?):  # 模糊查询列名称
-          likeQueryEncryptorName:  # 模糊查询列加密算法名称
-      queryWithCipherColumn(?): # 该表是否使用加密列进行查询
+          cipher:
+            name: # 密文列名称
+            encryptorName: # 密文列加密算法名称
+          assistedQuery (?):  
+            name: # 查询辅助列名称
+            encryptorName:  # 查询辅助列加密算法名称
+          likeQuery (?):
+            name: # 模糊查询列名称
+            encryptorName:  # 模糊查询列加密算法名称
     
   # 加密算法配置
   encryptors:
@@ -31,8 +32,6 @@ rules:
       type: # 加解密算法类型
       props: # 加解密算法属性配置
         # ...
-
-  queryWithCipherColumn: # 是否使用加密列进行查询。在有原文列的情况下，可以使用原文列进行查询
 ```
 
 算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/common-config/builtin-algorithm/encrypt)。
@@ -61,38 +60,76 @@ rules:
     t_user:
       columns:
         username:
-          plainColumn: username_plain
-          cipherColumn: username
-          encryptorName: name_encryptor
-          assistedQueryColumn: assisted_query_username
-          assistedQueryEncryptorName: assisted_encryptor
-          likeQueryColumn: like_query_username
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: username
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_username
+            encryptorName: assisted_encryptor
+          likeQuery:
+            name: like_query_username
+            encryptorName: like_encryptor
         pwd:
-          cipherColumn: pwd
-          encryptorName: pwd_encryptor
-          assistedQueryColumn: assisted_query_pwd
-          assistedQueryEncryptorName: assisted_encryptor
-      queryWithCipherColumn: true
+          cipher:
+            name: pwd
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_pwd
+            encryptorName: assisted_encryptor
   encryptors:
-    name_encryptor:
+    aes_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
     assisted_encryptor:
-      type: AES
-      props:
-        aes-key-value: 123456abc
+      type: MD5
     like_encryptor:
       type: CHAR_DIGEST_LIKE
-    pwd_encryptor:
-      type: MD5
 ```
 
 然后通过 YamlShardingSphereDataSourceFactory 的 createDataSource 方法创建数据源。
 
 ```java
 YamlShardingSphereDataSourceFactory.createDataSource(getFile());
+```
+
+为了保持对低版本 YAML 配置的兼容，ShardingSphere 通过 `COMPATIBLE_ENCRYPT` 提供了如下的兼容配置，该配置会在后续版本中删除，建议及时升级最新 YAML 配置。
+
+```yaml
+dataSources:
+  unique_ds:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password:
+
+rules:
+- !COMPATIBLE_ENCRYPT
+  tables:
+    t_user:
+      columns:
+        username:
+          cipherColumn: username
+          encryptorName: aes_encryptor
+          assistedQueryColumn: assisted_query_username
+          assistedQueryEncryptorName: assisted_encryptor
+          likeQueryColumn: like_query_username
+          likeQueryEncryptorName: like_encryptor
+        pwd:
+          cipherColumn: pwd
+          encryptorName: aes_encryptor
+          assistedQueryColumn: assisted_query_pwd
+          assistedQueryEncryptorName: assisted_encryptor
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    assisted_encryptor:
+      type: MD5
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
 ```
 
 ## 相关参考

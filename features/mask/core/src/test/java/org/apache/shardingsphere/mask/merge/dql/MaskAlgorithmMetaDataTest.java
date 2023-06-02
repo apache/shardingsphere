@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MaskAlgorithmMetaDataTest {
+class MaskAlgorithmMetaDataTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -51,7 +51,7 @@ public final class MaskAlgorithmMetaDataTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertFindMaskAlgorithmByColumnIndex() {
+    void assertFindMaskAlgorithmByColumnIndex() {
         when(maskRule.findMaskAlgorithm("t_order", "order_id")).thenReturn(Optional.of(TypedSPILoader.getService(MaskAlgorithm.class, "MD5")));
         when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(new ColumnProjection(null, "order_id", null)));
         when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));

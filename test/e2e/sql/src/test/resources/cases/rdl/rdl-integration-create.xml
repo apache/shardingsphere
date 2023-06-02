@@ -31,7 +31,7 @@
         </assertion>
     </test-case>
     
-    <test-case sql="CREATE ENCRYPT RULE t_user (COLUMNS((NAME=pwd,PLAIN=pwd_plain,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))))),QUERY_WITH_CIPHER_COLUMN=true);" db-types="MySQL, PostgreSQL">
+    <test-case sql="CREATE ENCRYPT RULE t_user (COLUMNS((NAME=pwd,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))))));" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="create_encrypt_rule.xml">
             <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user;" />
             <destroy-sql sql="DROP ENCRYPT RULE t_user " />

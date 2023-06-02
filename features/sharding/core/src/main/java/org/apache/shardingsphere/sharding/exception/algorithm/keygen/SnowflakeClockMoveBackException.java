@@ -27,7 +27,7 @@ public final class SnowflakeClockMoveBackException extends ShardingSQLException 
     
     private static final long serialVersionUID = -2435731376659956566L;
     
-    public SnowflakeClockMoveBackException(final long lastMilliseconds, final long currentMilliseconds) {
-        super(XOpenSQLState.GENERAL_ERROR, 92, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.", lastMilliseconds, currentMilliseconds);
+    public SnowflakeClockMoveBackException(final long lastMillis, final long currentMillis) {
+        super(XOpenSQLState.GENERAL_ERROR, 92, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.", lastMillis, currentMillis);
     }
 }

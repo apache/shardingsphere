@@ -134,7 +134,7 @@ Below are all the update logs of ShardingSphere 5.2.0. To deliver a better user 
 
 - Kernel: Support SQL audit for sharding feature
 
-- Kernel: Support MySQL show processlist and kill process list id feature
+- Kernel: Support MySQL show processlist and kill process id feature
 
 - Scaling: Add dedicated DistSQL for data migration
 
@@ -355,8 +355,6 @@ Below are all the update logs of ShardingSphere 5.2.0. To deliver a better user 
 - DistSQL: Support more databases for FORMAT SQL
 
 - DistSQL: Optimize the execution logic of CREATE TRAFFIC RULE
-
-- DistSQL: Add paramter writeDataSourceQueryEnabled for RDL READWRITE_SPLITTING RULE.
 
 - DistSQL: Support assistEncryptor for Encrypt RDL
 

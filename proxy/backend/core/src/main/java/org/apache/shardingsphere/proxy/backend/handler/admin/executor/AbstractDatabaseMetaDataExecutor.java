@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.StorageUnitNotExistedException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import javax.sql.DataSource;
@@ -65,18 +64,18 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     
     private MergedResult mergedResult;
     
-    private final LinkedList<Map<String, Object>> rows = new LinkedList<>();
+    private final List<Map<String, Object>> rows = new LinkedList<>();
     
     private final Collection<String> labels = new LinkedList<>();
     
     @Override
     public final void execute(final ConnectionSession connectionSession) throws SQLException {
-        List<String> databaseNames = getDatabaseNames(connectionSession);
+        Collection<String> databaseNames = getDatabaseNames(connectionSession);
         for (String databaseName : databaseNames) {
             initDatabaseData(databaseName);
-            getSourceData(databaseName, resultSet -> handleResultSet(databaseName, resultSet));
+            processMetaData(databaseName, resultSet -> handleResultSet(databaseName, resultSet));
         }
-        createPreProcessing();
+        postProcess();
         queryResultMetaData = createQueryResultMetaData();
         mergedResult = createMergedResult();
     }
@@ -91,9 +90,9 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
                 aliasMap.put(metaData.getColumnName(i), metaData.getColumnLabel(i));
                 rowMap.put(metaData.getColumnLabel(i), resultSet.getString(i));
             }
-            rowPostProcessing(databaseName, rowMap, aliasMap);
+            preProcess(databaseName, rowMap, aliasMap);
             if (!rowMap.isEmpty()) {
-                rows.addFirst(rowMap);
+                rows.add(rowMap);
             }
         }
         if (rows.isEmpty()) {
@@ -105,13 +104,13 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     
     protected abstract void initDatabaseData(String databaseName);
     
-    protected abstract List<String> getDatabaseNames(ConnectionSession connectionSession);
+    protected abstract Collection<String> getDatabaseNames(ConnectionSession connectionSession);
     
-    protected abstract void createPreProcessing();
+    protected abstract void preProcess(String databaseName, Map<String, Object> rows, Map<String, String> alias);
     
-    protected abstract void getSourceData(String databaseName, Consumer<ResultSet> callback) throws SQLException;
+    protected abstract void postProcess();
     
-    protected abstract void rowPostProcessing(String databaseName, Map<String, Object> rowMap, Map<String, String> aliasMap);
+    protected abstract void processMetaData(String databaseName, Consumer<ResultSet> callback) throws SQLException;
     
     private MergedResult createMergedResult() {
         List<MemoryQueryResultDataRow> resultDataRows = rows.stream().map(each -> new MemoryQueryResultDataRow(new LinkedList<>(each.values()))).collect(Collectors.toList());
@@ -146,36 +145,44 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         
         private final String sql;
         
+        private final List<Object> parameters;
+        
         @Override
         protected void initDatabaseData(final String databaseName) {
         }
         
         @Override
-        protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
+        protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
             Optional<String> database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getGrantee()))
                     .filter(AbstractDatabaseMetaDataExecutor::hasDataSource).findFirst();
             return database.map(Collections::singletonList).orElse(Collections.emptyList());
         }
         
         @Override
-        protected void getSourceData(final String databaseName, final Consumer<ResultSet> callback) throws SQLException {
+        protected void processMetaData(final String databaseName, final Consumer<ResultSet> callback) throws SQLException {
             ShardingSphereResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
             Optional<Entry<String, DataSource>> dataSourceEntry = resourceMetaData.getDataSources().entrySet().stream().findFirst();
-            log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(() -> new StorageUnitNotExistedException(databaseName)).getKey(), sql);
+            if (!dataSourceEntry.isPresent()) {
+                return;
+            }
             try (
                     Connection connection = dataSourceEntry.get().getValue().getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                    ResultSet resultSet = preparedStatement.executeQuery()) {
-                callback.accept(resultSet);
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                for (int i = 0; i < parameters.size(); i++) {
+                    preparedStatement.setObject(i + 1, parameters.get(i));
+                }
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    callback.accept(resultSet);
+                }
             }
         }
         
         @Override
-        protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
+        protected void preProcess(final String databaseName, final Map<String, Object> rows, final Map<String, String> alias) {
         }
         
         @Override
-        protected void createPreProcessing() {
+        protected void postProcess() {
         }
     }
 }

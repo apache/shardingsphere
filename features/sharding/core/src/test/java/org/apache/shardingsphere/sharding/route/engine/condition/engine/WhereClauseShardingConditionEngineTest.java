@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
+import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class WhereClauseShardingConditionEngineTest {
+class WhereClauseShardingConditionEngineTest {
     
     private WhereClauseShardingConditionEngine shardingConditionEngine;
     
@@ -71,16 +71,16 @@ public final class WhereClauseShardingConditionEngineTest {
     private TablesContext tablesContext;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         shardingConditionEngine = new WhereClauseShardingConditionEngine(
-                ShardingSphereDatabase.create("test_db", DatabaseTypeEngine.getDatabaseType("MySQL")), shardingRule, mock(TimeServiceRule.class));
+                ShardingSphereDatabase.create("test_db", DatabaseTypeEngine.getDatabaseType("MySQL")), shardingRule, mock(TimestampServiceRule.class));
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.findTableNamesByColumnSegment(anyCollection(), any())).thenReturn(Maps.of("foo_sharding_col", "table_1"));
     }
     
     @Test
-    public void assertCreateShardingConditionsForSelectRangeStatement() {
+    void assertCreateShardingConditionsForSelectRangeStatement() {
         int between = 1;
         int and = 100;
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
@@ -95,7 +95,7 @@ public final class WhereClauseShardingConditionEngineTest {
     }
     
     @Test
-    public void assertCreateShardingConditionsForSelectInStatement() {
+    void assertCreateShardingConditionsForSelectInStatement() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
         ListExpression right = new ListExpression(0, 0);
         LiteralExpressionSegment literalExpressionSegment = new LiteralExpressionSegment(0, 0, 5);

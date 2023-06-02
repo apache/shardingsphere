@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.checker;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptEncryptorNotFoundException;
@@ -33,11 +34,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class EncryptRuleConfigurationCheckerTest {
+class EncryptRuleConfigurationCheckerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertCheckWhenConfigValidConfiguration() {
+    void assertCheckWhenConfigValidConfiguration() {
         EncryptRuleConfiguration config = createValidConfiguration();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
@@ -46,14 +47,15 @@ public final class EncryptRuleConfigurationCheckerTest {
     private EncryptRuleConfiguration createValidConfiguration() {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.singletonMap("aes_encryptor", mock(AlgorithmConfiguration.class)));
-        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, null, "user_plain", "aes_encryptor", false));
-        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, false)));
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(columnRuleConfig);
+        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns)));
         return result;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertCheckWhenConfigInvalidCipherColumn() {
+    void assertCheckWhenConfigInvalidCipherColumn() {
         EncryptRuleConfiguration config = createInvalidCipherColumnConfig();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         assertThrows(EncryptEncryptorNotFoundException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
@@ -62,14 +64,15 @@ public final class EncryptRuleConfigurationCheckerTest {
     private EncryptRuleConfiguration createInvalidCipherColumnConfig() {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
-        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, null, "user_plain", "aes_encryptor", false));
-        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, false)));
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(columnRuleConfig);
+        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns)));
         return result;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertCheckWhenConfigInvalidAssistColumn() {
+    void assertCheckWhenConfigInvalidAssistColumn() {
         EncryptRuleConfiguration config = createInvalidAssistColumnConfig();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         assertThrows(EncryptEncryptorNotFoundException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
@@ -78,15 +81,16 @@ public final class EncryptRuleConfigurationCheckerTest {
     private EncryptRuleConfiguration createInvalidAssistColumnConfig() {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
-        Collection<EncryptColumnRuleConfiguration> columns =
-                Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", "user_assisted", "", "user_plain", "aes_encryptor", "aes_assisted_encryptor", null, false));
-        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, false)));
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(columnRuleConfig);
+        columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_assisted", "aes_assisted_encryptor"));
+        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns)));
         return result;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertCheckWhenConfigInvalidLikeColumn() {
+    void assertCheckWhenConfigInvalidLikeColumn() {
         EncryptRuleConfiguration config = createInvalidLikeColumnConfig();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         assertThrows(EncryptEncryptorNotFoundException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
@@ -95,9 +99,10 @@ public final class EncryptRuleConfigurationCheckerTest {
     private EncryptRuleConfiguration createInvalidLikeColumnConfig() {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
-        Collection<EncryptColumnRuleConfiguration> columns =
-                Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "user_like", "user_plain", "aes_encryptor", null, "like_cn_encryptor", false));
-        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, false)));
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(columnRuleConfig);
+        columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_like", "like_cn_encryptor"));
+        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns)));
         return result;
     }
 }

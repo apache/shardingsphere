@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.engine.type;
 
 import com.google.common.base.Splitter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestPar
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,10 +38,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,12 +49,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @E2ETestCaseSettings(SQLCommandType.RDL)
-public final class RDLE2EIT {
+class RDLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException {
+    void assertExecute(final AssertionTestParameter testParam) throws SQLException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -66,18 +66,18 @@ public final class RDLE2EIT {
         }
     }
     
-    private void assertExecute(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, ParseException {
+    private void assertExecute(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException {
         assertNotNull(testParam.getAssertion().getAssertionSQL(), "Assertion SQL is required");
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 executeSQLCase(containerComposer, statement);
-                waitCompleted();
+                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
                 assertResultSet(containerComposer, statement);
             }
         }
     }
     
-    private void executeSQLCase(final SingleE2EContainerComposer containerComposer, final Statement statement) throws SQLException, ParseException {
+    private void executeSQLCase(final SingleE2EContainerComposer containerComposer, final Statement statement) throws SQLException {
         statement.execute(containerComposer.getSQL());
     }
     
@@ -93,7 +93,7 @@ public final class RDLE2EIT {
                 executeDestroySQLs(containerComposer, connection);
             }
         }
-        waitCompleted();
+        Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
     }
     
     private void executeInitSQLs(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
@@ -103,7 +103,7 @@ public final class RDLE2EIT {
         for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
-                waitCompleted();
+                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
             }
         }
     }
@@ -115,7 +115,7 @@ public final class RDLE2EIT {
         for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
-                waitCompleted();
+                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
             }
         }
     }
@@ -170,11 +170,6 @@ public final class RDLE2EIT {
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
         assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         assertThat(String.valueOf(actual.getObject(columnLabel)), is(expected));
-    }
-    
-    @SneakyThrows(InterruptedException.class)
-    private void waitCompleted() {
-        Thread.sleep(2000L);
     }
     
     private static boolean isEnabled() {

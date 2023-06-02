@@ -29,17 +29,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PrometheusMetricsExporterTest {
+class PrometheusMetricsExporterTest {
     
     @Test
-    public void assertCollectWithAbsentMetricsExporter() {
+    void assertCollectWithAbsentMetricsExporter() {
         MetricsExporter exporter = mock(MetricsExporter.class);
         when(exporter.export("Prometheus")).thenReturn(Optional.empty());
         assertTrue(new PrometheusMetricsExporter(exporter).collect().isEmpty());
     }
     
     @Test
-    public void assertCollectWithPresentMetricsExporter() {
+    void assertCollectWithPresentMetricsExporter() {
         MetricsExporter exporter = mock(MetricsExporter.class);
         when(exporter.export("Prometheus")).thenReturn(Optional.of(mock(GaugeMetricFamilyMetricsCollector.class)));
         assertThat(new PrometheusMetricsExporter(exporter).collect().size(), is(1));

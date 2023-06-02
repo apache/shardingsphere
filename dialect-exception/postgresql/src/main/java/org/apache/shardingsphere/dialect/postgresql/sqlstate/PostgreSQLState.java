@@ -34,11 +34,15 @@ public enum PostgreSQLState implements SQLState {
     
     DUPLICATE_DATABASE("42P04"),
     
+    DUPLICATE_TABLE("42P07"),
+    
     INVALID_PASSWORD("28P01"),
     
     UNDEFINED_COLUMN("42703"),
     
-    SYSTEM_ERROR("58000");
+    SYSTEM_ERROR("58000"),
+    
+    UNEXPECTED_ERROR("99999");
     
     private final String value;
 }

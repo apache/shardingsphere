@@ -39,18 +39,19 @@ import java.util.Optional;
 /**
  * Sharding create procedure statement validator.
  */
-public final class ShardingCreateProcedureStatementValidator extends ShardingDDLStatementValidator<CreateProcedureStatement> {
+public final class ShardingCreateProcedureStatementValidator extends ShardingDDLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
+        CreateProcedureStatement createProcedureStatement = (CreateProcedureStatement) sqlStatementContext.getSqlStatement();
+        Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(createProcedureStatement);
         if (!routineBodySegment.isPresent()) {
             return;
         }
         TableExtractor extractor = new TableExtractor();
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
-        ShardingSphereSchema schema = sqlStatementContext.getSqlStatement().getProcedureName().flatMap(optional -> optional.getOwner()
+        ShardingSphereSchema schema = createProcedureStatement.getProcedureName().flatMap(optional -> optional.getOwner()
                 .map(owner -> database.getSchema(owner.getIdentifier().getValue()))).orElseGet(() -> database.getSchema(defaultSchemaName));
         Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBodySegment.get());
         validateShardingTable(shardingRule, "CREATE PROCEDURE", existTables);
@@ -60,7 +61,7 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext, final HintValueContext hintValueContext,
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                              final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

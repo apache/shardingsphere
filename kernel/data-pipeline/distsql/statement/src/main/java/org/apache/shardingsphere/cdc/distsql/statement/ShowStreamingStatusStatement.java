@@ -19,14 +19,14 @@ package org.apache.shardingsphere.cdc.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.cdc.QueryableCDCRALStatement;
 
 /**
  * Show streaming status statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowStreamingStatusStatement extends QueryableScalingRALStatement {
+public final class ShowStreamingStatusStatement extends QueryableCDCRALStatement {
     
     private final String jobId;
 }

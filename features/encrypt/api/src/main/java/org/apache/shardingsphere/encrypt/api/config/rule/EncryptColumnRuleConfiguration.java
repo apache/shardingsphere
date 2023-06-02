@@ -19,34 +19,41 @@ package org.apache.shardingsphere.encrypt.api.config.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+import java.util.Optional;
 
 /**
  * Encrypt column rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class EncryptColumnRuleConfiguration {
     
-    private final String logicColumn;
+    private final String name;
     
-    private final String cipherColumn;
+    private final EncryptColumnItemRuleConfiguration cipher;
     
-    private final String assistedQueryColumn;
+    private EncryptColumnItemRuleConfiguration assistedQuery;
     
-    private final String likeQueryColumn;
+    private EncryptColumnItemRuleConfiguration likeQuery;
     
-    private final String plainColumn;
+    /**
+     * Get assisted query.
+     *
+     * @return assisted query column item rule configuration
+     */
+    public Optional<EncryptColumnItemRuleConfiguration> getAssistedQuery() {
+        return Optional.ofNullable(assistedQuery);
+    }
     
-    private final String encryptorName;
-    
-    private final String assistedQueryEncryptorName;
-    
-    private final String likeQueryEncryptorName;
-    
-    private final Boolean queryWithCipherColumn;
-    
-    public EncryptColumnRuleConfiguration(final String logicColumn, final String cipherColumn, final String assistedQueryColumn, final String likeQueryColumn,
-                                          final String plainColumn, final String encryptorName, final Boolean queryWithCipherColumn) {
-        this(logicColumn, cipherColumn, assistedQueryColumn, likeQueryColumn, plainColumn, encryptorName, null, null, queryWithCipherColumn);
+    /**
+     * Get like query.
+     *
+     * @return like query column item rule configuration
+     */
+    public Optional<EncryptColumnItemRuleConfiguration> getLikeQuery() {
+        return Optional.ofNullable(likeQuery);
     }
 }

@@ -27,11 +27,11 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PipelineDataSourceFactoryTest {
+class PipelineDataSourceFactoryTest {
     
     @Test
-    public void assertNewInstance() {
-        Map<String, Object> yamlDataSourceConfig = new HashMap<>(3, 1);
+    void assertNewInstance() {
+        Map<String, Object> yamlDataSourceConfig = new HashMap<>(3, 1F);
         yamlDataSourceConfig.put("url", "jdbc:mysql://localhost:3306/database");
         yamlDataSourceConfig.put("username", "username");
         yamlDataSourceConfig.put("password", "password");

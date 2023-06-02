@@ -34,13 +34,18 @@ import java.util.LinkedList;
  * Show index statement context.
  */
 @Getter
-public final class ShowIndexStatementContext extends CommonSQLStatementContext<MySQLShowIndexStatement> implements TableAvailable, RemoveAvailable {
+public final class ShowIndexStatementContext extends CommonSQLStatementContext implements TableAvailable, RemoveAvailable {
     
     private final TablesContext tablesContext;
     
     public ShowIndexStatementContext(final MySQLShowIndexStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
+    }
+    
+    @Override
+    public MySQLShowIndexStatement getSqlStatement() {
+        return (MySQLShowIndexStatement) super.getSqlStatement();
     }
     
     @Override

@@ -32,10 +32,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class TypedPropertiesTest {
+class TypedPropertiesTest {
     
     @Test
-    public void assertGetValue() {
+    void assertGetValue() {
         Properties props = createProperties();
         TypedPropertiesFixture actual = new TypedPropertiesFixture(props);
         assertTrue((Boolean) actual.getValue(TypedPropertyKeyFixture.BOOLEAN_VALUE));
@@ -60,7 +60,7 @@ public final class TypedPropertiesTest {
     }
     
     @Test
-    public void assertGetDefaultValue() {
+    void assertGetDefaultValue() {
         TypedPropertiesFixture actual = new TypedPropertiesFixture(new Properties());
         assertFalse((Boolean) actual.getValue(TypedPropertyKeyFixture.BOOLEAN_VALUE));
         assertFalse((Boolean) actual.getValue(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE));
@@ -72,7 +72,7 @@ public final class TypedPropertiesTest {
     }
     
     @Test
-    public void assertGetInvalidValue() {
+    void assertGetInvalidValue() {
         Properties props = PropertiesBuilder.build(
                 new Property(TypedPropertyKeyFixture.BOOLEAN_VALUE.getKey(), "test"),
                 new Property(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE.getKey(), "test"),

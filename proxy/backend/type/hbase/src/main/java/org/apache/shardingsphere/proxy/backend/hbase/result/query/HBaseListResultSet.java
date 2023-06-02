@@ -45,7 +45,7 @@ public final class HBaseListResultSet implements HBaseQueryResultSet {
      * @param sqlStatementContext SQL statement context
      */
     @Override
-    public void init(final SQLStatementContext<?> sqlStatementContext) {
+    public void init(final SQLStatementContext sqlStatementContext) {
         ShowTablesStatementContext context = (ShowTablesStatementContext) sqlStatementContext;
         Map<String, String> result;
         if (context.getSqlStatement().getFromSchema().isPresent()) {
@@ -67,7 +67,7 @@ public final class HBaseListResultSet implements HBaseQueryResultSet {
     }
     
     private Map<String, String> listTablesInHBase() {
-        Map<String, String> result = new HashMap<>(HBaseContext.getInstance().getTableConnectionMap().size());
+        Map<String, String> result = new HashMap<>(HBaseContext.getInstance().getTableConnectionMap().size(), 1F);
         for (Entry<String, HBaseCluster> entry : HBaseContext.getInstance().getTableConnectionMap().entrySet()) {
             result.put(entry.getKey(), entry.getValue().getClusterName());
         }

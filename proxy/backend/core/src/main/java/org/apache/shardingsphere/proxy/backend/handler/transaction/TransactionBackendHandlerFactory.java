@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoComm
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.util.Collections;
@@ -53,8 +53,8 @@ public final class TransactionBackendHandlerFactory {
      * @param connectionSession connection session
      * @return backend handler
      */
-    public static ProxyBackendHandler newInstance(final SQLStatementContext<? extends TCLStatement> sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
-        TCLStatement tclStatement = sqlStatementContext.getSqlStatement();
+    public static ProxyBackendHandler newInstance(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
+        TCLStatement tclStatement = (TCLStatement) sqlStatementContext.getSqlStatement();
         if (tclStatement instanceof BeginTransactionStatement || tclStatement instanceof StartTransactionStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, connectionSession);
         }
@@ -82,6 +82,6 @@ public final class TransactionBackendHandlerFactory {
             return new TransactionXAHandler(sqlStatementContext, sql, connectionSession);
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList());
-        return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getBackendConnection(), false);
+        return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
     }
 }

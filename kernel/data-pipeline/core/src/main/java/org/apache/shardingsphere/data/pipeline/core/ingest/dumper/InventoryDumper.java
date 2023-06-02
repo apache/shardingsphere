@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
@@ -33,14 +33,16 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPos
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -49,7 +51,6 @@ import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -59,7 +60,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Inventory dumper.
@@ -80,11 +84,9 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private final PipelineTableMetaDataLoader metaDataLoader;
     
-    private volatile Statement dumpStatement;
+    private final AtomicReference<Statement> dumpStatement = new AtomicReference<>();
     
     public InventoryDumper(final InventoryDumperConfiguration dumperConfig, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
-        ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
-                () -> new UnsupportedSQLOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration"));
         this.dumperConfig = dumperConfig;
         this.channel = channel;
         this.dataSource = dataSource;
@@ -96,7 +98,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     @Override
     protected void runBlocking() {
-        IngestPosition<?> position = dumperConfig.getPosition();
+        IngestPosition position = dumperConfig.getPosition();
         if (position instanceof FinishedPosition) {
             log.info("Ignored because of already finished.");
             return;
@@ -107,16 +109,17 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         } catch (final SQLException ex) {
             log.error("Inventory dump, ex caught, msg={}.", ex.getMessage());
             throw new IngestException("Inventory dump failed on " + dumperConfig.getActualTableName(), ex);
-        } finally {
-            channel.pushRecord(new FinishedRecord(new FinishedPosition()));
         }
     }
     
     private void dump(final PipelineTableMetaData tableMetaData, final Connection connection) throws SQLException {
         int batchSize = dumperConfig.getBatchSize();
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
-        try (PreparedStatement preparedStatement = JDBCStreamQueryUtil.generateStreamQueryPreparedStatement(databaseType, connection, buildInventoryDumpSQL())) {
-            dumpStatement = preparedStatement;
+        if (null != dumperConfig.getTransactionIsolation()) {
+            connection.setTransactionIsolation(dumperConfig.getTransactionIsolation());
+        }
+        try (PreparedStatement preparedStatement = JDBCStreamQueryUtils.generateStreamQueryPreparedStatement(databaseType, connection, buildInventoryDumpSQL())) {
+            dumpStatement.set(preparedStatement);
             if (!(databaseType instanceof MySQLDatabaseType)) {
                 preparedStatement.setFetchSize(batchSize);
             }
@@ -125,8 +128,13 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                 int rowCount = 0;
                 JobRateLimitAlgorithm rateLimitAlgorithm = dumperConfig.getRateLimitAlgorithm();
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+                List<Record> dataRecords = new LinkedList<>();
                 while (resultSet.next()) {
-                    channel.pushRecord(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
+                    if (dataRecords.size() >= batchSize) {
+                        channel.pushRecords(dataRecords);
+                        dataRecords = new LinkedList<>();
+                    }
+                    dataRecords.add(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
                     ++rowCount;
                     if (!isRunning()) {
                         log.info("Broke because of inventory dump is not running.");
@@ -136,13 +144,18 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                         rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
                     }
                 }
-                dumpStatement = null;
+                dataRecords.add(new FinishedRecord(new FinishedPosition()));
+                channel.pushRecords(dataRecords);
+                dumpStatement.set(null);
                 log.info("Inventory dump done, rowCount={}", rowCount);
             }
         }
     }
     
     private String buildInventoryDumpSQL() {
+        if (!Strings.isNullOrEmpty(dumperConfig.getQuerySQL())) {
+            return dumperConfig.getQuerySQL();
+        }
         LogicTableName logicTableName = new LogicTableName(dumperConfig.getLogicTableName());
         String schemaName = dumperConfig.getSchemaName(logicTableName);
         if (!dumperConfig.hasUniqueKey()) {
@@ -188,21 +201,26 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         DataRecord result = new DataRecord(newPosition(resultSet), columnCount);
         result.setType(IngestDataChangeType.INSERT);
         result.setTableName(dumperConfig.getLogicTableName());
+        List<String> insertColumnNames = Optional.ofNullable(dumperConfig.getInsertColumnNames()).orElse(Collections.emptyList());
+        ShardingSpherePreconditions.checkState(insertColumnNames.isEmpty() || insertColumnNames.size() == resultSetMetaData.getColumnCount(),
+                () -> new PipelineInvalidParameterException("Insert colum names count not equals ResultSet column count"));
         for (int i = 1; i <= columnCount; i++) {
-            String columnName = resultSetMetaData.getColumnName(i);
-            result.addColumn(new Column(columnName, columnValueReader.readValue(resultSet, resultSetMetaData, i), true, tableMetaData.getColumnMetaData(columnName).isUniqueKey()));
+            String columnName = insertColumnNames.isEmpty() ? resultSetMetaData.getColumnName(i) : insertColumnNames.get(i - 1);
+            ShardingSpherePreconditions.checkNotNull(tableMetaData.getColumnMetaData(columnName), () -> new PipelineInvalidParameterException(String.format("Column name is %s", columnName)));
+            boolean isUniqueKey = tableMetaData.getColumnMetaData(columnName).isUniqueKey();
+            result.addColumn(new Column(columnName, columnValueReader.readValue(resultSet, resultSetMetaData, i), true, isUniqueKey));
         }
         return result;
     }
     
-    private IngestPosition<?> newPosition(final ResultSet resultSet) throws SQLException {
-        return !dumperConfig.hasUniqueKey()
-                ? new PlaceholderPosition()
-                : PrimaryKeyPositionFactory.newInstance(resultSet.getObject(dumperConfig.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue());
+    private IngestPosition newPosition(final ResultSet resultSet) throws SQLException {
+        return dumperConfig.hasUniqueKey()
+                ? PrimaryKeyPositionFactory.newInstance(resultSet.getObject(dumperConfig.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue())
+                : new PlaceholderPosition();
     }
     
     @Override
     protected void doStop() throws SQLException {
-        cancelStatement(dumpStatement);
+        cancelStatement(dumpStatement.get());
     }
 }

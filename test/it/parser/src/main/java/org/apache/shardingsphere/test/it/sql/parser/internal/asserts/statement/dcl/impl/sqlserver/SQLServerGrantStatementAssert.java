@@ -39,10 +39,10 @@ public final class SQLServerGrantStatementAssert {
      * @param expected expected grant statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerGrantStatement actual, final GrantStatementTestCase expected) {
-        if (0 != expected.getTables().size()) {
+        if (!expected.getTables().isEmpty()) {
             TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
         }
-        if (0 != expected.getColumns().size()) {
+        if (!expected.getColumns().isEmpty()) {
             ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
         }
     }

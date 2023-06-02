@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.OpenGaussLogicalReplication;
@@ -44,17 +46,21 @@ import org.opengauss.replication.PGReplicationStream;
 
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * WAL dumper of openGauss.
  */
+@Slf4j
 public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
     private final DumperConfiguration dumperConfig;
     
-    private final WALPosition walPosition;
+    private final AtomicReference<WALPosition> walPosition;
     
     private final PipelineChannel channel;
     
@@ -64,14 +70,14 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     private final boolean decodeWithTX;
     
-    private final List<AbstractRowEvent> rowEvents = new LinkedList<>();
+    private List<AbstractRowEvent> rowEvents = new LinkedList<>();
     
-    public OpenGaussWALDumper(final DumperConfiguration dumperConfig, final IngestPosition<WALPosition> position,
+    public OpenGaussWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                               final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support PipelineDataSourceConfiguration"));
         this.dumperConfig = dumperConfig;
-        walPosition = (WALPosition) position;
+        walPosition = new AtomicReference<>((WALPosition) position);
         this.channel = channel;
         walEventConverter = new WALEventConverter(dumperConfig, metaDataLoader);
         logicalReplication = new OpenGaussLogicalReplication();
@@ -81,9 +87,30 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     @SneakyThrows(InterruptedException.class)
     @Override
     protected void runBlocking() {
+        AtomicInteger reconnectTimes = new AtomicInteger();
+        while (isRunning()) {
+            try {
+                dump();
+                break;
+            } catch (final SQLException ex) {
+                int times = reconnectTimes.incrementAndGet();
+                log.error("Connect failed, reconnect times={}", times, ex);
+                if (isRunning()) {
+                    Thread.sleep(5000);
+                }
+                if (times >= 5) {
+                    throw new IngestException(ex);
+                }
+            }
+        }
+    }
+    
+    @SneakyThrows(InterruptedException.class)
+    private void dump() throws SQLException {
         PGReplicationStream stream = null;
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
-            stream = logicalReplication.createReplicationStream(connection, walPosition.getLogSequenceNumber(), OpenGaussPositionInitializer.getUniqueSlotName(connection, dumperConfig.getJobId()));
+            stream = logicalReplication.createReplicationStream(connection, walPosition.get().getLogSequenceNumber(),
+                    OpenGaussPositionInitializer.getUniqueSlotName(connection, dumperConfig.getJobId()));
             DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
@@ -97,9 +124,8 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
                 } else {
                     processEventIgnoreTX(event);
                 }
+                walPosition.set(new WALPosition(event.getLogSequenceNumber()));
             }
-        } catch (final SQLException ex) {
-            throw new IngestException(ex);
         } finally {
             if (null != stream) {
                 try {
@@ -115,29 +141,31 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     }
     
     private void processEventWithTX(final AbstractWALEvent event) {
+        if (event instanceof BeginTXEvent) {
+            return;
+        }
         if (event instanceof AbstractRowEvent) {
             rowEvents.add((AbstractRowEvent) event);
             return;
         }
-        if (event instanceof BeginTXEvent) {
-            rowEvents.clear();
-            return;
-        }
         if (event instanceof CommitTXEvent) {
             Long csn = ((CommitTXEvent) event).getCsn();
+            List<Record> records = new LinkedList<>();
             for (AbstractRowEvent each : rowEvents) {
                 each.setCsn(csn);
-                channel.pushRecord(walEventConverter.convert(each));
+                records.add(walEventConverter.convert(each));
             }
+            records.add(walEventConverter.convert(event));
+            channel.pushRecords(records);
+            rowEvents = new LinkedList<>();
         }
-        channel.pushRecord(walEventConverter.convert(event));
     }
     
     private void processEventIgnoreTX(final AbstractWALEvent event) {
         if (event instanceof BeginTXEvent) {
             return;
         }
-        channel.pushRecord(walEventConverter.convert(event));
+        channel.pushRecords(Collections.singletonList(walEventConverter.convert(event)));
     }
     
     @Override

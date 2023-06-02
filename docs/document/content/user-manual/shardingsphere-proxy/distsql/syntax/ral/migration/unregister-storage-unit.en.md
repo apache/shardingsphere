@@ -1,6 +1,6 @@
 +++
 title = "UNREGISTER MIGRATION SOURCE STORAGE UNIT"
-weight = 5
+weight = 4
 +++
 
 ### Description

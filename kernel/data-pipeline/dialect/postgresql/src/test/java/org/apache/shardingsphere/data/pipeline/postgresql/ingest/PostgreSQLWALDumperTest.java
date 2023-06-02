@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.EmptyAckCallback;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MultiplexMemoryPipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.PostgreSQLLogicalReplication;
@@ -49,6 +49,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,7 +59,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(PostgreSQLPositionInitializer.class)
-public final class PostgreSQLWALDumperTest {
+class PostgreSQLWALDumperTest {
     
     @Mock
     private PostgreSQLLogicalReplication logicalReplication;
@@ -75,14 +76,14 @@ public final class PostgreSQLWALDumperTest {
     
     private PostgreSQLWALDumper walDumper;
     
-    private MultiplexMemoryPipelineChannel channel;
+    private SimpleMemoryPipelineChannel channel;
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         position = new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
-        channel = new MultiplexMemoryPipelineChannel(1, 10000, new EmptyAckCallback());
+        channel = new SimpleMemoryPipelineChannel(10000, new EmptyAckCallback());
         String jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL";
         String username = "root";
         String password = "root";
@@ -91,7 +92,7 @@ public final class PostgreSQLWALDumperTest {
         walDumper = new PostgreSQLWALDumper(dumperConfig, position, channel, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())));
     }
     
-    private static void createTable(final String jdbcUrl, final String username, final String password) {
+    private void createTable(final String jdbcUrl, final String username, final String password) {
         String sql = "CREATE TABLE t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))";
         try (
                 Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
@@ -112,12 +113,12 @@ public final class PostgreSQLWALDumperTest {
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         dataSourceManager.close();
     }
     
     @Test
-    public void assertStart() throws SQLException, ReflectiveOperationException {
+    void assertStart() throws SQLException, ReflectiveOperationException {
         StandardPipelineDataSourceConfiguration dataSourceConfig = (StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig();
         try {
             Plugins.getMemberAccessor().set(PostgreSQLWALDumper.class.getDeclaredField("logicalReplication"), walDumper, logicalReplication);
@@ -127,12 +128,11 @@ public final class PostgreSQLWALDumperTest {
             when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.getUniqueSlotName(pgConnection, ""), position.getLogSequenceNumber()))
                     .thenReturn(pgReplicationStream);
             ByteBuffer data = ByteBuffer.wrap("table public.t_order_0: DELETE: order_id[integer]:1".getBytes());
-            when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new SQLException(""));
+            when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new IngestException(""));
             when(pgReplicationStream.getLastReceiveLSN()).thenReturn(LogSequenceNumber.valueOf(101L));
-            // TODO NPE occurred here
             walDumper.start();
         } catch (final IngestException ignored) {
         }
-        assertThat(channel.fetchRecords(100, 0).size(), is(1));
+        assertThat(channel.fetchRecords(100, 0, TimeUnit.SECONDS).size(), is(1));
     }
 }

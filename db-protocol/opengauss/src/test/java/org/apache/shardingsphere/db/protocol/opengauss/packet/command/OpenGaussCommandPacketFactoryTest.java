@@ -34,19 +34,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class OpenGaussCommandPacketFactoryTest {
+class OpenGaussCommandPacketFactoryTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private PostgreSQLPacketPayload payload;
     
     @Test
-    public void assertNewOpenGaussComBatchBindPacket() {
+    void assertNewOpenGaussComBatchBindPacket() {
         when(payload.getByteBuf()).thenReturn(mock(ByteBuf.class));
         assertThat(OpenGaussCommandPacketFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, payload), instanceOf(PostgreSQLAggregatedCommandPacket.class));
     }
     
     @Test
-    public void assertNewPostgreSQLPacket() {
+    void assertNewPostgreSQLPacket() {
         assertThat(OpenGaussCommandPacketFactory.newInstance(mock(PostgreSQLCommandPacketType.class), payload), instanceOf(PostgreSQLCommandPacket.class));
     }
 }

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSe
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,22 +41,22 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngine {
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     @Override
-    public void route(final RouteContext routeContext, final ShadowRule shadowRule) {
-        decorateRouteContext(routeContext, shadowRule, findShadowDataSourceMappings(shadowRule));
+    public void route(final RouteContext routeContext, final ShadowRule rule) {
+        decorateRouteContext(routeContext, rule, findShadowDataSourceMappings(rule));
     }
     
-    private Map<String, String> findShadowDataSourceMappings(final ShadowRule shadowRule) {
+    private Map<String, String> findShadowDataSourceMappings(final ShadowRule rule) {
         Optional<Collection<String>> sqlComments = parseSQLComments();
         if (!sqlComments.isPresent()) {
-            return new LinkedHashMap<>();
+            return Collections.emptyMap();
         }
-        if (isMatchAnyNoteShadowAlgorithms(shadowRule, createShadowDetermineCondition(sqlComments.get()))) {
-            return shadowRule.getAllShadowDataSourceMappings();
+        if (isMatchAnyNoteShadowAlgorithms(rule, createShadowDetermineCondition(sqlComments.get()))) {
+            return rule.getAllShadowDataSourceMappings();
         }
-        return new LinkedHashMap<>();
+        return Collections.emptyMap();
     }
     
     private Optional<Collection<String>> parseSQLComments() {
@@ -65,13 +65,12 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition(final Collection<String> sqlComments) {
-        ShadowDetermineCondition result = new ShadowDetermineCondition("", ShadowOperationType.HINT_MATCH);
-        return result.initSQLComments(sqlComments);
+        return new ShadowDetermineCondition("", ShadowOperationType.HINT_MATCH).initSQLComments(sqlComments);
     }
     
-    private boolean isMatchAnyNoteShadowAlgorithms(final ShadowRule shadowRule, final ShadowDetermineCondition shadowCondition) {
-        for (HintShadowAlgorithm<Comparable<?>> each : shadowRule.getAllHintShadowAlgorithms()) {
-            if (HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, shadowRule)) {
+    private boolean isMatchAnyNoteShadowAlgorithms(final ShadowRule rule, final ShadowDetermineCondition shadowCondition) {
+        for (HintShadowAlgorithm<Comparable<?>> each : rule.getAllHintShadowAlgorithms()) {
+            if (HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, rule)) {
                 return true;
             }
         }

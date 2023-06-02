@@ -37,12 +37,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingCopyStatementValidatorTest {
+class ShardingCopyStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -51,26 +52,28 @@ public final class ShardingCopyStatementValidatorTest {
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertPreValidateWhenTableSegmentForPostgreSQL() {
+    void assertPreValidateWhenTableSegmentForPostgreSQL() {
         PostgreSQLCopyStatement sqlStatement = new PostgreSQLCopyStatement();
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        new ShardingCopyStatementValidator().preValidate(shardingRule, new CopyStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertDoesNotThrow(() -> new ShardingCopyStatementValidator().preValidate(
+                shardingRule, new CopyStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
-    public void assertPreValidateWhenTableSegmentForOpenGauss() {
+    void assertPreValidateWhenTableSegmentForOpenGauss() {
         OpenGaussCopyStatement sqlStatement = new OpenGaussCopyStatement();
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        new ShardingCopyStatementValidator().preValidate(shardingRule, new CopyStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertDoesNotThrow(() -> new ShardingCopyStatementValidator().preValidate(
+                shardingRule, new CopyStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
-    public void assertPreValidateCopyWithShardingTableForPostgreSQL() {
+    void assertPreValidateCopyWithShardingTableForPostgreSQL() {
         assertThrows(UnsupportedShardingOperationException.class, () -> assertPreValidateCopyTable(new PostgreSQLCopyStatement()));
     }
     
     @Test
-    public void assertPreValidateCopyWithShardingTableForOpenGauss() {
+    void assertPreValidateCopyWithShardingTableForOpenGauss() {
         assertThrows(UnsupportedShardingOperationException.class, () -> assertPreValidateCopyTable(new OpenGaussCopyStatement()));
     }
     
@@ -79,6 +82,7 @@ public final class ShardingCopyStatementValidatorTest {
         CopyStatementContext sqlStatementContext = new CopyStatementContext(sqlStatement);
         String tableName = "t_order";
         when(shardingRule.isShardingTable(tableName)).thenReturn(true);
-        new ShardingCopyStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class));
+        new ShardingCopyStatementValidator().preValidate(
+                shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class));
     }
 }

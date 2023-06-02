@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.session;
 
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -52,40 +52,40 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ConnectionSessionTest {
+class ConnectionSessionTest {
     
     @Mock
-    private BackendConnection backendConnection;
+    private ProxyDatabaseConnectionManager databaseConnectionManager;
     
     private ConnectionSession connectionSession;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, null);
-        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
     }
     
     @Test
-    public void assertSetCurrentSchema() {
+    void assertSetCurrentSchema() {
         connectionSession.setCurrentDatabase("currentDatabase");
         assertThat(connectionSession.getDatabaseName(), is("currentDatabase"));
     }
     
     @Test
-    public void assertFailedSwitchTransactionTypeWhileBegin() {
+    void assertFailedSwitchTransactionTypeWhileBegin() {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        new BackendTransactionManager(backendConnection).begin();
+        new BackendTransactionManager(databaseConnectionManager).begin();
         assertThrows(SwitchTypeInTransactionException.class, () -> connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA));
     }
     
     @Test
-    public void assertSwitchSchemaWhileBegin() {
+    void assertSwitchSchemaWhileBegin() {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        new BackendTransactionManager(backendConnection).begin();
+        new BackendTransactionManager(databaseConnectionManager).begin();
         connectionSession.setCurrentDatabase("newDB");
         assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));
     }
@@ -97,18 +97,18 @@ public final class ConnectionSessionTest {
     }
     
     @Test
-    public void assertDefaultAutocommit() {
+    void assertDefaultAutocommit() {
         assertTrue(connectionSession.isAutoCommit());
     }
     
     @Test
-    public void assertSetAutocommit() {
+    void assertSetAutocommit() {
         connectionSession.setAutoCommit(false);
         assertFalse(connectionSession.isAutoCommit());
     }
     
     @Test
-    public void assertClearQueryContext() {
+    void assertClearQueryContext() {
         connectionSession.setQueryContext(mock(QueryContext.class));
         assertNotNull(connectionSession.getQueryContext());
         connectionSession.clearQueryContext();

@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class DropBroadcastTableRuleStatementUpdaterTest {
+class DropBroadcastTableRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -44,35 +44,35 @@ public final class DropBroadcastTableRuleStatementUpdaterTest {
     private final DropBroadcastTableRuleStatementUpdater updater = new DropBroadcastTableRuleStatementUpdater();
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    void assertCheckSQLStatementWithoutCurrentRule() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_order"), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutExistBroadcastTableRule() {
+    void assertCheckSQLStatementWithoutExistBroadcastTableRule() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithIfExists() {
+    void assertCheckSQLStatementWithIfExists() {
         updater.checkSQLStatement(database, createSQLStatement(true, "t_order"), new ShardingRuleConfiguration());
         updater.checkSQLStatement(database, createSQLStatement(true, "t_order"), null);
     }
     
     @Test
-    public void assertHasAnyOneToBeDropped() {
+    void assertHasAnyOneToBeDropped() {
         assertFalse(updater.hasAnyOneToBeDropped(createSQLStatement(true, "t_order"), new ShardingRuleConfiguration()));
         assertFalse(updater.hasAnyOneToBeDropped(createSQLStatement(true, "t_order"), null));
         assertTrue(updater.hasAnyOneToBeDropped(createSQLStatement(true, "t_order"), createCurrentRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithBroadcastTableRuleAreNotTheSame() {
+    void assertCheckSQLStatementWithBroadcastTableRuleAreNotTheSame() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_order_item"), createCurrentRuleConfiguration()));
     }
     
     @Test
-    public void assertDropSpecifiedRule() {
+    void assertDropSpecifiedRule() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement("t_order"), currentRuleConfig));
         assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement("t_address"), currentRuleConfig));
@@ -80,7 +80,7 @@ public final class DropBroadcastTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertDropSpecifiedCurrentRuleConfigurationWithDifferentCase() {
+    void assertDropSpecifiedCurrentRuleConfigurationWithDifferentCase() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement("T_ORDER"), currentRuleConfig);
         updater.updateCurrentRuleConfiguration(createSQLStatement("T_ADDRESS"), currentRuleConfig);
@@ -88,7 +88,7 @@ public final class DropBroadcastTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertDropMultipleBroadcastRule() {
+    void assertDropMultipleBroadcastRule() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(new DropBroadcastTableRuleStatement(false, Arrays.asList("t_order", "t_address")), currentRuleConfig);
         assertTrue(currentRuleConfig.getBroadcastTables().isEmpty());

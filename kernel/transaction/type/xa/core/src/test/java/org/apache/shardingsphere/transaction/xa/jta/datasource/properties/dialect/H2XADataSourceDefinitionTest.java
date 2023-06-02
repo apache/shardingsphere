@@ -24,10 +24,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class H2XADataSourceDefinitionTest {
+class H2XADataSourceDefinitionTest {
     
     @Test
-    public void assertGetXADriverClassName() {
+    void assertGetXADriverClassName() {
         assertThat(new H2XADataSourceDefinition().getXADriverClassNames(), is(Collections.singletonList("org.h2.jdbcx.JdbcDataSource")));
     }
 }

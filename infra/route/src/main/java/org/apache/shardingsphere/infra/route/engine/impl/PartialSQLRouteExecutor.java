@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.route.engine.impl;
 
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.SQLHintDataSourceNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -79,12 +79,12 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
         return result;
     }
     
-    private Optional<String> findDataSourceByHint(final SQLStatementContext<?> sqlStatementContext, final Map<String, DataSource> dataSources) {
+    private Optional<String> findDataSourceByHint(final SQLStatementContext sqlStatementContext, final Map<String, DataSource> dataSources) {
         Optional<String> result;
         if (HintManager.isInstantiated() && HintManager.getDataSourceName().isPresent()) {
             result = HintManager.getDataSourceName();
         } else {
-            result = ((CommonSQLStatementContext<?>) sqlStatementContext).findHintDataSourceName();
+            result = ((CommonSQLStatementContext) sqlStatementContext).findHintDataSourceName();
         }
         if (result.isPresent() && !dataSources.containsKey(result.get())) {
             throw new SQLHintDataSourceNotExistsException(result.get());

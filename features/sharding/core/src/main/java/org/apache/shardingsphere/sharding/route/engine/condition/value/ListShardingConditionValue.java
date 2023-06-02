@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 
 /**
  * Sharding condition value for list values.
+ * 
+ * @param <T> type of sharding condition value
  */
 @RequiredArgsConstructor
 @Getter

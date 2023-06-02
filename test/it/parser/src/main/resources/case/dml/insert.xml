@@ -332,7 +332,73 @@
             </assignment>
         </set>
     </insert>
-
+    <insert sql-case-id="insert_duplicate_key_update">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <set start-index="20" stop-index="34" literal-stop-index="34">
+            <assignment>
+                <column name="b" start-index="24" stop-index="24" />
+                <assignment-value>
+                    <literal-expression value="11" literal-start-index="26" literal-stop-index="29" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="a" start-index="32" stop-index="32" />
+                <assignment-value>
+                    <literal-expression value="0" literal-start-index="34" literal-stop-index="34" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <on-duplicate-key-columns start-index="43" stop-index="76" literal-start-index="36" literal-stop-index="76">
+            <assignment start-index="65" stop-index="69">
+                <column name="b" start-index="65" stop-index="65"  />
+                <assignment-value>
+                    <common-expression literal-text="n.a" start-index="67" stop-index="69" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="72" stop-index="76">
+                <column name="a" start-index="72" stop-index="72"  />
+                <assignment-value>
+                    <common-expression literal-text="n.b" start-index="74" stop-index="76" />
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
+    </insert>
+    <insert sql-case-id="insert_with_underscore_charset">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
+        <values>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="_utf160x1EC2" start-index="27" stop-index="39" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="_utf160x1EC3" start-index="44" stop-index="56" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="_utf160x1EC5" start-index="61" stop-index="73" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="_utf160x1EC0" start-index="78" stop-index="90" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="_utf160x1EC7" start-index="95" stop-index="107" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="_Utf160x1EBF" start-index="112" stop-index="124" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
     <insert sql-case-id="insert_with_partial_placeholders" parameters="1, 1">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="46">
@@ -794,7 +860,15 @@
                     <literal-expression value="1" start-index="59" stop-index="59" />
                 </assignment-value>
                 <assignment-value>
-                    <function function-name="SUBSTR" text="SUBSTR(?, 1)" literal-text="SUBSTR('init', 1)" literal-start-index="62" literal-stop-index="78" start-index="62" stop-index="73" />
+                    <function function-name="SUBSTR" text="SUBSTR(?, 1)" literal-text="SUBSTR('init', 1)" literal-start-index="62" literal-stop-index="78" start-index="62" stop-index="73" >
+                        <parameter>
+                            <parameter-marker-expression parameter-index="2" start-index="69" stop-index="69" />
+                            <literal-expression value="init" literal-start-index="69" literal-stop-index="74" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="72" stop-index="72" literal-start-index="77" literal-stop-index="77" />
+                        </parameter>
+                    </function>
                 </assignment-value>
             </value>
             <value>
@@ -807,7 +881,15 @@
                     <literal-expression value="2" literal-start-index="86" literal-stop-index="86" />
                 </assignment-value>
                 <assignment-value>
-                    <function function-name="SUBSTR" text="SUBSTR(?, 1)" literal-text="SUBSTR('init', 1)" start-index="84" stop-index="95" literal-start-index="89" literal-stop-index="105" />
+                    <function function-name="SUBSTR" text="SUBSTR(?, 1)" literal-text="SUBSTR('init', 1)" start-index="84" stop-index="95" literal-start-index="89" literal-stop-index="105" >
+                        <parameter>
+                            <parameter-marker-expression parameter-index="5" start-index="91" stop-index="91" />
+                            <literal-expression value="init" literal-start-index="96" literal-stop-index="101" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="94" stop-index="94" literal-start-index="104" literal-stop-index="104" />
+                        </parameter>
+                    </function>
                 </assignment-value>
             </value>
         </values>
@@ -1338,13 +1420,20 @@
         <values>
             <value>
                 <assignment-value>
-                    <parameter-marker-expression parameter-index="0" start-index="96" stop-index="96" />
                     <function function-name="date_add" text="date_add(now(),interval ? second)" literal-text="date_add(now(),interval 1 second)" start-index="61" stop-index="93" literal-start-index="61" literal-stop-index="93">
                         <parameter>
                             <function function-name="now" text="now()" start-index="70" stop-index="74" />
                         </parameter>
                         <parameter>
-                            <expression-projection literal-text="interval 1 second" text="interval ? second" start-index="76" stop-index="92" />
+                            <function function-name="interval" text="interval" start-index="76" stop-index="83" >
+                                <parameter>
+                                    <parameter-marker-expression parameter-index="0" start-index="85" stop-index="85" />
+                                    <literal-expression value="1" start-index="85" stop-index="85" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="second" start-index="87" stop-index="92" />
+                                </parameter>
+                            </function>
                         </parameter>
                     </function>
                 </assignment-value>

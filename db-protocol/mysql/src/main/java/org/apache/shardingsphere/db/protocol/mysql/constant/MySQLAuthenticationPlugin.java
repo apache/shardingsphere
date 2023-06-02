@@ -34,13 +34,13 @@ public enum MySQLAuthenticationPlugin {
     
     DEFAULT(null),
     
-    NATIVE_PASSWORD_AUTHENTICATION("mysql_native_password"),
+    NATIVE("mysql_native_password"),
     
-    SHA2_AUTHENTICATION("caching_sha2_password"),
+    CACHING_SHA2("caching_sha2_password"),
     
-    SHA256_AUTHENTICATION("sha256_password");
+    SHA256("sha256_password");
     
-    private static final Map<String, MySQLAuthenticationPlugin> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
+    private static final Map<String, MySQLAuthenticationPlugin> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
     static {
         for (MySQLAuthenticationPlugin each : values()) {

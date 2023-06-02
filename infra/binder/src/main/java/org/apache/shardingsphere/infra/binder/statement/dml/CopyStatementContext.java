@@ -30,7 +30,7 @@ import java.util.Collection;
  * Copy statement context.
  */
 @Getter
-public final class CopyStatementContext extends CommonSQLStatementContext<CopyStatement> implements TableAvailable {
+public final class CopyStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
@@ -40,7 +40,12 @@ public final class CopyStatementContext extends CommonSQLStatementContext<CopySt
     }
     
     @Override
+    public CopyStatement getSqlStatement() {
+        return (CopyStatement) super.getSqlStatement();
+    }
+    
+    @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getTables();
+        return tablesContext.getSimpleTableSegments();
     }
 }

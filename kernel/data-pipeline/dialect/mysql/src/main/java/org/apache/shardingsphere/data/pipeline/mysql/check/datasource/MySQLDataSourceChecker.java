@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Data source checker for MySQL.
@@ -43,16 +44,16 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private static final String[][] REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"REPLICATION SLAVE", "REPLICATION CLIENT", "ON *.*"}};
     
-    private static final String SHOW_VARIABLES_SQL = "SHOW VARIABLES LIKE ?";
+    private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3, 1F);
     
-    private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3, 1);
-    
-    private static final String BINLOG_ROW_IMAGE = "BINLOG_ROW_IMAGE";
+    private static final String SHOW_VARIABLES_SQL;
     
     static {
         REQUIRED_VARIABLES.put("LOG_BIN", "ON");
         REQUIRED_VARIABLES.put("BINLOG_FORMAT", "ROW");
+        // It does not exist in all versions of MySQL
         REQUIRED_VARIABLES.put("BINLOG_ROW_IMAGE", "FULL");
+        SHOW_VARIABLES_SQL = String.format("SHOW VARIABLES WHERE Variable_name IN (%s)", REQUIRED_VARIABLES.keySet().stream().map(each -> "?").collect(Collectors.joining(",")));
     }
     
     @Override
@@ -91,25 +92,24 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     }
     
     private void checkVariable(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(SHOW_VARIABLES_SQL)) {
+            int parameterIndex = 1;
             for (Entry<String, String> entry : REQUIRED_VARIABLES.entrySet()) {
-                checkVariable(connection, entry.getKey(), entry.getValue());
+                preparedStatement.setString(parameterIndex++, entry.getKey());
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String key = resultSet.getString(1).toUpperCase();
+                    String expectedValue = REQUIRED_VARIABLES.get(key);
+                    String actualValue = resultSet.getString(2);
+                    ShardingSpherePreconditions.checkState(expectedValue.equalsIgnoreCase(actualValue),
+                            () -> new PrepareJobWithInvalidSourceDataSourceException(key, expectedValue, actualValue));
+                }
             }
         } catch (final SQLException ex) {
             throw new PrepareJobWithCheckPrivilegeFailedException(ex);
-        }
-    }
-    
-    private void checkVariable(final Connection connection, final String key, final String toBeCheckedValue) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SHOW_VARIABLES_SQL)) {
-            preparedStatement.setString(1, key);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next() || !BINLOG_ROW_IMAGE.equalsIgnoreCase(key)) {
-                    String actualValue = resultSet.getString(2);
-                    ShardingSpherePreconditions.checkState(toBeCheckedValue.equalsIgnoreCase(actualValue),
-                            () -> new PrepareJobWithInvalidSourceDataSourceException(key, toBeCheckedValue, actualValue));
-                }
-            }
         }
     }
     

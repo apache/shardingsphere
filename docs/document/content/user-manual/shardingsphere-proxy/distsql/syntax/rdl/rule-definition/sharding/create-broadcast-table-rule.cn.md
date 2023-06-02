@@ -1,11 +1,11 @@
 +++
 title = "CREATE BROADCAST TABLE RULE"
-weight = 16
+weight = 15
 +++
 
 ## 描述
 
-`CREATE BROADCAST TABLE RULE` 语法用于为需要广播的表（广播表）创建广播规则
+`CREATE BROADCAST TABLE RULE` 语法用于为需要广播的表（广播表）创建广播规则。
 
 ### 语法定义
 

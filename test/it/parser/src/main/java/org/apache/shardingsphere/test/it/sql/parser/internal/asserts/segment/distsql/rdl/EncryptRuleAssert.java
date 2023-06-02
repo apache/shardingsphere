@@ -29,10 +29,10 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Encrypt rule assert.
@@ -53,7 +53,6 @@ public final class EncryptRuleAssert {
         } else {
             assertNotNull(actual, assertContext.getText("Actual encrypt rule should exist."));
             assertThat(assertContext.getText("encrypt rule assertion error: "), actual.getTableName(), is(expected.getName()));
-            assertThat(assertContext.getText("encrypt rule assertion error: "), actual.getQueryWithCipherColumn(), is(expected.getQueryWithCipherColumn()));
             assertEncryptColumns(assertContext, actual.getColumns(), expected.getColumns());
         }
     }

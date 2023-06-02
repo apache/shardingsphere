@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.event.process.KillProcessListIdRequestEvent;
+import org.apache.shardingsphere.mode.process.event.KillProcessRequestEvent;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -39,7 +39,7 @@ public final class KillProcessExecutor implements DatabaseAdminExecutor {
      */
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String processlistId = killStatement.getProcesslistId();
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new KillProcessListIdRequestEvent(processlistId));
+        String processId = killStatement.getProcessId();
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new KillProcessRequestEvent(processId));
     }
 }

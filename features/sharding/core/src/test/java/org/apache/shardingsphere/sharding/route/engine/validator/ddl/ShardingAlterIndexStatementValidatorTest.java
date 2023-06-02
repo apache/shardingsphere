@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicatedIndexException;
 import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
@@ -37,15 +36,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingAlterIndexStatementValidatorTest {
+class ShardingAlterIndexStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -54,48 +52,43 @@ public final class ShardingAlterIndexStatementValidatorTest {
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertPreValidateAlterIndexWhenIndexExistRenameIndexNotExistForPostgreSQL() {
+    void assertPreValidateAlterIndexWhenIndexExistRenameIndexNotExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
-        when(table.getIndexes()).thenReturn(indexes);
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        when(indexes.containsKey("t_order_index")).thenReturn(true);
-        when(indexes.containsKey("t_order_index_new")).thenReturn(false);
-        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        when(table.containsIndex("t_order_index")).thenReturn(true);
+        when(table.containsIndex("t_order_index_new")).thenReturn(false);
+        assertDoesNotThrow(() -> new ShardingAlterIndexStatementValidator().preValidate(
+                shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
-    public void assertPreValidateAlterIndexWhenIndexNotExistRenameIndexNotExistForPostgreSQL() {
+    void assertPreValidateAlterIndexWhenIndexNotExistRenameIndexNotExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
-        when(table.getIndexes()).thenReturn(indexes);
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        when(indexes.containsKey("t_order_index")).thenReturn(false);
+        when(table.containsIndex("t_order_index")).thenReturn(false);
         assertThrows(IndexNotExistedException.class,
                 () -> new ShardingAlterIndexStatementValidator().preValidate(
                         shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
-    public void assertPreValidateAlterIndexWhenIndexExistRenameIndexExistForPostgreSQL() {
+    void assertPreValidateAlterIndexWhenIndexExistRenameIndexExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
-        when(table.getIndexes()).thenReturn(indexes);
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        when(indexes.containsKey("t_order_index")).thenReturn(true);
-        when(indexes.containsKey("t_order_index_new")).thenReturn(true);
+        when(table.containsIndex("t_order_index")).thenReturn(true);
+        when(table.containsIndex("t_order_index_new")).thenReturn(true);
         assertThrows(DuplicatedIndexException.class,
                 () -> new ShardingAlterIndexStatementValidator().preValidate(
                         shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));

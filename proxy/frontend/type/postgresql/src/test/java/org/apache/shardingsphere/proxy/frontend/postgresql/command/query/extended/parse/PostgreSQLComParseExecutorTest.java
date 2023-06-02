@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class PostgreSQLComParseExecutorTest {
+class PostgreSQLComParseExecutorTest {
     
     @Mock
     private PostgreSQLComParsePacket parsePacket;
@@ -70,20 +70,20 @@ public final class PostgreSQLComParseExecutorTest {
     private PostgreSQLComParseExecutor executor;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
     }
     
     @Test
-    public void assertExecuteWithEmptySQL() {
+    void assertExecuteWithEmptySQL() {
         final String expectedSQL = "";
         final String statementId = "S_1";
-        when(parsePacket.getSql()).thenReturn(expectedSQL);
+        when(parsePacket.getSQL()).thenReturn(expectedSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
+        Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
         PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
@@ -94,36 +94,36 @@ public final class PostgreSQLComParseExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithParameterizedSQL() throws ReflectiveOperationException {
+    void assertExecuteWithParameterizedSQL() throws ReflectiveOperationException {
         final String rawSQL = "/*$0*/insert into sbtest1 /* $1 */ -- $2 \n (id, k, c, pad) \r values \r\n($1, $2, 'apsbd$31a', '$99')/*$0*/ \n--$0";
         final String expectedSQL = "/*$0*/insert into sbtest1 /* $1 */ -- $2 \n (id, k, c, pad) \r values \r\n(?, ?, 'apsbd$31a', '$99')/*$0*/ \n--$0";
         final String statementId = "S_2";
-        when(parsePacket.getSql()).thenReturn(rawSQL);
+        when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
-        when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
+        when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.INT4));
         when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
         Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
+        Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
         PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
         assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(InsertStatementContext.class));
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(PostgreSQLInsertStatement.class));
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
-        assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED)));
+        assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.UNSPECIFIED)));
     }
     
     @Test
-    public void assertExecuteWithDistSQL() {
+    void assertExecuteWithDistSQL() {
         String sql = "SHOW DIST VARIABLE WHERE NAME = sql_show";
         String statementId = "";
-        when(parsePacket.getSql()).thenReturn(sql);
+        when(parsePacket.getSQL()).thenReturn(sql);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
+        Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
         PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);

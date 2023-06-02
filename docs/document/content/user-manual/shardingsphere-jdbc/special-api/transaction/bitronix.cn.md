@@ -54,7 +54,7 @@ Apache ShardingSphere 提供 XA 事务，集成了 Bitronix 的实现。
 Yaml:
 
 ```yaml
-- !TRANSACTION
+transaction:
   defaultType: XA
   providerType: Bitronix
 ```

@@ -35,26 +35,26 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLComStmtPrepareParameterMarkerExtractorTest {
+class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
     @Test
-    public void assertFindColumnsOfParameterMarkersForInsertStatement() {
+    void assertFindColumnsOfParameterMarkersForInsertStatement() {
         String sql = "insert into user (id, name, age) values (1, ?, ?), (?, 'bar', ?)";
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", new CacheOption(0, 0), new CacheOption(0, 0), false).parse(sql, false);
         ShardingSphereSchema schema = prepareSchema();
         Map<ParameterMarkerSegment, ShardingSphereColumn> actual = MySQLComStmtPrepareParameterMarkerExtractor.findColumnsOfParameterMarkers(sqlStatement, schema);
         List<ParameterMarkerSegment> parameterMarkerSegments = new ArrayList<>(((AbstractSQLStatement) sqlStatement).getParameterMarkerSegments());
-        assertThat(actual.get(parameterMarkerSegments.get(0)), is(schema.getTable("user").getColumns().get("name")));
-        assertThat(actual.get(parameterMarkerSegments.get(1)), is(schema.getTable("user").getColumns().get("age")));
-        assertThat(actual.get(parameterMarkerSegments.get(2)), is(schema.getTable("user").getColumns().get("id")));
-        assertThat(actual.get(parameterMarkerSegments.get(3)), is(schema.getTable("user").getColumns().get("age")));
+        assertThat(actual.get(parameterMarkerSegments.get(0)), is(schema.getTable("user").getColumn("name")));
+        assertThat(actual.get(parameterMarkerSegments.get(1)), is(schema.getTable("user").getColumn("age")));
+        assertThat(actual.get(parameterMarkerSegments.get(2)), is(schema.getTable("user").getColumn("id")));
+        assertThat(actual.get(parameterMarkerSegments.get(3)), is(schema.getTable("user").getColumn("age")));
     }
     
     private ShardingSphereSchema prepareSchema() {
         ShardingSphereTable table = new ShardingSphereTable();
-        table.getColumns().put("id", new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));
-        table.getColumns().put("name", new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false));
-        table.getColumns().put("age", new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true));
+        table.putColumn(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));
+        table.putColumn(new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false));
+        table.putColumn(new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true));
         ShardingSphereSchema result = new ShardingSphereSchema();
         result.getTables().put("user", table);
         return result;

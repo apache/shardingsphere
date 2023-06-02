@@ -54,17 +54,17 @@ public final class EncryptPredicateFunctionRightValueToken extends SQLToken impl
         result.append(functionName).append(" (");
         for (int i = 0; i < indexValues.size() + paramMarkerIndexes.size(); i++) {
             if (paramMarkerIndexes.contains(i)) {
-                result.append("?");
+                result.append('?');
             } else {
                 if (indexValues.get(i) instanceof String) {
-                    result.append("'").append(indexValues.get(i)).append("'");
+                    result.append('\'').append(indexValues.get(i)).append('\'');
                 } else {
                     result.append(indexValues.get(i));
                 }
             }
             result.append(", ");
         }
-        result.delete(result.length() - 2, result.length()).append(")");
+        result.delete(result.length() - 2, result.length()).append(')');
         return result.toString();
     }
     

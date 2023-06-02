@@ -19,9 +19,8 @@ package org.apache.shardingsphere.proxy.backend.hbase.result;
 
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import java.util.Properties;
 
 /**
  * SQL Statement which supported in HBase.
@@ -30,92 +29,99 @@ public final class HBaseSupportedSQLStatement {
     
     public static final String HBASE_DATABASE_TABLE_NAME = "t_test_order";
     
-    private static final String SELECT_STATEMENT = "select /*+ hbase */ * from t_order where id = 1";
+    private static final String INSERT = "insert /*+ hbase */ into t_test_order(rowKey, v1, v2) values(1, 2, 3)";
     
-    private static final String SHOW_TABLE_STATEMENT = "show /*+ hbase */ tables";
+    private static final String UPDATE = "update /*+ hbase */ t_test_order set age = 10 where rowKey = 1";
     
-    private static final String SHOW_CREATE_TABLE_STATEMENT = "show /*+ hbase */ create table t_test_order";
+    private static final String DELETE = "delete /*+ hbase */ from t_test_order where rowKey = 'kid'";
     
-    private static final String UPDATE_STATEMENT = "update /*+ hbase */ t_test_order set age = 10 where rowKey = 1";
-    
-    private static final String DELETE_STATEMENT = "delete /*+ hbase */ from t_test_order where rowKey = 'kid'";
-    
-    private static final String INSERT_STATEMENT = "insert /*+ hbase */ into t_test_order(rowKey, v1, v2) values(1, 2, 3)";
+    private static final String SELECT = "select /*+ hbase */ * from t_order where id = 1";
     
     private static final String SHOW_DATABASES = "show /*+ hbase */ databases";
+    
+    private static final String SHOW_TABLES = "show /*+ hbase */ tables";
+    
+    private static final String SHOW_CREATE_TABLE = "show /*+ hbase */ create table t_test_order";
     
     private static final String FLUSH_TABLES = "flush /*+ hbase */ tables t_test";
     
     /**
-     * parse sql statement.
+     * parse SQL statement.
      *
-     * @param sql sql
-     * @return SQLStatement Object.
+     * @param sql SQL
+     * @return SQL statement
      */
     public static SQLStatement parseSQLStatement(final String sql) {
-        return new SQLVisitorEngine("MySQL", "STATEMENT", false, new Properties()).visit(new SQLParserEngine("MySQL",
-                new CacheOption(128, 4)).parse(sql, false));
+        return new SQLStatementVisitorEngine("MySQL", false).visit(new SQLParserEngine("MySQL", new CacheOption(128, 4)).parse(sql, false));
     }
     
     /**
-     * get SQL Statement for test.
-     * @return SQLStatement.
+     * Get insert statement.
+     * 
+     * @return insert statement
      */
     public static String getInsertStatement() {
-        return INSERT_STATEMENT;
+        return INSERT;
     }
     
     /**
-     * get SQL Statement for test.
-     * @return SQLStatement.
-     */
-    public static String getDeleteStatement() {
-        return DELETE_STATEMENT;
-    }
-    
-    /**
-     * get SQL Statement for test.
-     * @return SQLStatement.
+     * Get update statement.
+     *
+     * @return update statement
      */
     public static String getUpdateStatement() {
-        return UPDATE_STATEMENT;
+        return UPDATE;
     }
     
     /**
-     * get SQL Statement for test.
-     * @return SQLStatement.
+     * Get delete statement.
+     * 
+     * @return delete statement
+     */
+    public static String getDeleteStatement() {
+        return DELETE;
+    }
+    
+    /**
+     * Get select statement.
+     * 
+     * @return select statement
      */
     public static String getSelectStatement() {
-        return SELECT_STATEMENT;
+        return SELECT;
     }
     
     /**
-     * get SQL Statement for test.
-     * @return SQLStatement.
-     */
-    public static String getShowCreateTableStatement() {
-        return SHOW_CREATE_TABLE_STATEMENT;
-    }
-    
-    /**
-     * get SQL Statement for test.
-     * @return SQLStatement.
-     */
-    public static String getShowTableStatement() {
-        return SHOW_TABLE_STATEMENT;
-    }
-    
-    /**
-     * get SQL Statement for test.
-     * @return SQLStatement.
+     * Get show databases statement.
+     *
+     * @return show databases statement
      */
     public static String getShowDatabaseStatement() {
         return SHOW_DATABASES;
     }
     
     /**
-     * get SQL Statement for test.
-     * @return SQLStatement.
+     * Get show tables statement.
+     * 
+     * @return show tables statement
+     */
+    public static String getShowTablesStatement() {
+        return SHOW_TABLES;
+    }
+    
+    /**
+     * Get show create table statement.
+     *
+     * @return show create table statement
+     */
+    public static String getShowCreateTableStatement() {
+        return SHOW_CREATE_TABLE;
+    }
+    
+    /**
+     * Get flush tables statement.
+     * 
+     * @return flush tables statement
      */
     public static String getFlushTablesStatement() {
         return FLUSH_TABLES;

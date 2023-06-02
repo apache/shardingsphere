@@ -25,12 +25,12 @@ import java.io.Serializable;
 
 /**
  * TIME type value of MySQL binlog protocol.
- *
+ * Stored as a 3 byte value with the values stored as multiples of 100. This means that the stored value is in the format HHMMSS
  * <p>
  *     TIME type applied before MySQL 5.6.4.
  * </p>
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/field__types_8h.html">field type</a>
  */
 public final class MySQLTimeBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
@@ -38,7 +38,7 @@ public final class MySQLTimeBinlogProtocolValue implements MySQLBinlogProtocolVa
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int time = payload.getByteBuf().readUnsignedMediumLE();
         if (0 == time) {
-            return MySQLTimeValueUtil.ZERO_OF_TIME;
+            return MySQLTimeValueUtils.ZERO_OF_TIME;
         }
         int minuteSecond = Math.abs(time) % 10000;
         return String.format("%02d:%02d:%02d", time / 10000, minuteSecond / 100, minuteSecond % 100);

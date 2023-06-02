@@ -25,12 +25,12 @@ import java.io.Serializable;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLUnsignedSmallintHandlerTest {
+class MySQLUnsignedSmallintHandlerTest {
     
     private final MySQLUnsignedSmallintHandler handler = new MySQLUnsignedSmallintHandler();
     
     @Test
-    public void assertHandle() {
+    void assertHandle() {
         Serializable actual = handler.handle((short) 1);
         assertThat(actual, is(1));
         actual = handler.handle((short) -1);

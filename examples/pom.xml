@@ -34,7 +34,7 @@
     </modules>
     
     <properties>
-        <revision>5.3.2-SNAPSHOT</revision>
+        <revision>5.3.3-SNAPSHOT</revision>
         <java.version>1.8</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -43,7 +43,7 @@
         <spring-framework.version>5.2.15.RELEASE</spring-framework.version>
         <spring-boot.version>2.3.12.RELEASE</spring-boot.version>
         <hikari-cp.version>3.4.2</hikari-cp.version>
-        <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
+        <mysql-connector-java.version>5.1.49</mysql-connector-java.version>
         <postgresql.version>42.4.1</postgresql.version>
         <h2.version>2.1.214</h2.version>
         <slf4j.version>1.7.7</slf4j.version>
@@ -60,15 +60,10 @@
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
         <btm.version>2.1.3</btm.version>
         
-        <seata.version>1.4.2</seata.version>
-        
-        <junit4.version>4.13.2</junit4.version>
-        <hamcrest.version>1.3</hamcrest.version>
-        <mockito.version>2.7.21</mockito.version>
+        <seata.version>1.6.1</seata.version>
         
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-        <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <freemarker.version>2.3.31</freemarker.version>
@@ -142,42 +137,42 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-engine</artifactId>
+                <artifactId>shardingsphere-parser-sql-engine</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-mysql</artifactId>
+                <artifactId>shardingsphere-parser-sql-mysql</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-oracle</artifactId>
+                <artifactId>shardingsphere-parser-sql-oracle</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-sql92</artifactId>
+                <artifactId>shardingsphere-parser-sql-sql92</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-postgresql</artifactId>
+                <artifactId>shardingsphere-parser-sql-postgresql</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-sqlserver</artifactId>
+                <artifactId>shardingsphere-parser-sql-sqlserver</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-opengauss</artifactId>
+                <artifactId>shardingsphere-parser-sql-opengauss</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-parser-core</artifactId>
+                <artifactId>shardingsphere-sql-parser-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             
@@ -357,31 +352,6 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
-        
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <version>${hamcrest.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.hamcrest</groupId>
-                    <artifactId>hamcrest-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
-            <version>${mockito.version}</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
     
     <profiles>
@@ -414,10 +384,6 @@
                     <testTarget>${java.version}</testTarget>
                 </configuration>
                 <version>${maven-compiler-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven-resources-plugin.version}</version>
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>

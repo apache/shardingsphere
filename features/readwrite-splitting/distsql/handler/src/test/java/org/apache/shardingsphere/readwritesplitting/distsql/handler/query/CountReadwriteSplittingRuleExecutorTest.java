@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -31,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,12 +35,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CountReadwriteSplittingRuleExecutorTest {
+class CountReadwriteSplittingRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
-        RQLExecutor<CountReadwriteSplittingRuleStatement> executor = new CountReadwriteSplittingRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountReadwriteSplittingRuleStatement.class));
+    void assertGetRowData() {
+        Collection<LocalDataQueryResultRow> actual = new CountReadwriteSplittingRuleExecutor().getRows(mockDatabase(), mock(CountReadwriteSplittingRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -54,9 +49,8 @@ public final class CountReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
-        RQLExecutor<CountReadwriteSplittingRuleStatement> executor = new CountReadwriteSplittingRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
+    void assertGetColumnNames() {
+        Collection<String> columns = new CountReadwriteSplittingRuleExecutor().getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("rule_name"));
@@ -74,10 +68,7 @@ public final class CountReadwriteSplittingRuleExecutorTest {
     
     private ReadwriteSplittingRule mockReadwriteSplittingRule() {
         ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
-        Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = Collections.singletonMap("readwrite_splitting",
-                Arrays.asList(new DataSourceRoleInfo("write_ds", DataSourceRole.PRIMARY),
-                        new DataSourceRoleInfo("read_ds", DataSourceRole.MEMBER)));
-        when(result.getDataSourceMapper()).thenReturn(dataSourceMapper);
+        when(result.getDataSourceMapper()).thenReturn(Collections.singletonMap("readwrite_splitting", Arrays.asList("write_ds", "read_ds")));
         return result;
     }
 }

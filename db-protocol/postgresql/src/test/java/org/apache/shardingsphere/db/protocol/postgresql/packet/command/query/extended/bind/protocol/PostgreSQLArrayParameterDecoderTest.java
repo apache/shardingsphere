@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PostgreSQLArrayParameterDecoderTest {
+class PostgreSQLArrayParameterDecoderTest {
     
     private static final PostgreSQLArrayParameterDecoder DECODER = new PostgreSQLArrayParameterDecoder();
     
@@ -34,7 +34,7 @@ public final class PostgreSQLArrayParameterDecoderTest {
     private static final String FLOAT_ARRAY_STR = "{\"11.1\",\"12.1\"}";
     
     @Test
-    public void assertParseInt2ArrayNormalTextMode() {
+    void assertParseInt2ArrayNormalTextMode() {
         short[] result = DECODER.decodeInt2Array(INT_ARRAY_STR.getBytes(), false);
         assertThat(result.length, is(2));
         assertThat(result[0], is((short) 11));
@@ -42,7 +42,7 @@ public final class PostgreSQLArrayParameterDecoderTest {
     }
     
     @Test
-    public void assertParseInt4ArrayNormalTextMode() {
+    void assertParseInt4ArrayNormalTextMode() {
         int[] result = DECODER.decodeInt4Array(INT_ARRAY_STR.getBytes(), false);
         assertThat(result.length, is(2));
         assertThat(result[0], is(11));
@@ -50,7 +50,7 @@ public final class PostgreSQLArrayParameterDecoderTest {
     }
     
     @Test
-    public void assertParseInt8ArrayNormalTextMode() {
+    void assertParseInt8ArrayNormalTextMode() {
         long[] result = DECODER.decodeInt8Array(INT_ARRAY_STR.getBytes(), false);
         assertThat(result.length, is(2));
         assertThat(result[0], is(11L));
@@ -58,7 +58,7 @@ public final class PostgreSQLArrayParameterDecoderTest {
     }
     
     @Test
-    public void assertParseFloat4ArrayNormalTextMode() {
+    void assertParseFloat4ArrayNormalTextMode() {
         float[] result = DECODER.decodeFloat4Array(FLOAT_ARRAY_STR.getBytes(), false);
         assertThat(result.length, is(2));
         assertThat(Float.compare(result[0], 11.1F), is(0));
@@ -66,7 +66,7 @@ public final class PostgreSQLArrayParameterDecoderTest {
     }
     
     @Test
-    public void assertParseFloat8ArrayNormalTextMode() {
+    void assertParseFloat8ArrayNormalTextMode() {
         double[] result = DECODER.decodeFloat8Array(FLOAT_ARRAY_STR.getBytes(), false);
         assertThat(result.length, is(2));
         assertThat(Double.compare(result[0], 11.1D), is(0));
@@ -74,7 +74,7 @@ public final class PostgreSQLArrayParameterDecoderTest {
     }
     
     @Test
-    public void assertParseBoolArrayNormalTextMode() {
+    void assertParseBoolArrayNormalTextMode() {
         boolean[] result = DECODER.decodeBoolArray("{\"true\",\"false\"}".getBytes(), false);
         assertThat(result.length, is(2));
         assertTrue(result[0]);
@@ -82,7 +82,7 @@ public final class PostgreSQLArrayParameterDecoderTest {
     }
     
     @Test
-    public void assertParseStringArrayNormalTextMode() {
+    void assertParseStringArrayNormalTextMode() {
         String[] result = DECODER.decodeStringArray("{\"a\",\"b\"}".getBytes(), false);
         assertThat(result.length, is(2));
         assertThat(result[0], is("a"));
@@ -90,7 +90,7 @@ public final class PostgreSQLArrayParameterDecoderTest {
     }
     
     @Test
-    public void assertParseStringArrayWithEscapeTextMode() {
+    void assertParseStringArrayWithEscapeTextMode() {
         String[] result = DECODER.decodeStringArray("{\"\\\"a\",\"\\\\b\",\"c\"}".getBytes(), false);
         assertThat(result.length, is(3));
         assertThat(result[0], is("\"a"));
@@ -99,7 +99,7 @@ public final class PostgreSQLArrayParameterDecoderTest {
     }
     
     @Test
-    public void assertParseStringArrayWithNullTextMode() {
+    void assertParseStringArrayWithNullTextMode() {
         String[] result = DECODER.decodeStringArray("{\"a\",\"b\",NULL}".getBytes(), false);
         assertThat(result.length, is(3));
         assertThat(result[0], is("a"));

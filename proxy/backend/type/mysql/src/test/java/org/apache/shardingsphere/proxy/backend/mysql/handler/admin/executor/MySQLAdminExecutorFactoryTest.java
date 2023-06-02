@@ -33,11 +33,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLAdminExecutorFactoryTest {
+class MySQLAdminExecutorFactoryTest {
     
-    @SuppressWarnings("rawtypes")
     @Test
-    public void assertNewInstanceWithMySQLShowFunctionStatusStatement() {
+    void assertNewInstanceWithMySQLShowFunctionStatusStatement() {
         MySQLShowFunctionStatusStatement statement = mock(MySQLShowFunctionStatusStatement.class);
         CommonSQLStatementContext statementContext = mock(CommonSQLStatementContext.class);
         when(statementContext.getSqlStatement()).thenReturn(statement);
@@ -46,9 +45,8 @@ public final class MySQLAdminExecutorFactoryTest {
         assertThat(executor.get(), instanceOf(ShowFunctionStatusExecutor.class));
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
-    public void assertNewInstanceWithMySQLShowProcedureStatusStatement() {
+    void assertNewInstanceWithMySQLShowProcedureStatusStatement() {
         MySQLShowProcedureStatusStatement statement = mock(MySQLShowProcedureStatusStatement.class);
         CommonSQLStatementContext statementContext = mock(CommonSQLStatementContext.class);
         when(statementContext.getSqlStatement()).thenReturn(statement);
@@ -57,9 +55,8 @@ public final class MySQLAdminExecutorFactoryTest {
         assertThat(executor.get(), instanceOf(ShowProcedureStatusExecutor.class));
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
-    public void assertNewInstanceWithMySQLShowTablesStatement() {
+    void assertNewInstanceWithMySQLShowTablesStatement() {
         MySQLShowTablesStatement statement = mock(MySQLShowTablesStatement.class);
         CommonSQLStatementContext statementContext = mock(CommonSQLStatementContext.class);
         when(statementContext.getSqlStatement()).thenReturn(statement);

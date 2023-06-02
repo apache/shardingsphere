@@ -23,9 +23,9 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
-import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
+import org.apache.shardingsphere.infra.datanode.DataNodeUtils;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -92,7 +92,7 @@ public final class TableRule {
     
     public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
         logicTable = logicTableName;
-        dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1);
+        dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1F);
         actualDataNodes = generateDataNodes(logicTableName, dataSourceNames);
         actualTables = getActualTables();
         databaseShardingStrategyConfig = null;
@@ -106,8 +106,8 @@ public final class TableRule {
     
     public TableRule(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable();
-        List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
-        dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
+        List<String> dataNodes = InlineExpressionParserFactory.newInstance().splitAndEvaluate(tableRuleConfig.getActualDataNodes());
+        dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1F);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
         databaseShardingStrategyConfig = tableRuleConfig.getDatabaseShardingStrategy();
@@ -128,7 +128,7 @@ public final class TableRule {
         tableShardingStrategyConfig = tableRuleConfig.getShardingStrategy();
         auditStrategyConfig = tableRuleConfig.getAuditStrategy();
         List<String> dataNodes = getDataNodes(tableRuleConfig, shardingAutoTableAlgorithm, dataSourceNames);
-        dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
+        dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1F);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
@@ -158,8 +158,8 @@ public final class TableRule {
             return new LinkedList<>();
         }
         List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new LinkedList<>(dataSourceNames)
-                : new InlineExpressionParser(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
-        return DataNodeUtil.getFormatDataNodes(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
+                : InlineExpressionParserFactory.newInstance().splitAndEvaluate(tableRuleConfig.getActualDataSources());
+        return DataNodeUtils.getFormatDataNodes(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
     }
     
     private Set<String> getActualTables() {
@@ -211,7 +211,7 @@ public final class TableRule {
      * @return data node groups, key is data source name, values are data nodes belong to this data source
      */
     public Map<String, List<DataNode>> getDataNodeGroups() {
-        return DataNodeUtil.getDataNodeGroups(actualDataNodes);
+        return DataNodeUtils.getDataNodeGroups(actualDataNodes);
     }
     
     /**
@@ -233,11 +233,24 @@ public final class TableRule {
         return dataSourceToTablesMap.getOrDefault(targetDataSource, Collections.emptySet());
     }
     
-    int findActualTableIndex(final String dataSourceName, final String actualTableName) {
+    /**
+     * Find actual table index.
+     * 
+     * @param dataSourceName data source name
+     * @param actualTableName actual table name
+     * @return actual table index
+     */
+    public int findActualTableIndex(final String dataSourceName, final String actualTableName) {
         return dataNodeIndexMap.getOrDefault(new DataNode(dataSourceName, actualTableName), -1);
     }
     
-    boolean isExisted(final String actualTableName) {
+    /**
+     * Is existed.
+     * 
+     * @param actualTableName actual table name
+     * @return is existed or not
+     */
+    public boolean isExisted(final String actualTableName) {
         return actualTables.contains(actualTableName);
     }
     

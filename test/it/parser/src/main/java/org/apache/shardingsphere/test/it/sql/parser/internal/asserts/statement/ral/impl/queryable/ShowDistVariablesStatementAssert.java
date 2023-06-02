@@ -17,15 +17,22 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowDistVariablesStatementTestCase;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Show dist variables statement assert.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowDistVariablesStatementAssert {
     
     /**
@@ -36,8 +43,16 @@ public final class ShowDistVariablesStatementAssert {
      * @param expected expected show dist variables statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowDistVariablesStatement actual, final ShowDistVariablesStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
+        ExistingAssert.assertIs(assertContext, actual, expected);
+        assertLikePattern(assertContext, actual, expected);
+    }
+    
+    private static void assertLikePattern(final SQLCaseAssertContext assertContext, final ShowDistVariablesStatement actual, final ShowDistVariablesStatementTestCase expected) {
+        if (null == expected.getLikePattern()) {
+            assertFalse(actual.getLikePattern().isPresent(), assertContext.getText("Actual like pattern should not exist."));
+        } else {
+            assertTrue(actual.getLikePattern().isPresent(), assertContext.getText("Actual like pattern should exist."));
+            assertThat(assertContext.getText("Like pattern assertion error"), actual.getLikePattern().get(), is(expected.getLikePattern()));
         }
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.cases.dataset;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 
@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 /**
  * Data sets root xml entry.
  */
-@Getter
 @XmlRootElement(name = "dataset")
+@Getter
 public final class DataSet {
     
     @XmlAttribute(name = "update-count")
@@ -65,7 +65,7 @@ public final class DataSet {
      * @return data set meta data belong to current data node
      */
     public DataSetMetaData findMetaData(final DataNode dataNode) {
-        Optional<DataSetMetaData> result = metaDataList.stream().filter(each -> contains(new InlineExpressionParser(each.getDataNodes()).splitAndEvaluate(), dataNode)).findFirst();
+        Optional<DataSetMetaData> result = metaDataList.stream().filter(each -> contains(InlineExpressionParserFactory.newInstance().splitAndEvaluate(each.getDataNodes()), dataNode)).findFirst();
         return result.orElseThrow(() -> new IllegalArgumentException(String.format("Cannot find data node: %s", dataNode)));
     }
     

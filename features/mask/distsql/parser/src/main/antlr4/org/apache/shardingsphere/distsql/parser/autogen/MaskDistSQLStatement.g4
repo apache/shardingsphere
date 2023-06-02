@@ -25,5 +25,5 @@ execute
     | dropMaskRule
     | showMaskRules
     | countMaskRule
-    ) SEMI?
+    ) SEMI_? EOF
     ;

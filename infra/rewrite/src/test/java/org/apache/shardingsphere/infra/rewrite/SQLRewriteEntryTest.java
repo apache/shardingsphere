@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rewrite;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -49,10 +49,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SQLRewriteEntryTest {
+class SQLRewriteEntryTest {
     
     @Test
-    public void assertRewriteForGenericSQLRewriteResult() {
+    void assertRewriteForGenericSQLRewriteResult() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "H2"), mockResource(),
                 mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
@@ -65,7 +65,7 @@ public final class SQLRewriteEntryTest {
     }
     
     @Test
-    public void assertRewriteForRouteSQLRewriteResult() {
+    void assertRewriteForRouteSQLRewriteResult() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "H2"), mockResource(),
                 mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
@@ -83,7 +83,7 @@ public final class SQLRewriteEntryTest {
     
     private ShardingSphereResourceMetaData mockResource() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1);
+        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
         databaseTypes.put("ds_0", new H2DatabaseType());
         databaseTypes.put("ds_1", new MySQLDatabaseType());
         when(result.getStorageTypes()).thenReturn(databaseTypes);

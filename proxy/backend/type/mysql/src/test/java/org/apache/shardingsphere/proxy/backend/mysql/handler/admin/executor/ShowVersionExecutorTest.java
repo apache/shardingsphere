@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
@@ -36,23 +36,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowVersionExecutorTest {
+class ShowVersionExecutorTest {
     
     private String previousVersion;
     
     @BeforeEach
-    public void setUp() {
-        previousVersion = MySQLServerInfo.getServerVersion("foo_db");
-        MySQLServerInfo.setServerVersion("foo_db", "8.0.26");
+    void setUp() {
+        previousVersion = DatabaseProtocolServerInfo.getProtocolVersion("foo_db", "MySQL");
+        DatabaseProtocolServerInfo.setProtocolVersion("foo_db", "8.0.26");
     }
     
     @AfterEach
-    public void tearDown() {
-        MySQLServerInfo.setServerVersion("foo_db", previousVersion);
+    void tearDown() {
+        DatabaseProtocolServerInfo.setProtocolVersion("foo_db", previousVersion);
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithoutAlias());
         ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);
@@ -74,7 +74,7 @@ public final class ShowVersionExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithAlias() throws SQLException {
+    void assertExecuteWithAlias() throws SQLException {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithAlias());
         ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);
@@ -96,7 +96,7 @@ public final class ShowVersionExecutorTest {
         assertThat(actualQueryResultMetaData.getColumnName(1), is(ShowVersionExecutor.FUNCTION_NAME));
         assertThat(actualQueryResultMetaData.getColumnLabel(1), is(expectedColumnLabel));
         while (executor.getMergedResult().next()) {
-            assertThat(executor.getMergedResult().getValue(1, Object.class), is(MySQLServerInfo.getServerVersion("foo_db")));
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is(DatabaseProtocolServerInfo.getProtocolVersion("foo_db", "MySQL")));
         }
     }
 }

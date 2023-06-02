@@ -23,12 +23,16 @@ import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTes
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * MySQL savepoint transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
+@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
 public final class MySQLSavePointTestCase extends BaseSavePointTestCase {
     
     public MySQLSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
@@ -39,5 +43,22 @@ public final class MySQLSavePointTestCase extends BaseSavePointTestCase {
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertRollback2Savepoint();
         assertReleaseSavepoint();
+        assertReleaseSavepointFailure();
+    }
+    
+    private void assertReleaseSavepointFailure() throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            executeWithLog(connection, "DELETE FROM account");
+            connection.setAutoCommit(false);
+            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1,1,1)");
+            executeWithLog(connection, "SAVEPOINT point1");
+            executeWithLog(connection, "RELEASE SAVEPOINT point1");
+            try {
+                executeWithLog(connection, "ROLLBACK TO SAVEPOINT point1");
+            } catch (final SQLException ex) {
+                assertThat(ex.getMessage(), is("SAVEPOINT point1 does not exist"));
+            }
+            connection.rollback();
+        }
     }
 }

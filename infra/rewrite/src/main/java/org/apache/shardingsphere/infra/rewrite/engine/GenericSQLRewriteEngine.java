@@ -48,7 +48,7 @@ public final class GenericSQLRewriteEngine {
     public GenericSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
         String sql = translatorRule.translate(
                 new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getSqlStatementContext().getSqlStatement(), protocolType,
-                !storageTypes.isEmpty() ? storageTypes.values().iterator().next() : protocolType);
+                storageTypes.isEmpty() ? protocolType : storageTypes.values().iterator().next());
         return new GenericSQLRewriteResult(new SQLRewriteUnit(sql, sqlRewriteContext.getParameterBuilder().getParameters()));
     }
 }

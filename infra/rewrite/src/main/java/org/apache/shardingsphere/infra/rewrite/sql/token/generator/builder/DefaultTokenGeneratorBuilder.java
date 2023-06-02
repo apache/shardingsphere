@@ -31,7 +31,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class DefaultTokenGeneratorBuilder implements SQLTokenGeneratorBuilder {
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {

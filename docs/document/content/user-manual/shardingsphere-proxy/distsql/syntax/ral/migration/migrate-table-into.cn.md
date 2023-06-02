@@ -1,6 +1,6 @@
 +++
 title = "MIGRATE TABLE INTO"
-weight = 7
+weight = 6
 +++
 
 ### 描述

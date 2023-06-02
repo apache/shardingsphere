@@ -32,9 +32,9 @@
         </assertion>
     </test-case>
     
-    <test-case sql="ALTER ENCRYPT RULE t_user (COLUMNS((NAME=pwd,PLAIN=pwd_plain,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abcd'))))),QUERY_WITH_CIPHER_COLUMN=true);" db-types="MySQL, PostgreSQL">
+    <test-case sql="ALTER ENCRYPT RULE t_user (COLUMNS((NAME=pwd,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abcd'))))));" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="alter_encrypt_rule.xml">
-            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS((NAME=pwd,PLAIN=pwd_plain,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))))),QUERY_WITH_CIPHER_COLUMN=true);" />
+            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS((NAME=pwd,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))))));" />
             <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user;" />
             <destroy-sql sql="DROP ENCRYPT RULE t_user " />
         </assertion>
@@ -60,7 +60,7 @@
 <!--        </assertion>-->
 <!--    </test-case>-->
     
-    <test-case sql="ALTER MASK RULE t_mask (COLUMNS((NAME=order_id, TYPE(NAME='MASK_FROM_X_TO_Y', PROPERTIES('from-x'=1, 'to-y'=2, 'replace-char'='*'))))));">
+    <test-case sql="ALTER MASK RULE t_mask (COLUMNS((NAME=order_id, TYPE(NAME='MASK_FROM_X_TO_Y', PROPERTIES('from-x'=1, 'to-y'=2, 'replace-char'='*')))));">
         <assertion expected-data-file="alter_mask_rule.xml">
             <initial-sql sql="CREATE MASK RULE t_mask (COLUMNS((NAME=order_id,TYPE(NAME='MD5'))));" />
             <assertion-sql sql="SHOW MASK RULES;" />

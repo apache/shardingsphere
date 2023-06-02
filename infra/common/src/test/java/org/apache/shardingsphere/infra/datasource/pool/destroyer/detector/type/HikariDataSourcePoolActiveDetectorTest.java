@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -28,20 +29,20 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class HikariDataSourcePoolActiveDetectorTest {
+class HikariDataSourcePoolActiveDetectorTest {
     
     @Test
-    public void assertNotContainsActiveConnectionWhenEmptyPool() {
+    void assertNotContainsActiveConnectionWhenEmptyPool() {
         assertFalse(new HikariDataSourcePoolActiveDetector().containsActiveConnection(new HikariDataSource()));
     }
     
     @Test
-    public void assertNotContainsActiveConnection() {
+    void assertNotContainsActiveConnection() {
         assertFalse(new HikariDataSourcePoolActiveDetector().containsActiveConnection(createHikariDataSource()));
     }
     
     @Test
-    public void assertContainsActiveConnection() throws SQLException {
+    void assertContainsActiveConnection() throws SQLException {
         DataSource dataSource = createHikariDataSource();
         try (Connection ignored = dataSource.getConnection()) {
             assertTrue(new HikariDataSourcePoolActiveDetector().containsActiveConnection(dataSource));
@@ -50,10 +51,8 @@ public final class HikariDataSourcePoolActiveDetectorTest {
     
     private HikariDataSource createHikariDataSource() {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName("org.h2.Driver");
-        config.setJdbcUrl("jdbc:h2:mem:foo_ds;DB_CLOSE_DELAY=-1");
-        config.setUsername("root");
-        config.setPassword("root");
+        config.setDriverClassName(MockedDriver.class.getName());
+        config.setJdbcUrl("mock:jdbc");
         return new HikariDataSource(config);
     }
 }

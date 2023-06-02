@@ -26,12 +26,12 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OrderByTokenTest {
+class OrderByTokenTest {
     
     private OrderByToken orderByToken;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         orderByToken = new OrderByToken(0);
         List<String> columnLabels = orderByToken.getColumnLabels();
         List<OrderDirection> orderDirections = orderByToken.getOrderDirections();
@@ -42,7 +42,7 @@ public final class OrderByTokenTest {
     }
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         assertThat(orderByToken.toString(), is(" ORDER BY Test1 ASC,Test2 ASC "));
     }
 }

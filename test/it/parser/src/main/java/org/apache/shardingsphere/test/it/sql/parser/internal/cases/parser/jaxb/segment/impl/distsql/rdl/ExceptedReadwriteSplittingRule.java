@@ -27,20 +27,20 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
 /**
- * Excepted readwrite splitting rule.
+ * Excepted readwrite-splitting rule.
  */
 @Getter
 @Setter
 public final class ExceptedReadwriteSplittingRule extends AbstractExpectedIdentifierSQLSegment {
-    
-    @XmlAttribute(name = "auto-aware-resource")
-    private String autoAwareResource;
     
     @XmlAttribute(name = "write-data-source")
     private String writeDataSource;
     
     @XmlElement(name = "read-data-source")
     private List<String> readDataSources;
+    
+    @XmlAttribute(name = "transactional-read-query-strategy")
+    private String transactionalReadQueryStrategy;
     
     @XmlElement(name = "load-balancer")
     private ExpectedAlgorithm loadBalancer;

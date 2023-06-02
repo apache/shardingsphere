@@ -24,11 +24,12 @@ import java.security.NoSuchAlgorithmException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-public final class PasswordEncryptionTest {
+class PasswordEncryptionTest {
     
     @Test
-    public void assertEncryptWithMySQL41() throws NoSuchAlgorithmException {
+    void assertEncryptWithMySQL41() throws NoSuchAlgorithmException {
         byte[] passwordBytes = "password".getBytes();
         byte[] seed = getRandomSeed();
         assertThat(PasswordEncryption.encryptWithMySQL41(passwordBytes, seed), is(getMySQL41ExpectedPassword()));
@@ -40,7 +41,7 @@ public final class PasswordEncryptionTest {
     
     @SneakyThrows(NoSuchAlgorithmException.class)
     @Test
-    public void encryptEncryptWithSha2() {
+    void assertEncryptEncryptWithSha2() {
         assertThat(PasswordEncryption.encryptWithSha2("123456".getBytes(), getRandomSeed()), is(getSha2ExpectedPassword()));
     }
     
@@ -57,10 +58,8 @@ public final class PasswordEncryptionTest {
     }
     
     @Test
-    public void assertEncryptWithRSAPublicKey() {
-        PasswordEncryption.encryptWithRSAPublicKey("123456", getRandomSeed(),
-                "RSA/ECB/OAEPWithSHA-1AndMGF1Padding",
-                mockPublicKey());
+    void assertEncryptWithRSAPublicKey() {
+        assertDoesNotThrow(() -> PasswordEncryption.encryptWithRSAPublicKey("123456", getRandomSeed(), "RSA/ECB/OAEPWithSHA-1AndMGF1Padding", mockPublicKey()));
     }
     
     private String mockPublicKey() {

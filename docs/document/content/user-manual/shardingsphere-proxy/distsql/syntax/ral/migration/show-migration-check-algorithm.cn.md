@@ -1,11 +1,11 @@
 +++
 title = "SHOW MIGRATION CHECK ALGORITHM"
-weight = 10
+weight = 9
 +++
 
 ### 描述
 
-`SHOW MIGRATION CHECK ALGORITHM` 语法用于查询数据迁移一致性校验算法
+`SHOW MIGRATION CHECK ALGORITHM` 语法用于查询数据迁移一致性校验算法。
 ### 语法
 
 {{< tabs >}}
@@ -23,11 +23,11 @@ ShowMigrationCheckAlgorithm ::=
 
 ### 返回值说明
 
-| 列                       | 说明             |
-|-------------------------|------------------|
-|type                     | 一致性校验算法类型  |
-|supported_database_types | 支持数据库类型     |
-|description              | 说明              |
+| 列                        | 说明        |
+|--------------------------|-----------|
+| type                     | 一致性校验算法类型 |
+| supported_database_types | 支持数据库类型   |
+| description              | 说明        |
 ### 示例
 
 - 查询数据迁移一致性校验算法

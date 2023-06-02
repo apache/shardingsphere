@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dal;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.RemoveAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
@@ -29,11 +28,15 @@ import java.util.LinkedList;
 /**
  * Show table status statement context.
  */
-@Getter
-public final class ShowTableStatusStatementContext extends CommonSQLStatementContext<MySQLShowTableStatusStatement> implements RemoveAvailable {
+public final class ShowTableStatusStatementContext extends CommonSQLStatementContext implements RemoveAvailable {
     
     public ShowTableStatusStatementContext(final MySQLShowTableStatusStatement sqlStatement) {
         super(sqlStatement);
+    }
+    
+    @Override
+    public MySQLShowTableStatusStatement getSqlStatement() {
+        return (MySQLShowTableStatusStatement) super.getSqlStatement();
     }
     
     @Override

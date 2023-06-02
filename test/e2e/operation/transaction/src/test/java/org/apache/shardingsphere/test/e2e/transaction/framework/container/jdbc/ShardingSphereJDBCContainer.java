@@ -25,7 +25,6 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -52,10 +51,11 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer {
      * Get target data source.
      *
      * @return target data source
+     * @throws RuntimeException runtime exception
      */
     public DataSource getTargetDataSource() {
         DataSource dataSource = targetDataSourceProvider.get();
-        if (Objects.isNull(dataSource)) {
+        if (null == dataSource) {
             try {
                 targetDataSourceProvider.set(
                         YamlShardingSphereDataSourceFactory.createDataSource(databaseContainer.getActualDataSourceMap(), new File(ruleConfigPath)));

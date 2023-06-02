@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.classictransfer;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,6 +33,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,13 +60,13 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     private void innerRun() throws SQLException {
         List<Thread> tasks = new LinkedList<>();
         for (int i = 0; i < 20; i++) {
-            Thread updateThread = new UpdateTread(getDataSource());
+            Thread updateThread = new Thread(new UpdateAccountTask(getDataSource()));
             updateThread.start();
             tasks.add(updateThread);
             int sum = getBalanceSum();
             assertThat(String.format("Balance sum is %s, should be 100.", sum), sum, is(100));
         }
-        Thread.sleep(3000);
+        Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
         int sum = getBalanceSum();
         assertThat(String.format("Balance sum is %s, should be 100.", sum), sum, is(100));
         for (Thread task : tasks) {
@@ -85,22 +87,22 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
         return result;
     }
     
-    @AllArgsConstructor
-    private static class UpdateTread extends Thread {
+    @RequiredArgsConstructor
+    @Getter
+    private static class UpdateAccountTask implements Runnable {
         
-        @Getter
-        private DataSource dataSource;
+        private final DataSource dataSource;
         
         public void run() {
             try (Connection connection = dataSource.getConnection()) {
                 connection.setAutoCommit(false);
                 Statement statement1 = connection.createStatement();
-                statement1.execute("update account set balance = balance - 1 where transaction_id = 2;");
+                statement1.execute("UPDATE account SET balance = balance - 1 WHERE transaction_id = 2;");
                 Statement statement2 = connection.createStatement();
-                Thread.sleep(1000);
-                statement2.execute("update account set balance = balance + 1 where transaction_id = 1;");
+                Awaitility.await().pollDelay(1L, TimeUnit.SECONDS).until(() -> true);
+                statement2.execute("UPDATE account SET balance = balance + 1 WHERE transaction_id = 1;");
                 connection.commit();
-            } catch (final SQLException | InterruptedException ignored) {
+            } catch (final SQLException ignored) {
             }
         }
     }

@@ -19,14 +19,16 @@
     t_order:
       columns:
         status:
-          cipherColumn: status
-          encryptorName: string_encryptor
-          assistedQueryColumn: assisted_query_status
-          assistedQueryEncryptorName: string_encryptor
+          cipher: 
+            name: status
+            encryptorName: string_encryptor
+          assistedQuery: 
+            name: assisted_query_status
+            encryptorName: string_encryptor
         phone:
-          plainColumn: phone_plain
-          cipherColumn: phone
-          encryptorName: phone_encryptor
+          cipher: 
+            name: phone
+            encryptorName: phone_encryptor
 
   encryptors:
     string_encryptor:

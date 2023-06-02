@@ -35,7 +35,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,12 +44,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @E2ETestCaseSettings(SQLCommandType.RQL)
-public final class RQLE2EIT {
+class RQLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException {
+    void assertExecute(final AssertionTestParameter testParam) throws SQLException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -60,7 +59,7 @@ public final class RQLE2EIT {
         }
     }
     
-    private void assertExecute(final SingleE2EContainerComposer containerComposer) throws SQLException, ParseException {
+    private void assertExecute(final SingleE2EContainerComposer containerComposer) throws SQLException {
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             try (
                     Statement statement = connection.createStatement();

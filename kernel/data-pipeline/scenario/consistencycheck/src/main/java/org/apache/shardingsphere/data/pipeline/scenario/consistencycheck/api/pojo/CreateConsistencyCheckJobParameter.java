@@ -29,7 +29,7 @@ import java.util.Properties;
 @Getter
 public final class CreateConsistencyCheckJobParameter {
     
-    private final String jobId;
+    private final String parentJobId;
     
     private final String algorithmTypeName;
     

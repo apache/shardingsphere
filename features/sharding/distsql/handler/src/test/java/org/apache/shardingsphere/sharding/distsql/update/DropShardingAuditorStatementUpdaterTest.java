@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class DropShardingAuditorStatementUpdaterTest {
+class DropShardingAuditorStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -53,23 +53,23 @@ public final class DropShardingAuditorStatementUpdaterTest {
     private final DropShardingAuditorStatementUpdater updater = new DropShardingAuditorStatementUpdater();
     
     @BeforeEach
-    public void before() {
+    void before() {
         when(database.getName()).thenReturn("foo_db");
     }
     
     @Test
-    public void assertExecuteWithNotExist() {
+    void assertExecuteWithNotExist() {
         assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, createSQLStatement("sharding_key_required_auditor"), new ShardingRuleConfiguration()));
     }
     
     @Test
-    public void assertExecuteWithNotExistWithIfExists() {
+    void assertExecuteWithNotExistWithIfExists() {
         DropShardingAuditorStatement sqlStatement = new DropShardingAuditorStatement(true, Collections.singletonList("sharding_key_required_auditor"));
         updater.checkSQLStatement(database, sqlStatement, new ShardingRuleConfiguration());
     }
     
     @Test
-    public void assertDropSpecifiedAuditor() {
+    void assertDropSpecifiedAuditor() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
         updater.updateCurrentRuleConfiguration(createSQLStatement("sharding_key_required_auditor"), currentRuleConfig);
@@ -77,7 +77,7 @@ public final class DropShardingAuditorStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithUsed() {
+    void assertExecuteWithUsed() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", null));
         currentRuleConfig.getAutoTables().add(createShardingAutoTableRuleConfiguration());

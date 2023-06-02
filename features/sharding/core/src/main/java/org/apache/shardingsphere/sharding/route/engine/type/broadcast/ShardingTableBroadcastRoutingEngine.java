@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -47,7 +47,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     
     private final ShardingSphereDatabase database;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final Collection<String> shardingRuleTableNames;
     
@@ -115,7 +115,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     
     private Collection<String> getTableNames(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<IndexSegment> indexes) {
         Collection<String> result = new LinkedList<>();
-        for (QualifiedTable each : IndexMetaDataUtil.getTableNames(database, databaseType, indexes)) {
+        for (QualifiedTable each : IndexMetaDataUtils.getTableNames(database, databaseType, indexes)) {
             result.add(each.getTableName());
         }
         return result;

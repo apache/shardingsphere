@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.driver.executor;
 
 import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
+import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -50,6 +50,8 @@ public final class DriverJDBCExecutor {
     
     private final MetaDataRefreshEngine metaDataRefreshEngine;
     
+    private final ProcessEngine processEngine = new ProcessEngine();
+    
     public DriverJDBCExecutor(final String databaseName, final ContextManager contextManager, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
         this.jdbcExecutor = jdbcExecutor;
@@ -69,12 +71,11 @@ public final class DriverJDBCExecutor {
      */
     public List<QueryResult> executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                           final QueryContext queryContext, final ExecuteQueryCallback callback) throws SQLException {
-        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
+            processEngine.executeSQL(executionGroupContext, queryContext);
             return jdbcExecutor.execute(executionGroupContext, callback);
         } finally {
-            executeProcessEngine.cleanExecution();
+            processEngine.completeSQLExecution();
         }
     }
     
@@ -90,18 +91,17 @@ public final class DriverJDBCExecutor {
      */
     public int executeUpdate(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                              final QueryContext queryContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
-        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
-            SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
+            processEngine.executeSQL(executionGroupContext, queryContext);
+            SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
             return isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
         } finally {
-            executeProcessEngine.cleanExecution();
+            processEngine.completeSQLExecution();
         }
     }
     
-    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
+    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
         for (ShardingSphereRule each : rules) {
             if (each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
                 return true;
@@ -130,17 +130,16 @@ public final class DriverJDBCExecutor {
      */
     public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final QueryContext queryContext,
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
-        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
+            processEngine.executeSQL(executionGroupContext, queryContext);
             List<Boolean> results = doExecute(executionGroupContext, queryContext.getSqlStatementContext(), routeUnits, callback);
             return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
         } finally {
-            executeProcessEngine.cleanExecution();
+            processEngine.completeSQLExecution();
         }
     }
     
-    private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits,
+    private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits,
                                   final JDBCExecutorCallback<T> callback) throws SQLException {
         List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
         metaDataRefreshEngine.refresh(sqlStatementContext, routeUnits);

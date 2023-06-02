@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.logging.rule.builder;
 
-import ch.qos.logback.classic.Logger;
+import org.slf4j.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -51,14 +51,14 @@ public final class DefaultLoggingRuleConfigurationBuilder implements DefaultGlob
     }
     
     private Collection<ShardingSphereLogger> getDefaultLoggers(final LoggerContext loggerContext) {
-        return loggerContext.getLoggerList().stream().filter(each -> Objects.nonNull(each.getLevel())).filter(each -> !Logger.ROOT_LOGGER_NAME.equalsIgnoreCase(each.getName()))
+        return loggerContext.getLoggerList().stream().filter(each -> null != each.getLevel()).filter(each -> !Logger.ROOT_LOGGER_NAME.equalsIgnoreCase(each.getName()))
                 .map(each -> new ShardingSphereLogger(each.getName(), each.getLevel().levelStr, each.isAdditive(),
                         each.iteratorForAppenders().hasNext() ? each.iteratorForAppenders().next().getName() : null))
                 .collect(Collectors.toList());
     }
     
     private Collection<ShardingSphereAppender> getDefaultAppenders(final LoggerContext loggerContext) {
-        return loggerContext.getLoggerList().stream().filter(each -> Objects.nonNull(each.getLevel())).filter(each -> !Logger.ROOT_LOGGER_NAME.equalsIgnoreCase(each.getName())).map(each -> {
+        return loggerContext.getLoggerList().stream().filter(each -> null != each.getLevel()).filter(each -> !Logger.ROOT_LOGGER_NAME.equalsIgnoreCase(each.getName())).map(each -> {
             Iterator<Appender<ILoggingEvent>> appenderIterator = each.iteratorForAppenders();
             if (appenderIterator.hasNext()) {
                 Appender<ILoggingEvent> appender = appenderIterator.next();

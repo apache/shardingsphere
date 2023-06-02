@@ -29,6 +29,8 @@ import java.util.Properties;
 
 /**
  * Typed properties with a specified enum.
+ * 
+ * @param <E> type of enum
  */
 public abstract class TypedProperties<E extends Enum<?> & TypedPropertyKey> {
     
@@ -44,7 +46,7 @@ public abstract class TypedProperties<E extends Enum<?> & TypedPropertyKey> {
     
     private Map<E, TypedPropertyValue> preload(final Class<E> keyClass) {
         E[] enumConstants = keyClass.getEnumConstants();
-        Map<E, TypedPropertyValue> result = new HashMap<>(enumConstants.length, 1);
+        Map<E, TypedPropertyValue> result = new HashMap<>(enumConstants.length, 1F);
         Collection<String> errorMessages = new LinkedList<>();
         for (E each : enumConstants) {
             TypedPropertyValue value = null;

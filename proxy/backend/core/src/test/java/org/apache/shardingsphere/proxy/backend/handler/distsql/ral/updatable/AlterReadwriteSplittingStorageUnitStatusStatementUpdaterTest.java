@@ -36,10 +36,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest {
+class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest {
     
     @Test
-    public void assertWithStandaloneMode() {
+    void assertWithStandaloneMode() {
         AlterReadwriteSplittingStorageUnitStatusStatementUpdater updater = new AlterReadwriteSplittingStorageUnitStatusStatementUpdater();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertThrows(UnsupportedSQLOperationException.class,
@@ -47,7 +47,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest 
     }
     
     @Test
-    public void assertWithUnknownDatabase() {
+    void assertWithUnknownDatabase() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         AlterReadwriteSplittingStorageUnitStatusStatementUpdater updater = new AlterReadwriteSplittingStorageUnitStatusStatementUpdater();
@@ -56,7 +56,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest 
     }
     
     @Test
-    public void assertWithNoReadwriteSplittingRule() {
+    void assertWithNoReadwriteSplittingRule() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);

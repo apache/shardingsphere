@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResu
 public final class CsvSQLParseResultReporterCreator implements SQLParseResultReporterCreator {
     
     @Override
-    public SQLParseResultReporter create(final String databaseType) {
-        return new CsvSQLParseResultReporter(databaseType);
+    public SQLParseResultReporter create(final String databaseType, final String resultPath) {
+        return new CsvSQLParseResultReporter(databaseType, resultPath);
     }
     
     @Override

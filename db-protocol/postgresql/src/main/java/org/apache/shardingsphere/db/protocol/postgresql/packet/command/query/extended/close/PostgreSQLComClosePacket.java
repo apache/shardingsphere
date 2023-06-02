@@ -19,7 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.postgresql.exception.PostgreSQLProtocolException;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * Command close packet for PostgreSQL.
  */
 @Getter
-@ToString
 public final class PostgreSQLComClosePacket extends PostgreSQLCommandPacket {
     
     private final Type type;
@@ -44,7 +42,7 @@ public final class PostgreSQLComClosePacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override
@@ -53,24 +51,24 @@ public final class PostgreSQLComClosePacket extends PostgreSQLCommandPacket {
     }
     
     @RequiredArgsConstructor
-    @Getter
     public enum Type {
         
         PREPARED_STATEMENT('S'),
         
         PORTAL('P');
         
-        private final char type;
+        private final char value;
         
         /**
          * Value of type.
          *
-         * @param type type
+         * @param type type char
          * @return type
+         * @throws PostgreSQLProtocolException PostgreSQL protocol exception
          */
         public static Type valueOf(final char type) {
             for (Type each : values()) {
-                if (type == each.type) {
+                if (type == each.value) {
                     return each;
                 }
             }

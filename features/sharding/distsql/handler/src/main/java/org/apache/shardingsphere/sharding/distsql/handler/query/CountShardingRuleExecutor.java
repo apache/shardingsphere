@@ -28,18 +28,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Count sharding rule executor.
  */
 public final class CountShardingRuleExecutor implements RQLExecutor<CountShardingRuleStatement> {
-    
-    private static final String SHARDING_TABLE = "sharding_table";
-    
-    private static final String SHARDING_BINDING_TABLE = "sharding_table_reference";
-    
-    private static final String SHARDING_BROADCAST_TABLE = "broadcast_table";
     
     @Override
     public Collection<String> getColumnNames() {
@@ -50,18 +43,18 @@ public final class CountShardingRuleExecutor implements RQLExecutor<CountShardin
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountShardingRuleStatement sqlStatement) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.ifPresent(optional -> addShardingData(result, rule.get(), database.getName()));
+        rule.ifPresent(optional -> fillRows(result, optional, database.getName()));
         return result;
     }
     
-    private void addShardingData(final Collection<LocalDataQueryResultRow> result, final ShardingRule rule, final String databaseName) {
-        addData(result, SHARDING_TABLE, databaseName, () -> rule.getTableRules().size());
-        addData(result, SHARDING_BINDING_TABLE, databaseName, () -> ((ShardingRuleConfiguration) rule.getConfiguration()).getBindingTableGroups().size());
-        addData(result, SHARDING_BROADCAST_TABLE, databaseName, () -> rule.getBroadcastTables().size());
+    private void fillRows(final Collection<LocalDataQueryResultRow> result, final ShardingRule rule, final String databaseName) {
+        fillRows(result, "sharding_table", databaseName, rule.getTableRules().size());
+        fillRows(result, "sharding_table_reference", databaseName, ((ShardingRuleConfiguration) rule.getConfiguration()).getBindingTableGroups().size());
+        fillRows(result, "broadcast_table", databaseName, rule.getBroadcastTables().size());
     }
     
-    private void addData(final Collection<LocalDataQueryResultRow> result, final String dataKey, final String databaseName, final Supplier<Integer> apply) {
-        result.add(new LocalDataQueryResultRow(dataKey, databaseName, apply.get()));
+    private void fillRows(final Collection<LocalDataQueryResultRow> result, final String ruleName, final String databaseName, final int count) {
+        result.add(new LocalDataQueryResultRow(ruleName, databaseName, count));
     }
     
     @Override

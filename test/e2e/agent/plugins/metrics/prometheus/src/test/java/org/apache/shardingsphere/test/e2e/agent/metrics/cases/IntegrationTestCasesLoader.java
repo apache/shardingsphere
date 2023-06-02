@@ -62,15 +62,16 @@ public final class IntegrationTestCasesLoader {
     /**
      * Load integration test cases.
      *
+     * @param adapter adapter proxy or jdbc
      * @return integration test cases
      */
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    public Collection<MetricTestCase> loadIntegrationTestCases() {
+    public Collection<MetricTestCase> loadIntegrationTestCases(final String adapter) {
         if (null != integrationTestCases) {
             return integrationTestCases;
         }
         integrationTestCases = new LinkedList<>();
-        URL url = Objects.requireNonNull(IntegrationTestCasesLoader.class.getClassLoader().getResource("cases/"));
+        URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(String.format("cases/%s", adapter)));
         Collection<File> files = getFiles(url);
         for (File each : files) {
             integrationTestCases.addAll(unmarshal(each.getPath()).getTestCases());
@@ -78,7 +79,7 @@ public final class IntegrationTestCasesLoader {
         return integrationTestCases;
     }
     
-    private static Collection<File> getFiles(final URL url) throws IOException, URISyntaxException {
+    private Collection<File> getFiles(final URL url) throws IOException, URISyntaxException {
         Collection<File> result = new LinkedList<>();
         Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
             
@@ -93,7 +94,7 @@ public final class IntegrationTestCasesLoader {
         return result;
     }
     
-    private static IntegrationTestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
+    private IntegrationTestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(integrateCasesFile)) {
             return (IntegrationTestCases) JAXBContext.newInstance(IntegrationTestCases.class).createUnmarshaller().unmarshal(reader);
         }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.migration.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
 
 import java.util.Collection;
 
@@ -26,7 +26,7 @@ import java.util.Collection;
  * Unregister migration source storage unit statement.
  */
 @Getter
-public final class UnregisterMigrationSourceStorageUnitStatement extends UpdatableScalingRALStatement {
+public final class UnregisterMigrationSourceStorageUnitStatement extends UpdatableMigrationRALStatement {
     
     private final Collection<String> names;
     

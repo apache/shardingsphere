@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.test.e2e.engine.type;
 
 import com.google.common.base.Splitter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestPar
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -41,12 +41,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -55,12 +55,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @E2ETestCaseSettings(SQLCommandType.DDL)
-public final class DDLE2EIT {
+class DDLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException {
+    void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -79,14 +79,14 @@ public final class DDLE2EIT {
         }
     }
     
-    private void executeUpdateForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private void executeUpdateForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             assertFalse(statement.executeUpdate(containerComposer.getSQL()) > 0, "Not a DDL statement.");
         }
         waitCompleted();
     }
     
-    private void executeUpdateForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private void executeUpdateForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
             assertFalse(preparedStatement.executeUpdate() > 0, "Not a DDL statement.");
         }
@@ -96,7 +96,7 @@ public final class DDLE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    public void assertExecute(final AssertionTestParameter testParam) throws Exception {
+    void assertExecute(final AssertionTestParameter testParam) throws Exception {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -115,14 +115,14 @@ public final class DDLE2EIT {
         }
     }
     
-    private void executeForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private void executeForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             assertFalse(statement.execute(containerComposer.getSQL()), "Not a DDL statement.");
         }
         waitCompleted();
     }
     
-    private void executeForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private void executeForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
             assertFalse(preparedStatement.execute(), "Not a DDL statement.");
         }
@@ -172,7 +172,7 @@ public final class DDLE2EIT {
     private void assertTableMetaData(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException {
         String tableName = containerComposer.getAssertion().getInitialSQL().getAffectedTable();
         DataSetMetaData expected = containerComposer.getDataSet().findMetaData(tableName);
-        Collection<DataNode> dataNodes = new InlineExpressionParser(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
+        Collection<DataNode> dataNodes = InlineExpressionParserFactory.newInstance().splitAndEvaluate(expected.getDataNodes()).stream().map(DataNode::new).collect(Collectors.toList());
         if (expected.getColumns().isEmpty()) {
             assertNotContainsTable(containerComposer, dataNodes);
             return;
@@ -281,9 +281,8 @@ public final class DDLE2EIT {
         }
     }
     
-    @SneakyThrows(InterruptedException.class)
     private void waitCompleted() {
-        Thread.sleep(1500L);
+        Awaitility.await().pollDelay(1500L, TimeUnit.MILLISECONDS).until(() -> true);
     }
     
     private static boolean isEnabled() {

@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
 import com.google.common.base.Preconditions;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -38,14 +40,21 @@ import java.util.List;
 /**
  * Test decoding plugin.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class TestDecodingPlugin implements DecodingPlugin {
     
     private final BaseTimestampUtils timestampUtils;
     
     @Override
     public AbstractWALEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
-        AbstractWALEvent result = "table".equals(readEventType(data)) ? readTableEvent(data) : new PlaceholderEvent();
+        String type = readEventType(data);
+        if (type.startsWith("BEGIN")) {
+            return new BeginTXEvent(Long.parseLong(readNextSegment(data)));
+        }
+        if (type.startsWith("COMMIT")) {
+            return new CommitTXEvent(Long.parseLong(readNextSegment(data)), null);
+        }
+        AbstractWALEvent result = "table".equals(type) ? readTableEvent(data) : new PlaceholderEvent();
         result.setLogSequenceNumber(logSequenceNumber);
         return result;
     }
@@ -117,7 +126,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     }
     
     private Object readColumn(final ByteBuffer data) {
-        String columnName = readColumnName(data);
+        readColumnName(data);
         String columnType = readColumnType(data);
         data.get();
         return readColumnData(data, columnType);
@@ -149,7 +158,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     private Object readColumnData(final ByteBuffer data, final String columnType) {
         data.mark();
-        if ('n' == data.get() && data.remaining() >= 3 && 'u' == data.get() && 'l' == data.get() && 'l' == data.get()) {
+        if ('n' == data.get() && data.remaining() >= 3 && 'u' == data.get() && 'l' == data.get()) {
             if (data.hasRemaining()) {
                 data.get();
             }

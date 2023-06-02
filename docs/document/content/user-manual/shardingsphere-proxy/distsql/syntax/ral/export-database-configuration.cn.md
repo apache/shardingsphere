@@ -1,11 +1,11 @@
 +++
 title = "EXPORT DATABASE CONFIGURATION"
-weight = 9
+weight = 11
 +++
 
 ### 描述
 
-`EXPORT DATABASE CONFIGURATION` 语法用于将 `database` 中的存储单元和规则配置导出为 `YAML` 格式
+`EXPORT DATABASE CONFIGURATION` 语法用于将 `database` 中的存储单元和规则配置导出为 `YAML` 格式。
 
 ### 语法
 

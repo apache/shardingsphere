@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class DerivedLiteralExpressionSegmentTest {
+class DerivedLiteralExpressionSegmentTest {
     
     @Test
-    public void assertInstanceConstructedOk() {
+    void assertInstanceConstructedOk() {
         Object literals = new Object();
         DerivedLiteralExpressionSegment derivedLiteralExpressionSegment = new DerivedLiteralExpressionSegment(literals);
         assertThat(derivedLiteralExpressionSegment.getStartIndex(), is(0));

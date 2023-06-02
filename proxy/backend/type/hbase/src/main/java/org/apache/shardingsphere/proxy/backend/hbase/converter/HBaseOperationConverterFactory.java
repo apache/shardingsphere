@@ -43,8 +43,9 @@ public final class HBaseOperationConverterFactory {
      *
      * @param sqlStatementContext SQL statement context
      * @return instance of converter
+     * @throws HBaseOperationException HBase operation exception
      */
-    public static HBaseOperationConverter newInstance(final SQLStatementContext<?> sqlStatementContext) {
+    public static HBaseOperationConverter newInstance(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return new HBaseSelectOperationConverter(sqlStatementContext);
         }

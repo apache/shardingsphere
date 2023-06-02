@@ -22,6 +22,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.concurrent.Promise;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.PasswordEncryption;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerVersion;
@@ -39,7 +40,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandsha
 import java.security.NoSuchAlgorithmException;
 
 /**
- * MySQL Negotiate Handler.
+ * MySQL negotiate handler.
  */
 @RequiredArgsConstructor
 public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
@@ -58,11 +59,11 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     private final Promise<Object> authResultCallback;
     
-    private volatile ServerInfo serverInfo;
+    private ServerInfo serverInfo;
     
-    private volatile byte[] seed;
+    private byte[] seed;
     
-    private volatile boolean publicKeyRequested;
+    private boolean publicKeyRequested;
     
     @SneakyThrows(NoSuchAlgorithmException.class)
     @Override
@@ -74,25 +75,12 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
             handshakeResponsePacket.setCapabilityFlags(generateClientCapability());
             handshakeResponsePacket.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
             ctx.channel().writeAndFlush(handshakeResponsePacket);
-            serverInfo = new ServerInfo();
-            serverInfo.setServerVersion(new ServerVersion(handshake.getServerVersion()));
+            serverInfo = new ServerInfo(new ServerVersion(handshake.getServerVersion()));
             return;
         }
         if (msg instanceof MySQLAuthSwitchRequestPacket) {
             MySQLAuthSwitchRequestPacket authSwitchRequest = (MySQLAuthSwitchRequestPacket) msg;
-            byte[] authPluginResponse;
-            // TODO not support sha256_password now
-            switch (MySQLAuthenticationPlugin.getPluginByName(authSwitchRequest.getAuthPluginName())) {
-                case NATIVE_PASSWORD_AUTHENTICATION:
-                    authPluginResponse = PasswordEncryption.encryptWithMySQL41(password.getBytes(), authSwitchRequest.getAuthPluginData().getAuthenticationPluginData());
-                    break;
-                case SHA2_AUTHENTICATION:
-                    authPluginResponse = PasswordEncryption.encryptWithSha2(password.getBytes(), authSwitchRequest.getAuthPluginData().getAuthenticationPluginData());
-                    break;
-                default:
-                    authPluginResponse = password.getBytes();
-            }
-            ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(authPluginResponse));
+            ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(getAuthPluginResponse(authSwitchRequest)));
             seed = authSwitchRequest.getAuthPluginData().getAuthenticationPluginData();
             return;
         }
@@ -108,21 +96,32 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
         }
         MySQLErrPacket error = (MySQLErrPacket) msg;
         ctx.channel().close();
-        throw new RuntimeException(error.getErrorMessage());
+        throw new PipelineInternalException(error.getErrorMessage());
+    }
+    
+    private byte[] getAuthPluginResponse(final MySQLAuthSwitchRequestPacket authSwitchRequest) throws NoSuchAlgorithmException {
+        // TODO not support sha256_password now
+        switch (MySQLAuthenticationPlugin.getPluginByName(authSwitchRequest.getAuthPluginName())) {
+            case NATIVE:
+                return PasswordEncryption.encryptWithMySQL41(password.getBytes(), authSwitchRequest.getAuthPluginData().getAuthenticationPluginData());
+            case CACHING_SHA2:
+                return PasswordEncryption.encryptWithSha2(password.getBytes(), authSwitchRequest.getAuthPluginData().getAuthenticationPluginData());
+            default:
+                return password.getBytes();
+        }
     }
     
     private void handleCachingSha2Auth(final ChannelHandlerContext ctx, final MySQLAuthMoreDataPacket authMoreData) {
-        // how caching_sha2_password works: https://dev.mysql.com/doc/dev/mysql-server/8.0.11/page_caching_sha2_authentication_exchanges.html#sect_caching_sha2_info
-        if (!publicKeyRequested) {
-            if (PERFORM_FULL_AUTHENTICATION == authMoreData.getPluginData()[0]) {
-                publicKeyRequested = true;
-                ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(new byte[]{REQUEST_PUBLIC_KEY}));
-            }
-        } else {
+        if (publicKeyRequested) {
             ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(
                     PasswordEncryption.encryptWithRSAPublicKey(password, seed,
                             serverInfo.getServerVersion().greaterThanOrEqualTo(8, 0, 5) ? "RSA/ECB/OAEPWithSHA-1AndMGF1Padding" : "RSA/ECB/PKCS1Padding",
                             new String(authMoreData.getPluginData()))));
+        } else {
+            if (PERFORM_FULL_AUTHENTICATION == authMoreData.getPluginData()[0]) {
+                publicKeyRequested = true;
+                ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(new byte[]{REQUEST_PUBLIC_KEY}));
+            }
         }
     }
     
@@ -134,6 +133,6 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     @SneakyThrows(NoSuchAlgorithmException.class)
     private byte[] generateAuthResponse(final byte[] authPluginData) {
-        return (null == password || password.isEmpty()) ? new byte[0] : PasswordEncryption.encryptWithMySQL41(password.getBytes(), authPluginData);
+        return null == password || password.isEmpty() ? new byte[0] : PasswordEncryption.encryptWithMySQL41(password.getBytes(), authPluginData);
     }
 }

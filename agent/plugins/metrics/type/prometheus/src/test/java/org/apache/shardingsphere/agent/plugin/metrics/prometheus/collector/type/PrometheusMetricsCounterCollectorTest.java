@@ -28,14 +28,14 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusMetricsCounterCollectorTest {
+class PrometheusMetricsCounterCollectorTest {
     
     @Test
-    public void assertCreate() throws ReflectiveOperationException {
+    void assertCreate() throws ReflectiveOperationException {
         PrometheusMetricsCounterCollector collector = new PrometheusMetricsCounterCollector(new MetricConfiguration("foo_counter",
                 MetricCollectorType.COUNTER, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.inc();
         Counter counter = (Counter) Plugins.getMemberAccessor().get(PrometheusMetricsCounterCollector.class.getDeclaredField("counter"), collector);
-        assertThat(counter.get(), is(1d));
+        assertThat(counter.get(), is(1D));
     }
 }

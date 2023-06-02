@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.RenameColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.RenameIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameIndexDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterTableStatementTestCase;
 
 import java.util.Collection;
@@ -81,6 +83,7 @@ public final class AlterTableStatementAssert {
         assertChangeColumnDefinitions(assertContext, actual, expected);
         assertDropColumns(assertContext, actual, expected);
         assertRenameIndexDefinitions(assertContext, actual, expected);
+        assertRenameColumnDefinitions(assertContext, actual, expected);
         assertConvertTable(assertContext, actual, expected);
     }
     
@@ -206,6 +209,17 @@ public final class AlterTableStatementAssert {
             ExpectedRenameIndexDefinition expectedRenameIndexDefinition = expected.getRenameIndexes().get(count);
             IndexDefinitionAssert.assertIs(assertContext, each.getIndexSegment(), expectedRenameIndexDefinition.getIndexDefinition());
             IndexDefinitionAssert.assertIs(assertContext, each.getRenameIndexSegment(), expectedRenameIndexDefinition.getRenameIndexDefinition());
+            count++;
+        }
+    }
+    
+    private static void assertRenameColumnDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Rename columns definitions size assertion error:"), actual.getRenameColumnDefinitions().size(), is(expected.getRenameColumns().size()));
+        int count = 0;
+        for (RenameColumnSegment each : actual.getRenameColumnDefinitions()) {
+            ExpectedRenameColumnDefinition expectedRenameColumnDefinition = expected.getRenameColumns().get(count);
+            ColumnAssert.assertIs(assertContext, each.getOldColumnName(), expectedRenameColumnDefinition.getOldColumnName());
+            ColumnAssert.assertIs(assertContext, each.getColumnName(), expectedRenameColumnDefinition.getColumnName());
             count++;
         }
     }

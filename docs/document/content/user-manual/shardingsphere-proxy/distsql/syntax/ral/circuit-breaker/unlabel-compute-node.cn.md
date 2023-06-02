@@ -1,11 +1,11 @@
 +++
 title = "UNLABEL COMPUTE NODE"
-weight = 7
+weight = 6
 +++
 
 ### 描述
 
-`UNLABEL COMPUTE NODE` 语法用于为 `PROXY` 实例去除指定标签
+`UNLABEL COMPUTE NODE` 语法用于为 `PROXY` 实例去除指定标签。
 
 ### 语法
 

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,22 +38,22 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DefaultPipelineDataSourceManagerTest {
+class DefaultPipelineDataSourceManagerTest {
     
     private MigrationJobConfiguration jobConfig;
     
     @BeforeAll
-    public static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+    static void beforeClass() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         jobConfig = JobConfigurationBuilder.createJobConfiguration();
     }
     
     @Test
-    public void assertGetDataSource() {
+    void assertGetDataSource() {
         PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         PipelineDataSourceConfiguration source = jobConfig.getSources().values().iterator().next();
         DataSource actual = dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter()));
@@ -61,7 +61,7 @@ public final class DefaultPipelineDataSourceManagerTest {
     }
     
     @Test
-    public void assertClose() throws ReflectiveOperationException {
+    void assertClose() throws ReflectiveOperationException {
         PipelineDataSourceConfiguration source = jobConfig.getSources().values().iterator().next();
         PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         try {

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.cases.value;
 import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,11 +32,11 @@ public final class SQLValueGroup {
     
     private final Collection<SQLValue> values;
     
-    public SQLValueGroup(final DataSetMetaData metaData, final List<String> values) throws ParseException {
+    public SQLValueGroup(final DataSetMetaData metaData, final List<String> values) {
         this.values = createSQLValues(metaData, values);
     }
     
-    private Collection<SQLValue> createSQLValues(final DataSetMetaData metaData, final List<String> values) throws ParseException {
+    private Collection<SQLValue> createSQLValues(final DataSetMetaData metaData, final List<String> values) {
         Collection<SQLValue> result = new LinkedList<>();
         int count = 0;
         for (String each : values) {

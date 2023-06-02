@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -113,7 +113,7 @@ public final class ProjectionsContext {
                     return projection.flatMap(Projection::getAlias);
                 }
             }
-            if (projectionName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
+            if (projectionName.equalsIgnoreCase(SQLUtils.getExactlyValue(each.getExpression()))) {
                 return each.getAlias();
             }
         }
@@ -129,7 +129,7 @@ public final class ProjectionsContext {
     public Optional<Integer> findProjectionIndex(final String projectionName) {
         int result = 1;
         for (Projection each : projections) {
-            if (projectionName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
+            if (projectionName.equalsIgnoreCase(SQLUtils.getExactlyValue(each.getExpression()))) {
                 return Optional.of(result);
             }
             result++;
@@ -156,7 +156,7 @@ public final class ProjectionsContext {
     
     private boolean isContainsLastInsertIdProjection(final Collection<Projection> projections) {
         for (Projection each : projections) {
-            if (LAST_INSERT_ID_FUNCTION_EXPRESSION.equalsIgnoreCase(SQLUtil.getExactlyExpression(each.getExpression()))) {
+            if (LAST_INSERT_ID_FUNCTION_EXPRESSION.equalsIgnoreCase(SQLUtils.getExactlyExpression(each.getExpression()))) {
                 return true;
             }
         }

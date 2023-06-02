@@ -40,6 +40,7 @@ public final class StorageContainerFactory {
      * @param scenario scenario
      * @param storageContainerConfiguration storage container configuration
      * @return created instance
+     * @throws RuntimeException runtime exception
      */
     public static StorageContainer newInstance(final DatabaseType databaseType, final String storageContainerImage, final String scenario,
                                                final StorageContainerConfiguration storageContainerConfiguration) {

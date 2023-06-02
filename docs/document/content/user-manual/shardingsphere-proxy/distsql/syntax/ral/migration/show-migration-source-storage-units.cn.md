@@ -1,6 +1,6 @@
 +++
 title = "SHOW MIGRATION SOURCE STORAGE UNITS"
-weight = 6
+weight = 5
 +++
 
 ### 描述
@@ -23,13 +23,13 @@ ShowStorageUnit ::=
 
 ### 返回值说明
 
-| 列        | 说明        |
-| --------- | ---------- |
+| 列         | 说明     |
+|-----------|--------|
 | name      | 存储单元名称 |
 | type      | 存储单元类型 |
 | host      | 存储单元地址 |
 | port      | 存储单元端口 |
-| db        | 数据库名称   |
+| db        | 数据库名称  |
 | attribute | 存储单元参数 |
 
 ### 示例

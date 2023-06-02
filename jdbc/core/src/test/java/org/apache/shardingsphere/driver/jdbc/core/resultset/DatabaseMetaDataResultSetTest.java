@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class DatabaseMetaDataResultSetTest {
+class DatabaseMetaDataResultSetTest {
     
     private static final String TABLE_NAME_COLUMN_LABEL = "TABLE_NAME";
     
@@ -95,7 +95,7 @@ public final class DatabaseMetaDataResultSetTest {
     private DatabaseMetaDataResultSet databaseMetaDataResultSet;
     
     @BeforeEach
-    public void setUp() throws SQLException, MalformedURLException {
+    void setUp() throws SQLException, MalformedURLException {
         url = new URL("http://apache.org/");
         mockResultSetMetaData();
         databaseMetaDataResultSet = new DatabaseMetaDataResultSet(mockResultSet(), Collections.singletonList(mockShardingRule()));
@@ -139,25 +139,25 @@ public final class DatabaseMetaDataResultSetTest {
     }
     
     @Test
-    public void assertNext() throws SQLException {
+    void assertNext() throws SQLException {
         assertTrue(databaseMetaDataResultSet.next());
         assertFalse(databaseMetaDataResultSet.next());
     }
     
     @Test
-    public void assertClose() throws SQLException {
+    void assertClose() throws SQLException {
         assertFalse(databaseMetaDataResultSet.isClosed());
         databaseMetaDataResultSet.close();
         assertTrue(databaseMetaDataResultSet.isClosed());
     }
     
     @Test
-    public void assertWasNull() throws SQLException {
+    void assertWasNull() throws SQLException {
         assertFalse(databaseMetaDataResultSet.wasNull());
     }
     
     @Test
-    public void assertGetStringWithIndex() throws SQLException {
+    void assertGetStringWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getString(1), is(LOGIC_TABLE_NAME));
         assertThat(databaseMetaDataResultSet.getString(2), is(Boolean.TRUE.toString()));
@@ -166,7 +166,7 @@ public final class DatabaseMetaDataResultSetTest {
     }
     
     @Test
-    public void assertGetStringWithLabel() throws SQLException {
+    void assertGetStringWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getString(TABLE_NAME_COLUMN_LABEL), is(LOGIC_TABLE_NAME));
         assertThat(databaseMetaDataResultSet.getString(NON_TABLE_NAME_COLUMN_LABEL), is(Boolean.TRUE.toString()));
@@ -175,7 +175,7 @@ public final class DatabaseMetaDataResultSetTest {
     }
     
     @Test
-    public void assertGetStringWithLabelCaseInsensitive() throws SQLException {
+    void assertGetStringWithLabelCaseInsensitive() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getString(TABLE_NAME_COLUMN_LABEL.toLowerCase()), is(LOGIC_TABLE_NAME));
         assertThat(databaseMetaDataResultSet.getString(NON_TABLE_NAME_COLUMN_LABEL.toLowerCase()), is(Boolean.TRUE.toString()));
@@ -184,7 +184,7 @@ public final class DatabaseMetaDataResultSetTest {
     }
     
     @Test
-    public void assertGetNStringWithIndex() throws SQLException {
+    void assertGetNStringWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getNString(1), is(LOGIC_TABLE_NAME));
         assertThat(databaseMetaDataResultSet.getNString(2), is(Boolean.TRUE.toString()));
@@ -193,7 +193,7 @@ public final class DatabaseMetaDataResultSetTest {
     }
     
     @Test
-    public void assertGetNStringWithLabel() throws SQLException {
+    void assertGetNStringWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getNString(TABLE_NAME_COLUMN_LABEL), is(LOGIC_TABLE_NAME));
         assertThat(databaseMetaDataResultSet.getNString(NON_TABLE_NAME_COLUMN_LABEL), is(Boolean.TRUE.toString()));
@@ -202,180 +202,180 @@ public final class DatabaseMetaDataResultSetTest {
     }
     
     @Test
-    public void assertGetBooleanWithIndex() throws SQLException {
+    void assertGetBooleanWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertTrue(databaseMetaDataResultSet.getBoolean(2));
     }
     
     @Test
-    public void assertGetBooleanWithLabel() throws SQLException {
+    void assertGetBooleanWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertTrue(databaseMetaDataResultSet.getBoolean(NON_TABLE_NAME_COLUMN_LABEL));
     }
     
     @Test
-    public void assertGetByteWithIndex() throws SQLException {
+    void assertGetByteWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getByte(3), is((byte) NUMBER));
     }
     
     @Test
-    public void assertGetByteWithLabel() throws SQLException {
+    void assertGetByteWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getByte(NUMBER_COLUMN_LABEL), is((byte) NUMBER));
     }
     
     @Test
-    public void assertGetShortWithIndex() throws SQLException {
+    void assertGetShortWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getShort(3), is((short) NUMBER));
     }
     
     @Test
-    public void assertGetShortWithLabel() throws SQLException {
+    void assertGetShortWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getShort(NUMBER_COLUMN_LABEL), is((short) NUMBER));
     }
     
     @Test
-    public void assertGetIntWithIndex() throws SQLException {
+    void assertGetIntWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getInt(3), is(NUMBER));
     }
     
     @Test
-    public void assertGetIntWithLabel() throws SQLException {
+    void assertGetIntWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getInt(NUMBER_COLUMN_LABEL), is(NUMBER));
     }
     
     @Test
-    public void assertGetLongWithIndex() throws SQLException {
+    void assertGetLongWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getLong(3), is((long) NUMBER));
     }
     
     @Test
-    public void assertGetLongWithLabel() throws SQLException {
+    void assertGetLongWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getLong(NUMBER_COLUMN_LABEL), is((long) NUMBER));
     }
     
     @Test
-    public void assertGetFloatWithIndex() throws SQLException {
+    void assertGetFloatWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getFloat(3), is((float) NUMBER));
     }
     
     @Test
-    public void assertGetFloatWithLabel() throws SQLException {
+    void assertGetFloatWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getFloat(NUMBER_COLUMN_LABEL), is((float) NUMBER));
     }
     
     @Test
-    public void assertGetDoubleWithIndex() throws SQLException {
+    void assertGetDoubleWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getDouble(3), is((double) NUMBER));
     }
     
     @Test
-    public void assertGetDoubleWithLabel() throws SQLException {
+    void assertGetDoubleWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getDouble(NUMBER_COLUMN_LABEL), is((double) NUMBER));
     }
     
     @Test
-    public void assertGetBytesWithIndex() throws SQLException {
+    void assertGetBytesWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getBytes(4), is(BYTES));
     }
     
     @Test
-    public void assertGetBytesWithLabel() throws SQLException {
+    void assertGetBytesWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getBytes(BYTES_COLUMN_LABEL), is(BYTES));
     }
     
     @Test
-    public void assertGetDateWithIndex() throws SQLException {
+    void assertGetDateWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getDate(5), is(DATE));
     }
     
     @Test
-    public void assertGetDateWithLabel() throws SQLException {
+    void assertGetDateWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getDate(DATE_COLUMN_LABEL), is(DATE));
     }
     
     @Test
-    public void assertGetTimeWithIndex() throws SQLException {
+    void assertGetTimeWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getTime(5), is(new Time(DATE.getTime())));
     }
     
     @Test
-    public void assertGetTimeWithLabel() throws SQLException {
+    void assertGetTimeWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getTime(DATE_COLUMN_LABEL), is(new Time(DATE.getTime())));
     }
     
     @Test
-    public void assertGetTimestampWithIndex() throws SQLException {
+    void assertGetTimestampWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getTimestamp(5), is(new Timestamp(DATE.getTime())));
     }
     
     @Test
-    public void assertGetTimestampWithLabel() throws SQLException {
+    void assertGetTimestampWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getTimestamp(DATE_COLUMN_LABEL), is(new Timestamp(DATE.getTime())));
     }
     
     @Test
-    public void assertGetURLWithIndex() throws SQLException {
+    void assertGetURLWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getURL(7), is(url));
     }
     
     @Test
-    public void assertGetURLWithLabel() throws SQLException {
+    void assertGetURLWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getURL(URL_COLUMN_LABEL), is(url));
     }
     
     @Test
-    public void assertGetBigDecimalWithIndex() throws SQLException {
+    void assertGetBigDecimalWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getBigDecimal(8), is(BIGDECIMAL));
     }
     
     @Test
-    public void assertGetBigDecimalWithLabel() throws SQLException {
+    void assertGetBigDecimalWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getBigDecimal(BIG_DECIMAL_COLUMN_LABEL), is(BIGDECIMAL));
     }
     
     @Test
-    public void assertGetBigDecimalWithIndexAndScale() throws SQLException {
+    void assertGetBigDecimalWithIndexAndScale() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getBigDecimal(8, 1), is(BIG_DECIMAL_SCALA_ONE));
     }
     
     @Test
-    public void assertGetBigDecimalWithLabelAndScale() throws SQLException {
+    void assertGetBigDecimalWithLabelAndScale() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getBigDecimal(BIG_DECIMAL_COLUMN_LABEL, 1), is(BIG_DECIMAL_SCALA_ONE));
     }
     
     @Test
-    public void assertGetMetaData() throws SQLException {
+    void assertGetMetaData() throws SQLException {
         assertThat(databaseMetaDataResultSet.getMetaData(), is(resultSetMetaData));
     }
     
     @Test
-    public void assertGetObjectWithIndex() throws SQLException {
+    void assertGetObjectWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getObject(1), is(LOGIC_TABLE_NAME));
         assertThat(databaseMetaDataResultSet.getObject(2), is(NON_TABLE_NAME));
@@ -383,7 +383,7 @@ public final class DatabaseMetaDataResultSetTest {
     }
     
     @Test
-    public void assertGetObjectWithLabel() throws SQLException {
+    void assertGetObjectWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getObject(TABLE_NAME_COLUMN_LABEL), is(LOGIC_TABLE_NAME));
         assertThat(databaseMetaDataResultSet.getObject(NON_TABLE_NAME_COLUMN_LABEL), is(NON_TABLE_NAME));
@@ -391,48 +391,48 @@ public final class DatabaseMetaDataResultSetTest {
     }
     
     @Test
-    public void assertFindColumn() throws SQLException {
+    void assertFindColumn() throws SQLException {
         assertThat(databaseMetaDataResultSet.findColumn(TABLE_NAME_COLUMN_LABEL), is(1));
         assertThat(databaseMetaDataResultSet.findColumn(NON_TABLE_NAME_COLUMN_LABEL), is(2));
         assertThat(databaseMetaDataResultSet.findColumn(NUMBER_COLUMN_LABEL), is(3));
     }
     
     @Test
-    public void assertGetType() throws SQLException {
+    void assertGetType() throws SQLException {
         assertThat(databaseMetaDataResultSet.getType(), is(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
-    public void assertGetConcurrency() throws SQLException {
+    void assertGetConcurrency() throws SQLException {
         assertThat(databaseMetaDataResultSet.getConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
     }
     
     @Test
-    public void assertGetFetchDirection() throws SQLException {
+    void assertGetFetchDirection() throws SQLException {
         databaseMetaDataResultSet.setFetchDirection(ResultSet.FETCH_FORWARD);
         assertThat(databaseMetaDataResultSet.getFetchDirection(), is(ResultSet.FETCH_FORWARD));
     }
     
     @Test
-    public void assertGetFetchSize() throws SQLException {
+    void assertGetFetchSize() throws SQLException {
         databaseMetaDataResultSet.setFetchSize(3);
         assertThat(databaseMetaDataResultSet.getFetchSize(), is(3));
     }
     
     @Test
-    public void assertGetObjectOutOfIndexRange() throws SQLException {
+    void assertGetObjectOutOfIndexRange() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThrows(SQLException.class, () -> databaseMetaDataResultSet.getObject(9));
     }
     
     @Test
-    public void assertGetObjectInvalidLabel() throws SQLException {
+    void assertGetObjectInvalidLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThrows(SQLException.class, () -> databaseMetaDataResultSet.getObject("Invalid"));
     }
     
     @Test
-    public void assertOperationWithClose() throws SQLException {
+    void assertOperationWithClose() throws SQLException {
         databaseMetaDataResultSet.close();
         assertThrows(SQLException.class, () -> databaseMetaDataResultSet.next());
     }

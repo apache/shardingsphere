@@ -55,13 +55,14 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
      */
     @RuntimeType
     public void advice(@This final TargetAdviceObject target, @AllArguments final Object[] args) {
-        boolean adviceEnabled = PluginContext.isPluginEnabled();
+        boolean adviceEnabled = PluginContext.getInstance().isPluginEnabled();
+        if (!adviceEnabled) {
+            return;
+        }
         try {
-            if (adviceEnabled) {
-                for (Entry<String, Collection<ConstructorAdvice>> entry : advices.entrySet()) {
-                    for (ConstructorAdvice each : entry.getValue()) {
-                        each.onConstructor(target, args, entry.getKey());
-                    }
+            for (Entry<String, Collection<ConstructorAdvice>> entry : advices.entrySet()) {
+                for (ConstructorAdvice each : entry.getValue()) {
+                    each.onConstructor(target, args, entry.getKey());
                 }
             }
             // CHECKSTYLE:OFF

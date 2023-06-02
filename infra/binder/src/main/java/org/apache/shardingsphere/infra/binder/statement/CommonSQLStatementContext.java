@@ -36,13 +36,11 @@ import java.util.Optional;
 
 /**
  * Common SQL statement context.
- * 
- * @param <T> type of SQL statement
  */
 @Getter
-public class CommonSQLStatementContext<T extends SQLStatement> implements SQLStatementContext<T> {
+public abstract class CommonSQLStatementContext implements SQLStatementContext {
     
-    private final T sqlStatement;
+    private final SQLStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
@@ -50,7 +48,7 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     
     private final SQLHintExtractor sqlHintExtractor;
     
-    public CommonSQLStatementContext(final T sqlStatement) {
+    protected CommonSQLStatementContext(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         databaseType = getDatabaseType(sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList(), databaseType);

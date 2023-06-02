@@ -27,20 +27,20 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * Ready for query packet for PostgreSQL.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLReadyForQueryPacket implements PostgreSQLPacket {
-    
-    public static final PostgreSQLReadyForQueryPacket NOT_IN_TRANSACTION = new PostgreSQLReadyForQueryPacket((byte) 'I');
+public final class PostgreSQLReadyForQueryPacket extends PostgreSQLPacket {
     
     public static final PostgreSQLReadyForQueryPacket IN_TRANSACTION = new PostgreSQLReadyForQueryPacket((byte) 'T');
     
+    public static final PostgreSQLReadyForQueryPacket NOT_IN_TRANSACTION = new PostgreSQLReadyForQueryPacket((byte) 'I');
+    
     public static final PostgreSQLReadyForQueryPacket TRANSACTION_FAILED = new PostgreSQLReadyForQueryPacket((byte) 'E');
     
-    private static final byte[] PREFIX = new byte[]{(byte) PostgreSQLMessagePacketType.READY_FOR_QUERY.getValue(), 0, 0, 0, 5};
+    private static final byte[] PREFIX = {(byte) PostgreSQLMessagePacketType.READY_FOR_QUERY.getValue(), 0, 0, 0, 5};
     
     private final byte status;
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         payload.getByteBuf().writeBytes(PREFIX);
         payload.getByteBuf().writeByte(status);
     }

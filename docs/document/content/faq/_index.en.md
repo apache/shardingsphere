@@ -15,28 +15,52 @@ Answer:
 
 ### [JDBC] The tableName and columnName configured in yaml or properties leading incorrect result when loading Oracle metadata？
 
-Answer：
+Answer:
 
 Note that, in Oracle's metadata, the tableName and columnName is default UPPERCASE, while double-quoted such as `CREATE TABLE "TableName"("Id" number)` the tableName and columnName is the actual content double-quoted, refer to the following SQL for the reality in metadata:
-```
+```sql
 SELECT OWNER, TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM ALL_TAB_COLUMNS WHERE TABLE_NAME IN ('TableName') 
 ```
 ShardingSphere uses the `OracleTableMetaDataLoader` to load the metadata, keep the tableName and columnName in the yaml or properties consistent with the metadata.
 ShardingSphere assembled the SQL using the following code:
-```
-    private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
-        StringBuilder stringBuilder = new StringBuilder(28);
-        if (versionContainsIdentityColumn(metaData)) {
-            stringBuilder.append(", IDENTITY_COLUMN");
-        }
-        if (versionContainsCollation(metaData)) {
-            stringBuilder.append(", COLLATION");
-        }
-        String collation = stringBuilder.toString();
-        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
-    }
+```java
+ private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
+     StringBuilder stringBuilder = new StringBuilder(28);
+     if (versionContainsIdentityColumn(metaData)) {
+         stringBuilder.append(", IDENTITY_COLUMN");
+     }
+     if (versionContainsCollation(metaData)) {
+         stringBuilder.append(", COLLATION");
+     }
+     String collation = stringBuilder.toString();
+     return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
+             : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+ }
 ``` 
+
+### [JDBC] `SQLException: Unable to unwrap to interface com.mysql.jdbc.Connection` exception thrown when using MySQL XA transaction
+
+Answer:
+
+Incompatibility between multiple MySQL drivers. Because the MySQL5 version of the driver class under the class path is loaded first, when trying to call the `unwrap` method in the MySQL8 driver, the type conversion exception occurs.
+
+The solutions:
+Check whether there are both MySQL5 and MySQL8 drivers in the class path, and only keep one driver package of the corresponding version.
+
+The exception stack is as follows:
+```
+Caused by: java.sql.SQLException: Unable to unwrap to interface com.mysql.jdbc.Connection
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:129)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:97)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:89)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:63)
+	at com.mysql.cj.jdbc.ConnectionImpl.unwrap(ConnectionImpl.java:2650)
+	at com.zaxxer.hikari.pool.ProxyConnection.unwrap(ProxyConnection.java:481)
+	at org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapper.wrap(MySQLXAConnectionWrapper.java:46)
+	at org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource.getConnection(XATransactionDataSource.java:89)
+	at org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager.getConnection(XAShardingSphereTransactionManager.java:96
+```
+
 ## Proxy
 
 ### [Proxy] In Windows environment, could not find or load main class org.apache.shardingsphere.proxy.Bootstrap, how to solve it?
@@ -150,18 +174,6 @@ Yes. But there is restriction to the use of native auto-increment keys, which me
 Since ShardingSphere does not have the database table structure and native auto-increment key is not included in original SQL, it cannot parse that field to the sharding field. If the auto-increment key is not sharding key, it can be returned normally and is needless to be cared. But if the auto-increment key is also used as sharding key, ShardingSphere cannot parse its sharding value, which will make SQL routed to multiple tables and influence the rightness of the application.
 The premise for returning native auto-increment key is that INSERT SQL is eventually routed to one table. Therefore, auto-increment key will return zero when INSERT SQL returns multiple tables.
 
-## Encryption
-
-### [Encryption] How to solve that `data encryption` can't work with JPA?
-
-Answer:
-
-Because DDL for data encryption has not yet finished, JPA Entity cannot meet the DDL and DML at the same time, when JPA that automatically generates DDL is used with data encryption.
-The solutions are as follows:
-1. Create JPA Entity with logicColumn which needs to encrypt.
-2. Disable JPA auto-ddl, For example setting auto-ddl=none.
-3. Create table manually. Table structure should use `cipherColumn`,`plainColumn` and `assistedQueryColumn` to replace the logicColumn.
-
 ## DistSQL
 
 ### [DistSQL] How to set custom JDBC connection properties or connection pool properties when adding a data source using DistSQL?
@@ -207,7 +219,7 @@ Answer:
 ShardingSphere uses lombok to enable minimal coding. For more details about using and installment, please refer to the official website of [lombok](https://projectlombok.org/download.html).
 The codes under the package `org.apache.shardingsphere.sql.parser.autogen` are generated by ANTLR. You may execute the following command to generate codes:
 ```bash
-./mvnw -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests install -T1C 
+./mvnw -Dcheckstyle.skip=true -Dspotbugs.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests install -T1C 
 ```
 The generated codes such as `org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser` may be too large to be indexed by the IDEA.
 You may configure the IDEA's property `idea.max.intellisense.filesize=10000`.

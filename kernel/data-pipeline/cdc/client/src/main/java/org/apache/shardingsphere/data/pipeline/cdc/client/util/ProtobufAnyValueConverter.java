@@ -31,6 +31,8 @@ import com.google.protobuf.Struct;
 import com.google.protobuf.UInt32Value;
 import com.google.protobuf.UInt64Value;
 import com.google.protobuf.util.JsonFormat;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
@@ -38,6 +40,7 @@ import java.sql.Timestamp;
 /**
  * Protobuf any value converter.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ProtobufAnyValueConverter {
     
@@ -47,6 +50,7 @@ public final class ProtobufAnyValueConverter {
      * @param any any
      * @return object
      * @throws InvalidProtocolBufferException invalid protocol buffer exception
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public static Object convertToObject(final Any any) throws InvalidProtocolBufferException {
         if (null == any || any.is(Empty.class)) {

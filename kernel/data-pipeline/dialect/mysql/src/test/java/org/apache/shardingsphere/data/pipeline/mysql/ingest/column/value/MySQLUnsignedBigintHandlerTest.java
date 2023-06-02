@@ -26,12 +26,12 @@ import java.math.BigInteger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLUnsignedBigintHandlerTest {
+class MySQLUnsignedBigintHandlerTest {
     
     private final MySQLUnsignedBigintHandler handler = new MySQLUnsignedBigintHandler();
     
     @Test
-    public void assertHandle() {
+    void assertHandle() {
         Serializable actual = handler.handle(1L);
         assertThat(actual, is(1L));
         actual = handler.handle(-1L);

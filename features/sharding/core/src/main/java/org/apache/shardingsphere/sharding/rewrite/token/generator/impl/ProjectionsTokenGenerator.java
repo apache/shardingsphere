@@ -26,9 +26,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Der
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -86,7 +85,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
             if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty()) {
                 result.addAll(((AggregationProjection) each).getDerivedAggregationProjections().stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
-            } else if (each instanceof DerivedProjection && ((DerivedProjection) each).getDerivedProjection() instanceof ColumnOrderByItemSegment) {
+            } else if (each instanceof DerivedProjection && ((DerivedProjection) each).getDerivedProjectionSegment() instanceof ColumnOrderByItemSegment) {
                 TableExtractor tableExtractor = new TableExtractor();
                 tableExtractor.extractTablesFromSelect(selectStatementContext.getSqlStatement());
                 result.add(getDerivedProjectionTextFromColumnOrderByItemSegment((DerivedProjection) each, tableExtractor, routeUnit, selectStatementContext.getDatabaseType()));
@@ -108,8 +107,8 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     private String getDerivedProjectionTextFromColumnOrderByItemSegment(final DerivedProjection projection, final TableExtractor tableExtractor, final RouteUnit routeUnit,
                                                                         final DatabaseType databaseType) {
         Preconditions.checkState(projection.getAlias().isPresent());
-        Preconditions.checkState(projection.getDerivedProjection() instanceof ColumnOrderByItemSegment);
-        ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) projection.getDerivedProjection();
+        Preconditions.checkState(projection.getDerivedProjectionSegment() instanceof ColumnOrderByItemSegment);
+        ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) projection.getDerivedProjectionSegment();
         ColumnOrderByItemSegment newColumnOrderByItem = generateNewColumnOrderByItem(columnOrderByItemSegment, routeUnit, tableExtractor, databaseType);
         return newColumnOrderByItem.getText() + " AS " + projection.getAlias().get() + " ";
     }
@@ -141,9 +140,9 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     }
     
     private NullsOrderType generateNewNullsOrderType(final DatabaseType databaseType, final OrderDirection orderDirection) {
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType || databaseType instanceof OracleDatabaseType) {
-            return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.LAST : NullsOrderType.FIRST;
+        if (databaseType instanceof SchemaSupportedDatabaseType || databaseType instanceof OracleDatabaseType) {
+            return OrderDirection.ASC == orderDirection ? NullsOrderType.LAST : NullsOrderType.FIRST;
         }
-        return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.FIRST : NullsOrderType.LAST;
+        return OrderDirection.ASC == orderDirection ? NullsOrderType.FIRST : NullsOrderType.LAST;
     }
 }

@@ -1,6 +1,6 @@
 +++
 title = "Readwrite_splitting"
-weight = 3
+weight = 2
 +++
 
 ## Storage unit Operation

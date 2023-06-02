@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.yaml.config.swapper.resource;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
@@ -30,27 +29,27 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlDataSourcePropertiesSwapperTest {
+class YamlDataSourcePropertiesSwapperTest {
     
     private final YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
     
     @Test
-    public void assertSwapToDataSources() {
+    void assertSwapToDataSources() {
         Map<String, Map<String, Object>> yamlConfig = createYamlConfig();
         Map<String, DataSource> dataSources = swapper.swapToDataSources(yamlConfig);
-        HikariDataSource actual0 = (HikariDataSource) dataSources.get("ds_0");
-        assertThat(actual0.getJdbcUrl(), is("jdbc:mock://127.0.0.1/ds_0"));
+        MockedDataSource actual0 = (MockedDataSource) dataSources.get("ds_0");
+        assertThat(actual0.getUrl(), is("jdbc:mock://127.0.0.1/ds_0"));
         assertThat(actual0.getUsername(), is("root"));
         assertThat(actual0.getPassword(), is("root"));
-        HikariDataSource actual1 = (HikariDataSource) dataSources.get("ds_1");
-        assertThat(actual1.getJdbcUrl(), is("jdbc:mock://127.0.0.1/ds_1"));
+        MockedDataSource actual1 = (MockedDataSource) dataSources.get("ds_1");
+        assertThat(actual1.getUrl(), is("jdbc:mock://127.0.0.1/ds_1"));
         assertThat(actual1.getUsername(), is("root"));
         assertThat(actual1.getPassword(), is("root"));
     }
     
     @Test
-    public void assertSwapToDataSourceProperties() {
-        Map<String, Object> yamlConfig = new HashMap<>(3, 1);
+    void assertSwapToDataSourceProperties() {
+        Map<String, Object> yamlConfig = new HashMap<>(3, 1F);
         yamlConfig.put("dataSourceClassName", MockedDataSource.class.getName());
         yamlConfig.put("url", "xx:xxx");
         yamlConfig.put("username", "root");
@@ -61,7 +60,7 @@ public final class YamlDataSourcePropertiesSwapperTest {
     }
     
     @Test
-    public void assertSwapToMap() {
+    void assertSwapToMap() {
         Map<String, Object> actual = swapper.swapToMap(new DataSourceProperties(MockedDataSource.class.getName(), createProperties()));
         assertThat(actual.get("dataSourceClassName"), is(MockedDataSource.class.getName()));
         assertThat(actual.get("url").toString(), is("xx:xxx"));
@@ -69,23 +68,23 @@ public final class YamlDataSourcePropertiesSwapperTest {
     }
     
     private Map<String, Object> createProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(2, 1);
+        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         result.put("url", "xx:xxx");
         result.put("username", "root");
         return result;
     }
     
     private Map<String, Map<String, Object>> createYamlConfig() {
-        Map<String, Map<String, Object>> result = new LinkedHashMap<>(2, 1);
+        Map<String, Map<String, Object>> result = new LinkedHashMap<>(2, 1F);
         result.put("ds_0", createPropertyMap("ds_0"));
         result.put("ds_1", createPropertyMap("ds_1"));
         return result;
     }
     
     private Map<String, Object> createPropertyMap(final String name) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1);
-        result.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
-        result.put("jdbcUrl", String.format("jdbc:mock://127.0.0.1/%s", name));
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("dataSourceClassName", MockedDataSource.class.getName());
+        result.put("url", String.format("jdbc:mock://127.0.0.1/%s", name));
         result.put("username", "root");
         result.put("password", "root");
         return result;

@@ -19,15 +19,63 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Array;
+import java.sql.SQLException;
+import java.sql.SQLXML;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Objects;
 
 /**
- * Data consistency check utils.
+ * Data consistency check utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class DataConsistencyCheckUtils {
+    
+    /**
+     * Whether records equals or not.
+     *
+     * @param thisRecord this record
+     * @param thatRecord that record
+     * @param equalsBuilder equals builder
+     * @return true if records equals, otherwise false
+     * @throws SQLException if getting special value failed
+     */
+    public static boolean recordsEquals(final Collection<Object> thisRecord, final Collection<Object> thatRecord, final EqualsBuilder equalsBuilder) throws SQLException {
+        Iterator<Object> thisRecordIterator = thisRecord.iterator();
+        Iterator<Object> thatRecordIterator = thatRecord.iterator();
+        int columnIndex = 0;
+        while (thisRecordIterator.hasNext() && thatRecordIterator.hasNext()) {
+            ++columnIndex;
+            Object thisColumnValue = thisRecordIterator.next();
+            Object thatColumnValue = thatRecordIterator.next();
+            if (!isMatched(equalsBuilder, thisColumnValue, thatColumnValue)) {
+                log.warn("Record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}.", columnIndex, thisColumnValue, thatColumnValue,
+                        null != thisColumnValue ? thisColumnValue.getClass().getName() : "", null == thatColumnValue ? "" : thatColumnValue.getClass().getName());
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private static boolean isMatched(final EqualsBuilder equalsBuilder, final Object thisColumnValue, final Object thatColumnValue) throws SQLException {
+        if (thisColumnValue instanceof SQLXML && thatColumnValue instanceof SQLXML) {
+            return ((SQLXML) thisColumnValue).getString().equals(((SQLXML) thatColumnValue).getString());
+        }
+        if (thisColumnValue instanceof BigDecimal && thatColumnValue instanceof BigDecimal) {
+            return isBigDecimalEquals((BigDecimal) thisColumnValue, (BigDecimal) thatColumnValue);
+        }
+        if (thisColumnValue instanceof Array && thatColumnValue instanceof Array) {
+            return Objects.deepEquals(((Array) thisColumnValue).getArray(), ((Array) thatColumnValue).getArray());
+        }
+        return equalsBuilder.append(thisColumnValue, thatColumnValue).isEquals();
+    }
     
     /**
      * Check two BigDecimal whether equals or not.
@@ -41,7 +89,10 @@ public final class DataConsistencyCheckUtils {
     public static boolean isBigDecimalEquals(final BigDecimal one, final BigDecimal another) {
         BigDecimal decimalOne;
         BigDecimal decimalTwo;
-        if (one.scale() != another.scale()) {
+        if (one.scale() == another.scale()) {
+            decimalOne = one;
+            decimalTwo = another;
+        } else {
             if (one.scale() > another.scale()) {
                 decimalOne = one;
                 decimalTwo = another.setScale(one.scale(), RoundingMode.UNNECESSARY);
@@ -49,9 +100,6 @@ public final class DataConsistencyCheckUtils {
                 decimalOne = one.setScale(another.scale(), RoundingMode.UNNECESSARY);
                 decimalTwo = another;
             }
-        } else {
-            decimalOne = one;
-            decimalTwo = another;
         }
         return decimalOne.equals(decimalTwo);
     }

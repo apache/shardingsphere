@@ -24,9 +24,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Close complete packet for PostgreSQL.
  */
-public final class PostgreSQLCloseCompletePacket implements PostgreSQLPacket {
+public final class PostgreSQLCloseCompletePacket extends PostgreSQLPacket {
     
-    private static final byte[] VALUE = new byte[]{(byte) PostgreSQLMessagePacketType.CLOSE_COMPLETE.getValue(), 0, 0, 0, 4};
+    private static final byte[] VALUE = {(byte) PostgreSQLMessagePacketType.CLOSE_COMPLETE.getValue(), 0, 0, 0, 4};
     
     private static final PostgreSQLCloseCompletePacket INSTANCE = new PostgreSQLCloseCompletePacket();
     
@@ -40,7 +40,7 @@ public final class PostgreSQLCloseCompletePacket implements PostgreSQLPacket {
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         payload.getByteBuf().writeBytes(VALUE);
     }
 }

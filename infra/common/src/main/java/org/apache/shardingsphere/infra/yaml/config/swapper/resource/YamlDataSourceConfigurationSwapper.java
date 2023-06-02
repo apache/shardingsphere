@@ -67,7 +67,7 @@ public final class YamlDataSourceConfigurationSwapper {
      */
     public Map<String, DataSourceProperties> getDataSourcePropertiesMap(final YamlRootConfiguration yamlRootConfig) {
         Map<String, Map<String, Object>> yamlDataSourceConfigs = yamlRootConfig.getDataSources();
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSourceConfigs.size());
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSourceConfigs.size(), 1F);
         yamlDataSourceConfigs.forEach((key, value) -> result.put(key, swapToDataSourceProperties(value)));
         return result;
     }

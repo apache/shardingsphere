@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * OpenGauss cursor transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS}, adapters = TransactionTestConstants.PROXY, scenario = "cursor")
+@TransactionTestCase(dbTypes = TransactionTestConstants.OPENGAUSS, adapters = TransactionTestConstants.PROXY, scenario = "cursor")
 @Slf4j
 public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     
@@ -52,7 +52,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     private CursorSQLCommand loadCursorSQLCommand() {
-        return JAXB.unmarshal(Objects.requireNonNull(TransactionBaseE2EIT.class.getClassLoader().getResource("env/common/cursor-command.xml")), CursorSQLCommand.class);
+        return JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("env/common/cursor-command.xml")), CursorSQLCommand.class);
     }
     
     @Override

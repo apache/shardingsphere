@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -69,13 +69,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class GroupByMemoryMergedResultTest {
+class GroupByMemoryMergedResultTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertNextForResultSetsAllEmpty() throws SQLException {
+    void assertNextForResultSetsAllEmpty() throws SQLException {
         when(database.getName()).thenReturn("db_schema");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), database, mock(ConnectionContext.class));
@@ -86,7 +86,7 @@ public final class GroupByMemoryMergedResultTest {
     }
     
     @Test
-    public void assertNextForSomeResultSetsEmpty() throws SQLException {
+    void assertNextForSomeResultSetsEmpty() throws SQLException {
         when(database.getName()).thenReturn("db_schema");
         QueryResult queryResult1 = createQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
@@ -151,7 +151,7 @@ public final class GroupByMemoryMergedResultTest {
     }
     
     @Test
-    public void assertNextForAggregationResultSetsEmpty() throws SQLException {
+    void assertNextForAggregationResultSetsEmpty() throws SQLException {
         when(database.getName()).thenReturn("db_schema");
         QueryResult queryResult1 = createQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
@@ -197,7 +197,7 @@ public final class GroupByMemoryMergedResultTest {
     }
     
     @Test
-    public void assertNextForDistinctShorthandResultSetsEmpty() throws SQLException {
+    void assertNextForDistinctShorthandResultSetsEmpty() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(queryResult.getMetaData().getColumnCount()).thenReturn(2);
         when(queryResult.getMetaData().getColumnLabel(1)).thenReturn("order_id");
@@ -205,7 +205,7 @@ public final class GroupByMemoryMergedResultTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(schema.getTable("t_order")).thenReturn(table);
-        when(table.getColumns()).thenReturn(Collections.emptyMap());
+        when(table.getColumns()).thenReturn(Collections.emptyList());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         when(database.getSchemas()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));

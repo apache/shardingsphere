@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.job;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
@@ -34,7 +33,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfigurat
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSimplePipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.util.CloseUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 
@@ -43,7 +42,6 @@ import java.util.Optional;
 /**
  * CDC job.
  */
-@RequiredArgsConstructor
 @Slf4j
 public final class CDCJob extends AbstractSimplePipelineJob {
     
@@ -54,6 +52,11 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     private final CDCJobPreparer jobPreparer = new CDCJobPreparer();
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+    
+    public CDCJob(final String jobId, final ImporterConnector importerConnector) {
+        super(jobId);
+        this.importerConnector = importerConnector;
+    }
     
     @Override
     protected void doPrepare(final PipelineJobItemContext jobItemContext) {
@@ -70,6 +73,7 @@ public final class CDCJob extends AbstractSimplePipelineJob {
         return new CDCJobItemContext(jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, importerConnector);
     }
     
+    @Override
     protected PipelineTasksRunner buildPipelineTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
         InventoryIncrementalJobItemContext jobItemContext = (InventoryIncrementalJobItemContext) pipelineJobItemContext;
         return new CDCTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
@@ -79,7 +83,7 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     protected void doClean() {
         dataSourceManager.close();
         if (importerConnector instanceof AutoCloseable) {
-            CloseUtil.closeQuietly((AutoCloseable) importerConnector);
+            CloseUtils.closeQuietly((AutoCloseable) importerConnector);
         }
     }
 }

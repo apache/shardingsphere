@@ -37,14 +37,14 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowTablesMergedResultTest {
+class ShowTablesMergedResultTest {
     
     private ShardingRule shardingRule;
     
     private ShardingSphereSchema schema;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         shardingRule = createShardingRule();
         schema = new ShardingSphereSchema(Collections.singletonMap("table",
                 new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyMap());
@@ -57,12 +57,12 @@ public final class ShowTablesMergedResultTest {
     }
     
     @Test
-    public void assertNextForEmptyQueryResult() throws SQLException {
+    void assertNextForEmptyQueryResult() throws SQLException {
         assertFalse(new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
     }
     
     @Test
-    public void assertNextForActualTableNameInTableRule() throws SQLException {
+    void assertNextForActualTableNameInTableRule() throws SQLException {
         assertTrue(new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult("table_0"))).next());
     }
     

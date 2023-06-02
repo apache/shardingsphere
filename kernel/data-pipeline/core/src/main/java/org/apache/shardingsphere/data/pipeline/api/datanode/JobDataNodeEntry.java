@@ -47,7 +47,7 @@ public final class JobDataNodeEntry {
         String logicTableName = segments.get(0);
         List<DataNode> dataNodes = new LinkedList<>();
         for (String each : Splitter.on(",").omitEmptyStrings().splitToList(segments.get(1))) {
-            dataNodes.add(DataNodeUtil.parseWithSchema(each));
+            dataNodes.add(DataNodeUtils.parseWithSchema(each));
         }
         return new JobDataNodeEntry(logicTableName, dataNodes);
     }
@@ -59,10 +59,9 @@ public final class JobDataNodeEntry {
      */
     public String marshal() {
         StringBuilder result = new StringBuilder();
-        result.append(logicTableName);
-        result.append(":");
+        result.append(logicTableName).append(':');
         for (DataNode each : dataNodes) {
-            result.append(DataNodeUtil.formatWithSchema(each)).append(',');
+            result.append(DataNodeUtils.formatWithSchema(each)).append(',');
         }
         if (!dataNodes.isEmpty()) {
             result.setLength(result.length() - 1);

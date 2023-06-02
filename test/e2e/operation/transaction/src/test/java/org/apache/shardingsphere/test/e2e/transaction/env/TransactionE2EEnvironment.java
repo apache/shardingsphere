@@ -76,12 +76,11 @@ public final class TransactionE2EEnvironment {
     }
     
     private Map<String, TransactionTestCaseRegistry> initTransactionTestCaseRegistryMap() {
-        final Map<String, TransactionTestCaseRegistry> transactionTestCaseRegistryMap;
-        transactionTestCaseRegistryMap = new HashMap<>(TransactionTestCaseRegistry.values().length, 1);
+        Map<String, TransactionTestCaseRegistry> result = new HashMap<>(TransactionTestCaseRegistry.values().length, 1);
         for (TransactionTestCaseRegistry each : TransactionTestCaseRegistry.values()) {
-            transactionTestCaseRegistryMap.put(each.getTestCaseClass().getName(), each);
+            result.put(each.getTestCaseClass().getName(), each);
         }
-        return transactionTestCaseRegistryMap;
+        return result;
     }
     
     private List<String> splitProperty(final String key) {
@@ -90,7 +89,7 @@ public final class TransactionE2EEnvironment {
     
     private Properties loadProperties() {
         Properties result = new Properties();
-        try (InputStream inputStream = TransactionE2EEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/it-env.properties")) {
             result.load(inputStream);
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
@@ -104,8 +103,9 @@ public final class TransactionE2EEnvironment {
     /**
      * Get actual data source default port.
      *
-     * @param databaseType database type.
+     * @param databaseType database type
      * @return default port
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
@@ -116,7 +116,7 @@ public final class TransactionE2EEnvironment {
             case "openGauss":
                 return Integer.parseInt(props.getOrDefault("transaction.it.native.opengauss.port", OpenGaussContainer.OPENGAUSS_EXPOSED_PORT).toString());
             default:
-                throw new IllegalArgumentException("Unsupported database type: " + databaseType.getType());
+                throw new UnsupportedOperationException(String.format("Unsupported database type: `%s`", databaseType.getType()));
         }
     }
     
@@ -132,7 +132,7 @@ public final class TransactionE2EEnvironment {
     /**
      * Get actual data source username.
      *
-     * @param databaseType database type.
+     * @param databaseType database type
      * @return actual data source username
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
@@ -144,7 +144,7 @@ public final class TransactionE2EEnvironment {
     /**
      * Get actual data source password.
      *
-     * @param databaseType database type.
+     * @param databaseType database type
      * @return actual data source username
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {

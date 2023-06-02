@@ -19,6 +19,7 @@
 <sql-cases>
     <sql-case id="show-dist-variable" value="SHOW DIST VARIABLE WHERE NAME = 'CACHED_CONNECTIONS'" db-types="ShardingSphere" />
     <sql-case id="show-dist-variables" value="SHOW DIST VARIABLES" db-types="ShardingSphere" />
+    <sql-case id="show-dist-variables-like" value="SHOW DIST VARIABLES like 'sql_%'" db-types="ShardingSphere" />
     
     <sql-case id="show-status-from-readwrite-splitting-rules" value="SHOW STATUS FROM READWRITE_SPLITTING RULES" db-types="ShardingSphere" />
     
@@ -29,6 +30,7 @@
     <sql-case id="show-sql-parser-rule" value="SHOW SQL_PARSER RULE" db-types="ShardingSphere" />
     <sql-case id="show-traffic-rules" value="SHOW TRAFFIC RULE rule_name" db-types="ShardingSphere" />
     <sql-case id="show-sql-translator-rule" value="SHOW SQL_TRANSLATOR RULE" db-types="ShardingSphere" />
+    <sql-case id="show-global-clock-rule" value="SHOW GLOBAL CLOCK RULE" db-types="ShardingSphere" />
     
     <sql-case id="show-compute-nodes" value="SHOW COMPUTE NODES" db-types="ShardingSphere" />
     <sql-case id="show-compute-node-info" value="SHOW COMPUTE NODE INFO" db-types="ShardingSphere" />

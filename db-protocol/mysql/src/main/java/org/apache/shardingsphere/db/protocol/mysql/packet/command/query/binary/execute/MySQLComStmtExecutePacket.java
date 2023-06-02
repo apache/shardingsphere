@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
@@ -39,9 +39,9 @@ import java.util.Set;
 /**
  * COM_STMT_EXECUTE command packet for MySQL.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-execute.html">COM_STMT_EXECUTE</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_stmt_execute.html">COM_STMT_EXECUTE</a>
  */
-@ToString(of = {"statementId"})
+@Getter
 public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     
     private static final int ITERATION_COUNT = 1;
@@ -50,17 +50,15 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     
     private final MySQLPacketPayload payload;
     
-    @Getter
     private final int statementId;
     
     private final int flags;
     
+    @Getter(AccessLevel.NONE)
     private final MySQLNullBitmap nullBitmap;
     
-    @Getter
     private final MySQLNewParametersBoundFlag newParametersBoundFlag;
     
-    @Getter
     private final List<MySQLPreparedStatementParameterType> newParameterTypes;
     
     public MySQLComStmtExecutePacket(final MySQLPacketPayload payload, final int paramCount) {

@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyStateContext {
     
-    private static final Map<InstanceState, ProxyState> STATES = new ConcurrentHashMap<>(3, 1);
+    private static final Map<InstanceState, ProxyState> STATES = new ConcurrentHashMap<>(3, 1F);
     
     static {
         STATES.put(InstanceState.OK, new OKProxyState());

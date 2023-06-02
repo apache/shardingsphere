@@ -36,11 +36,11 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class HintShadowAlgorithmDeterminerTest {
+class HintShadowAlgorithmDeterminerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertIsShadow() {
+    void assertIsShadow() {
         HintShadowAlgorithm hintShadowAlgorithm = (HintShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "SQL_HINT", new Properties());
         assertTrue(HintShadowAlgorithmDeterminer.isShadow(hintShadowAlgorithm, createShadowDetermineCondition(), new ShadowRule(createShadowRuleConfiguration())));
     }

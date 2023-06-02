@@ -1,11 +1,11 @@
 +++
 title = "DROP SHARDING ALGORITHM"
-weight = 12
+weight = 11
 +++
 
 ## 描述
 
-`DROP SHARDING ALGORITHM` 语法用于删除指定逻辑库的指定分片算法
+`DROP SHARDING ALGORITHM` 语法用于删除指定逻辑库的指定分片算法。
 
 ### 语法定义
 

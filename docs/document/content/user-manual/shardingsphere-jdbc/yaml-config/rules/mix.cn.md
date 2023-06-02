@@ -5,7 +5,7 @@ weight = 9
 
 ## 背景信息
 
-ShardingSphere 涵盖了很多功能，例如，分库分片、读写分离、高可用、数据加密等。这些功能用户可以单独进行使用，也可以配合一起使用，下面是基于 YAML 的参数解释和配置示例。
+ShardingSphere 涵盖了很多功能，例如，分库分片、读写分离、数据加密等。这些功能用户可以单独进行使用，也可以配合一起使用，下面是基于 YAML 的参数解释和配置示例。
 
 ## 参数解释
 
@@ -39,39 +39,6 @@ rules:
     <key_generate_algorithm_name> (+): # 分布式序列算法名称
       type: # 分布式序列算法类型
       props: # 分布式序列算法属性配置
-- !READWRITE_SPLITTING
-  dataSources:
-    <data_source_name>: # 读写分离逻辑数据源名称
-      dynamicStrategy: # 读写分离类型
-        autoAwareDataSourceName: # 数据库发现逻辑数据源名称
-    <data_source_name>: # 读写分离逻辑数据源名称
-      dynamicStrategy: # 读写分离类型
-        autoAwareDataSourceName: # 数据库发现逻辑数据源名称
-- !DB_DISCOVERY
-  dataSources:
-    <data_source_name>:
-      dataSourceNames: # 数据源名称列表
-        - ds_0
-        - ds_1
-        - ds_2
-      discoveryHeartbeatName: # 检测心跳名称
-      discoveryTypeName: # 数据库发现类型名称
-    <data_source_name>:
-      dataSourceNames: # 数据源名称列表
-        - ds_3
-        - ds_4
-        - ds_5
-      discoveryHeartbeatName: # 检测心跳名称
-      discoveryTypeName: # 数据库发现类型名称
-  discoveryHeartbeats:
-    <discovery_heartbeat_name>: # 心跳名称
-      props:
-        keep-alive-cron: # cron 表达式，如：'0/5 * * * * ?'
-  discoveryTypes:
-    <discovery_type_name>: # 数据库发现类型名称
-      type: # 数据库发现类型，如：MySQL.MGR 
-      props:
-        group-name:  # 数据库发现类型必要参数，如 MGR 的 group-name
 - !ENCRYPT
   encryptors:
     <encrypt_algorithm_name> (+): # 加解密算法名称
@@ -83,14 +50,15 @@ rules:
     <table_name>: # 加密表名称
       columns:
         <column_name> (+): # 加密列名称
-          plainColumn (?): # 原文列名称
-          cipherColumn: # 密文列名称
-          encryptorName: # 密文列加密算法名称
-          assistedQueryColumn (?):  # 查询辅助列名称
-          assistedQueryEncryptorName:  # 查询辅助列加密算法名称
-          likeQueryColumn (?):  # 模糊查询列名称
-          likeQueryEncryptorName:  # 模糊查询列加密算法名称
-      queryWithCipherColumn(?): # 该表是否使用加密列进行查询
+          cipher:
+            name: # 密文列名称
+            encryptorName: # 密文列加密算法名称
+          assistedQuery (?):
+            name: # 查询辅助列名称
+            encryptorName:  # 查询辅助列加密算法名称
+          likeQuery (?):
+            name: # 模糊查询列名称
+            encryptorName:  # 模糊查询列加密算法名称
 ```
 
 ## 配置示例
@@ -128,46 +96,13 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-- !READWRITE_SPLITTING
-  dataSources:
-    replica_ds_0:
-      dynamicStrategy:
-        autoAwareDataSourceName: readwrite_ds_0
-    replica_ds_1:
-      dynamicStrategy:
-        autoAwareDataSourceName: readwrite_ds_1
-- !DB_DISCOVERY
-  dataSources:
-    readwrite_ds_0:
-      dataSourceNames:
-        - ds_0
-        - ds_1
-        - ds_2
-      discoveryHeartbeatName: mgr_heartbeat
-      discoveryTypeName: mgr
-    readwrite_ds_1:
-      dataSourceNames:
-        - ds_3
-        - ds_4
-        - ds_5
-      discoveryHeartbeatName: mgr_heartbeat
-      discoveryTypeName: mgr
-  discoveryHeartbeats:
-    mgr_heartbeat:
-      props:
-        keep-alive-cron: '0/5 * * * * ?'
-  discoveryTypes:
-    mgr:
-      type: MySQL.MGR
-      props:
-        group-name: 558edd3c-02ec-11ea-9bb3-080027e39bd2
 - !ENCRYPT
   encryptors:
     aes_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
-    md5_encryptor:
+    assisted_encryptor:
       type: MD5
     like_encryptor:
       type: CHAR_DIGEST_LIKE
@@ -175,15 +110,17 @@ rules:
     t_encrypt:
       columns:
         user_id:
-          plainColumn: user_plain
-          cipherColumn: user_cipher
-          encryptorName: aes_encryptor
-          assistedQueryColumn: assisted_query_user
-          assistedQueryEncryptorName: aes_encryptor
-          likeQueryColumn: like_query_user
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: user_cipher
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_user
+            encryptorName: assisted_encryptor
+          likeQuery:
+            name: like_query_user
+            encryptorName: like_encryptor
         order_id:
-          cipherColumn: order_cipher
-          encryptorName: md5_encryptor
-      queryWithCipherColumn: true
+          cipher:
+            name: order_cipher
+            encryptorName: aes_encryptor
 ```

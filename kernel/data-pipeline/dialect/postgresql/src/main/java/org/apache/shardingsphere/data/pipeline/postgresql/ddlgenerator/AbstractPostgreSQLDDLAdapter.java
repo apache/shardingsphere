@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import java.sql.Array;
 import java.sql.Connection;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 /**
  * Abstract ddl adapter for PostgreSQL.
  */
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public abstract class AbstractPostgreSQLDDLAdapter {
     
@@ -48,22 +51,17 @@ public abstract class AbstractPostgreSQLDDLAdapter {
     
     private final int minorVersion;
     
-    protected AbstractPostgreSQLDDLAdapter(final Connection connection, final int majorVersion, final int minorVersion) {
-        this.connection = connection;
-        this.majorVersion = majorVersion;
-        this.minorVersion = minorVersion;
-    }
-    
-    @SneakyThrows(SQLException.class)
     protected Collection<Map<String, Object>> executeByTemplate(final Map<String, Object> params, final String path) {
         try (
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(PostgreSQLPipelineFreemarkerManager.getSQLByVersion(params, path, majorVersion, minorVersion))) {
             return getRows(resultSet);
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
         }
     }
     
-    protected Collection<Map<String, Object>> getRows(final ResultSet resultSet) throws SQLException {
+    private Collection<Map<String, Object>> getRows(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         Collection<Map<String, Object>> result = new LinkedList<>();
         while (resultSet.next()) {
@@ -72,6 +70,27 @@ public abstract class AbstractPostgreSQLDDLAdapter {
                 row.put(metaData.getColumnName(i), resultSet.getObject(i));
             }
             result.add(row);
+        }
+        return result;
+    }
+    
+    protected Map<String, Object> executeByTemplateForSingleRow(final Map<String, Object> params, final String path) {
+        try (
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(PostgreSQLPipelineFreemarkerManager.getSQLByVersion(params, path, majorVersion, minorVersion))) {
+            return getSingleRow(resultSet);
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
+        }
+    }
+    
+    private Map<String, Object> getSingleRow(final ResultSet resultSet) throws SQLException {
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        Map<String, Object> result = new LinkedHashMap<>();
+        if (resultSet.next()) {
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                result.put(metaData.getColumnName(i), resultSet.getObject(i));
+            }
         }
         return result;
     }

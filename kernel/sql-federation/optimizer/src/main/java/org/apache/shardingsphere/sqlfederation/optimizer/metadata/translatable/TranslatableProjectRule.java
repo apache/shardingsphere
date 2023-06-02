@@ -43,12 +43,12 @@ public class TranslatableProjectRule extends RelOptRule {
     @Override
     public void onMatch(final RelOptRuleCall call) {
         LogicalProject project = call.rel(0);
-        TranslatableTableScan scan = call.rel(1);
         int[] fields = getProjectFields(project.getProjects());
-        List<RexNode> expressions = project.getProjects();
         if (0 == fields.length) {
             return;
         }
+        TranslatableTableScan scan = call.rel(1);
+        List<RexNode> expressions = project.getProjects();
         if (fields.length == expressions.size()) {
             call.transformTo(new TranslatableTableScan(scan.getCluster(), scan.getTable(), scan.getTranslatableTable(), scan.getFilters(), fields));
         } else {

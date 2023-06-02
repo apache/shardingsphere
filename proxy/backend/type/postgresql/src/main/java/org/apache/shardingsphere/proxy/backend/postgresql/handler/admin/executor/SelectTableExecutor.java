@@ -48,8 +48,8 @@ public final class SelectTableExecutor extends DefaultDatabaseMetaDataExecutor {
     
     private List<String> tableNames;
     
-    public SelectTableExecutor(final String sql) {
-        super(sql);
+    public SelectTableExecutor(final String sql, final List<Object> parameters) {
+        super(sql, parameters);
     }
     
     @Override
@@ -60,20 +60,20 @@ public final class SelectTableExecutor extends DefaultDatabaseMetaDataExecutor {
     }
     
     @Override
-    protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
+    protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
         Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getGrantee())).collect(Collectors.toList());
         return databaseNames.stream().filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
     }
     
     @Override
-    protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
+    protected void preProcess(final String databaseName, final Map<String, Object> rows, final Map<String, String> alias) {
         if (actualTableName.isEmpty()) {
-            actualTableName = aliasMap.getOrDefault(REL_NAME, aliasMap.getOrDefault(TABLE_NAME, aliasMap.getOrDefault(NAME, aliasMap.getOrDefault(REF_NAME, ""))));
+            actualTableName = alias.getOrDefault(REL_NAME, alias.getOrDefault(TABLE_NAME, alias.getOrDefault(NAME, alias.getOrDefault(REF_NAME, ""))));
         }
     }
     
     @Override
-    protected void createPreProcessing() {
+    protected void postProcess() {
         if (actualTableName.isEmpty()) {
             return;
         }

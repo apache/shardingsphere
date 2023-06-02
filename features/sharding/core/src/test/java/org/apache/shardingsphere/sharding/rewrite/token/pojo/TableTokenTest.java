@@ -33,10 +33,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class TableTokenTest {
+class TableTokenTest {
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         TableToken tableToken = new TableToken(0, 0, new IdentifierValue("t_order"), mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class));
         RouteUnit routeUnit = mock(RouteUnit.class);
         when(routeUnit.getTableMappers()).thenReturn(Collections.singletonList(new RouteMapper("t_order", "t_order_0")));

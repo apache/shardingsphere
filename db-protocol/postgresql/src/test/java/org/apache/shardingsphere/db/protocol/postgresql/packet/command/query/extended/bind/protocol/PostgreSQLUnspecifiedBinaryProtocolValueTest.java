@@ -32,15 +32,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-public final class PostgreSQLUnspecifiedBinaryProtocolValueTest {
+class PostgreSQLUnspecifiedBinaryProtocolValueTest {
     
     @Test
-    public void assertGetColumnLength() {
+    void assertGetColumnLength() {
         assertThrows(UnsupportedSQLOperationException.class, () -> new PostgreSQLUnspecifiedBinaryProtocolValue().getColumnLength("val"));
     }
     
     @Test
-    public void assertRead() {
+    void assertRead() {
         String timestampStr = "2020-08-23 15:57:03+08";
         int expectedLength = 4 + timestampStr.length();
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
@@ -55,7 +55,7 @@ public final class PostgreSQLUnspecifiedBinaryProtocolValueTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         assertThrows(UnsupportedSQLOperationException.class, () -> new PostgreSQLUnspecifiedBinaryProtocolValue().write(mock(PostgreSQLPacketPayload.class), "val"));
     }
 }

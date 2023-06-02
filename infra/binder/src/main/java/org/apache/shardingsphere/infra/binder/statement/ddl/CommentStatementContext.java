@@ -31,7 +31,7 @@ import java.util.Collections;
  * Comment statement context.
  */
 @Getter
-public final class CommentStatementContext extends CommonSQLStatementContext<CommentStatement> implements TableAvailable {
+public final class CommentStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
@@ -41,7 +41,12 @@ public final class CommentStatementContext extends CommonSQLStatementContext<Com
     }
     
     @Override
+    public CommentStatement getSqlStatement() {
+        return (CommentStatement) super.getSqlStatement();
+    }
+    
+    @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getTables();
+        return tablesContext.getSimpleTableSegments();
     }
 }

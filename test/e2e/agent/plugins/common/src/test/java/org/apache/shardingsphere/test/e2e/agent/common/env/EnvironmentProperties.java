@@ -35,11 +35,12 @@ public final class EnvironmentProperties {
      * 
      * @param propsFileName properties file name
      * @return properties
+     * @throws RuntimeException runtime exception
      */
     @SuppressWarnings("AccessOfSystemProperties")
     public static Properties loadProperties(final String propsFileName) {
         Properties result = new Properties();
-        try (InputStream inputStream = EnvironmentProperties.class.getClassLoader().getResourceAsStream(propsFileName)) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(propsFileName)) {
             result.load(inputStream);
         } catch (final IOException ex) {
             throw new RuntimeException(ex);

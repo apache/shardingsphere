@@ -41,21 +41,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class TransactionRuleTest {
+class TransactionRuleTest {
     
     private static final String SHARDING_DB_1 = "sharding_db_1";
     
     private static final String SHARDING_DB_2 = "sharding_db_2";
     
     @Test
-    public void assertInitTransactionRuleWithMultiDatabaseType() {
+    void assertInitTransactionRuleWithMultiDatabaseType() {
         TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
         assertNotNull(actual.getResource());
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
-    public void assertAddResource() {
+    void assertAddResource() {
         TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
         actual.addResource(createAddDatabase());
         assertNotNull(actual.getResource());
@@ -76,7 +76,7 @@ public final class TransactionRuleTest {
     }
     
     @Test
-    public void assertCloseStaleResource() {
+    void assertCloseStaleResource() {
         TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
         actual.closeStaleResource(SHARDING_DB_1);
         assertTrue(actual.getDatabases().isEmpty());
@@ -84,14 +84,14 @@ public final class TransactionRuleTest {
     }
     
     @Test
-    public void assertCloseAllStaleResources() {
+    void assertCloseAllStaleResources() {
         TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
         actual.closeStaleResource();
         assertTrue(actual.getDatabases().isEmpty());
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
-    private static ShardingSphereDatabase createDatabase() {
+    private ShardingSphereDatabase createDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         ShardingSphereResourceMetaData resourceMetaData = createResourceMetaData();
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
@@ -99,20 +99,20 @@ public final class TransactionRuleTest {
         return result;
     }
     
-    private static ShardingSphereResourceMetaData createResourceMetaData() {
+    private ShardingSphereResourceMetaData createResourceMetaData() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1);
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         when(result.getDataSources()).thenReturn(dataSourceMap);
-        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1);
+        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
         databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
         databaseTypes.put("ds_1", new OpenGaussDatabaseType());
         when(result.getStorageTypes()).thenReturn(databaseTypes);
         return result;
     }
     
-    private static ShardingSphereDatabase createAddDatabase() {
+    private ShardingSphereDatabase createAddDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         ShardingSphereResourceMetaData resourceMetaData = createAddResourceMetaData();
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
@@ -120,20 +120,20 @@ public final class TransactionRuleTest {
         return result;
     }
     
-    private static ShardingSphereResourceMetaData createAddResourceMetaData() {
+    private ShardingSphereResourceMetaData createAddResourceMetaData() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1);
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         when(result.getDataSources()).thenReturn(dataSourceMap);
-        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1);
+        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
         databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
         databaseTypes.put("ds_1", new OpenGaussDatabaseType());
         when(result.getStorageTypes()).thenReturn(databaseTypes);
         return result;
     }
     
-    private static TransactionRuleConfiguration createTransactionRuleConfiguration() {
+    private TransactionRuleConfiguration createTransactionRuleConfiguration() {
         TransactionRuleConfiguration result = mock(TransactionRuleConfiguration.class);
         when(result.getDefaultType()).thenReturn("XA");
         when(result.getProviderType()).thenReturn("Atomikos");

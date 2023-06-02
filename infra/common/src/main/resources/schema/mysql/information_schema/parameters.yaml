@@ -91,7 +91,7 @@ columns:
     visible: true
   numeric_precision:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMERIC_PRECISION
     primaryKey: false
@@ -107,7 +107,7 @@ columns:
     visible: true
   datetime_precision:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: DATETIME_PRECISION
     primaryKey: false

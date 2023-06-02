@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -63,20 +62,20 @@ public final class ShowUnusedShardingAlgorithmsExecutor implements RQLExecutor<S
     private Collection<String> getUsedShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
         shardingRuleConfig.getTables().forEach(each -> {
-            if (Objects.nonNull(each.getDatabaseShardingStrategy())) {
+            if (null != each.getDatabaseShardingStrategy()) {
                 result.add(each.getDatabaseShardingStrategy().getShardingAlgorithmName());
             }
-            if (Objects.nonNull(each.getTableShardingStrategy())) {
+            if (null != each.getTableShardingStrategy()) {
                 result.add(each.getTableShardingStrategy().getShardingAlgorithmName());
             }
         });
-        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy())).forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
+        shardingRuleConfig.getAutoTables().stream().filter(each -> null != each.getShardingStrategy()).forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
         ShardingStrategyConfiguration tableShardingStrategy = shardingRuleConfig.getDefaultTableShardingStrategy();
-        if (Objects.nonNull(tableShardingStrategy) && !Strings.isNullOrEmpty(tableShardingStrategy.getShardingAlgorithmName())) {
+        if (null != tableShardingStrategy && !Strings.isNullOrEmpty(tableShardingStrategy.getShardingAlgorithmName())) {
             result.add(tableShardingStrategy.getShardingAlgorithmName());
         }
         ShardingStrategyConfiguration databaseShardingStrategy = shardingRuleConfig.getDefaultDatabaseShardingStrategy();
-        if (Objects.nonNull(databaseShardingStrategy) && !Strings.isNullOrEmpty(databaseShardingStrategy.getShardingAlgorithmName())) {
+        if (null != databaseShardingStrategy && !Strings.isNullOrEmpty(databaseShardingStrategy.getShardingAlgorithmName())) {
             result.add(databaseShardingStrategy.getShardingAlgorithmName());
         }
         return result;
@@ -87,8 +86,8 @@ public final class ShowUnusedShardingAlgorithmsExecutor implements RQLExecutor<S
         return Arrays.asList("name", "type", "props");
     }
     
-    private Object buildProps(final Properties props) {
-        return Objects.nonNull(props) ? PropertiesConverter.convert(props) : "";
+    private String buildProps(final Properties props) {
+        return null == props ? "" : PropertiesConverter.convert(props);
     }
     
     @Override

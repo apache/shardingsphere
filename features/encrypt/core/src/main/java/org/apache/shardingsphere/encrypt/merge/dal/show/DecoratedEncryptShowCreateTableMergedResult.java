@@ -30,7 +30,7 @@ public final class DecoratedEncryptShowCreateTableMergedResult extends EncryptSh
     
     private final MergedResult mergedResult;
     
-    public DecoratedEncryptShowCreateTableMergedResult(final MergedResult mergedResult, final SQLStatementContext<?> sqlStatementContext, final EncryptRule encryptRule) {
+    public DecoratedEncryptShowCreateTableMergedResult(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         super(sqlStatementContext, encryptRule);
         this.mergedResult = mergedResult;
     }

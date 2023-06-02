@@ -37,41 +37,41 @@ import java.util.Objects;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlShardingSphereDataSourceFactoryTest {
+class YamlShardingSphereDataSourceFactoryTest {
     
     @Test
-    public void assertCreateDataSourceWithFile() throws Exception {
+    void assertCreateDataSourceWithFile() throws Exception {
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new File(getYamlFileUrl().toURI())));
     }
     
     @Test
-    public void assertCreateDataSourceWithBytes() throws SQLException, IOException {
+    void assertCreateDataSourceWithBytes() throws SQLException, IOException {
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(readFile(getYamlFileUrl()).getBytes()));
     }
     
     @Test
-    public void assertCreateDataSourceWithFileForExternalDataSources() throws Exception {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+    void assertCreateDataSourceWithFileForExternalDataSources() throws Exception {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(getYamlFileUrl().toURI())));
     }
     
     @Test
-    public void assertCreateDataSourceWithFileForExternalSingleDataSource() throws Exception {
+    void assertCreateDataSourceWithFileForExternalSingleDataSource() throws Exception {
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), new File(getYamlFileUrl().toURI())));
     }
     
     @Test
-    public void assertCreateDataSourceWithBytesForExternalDataSources() throws Exception {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+    void assertCreateDataSourceWithBytesForExternalDataSources() throws Exception {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, readFile(getYamlFileUrl()).getBytes()));
     }
     
     @Test
-    public void assertCreateDataSourceWithBytesForExternalSingleDataSource() throws Exception {
+    void assertCreateDataSourceWithBytesForExternalSingleDataSource() throws Exception {
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), readFile(getYamlFileUrl()).getBytes()));
     }
     

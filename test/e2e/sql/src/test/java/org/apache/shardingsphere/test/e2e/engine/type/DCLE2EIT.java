@@ -36,15 +36,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 
 @E2ETestCaseSettings(SQLCommandType.DCL)
-public final class DCLE2EIT {
+class DCLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+    void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -57,7 +56,7 @@ public final class DCLE2EIT {
         }
     }
     
-    private void assertExecuteUpdate(final SingleE2EContainerComposer containerComposer) throws ParseException, SQLException {
+    private void assertExecuteUpdate(final SingleE2EContainerComposer containerComposer) throws SQLException {
         String sql = containerComposer.getSQL();
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
@@ -75,7 +74,7 @@ public final class DCLE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+    void assertExecute(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -88,7 +87,7 @@ public final class DCLE2EIT {
         }
     }
     
-    private void assertExecute(final SingleE2EContainerComposer containerComposer) throws ParseException, SQLException {
+    private void assertExecute(final SingleE2EContainerComposer containerComposer) throws SQLException {
         String sql = containerComposer.getSQL();
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {

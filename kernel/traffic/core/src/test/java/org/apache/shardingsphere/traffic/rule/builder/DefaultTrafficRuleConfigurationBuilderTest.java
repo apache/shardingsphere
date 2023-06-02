@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DefaultTrafficRuleConfigurationBuilderTest {
+class DefaultTrafficRuleConfigurationBuilderTest {
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         TrafficRuleConfiguration actual = new DefaultTrafficRuleConfigurationBuilder().build();
         assertTrue(actual.getTrafficStrategies().isEmpty());
         assertTrue(actual.getTrafficAlgorithms().isEmpty());

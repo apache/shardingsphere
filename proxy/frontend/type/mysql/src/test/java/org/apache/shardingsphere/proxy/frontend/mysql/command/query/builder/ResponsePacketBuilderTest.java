@@ -43,25 +43,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ResponsePacketBuilderTest {
+class ResponsePacketBuilderTest {
     
     @Test
-    public void assertBuildQueryResponsePackets() {
+    void assertBuildQueryResponsePackets() {
         QueryHeader queryHeader1 = new QueryHeader("schema1", "table1", "columnLabel1", "columnName1", 5, "VARCHAR", 4, 6, false, true, false, true);
         QueryHeader queryHeader2 = new QueryHeader("schema2", "table2", "columnLabel2", "columnName2", 8, "VARCHAR", 7, 9, false, true, true, true);
         List<QueryHeader> queryHeaders = Arrays.asList(queryHeader1, queryHeader2);
         QueryResponseHeader queryResponseHeader = new QueryResponseHeader(queryHeaders);
-        Collection<DatabasePacket<?>> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, 255, 0);
+        Collection<DatabasePacket> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, 255, 0);
         assertTrue(actual.stream().findAny().isPresent());
         assertThat(actual.stream().findAny().get(), anyOf(instanceOf(MySQLFieldCountPacket.class), instanceOf(MySQLColumnDefinition41Packet.class), instanceOf(MySQLEofPacket.class)));
     }
     
     @Test
-    public void assertBuildUpdateResponsePackets() {
+    void assertBuildUpdateResponsePackets() {
         UpdateResponseHeader updateResponseHeader = mock(UpdateResponseHeader.class);
         when(updateResponseHeader.getUpdateCount()).thenReturn(10L);
         when(updateResponseHeader.getLastInsertId()).thenReturn(100L);
-        Collection<DatabasePacket<?>> actual = ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, 0);
+        Collection<DatabasePacket> actual = ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, 0);
         assertTrue(actual.stream().findAny().isPresent());
         MySQLOKPacket actualItem = (MySQLOKPacket) actual.stream().findAny().get();
         assertThat(actualItem, instanceOf(MySQLOKPacket.class));
@@ -71,12 +71,12 @@ public final class ResponsePacketBuilderTest {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
-    public void assertBuildQueryResponsePacketsWithBinaryColumnType() {
+    void assertBuildQueryResponsePacketsWithBinaryColumnType() {
         QueryHeader nonBinaryHeader = new QueryHeader("s", "t", "columnLabel1", "columnName1", 5, "VARCHAR", 1, 1, false, false, false, false);
         QueryHeader binaryHeader = new QueryHeader("s", "t", "columnLabel2", "columnName2", 8, "VARBINARY", 1, 1, false, false, false, false);
         List<QueryHeader> queryHeaders = Arrays.asList(nonBinaryHeader, binaryHeader);
         QueryResponseHeader queryResponseHeader = new QueryResponseHeader(queryHeaders);
-        List<DatabasePacket<MySQLPacketPayload>> actual = new ArrayList(ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, 255, 0));
+        List<DatabasePacket> actual = new ArrayList(ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, 255, 0));
         assertThat(actual.size(), is(4));
         byte[] actualNonBinaryData = new byte[48];
         actual.get(1).write(new MySQLPacketPayload(Unpooled.wrappedBuffer(actualNonBinaryData).writerIndex(0), StandardCharsets.UTF_8));

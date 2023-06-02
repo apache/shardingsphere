@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,11 +58,11 @@ public final class MySQLContainerConfigurationFactory {
     }
     
     private static String getCommand() {
-        return "--server-id=" + ContainerUtil.generateMySQLServerId();
+        return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }
     
     private static Map<String, String> getContainerEnvironments() {
-        Map<String, String> result = new HashMap<>(2, 1);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         return result;

@@ -17,11 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.lock.impl;
 
-import org.apache.shardingsphere.infra.lock.GlobalLockNames;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStatusChangedEvent;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
@@ -32,18 +28,8 @@ import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 public class ClusterReadWriteLockStrategy implements ClusterLockStrategy {
     
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void lock() {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        LockContext lockContext = contextManager.getInstanceContext().getLockContext();
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
-        if (lockContext.tryLock(lockDefinition, 3000L)) {
-            try {
-                contextManager.getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.UNAVAILABLE));
-            } finally {
-                lockContext.unlock(lockDefinition);
-            }
-        }
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.UNAVAILABLE));
     }
     
     @Override

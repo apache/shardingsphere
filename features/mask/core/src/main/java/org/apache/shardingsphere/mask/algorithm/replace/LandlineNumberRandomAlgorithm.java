@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -32,6 +33,8 @@ import java.util.Random;
 public final class LandlineNumberRandomAlgorithm implements MaskAlgorithm<Object, String> {
     
     private static final String LANDLINE_NUMBERS = "landline-numbers";
+    
+    private final Random random = new SecureRandom();
     
     private List<String> landLineNumbers;
     
@@ -55,7 +58,6 @@ public final class LandlineNumberRandomAlgorithm implements MaskAlgorithm<Object
     }
     
     private String createRandValue(final String plainValue, final String landLineNumber) {
-        Random random = new Random();
         StringBuilder result = new StringBuilder();
         result.append(landLineNumbers.get(random.nextInt(landLineNumbers.size())));
         for (int i = landLineNumber.length(); i < plainValue.length(); i++) {

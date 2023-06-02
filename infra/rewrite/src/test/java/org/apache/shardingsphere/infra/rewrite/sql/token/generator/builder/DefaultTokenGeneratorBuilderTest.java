@@ -35,24 +35,24 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DefaultTokenGeneratorBuilderTest {
+class DefaultTokenGeneratorBuilderTest {
     
     @Test
-    public void assertGetSQLTokenGeneratorsWithShowTableStatus() {
+    void assertGetSQLTokenGeneratorsWithShowTableStatus() {
         ShowTableStatusStatementContext sqlStatementContext = mock(ShowTableStatusStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getRemoveSegments().isEmpty()).thenReturn(false);
         assertGetSQLTokenGenerators(sqlStatementContext);
     }
     
     @Test
-    public void assertGetSQLTokenGeneratorsWithSelect() {
+    void assertGetSQLTokenGeneratorsWithSelect() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(true);
         assertGetSQLTokenGenerators(sqlStatementContext);
     }
     
     @Test
-    public void assertGetSQLTokenGeneratorsWithShowColumns() {
+    void assertGetSQLTokenGeneratorsWithShowColumns() {
         ShowColumnsStatementContext sqlStatementContext = mock(ShowColumnsStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getRemoveSegments().isEmpty()).thenReturn(false);
         when(sqlStatementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(true);

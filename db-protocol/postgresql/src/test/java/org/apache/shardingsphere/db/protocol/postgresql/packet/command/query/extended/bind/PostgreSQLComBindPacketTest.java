@@ -29,21 +29,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PostgreSQLComBindPacketTest {
+class PostgreSQLComBindPacketTest {
     
     private static final byte[] BIND_MESSAGE_BYTES = {
             0x00, 0x00, 0x00, 0x19, 0x00, 0x53, 0x5f,
             0x31, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01,
             0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x0a,
-            0x00, 0x00,
+            0x00, 0x00
     };
     
     @Test
-    public void assertConstructPostgreSQLComBindPacket() {
+    void assertConstructPostgreSQLComBindPacket() {
         PostgreSQLComBindPacket actual = new PostgreSQLComBindPacket(new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(BIND_MESSAGE_BYTES), StandardCharsets.UTF_8));
         assertThat(actual.getPortal(), is(""));
         assertThat(actual.getStatementId(), is("S_1"));
-        assertThat(actual.readParameters(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4)), is(Collections.singletonList(10)));
+        assertThat(actual.readParameters(Collections.singletonList(PostgreSQLColumnType.INT4)), is(Collections.singletonList(10)));
         assertTrue(actual.readResultFormats().isEmpty());
     }
 }

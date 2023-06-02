@@ -38,7 +38,7 @@ import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigu
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLOptimizeEngine;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
+import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -60,7 +60,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SQLOptimizeEngineIT {
+class SQLOptimizeEngineIT {
     
     private static final String SCHEMA_NAME = "federate_jdbc";
     
@@ -69,7 +69,7 @@ public final class SQLOptimizeEngineIT {
     private SQLOptimizeEngine optimizeEngine;
     
     @BeforeEach
-    public void init() {
+    void init() {
         Map<String, ShardingSphereTable> tables = new HashMap<>();
         tables.put("t_order_federate", createOrderFederationTableMetaData());
         tables.put("t_user_info", createUserInfoTableMetaData());
@@ -83,7 +83,7 @@ public final class SQLOptimizeEngineIT {
         tables.put("t_product_detail", createTProductDetailMetaData());
         tables.put("multi_types_first", createMultiTypesFirstTableMetaData());
         tables.put("multi_types_second", createMultiTypesSecondTableMetaData());
-        optimizeEngine = new SQLOptimizeEngine(createSqlToRelConverter(new ShardingSphereSchema(tables, Collections.emptyMap())), SQLFederationPlannerUtil.createHepPlanner());
+        optimizeEngine = new SQLOptimizeEngine(createSqlToRelConverter(new ShardingSphereSchema(tables, Collections.emptyMap())), SQLFederationPlannerUtils.createHepPlanner());
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {
@@ -237,15 +237,15 @@ public final class SQLOptimizeEngineIT {
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType("H2");
         TranslatableSchema federationSchema = new TranslatableSchema(SCHEMA_NAME, schema, databaseType, new JavaTypeFactoryImpl(), null);
-        CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(SCHEMA_NAME, federationSchema, relDataTypeFactory, connectionConfig);
-        SqlValidator validator = SQLFederationPlannerUtil.createSqlValidator(catalogReader, relDataTypeFactory, databaseType, connectionConfig);
-        RelOptCluster cluster = RelOptCluster.create(SQLFederationPlannerUtil.createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
-        return SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator, cluster, mock(SQLParserRule.class), databaseType, false);
+        CalciteCatalogReader catalogReader = SQLFederationPlannerUtils.createCatalogReader(SCHEMA_NAME, federationSchema, relDataTypeFactory, connectionConfig);
+        SqlValidator validator = SQLFederationPlannerUtils.createSqlValidator(catalogReader, relDataTypeFactory, databaseType, connectionConfig);
+        RelOptCluster cluster = RelOptCluster.create(SQLFederationPlannerUtils.createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
+        return SQLFederationPlannerUtils.createSqlToRelConverter(catalogReader, validator, cluster, mock(SQLParserRule.class), databaseType, false);
     }
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertOptimize(final TestCase testcase) {
+    void assertOptimize(final TestCase testcase) {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType())).parse(testcase.getSql(), false);
         String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain().replaceAll("[\r\n]", "");
         assertThat(actual, is(testcase.getAssertion().getExpectedResult()));

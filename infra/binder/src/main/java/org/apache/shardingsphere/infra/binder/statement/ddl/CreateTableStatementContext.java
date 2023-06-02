@@ -38,13 +38,18 @@ import java.util.LinkedList;
  * Create table statement context.
  */
 @Getter
-public final class CreateTableStatementContext extends CommonSQLStatementContext<CreateTableStatement> implements TableAvailable, IndexAvailable, ConstraintAvailable {
+public final class CreateTableStatementContext extends CommonSQLStatementContext implements TableAvailable, IndexAvailable, ConstraintAvailable {
     
     private final TablesContext tablesContext;
     
     public CreateTableStatementContext(final CreateTableStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
+    }
+    
+    @Override
+    public CreateTableStatement getSqlStatement() {
+        return (CreateTableStatement) super.getSqlStatement();
     }
     
     @Override

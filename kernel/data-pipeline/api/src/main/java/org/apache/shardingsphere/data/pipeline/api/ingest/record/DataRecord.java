@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"tableName", "uniqueKeyValue"}, callSuper = false)
+@EqualsAndHashCode(of = "tableName", callSuper = false)
 @ToString
 public final class DataRecord extends Record {
     
@@ -49,7 +49,7 @@ public final class DataRecord extends Record {
     
     private Long csn;
     
-    public DataRecord(final IngestPosition<?> position, final int columnCount) {
+    public DataRecord(final IngestPosition position, final int columnCount) {
         super(position);
         columns = new ArrayList<>(columnCount);
     }

@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e-agent-plugins-logging</artifactId>
-        <version>5.3.2-SNAPSHOT</version>
+        <version>5.3.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-plugins-logging-file</artifactId>
     <name>${project.artifactId}</name>
@@ -86,7 +86,7 @@
                         <artifactId>maven-resources-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>copy-dockerfile</id>
+                                <id>copy-resources</id>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
@@ -100,18 +100,6 @@
                                                 <include>Dockerfile</include>
                                             </includes>
                                         </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>copy-resources</id>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <phase>validate</phase>
-                                <configuration>
-                                    <outputDirectory>${docker.proxy.context.directory}</outputDirectory>
-                                    <resources>
                                         <resource>
                                             <directory>${project.basedir}/../../../../../../distribution/proxy/target/</directory>
                                             <includes>

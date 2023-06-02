@@ -34,10 +34,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class YamlPipelineProcessConfigurationSwapperTest {
+class YamlPipelineProcessConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         PipelineProcessConfiguration actual = new YamlPipelineProcessConfigurationSwapper().swapToObject(createYamlConfiguration());
         assertThat(actual.getRead().getWorkerThread(), is(40));
         assertThat(actual.getRead().getBatchSize(), is(1000));
@@ -56,18 +56,27 @@ public final class YamlPipelineProcessConfigurationSwapperTest {
     
     private YamlPipelineProcessConfiguration createYamlConfiguration() {
         YamlPipelineReadConfiguration yamlInputConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
-        yamlInputConfig.setRateLimiter(new YamlAlgorithmConfiguration("INPUT", PropertiesBuilder.build(new Property("batch-size", "1000"), new Property("qps", "50"))));
+        YamlAlgorithmConfiguration yamlAlgorithmConfig = new YamlAlgorithmConfiguration();
+        yamlAlgorithmConfig.setType("INPUT");
+        yamlAlgorithmConfig.setProps(PropertiesBuilder.build(new Property("batch-size", "1000"), new Property("qps", "50")));
+        yamlInputConfig.setRateLimiter(yamlAlgorithmConfig);
         YamlPipelineProcessConfiguration result = new YamlPipelineProcessConfiguration();
         result.setRead(yamlInputConfig);
         YamlPipelineWriteConfiguration yamlOutputConfig = YamlPipelineWriteConfiguration.buildWithDefaultValue();
-        yamlOutputConfig.setRateLimiter(new YamlAlgorithmConfiguration("OUTPUT", PropertiesBuilder.build(new Property("batch-size", "1000"), new Property("qps", "50"))));
+        YamlAlgorithmConfiguration rateLimiterConfig = new YamlAlgorithmConfiguration();
+        rateLimiterConfig.setType("OUTPUT");
+        rateLimiterConfig.setProps(PropertiesBuilder.build(new Property("batch-size", "1000"), new Property("qps", "50")));
+        yamlOutputConfig.setRateLimiter(rateLimiterConfig);
         result.setWrite(yamlOutputConfig);
-        result.setStreamChannel(new YamlAlgorithmConfiguration("MEMORY", PropertiesBuilder.build(new Property("block-queue-size", "10000"))));
+        YamlAlgorithmConfiguration streamChannelConfig = new YamlAlgorithmConfiguration();
+        streamChannelConfig.setType("MEMORY");
+        streamChannelConfig.setProps(PropertiesBuilder.build(new Property("block-queue-size", "10000")));
+        result.setStreamChannel(streamChannelConfig);
         return result;
     }
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         PipelineReadConfiguration readConfig = new PipelineReadConfiguration(40, 1000, 10000000,
                 new AlgorithmConfiguration("INPUT", PropertiesBuilder.build(new Property("batch-size", "1000"), new Property("qps", "50"))));
         PipelineWriteConfiguration writeConfig = new PipelineWriteConfiguration(40, 1000,
@@ -91,12 +100,12 @@ public final class YamlPipelineProcessConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToYamlConfigurationWithNull() {
+    void assertSwapToYamlConfigurationWithNull() {
         assertNull(new YamlPipelineProcessConfigurationSwapper().swapToYamlConfiguration(null));
     }
     
     @Test
-    public void assertSwapToObjectWithNull() {
+    void assertSwapToObjectWithNull() {
         assertNull(new YamlPipelineProcessConfigurationSwapper().swapToObject(null));
     }
 }

@@ -43,29 +43,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public final class DropShadowRuleStatementUpdaterTest {
+class DropShadowRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertCheckWithNullConfiguration() {
+    void assertCheckWithNullConfiguration() {
         assertThrows(MissingRequiredRuleException.class, () -> new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("anyRuleName"), null));
     }
     
     @Test
-    public void assertCheckWithRuleNotExisted() {
+    void assertCheckWithRuleNotExisted() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("notExistedRuleName"), mock(ShadowRuleConfiguration.class)));
     }
     
     @Test
-    public void assertCheckWithIfExists() {
+    void assertCheckWithIfExists() {
         new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement(true, "notExistedRuleName"), mock(ShadowRuleConfiguration.class));
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithUnusedAlgorithms() {
+    void assertUpdateCurrentRuleConfigurationWithUnusedAlgorithms() {
         DropShadowRuleStatement sqlStatement = createSQLStatement("shadow_group");
         ShadowRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropShadowRuleStatementUpdater updater = new DropShadowRuleStatementUpdater();
@@ -77,7 +77,7 @@ public final class DropShadowRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateMultipleCurrentRuleConfigurationWithInUsedAlgorithms() {
+    void assertUpdateMultipleCurrentRuleConfigurationWithInUsedAlgorithms() {
         DropShadowRuleStatement sqlStatement = createSQLStatement("shadow_group");
         ShadowRuleConfiguration ruleConfig = createMultipleCurrentRuleConfiguration();
         DropShadowRuleStatementUpdater updater = new DropShadowRuleStatementUpdater();

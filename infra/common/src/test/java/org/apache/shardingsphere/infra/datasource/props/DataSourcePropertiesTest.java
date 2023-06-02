@@ -35,11 +35,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DataSourcePropertiesTest {
+class DataSourcePropertiesTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGetDataSourceConfigurationWithConnectionInitSqls() {
+    void assertGetDataSourceConfigurationWithConnectionInitSqls() {
         MockedDataSource actualDataSource = new MockedDataSource();
         actualDataSource.setDriverClassName(MockedDataSource.class.getName());
         actualDataSource.setUrl("jdbc:mock://127.0.0.1/foo_ds");
@@ -59,7 +59,7 @@ public final class DataSourcePropertiesTest {
     }
     
     @Test
-    public void assertGetAllLocalProperties() {
+    void assertGetAllLocalProperties() {
         DataSourceProperties originalDataSourceProps = new DataSourceProperties(MockedDataSource.class.getName(), getProperties());
         Map<String, Object> actualAllProps = originalDataSourceProps.getAllLocalProperties();
         assertThat(actualAllProps.size(), is(7));
@@ -80,7 +80,7 @@ public final class DataSourcePropertiesTest {
     }
     
     private Map<String, Object> getProperties() {
-        Map<String, Object> result = new HashMap<>(7, 1);
+        Map<String, Object> result = new HashMap<>(7, 1F);
         result.put("driverClassName", MockedDataSource.class.getName());
         result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
@@ -92,55 +92,55 @@ public final class DataSourcePropertiesTest {
     }
     
     @Test
-    public void assertEquals() {
+    void assertEquals() {
         assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")),
                 is(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root"))));
     }
     
     @Test
-    public void assertNotEqualsWithNullValue() {
-        assertNotEquals(new DataSourceProperties(MockedDataSource.class.getName(), new HashMap<>()), null);
+    void assertNotEqualsWithNullValue() {
+        assertNotEquals(null, new DataSourceProperties(MockedDataSource.class.getName(), new HashMap<>()));
     }
     
     @Test
-    public void assertNotEqualsWithDifferentDataSourceClassName() {
+    void assertNotEqualsWithDifferentDataSourceClassName() {
         assertThat(new DataSourceProperties("FooDataSourceClass", new HashMap<>()), not(new DataSourceProperties("BarDataSourceClass", new HashMap<>())));
     }
     
     @Test
-    public void assertNotEqualsWithDifferentProperties() {
+    void assertNotEqualsWithDifferentProperties() {
         DataSourceProperties actual = new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("foo"));
         DataSourceProperties expected = new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("bar"));
         assertThat(actual, not(expected));
     }
     
     @Test
-    public void assertSameHashCode() {
+    void assertSameHashCode() {
         assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")).hashCode(),
                 is(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")).hashCode()));
     }
     
     @Test
-    public void assertDifferentHashCodeWithDifferentDataSourceClassName() {
+    void assertDifferentHashCodeWithDifferentDataSourceClassName() {
         assertThat(new DataSourceProperties("FooDataSourceClass", createUserProperties("foo")).hashCode(),
                 not(new DataSourceProperties("BarDataSourceClass", createUserProperties("foo")).hashCode()));
     }
     
     @Test
-    public void assertDifferentHashCodeWithDifferentProperties() {
+    void assertDifferentHashCodeWithDifferentProperties() {
         assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("foo")).hashCode(),
                 not(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("bar")).hashCode()));
     }
     
     private Map<String, Object> createUserProperties(final String username) {
-        Map<String, Object> result = new LinkedHashMap<>(2, 1);
+        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         result.put("username", username);
         result.put("dataSourceProperties", getDataSourceProperties());
         return result;
     }
     
     private Map<String, String> getDataSourceProperties() {
-        Map<String, String> result = new LinkedHashMap<>(3, 1);
+        Map<String, String> result = new LinkedHashMap<>(3, 1F);
         result.put("maintainTimeStats", "false");
         result.put("rewriteBatchedStatements", "true");
         result.put("useLocalSessionState", "true");

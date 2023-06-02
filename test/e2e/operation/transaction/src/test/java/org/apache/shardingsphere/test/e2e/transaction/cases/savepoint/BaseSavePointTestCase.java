@@ -30,7 +30,7 @@ import java.sql.Savepoint;
  */
 public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
     
-    public BaseSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
+    protected BaseSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     
@@ -63,6 +63,18 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
             assertAccountRowCount(connection, 3);
             connection.commit();
             assertAccountRowCount(connection, 3);
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertAccountRowCount(connection, 3);
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(4, 4, 4);");
+            executeWithLog(connection, "SAVEPOINT point1");
+            assertAccountRowCount(connection, 4);
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(5, 5, 5);");
+            assertAccountRowCount(connection, 5);
+            executeWithLog(connection, "RELEASE SAVEPOINT point1");
+            assertAccountRowCount(connection, 5);
+            connection.commit();
         }
     }
 }

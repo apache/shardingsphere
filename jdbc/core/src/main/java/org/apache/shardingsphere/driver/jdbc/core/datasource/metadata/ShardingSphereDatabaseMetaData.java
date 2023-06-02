@@ -57,7 +57,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     @Override
     public Connection getConnection() throws SQLException {
         if (null == currentPhysicalConnection) {
-            currentPhysicalConnection = connection.getConnectionManager().getRandomConnection();
+            currentPhysicalConnection = connection.getDatabaseConnectionManager().getRandomConnection();
         }
         return currentPhysicalConnection;
     }
@@ -214,7 +214,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
-        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(each -> (DataNodeContainedRule) each);
+        return rules.stream().filter(DataNodeContainedRule.class::isInstance).findFirst().map(DataNodeContainedRule.class::cast);
     }
     
     private ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {
@@ -235,7 +235,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private String getDataSourceName() {
         if (null == currentPhysicalDataSourceName) {
-            currentPhysicalDataSourceName = connection.getConnectionManager().getRandomPhysicalDataSourceName();
+            currentPhysicalDataSourceName = connection.getDatabaseConnectionManager().getRandomPhysicalDataSourceName();
         }
         return currentPhysicalDataSourceName;
     }

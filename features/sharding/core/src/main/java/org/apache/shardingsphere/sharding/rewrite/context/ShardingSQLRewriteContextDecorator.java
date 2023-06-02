@@ -36,7 +36,6 @@ import java.util.Collection;
 @Setter
 public final class ShardingSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShardingRule> {
     
-    @SuppressWarnings("rawtypes")
     @Override
     public void decorate(final ShardingRule shardingRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         if (!sqlRewriteContext.getParameters().isEmpty()) {
@@ -47,7 +46,6 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
         sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, routeContext, sqlRewriteContext.getSqlStatementContext()).getSQLTokenGenerators());
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private void rewriteParameters(final SQLRewriteContext sqlRewriteContext, final Collection<ParameterRewriter> parameterRewriters) {
         for (ParameterRewriter each : parameterRewriters) {
             each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());

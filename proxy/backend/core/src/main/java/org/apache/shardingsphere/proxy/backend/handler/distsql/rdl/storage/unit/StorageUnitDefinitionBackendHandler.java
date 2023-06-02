@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
  */
 public abstract class StorageUnitDefinitionBackendHandler<T extends StorageUnitDefinitionStatement> extends RDLBackendHandler<T> {
     
-    public StorageUnitDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
+    protected StorageUnitDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
     }
     

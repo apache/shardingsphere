@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLBinlogTableMapEventPacketTest {
+class MySQLBinlogTableMapEventPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -51,11 +51,11 @@ public final class MySQLBinlogTableMapEventPacketTest {
     private MySQLBinlogEventHeader binlogEventHeader;
     
     @Test
-    public void assertNew() {
+    void assertNew() {
         when(payload.readInt6()).thenReturn(1L);
         when(payload.readInt2()).thenReturn(0, 255);
-        when(payload.readInt1()).thenReturn(4, 4, MySQLBinaryColumnType.MYSQL_TYPE_LONGLONG.getValue(), MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR.getValue(),
-                MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL.getValue(), MySQLBinaryColumnType.MYSQL_TYPE_DATETIME2.getValue(), 11,
+        when(payload.readInt1()).thenReturn(4, 4, MySQLBinaryColumnType.LONGLONG.getValue(), MySQLBinaryColumnType.VARCHAR.getValue(),
+                MySQLBinaryColumnType.NEWDECIMAL.getValue(), MySQLBinaryColumnType.DATETIME2.getValue(), 11,
                 0x0e);
         when(payload.readStringFix(4)).thenReturn("test");
         when(payload.readIntLenenc()).thenReturn(4L);
@@ -76,10 +76,10 @@ public final class MySQLBinlogTableMapEventPacketTest {
     private void assertColumnDefs(final Collection<MySQLBinlogColumnDef> columnDefs) {
         assertThat(columnDefs.size(), is(4));
         Iterator<MySQLBinlogColumnDef> columnDefIterator = columnDefs.iterator();
-        assertColumnDef(columnDefIterator.next(), MySQLBinaryColumnType.MYSQL_TYPE_LONGLONG, 0);
-        assertColumnDef(columnDefIterator.next(), MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, 255);
-        assertColumnDef(columnDefIterator.next(), MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL, 10);
-        assertColumnDef(columnDefIterator.next(), MySQLBinaryColumnType.MYSQL_TYPE_DATETIME2, 11);
+        assertColumnDef(columnDefIterator.next(), MySQLBinaryColumnType.LONGLONG, 0);
+        assertColumnDef(columnDefIterator.next(), MySQLBinaryColumnType.VARCHAR, 255);
+        assertColumnDef(columnDefIterator.next(), MySQLBinaryColumnType.NEWDECIMAL, 10);
+        assertColumnDef(columnDefIterator.next(), MySQLBinaryColumnType.DATETIME2, 11);
     }
     
     private void assertColumnDef(final MySQLBinlogColumnDef actual, final MySQLBinaryColumnType columnType, final int columnMeta) {

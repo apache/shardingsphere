@@ -26,20 +26,20 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class StorageNodeTest {
+class StorageNodeTest {
     
     @Test
-    public void assertGetRootPath() {
+    void assertGetRootPath() {
         assertThat(StorageNode.getRootPath(), is("/nodes/storage_nodes"));
     }
     
     @Test
-    public void assertGetStorageNodesDataSourcePath() {
+    void assertGetStorageNodesDataSourcePath() {
         assertThat(StorageNode.getStorageNodesDataSourcePath("replica_query_db.readwrite_ds.replica_ds_0"), is("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0"));
     }
     
     @Test
-    public void assertExtractQualifiedDatabase() {
+    void assertExtractQualifiedDatabase() {
         Optional<QualifiedDatabase> actual = StorageNode.extractQualifiedDatabase("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabaseName(), is("replica_query_db"));

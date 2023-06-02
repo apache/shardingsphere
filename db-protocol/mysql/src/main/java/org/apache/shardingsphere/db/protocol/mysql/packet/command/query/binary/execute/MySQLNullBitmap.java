@@ -24,7 +24,7 @@ import lombok.Getter;
 /**
  * Null bitmap for MySQL.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/null-bitmap.html">NULL-Bitmap</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_binary_resultset.html#sect_protocol_binary_resultset_row_null_bitmap">NULL-Bitmap</a>
  */
 public final class MySQLNullBitmap {
     

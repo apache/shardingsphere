@@ -46,7 +46,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLComExecuteExecutorTest {
+class PostgreSQLComExecuteExecutorTest {
     
     @Mock
     private PortalContext portalContext;
@@ -61,36 +61,36 @@ public final class PostgreSQLComExecuteExecutorTest {
     private PostgreSQLComExecuteExecutor executor;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(packet.getPortal()).thenReturn("");
         when(portalContext.get(anyString())).thenReturn(portal);
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         PostgreSQLPacket expectedPacket = mock(PostgreSQLPacket.class);
         when(portal.execute(anyInt())).thenReturn(Collections.singletonList(expectedPacket));
-        List<DatabasePacket<?>> actualPackets = executor.execute();
+        List<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(expectedPacket));
     }
     
     @Test
-    public void assertCloseExecutorWhenPortalIsNotAnyTclStatement() throws SQLException {
+    void assertCloseExecutorWhenPortalIsNotAnyTclStatement() throws SQLException {
         when(portal.getSqlStatement()).thenReturn(mock(SQLStatement.class));
         executor.close();
         verify(portalContext, never()).closeAll();
     }
     
     @Test
-    public void assertCloseExecutorWhenPortalCommitStatement() throws SQLException {
+    void assertCloseExecutorWhenPortalCommitStatement() throws SQLException {
         when(portal.getSqlStatement()).thenReturn(mock(CommitStatement.class));
         executor.close();
         verify(portalContext).closeAll();
     }
     
     @Test
-    public void assertCloseExecutorWhenPortalRollbackStatement() throws SQLException {
+    void assertCloseExecutorWhenPortalRollbackStatement() throws SQLException {
         when(portal.getSqlStatement()).thenReturn(mock(RollbackStatement.class));
         executor.close();
         verify(portalContext).closeAll();

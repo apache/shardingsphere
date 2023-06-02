@@ -47,8 +47,8 @@ namespace
    ├    ├     ├──worker_id
    ├    ├     ├     ├──UUID
    ├    ├     ├     ├──....
-   ├    ├     ├──process_trigger
-   ├    ├     ├     ├──process_list_id:UUID
+   ├    ├     ├──show_process_list_trigger
+   ├    ├     ├     ├──process_id:UUID
    ├    ├     ├     ├──....
    ├    ├     ├──labels                      
    ├    ├     ├     ├──UUID
@@ -71,10 +71,10 @@ namespace
 These are the global rule configurations, which can include transaction configuration, SQL parser configuration, etc.
 
 ```yaml
-- !TRANSACTION
+transaction:
   defaultType: XA
   providerType: Atomikos
-- !SQL_PARSER
+sqlParser:
   sqlCommentParseEnabled: true
 ```
 

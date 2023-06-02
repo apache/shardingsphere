@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.DirectionType;
@@ -51,17 +51,17 @@ public final class FetchDirectionToken extends SQLToken implements Substitutable
     
     @Override
     public String toString() {
-        long actualFetchCount = Math.max(fetchCount - connectionContext.getCursorConnectionContext().getMinGroupRowCounts().getOrDefault(cursorName, 0L), 0);
+        long actualFetchCount = Math.max(fetchCount - connectionContext.getCursorContext().getMinGroupRowCounts().getOrDefault(cursorName, 0L), 0);
         if (DirectionType.isForwardCountDirectionType(directionType)) {
             return " FORWARD " + actualFetchCount + " ";
         }
         if (DirectionType.isBackwardCountDirectionType(directionType)) {
             return " BACKWARD " + actualFetchCount + " ";
         }
-        if (DirectionType.ABSOLUTE_COUNT.equals(directionType)) {
+        if (DirectionType.ABSOLUTE_COUNT == directionType) {
             return " ABSOLUTE " + actualFetchCount + " ";
         }
-        if (DirectionType.RELATIVE_COUNT.equals(directionType)) {
+        if (DirectionType.RELATIVE_COUNT == directionType) {
             return " RELATIVE " + actualFetchCount + " ";
         }
         return directionType.getName();

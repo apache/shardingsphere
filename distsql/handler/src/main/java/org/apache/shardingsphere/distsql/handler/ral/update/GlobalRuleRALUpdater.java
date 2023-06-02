@@ -24,6 +24,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * RAL updater for global rule.
+ * 
+ * @param <T> type of SQL statement
+ * @param <R> type of rule configuration
  */
 @SingletonSPI
 public interface GlobalRuleRALUpdater<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {

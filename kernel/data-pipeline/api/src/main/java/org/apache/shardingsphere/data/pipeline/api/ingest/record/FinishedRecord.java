@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 @ToString(callSuper = true)
 public final class FinishedRecord extends Record {
     
-    public FinishedRecord(final IngestPosition<?> position) {
+    public FinishedRecord(final IngestPosition position) {
         super(position);
     }
 }

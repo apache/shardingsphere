@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.connection;
 
+import io.netty.channel.ChannelHandlerContext;
 import lombok.SneakyThrows;
 
 import java.util.concurrent.TimeUnit;
@@ -37,14 +38,20 @@ public final class ResourceLock {
     
     /**
      * Await.
+     *
+     * @param context channel handler context
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @SneakyThrows(InterruptedException.class)
-    public void doAwait() {
-        lock.lock();
-        try {
-            condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
-        } finally {
-            lock.unlock();
+    public void doAwait(final ChannelHandlerContext context) {
+        while (!context.channel().isWritable() && context.channel().isActive()) {
+            context.flush();
+            lock.lock();
+            try {
+                condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
+            } finally {
+                lock.unlock();
+            }
         }
     }
     

@@ -102,7 +102,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         String collationName = resultSet.getString("COLLATION_NAME");
         boolean primaryKey = "1".equals(resultSet.getString("IS_PRIMARY_KEY"));
         boolean generated = "1".equals(resultSet.getString("IS_IDENTITY"));
-        boolean caseSensitive = null != collationName && collationName.indexOf("_CS") > 0;
+        boolean caseSensitive = null != collationName && collationName.contains("_CS");
         boolean isVisible = !(versionContainsHiddenColumn(databaseMetaData) && "1".equals(resultSet.getString("IS_HIDDEN")));
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible, false);
     }
@@ -112,9 +112,9 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         if (versionContainsHiddenColumn(databaseMetaData)) {
             stringBuilder.append("is_hidden AS IS_HIDDEN,");
         }
-        String isHidden = stringBuilder.toString();
-        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, isHidden)
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, isHidden, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        String hiddenFlag = stringBuilder.toString();
+        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, hiddenFlag)
+                : String.format(TABLE_META_DATA_SQL_IN_TABLES, hiddenFlag, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private boolean versionContainsHiddenColumn(final DatabaseMetaData databaseMetaData) throws SQLException {

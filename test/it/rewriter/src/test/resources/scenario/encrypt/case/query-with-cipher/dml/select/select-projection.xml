@@ -24,12 +24,12 @@
     
     <rewrite-assertion id="select_with_qualified_shorthand_for_cipher" db-types="MySQL">
         <input sql="SELECT a.* FROM t_account_bak a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount` FROM t_account_bak a" />
+        <output sql="SELECT a.`account_id`, a.`cipher_certificate_number` AS `certificate_number`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_bak a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_mix_qualified_shorthand_and_other_projection_for_cipher" db-types="MySQL">
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account_bak a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, account_id, 1+1 FROM t_account_bak a" />
+        <output sql="SELECT a.`account_id`, a.`cipher_certificate_number` AS `certificate_number`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount`, account_id, 1+1 FROM t_account_bak a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_for_predicate_and_right_value_should_be_matched_for_cipher_for_parameters" db-types="MySQL">
@@ -54,12 +54,12 @@
     
     <rewrite-assertion id="select_with_qualified_shorthand" db-types="MySQL">
         <input sql="SELECT a.* FROM t_account a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount` FROM t_account a" />
+        <output sql="SELECT a.`account_id`, a.`cipher_certificate_number` AS `certificate_number`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_mix_qualified_shorthand_and_other_projection" db-types="MySQL">
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, account_id, 1+1 FROM t_account a" />
+        <output sql="SELECT a.`account_id`, a.`cipher_certificate_number` AS `certificate_number`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount`, account_id, 1+1 FROM t_account a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_schema_name_in_shorthand_projection_for_parameters" db-types="MySQL">

@@ -38,14 +38,14 @@ public abstract class PropertySynonyms {
     
     private final Map<String, Object> localProperties;
     
-    public PropertySynonyms(final Map<String, Object> props, final Collection<String> standardPropertyKeys, final Map<String, String> propertySynonyms) {
+    protected PropertySynonyms(final Map<String, Object> props, final Collection<String> standardPropertyKeys, final Map<String, String> propertySynonyms) {
         this.standardPropertyKeys = standardPropertyKeys;
         standardProperties = buildStandardProperties(props, standardPropertyKeys, propertySynonyms);
         localProperties = buildLocalProperties(props, standardPropertyKeys, propertySynonyms);
     }
     
     private Map<String, Object> buildStandardProperties(final Map<String, Object> props, final Collection<String> standardPropertyKeys, final Map<String, String> propertySynonyms) {
-        Map<String, Object> result = new LinkedHashMap<>(standardPropertyKeys.size(), 1);
+        Map<String, Object> result = new LinkedHashMap<>(standardPropertyKeys.size(), 1F);
         for (String each : standardPropertyKeys) {
             if (props.containsKey(each)) {
                 result.put(each, props.get(each));
@@ -57,7 +57,7 @@ public abstract class PropertySynonyms {
     }
     
     private Map<String, Object> buildLocalProperties(final Map<String, Object> props, final Collection<String> standardPropertyKeys, final Map<String, String> propertySynonyms) {
-        Map<String, Object> result = new LinkedHashMap<>(standardPropertyKeys.size(), 1);
+        Map<String, Object> result = new LinkedHashMap<>(standardPropertyKeys.size(), 1F);
         for (String each : getLocalPropertyKeys(standardPropertyKeys, propertySynonyms)) {
             if (props.containsKey(each)) {
                 result.put(each, props.get(each));

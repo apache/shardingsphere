@@ -19,14 +19,14 @@ package org.apache.shardingsphere.migration.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.migration.QueryableMigrationRALStatement;
 
 /**
  * Show migration status statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowMigrationStatusStatement extends QueryableScalingRALStatement {
+public final class ShowMigrationStatusStatement extends QueryableMigrationRALStatement {
     
     private final String jobId;
 }

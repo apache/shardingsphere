@@ -51,7 +51,7 @@ public final class OpenGaussContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResources() {
-        Map<String, String> result = new HashMap<>(2, 1);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put("/env/postgresql/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
         result.put("/env/opengauss/pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
         return result;

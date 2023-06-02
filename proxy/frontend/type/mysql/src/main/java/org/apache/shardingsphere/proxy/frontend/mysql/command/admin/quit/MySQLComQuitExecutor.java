@@ -30,7 +30,7 @@ import java.util.Collections;
 public final class MySQLComQuitExecutor implements CommandExecutor {
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
-        return Collections.singletonList(new MySQLOKPacket(0));
+    public Collection<DatabasePacket> execute() {
+        return Collections.singleton(new MySQLOKPacket(0));
     }
 }

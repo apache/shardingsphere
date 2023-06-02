@@ -19,13 +19,13 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.MigrationDistSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtils;
+import org.awaitility.Awaitility;
 import org.opengauss.util.PSQLException;
 
 import javax.xml.bind.JAXB;
@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -47,8 +48,8 @@ public abstract class AbstractMigrationE2EIT {
     
     private final MigrationDistSQLCommand migrationDistSQL;
     
-    public AbstractMigrationE2EIT() {
-        migrationDistSQL = JAXB.unmarshal(Objects.requireNonNull(AbstractMigrationE2EIT.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
+    protected AbstractMigrationE2EIT() {
+        migrationDistSQL = JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
     }
     
     protected void addMigrationSourceResource(final PipelineContainerComposer containerComposer) throws SQLException {
@@ -61,27 +62,27 @@ public abstract class AbstractMigrationE2EIT {
         }
         String addSourceResource = migrationDistSQL.getRegisterMigrationSourceStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
                 .replace("${password}", containerComposer.getPassword())
-                .replace("${ds0}", containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_0, true)));
+                .replace("${ds0}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_0, true));
         containerComposer.addResource(addSourceResource);
     }
     
     protected void addMigrationTargetResource(final PipelineContainerComposer containerComposer) throws SQLException {
         String addTargetResource = migrationDistSQL.getRegisterMigrationTargetStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
                 .replace("${password}", containerComposer.getPassword())
-                .replace("${ds2}", containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_2, true)))
-                .replace("${ds3}", containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_3, true)))
-                .replace("${ds4}", containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, true)));
+                .replace("${ds2}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_2, true))
+                .replace("${ds3}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_3, true))
+                .replace("${ds4}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, true));
         containerComposer.addResource(addTargetResource);
         List<Map<String, Object>> resources = containerComposer.queryForListWithLog("SHOW STORAGE UNITS from sharding_db");
         assertThat(resources.size(), is(3));
     }
     
     protected void createSourceSchema(final PipelineContainerComposer containerComposer, final String schemaName) throws SQLException {
-        if (DatabaseTypeUtil.isPostgreSQL(containerComposer.getDatabaseType())) {
+        if (DatabaseTypeUtils.isPostgreSQL(containerComposer.getDatabaseType())) {
             containerComposer.sourceExecuteWithLog(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
             return;
         }
-        if (DatabaseTypeUtil.isOpenGauss(containerComposer.getDatabaseType())) {
+        if (DatabaseTypeUtils.isOpenGauss(containerComposer.getDatabaseType())) {
             try {
                 containerComposer.sourceExecuteWithLog(String.format("CREATE SCHEMA %s", schemaName));
             } catch (final SQLException ex) {
@@ -124,7 +125,7 @@ public abstract class AbstractMigrationE2EIT {
     }
     
     protected void startMigrationByJobId(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException {
-        containerComposer.proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 1);
+        containerComposer.proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 4);
     }
     
     protected void commitMigrationByJobId(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException {
@@ -141,7 +142,6 @@ public abstract class AbstractMigrationE2EIT {
         return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find " + tableName + " table")).get("id").toString();
     }
     
-    @SneakyThrows(InterruptedException.class)
     protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
         containerComposer.proxyExecuteWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType), 0);
         // TODO Need to add after the stop then to start, can continue the consistency check from the previous progress
@@ -149,14 +149,14 @@ public abstract class AbstractMigrationE2EIT {
         for (int i = 0; i < 10; i++) {
             resultList = containerComposer.queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
             if (resultList.isEmpty()) {
-                Thread.sleep(3000L);
+                Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
                 continue;
             }
             List<String> checkEndTimeList = resultList.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
             if (checkEndTimeList.size() == resultList.size()) {
                 break;
             } else {
-                Thread.sleep(3000L);
+                Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
             }
         }
         log.info("check job results: {}", resultList);

@@ -28,10 +28,10 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class EncryptPredicateFunctionRightValueTokenTest {
+class EncryptPredicateFunctionRightValueTokenTest {
     
     @Test
-    public void assertToStringWithoutPlaceholderWithoutTableOwnerWithFunction() {
+    void assertToStringWithoutPlaceholderWithoutTableOwnerWithFunction() {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "%");
         indexValues.put(1, "abc");

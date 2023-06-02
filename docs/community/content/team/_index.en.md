@@ -490,6 +490,16 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/57847965?s=64&v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/linghengqian" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/20187731?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/flyingzc" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/19788130?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -497,6 +507,12 @@ chapter = true
         </td>
         <td>
             <b>Zichao Wang</b>
+        </td>
+        <td>
+            <b>Qiheng He</b>
+        </td>
+        <td>
+            <b>Cheng Zhang</b>
         </td>
     </tr>
 </table>

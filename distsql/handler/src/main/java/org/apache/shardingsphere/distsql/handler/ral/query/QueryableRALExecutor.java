@@ -27,6 +27,8 @@ import java.util.Collections;
 
 /**
  * Queryable RAL executor.
+ * 
+ * @param <T> type of queryable RAL statement
  */
 @SingletonSPI
 public interface QueryableRALExecutor<T extends QueryableRALStatement> extends TypedSPI {

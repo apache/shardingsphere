@@ -24,7 +24,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSp
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.exception.connection.ConnectionClosedException;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -51,7 +51,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private final JDBCContext jdbcContext;
     
     @Getter
-    private final ConnectionManager connectionManager;
+    private final DriverDatabaseConnectionManager databaseConnectionManager;
     
     private boolean autoCommit = true;
     
@@ -65,7 +65,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         this.databaseName = databaseName;
         this.contextManager = contextManager;
         this.jdbcContext = jdbcContext;
-        connectionManager = new ConnectionManager(databaseName, contextManager);
+        databaseConnectionManager = new DriverDatabaseConnectionManager(databaseName, contextManager);
     }
     
     /**
@@ -74,7 +74,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
      * @return true or false
      */
     public boolean isHoldTransaction() {
-        return connectionManager.getConnectionTransaction().isHoldTransaction(autoCommit);
+        return databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit);
     }
     
     @Override
@@ -135,7 +135,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
-        if (connectionManager.getConnectionTransaction().isLocalTransaction()) {
+        if (databaseConnectionManager.getConnectionTransaction().isLocalTransaction()) {
             processLocalTransaction();
         } else {
             processDistributeTransaction();
@@ -143,21 +143,21 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     private void processLocalTransaction() throws SQLException {
-        connectionManager.setAutoCommit(autoCommit);
+        databaseConnectionManager.setAutoCommit(autoCommit);
         if (!autoCommit) {
-            getConnectionContext().getTransactionConnectionContext().setInTransaction(true);
+            getConnectionContext().getTransactionContext().setInTransaction(true);
         }
     }
     
     private void processDistributeTransaction() throws SQLException {
-        switch (connectionManager.getConnectionTransaction().getDistributedTransactionOperationType(autoCommit)) {
+        switch (databaseConnectionManager.getConnectionTransaction().getDistributedTransactionOperationType(autoCommit)) {
             case BEGIN:
-                connectionManager.close();
-                connectionManager.getConnectionTransaction().begin();
-                getConnectionContext().getTransactionConnectionContext().setInTransaction(true);
+                databaseConnectionManager.close();
+                databaseConnectionManager.getConnectionTransaction().begin();
+                getConnectionContext().getTransactionContext().setInTransaction(true);
                 break;
             case COMMIT:
-                connectionManager.getConnectionTransaction().commit();
+                databaseConnectionManager.getConnectionTransaction().commit();
                 break;
             default:
                 break;
@@ -167,31 +167,27 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public void commit() throws SQLException {
         try {
-            connectionManager.commit();
+            databaseConnectionManager.commit();
         } finally {
-            connectionManager.getConnectionTransaction().setRollbackOnly(false);
-            getConnectionContext().clearTransactionConnectionContext();
-            getConnectionContext().clearTrafficInstance();
-            getConnectionContext().clearCursorConnectionContext();
+            databaseConnectionManager.getConnectionTransaction().setRollbackOnly(false);
+            getConnectionContext().close();
         }
     }
     
     @Override
     public void rollback() throws SQLException {
         try {
-            connectionManager.rollback();
+            databaseConnectionManager.rollback();
         } finally {
-            connectionManager.getConnectionTransaction().setRollbackOnly(false);
-            getConnectionContext().clearTransactionConnectionContext();
-            getConnectionContext().clearTrafficInstance();
-            getConnectionContext().clearCursorConnectionContext();
+            databaseConnectionManager.getConnectionTransaction().setRollbackOnly(false);
+            getConnectionContext().close();
         }
     }
     
     @Override
     public void rollback(final Savepoint savepoint) throws SQLException {
         checkClose();
-        connectionManager.rollback(savepoint);
+        databaseConnectionManager.rollback(savepoint);
     }
     
     @Override
@@ -200,14 +196,14 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         if (!isHoldTransaction()) {
             throw new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks.");
         }
-        return connectionManager.setSavepoint(name);
+        return databaseConnectionManager.setSavepoint(name);
     }
     
     @Override
     public Savepoint setSavepoint() throws SQLException {
         checkClose();
         ShardingSpherePreconditions.checkState(isHoldTransaction(), () -> new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks."));
-        return connectionManager.setSavepoint();
+        return databaseConnectionManager.setSavepoint();
     }
     
     @Override
@@ -216,7 +212,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         if (!isHoldTransaction()) {
             return;
         }
-        connectionManager.releaseSavepoint(savepoint);
+        databaseConnectionManager.releaseSavepoint(savepoint);
     }
     
     private void checkClose() throws SQLException {
@@ -226,13 +222,13 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @SuppressWarnings("MagicConstant")
     @Override
     public int getTransactionIsolation() throws SQLException {
-        return connectionManager.getTransactionIsolation().orElseGet(() -> transactionIsolation);
+        return databaseConnectionManager.getTransactionIsolation().orElseGet(() -> transactionIsolation);
     }
     
     @Override
     public void setTransactionIsolation(final int level) throws SQLException {
         transactionIsolation = level;
-        connectionManager.setTransactionIsolation(level);
+        databaseConnectionManager.setTransactionIsolation(level);
     }
     
     @Override
@@ -243,17 +239,17 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public void setReadOnly(final boolean readOnly) throws SQLException {
         this.readOnly = readOnly;
-        connectionManager.setReadOnly(readOnly);
+        databaseConnectionManager.setReadOnly(readOnly);
     }
     
     @Override
     public boolean isValid(final int timeout) throws SQLException {
-        return connectionManager.isValid(timeout);
+        return databaseConnectionManager.isValid(timeout);
     }
     
     @Override
     public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
-        return connectionManager.getRandomConnection().createArrayOf(typeName, elements);
+        return databaseConnectionManager.getRandomConnection().createArrayOf(typeName, elements);
     }
     
     @Override
@@ -270,10 +266,10 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public void close() throws SQLException {
         closed = true;
-        connectionManager.close();
+        databaseConnectionManager.close();
     }
     
     private ConnectionContext getConnectionContext() {
-        return connectionManager.getConnectionContext();
+        return databaseConnectionManager.getConnectionContext();
     }
 }

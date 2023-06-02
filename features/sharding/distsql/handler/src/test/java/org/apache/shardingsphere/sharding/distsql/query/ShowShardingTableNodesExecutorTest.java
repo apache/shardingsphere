@@ -48,10 +48,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowShardingTableNodesExecutorTest {
+class ShowShardingTableNodesExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingRule shardingRule = createShardingRule();
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(shardingRule)));
@@ -104,7 +104,7 @@ public final class ShowShardingTableNodesExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowShardingTableNodesStatement> executor = new ShowShardingTableNodesExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(2));

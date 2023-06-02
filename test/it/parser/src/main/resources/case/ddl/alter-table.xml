@@ -47,6 +47,26 @@
     <alter-table sql-case-id="alter_table_with_force">
         <table name="t_order" start-index="12" stop-index="18" />
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_single_rename_column">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <rename-column start-index="20" stop-index="55">
+            <old-column-name name="new_col" start-index="34" stop-index="40" />
+            <column-name name="renamed_col" start-index="45" stop-index="55" />
+        </rename-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_multiple_rename_column">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <rename-column start-index="20" stop-index="56">
+            <old-column-name name="first_name" start-index="34" stop-index="43" />
+            <column-name name="full_name" start-index="48" stop-index="56" />
+        </rename-column>
+        <rename-column start-index="58" stop-index="91">
+            <old-column-name name="last_name" start-index="72" stop-index="80" />
+            <column-name name="surname" start-index="85" stop-index="91" />
+        </rename-column>
+    </alter-table>
     
     <alter-table sql-case-id="alter_table_with_space">
         <table name="t_order" start-index="24" stop-index="30" />
@@ -1231,6 +1251,19 @@
     </alter-table>
 
     <alter-table sql-case-id="alter_table_drop_expression">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_column_precision_with_decimal">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <modify-column>
+            <column-definition type="VARCHAR" start-index="34" stop-index="59">
+                <column name="a" stop-index="34" start-index="34" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_order_by">
         <table name="t_order" start-index="12" stop-index="18" />
     </alter-table>
 </sql-parser-test-cases>

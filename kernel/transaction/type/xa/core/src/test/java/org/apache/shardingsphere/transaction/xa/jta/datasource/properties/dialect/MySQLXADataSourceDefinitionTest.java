@@ -24,10 +24,10 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLXADataSourceDefinitionTest {
+class MySQLXADataSourceDefinitionTest {
     
     @Test
-    public void assertGetXADriverClassName() {
+    void assertGetXADriverClassName() {
         assertThat(new MySQLXADataSourceDefinition().getXADriverClassNames(), is(Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource")));
     }
 }

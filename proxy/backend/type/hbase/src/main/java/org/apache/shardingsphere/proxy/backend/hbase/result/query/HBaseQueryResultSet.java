@@ -31,7 +31,7 @@ public interface HBaseQueryResultSet extends TypedSPI {
      *
      * @param sqlStatementContext SQL statement context
      */
-    void init(SQLStatementContext<?> sqlStatementContext);
+    void init(SQLStatementContext sqlStatementContext);
     
     /**
      * Get result set column names.

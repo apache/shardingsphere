@@ -1,0 +1,141 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+advisors:
+  # config for proxy and jdbc
+  - target: org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.SQLParseCountAdvice
+    pointcuts:
+      - name: parse
+        type: method
+  - target: org.apache.shardingsphere.infra.route.engine.SQLRouteEngine
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.SQLRouteCountAdvice
+    pointcuts:
+      - name: route
+        type: method
+  - target: org.apache.shardingsphere.infra.route.engine.SQLRouteEngine
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.RouteResultCountAdvice
+    pointcuts:
+      - name: route
+        type: method
+  # config for proxy
+  - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.ExecuteLatencyHistogramAdvice
+    pointcuts:
+      - name: doExecuteCommand
+        type: method
+  - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.ExecuteErrorsCountAdvice
+    pointcuts:
+      - name: processException
+        type: method
+  - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelLimitationInboundHandler
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.CurrentConnectionsCountAdvice
+    pointcuts:
+      - name: channelActive
+        type: method
+      - name: channelInactive
+        type: method
+  - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.RequestsCountAdvice
+    pointcuts:
+      - name: run
+        type: method
+  - target: org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.CommitTransactionsCountAdvice
+    pointcuts:
+      - name: commit
+        type: method
+  - target: org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.RollbackTransactionsCountAdvice
+    pointcuts:
+      - name: rollback
+        type: method
+  # config for jdbc
+  - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.StatementExecuteCountAdvice
+    pointcuts:
+      - name: executeQuery
+        type: method
+      - name: execute
+        type: method
+      - name: executeUpdate
+        type: method
+        params:
+          - index: 0
+            type: java.lang.String
+  - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.StatementExecuteErrorsCountAdvice
+    pointcuts:
+      - name: executeQuery
+        type: method
+      - name: execute
+        type: method
+      - name: executeUpdate
+        type: method
+        params:
+          - index: 0
+            type: java.lang.String
+  - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.StatementExecuteLatencyHistogramAdvice
+    pointcuts:
+      - name: executeQuery
+        type: method
+      - name: execute
+        type: method
+      - name: executeUpdate
+        type: method
+        params:
+          - index: 0
+            type: java.lang.String
+  - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteCountAdvice
+    pointcuts:
+      - name: executeQuery
+        type: method
+      - name: execute
+        type: method
+      - name: executeUpdate
+        type: method
+  - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteErrorsCountAdvice
+    pointcuts:
+      - name: executeQuery
+        type: method
+      - name: execute
+        type: method
+      - name: executeUpdate
+        type: method
+  - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteLatencyHistogramAdvice
+    pointcuts:
+      - name: executeQuery
+        type: method
+      - name: execute
+        type: method
+      - name: executeUpdate
+        type: method
+  - target: org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.CommitTransactionsCountAdvice
+    pointcuts:
+      - name: commit
+        type: method
+  - target: org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.RollbackTransactionsCountAdvice
+    pointcuts:
+      - name: rollback
+        type: method

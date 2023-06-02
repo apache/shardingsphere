@@ -46,7 +46,7 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     private volatile long startTimeMillis;
     
     @Override
-    public void start() {
+    public final void start() {
         running = true;
         startTimeMillis = System.currentTimeMillis();
         runBlocking();
@@ -68,7 +68,7 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
         try {
             doStop();
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             log.warn("doStop failed", ex);
         }
@@ -76,9 +76,9 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
         stopped = true;
     }
     
-    protected abstract void doStop() throws Exception;
+    protected abstract void doStop() throws SQLException;
     
-    protected void cancelStatement(final Statement statement) throws SQLException {
+    protected final void cancelStatement(final Statement statement) throws SQLException {
         if (null == statement || statement.isClosed()) {
             return;
         }

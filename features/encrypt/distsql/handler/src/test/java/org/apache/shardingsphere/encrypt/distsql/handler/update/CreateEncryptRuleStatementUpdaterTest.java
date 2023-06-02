@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -48,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class CreateEncryptRuleStatementUpdaterTest {
+class CreateEncryptRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -56,28 +55,17 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     private final CreateEncryptRuleStatementUpdater updater = new CreateEncryptRuleStatementUpdater();
     
     @Test
-    public void assertCheckSQLStatementWithDuplicateEncryptRule() {
+    void assertCheckSQLStatementWithDuplicateEncryptRule() {
         assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "MD5"), getCurrentRuleConfig()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
+    void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
         assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithIncompleteDataType() {
-        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
-                "int varchar(10)", null, null, null, null, new AlgorithmSegment("test", new Properties()),
-                new AlgorithmSegment("test", new Properties()),
-                new AlgorithmSegment("CHAR_DIGEST_LIKE", new Properties()), null);
-        EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_user", Collections.singleton(columnSegment), null);
-        CreateEncryptRuleStatement statement = new CreateEncryptRuleStatement(false, Collections.singleton(ruleSegment));
-        assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, statement, null));
-    }
-    
-    @Test
-    public void assertCreateEncryptRuleWithIfNotExists() {
+    void assertCreateEncryptRuleWithIfNotExists() {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateEncryptRuleStatement sqlStatement = createAESEncryptRuleSQLStatement(true);
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
@@ -88,24 +76,24 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     }
     
     private CreateEncryptRuleStatement createAESEncryptRuleSQLStatement(final boolean ifNotExists) {
-        EncryptColumnSegment encryptColumnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
-                new AlgorithmSegment("AES", PropertiesBuilder.build(new Property("aes-key-value", "abc"))), null, null, null);
+        EncryptColumnSegment encryptColumnSegment = new EncryptColumnSegment("user_id", "user_cipher", "assisted_column", "like_column",
+                new AlgorithmSegment("AES", PropertiesBuilder.build(new Property("aes-key-value", "abc"))), null, null);
         Collection<EncryptRuleSegment> rules = new LinkedList<>();
-        rules.add(new EncryptRuleSegment("t_user", Collections.singleton(encryptColumnSegment), null));
+        rules.add(new EncryptRuleSegment("t_user", Collections.singleton(encryptColumnSegment)));
         return new CreateEncryptRuleStatement(ifNotExists, rules);
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final boolean ifNotExists, final String encryptorName) {
-        EncryptColumnSegment tUserColumnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
+        EncryptColumnSegment tUserColumnSegment = new EncryptColumnSegment("user_id", "user_cipher", "assisted_column", "like_column",
                 new AlgorithmSegment(encryptorName, new Properties()),
                 new AlgorithmSegment(encryptorName, new Properties()),
-                new AlgorithmSegment(encryptorName, new Properties()), null);
-        EncryptColumnSegment tOrderColumnSegment = new EncryptColumnSegment("order_id", "order_cipher", "order_plain", "assisted_column", "like_column",
+                new AlgorithmSegment(encryptorName, new Properties()));
+        EncryptColumnSegment tOrderColumnSegment = new EncryptColumnSegment("order_id", "order_cipher", "assisted_column", "like_column",
                 new AlgorithmSegment(encryptorName, new Properties()),
                 new AlgorithmSegment(encryptorName, new Properties()),
-                new AlgorithmSegment(encryptorName, new Properties()), null);
-        EncryptRuleSegment tUserRuleSegment = new EncryptRuleSegment("t_user", Collections.singleton(tUserColumnSegment), null);
-        EncryptRuleSegment tOrderRuleSegment = new EncryptRuleSegment("t_order", Collections.singleton(tOrderColumnSegment), null);
+                new AlgorithmSegment(encryptorName, new Properties()));
+        EncryptRuleSegment tUserRuleSegment = new EncryptRuleSegment("t_user", Collections.singleton(tUserColumnSegment));
+        EncryptRuleSegment tOrderRuleSegment = new EncryptRuleSegment("t_order", Collections.singleton(tOrderColumnSegment));
         Collection<EncryptRuleSegment> rules = new LinkedList<>();
         rules.add(tUserRuleSegment);
         rules.add(tOrderRuleSegment);
@@ -114,29 +102,29 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     
     private EncryptRuleConfiguration getCurrentRuleConfig() {
         Collection<EncryptTableRuleConfiguration> rules = new LinkedList<>();
-        rules.add(new EncryptTableRuleConfiguration("t_user", Collections.emptyList(), null));
-        rules.add(new EncryptTableRuleConfiguration("t_order", Collections.emptyList(), null));
+        rules.add(new EncryptTableRuleConfiguration("t_user", Collections.emptyList()));
+        rules.add(new EncryptTableRuleConfiguration("t_order", Collections.emptyList()));
         return new EncryptRuleConfiguration(rules, new HashMap<>());
     }
     
     @Test
-    public void assertCreateAESEncryptRuleWithPropertiesNotExists() {
+    void assertCreateAESEncryptRuleWithPropertiesNotExists() {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateEncryptRuleStatement sqlStatement = createWrongAESEncryptorSQLStatement();
         assertThrows(EncryptAlgorithmInitializationException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentRuleConfig));
     }
     
     private CreateEncryptRuleStatement createWrongAESEncryptorSQLStatement() {
-        EncryptColumnSegment tUserColumnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
+        EncryptColumnSegment tUserColumnSegment = new EncryptColumnSegment("user_id", "user_cipher", "assisted_column", "like_column",
                 new AlgorithmSegment("AES", new Properties()),
                 new AlgorithmSegment("AES", new Properties()),
-                new AlgorithmSegment("CHAR_DIGEST_LIKE", new Properties()), null);
-        EncryptColumnSegment tOrderColumnSegment = new EncryptColumnSegment("order_id", "order_cipher", "order_plain", "assisted_column", "like_column",
+                new AlgorithmSegment("CHAR_DIGEST_LIKE", new Properties()));
+        EncryptColumnSegment tOrderColumnSegment = new EncryptColumnSegment("order_id", "order_cipher", "assisted_column", "like_column",
                 new AlgorithmSegment("AES", new Properties()),
                 new AlgorithmSegment("AES", new Properties()),
-                new AlgorithmSegment("CHAR_DIGEST_LIKE", new Properties()), null);
-        EncryptRuleSegment tUserRuleSegment = new EncryptRuleSegment("t_user", Collections.singleton(tUserColumnSegment), null);
-        EncryptRuleSegment tOrderRuleSegment = new EncryptRuleSegment("t_order", Collections.singleton(tOrderColumnSegment), null);
+                new AlgorithmSegment("CHAR_DIGEST_LIKE", new Properties()));
+        EncryptRuleSegment tUserRuleSegment = new EncryptRuleSegment("t_user", Collections.singleton(tUserColumnSegment));
+        EncryptRuleSegment tOrderRuleSegment = new EncryptRuleSegment("t_order", Collections.singleton(tOrderColumnSegment));
         Collection<EncryptRuleSegment> rules = new LinkedList<>();
         rules.add(tUserRuleSegment);
         rules.add(tOrderRuleSegment);

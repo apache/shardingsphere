@@ -135,38 +135,38 @@
     
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow,sharding_encrypt_shadow,encrypt_shadow,readwrite_splitting_and_shadow,sharding_and_shadow">
-        <assertion parameters="6:int, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
+        <assertion parameters="6:int, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30.0:timestamp"
                    expected-data-file="pro_insert_order_value.xml" />
     </test-case>
     
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow,sharding_encrypt_shadow,encrypt_shadow,readwrite_splitting_and_shadow,sharding_and_shadow">
-        <assertion parameters="6:int, 0:int, shadow_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
+        <assertion parameters="6:int, 0:int, shadow_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30.0:timestamp"
                    expected-data-file="shadow_insert_order_value.xml" />
     </test-case>
     
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow,sharding_encrypt_shadow,encrypt_shadow,readwrite_splitting_and_shadow,sharding_and_shadow">
-        <assertion parameters="7:int, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp, 8:int, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
+        <assertion parameters="7:int, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30.0:timestamp, 8:int, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30.0:timestamp"
                    expected-data-file="pro_insert_order_batch_value.xml" />
     </test-case>
     
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow,sharding_encrypt_shadow,encrypt_shadow,readwrite_splitting_and_shadow,sharding_and_shadow">
-        <assertion parameters="7:int, 0:int, shadow_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp, 8:int, 0:int, shadow_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
+        <assertion parameters="7:int, 0:int, shadow_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30.0:timestamp, 8:int, 0:int, shadow_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30.0:timestamp"
                    expected-data-file="shadow_insert_order_batch_value.xml" />
     </test-case>
     
     <!-- FIXME Support enum types for PostgreSQL -->
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_decimal, type_date, type_time, type_timestamp)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="PostgreSQL" scenario-types="shadow,sharding_encrypt_shadow,encrypt_shadow,readwrite_splitting_and_shadow,sharding_and_shadow">
-        <assertion parameters="6:int, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, 120.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
+        <assertion parameters="6:int, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, 120.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30.0:timestamp"
                    expected-data-file="pro_insert_order_value.xml" />
     </test-case>
     
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_decimal, type_date, type_time, type_timestamp)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="PostgreSQL" scenario-types="shadow,sharding_encrypt_shadow,encrypt_shadow,readwrite_splitting_and_shadow,sharding_and_shadow">
-        <assertion parameters="6:int, 0:int, shadow_order:String, S:char, true:boolean, 50:smallint, 120.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
+        <assertion parameters="6:int, 0:int, shadow_order:String, S:char, true:boolean, 50:smallint, 120.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30.0:timestamp"
                    expected-data-file="shadow_insert_order_value.xml" />
     </test-case>
     

@@ -39,8 +39,8 @@ public final class ChangedMigrationJobConfigurationProcessor extends AbstractCha
     }
     
     @Override
-    protected AbstractPipelineJob buildPipelineJob() {
-        return new MigrationJob();
+    protected AbstractPipelineJob buildPipelineJob(final String jobId) {
+        return new MigrationJob(jobId);
     }
     
     @Override

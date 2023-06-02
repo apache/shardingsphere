@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
@@ -56,16 +56,16 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, DatabaseConnectorFactory.class})
-public final class TransactionBackendHandlerFactoryTest {
+class TransactionBackendHandlerFactoryTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
+    void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
-        BackendConnection backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
-        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
-        SQLStatementContext<CommitStatement> context = mock(SQLStatementContext.class);
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        SQLStatementContext context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(CommitStatement.class));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -73,16 +73,16 @@ public final class TransactionBackendHandlerFactoryTest {
         assertThat(proxyBackendHandler, instanceOf(TransactionBackendHandler.class));
         TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.COMMIT));
-        assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
+        assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(databaseConnectionManager));
     }
     
     @Test
-    public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfRollbackStatement() {
+    void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfRollbackStatement() {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
-        BackendConnection backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
-        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
-        SQLStatementContext<RollbackStatement> context = mock(SQLStatementContext.class);
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        SQLStatementContext context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(RollbackStatement.class));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -90,7 +90,7 @@ public final class TransactionBackendHandlerFactoryTest {
         assertThat(proxyBackendHandler, instanceOf(TransactionBackendHandler.class));
         TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
-        assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
+        assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(databaseConnectionManager));
     }
     
     private ContextManager mockContextManager() {
@@ -99,14 +99,13 @@ public final class TransactionBackendHandlerFactoryTest {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Test
-    public void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
-        SQLStatementContext<TCLStatement> context = mock(SQLStatementContext.class);
+    void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
+        SQLStatementContext context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(TCLStatement.class));
         DatabaseConnectorFactory mockFactory = mock(DatabaseConnectorFactory.class);
         when(DatabaseConnectorFactory.getInstance()).thenReturn(mockFactory);
-        when(mockFactory.newInstance(any(QueryContext.class), nullable(BackendConnection.class), anyBoolean())).thenReturn(mock(DatabaseConnector.class));
+        when(mockFactory.newInstance(any(QueryContext.class), nullable(ProxyDatabaseConnectionManager.class), anyBoolean())).thenReturn(mock(DatabaseConnector.class));
         assertThat(TransactionBackendHandlerFactory.newInstance(context, null, mock(ConnectionSession.class)), instanceOf(DatabaseConnector.class));
     }
     

@@ -26,52 +26,69 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class MaskAfterSpecialCharsAlgorithmTest {
+class MaskAfterSpecialCharsAlgorithmTest {
     
     private MaskAfterSpecialCharsAlgorithm maskAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new MaskAfterSpecialCharsAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "*")));
     }
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         assertThat(maskAlgorithm.mask("abcd134"), is("abcd1**"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueMatchedMultipleSpecialChars() {
+    void assertMaskWhenPlainValueMatchedMultipleSpecialChars() {
         assertThat(maskAlgorithm.mask("abcd1234d1234"), is("abcd1********"));
     }
     
     @Test
-    public void assertMaskEmptyString() {
+    void assertMaskEmptyString() {
         assertThat(maskAlgorithm.mask(""), is(""));
     }
     
     @Test
-    public void assertMaskNull() {
+    void assertMaskNull() {
         assertThat(maskAlgorithm.mask(null), is(nullValue()));
     }
     
     @Test
-    public void assertMaskWhenPlainValueNotMatchedSpecialChars() {
+    void assertMaskWhenPlainValueNotMatchedSpecialChars() {
         assertThat(maskAlgorithm.mask("abcd234"), is("abcd234"));
     }
     
     @Test
-    public void assertInitWhenSpecialCharsIsEmpty() {
+    void assertInitWhenSpecialCharsIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", ""), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenReplaceCharIsEmpty() {
+    void assertInitWhenReplaceCharIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", ""))));
+    }
+    
+    @Test
+    void assertInitWhenReplaceCharIsMissing() {
+        assertThrows(MaskAlgorithmInitializationException.class, () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", "d1"))));
+    }
+    
+    @Test
+    void assertInitWhenPropertiesAreEmpty() {
+        assertThrows(MaskAlgorithmInitializationException.class, () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build()));
+    }
+    
+    @Test
+    void assertInitWhenValidPropertiesAreSet() {
+        MaskBeforeSpecialCharsAlgorithm algorithm = new MaskBeforeSpecialCharsAlgorithm();
+        assertDoesNotThrow(() -> algorithm.init(PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "*"))));
     }
 }

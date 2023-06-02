@@ -20,7 +20,6 @@
         <column name="table" />
         <column name="logic_column" />
         <column name="cipher_column" />
-        <column name="plain_column" />
         <column name="assisted_query_column" />
         <column name="like_query_column" />
         <column name="encryptor_type" />
@@ -29,13 +28,12 @@
         <column name="assisted_query_props" />
         <column name="like_query_type" />
         <column name="like_query_props" />
-        <column name="query_with_cipher_column" />
     </metadata>
-    <row values="t_user| pwd| pwd_cipher| pwd_plain| | | AES| aes-key-value=123456abc| | | | | true" />
-    <row values="t_user_details| number| number_cipher| number_plain| | | AES| aes-key-value=123456abc| | | | | true" />
-    <row values="t_user_details| number_new| number_new_cipher| number_new_plain| | | AES| aes-key-value=123456abc| | | | | true" />
-    <row values="t_user_encrypt_federate| pwd| cipher_pwd| plain_pwd| | | AES| aes-key-value=123456abc| | | | | true" />
-    <row values="t_user_encrypt_federate_sharding| pwd| cipher_pwd| plain_pwd| | | AES| aes-key-value=123456abc| | | | | true" />
-    <row values="t_merchant| business_code| business_code_cipher| business_code_plain| | | AES| aes-key-value=123456abc| | | | | true" />
-    <row values="t_merchant| telephone| telephone_cipher| telephone_plain| | | AES| aes-key-value=123456abc| | | | | true" />
+    <row values="t_user| pwd| pwd_cipher| | | AES| aes-key-value=123456abc| | | | " />
+    <row values="t_user_details| number| number_cipher| | | AES| aes-key-value=123456abc| | | | " />
+    <row values="t_user_details| number_new| number_new_cipher| | | AES| aes-key-value=123456abc| | | | " />
+    <row values="t_user_encrypt_federate| pwd| cipher_pwd| | | AES| aes-key-value=123456abc| | | | " />
+    <row values="t_user_encrypt_federate_sharding| pwd| cipher_pwd| | | AES| aes-key-value=123456abc| | | | " />
+    <row values="t_merchant| business_code| business_code_cipher| | | AES| aes-key-value=123456abc| | | | " />
+    <row values="t_merchant| telephone| telephone_cipher| | | AES| aes-key-value=123456abc| | | | " />
 </dataset>

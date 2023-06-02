@@ -41,24 +41,12 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     private final PersistRepository repository;
     
     @Override
-    public void conditionalPersist(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        if (!dataSourcePropsMap.isEmpty() && !isExisted(databaseName)) {
-            persist(databaseName, dataSourcePropsMap);
-        }
-    }
-    
-    @Override
-    public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourceConfigs) {
         if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
             repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
         }
         repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)),
-                YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
-    }
-    
-    @Override
-    public void persist(final String databaseName, final String version, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, version), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
+                YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourceConfigs)));
     }
     
     private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourceProperties> dataSourcePropsMap) {
@@ -78,6 +66,11 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
         return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : getDataSourceProperties(yamlContent);
     }
     
+    private boolean isExisted(final String databaseName) {
+        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName)) && !Strings.isNullOrEmpty(repository.getDirectly(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName,
+                getDatabaseActiveVersion(databaseName))));
+    }
+    
     @SuppressWarnings("unchecked")
     private Map<String, DataSourceProperties> getDataSourceProperties(final String yamlContent) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(yamlContent, Map.class);
@@ -89,18 +82,13 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
         return result;
     }
     
-    @Override
-    public boolean isExisted(final String databaseName) {
-        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName)) && !Strings.isNullOrEmpty(repository.getDirectly(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName,
-                getDatabaseActiveVersion(databaseName))));
-    }
-    
     /**
      * Append data source properties map.
      * 
      * @param databaseName database name
      * @param toBeAppendedDataSourcePropsMap data source properties map to be appended
      */
+    @Override
     public void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
         Map<String, DataSourceProperties> dataSourceConfigs = load(databaseName);
         dataSourceConfigs.putAll(toBeAppendedDataSourcePropsMap);

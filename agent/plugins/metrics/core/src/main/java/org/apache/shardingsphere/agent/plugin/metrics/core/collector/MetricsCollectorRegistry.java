@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.collector;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.plugin.core.spi.PluginServiceLoader;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 
@@ -26,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Metrics collector registry.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetricsCollectorRegistry {
     
     private static final Map<String, MetricsCollector> COLLECTORS = new ConcurrentHashMap<>();

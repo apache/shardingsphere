@@ -28,10 +28,10 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : buildinAlgorithmTypeName | STRING_
+    : STRING_ | buildInEncryptAlgorithmType
     ;
 
-buildinAlgorithmTypeName
+buildInEncryptAlgorithmType
     : MD5
     | AES
     | RC4

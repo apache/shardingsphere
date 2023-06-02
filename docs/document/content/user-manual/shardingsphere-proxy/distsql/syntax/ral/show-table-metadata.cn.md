@@ -1,11 +1,11 @@
 +++
 title = "SHOW TABLE METADATA"
-weight = 8
+weight = 10
 +++
 
 ### 描述
 
-`SHOW TABLE METADATA` 语法用于查询表的元数据
+`SHOW TABLE METADATA` 语法用于查询表的元数据。
 
 ### 语法
 
@@ -29,10 +29,10 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列          | 说明       |
-|-------------|-----------|
+| 列           | 说明    |
+|-------------|-------|
 | schema_name | 逻辑库名称 |
-| table_name  | 表名称    |
+| table_name  | 表名称   |
 | type        | 元数据类型 |
 | name        | 元数据名称 |
 

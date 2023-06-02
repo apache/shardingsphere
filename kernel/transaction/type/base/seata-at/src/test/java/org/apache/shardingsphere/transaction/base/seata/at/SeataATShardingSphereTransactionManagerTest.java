@@ -18,18 +18,23 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.core.context.RootContext;
-import io.seata.core.protocol.MergeResultMessage;
-import io.seata.core.protocol.MergedWarpMessage;
 import io.seata.core.protocol.RegisterRMRequest;
 import io.seata.core.protocol.RegisterRMResponse;
 import io.seata.core.protocol.RegisterTMRequest;
 import io.seata.core.protocol.RegisterTMResponse;
+import io.seata.core.protocol.transaction.GlobalBeginRequest;
+import io.seata.core.protocol.transaction.GlobalBeginResponse;
+import io.seata.core.protocol.transaction.GlobalCommitRequest;
+import io.seata.core.protocol.transaction.GlobalCommitResponse;
+import io.seata.core.protocol.transaction.GlobalRollbackRequest;
+import io.seata.core.protocol.transaction.GlobalRollbackResponse;
 import io.seata.core.rpc.netty.RmNettyRemotingClient;
 import io.seata.core.rpc.netty.TmNettyRemotingClient;
 import io.seata.rm.datasource.ConnectionProxy;
 import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -56,8 +61,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public final class SeataATShardingSphereTransactionManagerTest {
+@Slf4j
+class SeataATShardingSphereTransactionManagerTest {
     
     private static final MockSeataServer MOCK_SEATA_SERVER = new MockSeataServer();
     
@@ -70,7 +77,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
     private final Queue<Object> responseQueue = MOCK_SEATA_SERVER.getMessageHandler().getResponseQueue();
     
     @BeforeAll
-    public static void before() {
+    static void before() {
         Executors.newSingleThreadExecutor().submit(MOCK_SEATA_SERVER::start);
         while (true) {
             if (MOCK_SEATA_SERVER.getInitialized().get()) {
@@ -80,18 +87,18 @@ public final class SeataATShardingSphereTransactionManagerTest {
     }
     
     @AfterAll
-    public static void after() {
+    static void after() {
         MOCK_SEATA_SERVER.shutdown();
     }
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         seataTransactionManager.init(Collections.singletonMap("sharding_db.ds_0", TypedSPILoader.getService(DatabaseType.class, "MySQL")),
                 Collections.singletonMap(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource()), "Seata");
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         SeataXIDContext.remove();
         RootContext.unbind();
         SeataTransactionHolder.clear();
@@ -102,7 +109,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
     }
     
     @Test
-    public void assertInit() {
+    void assertInit() {
         Map<String, DataSource> actual = getDataSourceMap();
         assertThat(actual.size(), is(1));
         assertThat(actual.get(DATA_SOURCE_UNIQUE_NAME), instanceOf(DataSourceProxy.class));
@@ -110,65 +117,76 @@ public final class SeataATShardingSphereTransactionManagerTest {
     }
     
     @Test
-    public void assertGetConnection() throws SQLException {
+    void assertGetConnection() throws SQLException {
         Connection actual = seataTransactionManager.getConnection("sharding_db", "ds_0");
         assertThat(actual, instanceOf(ConnectionProxy.class));
     }
     
     @Test
-    public void assertBegin() {
+    void assertBegin() {
         seataTransactionManager.begin();
         assertTrue(seataTransactionManager.isInTransaction());
-        assertResult();
+        assertResult(GlobalBeginRequest.class, GlobalBeginResponse.class);
     }
     
     @Test
-    public void assertBeginTimeout() {
+    void assertBeginTimeout() {
         seataTransactionManager.begin(30);
         assertTrue(seataTransactionManager.isInTransaction());
-        assertResult();
+        assertResult(GlobalBeginRequest.class, GlobalBeginResponse.class);
     }
     
     @Test
-    public void assertCommit() {
+    void assertCommit() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         setXID("testXID");
         seataTransactionManager.commit(false);
-        assertResult();
+        assertResult(GlobalCommitRequest.class, GlobalCommitResponse.class);
     }
     
     @Test
-    public void assertCommitWithoutBegin() {
+    void assertCommitWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         assertThrows(IllegalStateException.class, () -> seataTransactionManager.commit(false));
     }
     
     @Test
-    public void assertRollback() {
+    void assertRollback() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         setXID("testXID");
         seataTransactionManager.rollback();
-        assertResult();
+        assertResult(GlobalRollbackRequest.class, GlobalRollbackResponse.class);
     }
     
     @Test
-    public void assertRollbackWithoutBegin() {
+    void assertRollbackWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         assertThrows(IllegalStateException.class, seataTransactionManager::rollback);
     }
     
-    private void assertResult() {
-        int requestQueueSize = requestQueue.size();
-        if (3 == requestQueueSize) {
-            assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
-            assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
-            assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
-        }
-        int responseQueueSize = responseQueue.size();
-        if (3 == responseQueueSize) {
-            assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
-            assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
-            assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
+    private void assertResult(final Class<?> requestClass, final Class<?> responseClass) {
+        assertTrue(requestQueue.stream().anyMatch(each -> each instanceof RegisterTMRequest));
+        assertTrue(requestQueue.stream().anyMatch(each -> each instanceof RegisterRMRequest));
+        assertTrue(requestQueue.stream().anyMatch(each -> requestClass.equals(each.getClass())));
+        assertTrue(responseQueue.stream().anyMatch(each -> each instanceof RegisterTMResponse));
+        assertTrue(responseQueue.stream().anyMatch(each -> each instanceof RegisterRMResponse));
+        assertTrue(responseQueue.stream().anyMatch(each -> responseClass.equals(each.getClass())));
+        while (!requestQueue.isEmpty()) {
+            Object requestPackage = requestQueue.poll();
+            Object responsePackage = responseQueue.poll();
+            if (requestPackage instanceof RegisterTMRequest) {
+                assertThat(responsePackage, instanceOf(RegisterTMResponse.class));
+            } else if (requestPackage instanceof RegisterRMRequest) {
+                assertThat(responsePackage, instanceOf(RegisterRMResponse.class));
+            } else if (requestPackage instanceof GlobalBeginRequest) {
+                assertThat(responsePackage, instanceOf(GlobalBeginResponse.class));
+            } else if (requestPackage instanceof GlobalCommitRequest) {
+                assertThat(responsePackage, instanceOf(GlobalCommitResponse.class));
+            } else if (requestPackage instanceof GlobalRollbackRequest) {
+                assertThat(responsePackage, instanceOf(GlobalRollbackResponse.class));
+            } else {
+                fail("Request package type error");
+            }
         }
     }
     

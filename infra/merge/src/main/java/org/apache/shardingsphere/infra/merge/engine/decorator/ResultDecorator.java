@@ -40,7 +40,7 @@ public interface ResultDecorator<T extends ShardingSphereRule> {
      * @return merged result
      * @throws SQLException SQL exception
      */
-    MergedResult decorate(QueryResult queryResult, SQLStatementContext<?> sqlStatementContext, T rule) throws SQLException;
+    MergedResult decorate(QueryResult queryResult, SQLStatementContext sqlStatementContext, T rule) throws SQLException;
     
     /**
      * Decorate merged result.
@@ -51,5 +51,5 @@ public interface ResultDecorator<T extends ShardingSphereRule> {
      * @return merged result
      * @throws SQLException SQL exception
      */
-    MergedResult decorate(MergedResult mergedResult, SQLStatementContext<?> sqlStatementContext, T rule) throws SQLException;
+    MergedResult decorate(MergedResult mergedResult, SQLStatementContext sqlStatementContext, T rule) throws SQLException;
 }

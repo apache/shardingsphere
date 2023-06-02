@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Authentication request SCRAM SHA-256 for openGauss.
  */
-public final class OpenGaussAuthenticationSCRAMSha256Packet implements PostgreSQLIdentifierPacket {
+public final class OpenGaussAuthenticationSCRAMSha256Packet extends PostgreSQLIdentifierPacket {
     
     private static final int AUTH_REQ_SHA256 = 10;
     
@@ -48,7 +48,7 @@ public final class OpenGaussAuthenticationSCRAMSha256Packet implements PostgreSQ
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt4(AUTH_REQ_SHA256);
         payload.writeInt4(PASSWORD_STORED_METHOD_SHA256);
         payload.writeBytes(authHexData.getSalt().getBytes());

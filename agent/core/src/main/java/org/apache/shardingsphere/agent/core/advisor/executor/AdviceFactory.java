@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.core.advisor.executor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
+import org.apache.shardingsphere.agent.core.plugin.classloader.ClassLoaderContext;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

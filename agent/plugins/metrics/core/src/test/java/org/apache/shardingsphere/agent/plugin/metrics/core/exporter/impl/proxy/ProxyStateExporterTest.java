@@ -55,22 +55,22 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ProxyStateExporterTest {
+class ProxyStateExporterTest {
     
     @AfterEach
-    public void reset() {
+    void reset() {
         MetricConfiguration config = new MetricConfiguration("proxy_state", MetricCollectorType.GAUGE_METRIC_FAMILY, null, Collections.emptyList(), Collections.emptyMap());
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertExportWithoutContextManager() {
+    void assertExportWithoutContextManager() {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(null);
         assertFalse(new ProxyStateExporter().export("FIXTURE").isPresent());
     }
     
     @Test
-    public void assertExportWithContextManager() {
+    void assertExportWithContextManager() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getInstanceStateContext()).thenReturn(Optional.of(mock(InstanceStateContext.class, RETURNS_DEEP_STUBS)));

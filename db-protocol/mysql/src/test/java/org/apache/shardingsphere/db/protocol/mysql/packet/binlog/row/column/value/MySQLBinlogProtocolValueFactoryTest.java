@@ -25,15 +25,15 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class MySQLBinlogProtocolValueFactoryTest {
+class MySQLBinlogProtocolValueFactoryTest {
     
     @Test
-    public void assertGetBinlogProtocolValue() {
-        assertThat(MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.MYSQL_TYPE_TINY), instanceOf(MySQLTinyBinlogProtocolValue.class));
+    void assertGetBinlogProtocolValue() {
+        assertThat(MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.TINY), instanceOf(MySQLTinyBinlogProtocolValue.class));
     }
     
     @Test
-    public void assertGetBinlogProtocolValueFailure() {
-        assertThrows(IllegalArgumentException.class, () -> MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.MYSQL_TYPE_GEOMETRY));
+    void assertGetBinlogProtocolValueFailure() {
+        assertThrows(IllegalArgumentException.class, () -> MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.GEOMETRY));
     }
 }

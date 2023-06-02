@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -59,10 +58,10 @@ public final class ShowUnusedShardingAuditorsExecutor implements RQLExecutor<Sho
     
     private Collection<String> getUsedAuditors(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
-        shardingRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getAuditStrategy())).forEach(each -> result.addAll(each.getAuditStrategy().getAuditorNames()));
-        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getAuditStrategy())).forEach(each -> result.addAll(each.getAuditStrategy().getAuditorNames()));
+        shardingRuleConfig.getTables().stream().filter(each -> null != each.getAuditStrategy()).forEach(each -> result.addAll(each.getAuditStrategy().getAuditorNames()));
+        shardingRuleConfig.getAutoTables().stream().filter(each -> null != each.getAuditStrategy()).forEach(each -> result.addAll(each.getAuditStrategy().getAuditorNames()));
         ShardingAuditStrategyConfiguration auditStrategy = shardingRuleConfig.getDefaultAuditStrategy();
-        if (Objects.nonNull(auditStrategy) && !auditStrategy.getAuditorNames().isEmpty()) {
+        if (null != auditStrategy && !auditStrategy.getAuditorNames().isEmpty()) {
             result.addAll(auditStrategy.getAuditorNames());
         }
         return result;

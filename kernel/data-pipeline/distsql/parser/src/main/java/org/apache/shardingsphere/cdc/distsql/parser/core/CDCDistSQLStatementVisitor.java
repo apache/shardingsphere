@@ -18,19 +18,23 @@
 package org.apache.shardingsphere.cdc.distsql.parser.core;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.cdc.distsql.statement.CommitStreamingStatement;
+import org.apache.shardingsphere.cdc.distsql.statement.RollbackStreamingStatement;
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingListStatement;
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingStatusStatement;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.CommitStreamingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.RollbackStreamingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.ShowStreamingListContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.ShowStreamingStatusContext;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
  * SQL statement visitor for CDC DistSQL.
  */
-public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitShowStreamingList(final ShowStreamingListContext ctx) {
@@ -40,6 +44,16 @@ public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVis
     @Override
     public ASTNode visitShowStreamingStatus(final ShowStreamingStatusContext ctx) {
         return new ShowStreamingStatusStatement(getIdentifierValue(ctx.jobId()));
+    }
+    
+    @Override
+    public ASTNode visitRollbackStreaming(final RollbackStreamingContext ctx) {
+        return new RollbackStreamingStatement(getIdentifierValue(ctx.jobId()));
+    }
+    
+    @Override
+    public ASTNode visitCommitStreaming(final CommitStreamingContext ctx) {
+        return new CommitStreamingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     private String getIdentifierValue(final ParseTree ctx) {

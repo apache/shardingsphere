@@ -27,11 +27,11 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.Vendor
 /**
  * ERR packet protocol for MySQL.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/packet-ERR_Packet.html">ERR Packet</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_basic_err_packet.html">ERR Packet</a>
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLErrPacket implements MySQLPacket {
+public final class MySQLErrPacket extends MySQLPacket {
     
     /**
      * Header of ERR packet.
@@ -59,7 +59,7 @@ public final class MySQLErrPacket implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeInt1(HEADER);
         payload.writeInt2(errorCode);
         payload.writeStringFix(SQL_STATE_MARKER);

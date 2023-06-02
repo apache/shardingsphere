@@ -61,6 +61,7 @@ public final class TableAssert {
      * @param assertContext assert context
      * @param actual actual tables
      * @param expected expected tables
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final TableSegment actual, final ExpectedTable expected) {
         if (actual instanceof JoinTableSegment) {
@@ -72,8 +73,7 @@ public final class TableAssert {
         } else if (actual instanceof XmlTableSegment) {
             assertIs(assertContext, (XmlTableSegment) actual, expected.getXmlTable());
         } else {
-            throw new UnsupportedOperationException(
-                    String.format("Unsupported table segment type `%s`.", actual.getClass()));
+            throw new UnsupportedOperationException(String.format("Unsupported table segment type `%s`.", actual.getClass()));
         }
     }
     
@@ -100,7 +100,7 @@ public final class TableAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SimpleTableSegment actual, final ExpectedSimpleTable expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getTableName().getIdentifier(), expected, "Table");
-        assertThat(assertContext.getText("Table alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
+        assertThat(assertContext.getText("Table alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
         if (null == expected.getOwner()) {
             assertFalse(actual.getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {
@@ -119,7 +119,7 @@ public final class TableAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SubqueryTableSegment actual, final ExpectedSubqueryTable expected) {
         SelectStatementAssert.assertIs(assertContext, actual.getSubquery().getSelect(), expected.getSubquery().getSelectTestCases());
-        assertThat(assertContext.getText("Table alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
+        assertThat(assertContext.getText("Table alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
     }
     
     /**

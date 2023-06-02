@@ -45,7 +45,7 @@ public final class TranslatableDatabase extends AbstractSchema {
     }
     
     private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final DatabaseType protocolType, final TableScanExecutor executor) {
-        Map<String, Schema> result = new LinkedHashMap<>(database.getSchemas().size(), 1);
+        Map<String, Schema> result = new LinkedHashMap<>(database.getSchemas().size(), 1F);
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
             result.put(entry.getKey(), new TranslatableSchema(entry.getKey(), entry.getValue(), protocolType, null, executor));
         }

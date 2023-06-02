@@ -16,8 +16,5 @@
 #
 
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.storage.unit.ShowStorageUnitExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.ShowSingleTableExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.ShowRulesUsedStorageUnitExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.ShowDefaultSingleTableStorageUnitExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.CountSingleTableExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.ShowLogicalTableExecutor

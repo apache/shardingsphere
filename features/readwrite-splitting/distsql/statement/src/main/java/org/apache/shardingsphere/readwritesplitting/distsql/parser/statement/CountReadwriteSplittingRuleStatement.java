@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Count readwrite splitting rule statement.
+ * Count readwrite-splitting rule statement.
  */
 public final class CountReadwriteSplittingRuleStatement extends ShowRulesStatement {
     

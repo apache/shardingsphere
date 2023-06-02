@@ -89,7 +89,7 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     }
     
     private static Map<String, Object> wrapParameter(final String jdbcUrl, final String username, final String password) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1);
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         // Reference ConnectionPropertySynonyms
         result.put("url", jdbcUrl);
         result.put("username", username);

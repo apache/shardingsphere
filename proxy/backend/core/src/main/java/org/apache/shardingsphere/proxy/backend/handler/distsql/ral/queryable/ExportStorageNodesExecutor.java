@@ -29,15 +29,16 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNode;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNodes;
 import org.apache.shardingsphere.proxy.backend.util.ExportUtils;
-import org.apache.shardingsphere.proxy.backend.util.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
+import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Map.Entry;
 
 /**
  * Export storage nodes executor.
@@ -64,12 +65,12 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
     }
     
     private void checkSQLStatement(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(Objects.isNull(sqlStatement.getDatabaseName()) || null != metaData.getDatabase(sqlStatement.getDatabaseName()),
+        ShardingSpherePreconditions.checkState(null == sqlStatement.getDatabaseName() || null != metaData.getDatabase(sqlStatement.getDatabaseName()),
                 () -> new IllegalArgumentException(String.format("database %s is not existed", sqlStatement.getDatabaseName())));
     }
     
     private String generateExportData(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {
-        return JsonUtils.toJsonString(new ExportedStorageNodes(Objects.isNull(sqlStatement.getDatabaseName()) ? getAllStorageNodes(metaData)
+        return JsonUtils.toJsonString(new ExportedStorageNodes(null == sqlStatement.getDatabaseName() ? getAllStorageNodes(metaData)
                 : generateDatabaseExportStorageNodesData(metaData.getDatabase(sqlStatement.getDatabaseName()))));
     }
     
@@ -86,17 +87,17 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
     
     private Map<String, Collection<ExportedStorageNode>> generateDatabaseExportStorageNodesData(final ShardingSphereDatabase database) {
         Map<String, ExportedStorageNode> storageNodes = new LinkedHashMap<>();
-        database.getResourceMetaData().getDataSources().forEach((key, value) -> {
-            DataSourceMetaData dataSourceMetaData = database.getResourceMetaData().getDataSourceMetaData(key);
+        for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
+            DataSourceMetaData dataSourceMetaData = database.getResourceMetaData().getDataSourceMetaData(entry.getKey());
             String databaseInstanceIp = getDatabaseInstanceIp(dataSourceMetaData);
             if (storageNodes.containsKey(databaseInstanceIp)) {
-                return;
+                continue;
             }
-            Map<String, Object> standardProperties = DataSourcePropertiesCreator.create(value).getConnectionPropertySynonyms().getStandardProperties();
+            Map<String, Object> standardProperties = DataSourcePropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();
             ExportedStorageNode exportedStorageNode = new ExportedStorageNode(dataSourceMetaData.getHostname(), String.valueOf(dataSourceMetaData.getPort()),
                     String.valueOf(standardProperties.get("username")), String.valueOf(standardProperties.get("password")), dataSourceMetaData.getCatalog());
             storageNodes.put(databaseInstanceIp, exportedStorageNode);
-        });
+        }
         return Collections.singletonMap(database.getName(), storageNodes.values());
     }
     

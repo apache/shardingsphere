@@ -38,14 +38,14 @@ import java.util.List;
 public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
     
     @Override
-    public void audit(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData,
+    public void audit(final SQLStatementContext sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData,
                       final ShardingSphereDatabase database, final ShardingRule rule) {
         Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(sqlStatementContext, rule);
         if (auditStrategies.isEmpty()) {
             return;
         }
         Collection<String> disableAuditNames = sqlStatementContext instanceof CommonSQLStatementContext
-                ? ((CommonSQLStatementContext<?>) sqlStatementContext).getSqlHintExtractor().findDisableAuditNames()
+                ? ((CommonSQLStatementContext) sqlStatementContext).getSqlHintExtractor().findDisableAuditNames()
                 : Collections.emptyList();
         for (ShardingAuditStrategyConfiguration auditStrategy : auditStrategies) {
             for (String auditorName : auditStrategy.getAuditorNames()) {
@@ -56,7 +56,7 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
         }
     }
     
-    private Collection<ShardingAuditStrategyConfiguration> getShardingAuditStrategies(final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
+    private Collection<ShardingAuditStrategyConfiguration> getShardingAuditStrategies(final SQLStatementContext sqlStatementContext, final ShardingRule rule) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Collection<ShardingAuditStrategyConfiguration> result = new ArrayList<>(tableNames.size());
         for (String each : tableNames) {

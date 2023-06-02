@@ -41,30 +41,30 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class GroupByContextEngineTest {
+class GroupByContextEngineTest {
     
     @Test
-    public void assertCreateGroupByContextWithoutGroupByForMySQL() {
+    void assertCreateGroupByContextWithoutGroupByForMySQL() {
         assertCreateGroupByContextWithoutGroupBy(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCreateGroupByContextWithoutGroupByForOracle() {
+    void assertCreateGroupByContextWithoutGroupByForOracle() {
         assertCreateGroupByContextWithoutGroupBy(new OracleSelectStatement());
     }
     
     @Test
-    public void assertCreateGroupByContextWithoutGroupByForPostgreSQL() {
+    void assertCreateGroupByContextWithoutGroupByForPostgreSQL() {
         assertCreateGroupByContextWithoutGroupBy(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCreateGroupByContextWithoutGroupByForSQL92() {
+    void assertCreateGroupByContextWithoutGroupByForSQL92() {
         assertCreateGroupByContextWithoutGroupBy(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCreateGroupByContextWithoutGroupByForSQLServer() {
+    void assertCreateGroupByContextWithoutGroupByForSQLServer() {
         assertCreateGroupByContextWithoutGroupBy(new SQLServerSelectStatement());
     }
     
@@ -74,27 +74,27 @@ public final class GroupByContextEngineTest {
     }
     
     @Test
-    public void assertCreateGroupByContextWithGroupByForMySQL() {
+    void assertCreateGroupByContextWithGroupByForMySQL() {
         assertCreateGroupByContextWithGroupBy(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCreateGroupByContextWithGroupByForOracle() {
+    void assertCreateGroupByContextWithGroupByForOracle() {
         assertCreateGroupByContextWithGroupBy(new OracleSelectStatement());
     }
     
     @Test
-    public void assertCreateGroupByContextWithGroupByForPostgreSQL() {
+    void assertCreateGroupByContextWithGroupByForPostgreSQL() {
         assertCreateGroupByContextWithGroupBy(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCreateGroupByContextWithGroupByForSQL92() {
+    void assertCreateGroupByContextWithGroupByForSQL92() {
         assertCreateGroupByContextWithGroupBy(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCreateGroupByContextWithGroupByForSQLServer() {
+    void assertCreateGroupByContextWithGroupByForSQLServer() {
         assertCreateGroupByContextWithGroupBy(new SQLServerSelectStatement());
     }
     

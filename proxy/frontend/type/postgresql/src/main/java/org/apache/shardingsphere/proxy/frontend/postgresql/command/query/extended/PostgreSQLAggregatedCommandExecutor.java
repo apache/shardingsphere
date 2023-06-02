@@ -34,8 +34,8 @@ public final class PostgreSQLAggregatedCommandExecutor implements CommandExecuto
     private final List<CommandExecutor> executors;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() throws SQLException {
-        List<DatabasePacket<?>> result = new LinkedList<>();
+    public Collection<DatabasePacket> execute() throws SQLException {
+        List<DatabasePacket> result = new LinkedList<>();
         for (CommandExecutor each : executors) {
             try {
                 result.addAll(each.execute());
@@ -43,6 +43,6 @@ public final class PostgreSQLAggregatedCommandExecutor implements CommandExecuto
                 each.close();
             }
         }
-        return Collections.singletonList(new PostgreSQLAggregatedResponsesPacket(result));
+        return Collections.singleton(new PostgreSQLAggregatedResponsesPacket(result));
     }
 }

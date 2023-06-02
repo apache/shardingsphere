@@ -1,11 +1,11 @@
 +++
 title = "COMMIT MIGRATION"
-weight = 18
+weight = 16
 +++
 
 ### 描述
 
-`COMMIT MIGRATION` 语法用于完成指定的数据迁移作业
+`COMMIT MIGRATION` 语法用于完成指定的数据迁移作业。
 
 ### 语法
 

@@ -33,7 +33,8 @@ import java.util.List;
 /**
  * MySQL binlog rows event packet.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/rows-event.html">ROWS_EVENT</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/classbinary__log_1_1Rows__event.html">ROWS_EVENT</a>
+ * @see <a href="https://mariadb.com/kb/en/rows_event_v1v2-rows_compressed_event_v1/">ROWS_EVENT</a>
  */
 @Getter
 public final class MySQLBinlogRowsEventPacket extends AbstractMySQLBinlogEventPacket {
@@ -70,8 +71,8 @@ public final class MySQLBinlogRowsEventPacket extends AbstractMySQLBinlogEventPa
     }
     
     private boolean isRowsEventVersion2(final int eventType) {
-        return MySQLBinlogEventType.WRITE_ROWS_EVENTv2.getValue() == eventType || MySQLBinlogEventType.UPDATE_ROWS_EVENTv2.getValue() == eventType
-                || MySQLBinlogEventType.DELETE_ROWS_EVENTv2.getValue() == eventType;
+        return MySQLBinlogEventType.WRITE_ROWS_EVENT_V2.getValue() == eventType || MySQLBinlogEventType.UPDATE_ROWS_EVENT_V2.getValue() == eventType
+                || MySQLBinlogEventType.DELETE_ROWS_EVENT_V2.getValue() == eventType;
     }
     
     private MySQLNullBitmap readUpdateColumnsPresentBitmap(final MySQLPacketPayload payload) {
@@ -79,7 +80,7 @@ public final class MySQLBinlogRowsEventPacket extends AbstractMySQLBinlogEventPa
     }
     
     private boolean isUpdateRowsEvent(final int eventType) {
-        return MySQLBinlogEventType.UPDATE_ROWS_EVENTv2.getValue() == eventType || MySQLBinlogEventType.UPDATE_ROWS_EVENTv1.getValue() == eventType;
+        return MySQLBinlogEventType.UPDATE_ROWS_EVENT_V2.getValue() == eventType || MySQLBinlogEventType.UPDATE_ROWS_EVENT_V1.getValue() == eventType;
     }
     
     /**

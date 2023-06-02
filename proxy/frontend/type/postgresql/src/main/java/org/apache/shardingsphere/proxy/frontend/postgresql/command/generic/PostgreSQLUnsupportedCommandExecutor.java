@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.generic;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
 import java.util.Collection;
@@ -34,10 +34,10 @@ import java.util.Collections;
 public final class PostgreSQLUnsupportedCommandExecutor implements CommandExecutor {
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
+    public Collection<DatabasePacket> execute() {
         // TODO consider what severity and error code to use
         PostgreSQLErrorResponsePacket packet = PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLVendorError.FEATURE_NOT_SUPPORTED,
                 PostgreSQLVendorError.FEATURE_NOT_SUPPORTED.getReason()).build();
-        return Collections.singletonList(packet);
+        return Collections.singleton(packet);
     }
 }

@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ShardingIgnoreRoutingEngineTest {
+class ShardingIgnoreRoutingEngineTest {
     
     @Test
-    public void assertRoute() {
+    void assertRoute() {
         ShardingIgnoreRoutingEngine ignoreRoutingEngine = new ShardingIgnoreRoutingEngine();
         RouteContext routeContext = ignoreRoutingEngine.route(mock(ShardingRule.class));
         assertTrue(routeContext.getRouteUnits().isEmpty());

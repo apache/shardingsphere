@@ -40,9 +40,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
-import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,6 +63,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -76,7 +76,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class BatchPreparedStatementExecutorTest {
+class BatchPreparedStatementExecutorTest {
     
     private static final String SQL = "DELETE FROM table_x WHERE id=?";
     
@@ -85,15 +85,14 @@ public final class BatchPreparedStatementExecutorTest {
     private BatchPreparedStatementExecutor executor;
     
     @Mock
-    private SQLStatementContext<?> sqlStatementContext;
+    private SQLStatementContext sqlStatementContext;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
-        TransactionTypeHolder.set(TransactionType.LOCAL);
         ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), mock(JDBCContext.class));
         executor = new BatchPreparedStatementExecutor(
-                connection.getContextManager().getMetaDataContexts(), new JDBCExecutor(executorEngine, connection.getConnectionManager().getConnectionContext()), "foo_db");
+                connection.getContextManager().getMetaDataContexts(), new JDBCExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext()), "foo_db");
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
     }
     
@@ -117,9 +116,7 @@ public final class BatchPreparedStatementExecutorTest {
     }
     
     private TransactionRule mockTransactionRule() {
-        TransactionRule result = mock(TransactionRule.class);
-        when(result.getResource()).thenReturn(new ShardingSphereTransactionManagerEngine());
-        return result;
+        return new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), "", new Properties()), Collections.emptyMap());
     }
     
     private ShardingRule mockShardingRule() {
@@ -129,7 +126,7 @@ public final class BatchPreparedStatementExecutorTest {
     }
     
     private Map<String, DataSource> mockDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         result.put("ds_0", dataSource);
         result.put("ds_1", dataSource);
@@ -137,13 +134,12 @@ public final class BatchPreparedStatementExecutorTest {
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         executorEngine.close();
-        TransactionTypeHolder.clear();
     }
     
     @Test
-    public void assertNoPreparedStatement() throws SQLException {
+    void assertNoPreparedStatement() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[]{0, 0});
         setExecutionGroups(Collections.singletonList(preparedStatement));
@@ -151,7 +147,7 @@ public final class BatchPreparedStatementExecutorTest {
     }
     
     @Test
-    public void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException {
+    void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[]{10, 20});
         setExecutionGroups(Collections.singletonList(preparedStatement));
@@ -160,7 +156,7 @@ public final class BatchPreparedStatementExecutorTest {
     }
     
     @Test
-    public void assertExecuteBatchForMultiplePreparedStatementsSuccess() throws SQLException {
+    void assertExecuteBatchForMultiplePreparedStatementsSuccess() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         when(preparedStatement1.executeBatch()).thenReturn(new int[]{10, 20});
@@ -172,7 +168,7 @@ public final class BatchPreparedStatementExecutorTest {
     }
     
     @Test
-    public void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException {
+    void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         SQLException ex = new SQLException("");
         when(preparedStatement.executeBatch()).thenThrow(ex);
@@ -182,7 +178,7 @@ public final class BatchPreparedStatementExecutorTest {
     }
     
     @Test
-    public void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException {
+    void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException ex = new SQLException("");

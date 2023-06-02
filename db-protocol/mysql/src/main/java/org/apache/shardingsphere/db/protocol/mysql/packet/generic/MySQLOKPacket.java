@@ -26,11 +26,11 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 /**
  * OK packet protocol for MySQL.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/packet-OK_Packet.html">OK Packet</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_basic_ok_packet.html">OK Packet</a>
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLOKPacket implements MySQLPacket {
+public final class MySQLOKPacket extends MySQLPacket {
     
     /**
      * Header of OK packet.
@@ -65,7 +65,7 @@ public final class MySQLOKPacket implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeInt1(HEADER);
         payload.writeIntLenenc(affectedRows);
         payload.writeIntLenenc(lastInsertId);

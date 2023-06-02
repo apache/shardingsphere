@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
  * Incremental dumper creator.
  */
 @SingletonSPI
-public interface IncrementalDumperCreator<P> extends TypedSPI {
+public interface IncrementalDumperCreator extends TypedSPI {
     
     /**
      * Create incremental dumper.
@@ -40,5 +40,5 @@ public interface IncrementalDumperCreator<P> extends TypedSPI {
      * @param metaDataLoader meta data loader
      * @return incremental dumper
      */
-    IncrementalDumper createIncrementalDumper(DumperConfiguration dumperConfig, IngestPosition<P> position, PipelineChannel channel, PipelineTableMetaDataLoader metaDataLoader);
+    IncrementalDumper createIncrementalDumper(DumperConfiguration dumperConfig, IngestPosition position, PipelineChannel channel, PipelineTableMetaDataLoader metaDataLoader);
 }

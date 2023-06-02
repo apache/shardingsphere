@@ -29,21 +29,18 @@ public final class EncryptColumnExistedReviser implements ColumnExistedReviser {
     
     private final EncryptTable encryptTable;
     
-    private final Collection<String> plainColumns;
-    
     private final Collection<String> assistedQueryColumns;
     
     private final Collection<String> likeQueryColumns;
     
     public EncryptColumnExistedReviser(final EncryptTable encryptTable) {
         this.encryptTable = encryptTable;
-        plainColumns = encryptTable.getPlainColumns();
         assistedQueryColumns = encryptTable.getAssistedQueryColumns();
         likeQueryColumns = encryptTable.getLikeQueryColumns();
     }
     
     @Override
     public boolean isExisted(final String originalName) {
-        return plainColumns.contains(originalName) || encryptTable.isCipherColumn(originalName) || !assistedQueryColumns.contains(originalName) && !likeQueryColumns.contains(originalName);
+        return encryptTable.isCipherColumn(originalName) || !assistedQueryColumns.contains(originalName) && !likeQueryColumns.contains(originalName);
     }
 }

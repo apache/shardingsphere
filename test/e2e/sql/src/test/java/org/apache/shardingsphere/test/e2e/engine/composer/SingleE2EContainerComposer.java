@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 
-import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,13 +63,12 @@ public final class SingleE2EContainerComposer extends E2EContainerComposer {
      * Get SQL.
      * 
      * @return SQL
-     * @throws ParseException parse exception
      */
-    public String getSQL() throws ParseException {
+    public String getSQL() {
         return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(sql) : sql;
     }
     
-    private String getLiteralSQL(final String sql) throws ParseException {
+    private String getLiteralSQL(final String sql) {
         List<Object> params = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
         return params.isEmpty() ? sql : String.format(sql.replace("%", "ÿ").replace("?", "%s"), params.toArray()).replace("ÿ", "%").replace("%%", "%").replace("'%'", "'%%'");
     }

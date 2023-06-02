@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.channel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Pipeline channel.
@@ -29,19 +30,20 @@ public interface PipelineChannel {
     /**
      * Push {@code DataRecord} into channel.
      *
-     * @param dataRecord data
+     * @param dataRecords data records
      */
-    void pushRecord(Record dataRecord);
+    void pushRecords(List<Record> dataRecords);
     
     /**
      * Fetch {@code Record} list from channel.
      * It might be blocked at most timeout seconds if available records count doesn't reach batch size.
      *
      * @param batchSize record batch size
-     * @param timeoutSeconds timeout(seconds)
+     * @param timeout timeout
+     * @param timeUnit time unit
      * @return record
      */
-    List<Record> fetchRecords(int batchSize, int timeoutSeconds);
+    List<Record> fetchRecords(int batchSize, int timeout, TimeUnit timeUnit);
     
     /**
      * Ack the last batch.

@@ -49,7 +49,7 @@ public final class TestCasesLoader {
      * @throws JAXBException exception for parse xml file.
      */
     public Collection<TestCase> generate() throws IOException, JAXBException {
-        URL url = Objects.requireNonNull(TestCasesLoader.class.getClassLoader().getResource("cases/federation-query-sql-cases.xml"));
+        URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("cases/federation-query-sql-cases.xml"));
         try (FileReader reader = new FileReader(url.getFile())) {
             TestCases testCases = (TestCases) JAXBContext.newInstance(TestCases.class).createUnmarshaller().unmarshal(reader);
             return testCases.getTestCases();

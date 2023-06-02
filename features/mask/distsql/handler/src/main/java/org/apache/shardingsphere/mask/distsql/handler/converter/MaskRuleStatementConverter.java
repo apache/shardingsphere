@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.converter;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
@@ -32,6 +34,7 @@ import java.util.Map;
 /**
  * Mask rule statement converter.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MaskRuleStatementConverter {
     
     /**
@@ -59,7 +62,7 @@ public final class MaskRuleStatementConverter {
     }
     
     private static Map<String, AlgorithmConfiguration> createMaskAlgorithmConfigurations(final MaskRuleSegment ruleSegment) {
-        Map<String, AlgorithmConfiguration> result = new HashMap<>(ruleSegment.getColumns().size(), 1);
+        Map<String, AlgorithmConfiguration> result = new HashMap<>(ruleSegment.getColumns().size(), 1F);
         for (MaskColumnSegment each : ruleSegment.getColumns()) {
             result.put(getAlgorithmName(ruleSegment.getTableName(), each), new AlgorithmConfiguration(each.getAlgorithm().getName(), each.getAlgorithm().getProps()));
         }

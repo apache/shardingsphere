@@ -28,10 +28,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class OpenGaussJdbcQueryPropertiesExtensionTest {
+class OpenGaussJdbcQueryPropertiesExtensionTest {
     
     @Test
-    public void assertExtendQueryProperties() {
+    void assertExtendQueryProperties() {
         Optional<JdbcQueryPropertiesExtension> extension = TypedSPILoader.findService(JdbcQueryPropertiesExtension.class, "openGauss");
         assertTrue(extension.isPresent());
         assertExtension(extension.get());
@@ -40,6 +40,6 @@ public final class OpenGaussJdbcQueryPropertiesExtensionTest {
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {
         assertThat(actual, instanceOf(OpenGaussJdbcQueryPropertiesExtension.class));
         assertThat(actual.getType(), equalTo("openGauss"));
-        assertTrue(actual.extendQueryProperties().isEmpty());
+        assertThat(actual.extendQueryProperties().size(), equalTo(2));
     }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
+import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
@@ -76,7 +78,7 @@ public enum PostgreSQLCharacterSets {
     private static final Map<String, PostgreSQLCharacterSets> CHARACTER_SETS_MAP;
     
     static {
-        Map<String, PostgreSQLCharacterSets> map = new HashMap<>(128);
+        Map<String, PostgreSQLCharacterSets> map = new HashMap<>(128, 1F);
         for (PostgreSQLCharacterSets each : values()) {
             map.put(each.name(), each);
             for (String eachAlias : each.aliases) {
@@ -113,6 +115,6 @@ public enum PostgreSQLCharacterSets {
     }
     
     private static String formatValue(final String value) {
-        return value.startsWith("'") && value.endsWith("'") || value.startsWith("\"") && value.endsWith("\"") ? value.substring(1, value.length() - 1) : value.trim();
+        return QuoteCharacter.SINGLE_QUOTE.isWrapped(value) || QuoteCharacter.QUOTE.isWrapped(value) ? value.substring(1, value.length() - 1) : value.trim();
     }
 }

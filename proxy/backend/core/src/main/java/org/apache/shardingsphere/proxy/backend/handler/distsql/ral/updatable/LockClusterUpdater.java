@@ -22,10 +22,13 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LockClusterStatement;
+import org.apache.shardingsphere.infra.lock.GlobalLockNames;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 
@@ -37,11 +40,21 @@ import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 public final class LockClusterUpdater implements RALUpdater<LockClusterStatement> {
     
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void executeUpdate(final String databaseName, final LockClusterStatement sqlStatement) {
         checkMode();
         checkState();
         checkAlgorithm(sqlStatement);
-        TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock();
+        LockContext lockContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext();
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
+        if (lockContext.tryLock(lockDefinition, 3000L)) {
+            try {
+                checkState();
+                TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock();
+            } finally {
+                lockContext.unlock(lockDefinition);
+            }
+        }
     }
     
     private void checkMode() {

@@ -35,25 +35,28 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-public final class DefaultMySQLSessionVariableHandlerTest {
+class DefaultMySQLSessionVariableHandlerTest {
     
     @Test
-    public void assertHandleDiscard() {
+    void assertHandleDiscard() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         TypedSPILoader.getService(MySQLSessionVariableHandler.class, null).handle(connectionSession, "", "");
         verifyNoInteractions(connectionSession);
     }
     
     @Test
-    public void assertHandleRecord() {
+    void assertHandleRecord() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(mock(RequiredSessionVariableRecorder.class));
         try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
             ReplayedSessionVariablesProvider variablesProvider = mock(ReplayedSessionVariablesProvider.class);
             when(variablesProvider.getVariables()).thenReturn(Collections.singleton("sql_mode"));
             typedSPILoader.when(() -> TypedSPILoader.findService(ReplayedSessionVariablesProvider.class, "MySQL")).thenReturn(Optional.of(variablesProvider));
-            new MySQLDefaultSessionVariableHandler().handle(connectionSession, "sql_mode", "''");
+            final MySQLDefaultSessionVariableHandler defaultSessionVariableHandler = new MySQLDefaultSessionVariableHandler();
+            defaultSessionVariableHandler.handle(connectionSession, "sql_mode", "''");
             verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("sql_mode", "''");
+            defaultSessionVariableHandler.handle(connectionSession, "@variable_name", "'variable_value'");
+            verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("@variable_name", "'variable_value'");
         }
     }
 }

@@ -19,7 +19,9 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.algorithm.ExpectedAlgorithmClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedIndex;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.lock.ExpectedLockTypeClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
@@ -36,6 +38,12 @@ public final class DropIndexStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "index")
     private final List<ExpectedIndex> indexes = new LinkedList<>();
+    
+    @XmlElement(name = "algorithm-option")
+    private ExpectedAlgorithmClause algorithmOption;
+    
+    @XmlElement(name = "lock-option")
+    private ExpectedLockTypeClause lockOption;
     
     @XmlElement
     private ExpectedSimpleTable table;

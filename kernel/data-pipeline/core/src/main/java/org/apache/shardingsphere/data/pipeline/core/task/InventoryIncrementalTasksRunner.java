@@ -45,13 +45,13 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     @Getter
     private final PipelineJobItemContext jobItemContext;
     
-    private final Collection<InventoryTask> inventoryTasks;
+    private final Collection<PipelineTask> inventoryTasks;
     
-    private final Collection<IncrementalTask> incrementalTasks;
+    private final Collection<PipelineTask> incrementalTasks;
     
     private final PipelineJobAPI jobAPI;
     
-    public InventoryIncrementalTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<InventoryTask> inventoryTasks, final Collection<IncrementalTask> incrementalTasks) {
+    public InventoryIncrementalTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<PipelineTask> inventoryTasks, final Collection<PipelineTask> incrementalTasks) {
         this.jobItemContext = jobItemContext;
         this.inventoryTasks = inventoryTasks;
         this.incrementalTasks = incrementalTasks;
@@ -61,11 +61,11 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     @Override
     public void stop() {
         jobItemContext.setStopping(true);
-        for (InventoryTask each : inventoryTasks) {
+        for (PipelineTask each : inventoryTasks) {
             each.stop();
             each.close();
         }
-        for (IncrementalTask each : incrementalTasks) {
+        for (PipelineTask each : incrementalTasks) {
             each.stop();
             each.close();
         }
@@ -88,7 +88,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     private synchronized void executeInventoryTask() {
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
-        for (InventoryTask each : inventoryTasks) {
+        for (PipelineTask each : inventoryTasks) {
             if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
@@ -97,7 +97,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         ExecuteEngine.trigger(futures, new InventoryTaskExecuteCallback());
     }
     
-    private void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
+    protected void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
         jobItemContext.setStatus(jobStatus);
         jobAPI.updateJobItemStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
@@ -113,7 +113,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         }
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
-        for (IncrementalTask each : incrementalTasks) {
+        for (PipelineTask each : incrementalTasks) {
             if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
@@ -141,7 +141,6 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         @Override
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, inventory task execute failed.", throwable);
-            updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
             String jobId = jobItemContext.getJobId();
             jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
             jobAPI.stop(jobId);
@@ -158,7 +157,6 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         @Override
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, incremental task execute failed.", throwable);
-            updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
             String jobId = jobItemContext.getJobId();
             jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
             jobAPI.stop(jobId);

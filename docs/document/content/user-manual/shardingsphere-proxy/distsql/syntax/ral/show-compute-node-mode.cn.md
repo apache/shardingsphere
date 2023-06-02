@@ -1,11 +1,11 @@
 +++
 title = "SHOW COMPUTE NODE MODE"
-weight = 3
+weight = 5
 +++
 
 ### 描述
 
-`SHOW COMPUTE NODE MODE` 语法用于查询当前 proxy 的模式配置信息
+`SHOW COMPUTE NODE MODE` 语法用于查询当前 proxy 的模式配置信息。
 
 ### 语法
 
@@ -23,11 +23,11 @@ ShowComputeNodeMode ::=
 
 ### 返回值说明
 
-| 列           | 说明                     |
-|--------------|-------------------------|
-| type         | proxy 模式类型           |
-| repository   | proxy 持久化仓库类型      |
-| props        | proxy 持久化仓库属性参数  |
+| 列          | 说明              |
+|------------|-----------------|
+| type       | proxy 模式类型      |
+| repository | proxy 持久化仓库类型   |
+| props      | proxy 持久化仓库属性参数 |
 
 ### 示例
 

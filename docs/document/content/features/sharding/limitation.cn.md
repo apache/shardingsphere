@@ -7,7 +7,8 @@ weight = 2
 
 ## 稳定支持
 
-全面支持 DML、DDL、DCL、TCL 和常用 DAL。 支持分页、去重、排序、分组、聚合、表关联等复杂查询。 支持 PostgreSQL 和 openGauss 数据库 SCHEMA DDL 和 DML 语句。
+全面支持 DML、DDL、DCL、TCL 和常用 DAL。 支持分页、去重、排序、分组、聚合、表关联等复杂查询。
+支持 PostgreSQL 和 openGauss 数据库的 schema DDL 和 DML 语句，当 SQL 中不指定 schema 时，默认访问 `public` schema，其他 schema 则需要在表名前显示声明，暂不支持 `SEARCH_PATH` 修改 schema 搜索路径。
 
 ### 常规查询
 
@@ -99,6 +100,10 @@ SELECT * FROM t_order o ORDER BY id LIMIT ? OFFSET ?
 SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 ```
 
+### LOAD DATA / LOAD XML
+
+支持 MySQL `LOAD DATA` 和 `LOAD XML` 语句加载数据到单表和广播表。
+
 ## 实验性支持
 
 实验性支持特指使用 Federation 执行引擎提供支持。 该引擎处于快速开发中，用户虽基本可用，但仍需大量优化，是实验性产品。
@@ -140,6 +145,7 @@ SELECT * FROM t_user u RIGHT JOIN t_user_role r ON u.user_id = r.user_id WHERE u
 ## 不支持
 
 ### CASE WHEN
+
 以下 CASE WHEN 语句不支持：
 
 - CASE WHEN 中包含子查询
@@ -156,3 +162,7 @@ Oracle 和 SQLServer 由于分页查询较为复杂，目前有部分分页查�
 - SQLServer
 
 目前不支持使用 WITH xxx AS (SELECT …) 的方式进行分页。由于 Hibernate 自动生成的 SQLServer 分页语句使用了 WITH 语句，因此目前并不支持基于 Hibernate 的 SQLServer 分页。 目前也不支持使用两个 TOP + 子查询的方式实现分页。
+
+### LOAD DATA / LOAD XML
+
+不支持 MySQL `LOAD DATA` 和 `LOAD XML` 语句加载数据到分片表。

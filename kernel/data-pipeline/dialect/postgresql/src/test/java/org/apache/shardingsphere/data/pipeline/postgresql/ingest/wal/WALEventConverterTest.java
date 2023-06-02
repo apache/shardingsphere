@@ -62,17 +62,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class WALEventConverterTest {
+class WALEventConverterTest {
     
     private DumperConfiguration dumperConfig;
     
@@ -85,7 +83,7 @@ public final class WALEventConverterTest {
     private PipelineTableMetaData pipelineTableMetaData;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         dumperConfig = mockDumperConfiguration();
         walEventConverter = new WALEventConverter(dumperConfig, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())));
         initTableData(dumperConfig);
@@ -93,7 +91,7 @@ public final class WALEventConverterTest {
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         dataSourceManager.close();
     }
     
@@ -117,11 +115,11 @@ public final class WALEventConverterTest {
         }
     }
     
-    private static Map<String, PipelineColumnMetaData> mockOrderColumnsMetaDataMap() {
+    private Map<String, PipelineColumnMetaData> mockOrderColumnsMetaDataMap() {
         return mockOrderColumnsMetaDataList().stream().collect(Collectors.toMap(PipelineColumnMetaData::getName, Function.identity()));
     }
     
-    private static List<PipelineColumnMetaData> mockOrderColumnsMetaDataList() {
+    private List<PipelineColumnMetaData> mockOrderColumnsMetaDataList() {
         List<PipelineColumnMetaData> result = new LinkedList<>();
         result.add(new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "INT", false, true, true));
         result.add(new PipelineColumnMetaData(1, "user_id", Types.INTEGER, "INT", false, false, false));
@@ -130,19 +128,12 @@ public final class WALEventConverterTest {
     }
     
     @Test
-    public void assertIsColumnUnneeded() {
-        assertFalse(walEventConverter.isColumnUnneeded(null, "order_id"));
-        assertFalse(walEventConverter.isColumnUnneeded(Stream.of("order_id", "user_id").map(ColumnName::new).collect(Collectors.toSet()), "order_id"));
-        assertTrue(walEventConverter.isColumnUnneeded(Stream.of("order_id", "user_id").map(ColumnName::new).collect(Collectors.toSet()), "status"));
-    }
-    
-    @Test
-    public void assertWriteRowEventWithoutCustomColumns() throws ReflectiveOperationException {
+    void assertWriteRowEventWithoutCustomColumns() throws ReflectiveOperationException {
         assertWriteRowEvent0(null, 3);
     }
     
     @Test
-    public void assertWriteRowEventWithCustomColumns() throws ReflectiveOperationException {
+    void assertWriteRowEventWithCustomColumns() throws ReflectiveOperationException {
         assertWriteRowEvent0(mockTargetTableColumnsMap(), 1);
     }
     
@@ -163,7 +154,7 @@ public final class WALEventConverterTest {
     }
     
     @Test
-    public void assertConvertBeginTXEvent() {
+    void assertConvertBeginTXEvent() {
         BeginTXEvent beginTXEvent = new BeginTXEvent(100);
         beginTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
         Record record = walEventConverter.convert(beginTXEvent);
@@ -172,7 +163,7 @@ public final class WALEventConverterTest {
     }
     
     @Test
-    public void assertConvertCommitTXEvent() {
+    void assertConvertCommitTXEvent() {
         CommitTXEvent commitTXEvent = new CommitTXEvent(1, 3468L);
         commitTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
         Record record = walEventConverter.convert(commitTXEvent);
@@ -181,39 +172,39 @@ public final class WALEventConverterTest {
     }
     
     @Test
-    public void assertConvertWriteRowEvent() {
+    void assertConvertWriteRowEvent() {
         Record record = walEventConverter.convert(mockWriteRowEvent());
         assertThat(record, instanceOf(DataRecord.class));
         assertThat(((DataRecord) record).getType(), is(IngestDataChangeType.INSERT));
     }
     
     @Test
-    public void assertConvertUpdateRowEvent() {
+    void assertConvertUpdateRowEvent() {
         Record record = walEventConverter.convert(mockUpdateRowEvent());
         assertThat(record, instanceOf(DataRecord.class));
         assertThat(((DataRecord) record).getType(), is(IngestDataChangeType.UPDATE));
     }
     
     @Test
-    public void assertConvertDeleteRowEvent() {
+    void assertConvertDeleteRowEvent() {
         Record record = walEventConverter.convert(mockDeleteRowEvent());
         assertThat(record, instanceOf(DataRecord.class));
         assertThat(((DataRecord) record).getType(), is(IngestDataChangeType.DELETE));
     }
     
     @Test
-    public void assertConvertPlaceholderEvent() {
+    void assertConvertPlaceholderEvent() {
         Record record = walEventConverter.convert(new PlaceholderEvent());
         assertThat(record, instanceOf(PlaceholderRecord.class));
     }
     
     @Test
-    public void assertUnknownTable() {
+    void assertUnknownTable() {
         assertInstanceOf(PlaceholderRecord.class, walEventConverter.convert(mockUnknownTableEvent()));
     }
     
     @Test
-    public void assertConvertFailure() {
+    void assertConvertFailure() {
         AbstractRowEvent event = new AbstractRowEvent() {
         };
         event.setDatabaseName("");

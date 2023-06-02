@@ -30,7 +30,7 @@ import java.util.Collection;
  * Drop view statement context.
  */
 @Getter
-public final class DropViewStatementContext extends CommonSQLStatementContext<DropViewStatement> implements TableAvailable {
+public final class DropViewStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
@@ -40,7 +40,12 @@ public final class DropViewStatementContext extends CommonSQLStatementContext<Dr
     }
     
     @Override
+    public DropViewStatement getSqlStatement() {
+        return (DropViewStatement) super.getSqlStatement();
+    }
+    
+    @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getTables();
+        return tablesContext.getSimpleTableSegments();
     }
 }

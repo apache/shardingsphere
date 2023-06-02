@@ -1,0 +1,382 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: user
+columns:
+  host:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: Host
+    primaryKey: true
+    unsigned: false
+    visible: true
+  user:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: User
+    primaryKey: true
+    unsigned: false
+    visible: true
+  select_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Select_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  insert_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Insert_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  update_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Update_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  delete_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Delete_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  create_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Create_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  drop_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Drop_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  reload_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Reload_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  shutdown_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Shutdown_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  process_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Process_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  file_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: File_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  grant_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Grant_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  references_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: References_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  index_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Index_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  alter_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Alter_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  show_db_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Show_db_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  super_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Super_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  create_tmp_table_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Create_tmp_table_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lock_tables_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Lock_tables_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  execute_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Execute_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  repl_slave_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Repl_slave_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  repl_client_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Repl_client_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  create_view_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Create_view_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  show_view_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Show_view_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  create_routine_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Create_routine_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  alter_routine_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Alter_routine_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  create_user_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Create_user_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Event_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  trigger_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Trigger_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  create_tablespace_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Create_tablespace_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ssl_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_cipher:
+    caseSensitive: false
+    dataType: -4
+    generated: false
+    name: ssl_cipher
+    primaryKey: false
+    unsigned: false
+    visible: true
+  x509_issuer:
+    caseSensitive: false
+    dataType: -4
+    generated: false
+    name: x509_issuer
+    primaryKey: false
+    unsigned: false
+    visible: true
+  x509_subject:
+    caseSensitive: false
+    dataType: -4
+    generated: false
+    name: x509_subject
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_questions:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: max_questions
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_updates:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: max_updates
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_connections:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: max_connections
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_user_connections:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: max_user_connections
+    primaryKey: false
+    unsigned: true
+    visible: true
+  plugin:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: plugin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  authentication_string:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: authentication_string
+    primaryKey: false
+    unsigned: false
+    visible: true
+  password_expired:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: password_expired
+    primaryKey: false
+    unsigned: false
+    visible: true
+  password_last_changed:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: password_last_changed
+    primaryKey: false
+    unsigned: false
+    visible: true
+  password_lifetime:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: password_lifetime
+    primaryKey: false
+    unsigned: true
+    visible: true
+  account_locked:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: account_locked
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  primary:
+    name: PRIMARY

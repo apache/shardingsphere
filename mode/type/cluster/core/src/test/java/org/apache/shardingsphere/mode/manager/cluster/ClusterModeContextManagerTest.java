@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaDa
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
@@ -47,14 +49,16 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 
-public final class ClusterModeContextManagerTest {
+class ClusterModeContextManagerTest {
     
     @Test
-    public void assertCreateDatabase() {
+    void assertCreateDatabase() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -66,11 +70,11 @@ public final class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.createDatabase("Database Name");
+        assertDoesNotThrow(() -> clusterModeContextManager.createDatabase("db"));
     }
     
     @Test
-    public void assertDropDatabase() {
+    void assertDropDatabase() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -82,11 +86,11 @@ public final class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.dropDatabase("Database Name");
+        assertDoesNotThrow(() -> clusterModeContextManager.dropDatabase("db"));
     }
     
     @Test
-    public void assertCreateSchema() {
+    void assertCreateSchema() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -98,13 +102,13 @@ public final class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.createSchema("Database Name", "Schema Name");
+        assertDoesNotThrow(() -> clusterModeContextManager.createSchema("db", "Schema Name"));
     }
     
     @Test
-    public void assertAlterSchema() {
+    void assertAlterSchema() {
         ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData();
-        shardingSphereMetaData.addDatabase("Database Name", new H2DatabaseType());
+        shardingSphereMetaData.addDatabase("db", new H2DatabaseType());
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 new MetaDataPersistService(new ClusterPersistRepositoryFixture()), shardingSphereMetaData);
         ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
@@ -114,15 +118,14 @@ public final class ClusterModeContextManagerTest {
         ClusterModeContextManager modeContextManager = new ClusterModeContextManager();
         ContextManager contextManager = new ContextManager(metaDataContexts, new InstanceContext(instance,
                 workerIdGenerator, modeConfiguration, modeContextManager, null, new EventBusContext()));
-        contextManager.addSchema("Database Name", "Schema Name");
+        contextManager.addSchema("db", "Schema Name");
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         clusterModeContextManager.setContextManagerAware(contextManager);
-        clusterModeContextManager
-                .alterSchema(new AlterSchemaPOJO("Database Name", "Schema Name", "Rename Schema Name", new LinkedList<>()));
+        assertDoesNotThrow(() -> clusterModeContextManager.alterSchema(new AlterSchemaPOJO("db", "Schema Name", "Rename Schema Name", new LinkedList<>())));
     }
     
     @Test
-    public void assertDropSchema() {
+    void assertDropSchema() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -131,14 +134,13 @@ public final class ClusterModeContextManagerTest {
         ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
                 new ClusterPersistRepositoryConfiguration("Type", "Namespace", "Server Lists", new Properties()));
         ClusterModeContextManager modeContextManager = new ClusterModeContextManager();
-        clusterModeContextManager
-                .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
-                        modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.dropSchema("Database Name", new LinkedList<>());
+        clusterModeContextManager.setContextManagerAware(
+                new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator, modeConfiguration, modeContextManager, null, new EventBusContext())));
+        assertDoesNotThrow(() -> clusterModeContextManager.dropSchema("db", new LinkedList<>()));
     }
     
     @Test
-    public void assertDropSchemaWithEmptyList() {
+    void assertDropSchemaWithEmptyList() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -152,11 +154,11 @@ public final class ClusterModeContextManagerTest {
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Collection<String> stringList = new LinkedList<>();
         stringList.add("foo");
-        clusterModeContextManager.dropSchema("Database Name", stringList);
+        assertDoesNotThrow(() -> clusterModeContextManager.dropSchema("db", stringList));
     }
     
     @Test
-    public void assertDropSchemaWithListContainingRootAndNonRoot() {
+    void assertDropSchemaWithListContainingRootAndNonRoot() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -171,11 +173,11 @@ public final class ClusterModeContextManagerTest {
         Collection<String> stringList = new LinkedList<>();
         stringList.add("/");
         stringList.add("foo");
-        clusterModeContextManager.dropSchema("Database Name", stringList);
+        assertDoesNotThrow(() -> clusterModeContextManager.dropSchema("db", stringList));
     }
     
     @Test
-    public void assertAlterSchemaMetaData() {
+    void assertAlterSchemaMetaData() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -187,13 +189,13 @@ public final class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO("Database Name", "Schema Name");
+        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO("db", "Schema Name");
         clusterModeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         assertNull(alterSchemaMetaDataPOJO.getLogicDataSourceName());
     }
     
     @Test
-    public void assertRegisterStorageUnits() {
+    void assertRegisterStorageUnits() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -205,11 +207,11 @@ public final class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.registerStorageUnits("Database Name", new TreeMap<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.registerStorageUnits("db", new TreeMap<>()));
     }
     
     @Test
-    public void assertAlterStorageUnits() {
+    void assertAlterStorageUnits() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -221,11 +223,11 @@ public final class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.alterStorageUnits("Database Name", new TreeMap<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", new TreeMap<>()));
     }
     
     @Test
-    public void assertAlterStorageUnitsWithProcessListClusterPerRepoFix() {
+    void assertAlterStorageUnitsWithProcessListClusterPerRepoFix() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
@@ -238,11 +240,11 @@ public final class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.alterStorageUnits("Database Name", new TreeMap<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", new TreeMap<>()));
     }
     
     @Test
-    public void assertAlterStorageUnitsWithDataSourceProperties() {
+    void assertAlterStorageUnitsWithDataSourceProperties() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -256,11 +258,11 @@ public final class ClusterModeContextManagerTest {
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Map<String, DataSourceProperties> stringDataSourcePropertiesMap = new HashMap<>();
         stringDataSourcePropertiesMap.put("active_version", new DataSourceProperties("active_version", new HashMap<>()));
-        clusterModeContextManager.alterStorageUnits("Database Name", stringDataSourcePropertiesMap);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap));
     }
     
     @Test
-    public void assertAlterStorageUnitsInvalidName() {
+    void assertAlterStorageUnitsInvalidName() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -275,11 +277,11 @@ public final class ClusterModeContextManagerTest {
         Map<String, DataSourceProperties> stringDataSourcePropertiesMap = new HashMap<>();
         stringDataSourcePropertiesMap.put("\n", new DataSourceProperties("\n", new HashMap<>()));
         stringDataSourcePropertiesMap.put("active_version", new DataSourceProperties("active_version", new HashMap<>()));
-        clusterModeContextManager.alterStorageUnits("Database Name", stringDataSourcePropertiesMap);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap));
     }
     
     @Test
-    public void assertAlterStorageUnitsWithoutDataSourceProperties() {
+    void assertAlterStorageUnitsWithoutDataSourceProperties() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
@@ -295,11 +297,11 @@ public final class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.alterStorageUnits("Database Name", new TreeMap<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", new TreeMap<>()));
     }
     
     @Test
-    public void assertAlterStorageUnitsWithEmptyDataSourcePropertiesMap() {
+    void assertAlterStorageUnitsWithEmptyDataSourcePropertiesMap() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
@@ -313,11 +315,11 @@ public final class ClusterModeContextManagerTest {
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Map<String, DataSourceProperties> stringDataSourcePropertiesMap = new HashMap<>(new TreeMap<>());
-        clusterModeContextManager.alterStorageUnits("Database Name", stringDataSourcePropertiesMap);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap));
     }
     
     @Test
-    public void assertAlterStorageUnitsWithOneDataSourceProperties() {
+    void assertAlterStorageUnitsWithOneDataSourceProperties() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
@@ -332,14 +334,14 @@ public final class ClusterModeContextManagerTest {
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Map<String, DataSourceProperties> stringDataSourcePropertiesMap = new HashMap<>();
         stringDataSourcePropertiesMap.put("42", new DataSourceProperties("active_version", new HashMap<>()));
-        clusterModeContextManager.alterStorageUnits("Database Name", stringDataSourcePropertiesMap);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap));
     }
     
     @Test
-    public void assertUnregisterStorageUnits() {
+    void assertUnregisterStorageUnits() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, createShardingSphereMetaData());
         ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
         WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
         ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
@@ -348,15 +350,15 @@ public final class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.unregisterStorageUnits("Database Name", new LinkedList<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.unregisterStorageUnits("db", new LinkedList<>()));
     }
     
     @Test
-    public void assertUnregisterStorageUnitsWithProcessListClusterPersistRepoFixture() {
+    void assertUnregisterStorageUnitsWithProcessListClusterPersistRepoFixture() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, createShardingSphereMetaData());
         ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
         WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
         ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
@@ -365,30 +367,29 @@ public final class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.unregisterStorageUnits("Database Name", new LinkedList<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.unregisterStorageUnits("db", new LinkedList<>()));
     }
     
     @Test
-    public void assertUnregisterStorageUnitsWithClusterPersistRepoFixture() {
+    void assertUnregisterStorageUnitsWithClusterPersistRepoFixture() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, createShardingSphereMetaData());
         ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
         WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
         ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
                 new ClusterPersistRepositoryConfiguration("Type", "Namespace", "Server Lists", new Properties()));
         ClusterModeContextManager modeContextManager = new ClusterModeContextManager();
-        clusterModeContextManager
-                .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
-                        modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.alterRuleConfiguration("Database Name", new LinkedList<>());
+        clusterModeContextManager.setContextManagerAware(
+                new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator, modeConfiguration, modeContextManager, null, new EventBusContext())));
+        assertDoesNotThrow(() -> clusterModeContextManager.alterRuleConfiguration("db", new LinkedList<>()));
     }
     
     @Test
-    public void assertAlterRuleConfiguration() {
+    void assertAlterRuleConfiguration() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, createShardingSphereMetaData());
         ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
         WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
         ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
@@ -399,14 +400,20 @@ public final class ClusterModeContextManagerTest {
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Collection<RuleConfiguration> ruleConfigurationList = new LinkedList<>();
         ruleConfigurationList.add(new RuleConfigurationFixture());
-        clusterModeContextManager.alterRuleConfiguration("Database Name", ruleConfigurationList);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterRuleConfiguration("db", ruleConfigurationList));
+    }
+    
+    private ShardingSphereMetaData createShardingSphereMetaData() {
+        return new ShardingSphereMetaData(Collections.singletonMap("db", new ShardingSphereDatabase("db", new MySQLDatabaseType(),
+                new ShardingSphereResourceMetaData("db", Collections.emptyMap()), new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.emptyMap())),
+                new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
     
     @Test
-    public void assertAlterRuleConfigurationMultiple() {
+    void assertAlterRuleConfigurationMultiple() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, createShardingSphereMetaData());
         ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
         WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
         ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
@@ -418,15 +425,15 @@ public final class ClusterModeContextManagerTest {
         Collection<RuleConfiguration> ruleConfigurationList = new LinkedList<>();
         ruleConfigurationList.add(new RuleConfigurationFixture());
         ruleConfigurationList.add(new RuleConfigurationFixture());
-        clusterModeContextManager.alterRuleConfiguration("Database Name", ruleConfigurationList);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterRuleConfiguration("db", ruleConfigurationList));
     }
     
     @Test
-    public void assertAlterRuleConfigurationWithPersistService() {
+    void assertAlterRuleConfigurationWithPersistService() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, createShardingSphereMetaData());
         ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
         WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
         ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
@@ -437,14 +444,14 @@ public final class ClusterModeContextManagerTest {
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Collection<RuleConfiguration> ruleConfigurationList = new LinkedList<>();
         ruleConfigurationList.add(new RuleConfigurationFixture());
-        clusterModeContextManager.alterRuleConfiguration("Database Name", ruleConfigurationList);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterRuleConfiguration("db", ruleConfigurationList));
     }
     
     @Test
-    public void assertAlterGlobalRuleConfigurationWithEmptyRuleConfigurations() {
+    void assertAlterGlobalRuleConfigurationWithEmptyRuleConfigurations() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, createShardingSphereMetaData());
         ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
         WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
         ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
@@ -453,29 +460,11 @@ public final class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.alterGlobalRuleConfiguration(new LinkedList<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.alterGlobalRuleConfiguration(new LinkedList<>()));
     }
     
     @Test
-    public void assertAlterGlobalRuleConfigurationWithSingleRuleConfigurations() {
-        ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
-        MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
-        ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
-        WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
-        ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
-                new ClusterPersistRepositoryConfiguration("Type", "Namespace", "Server Lists", new Properties()));
-        ClusterModeContextManager modeContextManager = new ClusterModeContextManager();
-        clusterModeContextManager
-                .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
-                        modeConfiguration, modeContextManager, null, new EventBusContext())));
-        Collection<RuleConfiguration> ruleConfigurationList = new LinkedList<>();
-        ruleConfigurationList.add(new RuleConfigurationFixture());
-        clusterModeContextManager.alterGlobalRuleConfiguration(ruleConfigurationList);
-    }
-    
-    @Test
-    public void assertAlterGlobalRuleConfigurationWithMultipleRuleConfigurations() {
+    void assertAlterGlobalRuleConfigurationWithSingleRuleConfigurations() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -489,12 +478,11 @@ public final class ClusterModeContextManagerTest {
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Collection<RuleConfiguration> ruleConfigurationList = new LinkedList<>();
         ruleConfigurationList.add(new RuleConfigurationFixture());
-        ruleConfigurationList.add(new RuleConfigurationFixture());
-        clusterModeContextManager.alterGlobalRuleConfiguration(ruleConfigurationList);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterGlobalRuleConfiguration(ruleConfigurationList));
     }
     
     @Test
-    public void assertAlterProperties() {
+    void assertAlterGlobalRuleConfigurationWithMultipleRuleConfigurations() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -506,21 +494,40 @@ public final class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.alterProperties(new Properties());
+        Collection<RuleConfiguration> ruleConfigurationList = new LinkedList<>();
+        ruleConfigurationList.add(new RuleConfigurationFixture());
+        ruleConfigurationList.add(new RuleConfigurationFixture());
+        assertDoesNotThrow(() -> clusterModeContextManager.alterGlobalRuleConfiguration(ruleConfigurationList));
     }
     
     @Test
-    public void assertConstructor() {
+    void assertAlterProperties() {
+        ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
+        MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
+        ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
+        WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
+        ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
+                new ClusterPersistRepositoryConfiguration("Type", "Namespace", "Server Lists", new Properties()));
+        ClusterModeContextManager modeContextManager = new ClusterModeContextManager();
+        clusterModeContextManager
+                .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
+                        modeConfiguration, modeContextManager, null, new EventBusContext())));
+        assertDoesNotThrow(() -> clusterModeContextManager.alterProperties(new Properties()));
+    }
+    
+    @Test
+    void assertConstructor() {
         ClusterModeContextManager actualClusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
-        ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
-        WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
-        ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
-                new ClusterPersistRepositoryConfiguration("Type", "Namespace", "Server Lists", new Properties()));
-        ClusterModeContextManager modeContextManager = new ClusterModeContextManager();
-        actualClusterModeContextManager
-                .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
-                        modeConfiguration, modeContextManager, null, new EventBusContext())));
+        try (MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData())) {
+            ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
+            WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
+            ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
+                    new ClusterPersistRepositoryConfiguration("Type", "Namespace", "Server Lists", new Properties()));
+            ClusterModeContextManager modeContextManager = new ClusterModeContextManager();
+            assertDoesNotThrow(() -> actualClusterModeContextManager.setContextManagerAware(
+                    new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator, modeConfiguration, modeContextManager, null, new EventBusContext()))));
+        }
     }
 }

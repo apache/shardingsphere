@@ -1,0 +1,115 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: memory_summary_by_user_by_event_name
+columns:
+  user:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: USER
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  count_alloc:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_ALLOC
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_free:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_FREE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_number_of_bytes_alloc:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_NUMBER_OF_BYTES_ALLOC
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_number_of_bytes_free:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_NUMBER_OF_BYTES_FREE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  low_count_used:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: LOW_COUNT_USED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  current_count_used:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: CURRENT_COUNT_USED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  high_count_used:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: HIGH_COUNT_USED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  low_number_of_bytes_used:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: LOW_NUMBER_OF_BYTES_USED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  current_number_of_bytes_used:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: CURRENT_NUMBER_OF_BYTES_USED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  high_number_of_bytes_used:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: HIGH_NUMBER_OF_BYTES_USED
+    primaryKey: false
+    unsigned: false
+    visible: true

@@ -1,11 +1,11 @@
 +++
 title = "DROP SHARDING TABLE RULE"
-weight = 4
+weight = 3
 +++
 
 ## 描述
 
-`DROP SHARDING TABLE RULE` 语法用于删除指定逻辑库的指定分片规则
+`DROP SHARDING TABLE RULE` 语法用于删除指定逻辑库的指定分片规则。
 
 ### 语法定义
 

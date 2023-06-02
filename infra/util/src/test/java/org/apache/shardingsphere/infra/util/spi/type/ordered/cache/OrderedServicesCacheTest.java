@@ -38,19 +38,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class OrderedServicesCacheTest {
+class OrderedServicesCacheTest {
     
     @AfterEach
-    public void cleanCache() throws ReflectiveOperationException {
+    void cleanCache() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(OrderedServicesCache.class.getDeclaredField("cache"), OrderedServicesCache.class, new SoftReference<>(new ConcurrentHashMap<>()));
     }
     
     @Test
-    public void assertCacheServicesAndClear() {
+    void assertCacheServicesAndClear() {
         OrderedInterfaceFixture orderedInterfaceFixture = new OrderedInterfaceFixtureImpl();
         Collection<OrderedInterfaceFixture> customInterfaces = Collections.singleton(orderedInterfaceFixture);
         OrderedSPIFixture<?> cacheOrderedSPIFixture = new OrderedSPIFixtureImpl();
-        Map<OrderedInterfaceFixture, OrderedSPIFixture<?>> cachedOrderedServices = new LinkedHashMap<>(customInterfaces.size(), 1);
+        Map<OrderedInterfaceFixture, OrderedSPIFixture<?>> cachedOrderedServices = new LinkedHashMap<>(customInterfaces.size(), 1F);
         cachedOrderedServices.put(orderedInterfaceFixture, cacheOrderedSPIFixture);
         OrderedServicesCache.cacheServices(OrderedSPIFixture.class, customInterfaces, cachedOrderedServices);
         Optional<Map<?, ?>> actual = OrderedServicesCache.findCachedServices(OrderedSPIFixture.class, customInterfaces);
@@ -61,7 +61,7 @@ public final class OrderedServicesCacheTest {
     }
     
     @Test
-    public void assertNotFindCachedServices() {
+    void assertNotFindCachedServices() {
         assertFalse(OrderedServicesCache.findCachedServices(OrderedSPIFixture.class, Collections.singleton(new OrderedInterfaceFixtureImpl())).isPresent());
     }
 }

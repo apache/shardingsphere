@@ -98,8 +98,8 @@
     <create-account-table>
         CREATE TABLE account
         (
-        ID BIGINT, BALANCE FLOAT,
-        TRANSACTION_ID INT
+        id BIGINT, balance FLOAT,
+        transaction_id INT
         )
     </create-account-table>
 

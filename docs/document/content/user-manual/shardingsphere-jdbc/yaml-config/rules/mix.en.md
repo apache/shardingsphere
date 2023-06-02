@@ -5,7 +5,7 @@ weight = 9
 
 ## Background
 
-ShardingSphere provides a variety of features, such as data sharding, read/write splitting, high availability, and data encryption. These features can be used independently or in combination. 
+ShardingSphere provides a variety of features, such as data sharding, read/write splitting, and data encryption. These features can be used independently or in combination. 
 Below, you will find the parameters' explanation and configuration samples based on YAML.
 
 ## Parameters
@@ -40,39 +40,6 @@ rules:
     <key_generate_algorithm_name> (+): # Distributed sequence algorithm name
       type: # Distributed sequence algorithm type
       props: # Property configuration of distributed sequence algorithm
-- !READWRITE_SPLITTING
-  dataSources:
-    <data_source_name>: # Read/write splitting logical data source name
-      dynamicStrategy: # Read/write splitting type
-        autoAwareDataSourceName: # Database discovery logical data source name
-    <data_source_name>: # Read/write splitting logical data source name
-      dynamicStrategy: # Read/write splitting type
-        autoAwareDataSourceName: # Database discovery logical data source name
-- !DB_DISCOVERY
-  dataSources:
-    <data_source_name>:
-      dataSourceNames: # Data source name list
-        - ds_0
-        - ds_1
-        - ds_2
-      discoveryHeartbeatName: # Detect heartbeat name
-      discoveryTypeName: # Database discovery type name
-    <data_source_name>:
-      dataSourceNames: # Data source name list
-        - ds_3
-        - ds_4
-        - ds_5
-      discoveryHeartbeatName: # Detect heartbeat name
-      discoveryTypeName: # Database discovery type name
-  discoveryHeartbeats:
-    <discovery_heartbeat_name>: # Heartbeat name
-      props:
-        keep-alive-cron: # cron expression, such as '0/5 * * * * ?'
-  discoveryTypes:
-    <discovery_type_name>: # Database discovery type name
-      type: # Database discovery type, such as MySQL.MGR. 
-      props:
-        group-name:  # Required parameter of database discovery type, such as MGR's group-name.
 - !ENCRYPT
   encryptors:
     <encrypt_algorithm_name> (+): # Encryption and decryption algorithm name
@@ -84,14 +51,15 @@ rules:
     <table_name>: # Encryption table name
       columns:
         <column_name> (+): # Encrypt logic column name
-          plainColumn (?): # Plain column name
-          cipherColumn: # Cipher column name
-          encryptorName: # Cipher encrypt algorithm name
-          assistedQueryColumn (?):  # Assisted query column name
-          assistedQueryEncryptorName:  # Assisted query encrypt algorithm name
-          likeQueryColumn (?):  # Like query column name
-          likeQueryEncryptorName:  # Like query encrypt algorithm name
-      queryWithCipherColumn(?): # The current table whether query with cipher column for data encrypt. 
+          cipher:
+            name: # Cipher column name
+            encryptorName: # Cipher encrypt algorithm name
+          assistedQuery (?):
+            name: # Assisted query column name
+            encryptorName:  # Assisted query encrypt algorithm name
+          likeQuery (?):
+            name: # Like query column name
+            encryptorName:  # Like query encrypt algorithm name 
 ```
 
 ## Samples
@@ -129,46 +97,13 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-- !READWRITE_SPLITTING
-  dataSources:
-    replica_ds_0:
-      dynamicStrategy:
-        autoAwareDataSourceName: readwrite_ds_0
-    replica_ds_1:
-      dynamicStrategy:
-        autoAwareDataSourceName: readwrite_ds_1
-- !DB_DISCOVERY
-  dataSources:
-    readwrite_ds_0:
-      dataSourceNames:
-        - ds_0
-        - ds_1
-        - ds_2
-      discoveryHeartbeatName: mgr_heartbeat
-      discoveryTypeName: mgr
-    readwrite_ds_1:
-      dataSourceNames:
-        - ds_3
-        - ds_4
-        - ds_5
-      discoveryHeartbeatName: mgr_heartbeat
-      discoveryTypeName: mgr
-  discoveryHeartbeats:
-    mgr_heartbeat:
-      props:
-        keep-alive-cron: '0/5 * * * * ?'
-  discoveryTypes:
-    mgr:
-      type: MySQL.MGR
-      props:
-        group-name: 558edd3c-02ec-11ea-9bb3-080027e39bd2
 - !ENCRYPT
   encryptors:
     aes_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
-    md5_encryptor:
+    assisted_encryptor:
       type: MD5
     like_encryptor:
       type: CHAR_DIGEST_LIKE
@@ -176,15 +111,17 @@ rules:
     t_encrypt:
       columns:
         user_id:
-          plainColumn: user_plain
-          cipherColumn: user_cipher
-          encryptorName: aes_encryptor
-          assistedQueryColumn: assisted_query_user
-          assistedQueryEncryptorName: aes_encryptor
-          likeQueryColumn: like_query_user
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: user_cipher
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_user
+            encryptorName: assisted_encryptor
+          likeQuery:
+            name: like_query_user
+            encryptorName: like_encryptor
         order_id:
-          cipherColumn: order_cipher
-          encryptorName: md5_encryptor
-      queryWithCipherColumn: true
+          cipher:
+            name: order_cipher
+            encryptorName: aes_encryptor
 ```

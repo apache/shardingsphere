@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -38,13 +38,13 @@ import java.util.Optional;
 @Getter
 public final class MetaDataContexts implements AutoCloseable {
     
-    private final MetaDataPersistService persistService;
+    private final MetaDataBasedPersistService persistService;
     
     private final ShardingSphereMetaData metaData;
     
     private final ShardingSphereData shardingSphereData;
     
-    public MetaDataContexts(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
+    public MetaDataContexts(final MetaDataBasedPersistService persistService, final ShardingSphereMetaData metaData) {
         this.persistService = persistService;
         this.metaData = metaData;
         this.shardingSphereData = initShardingSphereData(metaData);
@@ -55,8 +55,8 @@ public final class MetaDataContexts implements AutoCloseable {
             return new ShardingSphereData();
         }
         ShardingSphereData result = Optional.ofNullable(metaData.getDatabases().values().iterator().next().getProtocolType())
-                // TODO can `protocolType instanceof OpenGaussDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
-                .flatMap(protocolType -> TypedSPILoader.findService(ShardingSphereDataBuilder.class, protocolType instanceof OpenGaussDatabaseType ? "PostgreSQL" : protocolType.getType())
+                // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
+                .flatMap(protocolType -> TypedSPILoader.findService(ShardingSphereDataBuilder.class, protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType())
                         .map(builder -> builder.build(metaData)))
                 .orElseGet(ShardingSphereData::new);
         Optional<ShardingSphereData> loadedShardingSphereData = Optional.ofNullable(persistService.getShardingSphereDataPersistService())

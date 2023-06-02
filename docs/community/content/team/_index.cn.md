@@ -490,6 +490,16 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/57847965?s=64&v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/linghengqian" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/20187731?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/flyingzc" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/19788130?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -497,6 +507,12 @@ chapter = true
         </td>
         <td>
             <b>汪子超</b>
+        </td>
+        <td>
+            <b>何其恒</b>
+        </td>
+        <td>
+            <b>张成</b>
         </td>
     </tr>
 </table>

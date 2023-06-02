@@ -35,7 +35,7 @@ import java.util.Optional;
  * Alter view statement context.
  */
 @Getter
-public final class AlterViewStatementContext extends CommonSQLStatementContext<AlterViewStatement> implements TableAvailable {
+public final class AlterViewStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
@@ -54,7 +54,12 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext<A
     }
     
     @Override
+    public AlterViewStatement getSqlStatement() {
+        return (AlterViewStatement) super.getSqlStatement();
+    }
+    
+    @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getTables();
+        return tablesContext.getSimpleTableSegments();
     }
 }

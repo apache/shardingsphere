@@ -38,7 +38,7 @@ public final class MySQLServerPreparedStatement implements ServerPreparedStateme
     
     private final String sql;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final List<Integer> parameterColumnDefinitionFlags;
     

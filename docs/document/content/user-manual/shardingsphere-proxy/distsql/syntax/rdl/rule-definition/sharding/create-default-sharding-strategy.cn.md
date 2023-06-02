@@ -1,11 +1,11 @@
 +++
 title = "CREATE DEFAULT SHARDING STRATEGY"
-weight = 5
+weight = 4
 +++
 
 ## 描述
 
-`CREATE DEFAULT SHARDING STRATEGY` 语法用于创建默认的分片策略
+`CREATE DEFAULT SHARDING STRATEGY` 语法用于创建默认的分片策略。
 
 ### 语法定义
 

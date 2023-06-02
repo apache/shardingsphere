@@ -24,17 +24,18 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class TableNameSchemaNameMappingTest {
+class TableNameSchemaNameMappingTest {
     
     @Test
-    public void assertConstructFromNull() {
-        new TableNameSchemaNameMapping(null);
+    void assertConstructFromNull() {
+        assertDoesNotThrow(() -> new TableNameSchemaNameMapping(null));
     }
     
     @Test
-    public void assertConstructFromValueNullMap() {
+    void assertConstructFromValueNullMap() {
         Map<String, String> map = new HashMap<>();
         map.put("t_order", null);
         TableNameSchemaNameMapping mapping = new TableNameSchemaNameMapping(map);
@@ -42,7 +43,7 @@ public final class TableNameSchemaNameMappingTest {
     }
     
     @Test
-    public void assertConstructFromMap() {
+    void assertConstructFromMap() {
         Map<String, String> map = new HashMap<>();
         map.put("t_order", "public");
         TableNameSchemaNameMapping mapping = new TableNameSchemaNameMapping(map);

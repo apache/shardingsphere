@@ -23,9 +23,6 @@
 
 databaseName: sharding_db
 rules:
-  - !TRANSACTION
-    defaultType: XA
-    providerType: Narayana
   - !SHARDING
     tables:
       t_order:
@@ -95,6 +92,10 @@ rules:
     keyGenerators:
       snowflake:
         type: SNOWFLAKE
+  
+transaction:
+  defaultType: XA
+  providerType: Narayana
 
 props:
   sql-show: false

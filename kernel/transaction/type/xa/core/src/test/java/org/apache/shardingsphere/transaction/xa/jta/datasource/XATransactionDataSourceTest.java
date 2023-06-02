@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class XATransactionDataSourceTest {
+class XATransactionDataSourceTest {
     
     @Mock
     private XATransactionManagerProvider xaTransactionManagerProvider;
@@ -62,13 +62,13 @@ public final class XATransactionDataSourceTest {
     private Transaction transaction;
     
     @BeforeEach
-    public void setUp() throws SystemException {
+    void setUp() throws SystemException {
         when(xaTransactionManagerProvider.getTransactionManager()).thenReturn(transactionManager);
         when(transactionManager.getTransaction()).thenReturn(transaction);
     }
     
     @Test
-    public void assertGetAtomikosConnection() throws SQLException, RollbackException, SystemException {
+    void assertGetAtomikosConnection() throws SQLException, RollbackException, SystemException {
         DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         try (Connection ignored = transactionDataSource.getConnection()) {
@@ -77,7 +77,7 @@ public final class XATransactionDataSourceTest {
     }
     
     @Test
-    public void assertGetHikariConnection() throws SQLException, RollbackException, SystemException {
+    void assertGetHikariConnection() throws SQLException, RollbackException, SystemException {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         try (Connection ignored = transactionDataSource.getConnection()) {
@@ -91,7 +91,7 @@ public final class XATransactionDataSourceTest {
     }
     
     @Test
-    public void assertCloseAtomikosDataSourceBean() {
+    void assertCloseAtomikosDataSourceBean() {
         DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds11");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds11", dataSource, xaTransactionManagerProvider);
         transactionDataSource.close();
@@ -99,7 +99,7 @@ public final class XATransactionDataSourceTest {
     }
     
     @Test
-    public void assertCloseHikariDataSource() {
+    void assertCloseHikariDataSource() {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         transactionDataSource.close();

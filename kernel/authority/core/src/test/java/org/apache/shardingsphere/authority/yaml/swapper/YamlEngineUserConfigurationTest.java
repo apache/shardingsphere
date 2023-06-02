@@ -26,22 +26,22 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlEngineUserConfigurationTest {
+class YamlEngineUserConfigurationTest {
     
     @Test
-    public void assertUnmarshal() {
+    void assertUnmarshal() {
         YamlUserConfiguration actual = YamlEngine.unmarshal("password: pwd", YamlUserConfiguration.class);
         assertThat(actual.getPassword(), is("pwd"));
     }
     
     @Test
-    public void assertSecureUnmarshalProperties() {
+    void assertSecureUnmarshalProperties() {
         Properties actual = YamlEngine.unmarshal("password: pwd", Properties.class);
         assertThat(actual.getProperty("password"), is("pwd"));
     }
     
     @Test
-    public void assertMarshal() {
+    void assertMarshal() {
         YamlUserConfiguration actual = new YamlUserConfiguration();
         actual.setPassword("pwd");
         assertThat(YamlEngine.marshal(actual), is("password: pwd" + System.lineSeparator()));

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -62,10 +62,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class GroupByStreamMergedResultTest {
+class GroupByStreamMergedResultTest {
     
     @Test
-    public void assertNextForResultSetsAllEmpty() throws SQLException {
+    void assertNextForResultSetsAllEmpty() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult()),
                 createSelectStatementContext(), createDatabase(), mock(ConnectionContext.class));
@@ -73,7 +73,7 @@ public final class GroupByStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForSomeResultSetsEmpty() throws SQLException {
+    void assertNextForSomeResultSetsEmpty() throws SQLException {
         QueryResult queryResult1 = mockQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
         when(queryResult1.getValue(1, Object.class)).thenReturn(20);
@@ -111,7 +111,7 @@ public final class GroupByStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForMix() throws SQLException {
+    void assertNextForMix() throws SQLException {
         QueryResult queryResult1 = mockQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
         when(queryResult1.getValue(1, Object.class)).thenReturn(20);

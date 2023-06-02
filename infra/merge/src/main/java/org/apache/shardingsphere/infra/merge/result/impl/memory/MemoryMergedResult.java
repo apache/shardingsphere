@@ -31,7 +31,10 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,13 +45,15 @@ import java.util.List;
  */
 public abstract class MemoryMergedResult<T extends ShardingSphereRule> implements MergedResult {
     
+    private static final Collection<Class<?>> INVALID_MEMORY_TYPES = new HashSet<>(Arrays.asList(Blob.class, Clob.class, Reader.class, InputStream.class, SQLXML.class));
+    
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
     private MemoryQueryResultRow currentResultSetRow;
     
     private boolean wasNull;
     
-    protected MemoryMergedResult(final T rule, final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    protected MemoryMergedResult(final T rule, final ShardingSphereSchema schema, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> memoryQueryResultRows = init(rule, schema, sqlStatementContext, queryResults);
         memoryResultSetRows = memoryQueryResultRows.iterator();
         if (!memoryQueryResultRows.isEmpty()) {
@@ -56,7 +61,7 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
         }
     }
     
-    protected abstract List<MemoryQueryResultRow> init(T rule, ShardingSphereSchema schema, SQLStatementContext<?> sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
+    protected abstract List<MemoryQueryResultRow> init(T rule, ShardingSphereSchema schema, SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
     
     @Override
     public final boolean next() {
@@ -69,8 +74,7 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
     
     @Override
     public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        ShardingSpherePreconditions.checkState(Blob.class != type && Clob.class != type && Reader.class != type && InputStream.class != type && SQLXML.class != type,
-                () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
+        ShardingSpherePreconditions.checkState(!INVALID_MEMORY_TYPES.contains(type), () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
         Object result = currentResultSetRow.getCell(columnIndex);
         wasNull = null == result;
         return result;

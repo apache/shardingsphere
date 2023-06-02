@@ -19,73 +19,56 @@ package org.apache.shardingsphere.proxy.backend.hbase.checker;
 
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class HeterogeneousUpdateStatementCheckerTest {
+class HeterogeneousUpdateStatementCheckerTest {
     
-    @Test
-    public void assertExecuteUpdateStatement() {
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getUpdateStatement());
-        HBaseCheckerFactory.newInstance(sqlStatement).execute();
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(SupportedTestCaseArgumentsProvider.class)
+    void assertExecuteSuccess(final String name, final String sql) {
+        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
+        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
     }
     
-    @Test
-    public void assertUpdateWithFunction() {
-        String sql = "update /*+ hbase */ t_test_order set age = 10, name = 'bob', time = now() where rowKey = 1";
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(UnsupportedTestCaseArgumentsProvider.class)
+    void assertExecuteFailed(final String name, final String sql, final String expectedErrorMessage) {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Assigment must is literal or parameter marker"));
+        assertThat(ex.getMessage(), is(expectedErrorMessage));
     }
     
-    @Test
-    public void assertOperatorIsNotEqual() {
-        String sql = "update /*+ hbase */ t_test_order set age = 10 where rowKey > 1";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Only Supported `=` operator"));
+    private static class SupportedTestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of("standard", HBaseSupportedSQLStatement.getUpdateStatement()));
+        }
     }
     
-    @Test
-    public void assertColumnIsNotRowKey() {
-        String sql = "update /*+ hbase */ t_test_order set age = 10 where age = 1";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("age is not a allowed key"));
-    }
-    
-    @Test
-    public void assertLeftIsNotColumn() {
-        String sql = "update /*+ hbase */ t_test_order set age = 10 where 1 = 1";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("left segment must is ColumnSegment"));
-    }
-    
-    @Test
-    public void assertMultiExpression() {
-        String sql = "update /*+ hbase */ t_test_order set age = 10 WHERE order_id = ? AND user_id = ? AND status=?";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Do not supported Multiple expressions"));
-    }
-    
-    @Test
-    public void assertNotWhereSegment() {
-        String sql = "update /*+ hbase */ t_test_order set age = 10 ";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Must Have Where Segment"));
-    }
-    
-    @Test
-    public void assertUpdateRowKey() {
-        String sql = "update /*+ hbase */ t_test_order set rowKey = 10 where rowKey = 'kid'";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Do not allow update rowKey"));
+    private static class UnsupportedTestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("function", "update /*+ hbase */ t_test_order set age = 10, name = 'bob', time = now() where rowKey = 1", "Assignment must is literal or parameter marker."),
+                    Arguments.of("operatorIsNotEqual", "update /*+ hbase */ t_test_order set age = 10 where rowKey > 1", "Only Supported `=` operator."),
+                    Arguments.of("columnIsNotRowKey", "update /*+ hbase */ t_test_order set age = 10 where age = 1", "age is not a allowed key."),
+                    Arguments.of("leftIsNotColumn", "update /*+ hbase */ t_test_order set age = 10 where 1 = 1", "Left segment must column segment."),
+                    Arguments.of("multiExpression", "update /*+ hbase */ t_test_order set age = 10 WHERE order_id = ? AND user_id = ? AND status=?", "Do not supported multiple expressions."),
+                    Arguments.of("withoutWhere", "update /*+ hbase */ t_test_order set age = 10 ", "Must contain where segment."),
+                    Arguments.of("updateRowKey", "update /*+ hbase */ t_test_order set rowKey = 10 where rowKey = 'kid'", "Do not allow update rowKey"));
+        }
     }
 }

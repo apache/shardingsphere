@@ -46,7 +46,7 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     private EncryptRule encryptRule;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof CreateTableStatementContext && !(((CreateTableStatementContext) sqlStatementContext).getSqlStatement()).getColumnDefinitions().isEmpty();
     }
     
@@ -59,7 +59,7 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
         for (int index = 0; index < columns.size(); index++) {
             ColumnDefinitionSegment each = columns.get(index);
             String columnName = each.getColumnName().getIdentifier().getValue();
-            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, columnName);
+            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findStandardEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 result.addAll(getColumnTokens(tableName, columnName, each, columns, index));
             }
@@ -76,7 +76,6 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
         result.add(getCipherColumnToken(tableName, columnName, column, columnStopIndex));
         getAssistedQueryColumnToken(tableName, columnName, column, columnStopIndex, lastColumn).ifPresent(result::add);
         getLikeQueryColumnToken(tableName, columnName, column, columnStopIndex, lastColumn).ifPresent(result::add);
-        getPlainColumnToken(tableName, columnName, column, columnStopIndex, lastColumn).ifPresent(result::add);
         return result;
     }
     
@@ -94,12 +93,6 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
                                                                  final int stopIndex, final boolean lastColumn) {
         Optional<String> likeQueryColumn = encryptRule.findLikeQueryColumn(tableName, columnName);
         return likeQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
-    }
-    
-    private Optional<? extends SQLToken> getPlainColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,
-                                                             final int stopIndex, final boolean lastColumn) {
-        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, columnName);
-        return plainColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
     }
     
     private Collection<ColumnProjection> getColumnProjections(final String columnName) {

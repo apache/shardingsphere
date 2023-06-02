@@ -1,11 +1,11 @@
 +++
 title = "CREATE SHARDING TABLE REFERENCE RULE"
-weight = 13
+weight = 12
 +++
 
 ## 描述
 
-`CREATE SHARDING TABLE REFERENCE RULE` 语法用于为分片表创建关联规则
+`CREATE SHARDING TABLE REFERENCE RULE` 语法用于为分片表创建关联规则。
 
 ### 语法定义
 

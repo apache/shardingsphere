@@ -27,14 +27,14 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * MD5 password authentication (backend) packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLMD5PasswordAuthenticationPacket implements PostgreSQLIdentifierPacket {
+public final class PostgreSQLMD5PasswordAuthenticationPacket extends PostgreSQLIdentifierPacket {
     
     private static final int AUTH_REQ_MD5 = 5;
     
     private final byte[] md5Salt;
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt4(AUTH_REQ_MD5);
         payload.writeBytes(md5Salt);
     }

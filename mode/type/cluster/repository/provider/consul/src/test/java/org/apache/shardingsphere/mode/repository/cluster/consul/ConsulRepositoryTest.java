@@ -25,6 +25,7 @@ import com.ecwid.consul.v1.session.model.NewSession;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +43,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,7 +55,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ConsulRepositoryTest {
+class ConsulRepositoryTest {
     
     private final ConsulRepository repository = new ConsulRepository();
     
@@ -84,7 +86,7 @@ public final class ConsulRepositoryTest {
     private long index = 123456L;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         setClient();
         setProperties();
     }
@@ -108,18 +110,18 @@ public final class ConsulRepositoryTest {
     private void setProperties() {
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(repository.getClass().getDeclaredField("consulProps"), repository, new ConsulProperties(new Properties()));
-        accessor.set(repository.getClass().getDeclaredField("watchKeyMap"), repository, new HashMap<>(4));
+        accessor.set(repository.getClass().getDeclaredField("watchKeyMap"), repository, new HashMap<>(4, 1F));
     }
     
     @Test
-    public void assertDirectlyKey() {
+    void assertDirectlyKey() {
         repository.getDirectly("key");
         verify(client).getKVValue("key");
         verify(response).getValue();
     }
     
     @Test
-    public void assertGetChildrenKeys() {
+    void assertGetChildrenKeys() {
         final String key = "/key";
         String k1 = "/key/key1/key1-1";
         String v1 = "value1";
@@ -137,14 +139,14 @@ public final class ConsulRepositoryTest {
     }
     
     @Test
-    public void assertPersistEphemeral() {
+    void assertPersistEphemeral() {
         repository.persistEphemeral("key1", "value1");
         verify(client).sessionCreate(any(NewSession.class), any(QueryParams.class));
         verify(client).setKVValue(any(String.class), any(String.class), any(PutParams.class));
     }
     
     @Test
-    public void assertWatchUpdate() throws InterruptedException {
+    void assertWatchUpdate() {
         final String key = "sharding/key";
         final String k1 = "sharding/key/key1";
         final String v1 = "value1";
@@ -157,7 +159,7 @@ public final class ConsulRepositoryTest {
         });
         client.setKVValue(k1, "value1-1");
         while (true) {
-            Thread.sleep(100L);
+            Awaitility.await().pollDelay(100L, TimeUnit.MILLISECONDS).until(() -> true);
             try {
                 verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
                 break;
@@ -167,7 +169,7 @@ public final class ConsulRepositoryTest {
     }
     
     @Test
-    public void assertWatchDelete() throws InterruptedException {
+    void assertWatchDelete() {
         final String key = "sharding/key";
         final String k1 = "sharding/key/key1";
         final String v1 = "value1";
@@ -183,7 +185,7 @@ public final class ConsulRepositoryTest {
         });
         client.deleteKVValue(k2);
         while (true) {
-            Thread.sleep(100L);
+            Awaitility.await().pollDelay(100L, TimeUnit.MILLISECONDS).until(() -> true);
             try {
                 verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
                 break;
@@ -193,18 +195,13 @@ public final class ConsulRepositoryTest {
     }
     
     @Test
-    public void assertWatchIgnored() {
-        // TODO
-    }
-    
-    @Test
-    public void assertDelete() {
+    void assertDelete() {
         repository.delete("key");
         verify(client).deleteKVValue(any(String.class));
     }
     
     @Test
-    public void assertPersist() {
+    void assertPersist() {
         repository.persist("key1", "value1");
         verify(client).setKVValue(any(String.class), any(String.class));
     }

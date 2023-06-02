@@ -27,9 +27,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * No data packet for PostgreSQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLNoDataPacket implements PostgreSQLPacket {
+public final class PostgreSQLNoDataPacket extends PostgreSQLPacket {
     
-    private static final byte[] VALUE = new byte[]{(byte) PostgreSQLMessagePacketType.NO_DATA.getValue(), 0, 0, 0, 4};
+    private static final byte[] VALUE = {(byte) PostgreSQLMessagePacketType.NO_DATA.getValue(), 0, 0, 0, 4};
     
     private static final PostgreSQLNoDataPacket INSTANCE = new PostgreSQLNoDataPacket();
     
@@ -43,7 +43,7 @@ public final class PostgreSQLNoDataPacket implements PostgreSQLPacket {
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         payload.getByteBuf().writeBytes(VALUE);
     }
 }

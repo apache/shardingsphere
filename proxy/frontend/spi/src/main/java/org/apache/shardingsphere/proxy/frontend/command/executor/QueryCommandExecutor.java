@@ -47,5 +47,5 @@ public interface QueryCommandExecutor extends CommandExecutor {
      * @return database packet of query row
      * @throws SQLException SQL exception
      */
-    DatabasePacket<?> getQueryRowPacket() throws SQLException;
+    DatabasePacket getQueryRowPacket() throws SQLException;
 }

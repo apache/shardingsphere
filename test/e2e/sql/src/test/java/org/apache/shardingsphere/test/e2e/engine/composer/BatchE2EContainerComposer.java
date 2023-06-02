@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.engine.composer;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
@@ -41,8 +41,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -64,7 +63,9 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BatchE2EContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException, SQLException, ParseException {
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    
+    public BatchE2EContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException, SQLException {
         super(testParam);
         databaseType = testParam.getDatabaseType();
         for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
@@ -84,7 +85,7 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer {
         DataSet expected = getDataSet(actualUpdateCounts);
         assertThat("Only support single table for DML.", expected.getMetaDataList().size(), is(1));
         DataSetMetaData expectedDataSetMetaData = expected.getMetaDataList().get(0);
-        for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
+        for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(expectedDataSetMetaData.getDataNodes())) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
@@ -158,7 +159,7 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer {
             for (String expected : expectedDatSetRows.get(count).splitValues(", ")) {
                 if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
                     if (!E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
-                        assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actual.getDate(columnIndex)), is(expected));
+                        assertThat(dateTimeFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
                     }
                 } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
                         && ("PostgreSQL".equals(databaseType.getType()) || "openGauss".equals(databaseType.getType()))) {

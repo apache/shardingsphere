@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.globalclock.core.executor;
 
 import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
-import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
@@ -59,7 +59,7 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
         if (!enabled) {
             return;
         }
-        transactionContext.setGlobalTimestamp(globalClockProvider.getCurrentTimestamp());
+        transactionContext.setBeginMills(globalClockProvider.getCurrentTimestamp());
     }
     
     @Override
@@ -67,7 +67,7 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
         if (!enabled) {
             return;
         }
-        globalClockTransactionExecutor.sendSnapshotTimestamp(connections, transactionContext.getGlobalTimestamp());
+        globalClockTransactionExecutor.sendSnapshotTimestamp(connections, transactionContext.getBeginMills());
     }
     
     @Override
@@ -75,7 +75,7 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
         if (!enabled) {
             return;
         }
-        if (TransactionIsolationLevel.READ_COMMITTED.equals(isolationLevel)) {
+        if (null == isolationLevel || TransactionIsolationLevel.READ_COMMITTED == isolationLevel) {
             globalClockTransactionExecutor.sendSnapshotTimestamp(connections, globalClockProvider.getCurrentTimestamp());
         }
     }
@@ -86,7 +86,7 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
         if (!enabled) {
             return;
         }
-        if (lockContext.tryLock(lockDefinition, 200)) {
+        if (lockContext.tryLock(lockDefinition, 200L)) {
             globalClockTransactionExecutor.sendCommitTimestamp(connections, globalClockProvider.getCurrentTimestamp());
         }
     }

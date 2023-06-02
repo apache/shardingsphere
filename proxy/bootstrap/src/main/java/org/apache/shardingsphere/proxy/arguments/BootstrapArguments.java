@@ -46,6 +46,7 @@ public final class BootstrapArguments {
      * Get port.
      *
      * @return port
+     * @throws IllegalArgumentException illegal argument exception
      */
     public Optional<Integer> getPort() {
         if (0 == args.length) {
@@ -57,7 +58,7 @@ public final class BootstrapArguments {
                 return Optional.empty();
             }
             return Optional.of(port);
-        } catch (final NumberFormatException ex) {
+        } catch (final NumberFormatException ignored) {
             throw new IllegalArgumentException(String.format("Invalid port `%s`.", args[0]));
         }
     }
@@ -102,7 +103,7 @@ public final class BootstrapArguments {
      *
      * @return force parameter
      */
-    public boolean getForce() {
+    public boolean isForce() {
         return args.length >= 4 && parseForceParameter(args[3]);
     }
     
@@ -124,7 +125,7 @@ public final class BootstrapArguments {
     private boolean isValidPath(final String path) {
         try {
             Paths.get(path);
-        } catch (InvalidPathException | NullPointerException ex) {
+        } catch (InvalidPathException ignored) {
             throw new IllegalArgumentException(String.format("Invalid path `%s`.", path));
         }
         return true;

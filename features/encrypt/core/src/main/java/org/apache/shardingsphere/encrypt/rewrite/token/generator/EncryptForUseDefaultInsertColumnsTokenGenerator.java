@@ -48,7 +48,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
     private EncryptRule encryptRule;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext && !((InsertStatementContext) sqlStatementContext).containsInsertColumns();
     }
     
@@ -102,19 +102,10 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
                 }
                 if (encryptTable.findLikeQueryEncryptorName(columnName).isPresent()) {
                     addLikeQueryColumn(result, encryptTable, columnName, columnIndex);
-                    columnIndex++;
-                }
-                if (encryptTable.findPlainColumn(columnName).isPresent()) {
-                    addPlainColumn(result, encryptTable, columnName, columnIndex);
-                    columnIndex++;
                 }
             }
         }
         return result;
-    }
-    
-    private void addPlainColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
-        encryptTable.findPlainColumn(columnName).ifPresent(optional -> columnNames.add(columnIndex + 1, optional));
     }
     
     private void addAssistedQueryColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {

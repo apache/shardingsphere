@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class JobItemInventoryTasksProgress {
     
-    private final Map<String, InventoryTaskProgress> inventoryTaskProgressMap;
+    private final Map<String, InventoryTaskProgress> progresses;
     
     /**
      * Get inventory position.
@@ -41,10 +41,8 @@ public final class JobItemInventoryTasksProgress {
      * @param tableName table name
      * @return inventory position
      */
-    public Map<String, IngestPosition<?>> getInventoryPosition(final String tableName) {
+    public Map<String, IngestPosition> getInventoryPosition(final String tableName) {
         Pattern pattern = Pattern.compile(String.format("%s(#\\d+)?", tableName));
-        return inventoryTaskProgressMap.entrySet().stream()
-                .filter(entry -> pattern.matcher(entry.getKey()).find())
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getPosition()));
+        return progresses.entrySet().stream().filter(entry -> pattern.matcher(entry.getKey()).find()).collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getPosition()));
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
@@ -43,7 +43,7 @@ public final class ExecutionContext {
      *
      * @return SQL statement context.
      */
-    public SQLStatementContext<?> getSqlStatementContext() {
+    public SQLStatementContext getSqlStatementContext() {
         return queryContext.getSqlStatementContext();
     }
 }

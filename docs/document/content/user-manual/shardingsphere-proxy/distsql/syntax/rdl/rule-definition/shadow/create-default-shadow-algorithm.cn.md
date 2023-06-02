@@ -1,6 +1,6 @@
 +++
 title = "CREATE DEFAULT SHADOW ALGORITHM"
-weight = 5
+weight = 4
 +++
 
 ## 描述

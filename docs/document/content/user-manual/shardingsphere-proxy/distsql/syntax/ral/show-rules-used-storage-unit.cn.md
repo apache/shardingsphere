@@ -1,11 +1,11 @@
 +++
 title = "SHOW RULES USED STORAGE UNIT"
-weight = 11
+weight = 13
 +++
 
 ### 描述
 
-`SHOW RULES USED STORAGE UNIT` 语法用于查询指定逻辑库中使用指定存储单元的规则
+`SHOW RULES USED STORAGE UNIT` 语法用于查询指定逻辑库中使用指定存储单元的规则。
 
 ### 语法
 
@@ -29,10 +29,10 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列          | 说明       |
-|-------------|-----------|
-| type        | 规则类型   |
-| name        | 规则名称   |
+| 列    | 说明   |
+|------|------|
+| type | 规则类型 |
+| name | 规则名称 |
 
 ### 补充说明
 

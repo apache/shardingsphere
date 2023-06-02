@@ -78,3 +78,11 @@ NARAYANA
 BITRONIX
     : B I T R O N I X
     ;
+
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
+    ;

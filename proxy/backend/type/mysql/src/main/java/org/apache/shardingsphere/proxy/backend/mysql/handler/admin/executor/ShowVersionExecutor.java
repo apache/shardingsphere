@@ -19,15 +19,15 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -49,7 +49,7 @@ public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(MySQLServerInfo.getServerVersion(connectionSession.getDatabaseName()))));
+        mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(DatabaseProtocolServerInfo.getProtocolVersion(connectionSession.getDatabaseName(), "MySQL"))));
     }
     
     @Override
@@ -59,6 +59,6 @@ public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     
     private String getLabel() {
         return sqlStatement.getProjections().getProjections().stream()
-                .filter(each -> each instanceof ExpressionProjectionSegment).findFirst().map(each -> ((ExpressionProjectionSegment) each).getAlias().orElse(FUNCTION_NAME)).orElse(FUNCTION_NAME);
+                .filter(ExpressionProjectionSegment.class::isInstance).findFirst().map(each -> ((ExpressionProjectionSegment) each).getAliasName().orElse(FUNCTION_NAME)).orElse(FUNCTION_NAME);
     }
 }

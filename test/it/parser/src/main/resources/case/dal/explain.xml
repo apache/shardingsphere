@@ -238,6 +238,71 @@
             </where>
         </select>
     </describe>
+    <describe sql-case-id="explain_with_analyze_delete">
+        <delete>
+            <table name="t_order" start-index="28" stop-index="34" />
+        </delete>
+    </describe>
+    <describe sql-case-id="explain_with_analyze_delete_condition">
+        <delete>
+            <table name="t1" start-index="23" stop-index="24" />
+            <where start-index="54" stop-index="74">
+                <expr>
+                    <binary-operation-expression start-index="60" stop-index="74">
+                        <left>
+                            <column name="x" start-index="60" stop-index="63">
+                                <owner name="t1" start-index="60" stop-index="61" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <binary-operation-expression start-index="67" stop-index="74">
+                                <left>
+                                    <column name="x" start-index="67" stop-index="70">
+                                        <owner name="t2" start-index="67" stop-index="68" />
+                                    </column>
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <literal-expression value="1" start-index="74" stop-index="74" />
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </describe>
+    <describe sql-case-id="explain_with_analyze_update">
+        <update>
+            <table start-index="7" stop-index="13">
+                <simple-table name="t_order" start-index="23" stop-index="29" />
+            </table>
+            <set start-index="31" stop-index="40" literal-stop-index="40">
+                <assignment start-index="35" stop-index="40" literal-stop-index="40">
+                    <column name="id" start-index="35" stop-index="36" />
+                    <assignment-value>
+                        <literal-expression value="1" start-index="40" stop-index="40" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </describe>
+    <describe sql-case-id="explain_with_analyze_insert">
+        <insert>
+            <table name="t_order" start-index="28" stop-index="34" />
+            <columns start-index="36" stop-index="45">
+                <column name="order_id" start-index="37" stop-index="44" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="54" stop-index="54" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </describe>
     <describe sql-case-id="desc_table">
         <simple-table name="tableName" start-index="5" stop-index="13" />
     </describe>
@@ -271,7 +336,6 @@
     
     <describe sql-case-id="explain_table">
         <select>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
             <order-by>
                 <column-item name="order_id" start-index="31" stop-index="38" />
             </order-by>
@@ -279,6 +343,9 @@
                 <offset value="2" literal-start-index="55" literal-stop-index="55" />
                 <row-count value="1" start-index="46" stop-index="46" />
             </limit>
+            <from>
+                <simple-table name="t_order" start-index="8" stop-index="20" />
+            </from>
         </select>
     </describe>
     

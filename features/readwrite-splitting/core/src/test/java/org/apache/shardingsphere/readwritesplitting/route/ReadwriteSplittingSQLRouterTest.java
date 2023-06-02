@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.readwritesplitting.route;
 
-import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -33,13 +31,13 @@ import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
@@ -62,7 +60,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ReadwriteSplittingSQLRouterTest {
+class ReadwriteSplittingSQLRouterTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
@@ -75,20 +73,19 @@ public final class ReadwriteSplittingSQLRouterTest {
     private ReadwriteSplittingRule staticRule;
     
     @Mock
-    private CommonSQLStatementContext<SQLStatement> sqlStatementContext;
+    private CommonSQLStatementContext sqlStatementContext;
     
     private ReadwriteSplittingSQLRouter sqlRouter;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         staticRule = new ReadwriteSplittingRule("logic_db", new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME,
-                new StaticReadwriteSplittingStrategyConfiguration(WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE)), null, "")),
-                Collections.emptyMap()), Collections.emptyList(), mock(InstanceContext.class));
+                WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE), "")), Collections.emptyMap()), mock(InstanceContext.class));
         sqlRouter = (ReadwriteSplittingSQLRouter) OrderedSPILoader.getServices(SQLRouter.class, Collections.singleton(staticRule)).get(staticRule);
     }
     
     @Test
-    public void assertCreateRouteContextToPrimaryWithoutRouteUnits() {
+    void assertCreateRouteContextToPrimaryWithoutRouteUnits() {
         QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class), "", Collections.emptyList());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(staticRule));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
@@ -104,7 +101,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     }
     
     @Test
-    public void assertDecorateRouteContextToPrimaryDataSource() {
+    void assertDecorateRouteContextToPrimaryDataSource() {
         RouteContext actual = mockRouteContext();
         QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class), "", Collections.emptyList());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(staticRule));
@@ -117,7 +114,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextToReplicaDataSource() {
+    void assertCreateRouteContextToReplicaDataSource() {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
@@ -136,7 +133,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     }
     
     @Test
-    public void assertDecorateRouteContextToReplicaDataSource() {
+    void assertDecorateRouteContextToReplicaDataSource() {
         RouteContext actual = mockRouteContext();
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
@@ -152,7 +149,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextToPrimaryDataSourceWithLock() {
+    void assertCreateRouteContextToPrimaryDataSourceWithLock() {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
@@ -167,7 +164,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     }
     
     @Test
-    public void assertDecorateRouteContextToPrimaryDataSourceWithLock() {
+    void assertDecorateRouteContextToPrimaryDataSourceWithLock() {
         RouteContext actual = mockRouteContext();
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
@@ -183,7 +180,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextToPrimaryDataSource() {
+    void assertCreateRouteContextToPrimaryDataSource() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(InsertStatement.class));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(staticRule));
@@ -196,7 +193,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextToReadDataSource() {
+    void assertCreateRouteContextToReadDataSource() {
         MySQLInsertStatement insertStatement = mock(MySQLInsertStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(insertStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList());
@@ -218,7 +215,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     }
     
     @Test
-    public void assertSqlHintRouteWriteOnly() {
+    void assertSqlHintRouteWriteOnly() {
         SelectStatement statement = mock(SelectStatement.class);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(statement);

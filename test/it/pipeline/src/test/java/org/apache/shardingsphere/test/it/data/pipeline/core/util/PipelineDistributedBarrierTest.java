@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.util;
 
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -32,19 +33,20 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PipelineDistributedBarrierTest {
+class PipelineDistributedBarrierTest {
     
     @BeforeAll
-    public static void setUp() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+    static void setUp() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
     @Test
-    public void assertRegisterAndRemove() throws ReflectiveOperationException {
-        String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
-        PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
+    void assertRegisterAndRemove() throws ReflectiveOperationException {
+        String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
+        PipelineContextKey contextKey = PipelineContextUtils.getContextKey();
+        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
-        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
+        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String parentPath = "/barrier";
         instance.register(parentPath, 1);
         Map<?, ?> countDownLatchMap = (Map<?, ?>) Plugins.getMemberAccessor().get(PipelineDistributedBarrier.class.getDeclaredField("countDownLatchHolders"), instance);
@@ -55,11 +57,12 @@ public final class PipelineDistributedBarrierTest {
     }
     
     @Test
-    public void assertAwait() {
-        String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
-        PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
+    void assertAwait() {
+        String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
+        PipelineContextKey contextKey = PipelineContextUtils.getContextKey();
+        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
-        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
+        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         instance.register(barrierEnablePath, 1);
         instance.persistEphemeralChildrenNode(barrierEnablePath, 1);

@@ -41,7 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
-public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
+class CreateShardingTableReferenceRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -49,7 +49,7 @@ public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
     private final CreateShardingTableReferenceRuleStatementUpdater updater = new CreateShardingTableReferenceRuleStatementUpdater();
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentTableRule() {
+    void assertCheckSQLStatementWithoutCurrentTableRule() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), new ShardingRuleConfiguration()));
     }
     
@@ -60,12 +60,12 @@ public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckSQLStatementWithDuplicateTables() {
+    void assertCheckSQLStatementWithDuplicateTables() {
         assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), getCurrentRuleConfig()));
     }
     
     @Test
-    public void assertUpdateWithIfNotExists() {
+    void assertUpdateWithIfNotExists() {
         CreateShardingTableReferenceRuleStatement sqlStatement = createSQLStatement(true, "foo", "t_order,t_order_item");
         ShardingRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);

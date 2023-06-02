@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper;
 
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -40,8 +43,10 @@ import java.time.OffsetDateTime;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class PipelineCaseHelper {
     
@@ -69,7 +74,8 @@ public final class PipelineCaseHelper {
      * @param databaseType database type
      * @param keyGenerateAlgorithm key generate algorithm
      * @param insertRows insert rows
-     * @return order insert data.
+     * @return order insert data
+     * @throws UnsupportedOperationException Unsupported operation exception
      */
     public static List<Object[]> generateOrderInsertData(final DatabaseType databaseType, final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
         List<Object[]> result = new ArrayList<>(insertRows);
@@ -80,7 +86,7 @@ public final class PipelineCaseHelper {
                 Object orderId = keyGenerateAlgorithm.generateKey();
                 int randomUnsignedInt = generateInt(0, 100);
                 LocalDateTime now = LocalDateTime.now();
-                Object[] addObjs = {orderId, generateInt(0, 100), generateString(6) + "", randomInt, randomInt, randomInt,
+                Object[] addObjs = {orderId, generateInt(0, 100), generateString(6), randomInt, randomInt, randomInt,
                         randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(),
                         BigDecimal.valueOf(generateDouble()), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue(), "1", "t", "e", "s", "t", generateString(2),
                         emojiText, generateString(1), "1", "2", generateJsonString(32, false)};
@@ -88,13 +94,26 @@ public final class PipelineCaseHelper {
             }
             return result;
         }
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
+        if (databaseType instanceof PostgreSQLDatabaseType) {
             for (int i = 0; i < insertRows; i++) {
                 Object orderId = keyGenerateAlgorithm.generateKey();
                 result.add(new Object[]{orderId, generateInt(0, 100), generateString(6), generateInt(-128, 127),
                         BigDecimal.valueOf(generateDouble()), true, "bytea".getBytes(), generateString(2), generateString(2), generateFloat(), generateDouble(),
                         generateJsonString(8, false), generateJsonString(12, true), emojiText, LocalDate.now(),
                         LocalTime.now(), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now()});
+            }
+            return result;
+        }
+        if (databaseType instanceof OpenGaussDatabaseType) {
+            for (int i = 0; i < insertRows; i++) {
+                Object orderId = keyGenerateAlgorithm.generateKey();
+                // TODO openGauss mpp plugin parses single quotes incorrectly
+                result.add(new Object[]{orderId, generateInt(0, 1000), "status" + i, generateInt(-1000, 9999), generateInt(0, 100), generateFloat(), generateDouble(),
+                        BigDecimal.valueOf(generateDouble()), false, generateString(6), "texts", "bytea".getBytes(), LocalDate.now(), LocalTime.now(), "2001-10-01",
+                        Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now(), "0 years 0 mons 1 days 2 hours 3 mins 4 secs", "{1, 2, 3}", generateJsonString(8, false),
+                        generateJsonString(8, true), UUID.randomUUID().toString(), DigestUtils.md5Hex(orderId.toString()), null, "0000", "[1,1000)",
+                        "1 years 1 mons 10 days -06:00:00", "2000-01-02 00:00:00+00", "(1.0,1.0)", "[(0.0,0.0),(2.0,2.0)]", "(3.0,3.0),(1.0,1.0)", "<(5.0,5.0),5.0>", "1111",
+                        "192.168.0.0/16", "192.168.1.1", "08:00:2b:01:02:03", "\\x484c4c00000000002b05000000000000000000000000000000000000"});
             }
             return result;
         }
@@ -106,7 +125,7 @@ public final class PipelineCaseHelper {
     }
     
     private static String generateString(final int strLength) {
-        return RandomStringUtils.randomAlphabetic(strLength);
+        return RandomStringUtils.randomAlphanumeric(strLength);
     }
     
     /**
@@ -119,8 +138,7 @@ public final class PipelineCaseHelper {
     public static String generateJsonString(final int length, final boolean useUnicodeCharacter) {
         String value;
         if (useUnicodeCharacter) {
-            // TODO openGauss incremental task parse single quote not correctly now
-            value = Strings.repeat("{中 } ABC", length);
+            value = Strings.repeat("{''中 } A'", Math.max(1, length / 10));
         } else {
             value = generateString(length);
         }

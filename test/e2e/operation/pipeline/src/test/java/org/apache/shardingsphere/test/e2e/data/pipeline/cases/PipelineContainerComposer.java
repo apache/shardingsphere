@@ -38,8 +38,8 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.comp
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtils;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -121,17 +121,17 @@ public final class PipelineContainerComposer implements AutoCloseable {
             username = PipelineE2EEnvironment.getInstance().getActualDataSourceUsername(databaseType);
             password = PipelineE2EEnvironment.getInstance().getActualDataSourcePassword(databaseType);
         }
-        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineContainerComposer.class.getClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
         containerComposer.start();
-        sourceDataSource = StorageContainerUtil.generateDataSource(appendExtraParameter(getActualJdbcUrlTemplate(DS_0, false)), username, password);
-        proxyDataSource = StorageContainerUtil.generateDataSource(
+        sourceDataSource = StorageContainerUtils.generateDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password);
+        proxyDataSource = StorageContainerUtils.generateDataSource(
                 appendExtraParameter(containerComposer.getProxyJdbcUrl(PROXY_DATABASE)), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
         init(jobType);
     }
     
     @SneakyThrows(SQLException.class)
     private void init(final JobType jobType) {
-        String jdbcUrl = containerComposer.getProxyJdbcUrl(DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType) ? "postgres" : "");
+        String jdbcUrl = containerComposer.getProxyJdbcUrl(DatabaseTypeUtils.isPostgreSQL(databaseType) || DatabaseTypeUtils.isOpenGauss(databaseType) ? "postgres" : "");
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
             cleanUpPipelineJobs(connection, jobType);
             cleanUpProxyDatabase(connection);
@@ -166,25 +166,23 @@ public final class PipelineContainerComposer implements AutoCloseable {
         }
     }
     
-    @SneakyThrows(InterruptedException.class)
     private void cleanUpProxyDatabase(final Connection connection) {
         if (PipelineEnvTypeEnum.NATIVE != PipelineE2EEnvironment.getInstance().getItEnvType()) {
             return;
         }
         try {
             connection.createStatement().execute(String.format("DROP DATABASE IF EXISTS %s", PROXY_DATABASE));
-            Thread.sleep(2000L);
+            Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
         } catch (final SQLException ex) {
             log.warn("Drop proxy database failed, error={}", ex.getMessage());
         }
     }
     
-    @SneakyThrows(InterruptedException.class)
     private void createProxyDatabase(final Connection connection) throws SQLException {
         String sql = String.format("CREATE DATABASE %s", PROXY_DATABASE);
         log.info("Create proxy database {}", PROXY_DATABASE);
         connection.createStatement().execute(sql);
-        Thread.sleep(2000L);
+        Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
     }
     
     private void cleanUpDataSource() {
@@ -198,23 +196,23 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Append extra parameter.
-     * 
+     *
      * @param jdbcUrl JDBC URL
      * @return appended JDBC URL
      */
     public String appendExtraParameter(final String jdbcUrl) {
-        if (DatabaseTypeUtil.isMySQL(databaseType)) {
+        if (DatabaseTypeUtils.isMySQL(databaseType)) {
             return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
         }
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
-            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified")));
+        if (DatabaseTypeUtils.isPostgreSQL(databaseType) || DatabaseTypeUtils.isOpenGauss(databaseType)) {
+            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified"), new Property("bitToString", Boolean.TRUE.toString())));
         }
         return jdbcUrl;
     }
     
     /**
      * Register storage unit.
-     * 
+     *
      * @param storageUnitName storage unit name
      * @throws SQLException SQL exception
      */
@@ -222,13 +220,13 @@ public final class PipelineContainerComposer implements AutoCloseable {
         String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
                 .replace("${user}", getUsername())
                 .replace("${password}", getPassword())
-                .replace("${url}", appendExtraParameter(getActualJdbcUrlTemplate(storageUnitName, true)));
+                .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, true));
         proxyExecuteWithLog(registerStorageUnitTemplate, 2);
     }
     
     /**
      * Add resource.
-     * 
+     *
      * @param distSQL dist SQL
      * @throws SQLException SQL exception
      */
@@ -239,7 +237,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Get actual JDBC URL template.
-     * 
+     *
      * @param databaseName database name
      * @param isInContainer is in container
      * @param storageContainerIndex storage container index
@@ -257,37 +255,36 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Get actual JDBC URL template.
-     * 
+     *
      * @param databaseName database name
      * @param isInContainer is in container
      * @return actual JDBC URL template
      */
     public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
-        return getActualJdbcUrlTemplate(databaseName, isInContainer, 0);
+        return appendExtraParameter(getActualJdbcUrlTemplate(databaseName, isInContainer, 0));
     }
     
     /**
      * Create schema.
-     * 
+     *
      * @param connection connection
      * @param sleepSeconds sleep seconds
      * @throws SQLException SQL exception
      */
-    @SneakyThrows(InterruptedException.class)
     public void createSchema(final Connection connection, final int sleepSeconds) throws SQLException {
         if (!getDatabaseType().isSchemaAvailable()) {
             return;
         }
         connection.createStatement().execute(String.format("CREATE SCHEMA %s", SCHEMA_NAME));
         if (sleepSeconds > 0) {
-            Thread.sleep(sleepSeconds * 1000L);
+            Awaitility.await().pollDelay(sleepSeconds, TimeUnit.SECONDS).until(() -> true);
         }
     }
     
     /**
      * Create source order table.
-     * 
-     * @param sourceTableName source table name 
+     *
+     * @param sourceTableName source table name
      * @throws SQLException SQL exception
      */
     public void createSourceOrderTable(final String sourceTableName) throws SQLException {
@@ -296,22 +293,22 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Create source table index list.
-     * 
+     *
      * @param schema schema
      * @param sourceTableName source table name
      * @throws SQLException SQL exception
      */
     public void createSourceTableIndexList(final String schema, final String sourceTableName) throws SQLException {
-        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
+        if (DatabaseTypeUtils.isPostgreSQL(getDatabaseType())) {
             sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.%s ( user_id )", schema, sourceTableName));
-        } else if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+        } else if (DatabaseTypeUtils.isOpenGauss(getDatabaseType())) {
             sourceExecuteWithLog(String.format("CREATE INDEX idx_user_id ON %s.%s ( user_id )", schema, sourceTableName));
         }
     }
     
     /**
      * Create source comment on list.
-     * 
+     *
      * @param schema schema
      * @param sourceTableName source table name
      * @throws SQLException SQL exception
@@ -322,7 +319,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Create source order item table.
-     * 
+     *
      * @throws SQLException SQL exception
      */
     public void createSourceOrderItemTable() throws SQLException {
@@ -331,7 +328,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Source execute with log.
-     * 
+     *
      * @param sql SQL
      * @throws SQLException SQL exception
      */
@@ -344,43 +341,41 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Proxy execute with log.
-     * 
+     *
      * @param sql SQL
      * @param sleepSeconds sleep seconds
      * @throws SQLException SQL exception
      */
-    @SneakyThrows(InterruptedException.class)
     public void proxyExecuteWithLog(final String sql, final int sleepSeconds) throws SQLException {
         log.info("proxy execute :{}", sql);
         try (Connection connection = proxyDataSource.getConnection()) {
             connection.createStatement().execute(sql);
         }
-        Thread.sleep(Math.max(sleepSeconds * 1000L, 0L));
+        Awaitility.await().pollDelay(Math.max(sleepSeconds, 0L), TimeUnit.SECONDS).until(() -> true);
     }
     
     /**
      * Wait job prepare success.
-     * 
+     *
      * @param distSQL dist SQL
      */
-    @SneakyThrows(InterruptedException.class)
     public void waitJobPrepareSuccess(final String distSQL) {
         for (int i = 0; i < 5; i++) {
             List<Map<String, Object>> jobStatus = queryForListWithLog(distSQL);
             Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
             if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name())) {
-                Thread.sleep(2000L);
+                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
             }
         }
     }
     
     /**
      * Query for list with log.
-     * 
+     *
      * @param sql SQL
      * @return query result
+     * @throws RuntimeException runtime exception
      */
-    @SneakyThrows(InterruptedException.class)
     public List<Map<String, Object>> queryForListWithLog(final String sql) {
         int retryNumber = 0;
         while (retryNumber <= 3) {
@@ -390,7 +385,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             } catch (final SQLException ex) {
                 log.error("Data access error.", ex);
             }
-            Thread.sleep(3000L);
+            Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
             retryNumber++;
         }
         throw new RuntimeException("Can not get result from proxy.");
@@ -398,7 +393,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Transform result set to list.
-     * 
+     *
      * @param resultSet result set
      * @return transformed result
      * @throws SQLException SQL exception
@@ -419,7 +414,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Start increment task.
-     * 
+     *
      * @param baseIncrementTask base increment task
      */
     public void startIncrementTask(final BaseIncrementTask baseIncrementTask) {
@@ -429,7 +424,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Wait increment task finished.
-     * 
+     *
      * @param distSQL dist SQL
      * @return result
      * @throws InterruptedException interrupted exception
@@ -450,11 +445,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
                 String incrementalIdleSeconds = each.get("incremental_idle_seconds").toString();
                 incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
             }
-            assertFalse(actualStatus.contains(JobStatus.PREPARING_FAILURE.name()), "status is JobStatus.PREPARING_FAILURE");
-            assertFalse(actualStatus.contains(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()), "status is JobStatus.EXECUTE_INVENTORY_TASK_FAILURE");
-            assertFalse(actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()), "status is JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE");
             if (Collections.min(incrementalIdleSecondsList) <= 5) {
-                Thread.sleep(3000L);
+                Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
                 continue;
             }
             if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
@@ -466,7 +458,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Assert proxy order record exist.
-     * 
+     *
      * @param tableName table name
      * @param orderId order id
      */
@@ -482,10 +474,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Assert proxy order record exist.
-     * 
+     *
      * @param sql SQL
      */
-    @SneakyThrows(InterruptedException.class)
     public void assertProxyOrderRecordExist(final String sql) {
         boolean recordExist = false;
         for (int i = 0; i < 5; i++) {
@@ -494,14 +485,14 @@ public final class PipelineContainerComposer implements AutoCloseable {
             if (recordExist) {
                 break;
             }
-            Thread.sleep(2000L);
+            Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
         }
         assertTrue(recordExist, "The insert record must exist after the stop");
     }
     
     /**
      * Get target table records count.
-     * 
+     *
      * @param tableName table name
      * @return target table records count
      */
@@ -513,7 +504,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Assert greater than order table init rows.
-     * 
+     *
      * @param tableInitRows table init rows
      * @param schema schema
      */
@@ -525,13 +516,13 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Generate ShardingSphere data source from proxy.
-     * 
+     *
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
     // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
     public DataSource generateShardingSphereDataSourceFromProxy() throws SQLException {
-        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !getYamlRootConfig().getRules().isEmpty());
+        Awaitility.await().atMost(5L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !getYamlRootConfig().getRules().isEmpty());
         YamlRootConfiguration rootConfig = getYamlRootConfig();
         if (PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);

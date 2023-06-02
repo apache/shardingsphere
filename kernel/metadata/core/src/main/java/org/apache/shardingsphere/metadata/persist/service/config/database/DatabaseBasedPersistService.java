@@ -17,20 +17,16 @@
 
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+
+import java.util.Map;
+
 /**
- * Schema based persist service.
+ * Database based persist service.
  * 
  * @param <T> type of configuration
  */
 public interface DatabaseBasedPersistService<T> {
-    
-    /**
-     * Conditional persist configurations.
-     *
-     * @param databaseName database name
-     * @param configs configurations
-     */
-    void conditionalPersist(String databaseName, T configs);
     
     /**
      * Persist configurations.
@@ -39,15 +35,6 @@ public interface DatabaseBasedPersistService<T> {
      * @param configs configurations
      */
     void persist(String databaseName, T configs);
-    
-    /**
-     * Persist version configurations.
-     * 
-     * @param databaseName database name
-     * @param version version
-     * @param configs configurations
-     */
-    void persist(String databaseName, String version, T configs);
     
     /**
      * Load configurations.
@@ -67,10 +54,12 @@ public interface DatabaseBasedPersistService<T> {
     T load(String databaseName, String version);
     
     /**
-     * Judge whether schema configuration existed.
+     * TODO remove this after meta data refactor completed
+     * Append data source properties map.
      *
      * @param databaseName database name
-     * @return configuration existed or not
+     * @param toBeAppendedDataSourcePropsMap data source properties map to be appended
      */
-    boolean isExisted(String databaseName);
+    default void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
+    }
 }

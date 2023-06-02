@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * Drop sharding table rule statement updater.
  */
-public final class DropDefaultStrategyStatementUpdater extends AbstractDropShardingRuleUpdater implements RuleDefinitionDropUpdater<DropDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
+public final class DropDefaultStrategyStatementUpdater implements RuleDefinitionDropUpdater<DropDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final DropDefaultShardingStrategyStatement sqlStatement,
@@ -79,9 +79,16 @@ public final class DropDefaultStrategyStatementUpdater extends AbstractDropShard
         } else {
             currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
         }
-        dropUnusedAlgorithm(currentRuleConfig);
-        return currentRuleConfig.getTables().isEmpty() && currentRuleConfig.getAutoTables().isEmpty() && currentRuleConfig.getBroadcastTables().isEmpty()
-                && null == currentRuleConfig.getDefaultDatabaseShardingStrategy() && null == currentRuleConfig.getDefaultTableShardingStrategy();
+        UnusedAlgorithmFinder.find(currentRuleConfig).forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
+        return isEmptyShardingTables(currentRuleConfig) && currentRuleConfig.getBroadcastTables().isEmpty() && isEmptyShardingStrategy(currentRuleConfig);
+    }
+    
+    private boolean isEmptyShardingTables(final ShardingRuleConfiguration currentRuleConfig) {
+        return currentRuleConfig.getTables().isEmpty() && currentRuleConfig.getAutoTables().isEmpty();
+    }
+    
+    private boolean isEmptyShardingStrategy(final ShardingRuleConfiguration currentRuleConfig) {
+        return null == currentRuleConfig.getDefaultDatabaseShardingStrategy() && null == currentRuleConfig.getDefaultTableShardingStrategy();
     }
     
     @Override

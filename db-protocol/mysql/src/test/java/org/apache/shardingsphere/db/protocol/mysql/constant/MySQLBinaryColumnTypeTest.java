@@ -25,45 +25,45 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class MySQLBinaryColumnTypeTest {
+class MySQLBinaryColumnTypeTest {
     
     @Test
-    public void assertValueOfJDBC() {
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BIT), is(MySQLBinaryColumnType.MYSQL_TYPE_BIT));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.TINYINT), is(MySQLBinaryColumnType.MYSQL_TYPE_TINY));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.SMALLINT), is(MySQLBinaryColumnType.MYSQL_TYPE_SHORT));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.INTEGER), is(MySQLBinaryColumnType.MYSQL_TYPE_LONG));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BIGINT), is(MySQLBinaryColumnType.MYSQL_TYPE_LONGLONG));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.FLOAT), is(MySQLBinaryColumnType.MYSQL_TYPE_FLOAT));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.REAL), is(MySQLBinaryColumnType.MYSQL_TYPE_FLOAT));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DOUBLE), is(MySQLBinaryColumnType.MYSQL_TYPE_DOUBLE));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.NUMERIC), is(MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DECIMAL), is(MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.CHAR), is(MySQLBinaryColumnType.MYSQL_TYPE_STRING));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.VARCHAR), is(MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.LONGVARCHAR), is(MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DATE), is(MySQLBinaryColumnType.MYSQL_TYPE_DATE));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.TIME), is(MySQLBinaryColumnType.MYSQL_TYPE_TIME));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.TIMESTAMP), is(MySQLBinaryColumnType.MYSQL_TYPE_TIMESTAMP));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BINARY), is(MySQLBinaryColumnType.MYSQL_TYPE_STRING));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.VARBINARY), is(MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.LONGVARBINARY), is(MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.NULL), is(MySQLBinaryColumnType.MYSQL_TYPE_NULL));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BLOB), is(MySQLBinaryColumnType.MYSQL_TYPE_BLOB));
+    void assertValueOfJDBC() {
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BIT), is(MySQLBinaryColumnType.BIT));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.TINYINT), is(MySQLBinaryColumnType.TINY));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.SMALLINT), is(MySQLBinaryColumnType.SHORT));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.INTEGER), is(MySQLBinaryColumnType.LONG));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BIGINT), is(MySQLBinaryColumnType.LONGLONG));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.FLOAT), is(MySQLBinaryColumnType.FLOAT));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.REAL), is(MySQLBinaryColumnType.FLOAT));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DOUBLE), is(MySQLBinaryColumnType.DOUBLE));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.NUMERIC), is(MySQLBinaryColumnType.NEWDECIMAL));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DECIMAL), is(MySQLBinaryColumnType.NEWDECIMAL));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.CHAR), is(MySQLBinaryColumnType.STRING));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.VARCHAR), is(MySQLBinaryColumnType.VAR_STRING));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.LONGVARCHAR), is(MySQLBinaryColumnType.VAR_STRING));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DATE), is(MySQLBinaryColumnType.DATE));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.TIME), is(MySQLBinaryColumnType.TIME));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.TIMESTAMP), is(MySQLBinaryColumnType.TIMESTAMP));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BINARY), is(MySQLBinaryColumnType.STRING));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.VARBINARY), is(MySQLBinaryColumnType.VAR_STRING));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.LONGVARBINARY), is(MySQLBinaryColumnType.VAR_STRING));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.NULL), is(MySQLBinaryColumnType.NULL));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BLOB), is(MySQLBinaryColumnType.BLOB));
     }
     
     @Test
-    public void assertValueOfJDBCIllegalArgument() {
+    void assertValueOfJDBCIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> MySQLBinaryColumnType.valueOfJDBCType(9999));
     }
     
     @Test
-    public void assertValueOf() {
-        assertThat(MySQLBinaryColumnType.valueOf(MySQLBinaryColumnType.MYSQL_TYPE_DECIMAL.getValue()), is(MySQLBinaryColumnType.MYSQL_TYPE_DECIMAL));
+    void assertValueOf() {
+        assertThat(MySQLBinaryColumnType.valueOf(MySQLBinaryColumnType.DECIMAL.getValue()), is(MySQLBinaryColumnType.DECIMAL));
     }
     
     @Test
-    public void assertValueOfWithIllegalArgument() {
+    void assertValueOfWithIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> MySQLBinaryColumnType.valueOf(-1));
     }
 }

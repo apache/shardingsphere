@@ -40,13 +40,12 @@ import java.time.OffsetDateTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ProtobufAnyValueConverterTest {
+class ProtobufAnyValueConverterTest {
     
     @Test
-    public void assertConvertToObject() throws InvalidProtocolBufferException {
+    void assertConvertToObject() throws InvalidProtocolBufferException {
         Object actual = ProtobufAnyValueConverter.convertToObject(Any.pack(Int32Value.of(123)));
         assertThat(actual, is(123));
         actual = ProtobufAnyValueConverter.convertToObject(Any.pack(Int64Value.of(Long.MAX_VALUE)));
@@ -70,6 +69,6 @@ public final class ProtobufAnyValueConverterTest {
                 .putFields("list", Value.newBuilder().setListValue(ListValue.newBuilder().addValues(Value.newBuilder().setNumberValue(1)).build()).build()).build();
         Builder expected = Struct.newBuilder();
         JsonFormat.parser().merge((String) ProtobufAnyValueConverter.convertToObject(Any.pack((Struct) actual)), expected);
-        assertEquals(actual.toString(), expected.toString());
+        assertThat(actual.toString(), is(expected.toString()));
     }
 }

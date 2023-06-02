@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -49,7 +48,7 @@ public final class OwnerToken extends SQLToken implements Substitutable, RouteUn
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        if (Objects.nonNull(ownerName) && !Strings.isNullOrEmpty(ownerName.getValue()) && tableName.getValue().equals(ownerName.getValue())) {
+        if (null != ownerName && !Strings.isNullOrEmpty(ownerName.getValue()) && tableName.getValue().equals(ownerName.getValue())) {
             Set<String> actualTableNames = routeUnit.getActualTableNames(tableName.getValue());
             String actualTableName = actualTableNames.isEmpty() ? tableName.getValue().toLowerCase() : actualTableNames.iterator().next();
             return tableName.getQuoteCharacter().wrap(actualTableName) + ".";
@@ -59,6 +58,6 @@ public final class OwnerToken extends SQLToken implements Substitutable, RouteUn
     
     @Override
     public String toString() {
-        return Objects.isNull(ownerName) || Strings.isNullOrEmpty(ownerName.getValue()) ? "" : ownerName.getValueWithQuoteCharacters() + ".";
+        return null == ownerName || Strings.isNullOrEmpty(ownerName.getValue()) ? "" : ownerName.getValueWithQuoteCharacters() + ".";
     }
 }

@@ -27,8 +27,9 @@ import java.time.LocalDate;
 
 /**
  * DATE type value of MySQL binlog protocol.
+ * Stored as a 3 byte value where bits 1 to 5 store the day, bits 6 to 9 store the month and the remaining bits store the year.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/field__types_8h.html">field type</a>
  */
 public final class MySQLDateBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
@@ -38,6 +39,6 @@ public final class MySQLDateBinlogProtocolValue implements MySQLBinlogProtocolVa
         int year = date / 16 / 32;
         int month = date / 32 % 16;
         int day = date % 32;
-        return 0 == date ? MySQLTimeValueUtil.ZERO_OF_DATE : Date.valueOf(LocalDate.of(year, month, day));
+        return 0 == date ? MySQLTimeValueUtils.ZERO_OF_DATE : Date.valueOf(LocalDate.of(year, month, day));
     }
 }

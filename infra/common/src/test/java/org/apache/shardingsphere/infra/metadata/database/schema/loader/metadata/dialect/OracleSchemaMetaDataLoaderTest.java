@@ -42,13 +42,13 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OracleSchemaMetaDataLoaderTest {
+class OracleSchemaMetaDataLoaderTest {
     
     private static final String ALL_CONSTRAINTS_SQL_WITHOUT_TABLES = "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A"
-            + " INNER JOIN ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = ?";
+            + " INNER JOIN ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = 'TEST'";
     
     private static final String ALL_CONSTRAINTS_SQL_WITH_TABLES = "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A"
-            + " INNER JOIN ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = ? AND A.TABLE_NAME IN ('tbl')";
+            + " INNER JOIN ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = 'TEST' AND A.TABLE_NAME IN ('tbl')";
     
     private static final String ALL_INDEXES_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')";
     
@@ -74,7 +74,7 @@ public final class OracleSchemaMetaDataLoaderTest {
             + " FROM ALL_TAB_COLS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
     @Test
-    public void assertLoadCondition1() throws SQLException {
+    void assertLoadCondition1() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_CONDITION1).executeQuery()).thenReturn(resultSet);
@@ -93,7 +93,7 @@ public final class OracleSchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadCondition2() throws SQLException {
+    void assertLoadCondition2() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_CONDITION2).executeQuery()).thenReturn(resultSet);
@@ -112,7 +112,7 @@ public final class OracleSchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadCondition3() throws SQLException {
+    void assertLoadCondition3() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_CONDITION3).executeQuery()).thenReturn(resultSet);
@@ -131,12 +131,13 @@ public final class OracleSchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadCondition4() throws SQLException {
+    void assertLoadCondition4() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_CONDITION4).executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_INDEXES_SQL).executeQuery()).thenReturn(indexResultSet);
+        when(dataSource.getConnection().getMetaData().getUserName()).thenReturn("TEST");
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
@@ -150,12 +151,13 @@ public final class OracleSchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadCondition5() throws SQLException {
+    void assertLoadCondition5() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_CONDITION5).executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_INDEXES_SQL).executeQuery()).thenReturn(indexResultSet);
+        when(dataSource.getConnection().getMetaData().getUserName()).thenReturn("TEST");
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
@@ -169,12 +171,13 @@ public final class OracleSchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadCondition6() throws SQLException {
+    void assertLoadCondition6() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_CONDITION6).executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_INDEXES_SQL).executeQuery()).thenReturn(indexResultSet);
+        when(dataSource.getConnection().getMetaData().getUserName()).thenReturn("TEST");
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(11);
@@ -188,12 +191,13 @@ public final class OracleSchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadCondition7() throws SQLException {
+    void assertLoadCondition7() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSetWithNullValue();
         when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_CONDITION7).executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_INDEXES_SQL).executeQuery()).thenReturn(indexResultSet);
+        when(dataSource.getConnection().getMetaData().getUserName()).thenReturn("TEST");
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);

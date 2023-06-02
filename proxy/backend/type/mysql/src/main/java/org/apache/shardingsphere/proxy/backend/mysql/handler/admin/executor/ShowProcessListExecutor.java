@@ -25,14 +25,11 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
-import org.apache.shardingsphere.mode.event.process.ShowProcessListResponseEvent;
+import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
+import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -41,7 +38,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -52,7 +48,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("UnstableApiUsage")
 public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
-    private Collection<String> batchProcessContexts;
+    private Collection<Process> processes;
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -71,7 +67,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
      */
     @Subscribe
     public void receiveProcessListData(final ShowProcessListResponseEvent event) {
-        batchProcessContexts = event.getBatchProcessContexts();
+        processes = event.getProcesses();
     }
     
     @Override
@@ -82,43 +78,39 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     
     private QueryResult getQueryResult() {
         ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new ShowProcessListRequestEvent());
-        if (null == batchProcessContexts || batchProcessContexts.isEmpty()) {
+        if (null == processes || processes.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        Collection<YamlExecuteProcessContext> processContexts = new LinkedList<>();
-        for (String each : batchProcessContexts) {
-            processContexts.addAll(YamlEngine.unmarshal(each, BatchYamlExecuteProcessContext.class).getContexts());
-        }
-        List<MemoryQueryResultDataRow> rows = processContexts.stream().map(processContext -> {
-            List<Object> rowValues = new ArrayList<>(8);
-            rowValues.add(processContext.getExecutionID());
-            rowValues.add(processContext.getUsername());
-            rowValues.add(processContext.getHostname());
-            rowValues.add(processContext.getDatabaseName());
-            rowValues.add(ExecuteProcessStatusEnum.SLEEP == processContext.getProcessStatus() ? "Sleep" : "Execute");
-            rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - processContext.getStartTimeMillis()));
-            String sql = null;
-            if (ExecuteProcessStatusEnum.SLEEP != processContext.getProcessStatus()) {
-                int processDoneCount = processContext.getUnitStatuses().stream()
-                        .map(each -> ExecuteProcessStatusEnum.DONE == each.getProcessStatus() ? 1 : 0)
-                        .reduce(0, Integer::sum);
-                String statePrefix = "Executing ";
-                rowValues.add(statePrefix + processDoneCount + "/" + processContext.getUnitStatuses().size());
-                sql = processContext.getSql();
-            } else {
-                rowValues.add("");
-            }
-            if (null != sql && sql.length() > 100) {
-                sql = sql.substring(0, 100);
-            }
-            rowValues.add(null != sql ? sql : "");
-            return new MemoryQueryResultDataRow(rowValues);
-        }).collect(Collectors.toList());
+        List<MemoryQueryResultDataRow> rows = processes.stream().map(this::getMemoryQueryResultDataRow).collect(Collectors.toList());
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
+    private MemoryQueryResultDataRow getMemoryQueryResultDataRow(final Process process) {
+        List<Object> rowValues = new ArrayList<>(8);
+        rowValues.add(process.getId());
+        rowValues.add(process.getUsername());
+        rowValues.add(process.getHostname());
+        rowValues.add(process.getDatabaseName());
+        rowValues.add(process.isIdle() ? "Sleep" : "Execute");
+        rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - process.getStartMillis()));
+        String sql = null;
+        if (process.isIdle()) {
+            rowValues.add("");
+        } else {
+            int processDoneCount = process.getCompletedUnitCount();
+            String statePrefix = "Executing ";
+            rowValues.add(statePrefix + processDoneCount + "/" + process.getTotalUnitCount());
+            sql = process.getSql();
+        }
+        if (null != sql && sql.length() > 100) {
+            sql = sql.substring(0, 100);
+        }
+        rowValues.add(null != sql ? sql : "");
+        return new MemoryQueryResultDataRow(rowValues);
+    }
+    
     private QueryResultMetaData createQueryResultMetaData() {
-        List<RawQueryResultColumnMetaData> columns = new ArrayList<>();
+        List<RawQueryResultColumnMetaData> columns = new ArrayList<>(8);
         columns.add(new RawQueryResultColumnMetaData("", "Id", "Id", Types.VARCHAR, "VARCHAR", 20, 0));
         columns.add(new RawQueryResultColumnMetaData("", "User", "User", Types.VARCHAR, "VARCHAR", 20, 0));
         columns.add(new RawQueryResultColumnMetaData("", "Host", "Host", Types.VARCHAR, "VARCHAR", 64, 0));

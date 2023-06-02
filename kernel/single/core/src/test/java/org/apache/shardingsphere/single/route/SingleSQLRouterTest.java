@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.single.route;
 
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -61,10 +61,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SingleSQLRouterTest {
+class SingleSQLRouterTest {
     
     @Test
-    public void assertCreateRouteContextWithSingleDataSource() throws SQLException {
+    void assertCreateRouteContextWithSingleDataSource() throws SQLException {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
                 DefaultDatabase.LOGIC_NAME, Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
         rule.getSingleTableDataNodes().put("t_order", Collections.singletonList(createDataNode("foo_ds")));
@@ -85,7 +85,7 @@ public final class SingleSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextWithReadwriteSplittingDataSource() throws SQLException {
+    void assertCreateRouteContextWithReadwriteSplittingDataSource() throws SQLException {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
                 DefaultDatabase.LOGIC_NAME, Collections.singletonMap("readwrite_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
         rule.getSingleTableDataNodes().put("t_order", Collections.singletonList(createDataNode("write_ds")));
@@ -107,7 +107,7 @@ public final class SingleSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextWithMultiDataSource() throws SQLException {
+    void assertCreateRouteContextWithMultiDataSource() throws SQLException {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createMultiDataSourceMap(), Collections.emptyList());
         ShardingSphereDatabase database = mockDatabaseWithMultipleResources();
         RouteContext actual = new SingleSQLRouter().createRouteContext(createQueryContext(),
@@ -122,7 +122,7 @@ public final class SingleSQLRouterTest {
     }
     
     private Map<String, DataSource> createMultiDataSourceMap() throws SQLException {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
+        Map<String, DataSource> result = new HashMap<>(2, 1F);
         Connection connection = mockConnection();
         result.put("ds_0", new MockedDataSource(connection));
         result.put("ds_1", new MockedDataSource(connection));
@@ -143,7 +143,7 @@ public final class SingleSQLRouterTest {
     
     private ShardingSphereDatabase mockDatabaseWithMultipleResources() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         when(result.getResourceMetaData().getDataSources()).thenReturn(dataSourceMap);
@@ -152,7 +152,7 @@ public final class SingleSQLRouterTest {
     }
     
     @Test
-    public void assertDecorateRouteContextWithSingleDataSource() {
+    void assertDecorateRouteContextWithSingleDataSource() {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
                 DefaultDatabase.LOGIC_NAME, Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
@@ -164,7 +164,7 @@ public final class SingleSQLRouterTest {
     }
     
     @Test
-    public void assertDecorateRouteContextWithReadwriteSplittingDataSource() {
+    void assertDecorateRouteContextWithReadwriteSplittingDataSource() {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
                 DefaultDatabase.LOGIC_NAME, Collections.singletonMap("readwrite_ds", new MockedDataSource()), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
@@ -182,7 +182,7 @@ public final class SingleSQLRouterTest {
     }
     
     @Test
-    public void assertDecorateRouteContextWithMultiDataSource() throws SQLException {
+    void assertDecorateRouteContextWithMultiDataSource() throws SQLException {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createMultiDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.emptyList()));

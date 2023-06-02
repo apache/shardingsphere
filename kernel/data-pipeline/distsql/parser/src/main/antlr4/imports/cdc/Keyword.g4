@@ -38,3 +38,11 @@ LIST
 STATUS
     : S T A T U S
     ;
+
+ROLLBACK
+    : R O L L B A C K
+    ;
+
+COMMIT
+    : C O M M I T
+    ;

@@ -26,11 +26,8 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
@@ -47,7 +44,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
@@ -77,7 +73,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -85,7 +80,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class StateChangedSubscriberTest {
+class StateChangedSubscriberTest {
     
     private StateChangedSubscriber subscriber;
     
@@ -95,7 +90,7 @@ public final class StateChangedSubscriberTest {
     private ShardingSphereDatabase database;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
@@ -121,7 +116,7 @@ public final class StateChangedSubscriberTest {
     }
     
     @Test
-    public void assertRenewForDisableStateChanged() {
+    void assertRenewForDisableStateChanged() {
         StaticDataSourceContainedRule staticDataSourceRule = mock(StaticDataSourceContainedRule.class);
         when(database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class)).thenReturn(Optional.of(staticDataSourceRule));
         StorageNodeChangedEvent event = new StorageNodeChangedEvent(new QualifiedDatabase("db.readwrite_ds.ds_0"), new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.DISABLED));
@@ -132,61 +127,47 @@ public final class StateChangedSubscriberTest {
     }
     
     @Test
-    public void assertRenewPrimaryDataSourceName() {
-        Collection<ShardingSphereRule> rules = new LinkedList<>();
-        DynamicDataSourceContainedRule dynamicDataSourceRule = mock(DynamicDataSourceContainedRule.class);
-        rules.add(dynamicDataSourceRule);
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(rules);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().put("db", database);
-        PrimaryStateChangedEvent mockPrimaryStateChangedEvent = new PrimaryStateChangedEvent(new QualifiedDatabase("db.readwrite_ds.test_ds"));
-        subscriber.renew(mockPrimaryStateChangedEvent);
-        verify(dynamicDataSourceRule).restartHeartBeatJob(any());
-    }
-    
-    @Test
-    public void assertResetClusterStatus() {
+    void assertResetClusterStatus() {
         ClusterLockDeletedEvent mockLockDeletedEvent = new ClusterLockDeletedEvent(ClusterState.OK);
         subscriber.renew(mockLockDeletedEvent);
         assertThat(contextManager.getClusterStateContext().getCurrentState(), is(ClusterState.OK));
     }
     
     @Test
-    public void assertRenewClusterStatus() {
+    void assertRenewClusterStatus() {
         ClusterStateEvent mockClusterStateEvent = new ClusterStateEvent("READ_ONLY");
         subscriber.renew(mockClusterStateEvent);
         assertThat(contextManager.getClusterStateContext().getCurrentState(), is(ClusterState.READ_ONLY));
     }
     
     @Test
-    public void assertRenewInstanceStatus() {
+    void assertRenewInstanceStatus() {
         StateEvent mockStateEvent = new StateEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), InstanceState.OK.name());
         subscriber.renew(mockStateEvent);
         assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
     }
     
     @Test
-    public void assertRenewInstanceWorkerIdEvent() {
+    void assertRenewInstanceWorkerIdEvent() {
         subscriber.renew(new WorkerIdEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), 0));
         assertThat(contextManager.getInstanceContext().getInstance().getWorkerId(), is(0));
     }
     
     @Test
-    public void assertRenewInstanceLabels() {
+    void assertRenewInstanceLabels() {
         Collection<String> labels = Collections.singleton("test");
         subscriber.renew(new LabelsEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), labels));
         assertThat(contextManager.getInstanceContext().getInstance().getLabels(), is(labels));
     }
     
     @Test
-    public void assertRenewInstanceOfflineEvent() {
+    void assertRenewInstanceOfflineEvent() {
         subscriber.renew(new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getMetaData()));
         assertThat(((ProxyInstanceMetaData) contextManager.getInstanceContext().getInstance().getMetaData()).getPort(), is(3307));
     }
     
     @Test
-    public void assertRenewInstanceOnlineEvent() {
+    void assertRenewInstanceOnlineEvent() {
         InstanceMetaData instanceMetaData1 = new ProxyInstanceMetaData("foo_instance_3307", 3307);
         InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceMetaData1);
         subscriber.renew(instanceOnlineEvent1);

@@ -39,6 +39,11 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
     private static final int THIN_MATCH_GROUP_COUNT = 5;
     
+    private static final Pattern THIN_URL_PATTERN = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?(\\d*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
+    
+    private static final Pattern CONNECT_DESCRIPTOR_URL_PATTERN = Pattern.compile(
+            "jdbc:oracle:(thin|oci|kprb):@[(\\w\\s=)]+HOST\\s*=\\s*([\\w\\-\\.]+).*PORT\\s*=\\s*(\\d+).*SERVICE_NAME\\s*=\\s*(\\w+)\\)");
+    
     private final String hostname;
     
     private final int port;
@@ -47,15 +52,11 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
     private final String schema;
     
-    private final Pattern thinUrlPattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
-    
-    private final Pattern connectDescriptorUrlPattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@[(\\w\\s=)]+HOST\\s*=\\s*([\\w\\-\\.]+).*PORT\\s*=\\s*(\\d+).*SERVICE_NAME\\s*=\\s*(\\w+)\\)");
-    
     public OracleDataSourceMetaData(final String url, final String username) {
-        List<Matcher> matcherList = Arrays.asList(thinUrlPattern.matcher(url), connectDescriptorUrlPattern.matcher(url));
+        List<Matcher> matcherList = Arrays.asList(THIN_URL_PATTERN.matcher(url), CONNECT_DESCRIPTOR_URL_PATTERN.matcher(url));
         Optional<Matcher> matcherOptional = matcherList.stream().filter(Matcher::find).findAny();
         if (!matcherOptional.isPresent()) {
-            throw new UnrecognizedDatabaseURLException(url, thinUrlPattern.pattern());
+            throw new UnrecognizedDatabaseURLException(url, THIN_URL_PATTERN.pattern());
         }
         Matcher matcher = matcherOptional.get();
         int groupCount = matcher.groupCount();

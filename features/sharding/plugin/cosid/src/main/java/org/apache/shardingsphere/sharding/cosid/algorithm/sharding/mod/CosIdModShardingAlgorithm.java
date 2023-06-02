@@ -30,6 +30,8 @@ import java.util.Properties;
 
 /**
  * Modular sharding algorithm with CosId.
+ * 
+ * @param <T> type of sharding value
  */
 public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> implements StandardShardingAlgorithm<T> {
     

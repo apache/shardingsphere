@@ -38,10 +38,9 @@ public final class YamlEncryptTableRuleConfigurationSwapper implements YamlConfi
     public YamlEncryptTableRuleConfiguration swapToYamlConfiguration(final EncryptTableRuleConfiguration data) {
         YamlEncryptTableRuleConfiguration result = new YamlEncryptTableRuleConfiguration();
         for (EncryptColumnRuleConfiguration each : data.getColumns()) {
-            result.getColumns().put(each.getLogicColumn(), columnSwapper.swapToYamlConfiguration(each));
+            result.getColumns().put(each.getName(), columnSwapper.swapToYamlConfiguration(each));
         }
         result.setName(data.getName());
-        result.setQueryWithCipherColumn(data.getQueryWithCipherColumn());
         return result;
     }
     
@@ -49,10 +48,9 @@ public final class YamlEncryptTableRuleConfigurationSwapper implements YamlConfi
     public EncryptTableRuleConfiguration swapToObject(final YamlEncryptTableRuleConfiguration yamlConfig) {
         Collection<EncryptColumnRuleConfiguration> columns = new LinkedList<>();
         for (Entry<String, YamlEncryptColumnRuleConfiguration> entry : yamlConfig.getColumns().entrySet()) {
-            YamlEncryptColumnRuleConfiguration yamlEncryptColumnRuleConfig = entry.getValue();
-            yamlEncryptColumnRuleConfig.setLogicColumn(entry.getKey());
-            columns.add(columnSwapper.swapToObject(yamlEncryptColumnRuleConfig));
+            entry.getValue().setName(entry.getKey());
+            columns.add(columnSwapper.swapToObject(entry.getValue()));
         }
-        return new EncryptTableRuleConfiguration(yamlConfig.getName(), columns, yamlConfig.getQueryWithCipherColumn());
+        return new EncryptTableRuleConfiguration(yamlConfig.getName(), columns);
     }
 }

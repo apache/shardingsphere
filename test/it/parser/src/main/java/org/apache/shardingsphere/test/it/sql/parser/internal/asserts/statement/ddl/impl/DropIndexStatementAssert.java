@@ -31,6 +31,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -50,6 +52,8 @@ public final class DropIndexStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
         assertTables(assertContext, actual, expected);
         assertIndex(assertContext, actual, expected);
+        assertLockTable(assertContext, actual, expected);
+        assertAlgorithm(assertContext, actual, expected);
     }
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
@@ -70,6 +74,26 @@ public final class DropIndexStatementAssert {
                 IndexAssert.assertIs(assertContext, each, expected.getIndexes().get(count));
                 count++;
             }
+        }
+    }
+    
+    private static void assertLockTable(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
+        if (null == expected.getLockOption()) {
+            assertFalse(DropIndexStatementHandler.getLockTableSegment(actual).isPresent(), assertContext.getText("Actual lock table segments should not exist."));
+        } else {
+            assertTrue(DropIndexStatementHandler.getLockTableSegment(actual).isPresent(), assertContext.getText("Actual lock table segments should exist."));
+            assertThat(assertContext.getText(String.format("`%s`'s lock table assertion error: ", actual.getClass().getSimpleName())),
+                    DropIndexStatementHandler.getLockTableSegment(actual).get().getLockTableOption().name(), is(expected.getLockOption().getType()));
+        }
+    }
+    
+    private static void assertAlgorithm(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
+        if (null == expected.getAlgorithmOption()) {
+            assertFalse(DropIndexStatementHandler.getAlgorithmTypeSegment(actual).isPresent(), assertContext.getText("Actual algorithm segments should not exist."));
+        } else {
+            assertTrue(DropIndexStatementHandler.getAlgorithmTypeSegment(actual).isPresent(), assertContext.getText("Actual algorithm segments should exist."));
+            assertThat(assertContext.getText(String.format("`%s`'s algorithm assertion error: ", actual.getClass().getSimpleName())),
+                    DropIndexStatementHandler.getAlgorithmTypeSegment(actual).get().getAlgorithmOption().name(), is(expected.getAlgorithmOption().getType()));
         }
     }
 }

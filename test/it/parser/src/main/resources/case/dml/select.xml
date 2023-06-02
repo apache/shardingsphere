@@ -73,6 +73,26 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_system_variables" >
+        <projections start-index="7" stop-index="121">
+            <expression-projection text="@@session.auto_increment_increment" alias="auto_increment_increment" start-index="7" stop-index="65">
+                <expr>
+                    <variable-segment text="@@session.auto_increment_increment" start-index="7" stop-index="40" scope="session" variable="auto_increment_increment" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="@@global.max_connections" alias="max_connections" start-index="68" stop-index="107">
+                <expr>
+                    <variable-segment text="@@global.max_connections" start-index="68" stop-index="91" scope="global" variable="max_connections" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="@@autocommit" start-index="110" stop-index="121">
+                <expr>
+                    <variable-segment text="@@autocommit" start-index="110" stop-index="121" variable="autocommit" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 
     <select sql-case-id="select_sqlmode_ansi_quotes" >
         <projections start-index="7" stop-index="10">
@@ -3329,6 +3349,9 @@
     </select>
 
     <select sql-case-id="select_from_dual" >
+        <from>
+            <simple-table name="DUAL" start-index="14" stop-index="17" />
+        </from>
         <projections start-index="7" stop-index="7">
             <expression-projection text="1" start-index="7" stop-index="7" />
         </projections>
@@ -3389,7 +3412,7 @@
                             <column name="order_id" start-index="20" stop-index="27" />
                         </parameter>
                         <parameter>
-                            <data-type value="SIGNED" start-index="32" stop-index="41" />
+                            <data-type value="SIGNED INT" start-index="32" stop-index="41" />
                         </parameter>
                     </function>
                 </expr>
@@ -3409,7 +3432,7 @@
                             <column name="order_id" start-index="12" stop-index="19" />
                         </parameter>
                         <parameter>
-                            <data-type value="UNSIGNED" start-index="24" stop-index="35" />
+                            <data-type value="UNSIGNED INT" start-index="24" stop-index="35" />
                         </parameter>
                     </function>
                 </expr>
@@ -3431,7 +3454,7 @@
                             <column name="order_id" start-index="20" stop-index="27" />
                         </parameter>
                         <parameter>
-                            <data-type value="SIGNED" start-index="32" stop-index="45" />
+                            <data-type value="SIGNED INTEGER" start-index="32" stop-index="45" />
                         </parameter>
                     </function>
                 </expr>
@@ -3451,7 +3474,7 @@
                             <column name="order_id" start-index="12" stop-index="19" />
                         </parameter>
                         <parameter>
-                            <data-type value="UNSIGNED" start-index="24" stop-index="39" />
+                            <data-type value="UNSIGNED INTEGER" start-index="24" stop-index="39" />
                         </parameter>
                     </function>
                 </expr>

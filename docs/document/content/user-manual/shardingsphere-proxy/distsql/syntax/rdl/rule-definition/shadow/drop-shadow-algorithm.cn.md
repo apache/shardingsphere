@@ -1,11 +1,11 @@
 +++
 title = "DROP SHADOW ALGORITHM"
-weight = 8
+weight = 7
 +++
 
 ## 描述
 
-`DROP SHADOW ALGORITHM` 语法用于为指定逻辑库删除影子库压测算法
+`DROP SHADOW ALGORITHM` 语法用于为指定逻辑库删除影子库压测算法。
 
 ### 语法定义
 

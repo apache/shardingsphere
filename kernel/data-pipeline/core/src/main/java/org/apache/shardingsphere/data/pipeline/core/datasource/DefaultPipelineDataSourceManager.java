@@ -34,12 +34,7 @@ public final class DefaultPipelineDataSourceManager implements PipelineDataSourc
     
     private final Map<PipelineDataSourceConfiguration, PipelineDataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
     
-    /**
-     * Get cached data source.
-     *
-     * @param dataSourceConfig data source configuration
-     * @return data source
-     */
+    @Override
     public PipelineDataSourceWrapper getDataSource(final PipelineDataSourceConfiguration dataSourceConfig) {
         PipelineDataSourceWrapper result = cachedDataSources.get(dataSourceConfig);
         if (null != result) {

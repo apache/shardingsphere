@@ -38,7 +38,7 @@ public interface PositionInitializer extends TypedSPI {
      * @return position
      * @throws SQLException SQL exception
      */
-    IngestPosition<?> init(DataSource dataSource, String slotNameSuffix) throws SQLException;
+    IngestPosition init(DataSource dataSource, String slotNameSuffix) throws SQLException;
     
     /**
      * Init position by string data.
@@ -46,7 +46,7 @@ public interface PositionInitializer extends TypedSPI {
      * @param data string data
      * @return position
      */
-    IngestPosition<?> init(String data);
+    IngestPosition init(String data);
     
     /**
      * Clean up by data source if necessary.

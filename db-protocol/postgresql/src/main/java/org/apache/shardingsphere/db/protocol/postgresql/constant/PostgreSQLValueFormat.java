@@ -39,6 +39,7 @@ public enum PostgreSQLValueFormat {
      *
      * @param code format code
      * @return PostgreSQL value format
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static PostgreSQLValueFormat valueOf(final int code) {
         switch (code) {

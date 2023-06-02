@@ -32,10 +32,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class DataSourcePropertiesCreatorTest {
+class DataSourcePropertiesCreatorTest {
     
     @Test
-    public void assertCreateWithDataSourceConfiguration() {
+    void assertCreateWithDataSourceConfiguration() {
         assertParameter(DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), createResourceConfiguration()));
     }
     
@@ -59,7 +59,7 @@ public final class DataSourcePropertiesCreatorTest {
     }
     
     @Test
-    public void assertCreateWithDataSource() {
+    void assertCreateWithDataSource() {
         assertThat(DataSourcePropertiesCreator.create(createDataSource()), is(new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
     }
     

@@ -42,7 +42,7 @@ public final class ScenarioCommonPath {
      */
     public void checkFolderExist() {
         String scenarioDirectory = String.join("/", ROOT_PATH, scenario);
-        assertNotNull(ScenarioCommonPath.class.getClassLoader().getResource(scenarioDirectory), String.format("Scenario folder `%s` must exist.", scenarioDirectory));
+        assertNotNull(Thread.currentThread().getContextClassLoader().getResource(scenarioDirectory), String.format("Scenario folder `%s` must exist.", scenarioDirectory));
     }
     
     /**
@@ -65,7 +65,7 @@ public final class ScenarioCommonPath {
     
     private String getFile(final String fileName) {
         String path = String.join("/", ROOT_PATH, scenario, fileName);
-        URL url = ScenarioCommonPath.class.getClassLoader().getResource(path);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(path);
         assertNotNull(url, String.format("File `%s` must exist.", path));
         return url.getFile();
     }

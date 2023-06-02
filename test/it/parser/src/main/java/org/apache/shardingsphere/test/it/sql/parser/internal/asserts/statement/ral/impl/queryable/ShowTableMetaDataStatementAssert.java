@@ -17,19 +17,21 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTableMetaDataStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Show table meta data statement assert.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowTableMetaDataStatementAssert {
     
     /**
@@ -39,12 +41,8 @@ public final class ShowTableMetaDataStatementAssert {
      * @param actual actual show table meta data statement
      * @param expected expected show table meta data statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableMetaDataStatement actual,
-                                final ShowTableMetaDataStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableMetaDataStatement actual, final ShowTableMetaDataStatementTestCase expected) {
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
             assertThat(assertContext.getText("Table assertion error:"), actual.getTableNames(), is(expected.getTableNames()));
         }

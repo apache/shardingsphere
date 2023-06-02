@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class OpenGaussComBatchBindPacketTest {
+class OpenGaussComBatchBindPacketTest {
     
     private static final byte[] BATCH_BIND_MESSAGE_BYTES = {
             'U', 0x00, 0x00, 0x00, 0x55, 0x00, 0x00, 0x00,
@@ -43,11 +43,11 @@ public final class OpenGaussComBatchBindPacketTest {
             0x00, 0x00, 0x00, 0x02, 0x33, 0x36, 0x00, 0x00,
             0x00, 0x01, 0x33, 0x00, 0x00, 0x00, 0x03, 0x54,
             0x6f, 0x6d, 0x00, 0x00, 0x00, 0x02, 0x35, 0x34,
-            0x45, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x45, 0x00, 0x00, 0x00, 0x00, 0x00
     };
     
     @Test
-    public void assertConstructOpenGaussComBatchBindPacket() {
+    void assertConstructOpenGaussComBatchBindPacket() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(BATCH_BIND_MESSAGE_BYTES), StandardCharsets.UTF_8);
         assertThat(payload.readInt1(), is((int) 'U'));
         OpenGaussComBatchBindPacket actual = new OpenGaussComBatchBindPacket(payload);
@@ -56,7 +56,7 @@ public final class OpenGaussComBatchBindPacketTest {
         assertThat(actual.getParameterFormats(), is(Arrays.asList(0, 0, 0)));
         assertTrue(actual.getResultFormats().isEmpty());
         List<List<Object>> actualParameterSets = actual.readParameterSets(
-                Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR, PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
+                Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR, PostgreSQLColumnType.INT4));
         assertThat(actualParameterSets.size(), is(3));
         List<List<Object>> expectedParameterSets = Arrays.asList(Arrays.asList(1, "Foo", 18), Arrays.asList(2, "Bar", 36), Arrays.asList(3, "Tom", 54));
         assertThat(actualParameterSets, is(expectedParameterSets));
