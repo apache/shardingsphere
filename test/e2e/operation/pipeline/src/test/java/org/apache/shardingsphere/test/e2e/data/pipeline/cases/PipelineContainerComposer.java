@@ -377,13 +377,14 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @throws RuntimeException runtime exception
      */
     public List<Map<String, Object>> queryForListWithLog(final String sql) {
+        log.info("Query SQL: {}", sql);
         int retryNumber = 0;
         while (retryNumber <= 3) {
             try (Connection connection = proxyDataSource.getConnection()) {
                 ResultSet resultSet = connection.createStatement().executeQuery(sql);
                 return transformResultSetToList(resultSet);
             } catch (final SQLException ex) {
-                log.error("Data access error.", ex);
+                log.error("Data access error: ", ex);
             }
             Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
             retryNumber++;
