@@ -49,7 +49,7 @@ public class HeterogeneousUpdateStatementChecker extends CommonHeterogeneousSQLS
     private void checkAssignmentIsOk() {
         Collection<AssignmentSegment> assignmentSegments = getSqlStatement().getSetAssignment().getAssignments();
         for (AssignmentSegment assignmentSegment : assignmentSegments) {
-            Preconditions.checkArgument(isAllowExpressionSegment(assignmentSegment.getValue()), "Assigment must is literal or parameter marker");
+            Preconditions.checkArgument(isAllowExpressionSegment(assignmentSegment.getValue()), "Assignment must is literal or parameter marker.");
             boolean isRowKey = ALLOW_KEYS.stream().anyMatch(each -> each.equalsIgnoreCase(assignmentSegment.getColumns().iterator().next().getIdentifier().getValue()));
             Preconditions.checkArgument(!isRowKey, "Do not allow update rowKey");
         }

@@ -31,7 +31,7 @@ import org.apache.shardingsphere.readwritesplitting.event.config.DeleteReadwrite
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AddLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
-import org.apache.shardingsphere.readwritesplitting.yaml.converter.ReadwriteSplittingNodeConverter;
+import org.apache.shardingsphere.readwritesplitting.metadata.converter.ReadwriteSplittingNodeConverter;
 
 import java.util.Optional;
 

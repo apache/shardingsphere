@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.node.metadata.config.shadow;
+package org.apache.shardingsphere.shadow.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * TODO move to feature
- * Sharding node converter.
+ * Shadow node converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowNodeConverter {
@@ -37,7 +36,7 @@ public final class ShadowNodeConverter {
     
     /**
      * Get data source path.
-     *
+     * 
      * @param dataSourceName data source name
      * @return data source path
      */
@@ -57,7 +56,7 @@ public final class ShadowNodeConverter {
     
     /**
      * Get shadow algorithm path.
-     *
+     * 
      * @param shadowAlgorithmName shadow algorithm name
      * @return shadow algorithm path
      */
@@ -67,7 +66,7 @@ public final class ShadowNodeConverter {
     
     /**
      * Get default shadow algorithm path.
-     *
+     * 
      * @return default shadow algorithm path
      */
     public static String getDefaultShadowAlgorithmPath() {

@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.node.metadata.config.encrypt;
+package org.apache.shardingsphere.encrypt.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * TODO move to features module
  * Encrypt node converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

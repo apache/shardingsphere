@@ -19,7 +19,13 @@ package org.apache.shardingsphere.proxy.backend.hbase.checker;
 
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,57 +34,40 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HeterogeneousDeleteStatementCheckerTest {
     
-    @Test
-    void assertExecuteDeleteStatement() {
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getDeleteStatement());
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(SupportedTestCaseArgumentsProvider.class)
+    void assertExecuteSuccess(final String name, final String sql) {
+        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
     }
     
-    @Test
-    void assertOperatorIsNotEqual() {
-        String sql = "delete /*+ hbase */ from t_test_order where rowKey > 1";
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(UnsupportedTestCaseArgumentsProvider.class)
+    void assertExecuteFailed(final String name, final String sql, final String expectedErrorMessage) {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Only Supported `=` operator."));
+        assertThat(ex.getMessage(), is(expectedErrorMessage));
     }
     
-    @Test
-    void assertColumnIsNotRowKey() {
-        String sql = "delete /*+ hbase */ from t_test_order where age = 1";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("age is not a allowed key."));
+    private static class SupportedTestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of("standard", HBaseSupportedSQLStatement.getDeleteStatement()));
+        }
     }
     
-    @Test
-    void assertLeftIsNotColumn() {
-        String sql = "delete /*+ hbase */ from t_test_order where 1 = 1";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Left segment must column segment."));
-    }
-    
-    @Test
-    void assertMultiExpression() {
-        String sql = "DELETE /*+ hbase */ FROM t_order WHERE order_id = ? AND user_id = ? AND status=?";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Do not supported multiple expressions."));
-    }
-    
-    @Test
-    void assertWithBetweenExpression() {
-        String sql = "DELETE /*+ hbase */ FROM t_order WHERE rowKey between 1 and 5";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Only support binary operation expression."));
-    }
-    
-    @Test
-    void assertNotWhereSegment() {
-        String sql = "DELETE /*+ hbase */ FROM t_order";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Must contain where segment."));
+    private static class UnsupportedTestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("operatorIsNotEqual", "delete /*+ hbase */ from t_test_order where rowKey > 1", "Only Supported `=` operator."),
+                    Arguments.of("columnIsNotRowKey", "delete /*+ hbase */ from t_test_order where age = 1", "age is not a allowed key."),
+                    Arguments.of("leftIsNotColumn", "delete /*+ hbase */ from t_test_order where 1 = 1", "Left segment must column segment."),
+                    Arguments.of("MultipleExpressions", "DELETE /*+ hbase */ FROM t_order WHERE order_id = ? AND user_id = ? AND status=?", "Do not supported multiple expressions."),
+                    Arguments.of("between", "DELETE /*+ hbase */ FROM t_order WHERE rowKey between 1 and 5", "Only support binary operation expression."),
+                    Arguments.of("withoutWhere", "DELETE /*+ hbase */ FROM t_order", "Must contain where segment."));
+        }
     }
 }

@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.yaml.converter;
+package org.apache.shardingsphere.readwritesplitting.metadata.converter;
 
+import org.apache.shardingsphere.readwritesplitting.metadata.converter.ReadwriteSplittingNodeConverter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

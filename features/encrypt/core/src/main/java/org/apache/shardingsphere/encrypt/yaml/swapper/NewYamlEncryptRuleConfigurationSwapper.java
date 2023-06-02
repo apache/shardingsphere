@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.metadata.persist.node.metadata.config.encrypt.EncryptNodeConverter;
+import org.apache.shardingsphere.encrypt.metadata.converter.EncryptNodeConverter;
 
 import java.util.Collection;
 import java.util.Collections;

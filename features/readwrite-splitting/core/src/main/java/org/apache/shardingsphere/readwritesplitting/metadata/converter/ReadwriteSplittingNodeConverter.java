@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.yaml.converter;
+package org.apache.shardingsphere.readwritesplitting.metadata.converter;
 
 import java.util.Optional;
 import java.util.regex.Matcher;

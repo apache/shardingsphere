@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.node.metadata.config.mask;
+package org.apache.shardingsphere.mask.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * TODO move to features module
  * Mask node converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

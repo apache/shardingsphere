@@ -53,6 +53,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -63,6 +68,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -129,44 +135,9 @@ class ProxyBackendHandlerFactoryTest {
         assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
     }
     
-    @Test
-    void assertNewInstanceWithBegin() throws SQLException {
-        String sql = "BEGIN";
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(TransactionBackendHandler.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithStartTransaction() throws SQLException {
-        String sql = "START TRANSACTION";
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(TransactionBackendHandler.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithSetAutoCommitToOff() throws SQLException {
-        String sql = "SET AUTOCOMMIT=0";
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(TransactionBackendHandler.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithScopeSetAutoCommitToOff() throws SQLException {
-        String sql = "SET @@SESSION.AUTOCOMMIT = OFF";
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(TransactionBackendHandler.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithSetAutoCommitToOn() throws SQLException {
-        String sql = "SET AUTOCOMMIT=1";
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(TransactionBackendHandler.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithScopeSetAutoCommitToOnForInTransaction() throws SQLException {
-        String sql = "SET @@SESSION.AUTOCOMMIT = ON";
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TCLTestCaseArgumentsProvider.class)
+    void assertNewInstanceWithTCL(final String sql) throws SQLException {
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
@@ -188,7 +159,7 @@ class ProxyBackendHandlerFactoryTest {
     }
     
     // TODO
-    @Disabled("FIX ME")
+    @Disabled("FIXME")
     @Test
     void assertNewInstanceWithQuery() throws SQLException {
         String sql = "SELECT * FROM t_order limit 1";
@@ -250,5 +221,19 @@ class ProxyBackendHandlerFactoryTest {
         String sql = "PREVIEW INSERT INTO account VALUES(1, 1, 1)";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(SQLRULBackendHandler.class));
+    }
+    
+    private static class TCLTestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("BEGIN"),
+                    Arguments.of("START TRANSACTION"),
+                    Arguments.of("SET AUTOCOMMIT=0"),
+                    Arguments.of("SET @@SESSION.AUTOCOMMIT = OFF"),
+                    Arguments.of("SET AUTOCOMMIT=1"),
+                    Arguments.of("SET @@SESSION.AUTOCOMMIT = ON"));
+        }
     }
 }

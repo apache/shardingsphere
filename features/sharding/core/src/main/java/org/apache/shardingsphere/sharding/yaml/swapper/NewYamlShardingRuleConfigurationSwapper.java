@@ -21,19 +21,19 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.sharding.yaml.converter.ShardingNodeConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
+import org.apache.shardingsphere.sharding.metadata.converter.ShardingNodeConverter;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
 /**
- * TODO Rename to NewYamlShardingRuleConfigurationSwapper when metadata structure adjustment completed. #25485
+ * TODO Rename to YamlShardingRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * New YAML sharding rule configuration swapper.
  */
 public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<ShardingRuleConfiguration> {
@@ -86,13 +86,19 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
     
     private void swapAlgorithms(final ShardingRuleConfiguration data, final Collection<YamlDataNode> result) {
         for (Entry<String, AlgorithmConfiguration> each : data.getShardingAlgorithms().entrySet()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getShardingAlgorithmsPath(each.getKey()), YamlEngine.marshal(each.getValue())));
+            result.add(new YamlDataNode(ShardingNodeConverter.getShardingAlgorithmPath(each.getKey()), YamlEngine.marshal(each.getValue())));
         }
         for (Entry<String, AlgorithmConfiguration> each : data.getKeyGenerators().entrySet()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getKeyGeneratorsPath(each.getKey()), YamlEngine.marshal(each.getValue())));
+            result.add(new YamlDataNode(ShardingNodeConverter.getKeyGeneratorPath(each.getKey()), YamlEngine.marshal(each.getValue())));
         }
         for (Entry<String, AlgorithmConfiguration> each : data.getAuditors().entrySet()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getAuditorsPath(each.getKey()), YamlEngine.marshal(each.getValue())));
+            result.add(new YamlDataNode(ShardingNodeConverter.getAuditorPath(each.getKey()), YamlEngine.marshal(each.getValue())));
+        }
+        for (Entry<String, AlgorithmConfiguration> each : data.getKeyGenerators().entrySet()) {
+            result.add(new YamlDataNode(ShardingNodeConverter.getKeyGeneratorPath(each.getKey()), YamlEngine.marshal(each.getValue())));
+        }
+        for (Entry<String, AlgorithmConfiguration> each : data.getAuditors().entrySet()) {
+            result.add(new YamlDataNode(ShardingNodeConverter.getAuditorPath(each.getKey()), YamlEngine.marshal(each.getValue())));
         }
     }
     

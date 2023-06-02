@@ -23,21 +23,18 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class H2DataSourceMetaDataTest {
+class H2DataSourceMetaDataTest extends AbstractDataSourceMetaDataTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
     void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema) {
-        H2DataSourceMetaData actual = new H2DataSourceMetaData(url);
-        assertThat(actual.getHostname(), is(hostname));
-        assertThat(actual.getPort(), is(port));
-        assertThat(actual.getCatalog(), is(catalog));
-        assertThat(actual.getSchema(), is(schema));
+        assertDataSourceMetaData(url, hostname, port, catalog, schema, new Properties());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -48,16 +45,21 @@ class H2DataSourceMetaDataTest {
         assertThat(actual1.isInSameDatabaseInstance(actual2), is(isSame));
     }
     
+    @Override
+    protected H2DataSourceMetaData createDataSourceMetaData(final String url) {
+        return new H2DataSourceMetaData(url);
+    }
+    
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of("mem", "jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "", -1, "ds_0", null),
-                    Arguments.of("symbol", "jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "", -1, "ds-0", null),
-                    Arguments.of("tcp", "jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1", "localhost", 8082, "test2", null),
-                    Arguments.of("ssl", "jdbc:h2:ssl:180.76.76.76/home/test", "180.76.76.76", -1, "test", null),
-                    Arguments.of("file", "jdbc:h2:file:/data/sample;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", "", -1, "sample", null));
+                    Arguments.of("mem", "jdbc:h2:mem:foo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "", -1, "foo_ds", null),
+                    Arguments.of("symbol", "jdbc:h2:~:foo-ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "", -1, "foo-ds", null),
+                    Arguments.of("tcp", "jdbc:h2:tcp://localhost:8082/~/home/foo_ds;DB_CLOSE_DELAY=-1", "localhost", 8082, "foo_ds", null),
+                    Arguments.of("ssl", "jdbc:h2:ssl:127.0.0.1/home/foo_ds", "127.0.0.1", -1, "foo_ds", null),
+                    Arguments.of("file", "jdbc:h2:file:/data/foo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", "", -1, "foo_ds", null));
         }
     }
     
@@ -71,9 +73,9 @@ class H2DataSourceMetaDataTest {
                     Arguments.of("memAndSymbol", "jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "jdbc:h2:~:ds-1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", true),
                     Arguments.of("tcp", "jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1", "jdbc:h2:tcp://localhost:8082/~/test3/test4;DB_CLOSE_DELAY=-1", true),
                     Arguments.of("tcpNotSame", "jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1", "jdbc:h2:tcp://192.168.64.76:8082/~/test3/test4;DB_CLOSE_DELAY=-1", false),
-                    Arguments.of("ssl", "jdbc:h2:ssl:180.76.76.76/home/test-one", "jdbc:h2:ssl:180.76.76.76/home/test-two", true),
-                    Arguments.of("sslNotSame", "jdbc:h2:ssl:180.76.76.76/home/test-one", "jdbc:h2:ssl:181.76.76.76/home/test-two", false),
-                    Arguments.of("file", "jdbc:h2:file:/data/sample-one;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", "jdbc:h2:file:/data/sample-two;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", true));
+                    Arguments.of("ssl", "jdbc:h2:ssl:127.0.0.1/home/test-one", "jdbc:h2:ssl:127.0.0.1/home/test-two", true),
+                    Arguments.of("sslNotSame", "jdbc:h2:ssl:127.0.0.1/home/test-one", "jdbc:h2:ssl:127.0.0.2/home/test-two", false),
+                    Arguments.of("file", "jdbc:h2:file:/data/ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", "jdbc:h2:file:/data/ds-1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", true));
         }
     }
 }

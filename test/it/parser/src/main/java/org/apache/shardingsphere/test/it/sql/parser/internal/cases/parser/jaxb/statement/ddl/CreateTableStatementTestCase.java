@@ -51,4 +51,7 @@ public final class CreateTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "select")
     private SelectStatementTestCase createTableAsSelectStatement;
+    
+    @XmlElement(name = "like-table")
+    private ExpectedSimpleTable likeTable;
 }
