@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -73,7 +73,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     
     private final PriorityQueue<CSNRecords> csnRecordsQueue = new PriorityQueue<>(new CSNRecordsComparator());
     
-    private final Cache<String, Pair<CDCChannelProgressPair, CDCAckPosition>> ackCache = CacheBuilder.newBuilder().maximumSize(10000).expireAfterAccess(5, TimeUnit.MINUTES).build();
+    private final Cache<String, Pair<CDCChannelProgressPair, CDCAckPosition>> ackCache = Caffeine.newBuilder().maximumSize(10000).expireAfterAccess(5, TimeUnit.MINUTES).build();
     
     @Override
     protected void runBlocking() {

@@ -72,6 +72,7 @@ public final class CDCJobPreparer {
      * @param jobItemContexts job item contexts
      */
     public void initTasks(final Collection<CDCJobItemContext> jobItemContexts) {
+        // TODO Use pipeline tree to build it
         AtomicBoolean inventoryImporterUsed = new AtomicBoolean();
         List<CDCChannelProgressPair> inventoryChannelProgressPairs = new LinkedList<>();
         AtomicBoolean incrementalImporterUsed = new AtomicBoolean();
