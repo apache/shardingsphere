@@ -166,25 +166,36 @@ public final class PipelineDataSourceSink implements PipelineSink {
         }
     }
     
-    private void doFlush(final Connection connection, final DataRecord each) throws SQLException {
-        switch (each.getType()) {
+    private void doFlush(final Connection connection, final List<DataRecord> buffer) {
+        // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL sometimes
+        for (DataRecord each : buffer) {
+            try {
+                doFlush(connection, each);
+            } catch (final SQLException ex) {
+                throw new PipelineImporterJobWriteException(String.format("Write failed, record=%s", each), ex);
+            }
+        }
+    }
+    
+    private void doFlush(final Connection connection, final DataRecord dataRecord) throws SQLException {
+        switch (dataRecord.getType()) {
             case IngestDataChangeType.INSERT:
                 if (null != rateLimitAlgorithm) {
                     rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
                 }
-                executeBatchInsert(connection, Collections.singletonList(each));
+                executeBatchInsert(connection, Collections.singletonList(dataRecord));
                 break;
             case IngestDataChangeType.UPDATE:
                 if (null != rateLimitAlgorithm) {
                     rateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1);
                 }
-                executeUpdate(connection, each);
+                executeUpdate(connection, dataRecord);
                 break;
             case IngestDataChangeType.DELETE:
                 if (null != rateLimitAlgorithm) {
                     rateLimitAlgorithm.intercept(JobOperationType.DELETE, 1);
                 }
-                executeBatchDelete(connection, Collections.singletonList(each));
+                executeBatchDelete(connection, Collections.singletonList(dataRecord));
                 break;
             default:
         }
@@ -279,14 +290,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
             return;
         }
         try (Connection connection = dataSource.getConnection()) {
-            // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL sometimes
-            for (DataRecord each : buffer) {
-                try {
-                    doFlush(connection, each);
-                } catch (final SQLException ex) {
-                    throw new PipelineImporterJobWriteException(String.format("Write failed, record=%s", each), ex);
-                }
-            }
+            doFlush(connection, buffer);
         } catch (final SQLException ex) {
             throw new PipelineImporterJobWriteException(ex);
         }
