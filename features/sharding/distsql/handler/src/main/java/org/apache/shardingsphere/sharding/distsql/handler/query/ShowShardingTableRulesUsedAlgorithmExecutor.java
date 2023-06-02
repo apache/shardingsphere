@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAlgorithmStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -53,10 +54,7 @@ public final class ShowShardingTableRulesUsedAlgorithmExecutor implements RQLExe
         boolean matchDefaultTableShardingStrategy = null != config.getDefaultTableShardingStrategy()
                 && algorithmName.equals(config.getDefaultTableShardingStrategy().getShardingAlgorithmName());
         config.getTables().forEach(each -> {
-            if (null == each.getDatabaseShardingStrategy() && matchDefaultDatabaseShardingStrategy
-                    || null != each.getDatabaseShardingStrategy() && algorithmName.equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())
-                    || null == each.getTableShardingStrategy() && matchDefaultTableShardingStrategy
-                    || null != each.getTableShardingStrategy() && algorithmName.equals(each.getTableShardingStrategy().getShardingAlgorithmName())) {
+            if (isMatchDatabaseShardingStrategy(each, algorithmName, matchDefaultDatabaseShardingStrategy) || isMatchTableShardingStrategy(each, algorithmName, matchDefaultTableShardingStrategy)) {
                 result.add(new LocalDataQueryResultRow("table", each.getLogicTable()));
             }
         });
@@ -65,6 +63,30 @@ public final class ShowShardingTableRulesUsedAlgorithmExecutor implements RQLExe
                 result.add(new LocalDataQueryResultRow("auto_table", each.getLogicTable()));
             }
         });
+    }
+    
+    private boolean isMatchDatabaseShardingStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final String algorithmName, final boolean matchDefaultDatabaseShardingStrategy) {
+        return isMatchDatabaseShardingStrategy(tableRuleConfig, algorithmName) || isMatchDefaultDatabaseShardingStrategy(tableRuleConfig, matchDefaultDatabaseShardingStrategy);
+    }
+    
+    private boolean isMatchDatabaseShardingStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final String algorithmName) {
+        return null != tableRuleConfig.getDatabaseShardingStrategy() && algorithmName.equals(tableRuleConfig.getDatabaseShardingStrategy().getShardingAlgorithmName());
+    }
+    
+    private boolean isMatchDefaultDatabaseShardingStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final boolean matchDefaultDatabaseShardingStrategy) {
+        return null == tableRuleConfig.getDatabaseShardingStrategy() && matchDefaultDatabaseShardingStrategy;
+    }
+    
+    private boolean isMatchTableShardingStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final String algorithmName, final boolean matchDefaultTableShardingStrategy) {
+        return isMatchTableShardingStrategy(tableRuleConfig, algorithmName) || isMatchDefaultTableShardingStrategy(tableRuleConfig, matchDefaultTableShardingStrategy);
+    }
+    
+    private boolean isMatchTableShardingStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final String algorithmName) {
+        return null != tableRuleConfig.getTableShardingStrategy() && algorithmName.equals(tableRuleConfig.getTableShardingStrategy().getShardingAlgorithmName());
+    }
+    
+    private boolean isMatchDefaultTableShardingStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final boolean matchDefaultTableShardingStrategy) {
+        return null == tableRuleConfig.getTableShardingStrategy() && matchDefaultTableShardingStrategy;
     }
     
     @Override

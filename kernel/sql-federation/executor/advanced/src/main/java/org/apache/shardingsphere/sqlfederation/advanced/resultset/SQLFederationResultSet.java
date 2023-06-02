@@ -46,8 +46,11 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +64,8 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     private static final String UNICODE = "Unicode";
     
     private static final String BINARY = "Binary";
+    
+    private static final Collection<Class<?>> INVALID_FEDERATION_TYPES = new HashSet<>(Arrays.asList(Blob.class, Clob.class, Reader.class, InputStream.class, SQLXML.class));
     
     private final Enumerator<Object> enumerator;
     
@@ -467,9 +472,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     }
     
     private Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
-            throw new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName()));
-        }
+        ShardingSpherePreconditions.checkState(!INVALID_FEDERATION_TYPES.contains(type), () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
         Object result = currentRows[columnIndex - 1];
         wasNull = null == result;
         return result;

@@ -17,6 +17,10 @@
   -->
 
 <sql-parser-test-cases>
+    <create-table sql-case-id="create_table_with_like">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <like-table name="t_old_log" start-index="24" stop-index="32" />
+    </create-table>
     <create-table sql-case-id="create_table">
         <table name="t_log" start-index="13" stop-index="17" />
         <column-definition type="int" primary-key="true" start-index="19" stop-index="36">

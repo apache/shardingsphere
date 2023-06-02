@@ -51,7 +51,7 @@ public final class SubqueryTableConverter implements SQLSegmentConverter<Subquer
         } else {
             sqlNodes.add(new SelectStatementConverter().convert(segment.getSubquery().getSelect()));
         }
-        segment.getAlias().ifPresent(optional -> sqlNodes.add(new SqlIdentifier(optional, SqlParserPos.ZERO)));
+        segment.getAliasName().ifPresent(optional -> sqlNodes.add(new SqlIdentifier(optional, SqlParserPos.ZERO)));
         return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));
     }
 }

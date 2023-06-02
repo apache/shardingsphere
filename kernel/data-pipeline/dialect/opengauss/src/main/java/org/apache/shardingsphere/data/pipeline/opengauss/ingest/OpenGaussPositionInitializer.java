@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.pojo.ReplicationSlotInfo;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.opengauss.replication.LogSequenceNumber;
@@ -30,6 +31,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * OpenGauss WAL position initializer.
@@ -66,18 +68,27 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
      */
     private void createSlotIfNotExist(final Connection connection, final String slotNameSuffix) throws SQLException {
         String slotName = getUniqueSlotName(connection, slotNameSuffix);
-        if (!isSlotExist(connection, slotName)) {
+        Optional<ReplicationSlotInfo> slotInfo = getSlotInfo(connection, slotName);
+        if (!slotInfo.isPresent()) {
+            createSlotBySQL(connection, slotName);
+            return;
+        }
+        if (null == slotInfo.get().getDatabaseName()) {
+            dropSlotIfExist(connection, slotName);
             createSlotBySQL(connection, slotName);
         }
     }
     
-    private boolean isSlotExist(final Connection connection, final String slotName) throws SQLException {
-        String sql = "SELECT slot_name FROM pg_replication_slots WHERE slot_name=? AND plugin=?";
+    private Optional<ReplicationSlotInfo> getSlotInfo(final Connection connection, final String slotName) throws SQLException {
+        String sql = "SELECT slot_name, database FROM pg_replication_slots WHERE slot_name=? AND plugin=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, slotName);
             preparedStatement.setString(2, DECODE_PLUGIN);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return resultSet.next();
+                if (!resultSet.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(new ReplicationSlotInfo(resultSet.getString(1), resultSet.getString(2)));
             }
         }
     }
@@ -105,13 +116,12 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
     @Override
     public void destroy(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            dropSlotIfExist(connection, slotNameSuffix);
+            dropSlotIfExist(connection, getUniqueSlotName(connection, slotNameSuffix));
         }
     }
     
-    private void dropSlotIfExist(final Connection connection, final String slotNameSuffix) throws SQLException {
-        String slotName = getUniqueSlotName(connection, slotNameSuffix);
-        if (!isSlotExist(connection, slotName)) {
+    private void dropSlotIfExist(final Connection connection, final String slotName) throws SQLException {
+        if (!getSlotInfo(connection, slotName).isPresent()) {
             log.info("dropSlotIfExist, slot not exist, ignore, slotName={}", slotName);
             return;
         }

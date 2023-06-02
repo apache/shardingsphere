@@ -17,113 +17,65 @@
 
 package org.apache.shardingsphere.infra.database.metadata.dialect;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+
+import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class H2DataSourceMetaDataTest {
+class H2DataSourceMetaDataTest extends AbstractDataSourceMetaDataTest {
     
-    @Test
-    void assertNewConstructorWithMem() {
-        H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        assertThat(actual.getHostname(), is(""));
-        assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getCatalog(), is("ds_0"));
-        assertNull(actual.getSchema());
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
+    void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema) {
+        assertDataSourceMetaData(url, hostname, port, catalog, schema, new Properties());
     }
     
-    @Test
-    void assertNewConstructorWithSymbol() {
-        H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        assertThat(actual.getHostname(), is(""));
-        assertThat(actual.getPort(), is(-1));
-        assertNull(actual.getSchema());
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(IsInSameDatabaseInstanceTestCaseArgumentsProvider.class)
+    void assertIsInSameDatabaseInstance(final String name, final String url1, final String url2, final boolean isSame) {
+        H2DataSourceMetaData actual1 = new H2DataSourceMetaData(url1);
+        H2DataSourceMetaData actual2 = new H2DataSourceMetaData(url2);
+        assertThat(actual1.isInSameDatabaseInstance(actual2), is(isSame));
     }
     
-    @Test
-    void assertNewConstructorWithTcp() {
-        H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1");
-        assertThat(actual.getHostname(), is("localhost"));
-        assertThat(actual.getPort(), is(8082));
-        assertThat(actual.getCatalog(), is("test2"));
-        assertNull(actual.getSchema());
+    @Override
+    protected H2DataSourceMetaData createDataSourceMetaData(final String url) {
+        return new H2DataSourceMetaData(url);
     }
     
-    @Test
-    void assertNewConstructorWithSsl() {
-        H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:ssl:180.76.76.76/home/test");
-        assertThat(actual.getHostname(), is("180.76.76.76"));
-        assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getCatalog(), is("test"));
-        assertNull(actual.getSchema());
+    private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("mem", "jdbc:h2:mem:foo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "", -1, "foo_ds", null),
+                    Arguments.of("symbol", "jdbc:h2:~:foo-ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "", -1, "foo-ds", null),
+                    Arguments.of("tcp", "jdbc:h2:tcp://localhost:8082/~/home/foo_ds;DB_CLOSE_DELAY=-1", "localhost", 8082, "foo_ds", null),
+                    Arguments.of("ssl", "jdbc:h2:ssl:127.0.0.1/home/foo_ds", "127.0.0.1", -1, "foo_ds", null),
+                    Arguments.of("file", "jdbc:h2:file:/data/foo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", "", -1, "foo_ds", null));
+        }
     }
     
-    @Test
-    void assertNewConstructorWithFile() {
-        H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:file:/data/sample;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
-        assertThat(actual.getHostname(), is(""));
-        assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getCatalog(), is("sample"));
-        assertNull(actual.getSchema());
-    }
-    
-    @Test
-    void assertIsInSameDatabaseInstanceWithMem() {
-        H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        assertTrue(actual1.isInSameDatabaseInstance(actual2));
-    }
-    
-    @Test
-    void assertIsInSameDatabaseInstanceWithSymbol() {
-        H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:~:ds-1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        assertTrue(actual1.isInSameDatabaseInstance(actual2));
-    }
-    
-    @Test
-    void assertIsInSameDatabaseInstance() {
-        H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:~:ds-1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        assertTrue(actual1.isInSameDatabaseInstance(actual2));
-    }
-    
-    @Test
-    void assertIsInSameDatabaseInstanceWithTcp() {
-        H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1");
-        H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:tcp://localhost:8082/~/test3/test4;DB_CLOSE_DELAY=-1");
-        assertTrue(actual1.isInSameDatabaseInstance(actual2));
-    }
-    
-    @Test
-    void assertFalseIsInSameDatabaseInstanceWithTcp() {
-        H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1");
-        H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:tcp://192.168.64.76:8082/~/test3/test4;DB_CLOSE_DELAY=-1");
-        assertFalse(actual1.isInSameDatabaseInstance(actual2));
-    }
-    
-    @Test
-    void assertIsInSameDatabaseInstanceWithSsl() {
-        H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:ssl:180.76.76.76/home/test-one");
-        H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:ssl:180.76.76.76/home/test-two");
-        assertTrue(actual1.isInSameDatabaseInstance(actual2));
-    }
-    
-    @Test
-    void assertFalseIsInSameDatabaseInstanceWithSsl() {
-        H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:ssl:180.76.76.76/home/test-one");
-        H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:ssl:181.76.76.76/home/test-two");
-        assertFalse(actual1.isInSameDatabaseInstance(actual2));
-    }
-    
-    @Test
-    void assertIsInSameDatabaseInstanceWithFile() {
-        H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:file:/data/sample-one;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
-        H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:file:/data/sample-two;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
-        assertTrue(actual1.isInSameDatabaseInstance(actual2));
+    private static class IsInSameDatabaseInstanceTestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("mem", "jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", true),
+                    Arguments.of("symbol", "jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "jdbc:h2:~:ds-1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", true),
+                    Arguments.of("memAndSymbol", "jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "jdbc:h2:~:ds-1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", true),
+                    Arguments.of("tcp", "jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1", "jdbc:h2:tcp://localhost:8082/~/test3/test4;DB_CLOSE_DELAY=-1", true),
+                    Arguments.of("tcpNotSame", "jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1", "jdbc:h2:tcp://192.168.64.76:8082/~/test3/test4;DB_CLOSE_DELAY=-1", false),
+                    Arguments.of("ssl", "jdbc:h2:ssl:127.0.0.1/home/test-one", "jdbc:h2:ssl:127.0.0.1/home/test-two", true),
+                    Arguments.of("sslNotSame", "jdbc:h2:ssl:127.0.0.1/home/test-one", "jdbc:h2:ssl:127.0.0.2/home/test-two", false),
+                    Arguments.of("file", "jdbc:h2:file:/data/ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", "jdbc:h2:file:/data/ds-1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", true));
+        }
     }
 }

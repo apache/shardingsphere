@@ -112,7 +112,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         when(result.getConnectionContext()).thenReturn(new ConnectionContext());
         when(result.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         result.getServerPreparedStatementRegistry().addPreparedStatement(STATEMENT_ID,
-                new PostgreSQLServerPreparedStatement(SQL, sqlStatementContext, Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4)));
+                new PostgreSQLServerPreparedStatement(SQL, sqlStatementContext, Collections.singletonList(PostgreSQLColumnType.INT4)));
         when(result.getConnectionId()).thenReturn(CONNECTION_ID);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
@@ -133,7 +133,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         for (int i = 0; i < BATCH_SIZE; i++) {
             PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);
             when(bindPacket.getStatementId()).thenReturn(STATEMENT_ID);
-            when(bindPacket.readParameters(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4))).thenReturn(Collections.singletonList(i));
+            when(bindPacket.readParameters(Collections.singletonList(PostgreSQLColumnType.INT4))).thenReturn(Collections.singletonList(i));
             PostgreSQLComDescribePacket describePacket = mock(PostgreSQLComDescribePacket.class);
             PostgreSQLComExecutePacket executePacket = mock(PostgreSQLComExecutePacket.class);
             result.add(bindPacket);

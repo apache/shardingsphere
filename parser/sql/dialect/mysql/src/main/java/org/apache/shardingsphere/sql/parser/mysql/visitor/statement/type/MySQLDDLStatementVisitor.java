@@ -252,6 +252,9 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
                 }
             }
         }
+        if (null != ctx.createLikeClause()) {
+            result.setLikeTable((SimpleTableSegment) visit(ctx.createLikeClause()));
+        }
         return result;
     }
     
