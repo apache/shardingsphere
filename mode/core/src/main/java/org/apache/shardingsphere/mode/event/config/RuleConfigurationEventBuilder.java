@@ -30,8 +30,9 @@ public interface RuleConfigurationEventBuilder {
     /**
      * Build rule changed event.
      *
+     * @param databaseName database name
      * @param event data changed event
      * @return rule changed event
      */
-    Optional<GovernanceEvent> build(DataChangedEvent event);
+    Optional<GovernanceEvent> build(String databaseName, DataChangedEvent event);
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.yaml.converter;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,7 +51,7 @@ public final class ReadwriteSplittingNodeConverter {
     }
     
     /**
-     *  Is readwrite-splitting path.
+     * Is readwrite-splitting path.
      *
      * @param rulePath rule path
      * @return true or false
@@ -59,5 +60,29 @@ public final class ReadwriteSplittingNodeConverter {
         Pattern pattern = Pattern.compile("/([\\w\\-]+)/([\\w\\-]+)/rules/" + ROOT_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
+    }
+    
+    /**
+     * Get group name.
+     *
+     * @param rulePath rule path
+     * @return group name
+     */
+    public static Optional<String> getGroupName(final String rulePath) {
+        Pattern pattern = Pattern.compile("/([\\w\\-]+)/([\\w\\-]+)/rules/" + ROOT_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     *  Get group name.
+     *
+     * @param rulePath rule path
+     * @return group name
+     */
+    public static Optional<String> getLoadBalanceName(final String rulePath) {
+        Pattern pattern = Pattern.compile("/([\\w\\-]+)/([\\w\\-]+)/rules/" + ROOT_NODE + "/" + LOAD_BALANCER_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
 }

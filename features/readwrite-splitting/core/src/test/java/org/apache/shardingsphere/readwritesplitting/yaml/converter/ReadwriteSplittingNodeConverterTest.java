@@ -19,6 +19,8 @@ package org.apache.shardingsphere.readwritesplitting.yaml.converter;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,5 +40,19 @@ class ReadwriteSplittingNodeConverterTest {
     @Test
     void assertGetRuleTagNameByRulePath() {
         assertTrue(ReadwriteSplittingNodeConverter.isReadwriteSplittingPath("/metadata/foo_db/rules/readwrite_splitting/group_0"));
+    }
+    
+    @Test
+    void assertGetGroupNameByRulePath() {
+        Optional<String> actual = ReadwriteSplittingNodeConverter.getGroupName("/metadata/foo_db/rules/readwrite_splitting/group_0/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("group_0"));
+    }
+    
+    @Test
+    void assertGetLoadBalanceNameByRulePath() {
+        Optional<String> actual = ReadwriteSplittingNodeConverter.getLoadBalanceName("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("random"));
     }
 }
