@@ -428,13 +428,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
      *
      * @param distSQL dist SQL
      * @return result
-     * @throws InterruptedException interrupted exception
      */
     // TODO use DAO to query via DistSQL
-    public List<Map<String, Object>> waitIncrementTaskFinished(final String distSQL) throws InterruptedException {
-        if (null != increaseTaskThread) {
-            TimeUnit.SECONDS.timedJoin(increaseTaskThread, 30);
-        }
+    public List<Map<String, Object>> waitIncrementTaskFinished(final String distSQL) {
         for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> listJobStatus = queryForListWithLog(distSQL);
             log.info("show status result: {}", listJobStatus);
