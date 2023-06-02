@@ -23,10 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -36,30 +34,19 @@ import static org.mockito.Mockito.mock;
 class JDBCContextTest {
     
     @Test
-    void assertNullCachedDbMetadataWithEmptyDatasource() throws Exception {
-        JDBCContext actual = new JDBCContext(new HashMap<>());
-        assertNull(actual.getCachedDatabaseMetaData());
+    void assertGetCachedDatabaseMetaDataForNullValue() throws Exception {
+        assertNull(new JDBCContext(Collections.emptyMap()).getCachedDatabaseMetaData());
     }
     
     @Test
-    void assertNotNullCashedDbMetadataWith() throws SQLException {
-        Map<String, DataSource> dataSourceMap = getStringDataSourceMap();
-        JDBCContext jdbcContext = new JDBCContext(dataSourceMap);
-        assertNotNull(jdbcContext.getCachedDatabaseMetaData());
+    void assertGetCachedDatabaseMetaDataForSingleValue() throws SQLException {
+        assertNotNull(new JDBCContext(Collections.singletonMap("foo_db", new CircuitBreakerDataSource())).getCachedDatabaseMetaData());
     }
     
     @Test
-    void assetNullMetadataAfterRefreshingExisting() throws SQLException {
-        Map<String, DataSource> stringDataSourceMap = getStringDataSourceMap();
-        JDBCContext jdbcContext = new JDBCContext(stringDataSourceMap);
-        DataSourceChangedEvent event = mock();
-        jdbcContext.refreshCachedDatabaseMetaData(event);
+    void assertGetCachedDatabaseMetaDataAfterRefreshingExisting() throws SQLException {
+        JDBCContext jdbcContext = new JDBCContext(Collections.singletonMap("foo_db", new CircuitBreakerDataSource()));
+        jdbcContext.refreshCachedDatabaseMetaData(mock(DataSourceChangedEvent.class));
         assertNull(jdbcContext.getCachedDatabaseMetaData());
-    }
-    
-    private static Map<String, DataSource> getStringDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>();
-        result.put("test_db", new CircuitBreakerDataSource());
-        return result;
     }
 }

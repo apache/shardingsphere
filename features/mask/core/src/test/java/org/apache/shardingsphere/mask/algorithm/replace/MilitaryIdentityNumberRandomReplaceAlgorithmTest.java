@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mask.algorithm.replace;
 
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
-import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,8 +49,8 @@ class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
     }
     
     @Test
-    void testMaskWithInvalidProps() {
-        MaskAlgorithm algorithm = new MilitaryIdentityNumberRandomReplaceAlgorithm();
+    void assertMaskWithInvalidProps() {
+        MilitaryIdentityNumberRandomReplaceAlgorithm algorithm = new MilitaryIdentityNumberRandomReplaceAlgorithm();
         assertThrows(MaskAlgorithmInitializationException.class, () -> algorithm.init(new Properties()));
     }
 }

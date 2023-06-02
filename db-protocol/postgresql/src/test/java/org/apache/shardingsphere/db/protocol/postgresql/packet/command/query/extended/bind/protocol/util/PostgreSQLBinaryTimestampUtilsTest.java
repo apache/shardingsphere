@@ -30,12 +30,6 @@ class PostgreSQLBinaryTimestampUtilsTest {
     @Test
     void assertToPostgreSQLTimeWithoutTimeZone() {
         long expected = 688123357272000L + TimeZone.getDefault().getRawOffset() * 1000L;
-        assertThat(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime(new Timestamp(1634808157272L), false), is(expected));
-    }
-    
-    @Test
-    void assertToPostgreSQLTimeWithTimeZone() {
-        assertThat(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime(new Timestamp(1634808157272L), true), is(688123357272000L));
-        assertThat(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime(new Timestamp(-15165977600000L), true), is(-16113440000000000L));
+        assertThat(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime(new Timestamp(1634808157272L)), is(expected));
     }
 }
