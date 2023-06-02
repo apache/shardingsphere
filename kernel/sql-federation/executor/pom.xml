@@ -30,7 +30,6 @@
     
     <modules>
         <module>advanced</module>
-        <module>original</module>
         <module>core</module>
     </modules>
 </project>
