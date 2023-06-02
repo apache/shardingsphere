@@ -140,7 +140,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     }
     
     private List<Record> filterDataRecords(final List<Record> records) {
-        return records.stream().filter(DataRecord.class::isInstance).map(each -> (DataRecord) each).collect(Collectors.toList());
+        return records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
     }
     
     // TODO openGauss CSN should be incremented for every transaction. Currently, CSN might be duplicated in transactions.
