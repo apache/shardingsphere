@@ -63,7 +63,11 @@ public final class ComputeNodeInstance {
      * @param status status
      */
     public void switchState(final String status) {
-        state.switchState(InstanceState.CIRCUIT_BREAK, InstanceState.CIRCUIT_BREAK.name().equals(status));
+        if (InstanceState.CIRCUIT_BREAK.name().equals(status)) {
+            state.switchToValidState(InstanceState.CIRCUIT_BREAK);
+        } else {
+            state.switchToInvalidState(InstanceState.CIRCUIT_BREAK);
+        }
     }
     
     /**
