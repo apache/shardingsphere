@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.node.metadata.config.sharding;
+package org.apache.shardingsphere.sharding.metadata.converter;
 
 /**
  * Sharding node converter.
@@ -141,38 +141,38 @@ public final class ShardingNodeConverter {
     }
     
     /**
-     * Get sharding algorithm name path.
-     *
+     * Get sharding algorithm path.
+     * 
      * @param shardingAlgorithmName sharding algorithm name
-     * @return sharding algorithm name path
+     * @return sharding algorithm path
      */
-    public String getShardingAlgorithmsPath(final String shardingAlgorithmName) {
+    public String getShardingAlgorithmPath(final String shardingAlgorithmName) {
         return String.join("/", SHARDING_ALGORITHMS, shardingAlgorithmName);
     }
     
     /**
-     * Get key generator name path.
-     *
+     * Get key generator path.
+     * 
      * @param keyGeneratorName key generator name
-     * @return key generator name path
+     * @return key generator path
      */
-    public String getKeyGeneratorsPath(final String keyGeneratorName) {
+    public String getKeyGeneratorPath(final String keyGeneratorName) {
         return String.join("/", KEY_GENERATORS, keyGeneratorName);
     }
     
     /**
-     * Get auditor name path.
-     *
+     * Get auditor path.
+     * 
      * @param auditorName auditor name
-     * @return auditor name path
+     * @return auditor path
      */
-    public String getAuditorsPath(final String auditorName) {
+    public String getAuditorPath(final String auditorName) {
         return String.join("/", AUDITORS, auditorName);
     }
     
     /**
      * Get sharding cache path.
-     *
+     * 
      * @return sharding cache path
      */
     public String getShardingCachePath() {

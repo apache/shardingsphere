@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.constant.MaskOrder;
 import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigurationSwapper;
-import org.apache.shardingsphere.metadata.persist.node.metadata.config.mask.MaskNodeConverter;
+import org.apache.shardingsphere.mask.metadata.converter.MaskNodeConverter;
 
 import java.util.Collection;
 import java.util.Collections;
