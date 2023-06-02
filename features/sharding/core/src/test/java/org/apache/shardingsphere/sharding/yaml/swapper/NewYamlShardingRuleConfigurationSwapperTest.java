@@ -50,7 +50,7 @@ class NewYamlShardingRuleConfigurationSwapperTest {
     void assertSwapFullConfigToDataNodesEmpty() {
         ShardingRuleConfiguration config = createMaximumShardingRule();
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(14));
+        assertThat(result.size(), is(18));
         Iterator<YamlDataNode> iterator = result.iterator();
         assertThat(iterator.next().getKey(), is("tables/table_LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("tables/table_SUB_LOGIC_TABLE"));
