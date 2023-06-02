@@ -94,12 +94,6 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
         for (Entry<String, AlgorithmConfiguration> each : data.getAuditors().entrySet()) {
             result.add(new YamlDataNode(ShardingNodeConverter.getAuditorPath(each.getKey()), YamlEngine.marshal(each.getValue())));
         }
-        for (Entry<String, AlgorithmConfiguration> each : data.getKeyGenerators().entrySet()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getKeyGeneratorPath(each.getKey()), YamlEngine.marshal(each.getValue())));
-        }
-        for (Entry<String, AlgorithmConfiguration> each : data.getAuditors().entrySet()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getAuditorPath(each.getKey()), YamlEngine.marshal(each.getValue())));
-        }
     }
     
     @Override
