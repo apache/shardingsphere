@@ -49,7 +49,7 @@ class JDBCContextTest {
     }
     
     @Test
-    void assetNullMetadataAfterRefreshingExisting() throws SQLException {
+    void assertNullMetadataAfterRefreshingExisting() throws SQLException {
         Map<String, DataSource> stringDataSourceMap = getStringDataSourceMap();
         JDBCContext jdbcContext = new JDBCContext(stringDataSourceMap);
         DataSourceChangedEvent event = mock();
