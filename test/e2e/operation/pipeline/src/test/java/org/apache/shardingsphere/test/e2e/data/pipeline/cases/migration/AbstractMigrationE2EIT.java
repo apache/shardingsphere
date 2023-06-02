@@ -98,7 +98,8 @@ public abstract class AbstractMigrationE2EIT {
     }
     
     protected void createTargetOrderTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
-        containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderTableRule(), 2);
+        containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderTableRule(), 0);
+        Awaitility.await().atMost(4L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
     }
     
     protected void createTargetOrderTableEncryptRule(final PipelineContainerComposer containerComposer) throws SQLException {
@@ -106,7 +107,9 @@ public abstract class AbstractMigrationE2EIT {
     }
     
     protected void createTargetOrderItemTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
-        containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderItemTableRule(), 2);
+        containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderItemTableRule(), 0);
+        Awaitility.await().atMost(4L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS)
+                .until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order_item").isEmpty());
     }
     
     protected void startMigration(final PipelineContainerComposer containerComposer, final String sourceTableName, final String targetTableName) throws SQLException {
