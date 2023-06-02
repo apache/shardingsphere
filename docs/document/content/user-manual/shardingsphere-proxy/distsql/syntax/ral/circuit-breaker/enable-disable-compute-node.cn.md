@@ -5,7 +5,7 @@ weight = 4
 
 ## 描述
 
-`ENABLE/DISABLE COMPUTE NODE` 语法用于启用/禁用指定 proy 实例。
+`ENABLE/DISABLE COMPUTE NODE` 语法用于启用/禁用指定 proxy 实例。
 
 ### 语法定义
 
