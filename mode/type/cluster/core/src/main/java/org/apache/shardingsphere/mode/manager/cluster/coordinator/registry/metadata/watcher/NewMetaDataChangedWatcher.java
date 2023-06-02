@@ -57,7 +57,8 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
     // TODO Change to map to avoid loops.
     private Optional<GovernanceEvent> createRuleEvent(final DataChangedEvent event) {
         for (RuleConfigurationEventBuilder each : EVENT_BUILDERS) {
-            Optional<GovernanceEvent> result = each.build(event);
+            // TODO Get real databaseName.
+            Optional<GovernanceEvent> result = each.build("", event);
             if (!result.isPresent()) {
                 continue;
             }
