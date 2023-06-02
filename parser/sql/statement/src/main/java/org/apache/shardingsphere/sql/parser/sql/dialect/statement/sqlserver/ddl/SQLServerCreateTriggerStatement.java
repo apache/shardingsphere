@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTriggerStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer create trigger statement.
  */
-public final class SQLServerCreateTriggerStatement extends CreateTriggerStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerCreateTriggerStatement extends CreateTriggerStatement implements SQLServerStatement {
 }

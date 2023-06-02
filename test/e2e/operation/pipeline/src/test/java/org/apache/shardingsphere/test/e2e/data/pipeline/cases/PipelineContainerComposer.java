@@ -205,7 +205,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
             return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
         }
         if (DatabaseTypeUtils.isPostgreSQL(databaseType) || DatabaseTypeUtils.isOpenGauss(databaseType)) {
-            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified"), new Property("bitToString", Boolean.TRUE.toString())));
+            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified"),
+                    new Property("bitToString", Boolean.TRUE.toString()), new Property("TimeZone", "UTC")));
         }
         return jdbcUrl;
     }
@@ -383,8 +384,10 @@ public final class PipelineContainerComposer implements AutoCloseable {
             try (Connection connection = proxyDataSource.getConnection()) {
                 ResultSet resultSet = connection.createStatement().executeQuery(sql);
                 return transformResultSetToList(resultSet);
-            } catch (final SQLException ex) {
-                log.error("Data access error: ", ex);
+                // CHECKSTYLE:OFF
+            } catch (final SQLException | RuntimeException ex) {
+                // CHECKSTYLE:ON
+                log.error("Data access error, sql: {}.", sql, ex);
             }
             Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
             retryNumber++;

@@ -15,33 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.generator;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 
-import java.util.Comparator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Data record comparator generator.
+ * CDC importer manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataRecordComparatorGenerator {
+public final class CDCImporterManager {
+    
+    private static final Map<String, CDCImporter> IMPORTER_MAP = new ConcurrentHashMap<>();
     
     /**
-     * Generator comparator.
+     * Put importer.
      *
-     * @param databaseType database type
-     * @return data record comparator
+     * @param importer importer
      */
-    public static Comparator<DataRecord> generatorIncrementalComparator(final DatabaseType databaseType) {
-        if (databaseType instanceof OpenGaussDatabaseType) {
-            return Comparator.comparing(DataRecord::getCsn, Comparator.nullsFirst(Comparator.naturalOrder()));
-        }
-        // TODO MySQL and PostgreSQL not support now
-        return null;
+    public static void putImporter(final CDCImporter importer) {
+        IMPORTER_MAP.put(importer.getImporterId(), importer);
+    }
+    
+    /**
+     * Get importer.
+     *
+     * @param id importer id
+     * @return importer
+     */
+    public static CDCImporter getImporter(final String id) {
+        return IMPORTER_MAP.get(id);
+    }
+    
+    /**
+     * Remove importer.
+     *
+     * @param id importer id
+     */
+    public static void removeImporter(final String id) {
+        IMPORTER_MAP.remove(id);
     }
 }

@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.importer.connector;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+
+import java.util.List;
 
 /**
- * Default importer connector.
+ * CSN records.
  */
-
 @RequiredArgsConstructor
-public final class DataSourceImporterConnector implements ImporterConnector {
+@Getter
+public final class CSNRecords {
     
-    private final PipelineDataSourceManager pipelineDataSourceManager;
+    private final long csn;
     
-    @Override
-    public Object getConnector() {
-        return pipelineDataSourceManager;
-    }
+    private final CDCChannelProgressPair channelProgressPair;
     
-    @Override
-    public String getType() {
-        return "DataSource";
-    }
+    private final List<Record> records;
 }

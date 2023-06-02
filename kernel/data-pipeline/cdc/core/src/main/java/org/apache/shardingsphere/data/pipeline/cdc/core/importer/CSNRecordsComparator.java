@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
-import java.util.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Comparator;
 
 /**
- * Owner available.
- *
+ * CSN records comparator.
  */
-public interface OwnerAvailable {
+@RequiredArgsConstructor
+@Getter
+public final class CSNRecordsComparator implements Comparator<CSNRecords> {
     
-    /**
-     * Get owner.
-     *
-     * @return owner
-     */
-    Optional<OwnerSegment> getOwner();
-    
-    /**
-     * Set owner.
-     *
-     * @param owner owner
-     */
-    void setOwner(OwnerSegment owner);
+    @Override
+    public int compare(final CSNRecords o1, final CSNRecords o2) {
+        return Long.compare(o1.getCsn(), o2.getCsn());
+    }
 }

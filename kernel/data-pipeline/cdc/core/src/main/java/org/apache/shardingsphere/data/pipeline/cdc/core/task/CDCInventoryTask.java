@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.task;
+package org.apache.shardingsphere.data.pipeline.cdc.core.task;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,19 +26,22 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
+import org.apache.shardingsphere.data.pipeline.core.task.TaskExecuteCallback;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Inventory task.
+ * CDC inventory task.
  */
 @RequiredArgsConstructor
 @ToString(exclude = {"inventoryDumperExecuteEngine", "inventoryImporterExecuteEngine", "dumper", "importer"})
 @Slf4j
-public final class InventoryTask implements PipelineTask {
+public final class CDCInventoryTask implements PipelineTask {
     
     @Getter
     private final String taskId;
@@ -49,6 +52,7 @@ public final class InventoryTask implements PipelineTask {
     
     private final Dumper dumper;
     
+    @Nullable
     private final Importer importer;
     
     private final AtomicReference<IngestPosition> position;
@@ -57,14 +61,18 @@ public final class InventoryTask implements PipelineTask {
     public Collection<CompletableFuture<?>> start() {
         Collection<CompletableFuture<?>> result = new LinkedList<>();
         result.add(inventoryDumperExecuteEngine.submit(dumper, new TaskExecuteCallback(this)));
-        result.add(inventoryImporterExecuteEngine.submit(importer, new TaskExecuteCallback(this)));
+        if (null != importer) {
+            result.add(inventoryImporterExecuteEngine.submit(importer, new TaskExecuteCallback(this)));
+        }
         return result;
     }
     
     @Override
     public void stop() {
         dumper.stop();
-        importer.stop();
+        if (null != importer) {
+            importer.stop();
+        }
     }
     
     @Override

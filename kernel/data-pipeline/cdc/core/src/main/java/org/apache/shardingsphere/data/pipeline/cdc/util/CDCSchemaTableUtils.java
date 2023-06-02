@@ -50,11 +50,11 @@ public final class CDCSchemaTableUtils {
      * @return map key is schema, value is table names
      */
     public static Map<String, Set<String>> parseTableExpressionWithSchema(final ShardingSphereDatabase database, final Collection<SchemaTable> schemaTables) {
-        Map<String, Set<String>> result = new HashMap<>();
         Collection<String> systemSchemas = database.getProtocolType().getSystemSchemas();
         if (schemaTables.stream().anyMatch(each -> "*".equals(each.getTable()) && ("*".equals(each.getSchema()) || each.getSchema().isEmpty()))) {
             return parseTableExpressionWithAllTables(database, systemSchemas);
         }
+        Map<String, Set<String>> result = new HashMap<>();
         for (SchemaTable each : schemaTables) {
             if ("*".equals(each.getSchema())) {
                 result.putAll(parseTableExpressionWithAllSchema(database, systemSchemas, each));

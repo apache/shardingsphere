@@ -15,27 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.data.pipeline.cdc.core.ack;
 
-import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
-/**
- * Owner available.
- *
- */
-public interface OwnerAvailable {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class CDCAckIdTest {
     
-    /**
-     * Get owner.
-     *
-     * @return owner
-     */
-    Optional<OwnerSegment> getOwner();
-    
-    /**
-     * Set owner.
-     *
-     * @param owner owner
-     */
-    void setOwner(OwnerSegment owner);
+    @Test
+    void assertBuild() {
+        CDCAckId expected = CDCAckId.build("importer1");
+        String text = expected.marshal();
+        CDCAckId actual = CDCAckId.unmarshal(text);
+        assertThat(actual.getImporterId(), is(expected.getImporterId()));
+        assertThat(actual.getRandom(), is(expected.getRandom()));
+    }
 }

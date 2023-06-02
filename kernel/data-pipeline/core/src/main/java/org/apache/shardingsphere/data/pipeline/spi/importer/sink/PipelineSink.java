@@ -15,27 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.data.pipeline.spi.importer.sink;
 
-import java.util.Optional;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
+
+import java.io.Closeable;
+import java.util.List;
 
 /**
- * Owner available.
- *
+ * Pipeline sink.
  */
-public interface OwnerAvailable {
+public interface PipelineSink extends Closeable {
     
     /**
-     * Get owner.
+     * Identifier matched or not.
      *
-     * @return owner
+     * @param identifier sink identifier
+     * @return true if matched, otherwise false
      */
-    Optional<OwnerSegment> getOwner();
+    boolean identifierMatched(Object identifier);
     
     /**
-     * Set owner.
+     * Write data.
      *
-     * @param owner owner
+     * @param ackId ack id
+     * @param records records
+     * @return job progress updated parameter
      */
-    void setOwner(OwnerSegment owner);
+    PipelineJobProgressUpdatedParameter write(String ackId, List<Record> records);
 }

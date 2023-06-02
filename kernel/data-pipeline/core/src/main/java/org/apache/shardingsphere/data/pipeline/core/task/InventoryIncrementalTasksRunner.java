@@ -20,15 +20,16 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -43,7 +44,7 @@ import java.util.concurrent.CompletableFuture;
 public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     
     @Getter
-    private final PipelineJobItemContext jobItemContext;
+    private final InventoryIncrementalJobItemContext jobItemContext;
     
     private final Collection<PipelineTask> inventoryTasks;
     
@@ -51,10 +52,10 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     
     private final PipelineJobAPI jobAPI;
     
-    public InventoryIncrementalTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<PipelineTask> inventoryTasks, final Collection<PipelineTask> incrementalTasks) {
+    public InventoryIncrementalTasksRunner(final InventoryIncrementalJobItemContext jobItemContext) {
         this.jobItemContext = jobItemContext;
-        this.inventoryTasks = inventoryTasks;
-        this.incrementalTasks = incrementalTasks;
+        inventoryTasks = jobItemContext.getInventoryTasks();
+        incrementalTasks = jobItemContext.getIncrementalTasks();
         jobAPI = TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName());
     }
     
@@ -63,11 +64,11 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         jobItemContext.setStopping(true);
         for (PipelineTask each : inventoryTasks) {
             each.stop();
-            each.close();
+            CloseUtils.closeQuietly(each);
         }
         for (PipelineTask each : incrementalTasks) {
             each.stop();
-            each.close();
+            CloseUtils.closeQuietly(each);
         }
     }
     

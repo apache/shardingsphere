@@ -247,6 +247,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * DDL statement visitor for openGauss.
@@ -328,7 +329,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
         CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
         if (null != ctx.alterTableActions()) {
-            result.getValue().addAll(getAlterDefinitionSegments(ctx));
+            result.getValue().addAll(ctx.alterTableActions().alterTableAction().stream().flatMap(each -> getAlterDefinitionSegments(each).stream()).collect(Collectors.toList()));
         }
         if (null != ctx.renameTableSpecification()) {
             result.getValue().add((RenameTableDefinitionSegment) visit(ctx.renameTableSpecification()));
@@ -337,30 +338,28 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<AlterDefinitionSegment> getAlterDefinitionSegments(final AlterDefinitionClauseContext ctx) {
+    private Collection<AlterDefinitionSegment> getAlterDefinitionSegments(final AlterTableActionContext ctx) {
         Collection<AlterDefinitionSegment> result = new LinkedList<>();
-        for (AlterTableActionContext each : ctx.alterTableActions().alterTableAction()) {
-            if (null != each.addColumnSpecification()) {
-                result.addAll(((CollectionValue<AddColumnDefinitionSegment>) visit(each.addColumnSpecification())).getValue());
-            }
-            if (null != each.addConstraintSpecification() && null != each.addConstraintSpecification().tableConstraint()) {
-                result.add((AddConstraintDefinitionSegment) visit(each.addConstraintSpecification()));
-            }
-            if (null != each.validateConstraintSpecification()) {
-                result.add((ValidateConstraintDefinitionSegment) visit(each.validateConstraintSpecification()));
-            }
-            if (null != each.modifyColumnSpecification()) {
-                result.add((ModifyColumnDefinitionSegment) visit(each.modifyColumnSpecification()));
-            }
-            if (null != each.modifyConstraintSpecification()) {
-                result.add((ModifyConstraintDefinitionSegment) visit(each.modifyConstraintSpecification()));
-            }
-            if (null != each.dropColumnSpecification()) {
-                result.add((DropColumnDefinitionSegment) visit(each.dropColumnSpecification()));
-            }
-            if (null != each.dropConstraintSpecification()) {
-                result.add((DropConstraintDefinitionSegment) visit(each.dropConstraintSpecification()));
-            }
+        if (null != ctx.addColumnSpecification()) {
+            result.addAll(((CollectionValue<AddColumnDefinitionSegment>) visit(ctx.addColumnSpecification())).getValue());
+        }
+        if (null != ctx.addConstraintSpecification() && null != ctx.addConstraintSpecification().tableConstraint()) {
+            result.add((AddConstraintDefinitionSegment) visit(ctx.addConstraintSpecification()));
+        }
+        if (null != ctx.validateConstraintSpecification()) {
+            result.add((ValidateConstraintDefinitionSegment) visit(ctx.validateConstraintSpecification()));
+        }
+        if (null != ctx.modifyColumnSpecification()) {
+            result.add((ModifyColumnDefinitionSegment) visit(ctx.modifyColumnSpecification()));
+        }
+        if (null != ctx.modifyConstraintSpecification()) {
+            result.add((ModifyConstraintDefinitionSegment) visit(ctx.modifyConstraintSpecification()));
+        }
+        if (null != ctx.dropColumnSpecification()) {
+            result.add((DropColumnDefinitionSegment) visit(ctx.dropColumnSpecification()));
+        }
+        if (null != ctx.dropConstraintSpecification()) {
+            result.add((DropConstraintDefinitionSegment) visit(ctx.dropConstraintSpecification()));
         }
         return result;
     }
