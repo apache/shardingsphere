@@ -44,6 +44,8 @@ public final class DataSourceStateManager {
     
     private final Map<String, DataSourceState> dataSourceStates = new ConcurrentHashMap<>();
     
+    private final Map<String, DataSource> dataSourceMap = new ConcurrentHashMap<>();
+    
     private volatile boolean forceStart;
     
     private volatile boolean initialized;
@@ -55,6 +57,10 @@ public final class DataSourceStateManager {
      */
     public static DataSourceStateManager getInstance() {
         return INSTANCE;
+    }
+    
+    public static Map<String, DataSource> getDataSources() {
+        return dataSourceMap;
     }
     
     /**
@@ -83,6 +89,7 @@ public final class DataSourceStateManager {
     private void checkState(final String databaseName, final String actualDataSourceName, final DataSource dataSource) {
         try (Connection ignored = dataSource.getConnection()) {
             dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.ENABLED);
+            dataSourceMap.put(databaseName, dataSource);
         } catch (final SQLException ex) {
             ShardingSpherePreconditions.checkState(forceStart, () -> new UnavailableDataSourceException(ex, actualDataSourceName));
             log.error("Data source unavailable, ignored with the -f parameter.", ex);
