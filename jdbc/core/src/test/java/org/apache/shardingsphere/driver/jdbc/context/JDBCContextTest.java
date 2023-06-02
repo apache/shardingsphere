@@ -25,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -36,8 +35,7 @@ class JDBCContextTest {
     
     @Test
     void assertNullCachedDbMetadataWithEmptyDatasource() throws Exception {
-        JDBCContext actual = new JDBCContext(new HashMap<>());
-        assertNull(actual.getCachedDatabaseMetaData());
+        assertNull(new JDBCContext(Collections.emptyMap()).getCachedDatabaseMetaData());
     }
     
     @Test
