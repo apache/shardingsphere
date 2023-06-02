@@ -43,6 +43,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * ShardingSphere database.
@@ -189,13 +191,24 @@ public final class ShardingSphereDatabase {
      */
     public synchronized void reloadRules(final Class<? extends ShardingSphereRule> ruleClass) {
         Collection<? extends ShardingSphereRule> toBeReloadedRules = ruleMetaData.findRules(ruleClass);
-        RuleConfiguration ruleConfig = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
-        Collection<ShardingSphereRule> databaseRules = new LinkedList<>(ruleMetaData.getRules());
-        toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
+        if (toBeReloadedRules != null && toBeReloadedRules.size() != 0) {
+            RuleConfiguration ruleConfig = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
+            CopyOnWriteArrayList<ShardingSphereRule> databaseRules = new CopyOnWriteArrayList<>(ruleMetaData.getRules());
             databaseRules.removeAll(toBeReloadedRules);
-            databaseRules.add(((MutableDataNodeRule) optional).reloadRule(ruleConfig, name, resourceMetaData.getDataSources(), databaseRules));
-        });
-        ruleMetaData.getRules().clear();
-        ruleMetaData.getRules().addAll(databaseRules);
+            ShardingSphereRule newShardingSphereRule = ((MutableDataNodeRule) toBeReloadedRules.stream().findFirst().get())
+                    .reloadRule(ruleConfig, name, resourceMetaData.getDataSources(), databaseRules);
+            // Only replace one, and the rest will be cleared later (normal logic will only have one, in order to be consistent with the previous logic)
+            // replaceAll atomic operation, do logical assembly in advance, and finally directly replace the underlying array through setArray
+            AtomicBoolean replaced = new AtomicBoolean(false);
+            ((CopyOnWriteArrayList) ruleMetaData.getRules()).replaceAll(shardingSphereRule -> {
+                if (!replaced.get() && toBeReloadedRules.contains(shardingSphereRule)) {
+                    replaced.set(true);
+                    return newShardingSphereRule;
+                }
+                return shardingSphereRule;
+            });
+            // Clearing toBeReloaded Rules is the case for more than one
+            ruleMetaData.getRules().removeAll(toBeReloadedRules);
+        }
     }
 }
