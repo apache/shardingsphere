@@ -28,6 +28,8 @@ public final class ReadwriteSplittingNodeConverter {
     
     private static final String ROOT_NODE = "readwrite_splitting";
     
+    private static final String DATA_SOURCES_NODE = "data_sources";
+    
     private static final String LOAD_BALANCER_NODE = "load_balancers";
     
     /**
@@ -37,7 +39,7 @@ public final class ReadwriteSplittingNodeConverter {
      * @return group name path
      */
     public static String getGroupNamePath(final String groupName) {
-        return String.join("/", "", groupName);
+        return String.join("/", "", DATA_SOURCES_NODE, groupName);
     }
     
     /**
@@ -69,7 +71,7 @@ public final class ReadwriteSplittingNodeConverter {
      * @return group name
      */
     public static Optional<String> getGroupName(final String rulePath) {
-        Pattern pattern = Pattern.compile("/([\\w\\-]+)/([\\w\\-]+)/rules/" + ROOT_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("/([\\w\\-]+)/([\\w\\-]+)/rules/" + ROOT_NODE + "/" + DATA_SOURCES_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }

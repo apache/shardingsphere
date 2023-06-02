@@ -29,7 +29,7 @@ class ReadwriteSplittingNodeConverterTest {
     
     @Test
     void assertGetGroupNamePath() {
-        assertThat(ReadwriteSplittingNodeConverter.getGroupNamePath("group_0"), is("/group_0"));
+        assertThat(ReadwriteSplittingNodeConverter.getGroupNamePath("group_0"), is("/data_sources/group_0"));
     }
     
     @Test
@@ -44,7 +44,7 @@ class ReadwriteSplittingNodeConverterTest {
     
     @Test
     void assertGetGroupNameByRulePath() {
-        Optional<String> actual = ReadwriteSplittingNodeConverter.getGroupName("/metadata/foo_db/rules/readwrite_splitting/group_0/active_version");
+        Optional<String> actual = ReadwriteSplittingNodeConverter.getGroupName("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("group_0"));
     }

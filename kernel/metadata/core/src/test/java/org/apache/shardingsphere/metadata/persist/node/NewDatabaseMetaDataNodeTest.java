@@ -19,8 +19,11 @@ package org.apache.shardingsphere.metadata.persist.node;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // TODO Rename DatabaseMetaDataNodeTest when metadata structure adjustment completed. #25485
 class NewDatabaseMetaDataNodeTest {
@@ -43,5 +46,12 @@ class NewDatabaseMetaDataNodeTest {
     @Test
     void assertGetDatabaseRuleVersionPath() {
         assertThat(NewDatabaseMetaDataNode.getDatabaseRuleVersionPath("foo_db", "foo_rule", "foo_tables", "1"), is("/metadata/foo_db/rules/foo_rule/foo_tables/versions/1"));
+    }
+    
+    @Test
+    void assertGetDatabaseNameByPath() {
+        Optional<String> actual = NewDatabaseMetaDataNode.getDatabaseNameByPath("/metadata/foo_db/readwrite_splitting");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_db"));
     }
 }

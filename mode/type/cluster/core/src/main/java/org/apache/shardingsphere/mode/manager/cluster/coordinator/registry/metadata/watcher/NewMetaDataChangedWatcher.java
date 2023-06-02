@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.event.config.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.NewGovernanceWatcher;
@@ -56,9 +57,12 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
     
     // TODO Change to map to avoid loops.
     private Optional<GovernanceEvent> createRuleEvent(final DataChangedEvent event) {
+        Optional<String> databaseName = NewDatabaseMetaDataNode.getDatabaseNameByPath(event.getKey());
+        if (!databaseName.isPresent()) {
+            return Optional.empty();
+        }
         for (RuleConfigurationEventBuilder each : EVENT_BUILDERS) {
-            // TODO Get real databaseName.
-            Optional<GovernanceEvent> result = each.build("", event);
+            Optional<GovernanceEvent> result = each.build(databaseName.get(), event);
             if (!result.isPresent()) {
                 continue;
             }

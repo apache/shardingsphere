@@ -21,6 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.metadata.persist.node.metadata.datasource.DataSourceNodeConverter;
 
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * TODO Rename DatabaseMetaDataNode when metadata structure adjustment completed. #25485
  * New database meta data node.
@@ -115,6 +119,18 @@ public final class NewDatabaseMetaDataNode {
      */
     public static String getDatabaseRulePath(final String databaseName, final String ruleName) {
         return String.join("/", getRulesPath(databaseName), ruleName);
+    }
+    
+    /**
+     * Get database name by path.
+     *
+     * @param path config path
+     * @return database name
+     */
+    public static Optional<String> getDatabaseNameByPath(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     private static String getRulesPath(final String databaseName) {
