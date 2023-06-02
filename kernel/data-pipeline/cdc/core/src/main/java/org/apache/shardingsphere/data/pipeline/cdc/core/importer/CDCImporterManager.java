@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * CDC importer manager.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CDCImporterManager {
     
     private static final Map<String, CDCImporter> IMPORTER_MAP = new ConcurrentHashMap<>();
