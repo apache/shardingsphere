@@ -21,11 +21,14 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl.PostgreSQLMD5PasswordAuthenticator;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl.PostgreSQLPasswordAuthenticator;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import java.util.stream.Stream;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,35 +39,23 @@ class PostgreSQLAuthenticatorTypeTest {
     
     private final AuthorityRule rule = mock(AuthorityRule.class);
     
-    @Test
-    void assertDefaultAuthenticatorType() {
-        when(rule.getAuthenticatorType(any())).thenReturn("");
-        Authenticator authenticator = new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
-        assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
-        assertThat(authenticator.getAuthenticationMethod().getMethodName(), is("md5"));
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertAuthenticator(final String name, final String authenticatorType, final String expectedAuthenticatorMethodName) {
+        when(rule.getAuthenticatorType(any())).thenReturn(authenticatorType);
+        Authenticator actual = new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
+        assertThat(actual.getAuthenticationMethod().getMethodName(), is(expectedAuthenticatorMethodName));
     }
     
-    @Test
-    void assertAuthenticatorTypeWithErrorName() {
-        when(rule.getAuthenticatorType(any())).thenReturn("error");
-        Authenticator authenticator = new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
-        assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
-        assertThat(authenticator.getAuthenticationMethod().getMethodName(), is("md5"));
-    }
-    
-    @Test
-    void assertAuthenticatorTypeWithMD5() {
-        when(rule.getAuthenticatorType(any())).thenReturn("MD5");
-        Authenticator authenticator = new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
-        assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
-        assertThat(authenticator.getAuthenticationMethod().getMethodName(), is("md5"));
-    }
-    
-    @Test
-    void assertAuthenticatorTypeWithPassword() {
-        when(rule.getAuthenticatorType(any())).thenReturn("PASSWORD");
-        Authenticator authenticator = new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
-        assertThat(authenticator, instanceOf(PostgreSQLPasswordAuthenticator.class));
-        assertThat(authenticator.getAuthenticationMethod().getMethodName(), is("password"));
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("default", "", "md5"),
+                    Arguments.of("error", "error", "md5"),
+                    Arguments.of("md5", "MD5", "md5"),
+                    Arguments.of("password", "PASSWORD", "password"));
+        }
     }
 }

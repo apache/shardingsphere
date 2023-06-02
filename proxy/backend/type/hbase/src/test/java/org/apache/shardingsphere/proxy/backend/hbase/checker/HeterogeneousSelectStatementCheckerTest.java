@@ -23,7 +23,13 @@ import org.apache.shardingsphere.proxy.backend.hbase.props.HBasePropertyKey;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,178 +47,57 @@ class HeterogeneousSelectStatementCheckerTest {
         HBaseContext.getInstance().setProps(props);
     }
     
-    @Test
-    void assertSelectStatement() {
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getSelectStatement());
-        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(SupportedTestCaseArgumentsProvider.class)
+    void assertExecuteSuccess(final String name, final String sql) {
+        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(HBaseSupportedSQLStatement.parseSQLStatement(sql)).execute());
     }
     
-    @Test
-    void assertSelectStatementWithLargeRowCount() {
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("SELECT /*+ hbase */ * FROM t_order WHERE id = 1 LIMIT 5001");
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Row count must less than 5000."));
-    }
-    
-    @Test
-    void assertSelectStatementWithLimitSegment() {
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("SELECT /*+ hbase */ * FROM t_order WHERE id = 1 LIMIT 5 OFFSET 3");
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Do not supported offset segment."));
-    }
-    
-    @Test
-    void assertSelectStatementWithLockSegment() {
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("SELECT /*+ hbase */ * FROM t_order WHERE id = 1 lock in share mode");
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Do not supported lock segment."));
-    }
-    
-    @Test
-    void assertSelectStatementWithFunction() {
-        String sql = "SELECT /*+ HBase */ sum(score) FROM person";
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(UnsupportedTestCaseArgumentsProvider.class)
+    void assertExecuteFailed(final String name, final String sql, final String expectedErrorMessage) {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Only supported shorthand, column and crc32 expression projections."));
+        assertThat(ex.getMessage(), is(expectedErrorMessage));
     }
     
-    @Test
-    void assertSelectStatementWithJoinStatement() {
-        String sql = "SELECT /*+ HBase */ * FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Only supported simple table segment."));
+    private static class SupportedTestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("pointSelect", HBaseSupportedSQLStatement.getSelectStatement()),
+                    Arguments.of("parameterMarker", "SELECT /*+ HBase */ * FROM t_order WHERE rowKey IN (?, ?, ?)"),
+                    Arguments.of("selectIn", "SELECT /*+ HBase */ * FROM t_order WHERE rowKey IN (1, 2, 3)"),
+                    Arguments.of("between", "SELECT /*+ HBase */ * FROM t_order WHERE rowKey BETWEEN 1 AND 2"),
+                    Arguments.of("useCrc32", "SELECT /*+ HBase */ crc32(concat_ws('#',rowKey)) FROM t_order WHERE rowKey IN (1, 2, 3)"),
+                    Arguments.of("useCrc32", "SELECT /*+ HBase */ crc32(concat_ws('#',rowKey)) FROM t_order WHERE rowKey IN (1, 2, 3)"));
+        }
     }
     
-    @Test
-    void assertSelectStatementWithMultipleInExpression() {
-        String sql = "SELECT /*+ HBase */ * FROM t_order WHERE rowKey IN (?, ?) AND id IN (?, ?)";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Left segment must column segment."));
-    }
-    
-    @Test
-    void assertSelectStatementWithInExpression() {
-        String sql = "SELECT /*+ HBase */ * FROM t_order WHERE rowKey IN (1, 2, 3)";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-    }
-    
-    @Test
-    void assertSelectStatementWithErrorKey() {
-        String sql = "SELECT /*+ HBase */ * FROM t_order WHERE age IN (1, 2, 3)";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("age is not a allowed key."));
-    }
-    
-    @Test
-    void assertExecuteSelectWithNotIn() {
-        String sql = "SELECT /*+ HBase */ * FROM t_order WHERE rowKey NOT IN (1, 2, 3)";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Do not supported `not in`."));
-    }
-    
-    @Test
-    void assertExecuteSelectWithParameterMarker() {
-        String sql = "SELECT /*+ HBase */ * FROM t_order WHERE rowKey IN (?, ?, ?)";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-    }
-    
-    @Test
-    void assertSelectStatementUseCrc32() {
-        String sql = "SELECT /*+ HBase */ crc32(concat_ws('#',rowKey)) FROM t_order WHERE rowKey IN (1, 2, 3)";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-    }
-    
-    @Test
-    void assertExecuteSelectWithErrorInExpression() {
-        String sql = "SELECT /*+ HBase */ * FROM t_order WHERE rowKey IN (SELECT rowKey FROM t_order_item)";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Only supported list expression."));
-    }
-    
-    @Test
-    void assertExecuteSelectWithBetween() {
-        String sql = "SELECT /*+ HBase */ * FROM t_order WHERE rowKey BETWEEN 1 AND 2";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-    }
-    
-    @Test
-    void assertExecuteSelectWithNotBetween() {
-        String sql = "SELECT /*+ HBase */ * FROM t_order WHERE rowKey not BETWEEN 1 AND 2";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Do not supported `not between...and...`"));
-    }
-    
-    @Test
-    void assertExecuteSelectWithBetweenErrorKey() {
-        String sql = "SELECT /*+ HBase */ * FROM t_order WHERE age BETWEEN 1 AND 2";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("age is not a allowed key."));
-    }
-    
-    @Test
-    void assertExecuteSelectWithErrorBetweenExpr() {
-        String sql = "SELECT /*+ HBase */ * FROM t_order WHERE rowKey BETWEEN 1 AND now()";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Between expr must literal or parameter marker."));
-    }
-    
-    @Test
-    void assertSelectWithGroupBy() {
-        String sql = "SELECT /*+ HBase */ * FROM t_order GROUP BY order_id";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Do not supported group by segment."));
-    }
-    
-    @Test
-    void assertSelectWithNotAllowOperator() {
-        String sql = "SELECT /*+ hbase */ * FROM t_order WHERE rowKey != 1";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Only Supported `=` operator."));
-    }
-    
-    @Test
-    void assertSelectWithNotAllowColumn() {
-        String sql = "SELECT /*+ hbase */ * FROM t_order WHERE age = 1";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("age is not a allowed key."));
-    }
-    
-    @Test
-    void assertSelectWithMultipleExpression() {
-        String sql = "SELECT /*+ hbase */ * FROM t_order WHERE rowKey = 1 AND age = 2";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Do not supported multiple expressions."));
-    }
-    
-    @Test
-    void assertSelectWithNotColumnExpression() {
-        String sql = "SELECT /*+ hbase */ * FROM t_order WHERE 1 = 1";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Left segment must column segment."));
-    }
-    
-    @Test
-    void assertSelectWithParameterMarker() {
-        String sql = "SELECT /*+ hbase */ rowKey, name, ? FROM t_order WHERE rowKey = 'kid'";
-        SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Only supported shorthand, column and crc32 expression projections."));
+    private static class UnsupportedTestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("largeRowCount", "SELECT /*+ hbase */ * FROM t_order WHERE id = 1 LIMIT 5001", "Row count must less than 5000."),
+                    Arguments.of("limit", "SELECT /*+ hbase */ * FROM t_order WHERE id = 1 LIMIT 5 OFFSET 3", "Do not supported offset segment."),
+                    Arguments.of("lock", "SELECT /*+ hbase */ * FROM t_order WHERE id = 1 lock in share mode", "Do not supported lock segment."),
+                    Arguments.of("function", "SELECT /*+ HBase */ sum(score) FROM person", "Only supported shorthand, column and crc32 expression projections."),
+                    Arguments.of("join", "SELECT /*+ HBase */ * FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id", "Only supported simple table segment."),
+                    Arguments.of("multipleIn", "SELECT /*+ HBase */ * FROM t_order WHERE rowKey IN (?, ?) AND id IN (?, ?)", "Left segment must column segment."),
+                    Arguments.of("errorKey", "SELECT /*+ HBase */ * FROM t_order WHERE age IN (1, 2, 3)", "age is not a allowed key."),
+                    Arguments.of("notIn", "SELECT /*+ HBase */ * FROM t_order WHERE rowKey NOT IN (1, 2, 3)", "Do not supported `not in`."),
+                    Arguments.of("errorInExpression", "SELECT /*+ HBase */ * FROM t_order WHERE rowKey IN (SELECT rowKey FROM t_order_item)", "Only supported list expression."),
+                    Arguments.of("notBetween", "SELECT /*+ HBase */ * FROM t_order WHERE rowKey not BETWEEN 1 AND 2", "Do not supported `not between...and...`"),
+                    Arguments.of("betweenErrorKey", "SELECT /*+ HBase */ * FROM t_order WHERE age BETWEEN 1 AND 2", "age is not a allowed key."),
+                    Arguments.of("errorBetweenExpr", "SELECT /*+ HBase */ * FROM t_order WHERE rowKey BETWEEN 1 AND now()", "Between expr must literal or parameter marker."),
+                    Arguments.of("groupBy", "SELECT /*+ HBase */ * FROM t_order GROUP BY order_id", "Do not supported group by segment."),
+                    Arguments.of("notAllowedOperator", "SELECT /*+ hbase */ * FROM t_order WHERE rowKey != 1", "Only Supported `=` operator."),
+                    Arguments.of("notAllowedColumn", "SELECT /*+ hbase */ * FROM t_order WHERE age = 1", "age is not a allowed key."),
+                    Arguments.of("multipleExpressions", "SELECT /*+ hbase */ * FROM t_order WHERE rowKey = 1 AND age = 2", "Do not supported multiple expressions."),
+                    Arguments.of("notColumnExpression", "SELECT /*+ hbase */ * FROM t_order WHERE 1 = 1", "Left segment must column segment."),
+                    Arguments.of("parameterMarker", "SELECT /*+ hbase */ rowKey, name, ? FROM t_order WHERE rowKey = 'kid'", "Only supported shorthand, column and crc32 expression projections."));
+        }
     }
 }
