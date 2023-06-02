@@ -23,10 +23,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -43,23 +42,14 @@ class JDBCContextTest {
     
     @Test
     void assertNotNullCashedDbMetadataWith() throws SQLException {
-        Map<String, DataSource> dataSourceMap = getStringDataSourceMap();
-        JDBCContext jdbcContext = new JDBCContext(dataSourceMap);
+        JDBCContext jdbcContext = new JDBCContext(Collections.singletonMap("foo_db", new CircuitBreakerDataSource()));
         assertNotNull(jdbcContext.getCachedDatabaseMetaData());
     }
     
     @Test
     void assertNullMetadataAfterRefreshingExisting() throws SQLException {
-        Map<String, DataSource> stringDataSourceMap = getStringDataSourceMap();
-        JDBCContext jdbcContext = new JDBCContext(stringDataSourceMap);
-        DataSourceChangedEvent event = mock();
-        jdbcContext.refreshCachedDatabaseMetaData(event);
+        JDBCContext jdbcContext = new JDBCContext(Collections.singletonMap("foo_db", new CircuitBreakerDataSource()));
+        jdbcContext.refreshCachedDatabaseMetaData(mock(DataSourceChangedEvent.class));
         assertNull(jdbcContext.getCachedDatabaseMetaData());
-    }
-    
-    private static Map<String, DataSource> getStringDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>();
-        result.put("test_db", new CircuitBreakerDataSource());
-        return result;
     }
 }
