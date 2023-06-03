@@ -72,25 +72,25 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             MySQLPacketPayload payload = new MySQLPacketPayload(in, ctx.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
             checkPayload(payload);
             MySQLBinlogEventHeader binlogEventHeader = new MySQLBinlogEventHeader(payload, binlogContext.getChecksumLength());
-            if (checkEventIntegrity(in, binlogEventHeader)) {
-                Optional<AbstractBinlogEvent> binlogEvent = decodeEvent(binlogEventHeader, payload);
-                if (!binlogEvent.isPresent()) {
-                    skipChecksum(binlogEventHeader.getEventType(), in);
-                    return;
-                }
-                if (binlogEvent.get() instanceof PlaceholderEvent) {
-                    out.add(binlogEvent);
-                } else {
-                    if (decodeWithTX) {
-                        processEventWithTX(binlogEvent.get(), out);
-                    } else {
-                        processEventIgnoreTX(binlogEvent.get(), out);
-                    }
-                }
-                skipChecksum(binlogEventHeader.getEventType(), in);
-            } else {
-                break;
+            if (!checkEventIntegrity(in, binlogEventHeader)) {
+                return;
             }
+            Optional<AbstractBinlogEvent> binlogEvent = decodeEvent(binlogEventHeader, payload);
+            if (!binlogEvent.isPresent()) {
+                skipChecksum(binlogEventHeader.getEventType(), in);
+                return;
+            }
+            if (binlogEvent.get() instanceof PlaceholderEvent) {
+                out.add(binlogEvent);
+                skipChecksum(binlogEventHeader.getEventType(), in);
+                return;
+            }
+            if (decodeWithTX) {
+                processEventWithTX(binlogEvent.get(), out);
+            } else {
+                processEventIgnoreTX(binlogEvent.get(), out);
+            }
+            skipChecksum(binlogEventHeader.getEventType(), in);
         }
     }
     
