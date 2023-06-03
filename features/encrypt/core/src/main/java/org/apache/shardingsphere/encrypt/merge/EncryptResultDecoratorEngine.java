@@ -27,9 +27,10 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEngine;
-import org.apache.shardingsphere.infra.merge.engine.decorator.impl.TransparentResultDecorator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+
+import java.util.Optional;
 
 /**
  * Result decorator engine for encrypt.
@@ -37,15 +38,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine<EncryptRule> {
     
     @Override
-    public ResultDecorator<?> newInstance(final ShardingSphereDatabase database, final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
+    public Optional<ResultDecorator<EncryptRule>> newInstance(final ShardingSphereDatabase database,
+                                                              final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            EncryptAlgorithmMetaData algorithmMetaData = new EncryptAlgorithmMetaData(database, encryptRule, (SelectStatementContext) sqlStatementContext);
-            return new EncryptDQLResultDecorator(algorithmMetaData);
+            return Optional.of(new EncryptDQLResultDecorator(new EncryptAlgorithmMetaData(database, encryptRule, (SelectStatementContext) sqlStatementContext)));
         }
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            return new EncryptDALResultDecorator();
+            return Optional.of(new EncryptDALResultDecorator());
         }
-        return new TransparentResultDecorator();
+        return Optional.empty();
     }
     
     @Override
