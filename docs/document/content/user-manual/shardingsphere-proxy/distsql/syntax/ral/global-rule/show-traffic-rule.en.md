@@ -30,7 +30,7 @@ ruleName ::=
 
 ### Return Value Description
 
-| Colume              | Description                  |
+| Column              | Description                  |
 |---------------------|------------------------------|
 | name                | traffic rule name            |
 | labels              | compute node labels          |

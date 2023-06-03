@@ -23,7 +23,7 @@ ShowAuthorityRule ::=
 
 ### Return Value Description
 
-| Colume      | Description             |
+| Column      | Description             |
 |-------------|-------------------------|
 | users       | users                   |
 | provider    | privilege provider type |

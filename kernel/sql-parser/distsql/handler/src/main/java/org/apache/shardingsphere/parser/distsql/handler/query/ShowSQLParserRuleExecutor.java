@@ -43,7 +43,7 @@ public final class ShowSQLParserRuleExecutor implements MetaDataRequiredQueryabl
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("sql_comment_parse_enable", "parse_tree_cache", "sql_statement_cache");
+        return Arrays.asList("sql_comment_parse_enabled", "parse_tree_cache", "sql_statement_cache");
     }
     
     @Override

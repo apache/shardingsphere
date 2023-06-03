@@ -23,7 +23,7 @@ ShowMigrationRule ::=
 
 ### Return Value Description
 
-| Colume         | Description                |
+| Column         | Description                |
 |----------------|----------------------------|
 | read           | Data reading configuration |
 | write          | Data writing configuration |
