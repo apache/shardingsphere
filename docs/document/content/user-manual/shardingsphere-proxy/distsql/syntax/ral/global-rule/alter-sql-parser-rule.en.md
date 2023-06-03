@@ -5,7 +5,7 @@ weight = 5
 
 ### Description
 
-The `ALTER SQL_PARSER RULE` syntax is used to alter sql parser rule configuration.
+The `ALTER SQL_PARSER RULE` syntax is used to alter SQL parser rule configuration.
 
 ### Syntax
 
@@ -13,24 +13,30 @@ The `ALTER SQL_PARSER RULE` syntax is used to alter sql parser rule configuratio
 {{% tab name="Grammar" %}}
 ```sql
 AlterSqlParserRule ::=
-  'ALTER' 'SQL_PARSER' 'RULE' 'SQL_COMMENT_PARSE_ENABLE' '=' sqlCommentParseEnable ',' 'PARSE_TREE_CACHE' parseTreeCacheDefinition ',' 'SQL_STATEMENT_CACHE' sqlStatementCacheDefinition
+  'ALTER' 'SQL_PARSER' 'RULE' '(' sqlParserRuleDefinition ')'
 
-sqlCommentParseEnable ::=
-  boolean
+sqlParserRuleDefinition ::=
+  commentDefinition? (',' parseTreeCacheDefinition)? (',' sqlStatementCacheDefinition)?
+
+commentDefinition ::=
+  'SQL_COMMENT_PARSE_ENABLED' '=' sqlCommentParseEnabled
 
 parseTreeCacheDefinition ::=
-  '(' 'INITIAL_CAPACITY' '=' initialCapacity ',' 'MAXIMUM_SIZE' '=' maximumSize ',' 'CONCURRENCY_LEVEL' '=' concurrencyLevel ')'
+  'PARSE_TREE_CACHE' '(' cacheOption ')'
 
 sqlStatementCacheDefinition ::=
-  '(' 'INITIAL_CAPACITY' '=' initialCapacity ',' 'MAXIMUM_SIZE' '=' maximumSize ',' 'CONCURRENCY_LEVEL' '=' concurrencyLevel ')'
+  'SQL_STATEMENT_CACHE' '(' cacheOption ')'
+
+sqlCommentParseEnabled ::=
+  boolean
+
+cacheOption ::=
+  ('INITIAL_CAPACITY' '=' initialCapacity)? (','? 'MAXIMUM_SIZE' '=' maximumSize)?
 
 initialCapacity ::=
   int
 
 maximumSize ::=
-  int
-
-concurrencyLevel ::=
   int
 ```
 {{% /tab %}}
@@ -49,18 +55,19 @@ concurrencyLevel ::=
 
 ### Example
 
-- Alter sql parser rule
+- Alter SQL parser rule
 
 ```sql
-ALTER SQL_PARSER RULE 
-  SQL_COMMENT_PARSE_ENABLE=false, 
-  PARSE_TREE_CACHE(INITIAL_CAPACITY=10, MAXIMUM_SIZE=11, CONCURRENCY_LEVEL=1), 
-  SQL_STATEMENT_CACHE(INITIAL_CAPACITY=11, MAXIMUM_SIZE=11, CONCURRENCY_LEVEL=100);
+ALTER SQL_PARSER RULE (
+  SQL_COMMENT_PARSE_ENABLED=false, 
+  PARSE_TREE_CACHE(INITIAL_CAPACITY=128, MAXIMUM_SIZE=1024), 
+  SQL_STATEMENT_CACHE(INITIAL_CAPACITY=2000, MAXIMUM_SIZE=65535)
+);
 ```
 
 ### Reserved word
 
-`ALTER`, `SQL_PARSER`, `RULE`, `SQL_COMMENT_PARSE_ENABLE`, `PARSE_TREE_CACHE`, `INITIAL_CAPACITY`, `MAXIMUM_SIZE`, `CONCURRENCY_LEVEL`, `SQL_STATEMENT_CACHE`
+`ALTER`, `SQL_PARSER`, `RULE`, `SQL_COMMENT_PARSE_ENABLED`, `PARSE_TREE_CACHE`, `INITIAL_CAPACITY`, `MAXIMUM_SIZE`, `SQL_STATEMENT_CACHE`
 
 ### Related links
 
