@@ -16,12 +16,6 @@
       "pattern": "^/cn/*"
     },
     {
-      "pattern": "^https://fortawesome.github.io/"
-    },
-    {
-      "pattern": "^https://gohugo.io/"
-    },
-    {
       "pattern": "^https://twitter.com*"
     }
   ],
