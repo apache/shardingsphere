@@ -156,7 +156,7 @@ public final class MySQLClient {
      *
      * @param queryString query string
      * @return result set
-     * @throws PipelineInternalException if
+     * @throws PipelineInternalException if getting MySQL packet failed
      */
     public synchronized InternalResultSet executeQuery(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
