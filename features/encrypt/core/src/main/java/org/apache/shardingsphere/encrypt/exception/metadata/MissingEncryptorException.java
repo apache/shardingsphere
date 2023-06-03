@@ -21,13 +21,13 @@ import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Encrypt like query encryptor not found exception.
+ * Missing encryptor exception.
  */
-public final class EncryptLikeQueryEncryptorNotFoundException extends EncryptSQLException {
+public final class MissingEncryptorException extends EncryptSQLException {
     
-    private static final long serialVersionUID = 1620586484949188815L;
+    private static final long serialVersionUID = -4847495252826650747L;
     
-    public EncryptLikeQueryEncryptorNotFoundException(final String reason) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 8, "Encrypt like query encryptor not found, reason is: %s.", reason);
+    public MissingEncryptorException(final String tableName, final String logicColumnName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Can not found encryptor in table `%s` and column `%s`.", tableName, logicColumnName);
     }
 }

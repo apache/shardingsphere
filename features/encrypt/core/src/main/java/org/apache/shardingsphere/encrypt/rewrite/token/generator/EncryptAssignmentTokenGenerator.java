@@ -125,7 +125,7 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
     
     private void addCipherAssignment(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
         Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-        Object cipherValue = encryptRule.getEncryptValues(databaseName, schemaName, tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue(),
+        Object cipherValue = encryptRule.encrypt(databaseName, schemaName, tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue(),
                 Collections.singletonList(originalValue)).iterator().next();
         token.addAssignment(encryptRule.getCipherColumn(tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue()), cipherValue);
     }
