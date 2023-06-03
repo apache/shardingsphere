@@ -21,20 +21,24 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+
 import java.util.Optional;
 
 /**
- * Checker for delete statement.
+ * Delete statement checker.
  */
-public class HeterogeneousDeleteStatementChecker extends CommonHeterogeneousSQLStatementChecker<DeleteStatement> {
+public final class HeterogeneousDeleteStatementChecker extends CommonHeterogeneousSQLStatementChecker {
+    
+    private final DeleteStatement sqlStatement;
     
     public HeterogeneousDeleteStatementChecker(final DeleteStatement sqlStatement) {
         super(sqlStatement);
+        this.sqlStatement = sqlStatement;
     }
     
     @Override
     public void execute() {
-        Optional<WhereSegment> whereSegment = getSqlStatement().getWhere();
+        Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         Preconditions.checkArgument(whereSegment.isPresent(), "Must contain where segment.");
         if (whereSegment.get().getExpr() instanceof InExpression) {
             checkInExpressionIsExpected(whereSegment.get().getExpr());

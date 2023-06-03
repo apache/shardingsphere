@@ -65,7 +65,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     protected abstract String marshalJobIdLeftPart(PipelineJobId pipelineJobId);
     
     @Override
-    public List<? extends PipelineJobInfo> list(final PipelineContextKey contextKey) {
+    public List<PipelineJobInfo> list(final PipelineContextKey contextKey) {
         return getJobBriefInfos(contextKey).map(each -> getJobInfo(each.getJobName())).collect(Collectors.toList());
     }
     

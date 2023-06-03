@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.merge;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.merge.engine.decorator.impl.TransparentResultDecorator;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
@@ -89,7 +90,7 @@ public final class MergeEngine {
         MergedResult result = null;
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
-                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(database, entry.getKey(), props, sqlStatementContext);
+                ResultDecorator resultDecorator = getResultDecorator(sqlStatementContext, entry);
                 result = null == result ? resultDecorator.decorate(mergedResult, sqlStatementContext, entry.getKey()) : resultDecorator.decorate(result, sqlStatementContext, entry.getKey());
             }
         }
@@ -101,10 +102,15 @@ public final class MergeEngine {
         MergedResult result = null;
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
-                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(database, entry.getKey(), props, sqlStatementContext);
+                ResultDecorator resultDecorator = getResultDecorator(sqlStatementContext, entry);
                 result = null == result ? resultDecorator.decorate(queryResult, sqlStatementContext, entry.getKey()) : resultDecorator.decorate(result, sqlStatementContext, entry.getKey());
             }
         }
         return Optional.ofNullable(result);
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private ResultDecorator getResultDecorator(final SQLStatementContext sqlStatementContext, final Entry<ShardingSphereRule, ResultProcessEngine> entry) {
+        return (ResultDecorator) ((ResultDecoratorEngine) entry.getValue()).newInstance(database, entry.getKey(), props, sqlStatementContext).orElseGet(TransparentResultDecorator::new);
     }
 }
