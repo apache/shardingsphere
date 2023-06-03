@@ -51,7 +51,8 @@ import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
-import org.apache.shardingsphere.metadata.MetaDataFactory;
+import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
+import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
@@ -372,6 +373,10 @@ public final class ContextManager implements AutoCloseable {
         return newMetaDataContexts(new ShardingSphereMetaData(changedDatabases, changedGlobalMetaData, props));
     }
     
+    private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData) {
+        return new MetaDataContexts(metaDataContexts.get().getPersistService(), metaData);
+    }
+    
     /**
      * Create changed databases.
      * 
@@ -382,8 +387,8 @@ public final class ContextManager implements AutoCloseable {
      * @return ShardingSphere databases
      * @throws SQLException SQL exception
      */
-    public synchronized Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName, final boolean internalLoadMetaData, final SwitchingResource switchingResource,
-                                                                                   final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+    public synchronized Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName, final boolean internalLoadMetaData,
+                                                                                   final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         if (null != switchingResource && !switchingResource.getNewDataSources().isEmpty()) {
             metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources().putAll(switchingResource.getNewDataSources());
         }
@@ -392,16 +397,19 @@ public final class ContextManager implements AutoCloseable {
                 : ruleConfigs;
         DatabaseConfiguration toBeCreatedDatabaseConfig =
                 new DataSourceProvidedDatabaseConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources(), toBeCreatedRuleConfigs);
-        ShardingSphereDatabase changedDatabase = MetaDataFactory.create(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(),
-                internalLoadMetaData, metaDataContexts.get().getPersistService(), toBeCreatedDatabaseConfig, metaDataContexts.get().getMetaData().getProps(), instanceContext);
+        ShardingSphereDatabase changedDatabase = createChangedDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), internalLoadMetaData,
+                metaDataContexts.get().getPersistService(), toBeCreatedDatabaseConfig, metaDataContexts.get().getMetaData().getProps(), instanceContext);
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.get().getMetaData().getDatabases());
         changedDatabase.getSchemas().putAll(newShardingSphereSchemas(changedDatabase));
         result.put(databaseName.toLowerCase(), changedDatabase);
         return result;
     }
     
-    private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData) {
-        return new MetaDataContexts(metaDataContexts.get().getPersistService(), metaData);
+    private ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean internalLoadMetaData, final MetaDataBasedPersistService persistService,
+                                                         final DatabaseConfiguration databaseConfig, final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
+        return internalLoadMetaData
+                ? InternalMetaDataFactory.create(databaseName, persistService, databaseConfig, props, instanceContext)
+                : ExternalMetaDataFactory.create(databaseName, databaseConfig, props, instanceContext);
     }
     
     private Map<String, ShardingSphereSchema> newShardingSphereSchemas(final ShardingSphereDatabase database) {
