@@ -33,9 +33,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -51,14 +53,16 @@ class MaskResultDecoratorEngineTest {
     @Test
     void assertNewInstanceWithSelectStatement() {
         MaskResultDecoratorEngine engine = (MaskResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
-        ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
-        assertThat(actual, instanceOf(MaskDQLResultDecorator.class));
+        Optional<ResultDecorator<MaskRule>> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(MaskDQLResultDecorator.class));
     }
     
     @Test
     void assertNewInstanceWithOtherStatement() {
         MaskResultDecoratorEngine engine = (MaskResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
-        ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(InsertStatementContext.class));
-        assertThat(actual, instanceOf(TransparentResultDecorator.class));
+        Optional<ResultDecorator<MaskRule>> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(InsertStatementContext.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(TransparentResultDecorator.class));
     }
 }

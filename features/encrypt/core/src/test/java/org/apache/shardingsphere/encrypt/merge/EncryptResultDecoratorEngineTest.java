@@ -37,9 +37,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,8 +58,9 @@ class EncryptResultDecoratorEngineTest {
     @Test
     void assertNewInstanceWithSelectStatement() {
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
-        ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
-        assertThat(actual, instanceOf(EncryptDQLResultDecorator.class));
+        Optional<ResultDecorator<EncryptRule>> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(EncryptDQLResultDecorator.class));
     }
     
     @Test
@@ -65,14 +68,16 @@ class EncryptResultDecoratorEngineTest {
         SQLStatementContext sqlStatementContext = mock(ExplainStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLExplainStatement.class));
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
-        ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), sqlStatementContext);
-        assertThat(actual, instanceOf(EncryptDALResultDecorator.class));
+        Optional<ResultDecorator<EncryptRule>> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), sqlStatementContext);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(EncryptDALResultDecorator.class));
     }
     
     @Test
     void assertNewInstanceWithOtherStatement() {
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
-        ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(InsertStatementContext.class));
-        assertThat(actual, instanceOf(TransparentResultDecorator.class));
+        Optional<ResultDecorator<EncryptRule>> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(InsertStatementContext.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(TransparentResultDecorator.class));
     }
 }
