@@ -21,13 +21,13 @@ import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Encrypt encryptor not found exception.
+ * Missing assisted query encryptor exception.
  */
-public final class EncryptEncryptorNotFoundException extends EncryptSQLException {
+public final class MissingAssistedQueryEncryptorException extends EncryptSQLException {
     
-    private static final long serialVersionUID = -4847495252826650747L;
+    private static final long serialVersionUID = -8700683634804933320L;
     
-    public EncryptEncryptorNotFoundException(final String reason) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Encrypt column encryptor not found, reason is: %s.", reason);
+    public MissingAssistedQueryEncryptorException(final String tableName, final String logicColumnName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 6, "Can not found assist query encryptor in table `%s` and column `%s`.", tableName, logicColumnName);
     }
 }
