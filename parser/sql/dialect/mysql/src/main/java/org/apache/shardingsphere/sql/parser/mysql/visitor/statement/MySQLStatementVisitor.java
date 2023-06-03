@@ -141,6 +141,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightS
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
@@ -768,7 +770,23 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitWindowClause(final WindowClauseContext ctx) {
+        if (null != ctx.windowItem()) {
+            return new WindowSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getWindowItem(ctx.windowItem(0)),
+                    getWindowSpecification(ctx.windowItem(0).windowSpecification()));
+        }
         return new WindowSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+    }
+    
+    private IdentifierValue getWindowItem(final WindowItemContext ctx) {
+        return new IdentifierValue(ctx.identifier().getText());
+    }
+    
+    private Collection<ExpressionSegment> getWindowSpecification(final WindowSpecificationContext ctx) {
+        Collection<ExpressionSegment> segments = new LinkedList<>();
+        for (ExprContext each : ctx.expr()) {
+            segments.add((ExpressionSegment) visit(each));
+        }
+        return segments;
     }
     
     @Override

@@ -107,6 +107,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WhereOrCurrentClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
@@ -1016,7 +1018,20 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     
     @Override
     public ASTNode visitWindowClause(final WindowClauseContext ctx) {
+        if (null != ctx.windowDefinitionList()) {
+            return new WindowSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getWindowItem(ctx.windowDefinitionList().windowDefinition()),
+                    getWindowSpecification(ctx.windowDefinitionList().windowDefinition().windowSpecification()));
+        }
         return new WindowSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+    }
+    
+    private IdentifierValue getWindowItem(final WindowDefinitionContext ctx) {
+        return new IdentifierValue(ctx.colId().identifier().getText());
+    }
+    
+    private Collection<ExpressionSegment> getWindowSpecification(final WindowSpecificationContext ctx) {
+        Collection<ExpressionSegment> result = createInsertValuesSegments(ctx.partitionClause().exprList());
+        return result;
     }
     
     @Override
