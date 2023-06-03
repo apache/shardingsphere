@@ -146,5 +146,5 @@ jobs:
       - name: Check dead link
         run: |
           for file in $(find . -name "*.md"); do
-            markdown-link-check -c .github/workflows/resources/linkcheck/.dlc.json -q "$file"
+            markdown-link-check -c .github/workflows/resources/linkcheck/markdown-link-check-config.json -q "$file"
           done
