@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -34,29 +36,52 @@ import java.util.Optional;
 @ToString
 public final class ColumnProjection implements Projection {
     
-    private final String owner;
+    private final IdentifierValue ownerIdentifier;
     
-    private final String name;
+    private final IdentifierValue nameIdentifier;
     
-    private final String alias;
+    private final IdentifierValue aliasIdentifier;
+    
+    public ColumnProjection(final String owner, final String name, final String alias) {
+        this(null == owner ? null : new IdentifierValue(owner, QuoteCharacter.NONE), new IdentifierValue(name, QuoteCharacter.NONE),
+                null == alias ? null : new IdentifierValue(alias, QuoteCharacter.NONE));
+    }
+    
+    /**
+     * Get column name.
+     * 
+     * @return column name
+     */
+    public String getName() {
+        return nameIdentifier.getValue();
+    }
+    
+    /**
+     * Get owner.
+     * 
+     * @return owner
+     */
+    public String getOwner() {
+        return null == ownerIdentifier ? null : ownerIdentifier.getValue();
+    }
     
     @Override
     public String getExpression() {
-        return null == owner ? name : owner + "." + name;
+        return null == getOwner() ? getName() : getOwner() + "." + getName();
     }
     
     @Override
     public String getColumnLabel() {
-        return getAlias().orElse(name);
+        return getAlias().orElse(getName());
     }
     
     @Override
     public Optional<String> getAlias() {
-        return Optional.ofNullable(alias);
+        return Optional.ofNullable(aliasIdentifier).map(IdentifierValue::getValue);
     }
     
     @Override
-    public Projection cloneWithOwner(final String ownerName) {
-        return new ColumnProjection(ownerName, name, alias);
+    public Projection cloneWithOwner(final IdentifierValue ownerIdentifier) {
+        return new ColumnProjection(ownerIdentifier, nameIdentifier, aliasIdentifier);
     }
 }

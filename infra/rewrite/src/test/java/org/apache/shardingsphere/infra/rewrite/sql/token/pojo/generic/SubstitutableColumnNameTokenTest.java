@@ -43,13 +43,15 @@ class SubstitutableColumnNameTokenTest {
     
     @Test
     void assertToStringWithQuote() {
-        Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(null, "id", "id"));
+        Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(null,
+                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE)));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE, Collections.emptyList()).toString(mock(RouteUnit.class)), is("`id` AS `id`"));
     }
     
     @Test
     void assertToStringWithAliasQuote() {
-        Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection("temp", "id", "id"));
+        Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.BACK_QUOTE),
+                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE)));
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         tableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("`temp`")));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE, Collections.singletonList(tableSegment)).toString(mock(RouteUnit.class)), is("`temp`.`id` AS `id`"));
