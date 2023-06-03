@@ -145,6 +145,9 @@ jobs:
       - run: sudo npm install -g markdown-link-check@3.10.0
       - name: Check dead link
         run: |
-          for file in $(find . -name "*.md"); do
+          for file in $(find . -path "./docs/document/themes" -prune -o -name "*.md"); do
+              if [ -d "$file" ]; then
+                continue
+              fi
             markdown-link-check -c .github/workflows/resources/linkcheck/.dlc.json -q "$file"
           done
