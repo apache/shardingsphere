@@ -340,7 +340,7 @@ class ProjectionEngineTest {
         return result;
     }
     
-    private Collection<Projection> crateExpectedColumnsWithOwner(DatabaseType databaseType) {
+    private Collection<Projection> crateExpectedColumnsWithOwner(final DatabaseType databaseType) {
         Collection<Projection> result = new LinkedHashSet<>();
         result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id", databaseType.getQuoteCharacter()), null));
         result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id", databaseType.getQuoteCharacter()), null));
