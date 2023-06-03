@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatement;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,10 +49,6 @@ public final class PostgreSQLServerPreparedStatement implements ServerPreparedSt
     
     @Getter(AccessLevel.NONE)
     private PostgreSQLPacket rowDescription;
-    
-    public PostgreSQLServerPreparedStatement(final String sql, final SQLStatementContext sqlStatementContext, final List<PostgreSQLColumnType> parameterTypes) {
-        this(sql, sqlStatementContext, parameterTypes, Collections.emptyList());
-    }
     
     /**
      * Describe parameters of the prepared statement.
