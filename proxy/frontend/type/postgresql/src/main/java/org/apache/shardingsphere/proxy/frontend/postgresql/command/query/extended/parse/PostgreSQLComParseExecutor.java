@@ -45,7 +45,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * PostgreSQL command parse executor.
@@ -65,7 +64,9 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         List<Integer> actualParameterMarkerIndexes = new ArrayList<>();
         if (sqlStatement.getParameterCount() > 0) {
             List<ParameterMarkerSegment> parameterMarkerSegments = new ArrayList<>(((AbstractSQLStatement) sqlStatement).getParameterMarkerSegments());
-            actualParameterMarkerIndexes.addAll(parameterMarkerSegments.stream().map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()));
+            for (ParameterMarkerSegment each : parameterMarkerSegments) {
+                actualParameterMarkerIndexes.add(each.getParameterIndex());
+            }
             sql = convertSQLToJDBCStyle(parameterMarkerSegments, sql);
             sqlStatement = sqlParserEngine.parse(sql, true);
         }
