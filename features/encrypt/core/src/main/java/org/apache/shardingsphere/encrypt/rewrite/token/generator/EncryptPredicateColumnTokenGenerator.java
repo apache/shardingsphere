@@ -102,9 +102,10 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             ShardingSpherePreconditions.checkState(likeQueryColumn.isPresent(), () -> new UnsupportedEncryptSQLException("LIKE"));
             return new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(likeQueryColumn.get(), columnSegment.getIdentifier().getQuoteCharacter()));
         }
-        Collection<ColumnProjection> columnProjections = encryptTable.findAssistedQueryColumn(logicColumn).map(optional -> 
-                createColumnProjections(optional, columnSegment.getIdentifier().getQuoteCharacter())).orElseGet(() -> createColumnProjections(encryptTable.getCipherColumn(logicColumn),
-                        columnSegment.getIdentifier().getQuoteCharacter()));
+        Collection<ColumnProjection> columnProjections =
+                encryptTable.findAssistedQueryColumn(logicColumn).map(optional -> createColumnProjections(optional, columnSegment.getIdentifier().getQuoteCharacter()))
+                        .orElseGet(() -> createColumnProjections(encryptTable.getCipherColumn(logicColumn),
+                                columnSegment.getIdentifier().getQuoteCharacter()));
         return new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections);
     }
     

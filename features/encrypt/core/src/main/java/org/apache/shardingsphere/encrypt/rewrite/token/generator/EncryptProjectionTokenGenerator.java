@@ -183,7 +183,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         result.add(distinctOwner(new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(encryptRule.getCipherColumn(tableName, column.getName()),
                 column.getNameIdentifier().getQuoteCharacter()), null), shorthand));
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, column.getName());
-        assistedQueryColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwner(), optional, null)));
+        assistedQueryColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(optional, column.getNameIdentifier().getQuoteCharacter()), null)));
         return result;
     }
     
@@ -198,7 +198,8 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         String encryptColumnName = getEncryptColumnName(tableName, column.getName());
         IdentifierValue owner = (null == segment || !segment.getOwner().isPresent()) ? column.getOwnerIdentifier() : segment.getOwner().get().getIdentifier();
         return new ColumnProjection(owner, new IdentifierValue(encryptColumnName, column.getNameIdentifier().getQuoteCharacter()), column.getAlias().isPresent()
-                ? column.getAliasIdentifier() : column.getNameIdentifier());
+                ? column.getAliasIdentifier()
+                : column.getNameIdentifier());
     }
     
     private String getEncryptColumnName(final String tableName, final String logicEncryptColumnName) {
