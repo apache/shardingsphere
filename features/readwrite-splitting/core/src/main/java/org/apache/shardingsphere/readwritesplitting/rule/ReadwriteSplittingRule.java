@@ -161,7 +161,11 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         QualifiedDatabase qualifiedDatabase = dataSourceEvent.getQualifiedDatabase();
         ReadwriteSplittingDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
         Preconditions.checkNotNull(dataSourceRule, "Can not find readwrite-splitting data source rule in database `%s`", qualifiedDatabase.getDatabaseName());
-        dataSourceRule.updateDisabledDataSourceNames(dataSourceEvent.getQualifiedDatabase().getDataSourceName(), DataSourceState.DISABLED == dataSourceEvent.getDataSource().getStatus());
+        if (DataSourceState.DISABLED == dataSourceEvent.getDataSource().getStatus()) {
+            dataSourceRule.disableDataSource(dataSourceEvent.getQualifiedDatabase().getDataSourceName());
+        } else {
+            dataSourceRule.enableDataSource(dataSourceEvent.getQualifiedDatabase().getDataSourceName());
+        }
     }
     
     @Override

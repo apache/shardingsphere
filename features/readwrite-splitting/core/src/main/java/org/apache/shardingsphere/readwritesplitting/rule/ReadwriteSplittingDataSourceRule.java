@@ -65,16 +65,20 @@ public final class ReadwriteSplittingDataSourceRule {
     }
     
     /**
-     * Update disabled data source names.
+     * Enable data source.
      *
-     * @param dataSourceName data source name
-     * @param isDisabled is disabled
+     * @param dataSourceName data source name to be enabled.
      */
-    public void updateDisabledDataSourceNames(final String dataSourceName, final boolean isDisabled) {
-        if (isDisabled) {
-            disabledDataSourceNames.add(dataSourceName);
-        } else {
-            disabledDataSourceNames.remove(dataSourceName);
-        }
+    public void enableDataSource(final String dataSourceName) {
+        disabledDataSourceNames.remove(dataSourceName);
+    }
+    
+    /**
+     * Disable data source.
+     *
+     * @param dataSourceName data source name to be disabled.
+     */
+    public void disableDataSource(final String dataSourceName) {
+        disabledDataSourceNames.add(dataSourceName);
     }
 }
