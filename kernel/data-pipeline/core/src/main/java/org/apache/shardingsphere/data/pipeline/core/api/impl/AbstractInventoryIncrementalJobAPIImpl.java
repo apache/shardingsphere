@@ -189,7 +189,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     @Override
     public Optional<InventoryIncrementalJobItemProgress> getJobItemProgress(final String jobId, final int shardingItem) {
         Optional<String> progress = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProgress(jobId, shardingItem);
-        return progress.map(s -> jobItemProgressSwapper.swapToObject(YamlEngine.unmarshal(s, YamlInventoryIncrementalJobItemProgress.class)));
+        return progress.map(optional -> jobItemProgressSwapper.swapToObject(YamlEngine.unmarshal(optional, YamlInventoryIncrementalJobItemProgress.class)));
     }
     
     @Override
