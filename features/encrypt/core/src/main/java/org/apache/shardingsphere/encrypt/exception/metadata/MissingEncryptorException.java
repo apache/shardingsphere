@@ -27,7 +27,7 @@ public final class MissingEncryptorException extends EncryptSQLException {
     
     private static final long serialVersionUID = -4847495252826650747L;
     
-    public MissingEncryptorException(final String tableName, final String logicColumnName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Can not found encryptor in table `%s` and column `%s`.", tableName, logicColumnName);
+    public MissingEncryptorException(final String tableName, final String logicColumnName, final String encryptorType) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Can not find %s encryptor in table `%s` and column `%s`.", encryptorType, tableName, logicColumnName);
     }
 }
