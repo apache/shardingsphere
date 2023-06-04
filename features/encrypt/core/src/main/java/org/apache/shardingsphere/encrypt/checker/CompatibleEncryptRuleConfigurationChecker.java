@@ -37,8 +37,8 @@ public final class CompatibleEncryptRuleConfigurationChecker implements RuleConf
     private final EncryptRuleConfigurationChecker delegate = new EncryptRuleConfigurationChecker();
     
     @Override
-    public void check(final String databaseName, final CompatibleEncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
-        delegate.check(databaseName, config.convertToEncryptRuleConfiguration(), dataSourceMap, rules);
+    public void check(final String databaseName, final CompatibleEncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+        delegate.check(databaseName, config.convertToEncryptRuleConfiguration(), dataSourceMap, builtRules);
     }
     
     @Override
