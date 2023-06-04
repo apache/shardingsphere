@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Encrypt column.
+ * Encrypt column item.
  */
 @RequiredArgsConstructor
 @Getter
