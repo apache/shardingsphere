@@ -184,7 +184,8 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
         @SuppressWarnings("rawtypes")
         Optional<StandardEncryptAlgorithm> encryptor = findStandardEncryptor(tableName, logicColumnName);
         ShardingSpherePreconditions.checkState(encryptor.isPresent(), () -> new MissingEncryptorException(tableName, logicColumnName));
-        return encrypt(encryptor.get(), originalValues, EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName));
+        EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
+        return encrypt(encryptor.get(), originalValues, context);
     }
     
     @SuppressWarnings("unchecked")
@@ -265,7 +266,8 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
         @SuppressWarnings("rawtypes")
         Optional<AssistedEncryptAlgorithm> assistedQueryEncryptor = findAssistedQueryEncryptor(tableName, logicColumnName);
         ShardingSpherePreconditions.checkState(assistedQueryEncryptor.isPresent(), () -> new MissingAssistedQueryEncryptorException(tableName, logicColumnName));
-        return getEncryptAssistedQueryValues(assistedQueryEncryptor.get(), originalValues, EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName));
+        EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
+        return getEncryptAssistedQueryValues(assistedQueryEncryptor.get(), originalValues, context);
     }
     
     @SuppressWarnings("unchecked")
@@ -292,7 +294,8 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
         @SuppressWarnings("rawtypes")
         Optional<LikeEncryptAlgorithm> likeQueryEncryptor = findLikeQueryEncryptor(tableName, logicColumnName);
         ShardingSpherePreconditions.checkState(likeQueryEncryptor.isPresent(), () -> new MissingLikeQueryEncryptorException(tableName, logicColumnName));
-        return getEncryptLikeQueryValues(likeQueryEncryptor.get(), originalValues, EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName));
+        EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
+        return getEncryptLikeQueryValues(likeQueryEncryptor.get(), originalValues, context);
     }
     
     @SuppressWarnings("unchecked")
