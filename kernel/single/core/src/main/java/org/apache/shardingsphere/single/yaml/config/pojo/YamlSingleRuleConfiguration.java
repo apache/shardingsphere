@@ -22,12 +22,17 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
  * Single rule configuration for YAML.
  */
 @Getter
 @Setter
 public final class YamlSingleRuleConfiguration implements YamlRuleConfiguration {
+    
+    private Collection<String> tables = new LinkedList<>();
     
     private String defaultDataSource;
     

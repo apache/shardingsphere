@@ -22,6 +22,8 @@ import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfigura
 import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -46,7 +48,7 @@ class YamlSingleRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToYaml() {
-        assertThat(new YamlSingleRuleConfigurationSwapper().swapToYamlConfiguration(new SingleRuleConfiguration("ds_0")).getDefaultDataSource(), is("ds_0"));
+        assertThat(new YamlSingleRuleConfigurationSwapper().swapToYamlConfiguration(new SingleRuleConfiguration(Collections.emptyList(), "ds_0")).getDefaultDataSource(), is("ds_0"));
     }
     
     @Test
