@@ -40,12 +40,12 @@ public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket impl
     }
     
     @Override
-    public PostgreSQLIdentifierTag getIdentifier() {
-        return PostgreSQLCommandPacketType.SIMPLE_QUERY;
+    public String getSQL() {
+        return sql;
     }
     
     @Override
-    public String getSQL() {
-        return sql;
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLCommandPacketType.SIMPLE_QUERY;
     }
 }
