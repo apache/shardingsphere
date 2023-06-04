@@ -169,21 +169,21 @@ public final class EncryptTable {
     /**
      * Find assisted query column.
      *
-     * @param logicColumn column name
+     * @param logicColumnName logic column name
      * @return assisted query column
      */
-    public Optional<String> findAssistedQueryColumn(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getAssistedQuery().map(EncryptColumnItem::getName) : Optional.empty();
+    public Optional<String> findAssistedQueryColumn(final String logicColumnName) {
+        return columns.containsKey(logicColumnName) ? columns.get(logicColumnName).getAssistedQuery().map(EncryptColumnItem::getName) : Optional.empty();
     }
     
     /**
      * Find like query column.
      *
-     * @param logicColumn column name
+     * @param logicColumnName column name
      * @return like query column
      */
-    public Optional<String> findLikeQueryColumn(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getLikeQuery().map(EncryptColumnItem::getName) : Optional.empty();
+    public Optional<String> findLikeQueryColumn(final String logicColumnName) {
+        return columns.containsKey(logicColumnName) ? columns.get(logicColumnName).getLikeQuery().map(EncryptColumnItem::getName) : Optional.empty();
     }
     
     /**
@@ -202,11 +202,11 @@ public final class EncryptTable {
     /**
      * Find encrypt column.
      * 
-     * @param logicColumn logic column
+     * @param logicColumnName logic column name
      * @return encrypt column
      */
-    public Optional<EncryptColumn> findEncryptColumn(final String logicColumn) {
-        return Optional.ofNullable(columns.get(logicColumn));
+    public Optional<EncryptColumn> findEncryptColumn(final String logicColumnName) {
+        return Optional.ofNullable(columns.get(logicColumnName));
     }
     
 }
