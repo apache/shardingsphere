@@ -44,6 +44,8 @@ class EncryptRuleStatementConverterTest {
         assertTrue(actual.getTables().iterator().next().getColumns().iterator().next().getAssistedQuery().isPresent());
         assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getAssistedQuery().get().getName(), is("assisted_column"));
         assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getCipher().getEncryptorName(), is("t_encrypt_user_id"));
+        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getAssistedQuery().get().getEncryptorName(), is("assist_t_encrypt_user_id"));
+        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getLikeQuery().get().getEncryptorName(), is("like_t_encrypt_user_id"));
     }
     
     private Collection<EncryptColumnSegment> createColumns() {
