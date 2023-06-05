@@ -543,7 +543,7 @@ analyticFunction
     ;
 
 specialFunction
-    : castFunction  | charFunction
+    : castFunction  | charFunction | extractFunction
     ;
 
 castFunction
@@ -552,6 +552,10 @@ castFunction
 
 charFunction
     : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier)? RP_
+    ;
+    
+extractFunction
+    : EXTRACT LP_ (YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | TIMEZONE_HOUR | TIMEZONE_MINUTE | TIMEZONE_REGION | TIMEZONE_ABBR) FROM expr RP_
     ;
 
 regularFunction

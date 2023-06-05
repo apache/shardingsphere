@@ -439,6 +439,22 @@ SECOND
 MICROSECOND
     : M I C R O S E C O N D
     ;
+    
+TIMEZONE_HOUR
+    : T I M E Z O N E UL_ H O U R
+    ;
+    
+TIMEZONE_MINUTE
+    : T I M E Z O N E UL_ M I N U T E
+    ;
+    
+TIMEZONE_REGION
+    : T I M E Z O N E UL_ R E G I O N
+    ;
+    
+TIMEZONE_ABBR
+    : T I M E Z O N E UL_ A B B R
+    ;
 
 MAX
     : M A X
@@ -770,4 +786,8 @@ ORDINALITY
 
 PATH
     : P A T H
+    ;
+
+EXTRACT
+    : E X T R A C T
     ;
