@@ -70,9 +70,9 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     private void checkToBeAlteredEncryptors(final AlterEncryptRuleStatement sqlStatement) {
         Collection<AlgorithmSegment> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> each.getColumns().forEach(column -> {
-            encryptors.add(column.getEncryptor());
-            encryptors.add(column.getAssistedQueryEncryptor());
-            encryptors.add(column.getLikeQueryEncryptor());
+            encryptors.add(column.getCipherColumn().getEncryptor());
+            encryptors.add(column.getAssistedQueryColumn().getEncryptor());
+            encryptors.add(column.getLikeQueryColumn().getEncryptor());
         }));
         encryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getName(), each.getProps()));
     }

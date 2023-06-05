@@ -20,22 +20,17 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
 
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected encrypt column.
+ * Expected encrypt column item.
  */
 @Getter
 @Setter
-public final class ExpectedEncryptColumn extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedEncryptColumnItem extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement(name = "cipher-column")
-    private ExpectedEncryptColumnItem cipherColumn;
-    
-    @XmlElement(name = "assisted-query-column")
-    private ExpectedEncryptColumnItem assistedQueryColumn;
-    
-    @XmlElement(name = "like-query-column")
-    private ExpectedEncryptColumnItem likeQueryColumn;
+    @XmlElement
+    private ExpectedAlgorithm encryptor;
 }
