@@ -173,37 +173,24 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     // TODO Use channels watermark depth to improve performance.
     private void prepareTransactionRecords(final List<CDCChannelProgressPair> channelProgressPairs) {
         if (csnRecordsQueue.isEmpty()) {
-            for (CDCChannelProgressPair each : channelProgressPairs) {
-                PipelineChannel channel = each.getChannel();
-                List<Record> records = channel.pollRecords();
-                if (records.isEmpty()) {
-                    continue;
-                }
-                if (0 == getDataRecordsCount(records)) {
-                    channel.ack(records);
-                    continue;
-                }
-                csnRecordsQueue.add(new CSNRecords(findFirstDataRecord(records).getCsn(), each, records));
-            }
+            prepareWhenQueueIsEmpty(channelProgressPairs);
         } else {
-            long oldestCSN = csnRecordsQueue.peek().getCsn();
-            for (CDCChannelProgressPair each : channelProgressPairs) {
-                PipelineChannel channel = each.getChannel();
-                List<Record> records = channel.peekRecords();
-                if (records.isEmpty()) {
-                    continue;
-                }
-                if (0 == getDataRecordsCount(records)) {
-                    records = channel.pollRecords();
-                    channel.ack(records);
-                    continue;
-                }
-                long csn = findFirstDataRecord(records).getCsn();
-                if (csn <= oldestCSN) {
-                    records = channel.pollRecords();
-                    csnRecordsQueue.add(new CSNRecords(csn, each, records));
-                }
+            prepareWhenQueueIsNotEmpty(channelProgressPairs, csnRecordsQueue.peek().getCsn());
+        }
+    }
+    
+    private void prepareWhenQueueIsEmpty(final List<CDCChannelProgressPair> channelProgressPairs) {
+        for (CDCChannelProgressPair each : channelProgressPairs) {
+            PipelineChannel channel = each.getChannel();
+            List<Record> records = channel.pollRecords();
+            if (records.isEmpty()) {
+                continue;
             }
+            if (0 == getDataRecordsCount(records)) {
+                channel.ack(records);
+                continue;
+            }
+            csnRecordsQueue.add(new CSNRecords(findFirstDataRecord(records).getCsn(), each, records));
         }
     }
     
@@ -214,6 +201,26 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
             }
         }
         throw new IllegalStateException("No data record found");
+    }
+    
+    private void prepareWhenQueueIsNotEmpty(final List<CDCChannelProgressPair> channelProgressPairs, final long oldestCSN) {
+        for (CDCChannelProgressPair each : channelProgressPairs) {
+            PipelineChannel channel = each.getChannel();
+            List<Record> records = channel.peekRecords();
+            if (records.isEmpty()) {
+                continue;
+            }
+            if (0 == getDataRecordsCount(records)) {
+                records = channel.pollRecords();
+                channel.ack(records);
+                continue;
+            }
+            long csn = findFirstDataRecord(records).getCsn();
+            if (csn <= oldestCSN) {
+                records = channel.pollRecords();
+                csnRecordsQueue.add(new CSNRecords(csn, each, records));
+            }
+        }
     }
     
     /**
