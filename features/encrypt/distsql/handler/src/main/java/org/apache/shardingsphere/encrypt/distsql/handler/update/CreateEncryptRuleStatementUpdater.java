@@ -82,12 +82,12 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) {
         Collection<AlgorithmSegment> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> each.getColumns().forEach(column -> {
-            encryptors.add(column.getCipherColumn().getEncryptor());
-            if (null != column.getAssistedQueryColumn()) {
-                encryptors.add(column.getAssistedQueryColumn().getEncryptor());
+            encryptors.add(column.getCipher().getEncryptor());
+            if (null != column.getAssistedQuery()) {
+                encryptors.add(column.getAssistedQuery().getEncryptor());
             }
-            if (null != column.getLikeQueryColumn()) {
-                encryptors.add(column.getLikeQueryColumn().getEncryptor());
+            if (null != column.getLikeQuery()) {
+                encryptors.add(column.getLikeQuery().getEncryptor());
             }
         }));
         encryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getName(), each.getProps()));

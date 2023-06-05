@@ -30,9 +30,9 @@ public final class EncryptColumnSegment implements ASTNode {
     
     private final String name;
     
-    private final EncryptColumnItemSegment cipherColumn;
+    private final EncryptColumnItemSegment cipher;
     
-    private final EncryptColumnItemSegment assistedQueryColumn;
+    private final EncryptColumnItemSegment assistedQuery;
     
-    private final EncryptColumnItemSegment likeQueryColumn;
+    private final EncryptColumnItemSegment likeQuery;
 }

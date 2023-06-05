@@ -30,12 +30,12 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedEncryptColumn extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement(name = "cipher-column")
-    private ExpectedEncryptColumnItem cipherColumn;
+    @XmlElement(name = "cipher")
+    private ExpectedEncryptColumnItem cipher;
     
-    @XmlElement(name = "assisted-query-column")
-    private ExpectedEncryptColumnItem assistedQueryColumn;
+    @XmlElement(name = "assisted-query")
+    private ExpectedEncryptColumnItem assistedQuery;
     
-    @XmlElement(name = "like-query-column")
-    private ExpectedEncryptColumnItem likeQueryColumn;
+    @XmlElement(name = "like-query")
+    private ExpectedEncryptColumnItem likeQuery;
 }

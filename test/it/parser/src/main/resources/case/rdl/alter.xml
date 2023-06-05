@@ -201,16 +201,16 @@
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
         <rule name="t_encrypt">
             <column name="user_id">
-                <cipher-column name="user_cipher">
+                <cipher name="user_cipher">
                     <encryptor algorithm-name="AES">
                         <property key="aes-key-value" value="123456abc" />
                     </encryptor>
-                </cipher-column>
+                </cipher>
             </column>
             <column name="order_id">
-                <cipher-column name="order_cipher">
+                <cipher name="order_cipher">
                     <encryptor algorithm-name="MD5" />
-                </cipher-column>
+                </cipher>
             </column>
         </rule>
     </alter-encrypt-rule>
@@ -218,19 +218,19 @@
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-assisted-query-column">
         <rule name="t_encrypt">
             <column name="user_id">
-                <cipher-column name="user_cipher">
+                <cipher name="user_cipher">
                     <encryptor algorithm-name="AES">
                         <property key="aes-key-value" value="123456abc" />
                     </encryptor>
-                </cipher-column>
-                <assisted-query-column name="assisted_column">
+                </cipher>
+                <assisted-query name="assisted_column">
                     <encryptor algorithm-name="MD5" />
-                </assisted-query-column>
+                </assisted-query>
             </column>
             <column name="order_id">
-                <cipher-column name="order_cipher">
+                <cipher name="order_cipher">
                     <encryptor algorithm-name="MD5" />
-                </cipher-column>
+                </cipher>
             </column>
         </rule>
     </alter-encrypt-rule>
@@ -238,19 +238,19 @@
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-like-query-column">
         <rule name="t_encrypt">
             <column name="user_id">
-                <cipher-column name="user_cipher">
+                <cipher name="user_cipher">
                     <encryptor algorithm-name="AES">
                         <property key="aes-key-value" value="123456abc" />
                     </encryptor>
-                </cipher-column>
-                <like-query-column name="like_column">
+                </cipher>
+                <like-query name="like_column">
                     <encryptor algorithm-name="CHAR_DIGEST_LIKE" />
-                </like-query-column>
+                </like-query>
             </column>
             <column name="order_id">
-                <cipher-column name="order_cipher">
+                <cipher name="order_cipher">
                     <encryptor algorithm-name="MD5" />
-                </cipher-column>
+                </cipher>
             </column>
         </rule>
     </alter-encrypt-rule>
@@ -258,16 +258,16 @@
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-query-with-cipher-column">
         <rule name="t_encrypt" query-with-cipher-column="false">
             <column name="user_id">
-                <cipher-column name="user_cipher">
+                <cipher name="user_cipher">
                     <encryptor algorithm-name="AES">
                         <property key="aes-key-value" value="123456abc" />
                     </encryptor>
-                </cipher-column>
+                </cipher>
             </column>
             <column name="order_id">
-                <cipher-column name="order_cipher">
+                <cipher name="order_cipher">
                     <encryptor algorithm-name="MD5" />
-                </cipher-column>
+                </cipher>
             </column>
         </rule>
     </alter-encrypt-rule>
