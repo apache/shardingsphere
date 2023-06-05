@@ -102,8 +102,8 @@ class EncryptCreateTableTokenGeneratorTest {
     
     private EncryptColumn mockEncryptColumn() {
         EncryptColumn result = new EncryptColumn("certificate_number", new EncryptColumnItem("cipher_certificate_number", "test"));
-        result.setAssistedQuery(new EncryptColumnItem("assisted_certificate_number"));
-        result.setLikeQuery(new EncryptColumnItem("like_certificate_number"));
+        result.setAssistedQuery(new EncryptColumnItem("assisted_certificate_number", "assisted_encryptor"));
+        result.setLikeQuery(new EncryptColumnItem("like_certificate_number", "like_encryptor"));
         return result;
     }
 }
