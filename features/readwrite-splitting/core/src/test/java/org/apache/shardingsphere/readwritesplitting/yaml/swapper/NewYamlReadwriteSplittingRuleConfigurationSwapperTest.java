@@ -48,7 +48,7 @@ class NewYamlReadwriteSplittingRuleConfigurationSwapperTest {
     @Test
     void assertSwapToDataNodesLoadBalancers() {
         ReadwriteSplittingRuleConfiguration config = new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration("group_0",
-                "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null)), Collections.singletonMap("random", new AlgorithmConfiguration("random", new Properties())));
+                "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random")), Collections.singletonMap("random", new AlgorithmConfiguration("random", new Properties())));
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(2));
         Iterator<YamlDataNode> iterator = result.iterator();
