@@ -77,8 +77,8 @@ public final class EncryptRuleStatementConverter {
     }
     
     private static void setAssistedQuery(final String tableName, final EncryptColumnSegment columnSegment, final EncryptColumnRuleConfiguration result) {
-        String assistedQueryEncryptorName = null == columnSegment.getAssistedQueryColumn().getEncryptor() ?
-                null : getAssistedQueryEncryptorName(tableName, columnSegment.getAssistedQueryColumn().getName());
+        String assistedQueryEncryptorName = null == columnSegment.getAssistedQueryColumn().getEncryptor() ? null
+                : getAssistedQueryEncryptorName(tableName, columnSegment.getAssistedQueryColumn().getName());
         EncryptColumnItemRuleConfiguration assistedQueryColumnConfig = new EncryptColumnItemRuleConfiguration(columnSegment.getAssistedQueryColumn().getName(), assistedQueryEncryptorName);
         result.setAssistedQuery(assistedQueryColumnConfig);
     }
