@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.util.props;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.LinkedHashMap;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,6 @@ public final class PropertiesConverter {
      * @return converted string content
      */
     public static String convert(final Properties props) {
-        return props.entrySet().stream().map(entry -> String.join("=", entry.getKey().toString(), entry.getValue().toString())).collect(Collectors.joining(","));
+        return new LinkedHashMap<>(props).entrySet().stream().map(entry -> String.join("=", entry.getKey().toString(), entry.getValue().toString())).collect(Collectors.joining(","));
     }
 }
