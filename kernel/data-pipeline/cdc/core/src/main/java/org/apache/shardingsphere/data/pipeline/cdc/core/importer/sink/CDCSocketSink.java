@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink;
 
 import io.netty.channel.Channel;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
@@ -95,12 +96,12 @@ public final class CDCSocketSink implements PipelineSink {
         return new PipelineJobProgressUpdatedParameter(resultRecords.size());
     }
     
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SneakyThrows(InterruptedException.class)
     private void doAwait() {
         lock.lock();
         try {
             condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
-        } catch (final InterruptedException ignored) {
-            Thread.currentThread().interrupt();
         } finally {
             lock.unlock();
         }

@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception.metadata;
+package org.apache.shardingsphere.single.distsql.segment;
 
-import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
- * Encrypt assisted query encryptor not found exception.
+ * Single table segment.
  */
-public final class EncryptAssistedQueryEncryptorNotFoundException extends EncryptSQLException {
+@RequiredArgsConstructor
+@Getter
+public final class SingleTableSegment implements ASTNode {
     
-    private static final long serialVersionUID = -8700683634804933320L;
+    private final String storageUnitName;
     
-    public EncryptAssistedQueryEncryptorNotFoundException(final String reason) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 6, "Assisted query encryptor not found, reason is: %s.", reason);
-    }
+    private final String schemaName;
+    
+    private final String tableName;
 }

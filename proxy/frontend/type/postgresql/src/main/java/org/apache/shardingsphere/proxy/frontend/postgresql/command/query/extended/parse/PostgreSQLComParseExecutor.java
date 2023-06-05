@@ -61,15 +61,20 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         SQLParserEngine sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getDatabaseName());
         String sql = packet.getSQL();
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
+        List<Integer> actualParameterMarkerIndexes = new ArrayList<>();
         if (sqlStatement.getParameterCount() > 0) {
-            sql = convertSQLToJDBCStyle(sqlStatement, sql);
+            List<ParameterMarkerSegment> parameterMarkerSegments = new ArrayList<>(((AbstractSQLStatement) sqlStatement).getParameterMarkerSegments());
+            for (ParameterMarkerSegment each : parameterMarkerSegments) {
+                actualParameterMarkerIndexes.add(each.getParameterIndex());
+            }
+            sql = convertSQLToJDBCStyle(parameterMarkerSegments, sql);
             sqlStatement = sqlParserEngine.parse(sql, true);
         }
         List<PostgreSQLColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
                 : SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                         sqlStatement, connectionSession.getDefaultDatabaseName());
-        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, paddedColumnTypes);
+        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, paddedColumnTypes, actualParameterMarkerIndexes);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), serverPreparedStatement);
         return Collections.singleton(PostgreSQLParseCompletePacket.getInstance());
     }
@@ -80,8 +85,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         return sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType()));
     }
     
-    private String convertSQLToJDBCStyle(final SQLStatement sqlStatement, final String sql) {
-        List<ParameterMarkerSegment> parameterMarkerSegments = new ArrayList<>(((AbstractSQLStatement) sqlStatement).getParameterMarkerSegments());
+    private String convertSQLToJDBCStyle(final List<ParameterMarkerSegment> parameterMarkerSegments, final String sql) {
         parameterMarkerSegments.sort(Comparator.comparingInt(SQLSegment::getStopIndex));
         StringBuilder result = new StringBuilder(sql);
         for (int i = parameterMarkerSegments.size() - 1; i >= 0; i--) {

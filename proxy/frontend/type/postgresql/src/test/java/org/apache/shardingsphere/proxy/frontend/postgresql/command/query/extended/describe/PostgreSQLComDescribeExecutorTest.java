@@ -75,6 +75,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -142,7 +144,8 @@ class PostgreSQLComDescribeExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
         when(ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
+        List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes, parameterIndexes));
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
@@ -172,7 +175,8 @@ class PostgreSQLComDescribeExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
         when(ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
+        List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes, parameterIndexes));
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
@@ -202,7 +206,8 @@ class PostgreSQLComDescribeExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
         when(ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
+        List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes, parameterIndexes));
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
@@ -232,7 +237,8 @@ class PostgreSQLComDescribeExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
         when(ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
+        List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes, parameterIndexes));
         assertThrows(ColumnNotFoundException.class, () -> executor.execute());
     }
     
@@ -254,7 +260,8 @@ class PostgreSQLComDescribeExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
         when(ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
+        List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes, parameterIndexes));
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
@@ -334,7 +341,8 @@ class PostgreSQLComDescribeExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
         when(ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
+        List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes, parameterIndexes));
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(2));
         Iterator<DatabasePacket> actualPacketsIterator = actual.iterator();

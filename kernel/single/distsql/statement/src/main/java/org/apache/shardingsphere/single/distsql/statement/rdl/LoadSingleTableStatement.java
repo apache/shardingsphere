@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception.metadata;
+package org.apache.shardingsphere.single.distsql.statement.rdl;
 
-import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
+
+import java.util.Collection;
 
 /**
- * Encrypt like query encryptor not found exception.
+ * Load single table statement.
  */
-public final class EncryptLikeQueryEncryptorNotFoundException extends EncryptSQLException {
+@RequiredArgsConstructor
+@Getter
+public final class LoadSingleTableStatement extends CreateRuleStatement {
     
-    private static final long serialVersionUID = 1620586484949188815L;
-    
-    public EncryptLikeQueryEncryptorNotFoundException(final String reason) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 8, "Encrypt like query encryptor not found, reason is: %s.", reason);
-    }
+    private final Collection<SingleTableSegment> tables;
 }

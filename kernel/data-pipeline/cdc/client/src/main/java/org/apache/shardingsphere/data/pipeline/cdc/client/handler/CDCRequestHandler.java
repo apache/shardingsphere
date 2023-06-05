@@ -28,9 +28,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClie
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Builder;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
@@ -76,14 +74,6 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
         } else if (response.hasDataRecordResult()) {
             processDataRecords(ctx, response.getDataRecordResult());
         }
-    }
-    
-    // TODO not remove the method, may be used again in the future
-    private void sendStartStreamingDataRequest(final ChannelHandlerContext ctx, final String streamingId, final ClientConnectionContext connectionContext) {
-        StartStreamingRequestBody startStreamingRequest = StartStreamingRequestBody.newBuilder().setStreamingId(streamingId).build();
-        Builder builder = CDCRequest.newBuilder().setRequestId(RequestIdUtils.generateRequestId()).setType(Type.START_STREAMING).setStartStreamingRequestBody(startStreamingRequest);
-        ctx.writeAndFlush(builder.build());
-        connectionContext.setStatus(ClientConnectionStatus.STREAMING);
     }
     
     private void processDataRecords(final ChannelHandlerContext ctx, final DataRecordResult result) {

@@ -15,29 +15,19 @@
  * limitations under the License.
  */
 
-grammar RDLStatement;
+package org.apache.shardingsphere.encrypt.exception.metadata;
 
-import BaseRule;
+import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-setDefaultSingleTableStorageUnit
-    : SET DEFAULT SINGLE TABLE STORAGE UNIT EQ_ (storageUnitName | RANDOM)
-    ;
-
-loadSingleTable
-    : LOAD SINGLE TABLE tableDefinition
-    ;
-
-unloadSingleTable
-    : UNLOAD SINGLE TABLE tableDefinition
-    ;
-
-tableDefinition
-    : tableIdentifier (COMMA_ tableIdentifier)*
-    ;
-
-tableIdentifier
-    : ASTERISK_ DOTASTERISK_ # allTables
-    | storageUnitName DOTASTERISK_ # allTablesFromStorageUnit
-    | storageUnitName DOT_ tableName # tableFromStorageUnit
-    | storageUnitName DOT_ schemaName DOT_ tableName # tableFromSchema
-    ;
+/**
+ * Missing encryptor exception.
+ */
+public final class MissingEncryptorException extends EncryptSQLException {
+    
+    private static final long serialVersionUID = -4847495252826650747L;
+    
+    public MissingEncryptorException(final String tableName, final String logicColumnName, final String encryptorType) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Can not find %s encryptor in table `%s` and column `%s`.", encryptorType, tableName, logicColumnName);
+    }
+}

@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-grammar RDLStatement;
+grammar BaseRule;
 
-import BaseRule;
+import Symbol, Keyword, Literals;
 
-setDefaultSingleTableStorageUnit
-    : SET DEFAULT SINGLE TABLE STORAGE UNIT EQ_ (storageUnitName | RANDOM)
+storageUnitName
+    : IDENTIFIER_
     ;
 
-loadSingleTable
-    : LOAD SINGLE TABLE tableDefinition
+databaseName
+    : IDENTIFIER_
     ;
 
-unloadSingleTable
-    : UNLOAD SINGLE TABLE tableDefinition
+schemaName
+    : IDENTIFIER_
     ;
 
-tableDefinition
-    : tableIdentifier (COMMA_ tableIdentifier)*
-    ;
-
-tableIdentifier
-    : ASTERISK_ DOTASTERISK_ # allTables
-    | storageUnitName DOTASTERISK_ # allTablesFromStorageUnit
-    | storageUnitName DOT_ tableName # tableFromStorageUnit
-    | storageUnitName DOT_ schemaName DOT_ tableName # tableFromSchema
+tableName
+    : IDENTIFIER_
     ;

@@ -1888,4 +1888,26 @@
             <column name="status" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_partition_less_than">
+        <table name="t_sales" start-index="13" stop-index="19" />
+        <column-definition type="INTEGER" start-index="22"  stop-index="46">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="49" stop-index="76">
+            <column name="goods_name" />
+        </column-definition>
+        <column-definition type="DATE" start-index="79" stop-index="102">
+            <column name="sales_date" />
+        </column-definition>
+        <column-definition type="INTEGER" start-index="105" stop-index="124">
+            <column name="sales_volume" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="127" stop-index="146">
+            <column name="sales_store" />
+        </column-definition>
+        <constraint-definition start-index="149" stop-index="172">
+            <primary-key-column name="order_id" start-index="163" stop-index="170" />
+        </constraint-definition>
+    </create-table>
 </sql-parser-test-cases>
