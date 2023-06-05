@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.listener;
 
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+
 /**
  * Data changed listener.
  */

@@ -15,34 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.node.metadata.config.readwritesplitting;
+package org.apache.shardingsphere.mode.event;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Readwrite-splitting node converter.
+ * Data changed event.
  */
-public final class ReadwriteSplittingNodeConverter {
+@RequiredArgsConstructor
+@Getter
+public final class DataChangedEvent {
     
-    private static final String DATA_SOURCES = "data_sources";
+    private final String key;
     
-    private static final String LOAD_BALANCER_NODE = "load_balancers";
+    private final String value;
     
-    /**
-     * Get group name path.
-     * 
-     * @param groupName group name
-     * @return group name path
-     */
-    public String getGroupNamePath(final String groupName) {
-        return String.join("/", DATA_SOURCES, groupName);
-    }
+    private final Type type;
     
     /**
-     * Get load balancer name.
-     * 
-     * @param loadBalancerName load balancer name
-     * @return load balancer path
+     * Data changed type.
      */
-    public String getLoadBalancerPath(final String loadBalancerName) {
-        return String.join("/", LOAD_BALANCER_NODE, loadBalancerName);
+    public enum Type {
+        
+        ADDED, UPDATED, DELETED, IGNORED
     }
 }

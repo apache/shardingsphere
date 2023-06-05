@@ -15,29 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.listener;
+package org.apache.shardingsphere.readwritesplitting.event.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Data changed event.
+ * Delete readwrite-splitting configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataChangedEvent {
+public final class DeleteReadwriteSplittingConfigurationEvent implements GovernanceEvent {
     
-    private final String key;
+    private final String databaseName;
     
-    private final String value;
-    
-    private final Type type;
-    
-    /**
-     * Data changed type.
-     */
-    public enum Type {
-        
-        ADDED, UPDATED, DELETED, IGNORED
-    }
+    private final String groupName;
 }

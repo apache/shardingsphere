@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.watcher;
 
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

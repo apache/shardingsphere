@@ -15,10 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry;
+package org.apache.shardingsphere.readwritesplitting.event.loadbalance;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Governance event.
+ * Delete load-balance event.
  */
-public interface GovernanceEvent {
+@RequiredArgsConstructor
+@Getter
+public final class DeleteLoadBalanceEvent implements GovernanceEvent {
+    
+    private final String databaseName;
+    
+    private final String loadBalanceName;
 }
