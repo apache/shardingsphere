@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-grammar RDLStatement;
+package org.apache.shardingsphere.single.distsql.statement.rdl;
 
-import BaseRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 
-setDefaultSingleTableStorageUnit
-    : SET DEFAULT SINGLE TABLE STORAGE UNIT EQ_ (storageUnitName | RANDOM)
-    ;
+import java.util.Collection;
 
-loadSingleTable
-    : LOAD SINGLE TABLE tableDefinition
-    ;
-
-unloadSingleTable
-    : UNLOAD SINGLE TABLE tableDefinition
-    ;
-
-tableDefinition
-    : tableIdentifier (COMMA_ tableIdentifier)*
-    ;
-
-tableIdentifier
-    : ASTERISK_ DOTASTERISK_ # allTables
-    | storageUnitName DOTASTERISK_ # allTablesFromStorageUnit
-    | storageUnitName DOT_ tableName # tableFromStorageUnit
-    | storageUnitName DOT_ schemaName DOT_ tableName # tableFromSchema
-    ;
+/**
+ * Load single table statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class LoadSingleTableStatement extends CreateRuleStatement {
+    
+    private final Collection<SingleTableSegment> tables;
+}

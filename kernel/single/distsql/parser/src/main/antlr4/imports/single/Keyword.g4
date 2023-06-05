@@ -70,3 +70,23 @@ COUNT
 LIKE
     : L I K E
     ;
+
+SCHEMA
+    : S C H E M A
+    ;
+
+INTO
+    : I N T O
+    ;
+
+LOAD
+    : L O A D
+    ;
+
+UNLOAD
+    : U N L O A D
+    ;
+
+UNLOADED
+    : U N L O A D E D
+    ;

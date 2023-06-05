@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-grammar RDLStatement;
+package org.apache.shardingsphere.single.distsql.segment;
 
-import BaseRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
-setDefaultSingleTableStorageUnit
-    : SET DEFAULT SINGLE TABLE STORAGE UNIT EQ_ (storageUnitName | RANDOM)
-    ;
-
-loadSingleTable
-    : LOAD SINGLE TABLE tableDefinition
-    ;
-
-unloadSingleTable
-    : UNLOAD SINGLE TABLE tableDefinition
-    ;
-
-tableDefinition
-    : tableIdentifier (COMMA_ tableIdentifier)*
-    ;
-
-tableIdentifier
-    : ASTERISK_ DOTASTERISK_ # allTables
-    | storageUnitName DOTASTERISK_ # allTablesFromStorageUnit
-    | storageUnitName DOT_ tableName # tableFromStorageUnit
-    | storageUnitName DOT_ schemaName DOT_ tableName # tableFromSchema
-    ;
+/**
+ * Single table segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class SingleTableSegment implements ASTNode {
+    
+    private final String storageUnitName;
+    
+    private final String schemaName;
+    
+    private final String tableName;
+}
