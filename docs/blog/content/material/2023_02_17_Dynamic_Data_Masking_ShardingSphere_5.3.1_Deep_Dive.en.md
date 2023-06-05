@@ -250,7 +250,7 @@ mysql> SHOW MASK RULES FROM mask_db;
 +--------+-----------+---------------------------+-----------------------------------+
 | t_user | password  | MD5                       |                                   |
 | t_user | email     | MASK_BEFORE_SPECIAL_CHARS | replace-char=*,special-chars=@    |
-| t_user | telephone | KEEP_FIRST_N_LAST_M       | first-n=3,replace-char=*,last-m=4 |
+| t_user | telephone | KEEP_FIRST_N_LAST_M       | first-n=3,last-m=4,replace-char=* |
 +--------+-----------+---------------------------+-----------------------------------+
 3 rows in set (0.01 sec)
 

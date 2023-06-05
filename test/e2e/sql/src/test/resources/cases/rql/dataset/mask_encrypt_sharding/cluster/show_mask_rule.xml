@@ -23,6 +23,6 @@
         <column name="algorithm_props" />
     </metadata>
     <row values="t_user| password| MD5| " />
-    <row values="t_user| email| MASK_BEFORE_SPECIAL_CHARS| special-chars=@,replace-char=*" />
+    <row values="t_user| email| MASK_BEFORE_SPECIAL_CHARS| replace-char=*,special-chars=@" />
     <row values="t_user| telephone| KEEP_FIRST_N_LAST_M| first-n=3,last-m=4,replace-char=*" />
 </dataset>
