@@ -133,17 +133,18 @@ public final class ShardingRouteEngineFactory {
             return new ShardingIgnoreRoutingEngine();
         }
         if (sqlStatementContext instanceof CursorAvailable) {
-            return getCursorRouteEngine(shardingRule, database, sqlStatementContext, hintValueContext, shardingConditions, props, tableNames, connectionContext);
+            return getCursorRouteEngine(shardingRule, database, sqlStatementContext, hintValueContext, shardingConditions, props, connectionContext);
         }
         return new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, shardingRuleTableNames);
     }
     
     private static ShardingRouteEngine getCursorRouteEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
                                                             final HintValueContext hintValueContext, final ShardingConditions shardingConditions, final ConfigurationProperties props,
-                                                            final Collection<String> tableNames, final ConnectionContext connectionContext) {
+                                                            final ConnectionContext connectionContext) {
         if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         if (shardingRule.isAllBroadcastTables(tableNames)) {
             return new ShardingUnicastRoutingEngine(sqlStatementContext, tableNames, connectionContext);
         }
