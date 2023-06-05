@@ -52,20 +52,20 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(14));
         Iterator<YamlDataNode> iterator = result.iterator();
-        assertThat(iterator.next().getKey(), is("/tables/table_LOGIC_TABLE"));
-        assertThat(iterator.next().getKey(), is("/tables/table_SUB_LOGIC_TABLE"));
-        assertThat(iterator.next().getKey(), is("/binding_tables/binding_table_foo"));
-        assertThat(iterator.next().getKey(), is("/broadcast_tables"));
-        assertThat(iterator.next().getKey(), is("/default_strategy/default_database_strategy"));
-        assertThat(iterator.next().getKey(), is("/default_strategy/default_table_strategy"));
-        assertThat(iterator.next().getKey(), is("/default_strategy/default_key_generate_strategy"));
-        assertThat(iterator.next().getKey(), is("/default_strategy/default_audit_strategy"));
-        assertThat(iterator.next().getKey(), is("/sharding_algorithms/core_standard_fixture"));
-        assertThat(iterator.next().getKey(), is("/key_generators/uuid"));
-        assertThat(iterator.next().getKey(), is("/key_generators/default"));
-        assertThat(iterator.next().getKey(), is("/key_generators/auto_increment"));
-        assertThat(iterator.next().getKey(), is("/auditors/audit_algorithm"));
-        assertThat(iterator.next().getKey(), is("/default_strategy/default_sharding_column"));
+        assertThat(iterator.next().getKey(), is("tables/table_LOGIC_TABLE"));
+        assertThat(iterator.next().getKey(), is("tables/table_SUB_LOGIC_TABLE"));
+        assertThat(iterator.next().getKey(), is("binding_tables/binding_table_foo"));
+        assertThat(iterator.next().getKey(), is("broadcast_tables"));
+        assertThat(iterator.next().getKey(), is("default_strategy/default_database_strategy"));
+        assertThat(iterator.next().getKey(), is("default_strategy/default_table_strategy"));
+        assertThat(iterator.next().getKey(), is("default_strategy/default_key_generate_strategy"));
+        assertThat(iterator.next().getKey(), is("default_strategy/default_audit_strategy"));
+        assertThat(iterator.next().getKey(), is("sharding_algorithms/core_standard_fixture"));
+        assertThat(iterator.next().getKey(), is("key_generators/uuid"));
+        assertThat(iterator.next().getKey(), is("key_generators/default"));
+        assertThat(iterator.next().getKey(), is("key_generators/auto_increment"));
+        assertThat(iterator.next().getKey(), is("auditors/audit_algorithm"));
+        assertThat(iterator.next().getKey(), is("default_strategy/default_sharding_column"));
     }
     
     private ShardingRuleConfiguration createMaximumShardingRule() {

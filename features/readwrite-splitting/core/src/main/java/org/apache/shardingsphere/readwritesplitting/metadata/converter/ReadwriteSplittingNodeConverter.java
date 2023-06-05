@@ -39,7 +39,7 @@ public final class ReadwriteSplittingNodeConverter {
      * @return group name path
      */
     public static String getGroupNamePath(final String groupName) {
-        return String.join("/", "", DATA_SOURCES_NODE, groupName);
+        return String.join("/", DATA_SOURCES_NODE, groupName);
     }
     
     /**
@@ -49,7 +49,7 @@ public final class ReadwriteSplittingNodeConverter {
      * @return load balancer path
      */
     public static String getLoadBalancerPath(final String loadBalancerName) {
-        return String.join("/", "", LOAD_BALANCER_NODE, loadBalancerName);
+        return String.join("/", LOAD_BALANCER_NODE, loadBalancerName);
     }
     
     /**
