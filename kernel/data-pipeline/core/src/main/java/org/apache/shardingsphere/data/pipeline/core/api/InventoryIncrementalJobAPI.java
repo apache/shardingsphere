@@ -101,12 +101,11 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     /**
      * Build data consistency calculate algorithm.
      *
-     * @param jobConfig job configuration
      * @param algorithmType algorithm type
      * @param algorithmProps algorithm properties
      * @return calculate algorithm
      */
-    DataConsistencyCalculateAlgorithm buildDataConsistencyCalculateAlgorithm(PipelineJobConfiguration jobConfig, String algorithmType, Properties algorithmProps);
+    DataConsistencyCalculateAlgorithm buildDataConsistencyCalculateAlgorithm(String algorithmType, Properties algorithmProps);
     
     /**
      * Do data consistency check.
