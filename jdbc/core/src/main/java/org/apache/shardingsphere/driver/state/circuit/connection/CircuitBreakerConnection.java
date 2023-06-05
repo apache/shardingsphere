@@ -131,28 +131,13 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     }
     
     @Override
-    public CallableStatement prepareCall(final String sql) throws SQLException {
-        throw new SQLFeatureNotSupportedException("prepareCall");
-    }
-    
-    @Override
     public PreparedStatement prepareStatement(final String sql, final int resultSetType, final int resultSetConcurrency) {
         return new CircuitBreakerPreparedStatement();
     }
     
     @Override
-    public CallableStatement prepareCall(final String sql, final int resultSetType, final int resultSetConcurrency) throws SQLException {
-        throw new SQLFeatureNotSupportedException("prepareCall");
-    }
-    
-    @Override
     public PreparedStatement prepareStatement(final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         return new CircuitBreakerPreparedStatement();
-    }
-    
-    @Override
-    public CallableStatement prepareCall(final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
-        throw new SQLFeatureNotSupportedException("prepareCall");
     }
     
     @Override
@@ -168,6 +153,21 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     @Override
     public PreparedStatement prepareStatement(final String sql, final String[] columnNames) {
         return new CircuitBreakerPreparedStatement();
+    }
+    
+    @Override
+    public CallableStatement prepareCall(final String sql) throws SQLException {
+        throw new SQLFeatureNotSupportedException("prepareCall");
+    }
+    
+    @Override
+    public CallableStatement prepareCall(final String sql, final int resultSetType, final int resultSetConcurrency) throws SQLException {
+        throw new SQLFeatureNotSupportedException("prepareCall");
+    }
+    
+    @Override
+    public CallableStatement prepareCall(final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
+        throw new SQLFeatureNotSupportedException("prepareCall");
     }
     
     @Override
