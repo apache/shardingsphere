@@ -651,3 +651,16 @@ DEC
 END
     : E N D
     ;
+
+LESS
+    : L E S S
+    ;
+
+THAN
+    : T H A N
+    ;
+
+MAXVALUE
+    : M A X V A L U E
+    ;
+
