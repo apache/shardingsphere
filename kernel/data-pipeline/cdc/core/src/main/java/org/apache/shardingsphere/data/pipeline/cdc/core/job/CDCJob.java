@@ -35,7 +35,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.prepare.CDCJobPreparer;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCTasksRunner;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
@@ -118,13 +117,6 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
                 processFailed(each, ex);
             }
             throw ex;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            for (PipelineJobItemContext each : jobItemContexts) {
-                processFailed(each, ex);
-            }
-            throw new PipelineInternalException(ex);
         }
     }
     
