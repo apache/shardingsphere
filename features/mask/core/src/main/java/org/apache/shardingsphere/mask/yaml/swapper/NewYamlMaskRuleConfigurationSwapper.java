@@ -39,7 +39,6 @@ import java.util.Map.Entry;
  */
 public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<MaskRuleConfiguration> {
     
-    // TODO to be used
     private final YamlMaskTableRuleConfigurationSwapper tableSwapper = new YamlMaskTableRuleConfigurationSwapper();
     
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
@@ -48,10 +47,10 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
     public Collection<YamlDataNode> swapToDataNodes(final MaskRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (MaskTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(MaskNodeConverter.getTableNamePath(each.getName()), YamlEngine.marshal(each)));
+            result.add(new YamlDataNode(MaskNodeConverter.getTableNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
         }
         for (Entry<String, AlgorithmConfiguration> entry : data.getMaskAlgorithms().entrySet()) {
-            result.add(new YamlDataNode(MaskNodeConverter.getMaskAlgorithmNamePath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
+            result.add(new YamlDataNode(MaskNodeConverter.getMaskAlgorithmNamePath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         return result;
     }
