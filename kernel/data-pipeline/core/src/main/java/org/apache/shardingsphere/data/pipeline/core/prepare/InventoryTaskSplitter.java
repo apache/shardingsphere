@@ -48,9 +48,6 @@ import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -61,7 +58,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -185,56 +181,9 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition> getPositionWithoutUniqueKey(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
                                                                    final PipelineDataSourceWrapper dataSource) {
-        long tableRecordsCount = getTableRecordsCount(dumperConfig, dataSource);
+        long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperConfig, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         return Collections.singletonList(new NoUniqueKeyPosition());
-    }
-    
-    private long getTableRecordsCount(final InventoryDumperConfiguration dumperConfig, final PipelineDataSourceWrapper dataSource) {
-        String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
-        String actualTableName = dumperConfig.getActualTableName();
-        PipelineSQLBuilder pipelineSQLBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, dataSource.getDatabaseType().getType());
-        Optional<String> sql = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);
-        try {
-            if (sql.isPresent()) {
-                DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, dataSource.getDatabaseType().getType());
-                long result = getEstimatedCount(databaseType, dataSource, sql.get());
-                return result > 0 ? result : getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
-            }
-            return getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
-        } catch (final SQLException ex) {
-            String uniqueKey = dumperConfig.hasUniqueKey() ? dumperConfig.getUniqueKeyColumns().get(0).getName() : "";
-            throw new SplitPipelineJobByUniqueKeyException(dumperConfig.getActualTableName(), uniqueKey, ex);
-        }
-    }
-    
-    private long getEstimatedCount(final DatabaseType databaseType, final DataSource dataSource, final String estimatedCountSQL) throws SQLException {
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(estimatedCountSQL)) {
-            if (databaseType instanceof MySQLDatabaseType) {
-                preparedStatement.setString(1, connection.getCatalog());
-            }
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                resultSet.next();
-                return resultSet.getLong(1);
-            }
-        }
-    }
-    
-    private long getCount(final DataSource dataSource, final String countSQL) throws SQLException {
-        long startTimeMillis = System.currentTimeMillis();
-        long result;
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(countSQL)) {
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                resultSet.next();
-                result = resultSet.getLong(1);
-            }
-        }
-        log.info("getCountSQLResult cost {} ms", System.currentTimeMillis() - startTimeMillis);
-        return result;
     }
     
     private Collection<IngestPosition> getPositionByIntegerUniqueKeyRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
@@ -280,7 +229,7 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition> getPositionByStringUniqueKeyRange(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
                                                                          final PipelineDataSourceWrapper dataSource) {
-        long tableRecordsCount = getTableRecordsCount(dumperConfig, dataSource);
+        long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperConfig, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         Collection<IngestPosition> result = new LinkedList<>();
         result.add(new StringPrimaryKeyPosition(null, null));
@@ -289,7 +238,7 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition> getUnsupportedPosition(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
                                                               final PipelineDataSourceWrapper dataSource) {
-        long tableRecordsCount = getTableRecordsCount(dumperConfig, dataSource);
+        long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperConfig, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         return Collections.singletonList(new UnsupportedKeyPosition());
     }
