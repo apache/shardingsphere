@@ -37,8 +37,16 @@ rules:
         standard:
           shardingColumn: account_id
           shardingAlgorithmName: t_account_detail_inline
+    t_account_detail_new:
+      actualDataNodes: db.t_account_detail_new_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: account_id
+          shardingAlgorithmName: t_account_detail_new_inline
     t_order:
       actualDataNodes: db.t_order_0
+    t_order_new:
+      actualDataNodes: db.t_order_new_0
     t_order_item:
       actualDataNodes: db.t_order_item_0 
     t_order_extend:
@@ -67,11 +75,12 @@ rules:
           shardingAlgorithmName: t_account_view_inline
   bindingTables:
     - t_account, t_account_detail, t_account_view
-    - t_order, t_order_item
+    - t_order, t_order_new, t_order_item
     - t_user, t_user_extend
     - T_ROLE, T_ROLE_ADMIN
   broadcastTables:
     - t_config
+    - t_config_new
     - t_order_type
   shardingAlgorithms:
     t_account_inline:
@@ -82,6 +91,10 @@ rules:
       type: INLINE
       props:
         algorithm-expression: t_account_detail_${account_id % 2}
+    t_account_detail_new_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_account_detail_new_${account_id % 2}
     t_user_inline:
       type: INLINE
       props:
