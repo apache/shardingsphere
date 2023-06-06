@@ -48,7 +48,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -103,14 +103,13 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
                 .getConfiguration().getUsers().stream().map(user -> user.getGrantee().getUsername())
                 .forEach(userName -> openGaussRoles.add(new OpenGaussRoles(userName)));
         int index = 0;
-        for (String databaseName : allDatabaseNames) {
-            for (Map.Entry<String, ShardingSphereSchema> schema : ProxyContext.getInstance().getDatabase(databaseName).getSchemas().entrySet()) {
-                String schemaName = schema.getKey();
-                for (String tableName : schema.getValue().getAllTableNames()) {
-                    openGaussTables.add(new OpenGaussTables(schemaName, tableName));
+        for (String each : allDatabaseNames) {
+            for (Entry<String, ShardingSphereSchema> entry : ProxyContext.getInstance().getDatabase(each).getSchemas().entrySet()) {
+                for (String tableName : entry.getValue().getAllTableNames()) {
+                    openGaussTables.add(new OpenGaussTables(entry.getKey(), tableName));
                 }
             }
-            openGaussDatabases[index++] = new OpenGaussDatabase(databaseName, DAT_COMPATIBILITY);
+            openGaussDatabases[index++] = new OpenGaussDatabase(each, DAT_COMPATIBILITY);
         }
         openGaussTables.addAll(SystemSchemaBuilderRule.OPEN_GAUSS_PG_CATALOG.getTables().stream().map(tableName -> new OpenGaussTables(PG_CATALOG, tableName)).collect(Collectors.toSet()));
         openGaussTables.addAll(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG.getTables().stream().map(tableName -> new OpenGaussTables(PG_CATALOG, tableName)).collect(Collectors.toSet()));
