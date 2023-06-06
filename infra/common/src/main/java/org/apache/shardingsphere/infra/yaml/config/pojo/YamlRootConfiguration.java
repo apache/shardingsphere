@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfigurati
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -47,7 +47,7 @@ public final class YamlRootConfiguration implements YamlConfiguration {
     @Deprecated
     private String schemaName;
     
-    private Map<String, Map<String, Object>> dataSources = new HashMap<>();
+    private Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>();
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     
