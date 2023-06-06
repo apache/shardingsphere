@@ -71,10 +71,10 @@ class ShardingUpdateStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
-
+    
     @Mock
     private ShardingSphereDatabase database;
-
+    
     @Mock
     private ShardingSphereSchema schema;
     

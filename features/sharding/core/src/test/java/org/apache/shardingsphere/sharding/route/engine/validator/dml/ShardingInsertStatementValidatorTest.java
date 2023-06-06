@@ -90,7 +90,7 @@ class ShardingInsertStatementValidatorTest {
     
     @Mock
     private ShardingConditions shardingConditions;
-
+    
     @Mock
     private ShardingSphereDatabase database;
     
@@ -142,7 +142,7 @@ class ShardingInsertStatementValidatorTest {
         assertDoesNotThrow(() -> new ShardingInsertStatementValidator(shardingConditions).preValidate(
                 shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
-
+    
     @Test
     void assertPreValidateWhenInsertSelectWithoutBindingTables() {
         when(shardingRule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
