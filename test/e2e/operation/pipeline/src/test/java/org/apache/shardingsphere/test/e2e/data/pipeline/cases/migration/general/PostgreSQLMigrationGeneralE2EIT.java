@@ -84,6 +84,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
                     containerComposer.getDatabaseType(), 20));
             TimeUnit.SECONDS.timedJoin(containerComposer.getIncreaseTaskThread(), 30);
             containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (10000, 1, 'OK')", schemaTableName));
+            containerComposer.proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
             containerComposer.assertProxyOrderRecordExist(schemaTableName, 10000);
             checkOrderMigration(containerComposer, jobId);
             checkOrderItemMigration(containerComposer);
@@ -92,7 +93,6 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             }
             List<String> lastJobIds = listJobId(containerComposer);
             assertTrue(lastJobIds.isEmpty());
-            containerComposer.proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
             containerComposer.assertGreaterThanOrderTableInitRows(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1, PipelineContainerComposer.SCHEMA_NAME);
         }
     }
