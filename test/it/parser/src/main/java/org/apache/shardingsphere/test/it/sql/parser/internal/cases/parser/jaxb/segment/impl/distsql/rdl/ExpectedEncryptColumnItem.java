@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.parser.segment;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Encrypt column segment.
+ * Expected encrypt column item.
  */
-@RequiredArgsConstructor
 @Getter
-public final class EncryptColumnSegment implements ASTNode {
+@Setter
+public final class ExpectedEncryptColumnItem extends AbstractExpectedIdentifierSQLSegment {
     
-    private final String name;
-    
-    private final EncryptColumnItemSegment cipher;
-    
-    private final EncryptColumnItemSegment assistedQuery;
-    
-    private final EncryptColumnItemSegment likeQuery;
+    @XmlElement
+    private ExpectedAlgorithm encryptor;
 }
