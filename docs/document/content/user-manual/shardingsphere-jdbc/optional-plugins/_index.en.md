@@ -27,7 +27,6 @@ All the built-in plugins for ShardingSphere-JDBC are listed below in the form of
 - `org.apache.shardingsphere:shardingsphere-single-core`, single-table (only the only table that exists in all sharded data sources) core
 - `org.apache.shardingsphere:shardingsphere-sql-federation-core`, federation query executor core
 - `org.apache.shardingsphere:shardingsphere-sql-federation-executor-advanced`, the `advanced` implementation of federated query executor
-- `org.apache.shardingsphere:shardingsphere-sql-federation-executor-original`, the `original` implementation of federated query executor
 - `org.apache.shardingsphere:shardingsphere-sql-parser-mysql`, MySQL dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-opengauss`, OpenGauss dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-oracle`, Oracle dialect implementation of SQL parsing
