@@ -59,7 +59,6 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         return createRouteContext0(queryContext, globalRuleMetaData, database, rule, props, connectionContext);
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private RouteContext createRouteContext0(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule,
                                              final ConfigurationProperties props, final ConnectionContext connectionContext) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();

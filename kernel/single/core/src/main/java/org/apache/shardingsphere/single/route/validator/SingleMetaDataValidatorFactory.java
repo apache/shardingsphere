@@ -39,7 +39,6 @@ public final class SingleMetaDataValidatorFactory {
      * @param sqlStatement SQL statement
      * @return created instance
      */
-    @SuppressWarnings("rawtypes")
     public static Optional<SingleMetaDataValidator> newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DropSchemaStatement) {
             return Optional.of(new SingleDropSchemaMetaDataValidator());
