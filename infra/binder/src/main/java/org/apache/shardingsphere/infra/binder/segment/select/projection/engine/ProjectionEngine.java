@@ -46,11 +46,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -119,17 +122,19 @@ public final class ProjectionEngine {
     }
     
     private ShorthandProjection createProjection(final TableSegment table, final ShorthandProjectionSegment projectionSegment) {
-        String owner = projectionSegment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
+        IdentifierValue owner = projectionSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null);
         Collection<Projection> projections = new LinkedHashSet<>();
         projections.addAll(getShorthandColumnsFromSimpleTableSegment(table, owner));
         projections.addAll(getShorthandColumnsFromSubqueryTableSegment(table));
         projections.addAll(getShorthandColumnsFromJoinTableSegment(table, owner, projectionSegment));
-        return new ShorthandProjection(owner, projections);
+        return new ShorthandProjection(null == owner ? null : owner.getValue(), projections);
     }
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
-        String owner = projectionSegment.getColumn().getOwner().isPresent() ? projectionSegment.getColumn().getOwner().get().getIdentifier().getValue() : null;
-        return new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier().getValue(), projectionSegment.getAliasName().orElse(null));
+        IdentifierValue owner = projectionSegment.getColumn().getOwner().isPresent() ? projectionSegment.getColumn().getOwner().get().getIdentifier() : null;
+        return new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier(), projectionSegment.getAliasName().isPresent()
+                ? projectionSegment.getAlias().map(AliasSegment::getIdentifier).orElse(null)
+                : null);
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {
@@ -157,7 +162,7 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Collection<ColumnProjection> getShorthandColumnsFromSimpleTableSegment(final TableSegment table, final String owner) {
+    private Collection<ColumnProjection> getShorthandColumnsFromSimpleTableSegment(final TableSegment table, final IdentifierValue owner) {
         if (!(table instanceof SimpleTableSegment)) {
             return Collections.emptyList();
         }
@@ -169,9 +174,10 @@ public final class ProjectionEngine {
         ShardingSpherePreconditions.checkNotNull(schema, () -> new SchemaNotFoundException(schemaName));
         Collection<ColumnProjection> result = new LinkedList<>();
         if (null == owner) {
-            schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);
-        } else if (owner.equalsIgnoreCase(tableAlias)) {
-            schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, each, null)).forEach(result::add);
+            schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(table.getAlias().map(AliasSegment::getIdentifier)
+                    .orElse(((SimpleTableSegment) table).getTableName().getIdentifier()), new IdentifierValue(each, databaseType.getQuoteCharacter()), null)).forEach(result::add);
+        } else if (owner.getValue().equalsIgnoreCase(tableAlias)) {
+            schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, new IdentifierValue(each, databaseType.getQuoteCharacter()), null)).forEach(result::add);
         }
         return result;
     }
@@ -183,12 +189,11 @@ public final class ProjectionEngine {
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
         Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        String subqueryTableAlias = table.getAliasName().orElse(null);
-        return getSubqueryTableActualProjections(projections, subqueryTableAlias);
+        return getSubqueryTableActualProjections(projections, table.getAlias().map(AliasSegment::getIdentifier).orElse(null));
     }
     
-    private Collection<Projection> getSubqueryTableActualProjections(final Collection<Projection> projections, final String subqueryTableAlias) {
-        if (Strings.isNullOrEmpty(subqueryTableAlias)) {
+    private Collection<Projection> getSubqueryTableActualProjections(final Collection<Projection> projections, final IdentifierValue subqueryTableAlias) {
+        if (null == subqueryTableAlias || Strings.isNullOrEmpty(subqueryTableAlias.getValue())) {
             return getActualProjections(projections);
         }
         Collection<Projection> result = new LinkedList<>();
@@ -202,7 +207,7 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final String owner, final ProjectionSegment projectionSegment) {
+    private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final IdentifierValue owner, final ProjectionSegment projectionSegment) {
         if (!(table instanceof JoinTableSegment)) {
             return Collections.emptyList();
         }
@@ -211,7 +216,7 @@ public final class ProjectionEngine {
         Collection<Projection> remainingProjections = new LinkedList<>();
         for (Projection each : getOriginalProjections(joinTable, projectionSegment)) {
             Collection<Projection> actualProjections = getActualProjections(Collections.singletonList(each));
-            if (joinTable.getUsing().isEmpty() && !joinTable.isNatural() || null != owner && each.getExpression().contains(owner)) {
+            if (joinTable.getUsing().isEmpty() && !joinTable.isNatural() || null != owner && each.getExpression().contains(owner.getValue())) {
                 result.addAll(actualProjections);
             } else {
                 remainingProjections.addAll(actualProjections);

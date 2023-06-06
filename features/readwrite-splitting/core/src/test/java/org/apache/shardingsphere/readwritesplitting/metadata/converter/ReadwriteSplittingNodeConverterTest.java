@@ -29,12 +29,12 @@ class ReadwriteSplittingNodeConverterTest {
     
     @Test
     void assertGetGroupNamePath() {
-        assertThat(ReadwriteSplittingNodeConverter.getGroupNamePath("group_0"), is("/data_sources/group_0"));
+        assertThat(ReadwriteSplittingNodeConverter.getGroupNamePath("group_0"), is("data_sources/group_0"));
     }
     
     @Test
     void assertGetLoadBalancerPath() {
-        assertThat(ReadwriteSplittingNodeConverter.getLoadBalancerPath("random"), is("/load_balancers/random"));
+        assertThat(ReadwriteSplittingNodeConverter.getLoadBalancerPath("random"), is("load_balancers/random"));
     }
     
     @Test

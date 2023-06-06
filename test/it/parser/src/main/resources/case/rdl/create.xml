@@ -372,77 +372,103 @@
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule">
         <rule name="t_encrypt">
-            <column name="user_id" cipher-column="user_cipher">
-                <encryptor algorithm-name="AES">
-                    <property key="aes-key-value" value="123456abc" />
-                </encryptor>
+            <column name="user_id">
+                <cipher name="user_cipher">
+                    <encryptor algorithm-name="AES">
+                        <property key="aes-key-value" value="123456abc" />
+                    </encryptor>
+                </cipher>
             </column>
-            <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5" />
+            <column name="order_id">
+                <cipher name="order_cipher">
+                    <encryptor algorithm-name="MD5" />
+                </cipher>
             </column>
         </rule>
     </create-encrypt-rule>
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-if-not-exists" if-not-exists="true">
         <rule name="t_encrypt">
-            <column name="user_id" cipher-column="user_cipher">
-                <encryptor algorithm-name="AES">
-                    <property key="aes-key-value" value="123456abc" />
-                </encryptor>
+            <column name="user_id">
+                <cipher name="user_cipher">
+                    <encryptor algorithm-name="AES">
+                        <property key="aes-key-value" value="123456abc" />
+                    </encryptor>
+                </cipher>
             </column>
-            <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5" />
+            <column name="order_id">
+                <cipher name="order_cipher">
+                    <encryptor algorithm-name="MD5" />
+                </cipher>
             </column>
         </rule>
     </create-encrypt-rule>
 
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-quota">
         <rule name="encrypt">
-            <column name="user_id" cipher-column="user_cipher">
-                <encryptor algorithm-name="AES">
-                    <property key="aes-key-value" value="123456abc" />
-                </encryptor>
+            <column name="user_id">
+                <cipher name="user_cipher">
+                    <encryptor algorithm-name="AES">
+                        <property key="aes-key-value" value="123456abc" />
+                    </encryptor>
+                </cipher>
             </column>
-            <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5" />
+            <column name="order_id">
+                <cipher name="order_cipher">
+                    <encryptor algorithm-name="MD5" />
+                </cipher>
             </column>
         </rule>
     </create-encrypt-rule>
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-assisted-query-column">
         <rule name="t_encrypt">
-            <column name="user_id" cipher-column="user_cipher" assisted-query-column="assisted_column">
-                <encryptor algorithm-name="AES">
-                    <property key="aes-key-value" value="123456abc" />
-                </encryptor>
-                <assisted-query-encryptor algorithm-name="MD5" />
+            <column name="user_id">
+                <cipher name="user_cipher">
+                    <encryptor algorithm-name="AES">
+                        <property key="aes-key-value" value="123456abc" />
+                    </encryptor>
+                </cipher>
+                <assisted-query name="assisted_column">
+                    <encryptor algorithm-name="MD5" />
+                </assisted-query>
             </column>
-            <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5" />
+            <column name="order_id">
+                <cipher name="order_cipher">
+                    <encryptor algorithm-name="MD5" />
+                </cipher>
             </column>
         </rule>
     </create-encrypt-rule>
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-like-query-column">
         <rule name="t_encrypt">
-            <column name="user_id" cipher-column="user_cipher" like-query-column="like_column">
-                <encryptor algorithm-name="AES">
-                    <property key="aes-key-value" value="123456abc" />
-                </encryptor>
-                <like-query-encryptor algorithm-name="CHAR_DIGEST_LIKE" />
+            <column name="user_id">
+                <cipher name="user_cipher">
+                    <encryptor algorithm-name="AES">
+                        <property key="aes-key-value" value="123456abc" />
+                    </encryptor>
+                </cipher>
+                <like-query name="like_column">
+                    <encryptor algorithm-name="CHAR_DIGEST_LIKE" />
+                </like-query>
             </column>
-            <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5" />
+            <column name="order_id">
+                <cipher name="order_cipher">
+                    <encryptor algorithm-name="MD5" />
+                </cipher>
             </column>
         </rule>
     </create-encrypt-rule>
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-query-with-cipher-column">
         <rule name="encrypt" query-with-cipher-column="false">
-            <column name="user_id" cipher-column="user_cipher">
-                <encryptor algorithm-name="AES">
-                    <property key="aes-key-value" value="123456abc" />
-                </encryptor>
+            <column name="user_id">
+                <cipher name="user_cipher">
+                    <encryptor algorithm-name="AES">
+                        <property key="aes-key-value" value="123456abc" />
+                    </encryptor>
+                </cipher>
             </column>
         </rule>
     </create-encrypt-rule>

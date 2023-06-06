@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementConte
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -61,6 +62,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -70,6 +72,12 @@ class ShardingUpdateStatementValidatorTest {
     @Mock
     private ShardingRule shardingRule;
     
+    @Mock
+    private ShardingSphereDatabase database;
+    
+    @Mock
+    private ShardingSphereSchema schema;
+    
     @Test
     void assertPreValidateWhenUpdateSingleTable() {
         UpdateStatement updateStatement = createUpdateStatement();
@@ -78,8 +86,11 @@ class ShardingUpdateStatementValidatorTest {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
+        when(schema.containsTable("user")).thenReturn(true);
+        when(database.getSchema(any())).thenReturn(schema);
+        when(database.getName()).thenReturn("sharding_db");
         assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().preValidate(
-                shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
+                shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -93,22 +104,26 @@ class ShardingUpdateStatementValidatorTest {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
+        when(schema.containsTable("user")).thenReturn(true);
+        when(schema.containsTable("order")).thenReturn(true);
+        when(database.getSchema(any())).thenReturn(schema);
+        when(database.getName()).thenReturn("sharding_db");
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingUpdateStatementValidator().preValidate(
-                shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
+                shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
     void assertPostValidateWhenNotUpdateShardingColumn() {
         UpdateStatementContext sqlStatementContext = new UpdateStatementContext(createUpdateStatement());
         assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().postValidate(shardingRule,
-                sqlStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), mock(RouteContext.class)));
+                sqlStatementContext, new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), mock(RouteContext.class)));
     }
     
     @Test
     void assertPostValidateWhenUpdateShardingColumnWithSameRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
         assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().postValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()),
-                new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), createSingleRouteContext()));
+                new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), createSingleRouteContext()));
     }
     
     @Test
@@ -116,7 +131,7 @@ class ShardingUpdateStatementValidatorTest {
         mockShardingRuleForUpdateShardingColumn();
         when(shardingRule.isBroadcastTable("user")).thenReturn(true);
         assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().postValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()),
-                new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), createSingleRouteContext()));
+                new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), createSingleRouteContext()));
     }
     
     @Test
@@ -124,7 +139,7 @@ class ShardingUpdateStatementValidatorTest {
         mockShardingRuleForUpdateShardingColumn();
         assertThrows(UnsupportedUpdatingShardingValueException.class,
                 () -> new ShardingUpdateStatementValidator().postValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), new HintValueContext(),
-                        Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), createFullRouteContext()));
+                        Collections.emptyList(), database, mock(ConfigurationProperties.class), createFullRouteContext()));
     }
     
     private void mockShardingRuleForUpdateShardingColumn() {

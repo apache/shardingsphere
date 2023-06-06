@@ -42,17 +42,17 @@ class NewYamlReadwriteSplittingRuleConfigurationSwapperTest {
                 "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null)), Collections.emptyMap());
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(1));
-        assertThat(result.iterator().next().getKey(), is("/data_sources/group_0"));
+        assertThat(result.iterator().next().getKey(), is("data_sources/group_0"));
     }
     
     @Test
     void assertSwapToDataNodesLoadBalancers() {
         ReadwriteSplittingRuleConfiguration config = new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration("group_0",
-                "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null)), Collections.singletonMap("random", new AlgorithmConfiguration("random", new Properties())));
+                "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random")), Collections.singletonMap("random", new AlgorithmConfiguration("random", new Properties())));
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(2));
         Iterator<YamlDataNode> iterator = result.iterator();
-        assertThat(iterator.next().getKey(), is("/data_sources/group_0"));
-        assertThat(iterator.next().getKey(), is("/load_balancers/random"));
+        assertThat(iterator.next().getKey(), is("data_sources/group_0"));
+        assertThat(iterator.next().getKey(), is("load_balancers/random"));
     }
 }

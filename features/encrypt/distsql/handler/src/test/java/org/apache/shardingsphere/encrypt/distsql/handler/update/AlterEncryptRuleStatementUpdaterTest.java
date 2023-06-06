@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnItemSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
@@ -77,10 +78,10 @@ class AlterEncryptRuleStatementUpdaterTest {
     }
     
     private AlterEncryptRuleStatement createSQLStatement(final String encryptorName) {
-        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "assisted_column", "like_column",
-                new AlgorithmSegment(encryptorName, new Properties()),
-                new AlgorithmSegment("test", new Properties()),
-                new AlgorithmSegment("test", new Properties()));
+        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id",
+                new EncryptColumnItemSegment("user_cipher", new AlgorithmSegment(encryptorName, new Properties())),
+                new EncryptColumnItemSegment("assisted_column", new AlgorithmSegment("test", new Properties())),
+                new EncryptColumnItemSegment("like_column", new AlgorithmSegment("test", new Properties())));
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment));
         return new AlterEncryptRuleStatement(Collections.singleton(ruleSegment));
     }
