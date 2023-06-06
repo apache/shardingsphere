@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.readwritesplitting.metadata.converter;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +27,7 @@ import java.util.regex.Pattern;
 /**
  * Readwrite-splitting node converter.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingNodeConverter {
     
     private static final String ROOT_NODE = "readwrite_splitting";
@@ -31,6 +35,8 @@ public final class ReadwriteSplittingNodeConverter {
     private static final String DATA_SOURCES_NODE = "data_sources";
     
     private static final String LOAD_BALANCER_NODE = "load_balancers";
+    
+    private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
     
     /**
      * Get group name path.
@@ -59,7 +65,7 @@ public final class ReadwriteSplittingNodeConverter {
      * @return true or false
      */
     public static boolean isReadwriteSplittingPath(final String rulePath) {
-        Pattern pattern = Pattern.compile("/([\\w\\-]+)/([\\w\\-]+)/rules/" + ROOT_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -71,7 +77,7 @@ public final class ReadwriteSplittingNodeConverter {
      * @return group name
      */
     public static Optional<String> getGroupName(final String rulePath) {
-        Pattern pattern = Pattern.compile("/([\\w\\-]+)/([\\w\\-]+)/rules/" + ROOT_NODE + "/" + DATA_SOURCES_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
@@ -83,7 +89,7 @@ public final class ReadwriteSplittingNodeConverter {
      * @return group name
      */
     public static Optional<String> getLoadBalanceName(final String rulePath) {
-        Pattern pattern = Pattern.compile("/([\\w\\-]+)/([\\w\\-]+)/rules/" + ROOT_NODE + "/" + LOAD_BALANCER_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
