@@ -167,7 +167,6 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
                 insertOneOrder(containerComposer, uniqueKey);
                 doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
-                containerComposer.proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
                 containerComposer.assertProxyOrderRecordExist("t_order", uniqueKey);
                 return null;
             });
@@ -192,7 +191,6 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
                 insertOneOrder(containerComposer, uniqueKey);
                 doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
-                containerComposer.proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
                 containerComposer.assertProxyOrderRecordExist("t_order", uniqueKey);
                 return null;
             });
@@ -218,7 +216,6 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             byte[] uniqueKey = new byte[]{-1, 0, 1};
             assertMigrationSuccess(containerComposer, sql, "order_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
                 insertOneOrder(containerComposer, uniqueKey);
-                containerComposer.proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
                 // TODO Select by byte[] from proxy doesn't work, so unhex function is used for now
                 containerComposer.assertProxyOrderRecordExist(String.format("SELECT 1 FROM t_order WHERE order_id=UNHEX('%s')", Hex.encodeHexString(uniqueKey)));
                 return null;
@@ -245,7 +242,6 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             assertCheckMigrationSuccess(containerComposer, jobId, consistencyCheckAlgorithmType);
         }
         commitMigrationByJobId(containerComposer, jobId);
-        containerComposer.proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
         assertThat(containerComposer.getTargetTableRecordsCount(SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));
         List<String> lastJobIds = listJobId(containerComposer);
         assertTrue(lastJobIds.isEmpty());
