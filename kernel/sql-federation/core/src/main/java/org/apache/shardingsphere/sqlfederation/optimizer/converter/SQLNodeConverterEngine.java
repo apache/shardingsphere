@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.exception.OptimizationSQLNodeConvertException;
+import org.apache.shardingsphere.sqlfederation.exception.OptimizationSQLNodeConvertException;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
 
 /**

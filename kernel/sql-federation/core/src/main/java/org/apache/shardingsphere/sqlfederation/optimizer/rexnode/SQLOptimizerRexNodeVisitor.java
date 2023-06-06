@@ -48,7 +48,7 @@ import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.Param
 import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.ParameterContext;
 import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.SearchArgsContext;
 import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.TypeContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.exception.OptimizationSQLRexNodeException;
+import org.apache.shardingsphere.sqlfederation.exception.OptimizationSQLRexNodeException;
 
 import java.math.BigDecimal;
 import java.sql.Date;

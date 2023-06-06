@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.sqlfederation.exception;
 
-import org.apache.shardingsphere.infra.exception.ConnectionSQLException;
+import org.apache.shardingsphere.infra.exception.MetaDataSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * SQL federation driver register exception.
+ * Optimization SQL node convert exception.
  */
-public final class SQLFederationDriverRegisterException extends ConnectionSQLException {
+public final class OptimizationSQLNodeConvertException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = -2853184636838700216L;
+    private static final long serialVersionUID = -5486229929620713984L;
     
-    public SQLFederationDriverRegisterException(final String message) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 1, "Can not register SQL federation driver, reason is: %s", message);
+    public OptimizationSQLNodeConvertException(final SQLStatement statement) {
+        super(XOpenSQLState.SYNTAX_ERROR, 4, "Unsupported SQL node conversion for SQL statement `%s`.", statement.toString());
     }
 }
