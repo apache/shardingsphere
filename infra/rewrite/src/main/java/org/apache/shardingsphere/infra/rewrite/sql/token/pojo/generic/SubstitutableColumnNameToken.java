@@ -128,9 +128,9 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
             QuoteCharacter ownerQuoteCharacter = tableAliasSegments.containsKey(owner.toLowerCase()) ? tableAliasSegments.get(owner.toLowerCase()).getIdentifier().getQuoteCharacter() : quoteCharacter;
             builder.append(ownerQuoteCharacter.wrap(logicActualTableNames.getOrDefault(owner, owner))).append('.');
         }
-        builder.append(quoteCharacter.wrap(columnProjection.getName()));
+        builder.append(columnProjection.getNameIdentifier().getQuoteCharacter().wrap(columnProjection.getName()));
         if (columnProjection.getAlias().isPresent()) {
-            builder.append(" AS ").append(quoteCharacter.wrap(columnProjection.getAlias().get()));
+            builder.append(" AS ").append(columnProjection.getAliasIdentifier().getQuoteCharacter().wrap(columnProjection.getAlias().get()));
         }
         return builder.toString();
     }

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +75,7 @@ public class AggregationProjection implements Projection {
     }
     
     @Override
-    public Projection cloneWithOwner(final String ownerName) {
+    public Projection cloneWithOwner(final IdentifierValue owner) {
         // TODO replace column owner when AggregationProjection contains owner
         AggregationProjection result = new AggregationProjection(type, innerExpression, alias, databaseType);
         result.setIndex(index);

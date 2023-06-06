@@ -94,7 +94,7 @@
 
     <rewrite-assertion id="select_not_nested_subquery_in_tablesegment_ref_shorthand" db-types="MySQL">
         <input sql="SELECT b.* FROM (SELECT a.certificate_number as certificate_number, a.amount FROM t_account a WHERE a.amount = 1373) b" />
-        <output sql="SELECT b.`cipher_certificate_number` AS `certificate_number`, b.`cipher_amount` AS `amount` FROM (SELECT a.cipher_certificate_number, a.assisted_query_certificate_number, a.cipher_amount FROM t_account a WHERE a.cipher_amount = 'encrypt_1373') b" />
+        <output sql="SELECT b.cipher_certificate_number AS certificate_number, b.cipher_amount AS amount FROM (SELECT a.cipher_certificate_number, a.assisted_query_certificate_number, a.cipher_amount FROM t_account a WHERE a.cipher_amount = 'encrypt_1373') b" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_exists_sub_query" db-types="MySQL">
