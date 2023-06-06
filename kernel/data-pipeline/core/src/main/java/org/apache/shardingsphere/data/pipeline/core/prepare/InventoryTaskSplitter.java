@@ -129,7 +129,7 @@ public final class InventoryTaskSplitter {
     }
     
     private Collection<InventoryDumperConfiguration> splitByPrimaryKey(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
-                                                                       final DataSource dataSource) {
+                                                                       final PipelineDataSourceWrapper dataSource) {
         if (null == dumperConfig.getUniqueKeyColumns()) {
             String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
             String actualTableName = dumperConfig.getActualTableName();
@@ -141,7 +141,7 @@ public final class InventoryTaskSplitter {
         PipelineReadConfiguration readConfig = jobProcessContext.getPipelineProcessConfig().getRead();
         int batchSize = readConfig.getBatchSize();
         JobRateLimitAlgorithm rateLimitAlgorithm = jobProcessContext.getReadRateLimitAlgorithm();
-        Collection<IngestPosition> inventoryPositions = getInventoryPositions(jobItemContext, dumperConfig, dataSource);
+        Collection<IngestPosition> inventoryPositions = getInventoryPositions(dumperConfig, jobItemContext, dataSource);
         int i = 0;
         for (IngestPosition each : inventoryPositions) {
             InventoryDumperConfiguration splitDumperConfig = new InventoryDumperConfiguration(dumperConfig);
@@ -157,8 +157,8 @@ public final class InventoryTaskSplitter {
         return result;
     }
     
-    private Collection<IngestPosition> getInventoryPositions(final InventoryIncrementalJobItemContext jobItemContext, final InventoryDumperConfiguration dumperConfig,
-                                                             final DataSource dataSource) {
+    private Collection<IngestPosition> getInventoryPositions(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
+                                                             final PipelineDataSourceWrapper dataSource) {
         InventoryIncrementalJobItemProgress initProgress = jobItemContext.getInitProgress();
         if (null != initProgress) {
             // Do NOT filter FinishedPosition here, since whole inventory tasks are required in job progress when persisting to register center.
@@ -168,7 +168,7 @@ public final class InventoryTaskSplitter {
             }
         }
         if (!dumperConfig.hasUniqueKey()) {
-            return getPositionWithoutUniqueKey(jobItemContext, dataSource, dumperConfig);
+            return getPositionWithoutUniqueKey(dumperConfig, jobItemContext, dataSource);
         }
         List<PipelineColumnMetaData> uniqueKeyColumns = dumperConfig.getUniqueKeyColumns();
         if (1 == uniqueKeyColumns.size()) {
@@ -177,20 +177,21 @@ public final class InventoryTaskSplitter {
                 return getPositionByIntegerUniqueKeyRange(jobItemContext, dataSource, dumperConfig);
             }
             if (PipelineJdbcUtils.isStringColumn(firstColumnDataType)) {
-                return getPositionByStringUniqueKeyRange(jobItemContext, dataSource, dumperConfig);
+                return getPositionByStringUniqueKeyRange(dumperConfig, jobItemContext, dataSource);
             }
         }
-        return getUnsupportedPosition(jobItemContext, dataSource, dumperConfig);
+        return getUnsupportedPosition(dumperConfig, jobItemContext, dataSource);
     }
     
-    private Collection<IngestPosition> getPositionWithoutUniqueKey(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
-                                                                   final InventoryDumperConfiguration dumperConfig) {
-        long tableRecordsCount = getTableRecordsCount(jobItemContext, dataSource, dumperConfig);
+    private Collection<IngestPosition> getPositionWithoutUniqueKey(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
+                                                                   final PipelineDataSourceWrapper dataSource) {
+        long tableRecordsCount = getTableRecordsCount(dumperConfig, jobItemContext, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         return Collections.singletonList(new NoUniqueKeyPosition());
     }
     
-    private long getTableRecordsCount(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
+    private long getTableRecordsCount(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
+                                      final PipelineDataSourceWrapper dataSource) {
         PipelineJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
@@ -279,17 +280,18 @@ public final class InventoryTaskSplitter {
         return result;
     }
     
-    private Collection<IngestPosition> getPositionByStringUniqueKeyRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
-                                                                         final InventoryDumperConfiguration dumperConfig) {
-        long tableRecordsCount = getTableRecordsCount(jobItemContext, dataSource, dumperConfig);
+    private Collection<IngestPosition> getPositionByStringUniqueKeyRange(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
+                                                                         final PipelineDataSourceWrapper dataSource) {
+        long tableRecordsCount = getTableRecordsCount(dumperConfig, jobItemContext, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         Collection<IngestPosition> result = new LinkedList<>();
         result.add(new StringPrimaryKeyPosition(null, null));
         return result;
     }
     
-    private Collection<IngestPosition> getUnsupportedPosition(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
-        long tableRecordsCount = getTableRecordsCount(jobItemContext, dataSource, dumperConfig);
+    private Collection<IngestPosition> getUnsupportedPosition(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
+                                                              final PipelineDataSourceWrapper dataSource) {
+        long tableRecordsCount = getTableRecordsCount(dumperConfig, jobItemContext, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         return Collections.singletonList(new UnsupportedKeyPosition());
     }
