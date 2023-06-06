@@ -114,7 +114,7 @@ public final class InventoryTaskSplitter {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         dumperConfig.getTableNameMap().forEach((key, value) -> {
             InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(dumperConfig);
-            // use original table name, for meta data loader, since some database table name case-sensitive
+            // use original table name, for metadata loader, since some database table name case-sensitive
             inventoryDumperConfig.setActualTableName(key.getOriginal());
             inventoryDumperConfig.setLogicTableName(value.getOriginal());
             inventoryDumperConfig.setPosition(new PlaceholderPosition());
@@ -163,8 +163,9 @@ public final class InventoryTaskSplitter {
                 return result;
             }
         }
+        jobItemContext.updateInventoryRecordsCount(InventoryRecordsCountCalculator.getTableRecordsCount(dumperConfig, dataSource));
         if (!dumperConfig.hasUniqueKey()) {
-            return getPositionWithoutUniqueKey(dumperConfig, jobItemContext, dataSource);
+            return Collections.singletonList(new NoUniqueKeyPosition());
         }
         List<PipelineColumnMetaData> uniqueKeyColumns = dumperConfig.getUniqueKeyColumns();
         if (1 == uniqueKeyColumns.size()) {
@@ -173,17 +174,11 @@ public final class InventoryTaskSplitter {
                 return getPositionByIntegerUniqueKeyRange(jobItemContext, dataSource, dumperConfig);
             }
             if (PipelineJdbcUtils.isStringColumn(firstColumnDataType)) {
-                return getPositionByStringUniqueKeyRange(dumperConfig, jobItemContext, dataSource);
+                // TODO Support string unique key table splitting. Ascii characters ordering are different in different versions of databases.
+                return Collections.singletonList(new StringPrimaryKeyPosition(null, null));
             }
         }
-        return getUnsupportedPosition(dumperConfig, jobItemContext, dataSource);
-    }
-    
-    private Collection<IngestPosition> getPositionWithoutUniqueKey(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
-                                                                   final PipelineDataSourceWrapper dataSource) {
-        long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperConfig, dataSource);
-        jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
-        return Collections.singletonList(new NoUniqueKeyPosition());
+        return Collections.singletonList(new UnsupportedKeyPosition());
     }
     
     private Collection<IngestPosition> getPositionByIntegerUniqueKeyRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
@@ -199,7 +194,6 @@ public final class InventoryTaskSplitter {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             // TODO query minimum value less than 0
             long beginId = 0;
-            long recordsCount = 0;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 preparedStatement.setLong(1, beginId);
                 preparedStatement.setLong(2, shardingSize);
@@ -208,7 +202,6 @@ public final class InventoryTaskSplitter {
                         break;
                     }
                     long endId = resultSet.getLong(1);
-                    recordsCount += resultSet.getLong(2);
                     if (0 == endId) {
                         break;
                     }
@@ -216,7 +209,6 @@ public final class InventoryTaskSplitter {
                     beginId = endId + 1;
                 }
             }
-            jobItemContext.updateInventoryRecordsCount(recordsCount);
             // fix empty table missing inventory task
             if (result.isEmpty()) {
                 result.add(new IntegerPrimaryKeyPosition(0, 0));
@@ -225,21 +217,5 @@ public final class InventoryTaskSplitter {
             throw new SplitPipelineJobByUniqueKeyException(dumperConfig.getActualTableName(), uniqueKey, ex);
         }
         return result;
-    }
-    
-    private Collection<IngestPosition> getPositionByStringUniqueKeyRange(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
-                                                                         final PipelineDataSourceWrapper dataSource) {
-        long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperConfig, dataSource);
-        jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
-        Collection<IngestPosition> result = new LinkedList<>();
-        result.add(new StringPrimaryKeyPosition(null, null));
-        return result;
-    }
-    
-    private Collection<IngestPosition> getUnsupportedPosition(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
-                                                              final PipelineDataSourceWrapper dataSource) {
-        long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperConfig, dataSource);
-        jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
-        return Collections.singletonList(new UnsupportedKeyPosition());
     }
 }
