@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.sharding.metadata.converter;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Sharding node converter.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingNodeConverter {
     
     private static final String TABLES = "tables";
