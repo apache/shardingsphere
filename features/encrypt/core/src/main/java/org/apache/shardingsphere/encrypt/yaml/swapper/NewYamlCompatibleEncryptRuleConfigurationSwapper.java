@@ -47,7 +47,7 @@ public final class NewYamlCompatibleEncryptRuleConfigurationSwapper implements N
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
     @Override
-    public Collection<YamlDataNode> swapToDataNodes(CompatibleEncryptRuleConfiguration data) {
+    public Collection<YamlDataNode> swapToDataNodes(final CompatibleEncryptRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (EncryptTableRuleConfiguration each : data.getTables()) {
             result.add(new YamlDataNode(EncryptNodeConverter.getTableNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
@@ -59,7 +59,7 @@ public final class NewYamlCompatibleEncryptRuleConfigurationSwapper implements N
     }
     
     @Override
-    public CompatibleEncryptRuleConfiguration swapToObject(Collection<YamlDataNode> dataNodes) {
+    public CompatibleEncryptRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         // TODO to be completed
         return new CompatibleEncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
     }
