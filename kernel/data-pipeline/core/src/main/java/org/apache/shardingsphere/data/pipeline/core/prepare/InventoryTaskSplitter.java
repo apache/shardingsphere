@@ -185,21 +185,19 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition> getPositionWithoutUniqueKey(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
                                                                    final PipelineDataSourceWrapper dataSource) {
-        long tableRecordsCount = getTableRecordsCount(dumperConfig, jobItemContext, dataSource);
+        long tableRecordsCount = getTableRecordsCount(dumperConfig, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         return Collections.singletonList(new NoUniqueKeyPosition());
     }
     
-    private long getTableRecordsCount(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
-                                      final PipelineDataSourceWrapper dataSource) {
-        PipelineJobConfiguration jobConfig = jobItemContext.getJobConfig();
+    private long getTableRecordsCount(final InventoryDumperConfiguration dumperConfig, final PipelineDataSourceWrapper dataSource) {
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
-        PipelineSQLBuilder pipelineSQLBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType());
+        PipelineSQLBuilder pipelineSQLBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, dataSource.getDatabaseType().getType());
         Optional<String> sql = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);
         try {
             if (sql.isPresent()) {
-                DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, jobConfig.getSourceDatabaseType());
+                DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, dataSource.getDatabaseType().getType());
                 long result = getEstimatedCount(databaseType, dataSource, sql.get());
                 return result > 0 ? result : getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
             }
@@ -282,7 +280,7 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition> getPositionByStringUniqueKeyRange(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
                                                                          final PipelineDataSourceWrapper dataSource) {
-        long tableRecordsCount = getTableRecordsCount(dumperConfig, jobItemContext, dataSource);
+        long tableRecordsCount = getTableRecordsCount(dumperConfig, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         Collection<IngestPosition> result = new LinkedList<>();
         result.add(new StringPrimaryKeyPosition(null, null));
@@ -291,7 +289,7 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition> getUnsupportedPosition(final InventoryDumperConfiguration dumperConfig, final InventoryIncrementalJobItemContext jobItemContext,
                                                               final PipelineDataSourceWrapper dataSource) {
-        long tableRecordsCount = getTableRecordsCount(dumperConfig, jobItemContext, dataSource);
+        long tableRecordsCount = getTableRecordsCount(dumperConfig, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         return Collections.singletonList(new UnsupportedKeyPosition());
     }
