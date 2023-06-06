@@ -64,7 +64,7 @@ public final class EncryptColumnAssert {
                 assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())),
                         actual.getLikeQuery().getName(), is(expected.getLikeQuery().getName()));
                 AlgorithmAssert.assertIs(assertContext, actual.getLikeQuery().getEncryptor(), expected.getLikeQuery().getEncryptor());
-            } 
+            }
         }
     }
 }
