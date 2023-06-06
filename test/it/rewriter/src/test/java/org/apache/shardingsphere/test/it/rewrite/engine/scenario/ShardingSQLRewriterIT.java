@@ -85,6 +85,16 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
         when(result.getVisibleColumnNames("t_user")).thenReturn(new ArrayList<>(Arrays.asList("id", "content")));
         when(result.getVisibleColumnNames("t_user_extend")).thenReturn(new ArrayList<>(Arrays.asList("user_id", "content")));
         when(result.containsColumn("t_account", "account_id")).thenReturn(true);
+        when(result.containsTable("t_account")).thenReturn(true);
+        when(result.containsTable("t_account_detail")).thenReturn(true);
+        when(result.containsTable("t_user")).thenReturn(true);
+        when(result.containsTable("t_user_extend")).thenReturn(true);
+        when(result.containsTable("t_single")).thenReturn(true);
+        when(result.containsTable("t_single_extend")).thenReturn(true);
+        when(result.containsTable("t_config")).thenReturn(true);
+        when(result.containsTable("T_ROLE")).thenReturn(true);
+        when(result.containsTable("T_ROLE_ADMIN")).thenReturn(true);
+        when(result.containsTable("t_account_view")).thenReturn(true);
         return Collections.singletonMap(schemaName, result);
     }
     

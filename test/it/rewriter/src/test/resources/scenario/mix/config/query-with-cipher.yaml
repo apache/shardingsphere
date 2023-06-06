@@ -46,6 +46,12 @@ rules:
         standard:
           shardingColumn: account_id
           shardingAlgorithmName: t_account_detail_inline
+    t_account_detail_new:
+      actualDataNodes: db.t_account_detail_new_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: account_id
+          shardingAlgorithmName: t_account_detail_new_inline
   bindingTables:
     - t_account, t_account_detail
   
@@ -62,6 +68,10 @@ rules:
       type: INLINE
       props:
         algorithm-expression: t_account_detail_${account_id % 2}
+    t_account_detail_new_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_account_detail_new_${account_id % 2}
   
   keyGenerators:
     rewrite_keygen_fixture:
@@ -102,6 +112,19 @@ rules:
             name: cipher_password
             encryptorName: rewrite_normal_fixture
           assistedQuery: 
+            name: assisted_query_password
+            encryptorName: rewrite_assisted_query_fixture
+        amount:
+          cipher:
+            name: cipher_amount
+            encryptorName: rewrite_normal_fixture
+    t_account_detail_new:
+      columns:
+        password:
+          cipher:
+            name: cipher_password
+            encryptorName: rewrite_normal_fixture
+          assistedQuery:
             name: assisted_query_password
             encryptorName: rewrite_assisted_query_fixture
         amount:

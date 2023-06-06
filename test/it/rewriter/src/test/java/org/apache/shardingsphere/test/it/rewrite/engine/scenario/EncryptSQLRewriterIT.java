@@ -71,7 +71,14 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
         when(result.getVisibleColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount"));
         when(result.getVisibleColumnNames("t_account_detail")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount"));
         when(result.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("ORDER_ID", "USER_ID", "CONTENT"));
+        when(result.getTable("t_account")).thenReturn(new ShardingSphereTable("t_account", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        when(result.getTable("t_account_bak")).thenReturn(new ShardingSphereTable("t_account_bak", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        when(result.getTable("t_account_detail")).thenReturn(new ShardingSphereTable("t_account_detail", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         when(result.getTable("t_order")).thenReturn(new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        when(result.containsTable("t_account")).thenReturn(true);
+        when(result.containsTable("t_account_bak")).thenReturn(true);
+        when(result.containsTable("t_account_detail")).thenReturn(true);
+        when(result.containsTable("t_order")).thenReturn(true);
         return Collections.singletonMap(schemaName, result);
     }
     
