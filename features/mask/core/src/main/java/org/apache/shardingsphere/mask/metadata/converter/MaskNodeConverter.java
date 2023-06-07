@@ -54,7 +54,7 @@ public final class MaskNodeConverter {
      * @param maskAlgorithmName mask algorithm name
      * @return mask algorithm path
      */
-    public static String getMaskAlgorithmNamePath(final String maskAlgorithmName) {
+    public static String getMaskAlgorithmPath(final String maskAlgorithmName) {
         return String.join("/", ALGORITHMS_NODE, maskAlgorithmName);
     }
     
