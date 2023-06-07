@@ -45,6 +45,21 @@ public final class NewYamlRuleConfigurationSwapperEngine {
     /**
      * Swap from YAML rule configurations to rule configurations.
      *
+     * @param dataNodes YAML data nodes
+     * @return rule configurations
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlDataNode> dataNodes) {
+        Collection<RuleConfiguration> result = new LinkedList<>();
+        for (NewYamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(NewYamlRuleConfigurationSwapper.class)) {
+            result.add((RuleConfiguration) each.swapToObject(dataNodes));
+        }
+        return result;
+    }
+    
+    /**
+     * Swap from YAML rule configurations to rule configurations.
+     *
      * @param ruleName rule name
      * @param dataNodes YAML data nodes
      * @return rule configurations
