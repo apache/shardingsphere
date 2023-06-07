@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLUtils {
     
-    private static final char BACKTICK = '`';
+    private static final String BACKTICK = "`";
     
     private static final String SQL_END = ";";
     
@@ -129,16 +129,21 @@ public final class SQLUtils {
      * @return exactly SQL expression
      */
     public static String tryGetRealContentInBackticks(final String value) {
-        if (value.charAt(0) == BACKTICK && value.charAt(value.length() - 1) == BACKTICK) {
-            char[] chars = value.toCharArray();
+        if (null == value) {
+            return null;
+        }
+        if (value.startsWith(BACKTICK) && value.endsWith(BACKTICK)) {
+            int startIndex = 1;
+            int stopIndex = value.length() - 1;
             StringBuilder exactlyTableName = new StringBuilder();
-            for (int i = 1; i < chars.length - 1; i++) {
-                if (chars[i] == BACKTICK && (i + 1 >= chars.length - 1 || chars[i + 1] != BACKTICK)) {
+            while (startIndex < stopIndex) {
+                if (value.charAt(startIndex) == '`' && (startIndex + 1 >= stopIndex || value.charAt(startIndex + 1) != '`')) {
                     return value;
-                } else if (chars[i] == BACKTICK && chars[i + 1] == BACKTICK) {
-                    i++;
+                } else if (value.charAt(startIndex) == '`' && value.charAt(startIndex + 1) == '`') {
+                    startIndex++;
                 }
-                exactlyTableName.append(chars[i]);
+                exactlyTableName.append(value.charAt(startIndex));
+                startIndex++;
             }
             return 0 == exactlyTableName.length() ? value : exactlyTableName.toString();
         }
