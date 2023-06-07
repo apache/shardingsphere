@@ -57,7 +57,7 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
     
     // TODO Change to map to avoid loops.
     private Optional<GovernanceEvent> createRuleEvent(final DataChangedEvent event) {
-        Optional<String> databaseName = NewDatabaseMetaDataNode.getDatabaseNameByPath(event.getKey());
+        Optional<String> databaseName = NewDatabaseMetaDataNode.getDatabaseNameByNode(event.getKey());
         if (!databaseName.isPresent()) {
             return Optional.empty();
         }

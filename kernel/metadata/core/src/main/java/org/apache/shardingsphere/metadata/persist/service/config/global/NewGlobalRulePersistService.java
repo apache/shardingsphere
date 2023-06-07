@@ -15,85 +15,72 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.config.database;
+package org.apache.shardingsphere.metadata.persist.service.config.global;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.NewGlobalNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
-import javax.sql.DataSource;
-import java.util.Collections;
-import java.util.List;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.List;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * TODO Rename DatabaseRulePersistService when metadata structure adjustment completed. #25485
- * Database rule persist service.
+ * TODO Rename GlobalRulePersistService when metadata structure adjustment completed. #25485
+ * New Global rule persist service.
  */
 @RequiredArgsConstructor
-public final class NewDatabaseRulePersistService implements NewDatabaseRuleBasedPersistService<Collection<RuleConfiguration>> {
+public final class NewGlobalRulePersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
     
     private static final String DEFAULT_VERSION = "0";
     
     private final PersistRepository repository;
     
-    @Override
-    public void persist(final String databaseName, final Map<String, DataSource> dataSources,
-                        final Collection<ShardingSphereRule> rules, final Collection<RuleConfiguration> configs) {
-        // TODO Load single table refer to #22887
-    }
-    
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
-        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+    public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
+        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
         for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
             }
-            persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), dataNodes);
+            persistDataNodes(dataNodes);
         }
     }
     
-    private void persistDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
+    private void persistDataNodes(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            if (Strings.isNullOrEmpty(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()))) {
-                repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()), DEFAULT_VERSION);
+            if (Strings.isNullOrEmpty(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()))) {
+                repository.persist(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), DEFAULT_VERSION);
             }
-            List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getDatabaseRuleVersionsNode(databaseName, ruleName, each.getKey()));
-            repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), versions.isEmpty()
-                    ? DEFAULT_VERSION
-                    : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), each.getValue());
+            repository.persist(NewGlobalNode.getGlobalRuleVersionNode(each.getKey(), DEFAULT_VERSION), each.getValue());
         }
     }
     
     @Override
-    public Collection<RuleConfiguration> load(final String databaseName) {
+    @SuppressWarnings("unchecked")
+    public Collection<RuleConfiguration> load() {
         Collection<String> result = new LinkedHashSet<>();
-        getAllNodes(result, NewDatabaseMetaDataNode.getRulesNode(databaseName));
+        getAllNodes(result, NewGlobalNode.getGlobalRuleRootNode());
         if (1 == result.size()) {
             return Collections.emptyList();
         }
         return new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(getDataNodes(result));
     }
     
-    @Deprecated
-    @Override
-    public Collection<RuleConfiguration> load(final String databaseName, final String version) {
-        // TODO Remove this method when metadata structure adjustment completed. #25485
-        return Collections.emptyList();
-    }
-    
+    // TODO Consider merge NewGlobalRulePersistService and NewDatabaseRulePersistService load method.
     private void getAllNodes(final Collection<String> keys, final String path) {
         keys.add(path);
         List<String> childrenKeys = repository.getChildrenKeys(path);
@@ -111,5 +98,17 @@ public final class NewDatabaseRulePersistService implements NewDatabaseRuleBased
             result.add(new YamlDataNode(each, repository.getDirectly(each)));
         }
         return result;
+    }
+    
+    /**
+     * Load all users.
+     * 
+     * @return collection of user
+     */
+    @Override
+    public Collection<ShardingSphereUser> loadUsers() {
+        Optional<AuthorityRuleConfiguration> authorityRuleConfig = load().stream()
+                .filter(AuthorityRuleConfiguration.class::isInstance).map(AuthorityRuleConfiguration.class::cast).findFirst();
+        return authorityRuleConfig.isPresent() ? authorityRuleConfig.get().getUsers() : Collections.emptyList();
     }
 }
