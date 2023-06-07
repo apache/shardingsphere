@@ -71,6 +71,30 @@ public final class ReadwriteSplittingNodeConverter {
     }
     
     /**
+     * Is readwrite-splitting data sources path.
+     *
+     * @param rulePath rule path
+     * @return true or false
+     */
+    public static boolean isDataSourcePath(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find();
+    }
+    
+    /**
+     * Is readwrite-splitting load balancer path.
+     *
+     * @param rulePath rule path
+     * @return true or false
+     */
+    public static boolean isLoadBalancerPath(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find();
+    }
+    
+    /**
      * Get group name.
      *
      * @param rulePath rule path
@@ -83,12 +107,12 @@ public final class ReadwriteSplittingNodeConverter {
     }
     
     /**
-     *  Get group name.
+     * Get load balancer name.
      *
      * @param rulePath rule path
-     * @return group name
+     * @return load balancer name
      */
-    public static Optional<String> getLoadBalanceName(final String rulePath) {
+    public static Optional<String> getLoadBalancerName(final String rulePath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();

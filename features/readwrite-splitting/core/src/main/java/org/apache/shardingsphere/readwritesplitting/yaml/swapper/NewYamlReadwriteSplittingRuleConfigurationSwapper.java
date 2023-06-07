@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -30,9 +31,11 @@ import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingO
 import org.apache.shardingsphere.readwritesplitting.metadata.converter.ReadwriteSplittingNodeConverter;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
-import java.util.Collections;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -66,8 +69,19 @@ public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements 
     
     @Override
     public ReadwriteSplittingRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        // TODO
-        return new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
+        Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
+        Map<String, AlgorithmConfiguration> loadBalancerMap = new LinkedHashMap<>(dataNodes.size(), 1F);
+        for (YamlDataNode each : dataNodes) {
+            if (ReadwriteSplittingNodeConverter.isDataSourcePath(each.getKey())) {
+                ReadwriteSplittingNodeConverter.getGroupName(each.getKey())
+                        .ifPresent(groupName -> dataSources.add(swapToObject(groupName, YamlEngine.unmarshal(each.getValue(), YamlReadwriteSplittingDataSourceRuleConfiguration.class))));
+            } else if (ReadwriteSplittingNodeConverter.isLoadBalancerPath(each.getKey())) {
+                ReadwriteSplittingNodeConverter.getLoadBalancerName(each.getKey())
+                        .ifPresent(
+                                loadBalancerName -> loadBalancerMap.put(loadBalancerName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
+            }
+        }
+        return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancerMap);
     }
     
     private ReadwriteSplittingDataSourceRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
