@@ -148,14 +148,14 @@ public interface PipelineSQLBuilder extends TypedSPI {
     Optional<String> buildEstimatedCountSQL(String schemaName, String tableName);
     
     /**
-     * Build min max unique key SQL.
+     * Build unique key minimum maximum values SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key
      * @return min max unique key SQL
      */
-    String buildMinMaxUniqueKeySQL(String schemaName, String tableName, String uniqueKey);
+    String buildUniqueKeyMinMaxValuesSQL(String schemaName, String tableName, String uniqueKey);
     
     /**
      * Build query all ordering SQL.

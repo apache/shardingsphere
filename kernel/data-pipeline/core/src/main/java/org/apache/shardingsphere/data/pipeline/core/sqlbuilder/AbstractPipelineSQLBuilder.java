@@ -191,7 +191,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildMinMaxUniqueKeySQL(final String schemaName, final String tableName, final String uniqueKey) {
+    public String buildUniqueKeyMinMaxValuesSQL(final String schemaName, final String tableName, final String uniqueKey) {
         String quotedUniqueKey = quote(uniqueKey);
         return String.format("SELECT MIN(%s), MAX(%s) FROM %s", quotedUniqueKey, quotedUniqueKey, getQualifiedTableName(schemaName, tableName));
     }
