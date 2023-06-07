@@ -40,7 +40,7 @@ public final class EncryptColumn {
     private EncryptColumnItem likeQuery;
     
     /**
-     * Get assisted query.
+     * Get assisted query column item.
      *
      * @return assisted query column item
      */
@@ -49,7 +49,7 @@ public final class EncryptColumn {
     }
     
     /**
-     * Get like query.
+     * Get like query column item.
      *
      * @return like query column item
      */

@@ -61,23 +61,23 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
             channels.get(Math.abs(firstRecord.hashCode() % channelNumber)).pushRecords(records);
             return;
         }
-        for (Record record : records) {
-            pushRecord(record);
+        for (Record each : records) {
+            pushRecord(each);
         }
     }
     
-    private void pushRecord(final Record record) {
-        List<Record> records = Collections.singletonList(record);
-        if (record instanceof FinishedRecord) {
+    private void pushRecord(final Record ingestedRecord) {
+        List<Record> records = Collections.singletonList(ingestedRecord);
+        if (ingestedRecord instanceof FinishedRecord) {
             for (int i = 0; i < channelNumber; i++) {
                 channels.get(i).pushRecords(records);
             }
-        } else if (DataRecord.class.equals(record.getClass())) {
-            channels.get(Math.abs(record.hashCode() % channelNumber)).pushRecords(records);
-        } else if (PlaceholderRecord.class.equals(record.getClass())) {
+        } else if (DataRecord.class.equals(ingestedRecord.getClass())) {
+            channels.get(Math.abs(ingestedRecord.hashCode() % channelNumber)).pushRecords(records);
+        } else if (PlaceholderRecord.class.equals(ingestedRecord.getClass())) {
             channels.get(0).pushRecords(records);
         } else {
-            throw new UnsupportedOperationException("Unsupported record type: " + record.getClass().getName());
+            throw new UnsupportedOperationException("Unsupported record type: " + ingestedRecord.getClass().getName());
         }
     }
     

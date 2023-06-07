@@ -21,6 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.metadata.persist.node.metadata.datasource.DataSourceNodeConverter;
 
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * TODO Rename DatabaseMetaDataNode when metadata structure adjustment completed. #25485
  * New database meta data node.
@@ -70,17 +74,6 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
-     * Get database rule path.
-     *
-     * @param databaseName database name
-     * @param ruleName rule name
-     * @return database rule path
-     */
-    public static String getDatabaseRulePath(final String databaseName, final String ruleName) {
-        return String.join("/", getMetaDataNodePath(), databaseName, RULE_NODE, ruleName);
-    }
-    
-    /**
      * Get database rule active version path.
      *
      * @param databaseName database name
@@ -89,7 +82,7 @@ public final class NewDatabaseMetaDataNode {
      * @return database rule active version path
      */
     public static String getDatabaseRuleActiveVersionPath(final String databaseName, final String ruleName, final String key) {
-        return String.join("/", getMetaDataNodePath(), databaseName, ruleName, key, ACTIVE_VERSION);
+        return String.join("/", getDatabaseRulePath(databaseName, ruleName), key, ACTIVE_VERSION);
     }
     
     /**
@@ -101,7 +94,7 @@ public final class NewDatabaseMetaDataNode {
      * @return database rule versions path
      */
     public static String getDatabaseRuleVersionsPath(final String databaseName, final String ruleName, final String key) {
-        return String.join("/", getMetaDataNodePath(), databaseName, ruleName, key, VERSIONS);
+        return String.join("/", getDatabaseRulePath(databaseName, ruleName), key, VERSIONS);
     }
     
     /**
@@ -114,14 +107,36 @@ public final class NewDatabaseMetaDataNode {
      * @return database rule next version
      */
     public static String getDatabaseRuleVersionPath(final String databaseName, final String ruleName, final String key, final String nextVersion) {
-        return String.join("/", getMetaDataNodePath(), databaseName, ruleName, key, VERSIONS, nextVersion);
+        return String.join("/", getDatabaseRulePath(databaseName, ruleName), key, VERSIONS, nextVersion);
     }
     
     /**
-     * Get meta data node path.
+     * Get database rule path.
      *
-     * @return meta data node path
+     * @param databaseName database name
+     * @param ruleName rule name
+     * @return database rule path
      */
+    public static String getDatabaseRulePath(final String databaseName, final String ruleName) {
+        return String.join("/", getRulesPath(databaseName), ruleName);
+    }
+    
+    /**
+     * Get database name by path.
+     *
+     * @param path config path
+     * @return database name
+     */
+    public static Optional<String> getDatabaseNameByPath(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    private static String getRulesPath(final String databaseName) {
+        return String.join("/", getMetaDataNodePath(), databaseName, RULE_NODE);
+    }
+    
     private static String getMetaDataNodePath() {
         return String.join("/", "", ROOT_NODE);
     }

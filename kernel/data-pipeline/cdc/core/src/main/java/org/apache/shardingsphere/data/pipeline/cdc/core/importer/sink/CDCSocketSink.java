@@ -96,12 +96,17 @@ public final class CDCSocketSink implements PipelineSink {
         return new PipelineJobProgressUpdatedParameter(resultRecords.size());
     }
     
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @SneakyThrows(InterruptedException.class)
     private void doAwait() {
         lock.lock();
+        long startMillis = System.currentTimeMillis();
+        long endMillis = startMillis;
+        boolean awaitResult;
         try {
-            condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
+            do {
+                awaitResult = condition.await(DEFAULT_TIMEOUT_MILLISECONDS - (endMillis - startMillis), TimeUnit.MILLISECONDS);
+                endMillis = System.currentTimeMillis();
+            } while (!awaitResult && DEFAULT_TIMEOUT_MILLISECONDS > endMillis - startMillis);
         } finally {
             lock.unlock();
         }

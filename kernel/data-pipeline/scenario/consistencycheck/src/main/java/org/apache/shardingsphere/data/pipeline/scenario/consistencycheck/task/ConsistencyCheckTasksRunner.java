@@ -98,8 +98,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             JobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
             InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, jobType.getTypeName());
             PipelineJobConfiguration parentJobConfig = jobAPI.getJobConfiguration(parentJobId);
-            DataConsistencyCalculateAlgorithm calculateAlgorithm = jobAPI.buildDataConsistencyCalculateAlgorithm(
-                    parentJobConfig, checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());
+            DataConsistencyCalculateAlgorithm calculateAlgorithm = jobAPI.buildDataConsistencyCalculateAlgorithm(checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());
             ConsistencyCheckTasksRunner.this.calculateAlgorithm.set(calculateAlgorithm);
             Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult;
             try {

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection;
 
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+
 import java.util.Optional;
 
 /**
@@ -48,8 +50,8 @@ public interface Projection {
     /**
      * Clone with owner.
      * 
-     * @param ownerName owner name
+     * @param ownerIdentifier owner identifier
      * @return new projection
      */
-    Projection cloneWithOwner(String ownerName);
+    Projection cloneWithOwner(IdentifierValue ownerIdentifier);
 }

@@ -4939,4 +4939,32 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_projection_with_parameter" parameters="'OK'">
+        <projections start-index="7" stop-index="81" literal-stop-index="84">
+            <expression-projection text="1" start-index="7" stop-index="13" alias="id">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="OK" start-index="16" stop-index="26" literal-stop-index="29" alias="status">
+                <expr>
+                    <literal-expression value="OK" start-index="16" stop-index="19" />
+                </expr>
+            </expression-projection>
+            <column-projection name="SYSDATE" start-index="29" stop-index="50" literal-start-index="32" literal-stop-index="53" alias="create_time" />
+            <expression-projection text="TRUNC(SYSDATE)" start-index="53" stop-index="81" literal-start-index="56" literal-stop-index="84" alias="create_date">
+                <expr>
+                    <function function-name="TRUNC" start-index="53" stop-index="66" literal-start-index="56" literal-stop-index="69" text="TRUNC(SYSDATE)">
+                        <parameter>
+                            <column name="SYSDATE" start-index="59" stop-index="65" literal-start-index="62" literal-stop-index="68" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="88" stop-index="91" literal-start-index="91" literal-stop-index="94" />
+        </from>
+    </select>
 </sql-parser-test-cases>

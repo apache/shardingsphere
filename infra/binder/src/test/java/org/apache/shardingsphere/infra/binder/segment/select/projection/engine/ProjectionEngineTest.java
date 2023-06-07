@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -102,6 +103,7 @@ class ProjectionEngineTest {
     void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegmentAndDuplicateTableSegment() {
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
+        when(databaseType.getQuoteCharacter()).thenReturn(QuoteCharacter.NONE);
         Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(table, new ShorthandProjectionSegment(0, 0));
         assertTrue(actual.isPresent());
@@ -181,11 +183,12 @@ class ProjectionEngineTest {
     
     @Test
     void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegmentAndJoinTableSegment() {
-        SimpleTableSegment ordersTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "customer_id"));
+        when(databaseType.getQuoteCharacter()).thenReturn(QuoteCharacter.NONE);
         SimpleTableSegment customersTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_customer")));
         when(schema.getVisibleColumnNames("t_customer")).thenReturn(Collections.singletonList("customer_id"));
         JoinTableSegment table = new JoinTableSegment();
+        SimpleTableSegment ordersTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         table.setLeft(ordersTableSegment);
         table.setRight(customersTableSegment);
         table.setCondition(new CommonExpressionSegment(0, 0, "t_order.customer_id=t_customer.customer_id"));
@@ -277,7 +280,7 @@ class ProjectionEngineTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(6));
-        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateExpectedColumnsWithOwner()));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateExpectedColumnsWithOwner(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))));
     }
     
     @Test
@@ -290,7 +293,7 @@ class ProjectionEngineTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(6));
-        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateExpectedColumnsWithOwner()));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateExpectedColumnsWithOwner(TypedSPILoader.getService(DatabaseType.class, "MySQL"))));
     }
     
     private JoinTableSegment createJoinTableSegmentWithUsingColumn() {
@@ -309,40 +312,42 @@ class ProjectionEngineTest {
     
     private Collection<Projection> crateExpectedColumnsWithoutOwnerForPostgreSQL() {
         Collection<Projection> result = new LinkedHashSet<>();
-        result.add(new ColumnProjection("o", "user_id", null));
-        result.add(new ColumnProjection("o", "order_id", null));
-        result.add(new ColumnProjection("o", "creation_date", null));
-        result.add(new ColumnProjection("o", "status", null));
-        result.add(new ColumnProjection("o", "merchant_id", null));
-        result.add(new ColumnProjection("o", "remark", null));
-        result.add(new ColumnProjection("i", "item_id", null));
-        result.add(new ColumnProjection("i", "product_id", null));
-        result.add(new ColumnProjection("i", "quantity", null));
+        DatabaseType postgresDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id", postgresDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id", postgresDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("creation_date", postgresDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", postgresDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", postgresDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", postgresDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("item_id", postgresDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("product_id", postgresDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("quantity", postgresDatabaseType.getQuoteCharacter()), null));
         return result;
     }
     
     private Collection<Projection> crateExpectedColumnsWithoutOwnerForMySQL() {
         Collection<Projection> result = new LinkedHashSet<>();
-        result.add(new ColumnProjection("i", "order_id", null));
-        result.add(new ColumnProjection("i", "user_id", null));
-        result.add(new ColumnProjection("i", "creation_date", null));
-        result.add(new ColumnProjection("i", "item_id", null));
-        result.add(new ColumnProjection("i", "product_id", null));
-        result.add(new ColumnProjection("i", "quantity", null));
-        result.add(new ColumnProjection("o", "status", null));
-        result.add(new ColumnProjection("o", "merchant_id", null));
-        result.add(new ColumnProjection("o", "remark", null));
+        DatabaseType mysqlDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("order_id", mysqlDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("user_id", mysqlDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("creation_date", mysqlDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("item_id", mysqlDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("product_id", mysqlDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("quantity", mysqlDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", mysqlDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", mysqlDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", mysqlDatabaseType.getQuoteCharacter()), null));
         return result;
     }
     
-    private Collection<Projection> crateExpectedColumnsWithOwner() {
+    private Collection<Projection> crateExpectedColumnsWithOwner(final DatabaseType databaseType) {
         Collection<Projection> result = new LinkedHashSet<>();
-        result.add(new ColumnProjection("o", "order_id", null));
-        result.add(new ColumnProjection("o", "user_id", null));
-        result.add(new ColumnProjection("o", "status", null));
-        result.add(new ColumnProjection("o", "merchant_id", null));
-        result.add(new ColumnProjection("o", "remark", null));
-        result.add(new ColumnProjection("o", "creation_date", null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id", databaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id", databaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", databaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", databaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", databaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("creation_date", databaseType.getQuoteCharacter()), null));
         return result;
     }
     
@@ -381,7 +386,7 @@ class ProjectionEngineTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(6));
-        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateExpectedColumnsWithOwner()));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateExpectedColumnsWithOwner(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))));
     }
     
     @Test
@@ -394,7 +399,7 @@ class ProjectionEngineTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(6));
-        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateExpectedColumnsWithOwner()));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateExpectedColumnsWithOwner(TypedSPILoader.getService(DatabaseType.class, "MySQL"))));
     }
     
     private JoinTableSegment createJoinTableSegmentWithNaturalJoin() {

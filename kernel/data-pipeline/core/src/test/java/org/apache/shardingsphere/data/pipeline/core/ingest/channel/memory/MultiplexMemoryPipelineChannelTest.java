@@ -52,8 +52,8 @@ class MultiplexMemoryPipelineChannelTest {
         Record[] records = mockRecords();
         execute(ackRecords -> {
             AtomicInteger lastId = new AtomicInteger();
-            for (Record record : ackRecords) {
-                int currentId = ((IntPosition) record.getPosition()).getId();
+            for (Record each : ackRecords) {
+                int currentId = ((IntPosition) each.getPosition()).getId();
                 assertTrue(currentId > lastId.get());
                 lastId.set(currentId);
             }

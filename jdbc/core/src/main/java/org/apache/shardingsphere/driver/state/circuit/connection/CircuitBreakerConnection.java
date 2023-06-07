@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.driver.state.circuit.connection;
 
-import java.sql.Array;
+import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import org.apache.shardingsphere.driver.state.circuit.metadata.CircuitBreakerDatabaseMetaData;
 import org.apache.shardingsphere.driver.state.circuit.statement.CircuitBreakerPreparedStatement;
 import org.apache.shardingsphere.driver.state.circuit.statement.CircuitBreakerStatement;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 
+import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -152,6 +153,21 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     @Override
     public PreparedStatement prepareStatement(final String sql, final String[] columnNames) {
         return new CircuitBreakerPreparedStatement();
+    }
+    
+    @Override
+    public CallableStatement prepareCall(final String sql) throws SQLException {
+        throw new SQLFeatureNotSupportedException("prepareCall");
+    }
+    
+    @Override
+    public CallableStatement prepareCall(final String sql, final int resultSetType, final int resultSetConcurrency) throws SQLException {
+        throw new SQLFeatureNotSupportedException("prepareCall");
+    }
+    
+    @Override
+    public CallableStatement prepareCall(final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
+        throw new SQLFeatureNotSupportedException("prepareCall");
     }
     
     @Override

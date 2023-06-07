@@ -28,7 +28,7 @@ import java.util.Map;
 public final class RuleConfigurationFixtureChecker implements RuleConfigurationChecker<MockedRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final MockedRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
+    public void check(final String databaseName, final MockedRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
     }
     
     @Override

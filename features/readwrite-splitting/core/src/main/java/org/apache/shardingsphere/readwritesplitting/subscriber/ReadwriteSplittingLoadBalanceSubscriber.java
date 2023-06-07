@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.rule.readwritesplitting.loadbalance.AddLoadBalanceEvent;
-import org.apache.shardingsphere.mode.event.rule.readwritesplitting.loadbalance.AlterLoadBalanceEvent;
-import org.apache.shardingsphere.mode.event.rule.readwritesplitting.loadbalance.DeleteLoadBalanceEvent;
+import org.apache.shardingsphere.mode.event.config.RuleConfigurationChangedEvent;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AddLoadBalanceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadBalanceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Map;
@@ -44,9 +44,12 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleConfig
     
     private Map<String, ShardingSphereDatabase> databases;
     
+    private InstanceContext instanceContext;
+    
     @Override
     public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
         this.databases = databases;
+        this.instanceContext = instanceContext;
         instanceContext.getEventBusContext().register(this);
     }
     
@@ -56,8 +59,8 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleConfig
      * @param event add load-balance event
      */
     @Subscribe
-    public synchronized void renew(final AddLoadBalanceEvent event) {
-        renew(event.getDatabaseName(), event.getLoadBalanceName(), event.getData());
+    public synchronized void renew(final AddLoadBalanceEvent<AlgorithmConfiguration> event) {
+        renew(event.getDatabaseName(), event.getLoadBalanceName(), event.getConfig());
     }
     
     /**
@@ -66,17 +69,18 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleConfig
      * @param event alter load-balance event
      */
     @Subscribe
-    public synchronized void renew(final AlterLoadBalanceEvent event) {
-        renew(event.getDatabaseName(), event.getLoadBalanceName(), event.getData());
+    public synchronized void renew(final AlterLoadBalanceEvent<AlgorithmConfiguration> event) {
+        renew(event.getDatabaseName(), event.getLoadBalanceName(), event.getConfig());
     }
     
-    private void renew(final String databaseName, final String loadBalanceName, final String data) {
+    private void renew(final String databaseName, final String loadBalanceName, final AlgorithmConfiguration algorithmConfig) {
         ShardingSphereDatabase database = databases.get(databaseName);
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
-        config.getLoadBalancers().put(loadBalanceName, YamlEngine.unmarshal(data, AlgorithmConfiguration.class));
+        config.getLoadBalancers().put(loadBalanceName, algorithmConfig);
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
+        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(databaseName, config));
     }
     
     /**
@@ -92,5 +96,6 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleConfig
         config.getLoadBalancers().remove(event.getLoadBalanceName());
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
+        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
 }

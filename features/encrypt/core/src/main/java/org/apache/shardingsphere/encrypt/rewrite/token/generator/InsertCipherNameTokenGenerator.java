@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -57,11 +58,12 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(sqlSegment.isPresent());
-        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
+        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumnsMap(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : sqlSegment.get().getColumns()) {
             if (logicAndCipherColumns.containsKey(each.getIdentifier().getValue())) {
-                Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(null, logicAndCipherColumns.get(each.getIdentifier().getValue()), null));
+                Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(null, new IdentifierValue(logicAndCipherColumns.get(each.getIdentifier().getValue()),
+                        each.getIdentifier().getQuoteCharacter()), null));
                 result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), projections));
             }
         }

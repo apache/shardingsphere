@@ -36,6 +36,6 @@ public final class PropertiesConverter {
      * @return converted string content
      */
     public static String convert(final Properties props) {
-        return props.entrySet().stream().map(entry -> String.join("=", entry.getKey().toString(), entry.getValue().toString())).collect(Collectors.joining(","));
+        return props.entrySet().stream().map(entry -> String.join("=", entry.getKey().toString(), entry.getValue().toString())).sorted().collect(Collectors.joining(","));
     }
 }
