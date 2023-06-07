@@ -15,33 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.decider.fixture.decider;
+package org.apache.shardingsphere.sqlfederation.spi;
 
-import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
-import org.apache.shardingsphere.infra.binder.decider.fixture.rule.SQLFederationDeciderRuleMatchFixture;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
 
 import java.util.Collection;
 import java.util.List;
 
-public final class SQLFederationDeciderMatchFixture implements SQLFederationDecider<SQLFederationDeciderRuleMatchFixture> {
+/**
+ * SQL federation decider.
+ * 
+ * @param <T> type of rule
+ */
+@SingletonSPI
+public interface SQLFederationDecider<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
-    @Override
-    public boolean decide(final SelectStatementContext selectStatementContext, final List<Object> parameters, final ShardingSphereRuleMetaData globalRuleMetaData,
-                          final ShardingSphereDatabase database, final SQLFederationDeciderRuleMatchFixture rule, final Collection<DataNode> includedDataNodes) {
-        return true;
-    }
-    
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Class<SQLFederationDeciderRuleMatchFixture> getTypeClass() {
-        return SQLFederationDeciderRuleMatchFixture.class;
-    }
+    /**
+     * Judge whether to use SQL federation.
+     *
+     * @param selectStatementContext select statement context
+     * @param parameters parameters
+     * @param globalRuleMetaData global rule meta data
+     * @param database database
+     * @param rule rule
+     * @param includedDataNodes included data nodes
+     * @return use SQL federation or not
+     */
+    boolean decide(SelectStatementContext selectStatementContext, List<Object> parameters,
+                   ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, Collection<DataNode> includedDataNodes);
 }

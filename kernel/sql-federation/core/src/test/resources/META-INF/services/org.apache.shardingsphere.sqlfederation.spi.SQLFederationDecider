@@ -15,34 +15,5 @@
 # limitations under the License.
 #
 
-mode:
-  type: Cluster
-  repository:
-    type: ZooKeeper
-    props:
-      namespace: it_db_mysql
-      server-lists: zk.host:2181
-      timeToLiveSeconds: 60
-      operationTimeoutMilliseconds: 500
-      retryIntervalMilliseconds: 500
-      maxRetries: 3
-
-authority:
-  users:
-    - user: proxy
-      password: Proxy@123
-  privilege:
-    type: ALL_PERMITTED
-
-sqlFederation:
-  sqlFederationEnabled: true
-  executionPlanCache:
-    initialCapacity: 2000
-    maximumSize: 65535
-
-props:
-  max-connections-size-per-query: 1
-  kernel-executor-size: 16  # Infinite by default.
-  proxy-frontend-flush-threshold: 128  # The default value is 128.
-  sql-show: true
-  proxy-frontend-ssl-enabled: true
+org.apache.shardingsphere.sqlfederation.decider.fixture.decider.SQLFederationDeciderMatchFixture
+org.apache.shardingsphere.sqlfederation.decider.fixture.decider.SQLFederationDeciderNotMatchFixture

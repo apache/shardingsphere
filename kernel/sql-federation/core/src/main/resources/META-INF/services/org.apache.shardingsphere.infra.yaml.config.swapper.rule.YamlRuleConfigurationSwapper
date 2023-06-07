@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.binder.decider.fixture.decider.SQLFederationDeciderMatchFixture
-org.apache.shardingsphere.infra.binder.decider.fixture.decider.SQLFederationDeciderNotMatchFixture
+org.apache.shardingsphere.sqlfederation.yaml.swapper.YamlSQLFederationRuleConfigurationSwapper

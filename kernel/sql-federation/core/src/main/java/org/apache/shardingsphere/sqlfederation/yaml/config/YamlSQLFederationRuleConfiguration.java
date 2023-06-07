@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.decider.fixture.rule;
+package org.apache.shardingsphere.sqlfederation.yaml.config;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
+import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 
-import static org.mockito.Mockito.mock;
-
-public final class SQLFederationDeciderRuleNotMatchFixture implements ShardingSphereRule {
+/**
+ * SQL federation rule configuration for YAML.
+ */
+@Getter
+@Setter
+public final class YamlSQLFederationRuleConfiguration implements YamlGlobalRuleConfiguration {
+    
+    private boolean sqlFederationEnabled;
+    
+    private YamlSQLFederationExecutionPlanCacheRuleConfiguration executionPlanCache;
     
     @Override
-    public RuleConfiguration getConfiguration() {
-        return mock(RuleConfiguration.class);
-    }
-    
-    @Override
-    public String getType() {
-        return SQLFederationDeciderRuleNotMatchFixture.class.getSimpleName();
+    public Class<SQLFederationRuleConfiguration> getRuleConfigurationType() {
+        return SQLFederationRuleConfiguration.class;
     }
 }

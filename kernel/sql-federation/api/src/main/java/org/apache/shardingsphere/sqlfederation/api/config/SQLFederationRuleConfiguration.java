@@ -18,19 +18,20 @@
 package org.apache.shardingsphere.sqlfederation.api.config;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 /**
  * SQL federation rule configuration.
  */
 @Getter
 @Setter
+@RequiredArgsConstructor
 public final class SQLFederationRuleConfiguration implements GlobalRuleConfiguration {
     
-    private String sqlFederationType;
+    private final boolean sqlFederationEnabled;
     
-    public SQLFederationRuleConfiguration(final String sqlFederationType) {
-        this.sqlFederationType = sqlFederationType;
-    }
+    private final CacheOption executionPlanCache;
 }
