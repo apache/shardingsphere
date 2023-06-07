@@ -78,13 +78,13 @@ public final class NewDatabaseRulePersistService implements NewDatabaseRuleBased
     }
     
     @Override
-    public Collection<RuleConfiguration> load(final String databaseName, final String ruleName) {
+    public Collection<RuleConfiguration> load(final String databaseName) {
         Collection<String> result = new LinkedHashSet<>();
-        getAllNodes(result, NewDatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName));
+        getAllNodes(result, NewDatabaseMetaDataNode.getRulesNode(databaseName));
         if (1 == result.size()) {
             return Collections.emptyList();
         }
-        return new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(ruleName, getDataNodes(result));
+        return new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(getDataNodes(result));
     }
     
     private void getAllNodes(final Collection<String> keys, final String path) {

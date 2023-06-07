@@ -37,8 +37,7 @@ public interface NewDatabaseBasedPersistService<T> {
      * Load configurations.
      *
      * @param databaseName database name
-     * @param ruleName rule name
      * @return configurations
      */
-    T load(String databaseName, String ruleName);
+    T load(String databaseName);
 }

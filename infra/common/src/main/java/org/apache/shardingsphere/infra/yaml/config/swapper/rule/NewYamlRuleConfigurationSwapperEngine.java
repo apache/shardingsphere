@@ -56,23 +56,4 @@ public final class NewYamlRuleConfigurationSwapperEngine {
         }
         return result;
     }
-    
-    /**
-     * Swap from YAML rule configurations to rule configurations.
-     *
-     * @param ruleName rule name
-     * @param dataNodes YAML data nodes
-     * @return rule configurations
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public Collection<RuleConfiguration> swapToRuleConfigurations(final String ruleName, final Collection<YamlDataNode> dataNodes) {
-        Collection<RuleConfiguration> result = new LinkedList<>();
-        for (NewYamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(NewYamlRuleConfigurationSwapper.class)) {
-            if (!each.getRuleTagName().toLowerCase().equals(ruleName)) {
-                continue;
-            }
-            result.add((RuleConfiguration) each.swapToObject(dataNodes));
-        }
-        return result;
-    }
 }
