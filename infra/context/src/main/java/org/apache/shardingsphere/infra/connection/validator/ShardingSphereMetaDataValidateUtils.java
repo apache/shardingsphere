@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.connection.validator;
 
-import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
@@ -26,7 +25,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * ShardingSphere meta data validate utility class.
@@ -35,7 +35,11 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereMetaDataValidateUtils {
     
-    public static final Set<String> EXCLUDE_VALIDATE_TABLE = Sets.newHashSet("DUAL");
+    public static final Collection<String> EXCLUDE_VALIDATE_TABLE = new HashSet<>(1, 1F);
+    
+    static {
+        EXCLUDE_VALIDATE_TABLE.add("DUAL");
+    }
     
     /**
      * Validate table exist.
