@@ -71,14 +71,14 @@ public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements 
     public ReadwriteSplittingRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         Map<String, AlgorithmConfiguration> loadBalancerMap = new LinkedHashMap<>(dataNodes.size(), 1F);
-        for (YamlDataNode dataNode : dataNodes) {
-            if (ReadwriteSplittingNodeConverter.isDataSourcePath(dataNode.getKey())) {
-                ReadwriteSplittingNodeConverter.getGroupName(dataNode.getKey())
-                        .ifPresent(groupName -> dataSources.add(swapToObject(groupName, YamlEngine.unmarshal(dataNode.getValue(), YamlReadwriteSplittingDataSourceRuleConfiguration.class))));
-            } else if (ReadwriteSplittingNodeConverter.isLoadBalancerPath(dataNode.getKey())) {
-                ReadwriteSplittingNodeConverter.getLoadBalanceName(dataNode.getKey())
+        for (YamlDataNode each : dataNodes) {
+            if (ReadwriteSplittingNodeConverter.isDataSourcePath(each.getKey())) {
+                ReadwriteSplittingNodeConverter.getGroupName(each.getKey())
+                        .ifPresent(groupName -> dataSources.add(swapToObject(groupName, YamlEngine.unmarshal(each.getValue(), YamlReadwriteSplittingDataSourceRuleConfiguration.class))));
+            } else if (ReadwriteSplittingNodeConverter.isLoadBalancerPath(each.getKey())) {
+                ReadwriteSplittingNodeConverter.getLoadBalancerName(each.getKey())
                         .ifPresent(
-                                loadBalancerName -> loadBalancerMap.put(loadBalancerName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(dataNode.getValue(), YamlAlgorithmConfiguration.class))));
+                                loadBalancerName -> loadBalancerMap.put(loadBalancerName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
             }
         }
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancerMap);

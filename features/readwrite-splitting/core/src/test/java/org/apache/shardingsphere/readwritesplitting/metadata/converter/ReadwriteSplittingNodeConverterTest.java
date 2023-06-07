@@ -56,8 +56,8 @@ class ReadwriteSplittingNodeConverterTest {
     }
     
     @Test
-    void assertGetLoadBalanceNameByRulePath() {
-        Optional<String> actual = ReadwriteSplittingNodeConverter.getLoadBalanceName("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random");
+    void assertGetLoadBalancerNameByRulePath() {
+        Optional<String> actual = ReadwriteSplittingNodeConverter.getLoadBalancerName("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("random"));
     }

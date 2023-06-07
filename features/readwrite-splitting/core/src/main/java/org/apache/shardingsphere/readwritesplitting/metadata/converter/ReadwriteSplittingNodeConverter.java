@@ -107,12 +107,12 @@ public final class ReadwriteSplittingNodeConverter {
     }
     
     /**
-     * Get group name.
+     * Get load balancer name.
      *
      * @param rulePath rule path
-     * @return group name
+     * @return load balancer name
      */
-    public static Optional<String> getLoadBalanceName(final String rulePath) {
+    public static Optional<String> getLoadBalancerName(final String rulePath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
