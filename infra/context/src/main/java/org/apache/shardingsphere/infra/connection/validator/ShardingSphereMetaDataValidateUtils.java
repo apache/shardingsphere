@@ -35,10 +35,10 @@ import java.util.HashSet;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereMetaDataValidateUtils {
     
-    public static final Collection<String> EXCLUDE_VALIDATE_TABLE = new HashSet<>(1, 1F);
+    public static final Collection<String> EXCLUDE_VALIDATE_TABLES = new HashSet<>(1, 1F);
     
     static {
-        EXCLUDE_VALIDATE_TABLE.add("DUAL");
+        EXCLUDE_VALIDATE_TABLES.add("DUAL");
     }
     
     /**
@@ -52,7 +52,7 @@ public final class ShardingSphereMetaDataValidateUtils {
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            if (!EXCLUDE_VALIDATE_TABLE.contains(each.toUpperCase()) && !schema.containsTable(each)) {
+            if (!EXCLUDE_VALIDATE_TABLES.contains(each.toUpperCase()) && !schema.containsTable(each)) {
                 throw new NoSuchTableException(each);
             }
         }
