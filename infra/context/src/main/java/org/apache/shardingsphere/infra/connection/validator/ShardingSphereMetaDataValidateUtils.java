@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.connection.validator;
 
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
@@ -25,12 +26,16 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 
+import java.util.List;
+
 /**
  * ShardingSphere meta data validate utility class.
  */
 // TODO consider add common ShardingSphereMetaDataValidateEngine for all features
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereMetaDataValidateUtils {
+
+    public static final List<String> EXCLUDE_VALIDATE_TABLE = Lists.newArrayList("DUAL");
     
     /**
      * Validate table exist.
@@ -43,7 +48,7 @@ public final class ShardingSphereMetaDataValidateUtils {
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            if (!schema.containsTable(each)) {
+            if (!EXCLUDE_VALIDATE_TABLE.contains(each.toUpperCase()) && !schema.containsTable(each)) {
                 throw new NoSuchTableException(each);
             }
         }
