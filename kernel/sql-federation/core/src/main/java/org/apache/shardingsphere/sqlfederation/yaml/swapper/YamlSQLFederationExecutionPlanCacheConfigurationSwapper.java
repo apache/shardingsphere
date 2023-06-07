@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration;
 
 /**
- * YAML SQL federation execution cache configuration swapper.
+ * YAML SQL federation execution plan cache configuration swapper.
  */
 public final class YamlSQLFederationExecutionPlanCacheConfigurationSwapper implements YamlConfigurationSwapper<YamlSQLFederationExecutionPlanCacheRuleConfiguration, CacheOption> {
     
