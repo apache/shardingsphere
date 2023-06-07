@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.enums;
+package org.apache.shardingsphere.sqlfederation.decider.fixture.rule;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
-class SQLFederationTypeEnumTest {
+public final class SQLFederationDeciderRuleNotMatchFixture implements ShardingSphereRule {
     
-    @Test
-    void assertIsValidSQLFederationType() {
-        assertTrue(SQLFederationTypeEnum.isValidSQLFederationType("NONE"));
-        assertTrue(SQLFederationTypeEnum.isValidSQLFederationType("ORIGINAL"));
-        assertTrue(SQLFederationTypeEnum.isValidSQLFederationType("ADVANCED"));
-        assertFalse(SQLFederationTypeEnum.isValidSQLFederationType("XXX"));
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return new SQLFederationRuleConfiguration(false, mock(CacheOption.class));
+    }
+    
+    @Override
+    public String getType() {
+        return SQLFederationDeciderRuleNotMatchFixture.class.getSimpleName();
     }
 }

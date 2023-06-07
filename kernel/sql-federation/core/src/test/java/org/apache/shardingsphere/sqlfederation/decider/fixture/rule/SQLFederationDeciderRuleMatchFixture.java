@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.enums;
+package org.apache.shardingsphere.sqlfederation.decider.fixture.rule;
 
-import java.util.Arrays;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 
-/**
- * SQL federation type enum.
- */
-public enum SQLFederationTypeEnum {
+import static org.mockito.Mockito.mock;
+
+public final class SQLFederationDeciderRuleMatchFixture implements ShardingSphereRule {
     
-    NONE, ORIGINAL, ADVANCED;
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return new SQLFederationRuleConfiguration(true, mock(CacheOption.class));
+    }
     
-    /**
-     * Judge whether is valid sql federation type or not.
-     *
-     * @param sqlFederationType sql federation type
-     * @return whether is valid sql federation type or not
-     */
-    public static boolean isValidSQLFederationType(final String sqlFederationType) {
-        return Arrays.stream(values()).anyMatch(each -> each.name().equals(sqlFederationType));
+    @Override
+    public String getType() {
+        return SQLFederationDeciderRuleMatchFixture.class.getSimpleName();
     }
 }
