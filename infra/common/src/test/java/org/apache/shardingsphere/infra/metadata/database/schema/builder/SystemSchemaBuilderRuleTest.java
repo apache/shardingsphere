@@ -42,7 +42,7 @@ class SystemSchemaBuilderRuleTest {
         assertThat(actualPerformanceSchema.getTables().size(), is(87));
         SystemSchemaBuilderRule actualPgCatalog = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "pg_catalog");
         assertThat(actualPgCatalog, is(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG));
-        assertThat(actualPgCatalog.getTables().size(), is(7));
+        assertThat(actualPgCatalog.getTables().size(), is(9));
     }
     
     @Test
@@ -54,7 +54,9 @@ class SystemSchemaBuilderRuleTest {
     void assertIsisSystemTable() {
         assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "columns"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_database"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_tables"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_aggregate"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_roles"));
         assertFalse(SystemSchemaBuilderRule.isSystemTable("sharding_db", "t_order"));
     }
 }
