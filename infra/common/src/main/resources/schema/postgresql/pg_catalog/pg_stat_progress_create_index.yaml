@@ -1,0 +1,147 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_stat_progress_create_index
+columns:
+  pid:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: pid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  datid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: datid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  datname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: datname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: relid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  index_relid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: index_relid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  command:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: command
+    primaryKey: false
+    unsigned: false
+    visible: true
+  phase:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: phase
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lockers_total:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lockers_total
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lockers_done:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lockers_done
+    primaryKey: false
+    unsigned: false
+    visible: true
+  current_locker_pid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: current_locker_pid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  blocks_total:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: blocks_total
+    primaryKey: false
+    unsigned: false
+    visible: true
+  blocks_done:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: blocks_done
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tuples_total:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tuples_total
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tuples_done:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tuples_done
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partitions_total:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: partitions_total
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partitions_done:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: partitions_done
+    primaryKey: false
+    unsigned: false
+    visible: true

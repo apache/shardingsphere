@@ -1,0 +1,98 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_amop
+columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: true
+    unsigned: false
+    visible: true
+  amopfamily:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: amopfamily
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amoplefttype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: amoplefttype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amoprighttype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: amoprighttype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amopstrategy:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: amopstrategy
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amoppurpose:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: amoppurpose
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amopopr:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: amopopr
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amopmethod:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: amopmethod
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amopsortfamily:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: amopsortfamily
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_amop_fam_strat_index:
+    name: pg_amop_fam_strat_index
+  pg_amop_opr_fam_index:
+    name: pg_amop_opr_fam_index
+  pg_amop_oid_index:
+    name: pg_amop_oid_index

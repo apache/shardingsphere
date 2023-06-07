@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: oid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   datname:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: datname
     primaryKey: false
+    unsigned: false
     visible: true
   datdba:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: datdba
     primaryKey: false
+    unsigned: false
     visible: true
   encoding:
     caseSensitive: true
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: encoding
     primaryKey: false
+    unsigned: false
     visible: true
   datcollate:
     caseSensitive: true
@@ -51,6 +55,7 @@ columns:
     generated: false
     name: datcollate
     primaryKey: false
+    unsigned: false
     visible: true
   datctype:
     caseSensitive: true
@@ -58,6 +63,7 @@ columns:
     generated: false
     name: datctype
     primaryKey: false
+    unsigned: false
     visible: true
   datistemplate:
     caseSensitive: true
@@ -65,6 +71,7 @@ columns:
     generated: false
     name: datistemplate
     primaryKey: false
+    unsigned: false
     visible: true
   datallowconn:
     caseSensitive: true
@@ -72,6 +79,7 @@ columns:
     generated: false
     name: datallowconn
     primaryKey: false
+    unsigned: false
     visible: true
   datconnlimit:
     caseSensitive: true
@@ -79,6 +87,7 @@ columns:
     generated: false
     name: datconnlimit
     primaryKey: false
+    unsigned: false
     visible: true
   datlastsysoid:
     caseSensitive: true
@@ -86,6 +95,7 @@ columns:
     generated: false
     name: datlastsysoid
     primaryKey: false
+    unsigned: false
     visible: true
   datfrozenxid:
     caseSensitive: true
@@ -93,6 +103,7 @@ columns:
     generated: false
     name: datfrozenxid
     primaryKey: false
+    unsigned: false
     visible: true
   datminmxid:
     caseSensitive: true
@@ -100,6 +111,7 @@ columns:
     generated: false
     name: datminmxid
     primaryKey: false
+    unsigned: false
     visible: true
   dattablespace:
     caseSensitive: true
@@ -107,6 +119,7 @@ columns:
     generated: false
     name: dattablespace
     primaryKey: false
+    unsigned: false
     visible: true
   datacl:
     caseSensitive: true
@@ -114,9 +127,10 @@ columns:
     generated: false
     name: datacl
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
   pg_database_datname_index:
     name: pg_database_datname_index
   pg_database_oid_index:
-    name: pg_database_oid_index 
+    name: pg_database_oid_index

@@ -22,7 +22,8 @@ columns:
     dataType: 1111
     generated: false
     name: aggfnoid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   aggkind:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: aggkind
     primaryKey: false
+    unsigned: false
     visible: true
   aggnumdirectargs:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: aggnumdirectargs
     primaryKey: false
+    unsigned: false
     visible: true
   aggtransfn:
     caseSensitive: true
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: aggtransfn
     primaryKey: false
+    unsigned: false
     visible: true
   aggfinalfn:
     caseSensitive: true
@@ -51,6 +55,7 @@ columns:
     generated: false
     name: aggfinalfn
     primaryKey: false
+    unsigned: false
     visible: true
   aggcombinefn:
     caseSensitive: true
@@ -58,6 +63,7 @@ columns:
     generated: false
     name: aggcombinefn
     primaryKey: false
+    unsigned: false
     visible: true
   aggserialfn:
     caseSensitive: true
@@ -65,6 +71,7 @@ columns:
     generated: false
     name: aggserialfn
     primaryKey: false
+    unsigned: false
     visible: true
   aggdeserialfn:
     caseSensitive: true
@@ -72,6 +79,7 @@ columns:
     generated: false
     name: aggdeserialfn
     primaryKey: false
+    unsigned: false
     visible: true
   aggmtransfn:
     caseSensitive: true
@@ -79,6 +87,7 @@ columns:
     generated: false
     name: aggmtransfn
     primaryKey: false
+    unsigned: false
     visible: true
   aggminvtransfn:
     caseSensitive: true
@@ -86,6 +95,7 @@ columns:
     generated: false
     name: aggminvtransfn
     primaryKey: false
+    unsigned: false
     visible: true
   aggmfinalfn:
     caseSensitive: true
@@ -93,20 +103,23 @@ columns:
     generated: false
     name: aggmfinalfn
     primaryKey: false
+    unsigned: false
     visible: true
   aggfinalextra:
     caseSensitive: true
-    dataType: 16
+    dataType: -7
     generated: false
     name: aggfinalextra
     primaryKey: false
+    unsigned: false
     visible: true
   aggmfinalextra:
     caseSensitive: true
-    dataType: 16
+    dataType: -7
     generated: false
     name: aggmfinalextra
     primaryKey: false
+    unsigned: false
     visible: true
   aggfinalmodify:
     caseSensitive: true
@@ -114,6 +127,7 @@ columns:
     generated: false
     name: aggfinalmodify
     primaryKey: false
+    unsigned: false
     visible: true
   aggmfinalmodify:
     caseSensitive: true
@@ -121,6 +135,7 @@ columns:
     generated: false
     name: aggmfinalmodify
     primaryKey: false
+    unsigned: false
     visible: true
   aggsortop:
     caseSensitive: true
@@ -128,6 +143,7 @@ columns:
     generated: false
     name: aggsortop
     primaryKey: false
+    unsigned: false
     visible: true
   aggtranstype:
     caseSensitive: true
@@ -135,6 +151,7 @@ columns:
     generated: false
     name: aggtranstype
     primaryKey: false
+    unsigned: false
     visible: true
   aggtransspace:
     caseSensitive: true
@@ -142,6 +159,7 @@ columns:
     generated: false
     name: aggtransspace
     primaryKey: false
+    unsigned: false
     visible: true
   aggmtranstype:
     caseSensitive: true
@@ -149,6 +167,7 @@ columns:
     generated: false
     name: aggmtranstype
     primaryKey: false
+    unsigned: false
     visible: true
   aggmtransspace:
     caseSensitive: true
@@ -156,6 +175,7 @@ columns:
     generated: false
     name: aggmtransspace
     primaryKey: false
+    unsigned: false
     visible: true
   agginitval:
     caseSensitive: true
@@ -163,6 +183,7 @@ columns:
     generated: false
     name: agginitval
     primaryKey: false
+    unsigned: false
     visible: true
   aggminitval:
     caseSensitive: true
@@ -170,6 +191,7 @@ columns:
     generated: false
     name: aggminitval
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
   pg_aggregate_fnoid_index:

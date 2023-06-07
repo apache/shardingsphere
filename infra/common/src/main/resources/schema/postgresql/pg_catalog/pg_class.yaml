@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: oid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   relname:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: relname
     primaryKey: false
+    unsigned: false
     visible: true
   relnamespace:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: relnamespace
     primaryKey: false
+    unsigned: false
     visible: true
   reltype:
     caseSensitive: true
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: reltype
     primaryKey: false
+    unsigned: false
     visible: true
   reloftype:
     caseSensitive: true
@@ -51,6 +55,7 @@ columns:
     generated: false
     name: reloftype
     primaryKey: false
+    unsigned: false
     visible: true
   relowner:
     caseSensitive: true
@@ -58,6 +63,7 @@ columns:
     generated: false
     name: relowner
     primaryKey: false
+    unsigned: false
     visible: true
   relam:
     caseSensitive: true
@@ -65,6 +71,7 @@ columns:
     generated: false
     name: relam
     primaryKey: false
+    unsigned: false
     visible: true
   relfilenode:
     caseSensitive: true
@@ -72,6 +79,7 @@ columns:
     generated: false
     name: relfilenode
     primaryKey: false
+    unsigned: false
     visible: true
   reltablespace:
     caseSensitive: true
@@ -79,6 +87,7 @@ columns:
     generated: false
     name: reltablespace
     primaryKey: false
+    unsigned: false
     visible: true
   relpages:
     caseSensitive: true
@@ -86,6 +95,7 @@ columns:
     generated: false
     name: relpages
     primaryKey: false
+    unsigned: false
     visible: true
   reltuples:
     caseSensitive: true
@@ -93,6 +103,7 @@ columns:
     generated: false
     name: reltuples
     primaryKey: false
+    unsigned: false
     visible: true
   relallvisible:
     caseSensitive: true
@@ -100,6 +111,7 @@ columns:
     generated: false
     name: relallvisible
     primaryKey: false
+    unsigned: false
     visible: true
   reltoastrelid:
     caseSensitive: true
@@ -107,6 +119,7 @@ columns:
     generated: false
     name: reltoastrelid
     primaryKey: false
+    unsigned: false
     visible: true
   relhasindex:
     caseSensitive: true
@@ -114,6 +127,7 @@ columns:
     generated: false
     name: relhasindex
     primaryKey: false
+    unsigned: false
     visible: true
   relisshared:
     caseSensitive: true
@@ -121,6 +135,7 @@ columns:
     generated: false
     name: relisshared
     primaryKey: false
+    unsigned: false
     visible: true
   relpersistence:
     caseSensitive: true
@@ -128,6 +143,7 @@ columns:
     generated: false
     name: relpersistence
     primaryKey: false
+    unsigned: false
     visible: true
   relkind:
     caseSensitive: true
@@ -135,6 +151,7 @@ columns:
     generated: false
     name: relkind
     primaryKey: false
+    unsigned: false
     visible: true
   relnatts:
     caseSensitive: true
@@ -142,6 +159,7 @@ columns:
     generated: false
     name: relnatts
     primaryKey: false
+    unsigned: false
     visible: true
   relchecks:
     caseSensitive: true
@@ -149,6 +167,7 @@ columns:
     generated: false
     name: relchecks
     primaryKey: false
+    unsigned: false
     visible: true
   relhasrules:
     caseSensitive: true
@@ -156,6 +175,7 @@ columns:
     generated: false
     name: relhasrules
     primaryKey: false
+    unsigned: false
     visible: true
   relhastriggers:
     caseSensitive: true
@@ -163,6 +183,7 @@ columns:
     generated: false
     name: relhastriggers
     primaryKey: false
+    unsigned: false
     visible: true
   relhassubclass:
     caseSensitive: true
@@ -170,6 +191,7 @@ columns:
     generated: false
     name: relhassubclass
     primaryKey: false
+    unsigned: false
     visible: true
   relrowsecurity:
     caseSensitive: true
@@ -177,6 +199,7 @@ columns:
     generated: false
     name: relrowsecurity
     primaryKey: false
+    unsigned: false
     visible: true
   relforcerowsecurity:
     caseSensitive: true
@@ -184,6 +207,7 @@ columns:
     generated: false
     name: relforcerowsecurity
     primaryKey: false
+    unsigned: false
     visible: true
   relispopulated:
     caseSensitive: true
@@ -191,6 +215,7 @@ columns:
     generated: false
     name: relispopulated
     primaryKey: false
+    unsigned: false
     visible: true
   relreplident:
     caseSensitive: true
@@ -198,6 +223,7 @@ columns:
     generated: false
     name: relreplident
     primaryKey: false
+    unsigned: false
     visible: true
   relispartition:
     caseSensitive: true
@@ -205,6 +231,7 @@ columns:
     generated: false
     name: relispartition
     primaryKey: false
+    unsigned: false
     visible: true
   relrewrite:
     caseSensitive: true
@@ -212,6 +239,7 @@ columns:
     generated: false
     name: relrewrite
     primaryKey: false
+    unsigned: false
     visible: true
   relfrozenxid:
     caseSensitive: true
@@ -219,6 +247,7 @@ columns:
     generated: false
     name: relfrozenxid
     primaryKey: false
+    unsigned: false
     visible: true
   relminmxid:
     caseSensitive: true
@@ -226,6 +255,7 @@ columns:
     generated: false
     name: relminmxid
     primaryKey: false
+    unsigned: false
     visible: true
   relacl:
     caseSensitive: true
@@ -233,6 +263,7 @@ columns:
     generated: false
     name: relacl
     primaryKey: false
+    unsigned: false
     visible: true
   reloptions:
     caseSensitive: true
@@ -240,6 +271,7 @@ columns:
     generated: false
     name: reloptions
     primaryKey: false
+    unsigned: false
     visible: true
   relpartbound:
     caseSensitive: true
@@ -247,11 +279,12 @@ columns:
     generated: false
     name: relpartbound
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
-  pg_class_oid_index:
-    name: pg_class_oid_index
   pg_class_relname_nsp_index:
     name: pg_class_relname_nsp_index
   pg_class_tblspc_relfilenode_index:
     name: pg_class_tblspc_relfilenode_index
+  pg_class_oid_index:
+    name: pg_class_oid_index

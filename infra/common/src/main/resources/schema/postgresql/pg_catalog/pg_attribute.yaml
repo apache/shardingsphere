@@ -1,0 +1,232 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_attribute
+columns:
+  attrelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: attrelid
+    primaryKey: true
+    unsigned: false
+    visible: true
+  attname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: attname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  atttypid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: atttypid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attstattarget:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: attstattarget
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attlen:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: attlen
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attnum:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: attnum
+    primaryKey: true
+    unsigned: false
+    visible: true
+  attndims:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: attndims
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attcacheoff:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: attcacheoff
+    primaryKey: false
+    unsigned: false
+    visible: true
+  atttypmod:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: atttypmod
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attbyval:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: attbyval
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attalign:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: attalign
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attstorage:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: attstorage
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attcompression:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: attcompression
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attnotnull:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: attnotnull
+    primaryKey: false
+    unsigned: false
+    visible: true
+  atthasdef:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: atthasdef
+    primaryKey: false
+    unsigned: false
+    visible: true
+  atthasmissing:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: atthasmissing
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attidentity:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: attidentity
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attgenerated:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: attgenerated
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attisdropped:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: attisdropped
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attislocal:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: attislocal
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attinhcount:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: attinhcount
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attcollation:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: attcollation
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attacl:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: attacl
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attoptions:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: attoptions
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attfdwoptions:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: attfdwoptions
+    primaryKey: false
+    unsigned: false
+    visible: true
+  attmissingval:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: attmissingval
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_attribute_relid_attnam_index:
+    name: pg_attribute_relid_attnam_index
+  pg_attribute_relid_attnum_index:
+    name: pg_attribute_relid_attnum_index

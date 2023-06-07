@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: oid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   spcname:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: spcname
     primaryKey: false
+    unsigned: false
     visible: true
   spcowner:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: spcowner
     primaryKey: false
+    unsigned: false
     visible: true
   spcacl:
     caseSensitive: true
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: spcacl
     primaryKey: false
+    unsigned: false
     visible: true
   spcoptions:
     caseSensitive: true
@@ -51,9 +55,10 @@ columns:
     generated: false
     name: spcoptions
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
-  pg_tablespace_oid_index:
-    name: pg_tablespace_oid_index
   pg_tablespace_spcname_index:
     name: pg_tablespace_spcname_index
+  pg_tablespace_oid_index:
+    name: pg_tablespace_oid_index

@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: inhrelid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   inhparent:
     caseSensitive: true
@@ -30,13 +31,23 @@ columns:
     generated: false
     name: inhparent
     primaryKey: false
+    unsigned: false
     visible: true
   inhseqno:
     caseSensitive: true
     dataType: 4
     generated: false
     name: inhseqno
+    primaryKey: true
+    unsigned: false
+    visible: true
+  inhdetachpending:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: inhdetachpending
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
   pg_inherits_parent_index:

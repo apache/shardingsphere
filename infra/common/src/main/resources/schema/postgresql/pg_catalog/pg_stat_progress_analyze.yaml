@@ -1,0 +1,115 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_stat_progress_analyze
+columns:
+  pid:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: pid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  datid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: datid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  datname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: datname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: relid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  phase:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: phase
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sample_blks_total:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: sample_blks_total
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sample_blks_scanned:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: sample_blks_scanned
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ext_stats_total:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: ext_stats_total
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ext_stats_computed:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: ext_stats_computed
+    primaryKey: false
+    unsigned: false
+    visible: true
+  child_tables_total:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: child_tables_total
+    primaryKey: false
+    unsigned: false
+    visible: true
+  child_tables_done:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: child_tables_done
+    primaryKey: false
+    unsigned: false
+    visible: true
+  current_child_table_relid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: current_child_table_relid
+    primaryKey: false
+    unsigned: false
+    visible: true

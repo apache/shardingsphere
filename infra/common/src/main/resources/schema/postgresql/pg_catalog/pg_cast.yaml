@@ -1,0 +1,72 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_cast
+columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: true
+    unsigned: false
+    visible: true
+  castsource:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: castsource
+    primaryKey: false
+    unsigned: false
+    visible: true
+  casttarget:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: casttarget
+    primaryKey: false
+    unsigned: false
+    visible: true
+  castfunc:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: castfunc
+    primaryKey: false
+    unsigned: false
+    visible: true
+  castcontext:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: castcontext
+    primaryKey: false
+    unsigned: false
+    visible: true
+  castmethod:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: castmethod
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_cast_source_target_index:
+    name: pg_cast_source_target_index
+  pg_cast_oid_index:
+    name: pg_cast_oid_index
