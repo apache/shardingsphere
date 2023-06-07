@@ -35,7 +35,7 @@ class MaskNodeConverterTest {
     
     @Test
     void assertGetAlgorithmPath() {
-        assertThat(MaskNodeConverter.getMaskAlgorithmNamePath("MD5"), is("algorithms/MD5"));
+        assertThat(MaskNodeConverter.getMaskAlgorithmPath("MD5"), is("algorithms/MD5"));
     }
     
     @Test
