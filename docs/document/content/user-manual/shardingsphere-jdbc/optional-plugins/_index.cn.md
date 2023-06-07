@@ -26,7 +26,6 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 - `org.apache.shardingsphere:shardingsphere-sharding-core`，数据分片核心
 - `org.apache.shardingsphere:shardingsphere-single-core`，单表（所有的分片数据源中仅唯一存在的表）核心
 - `org.apache.shardingsphere:shardingsphere-sql-federation-core`，联邦查询执行器核心
-- `org.apache.shardingsphere:shardingsphere-sql-federation-executor-advanced`，联邦查询执行器的 `advanced` 实现
 - `org.apache.shardingsphere:shardingsphere-sql-parser-mysql`， SQL 解析的 MySQL 方言实现
 - `org.apache.shardingsphere:shardingsphere-sql-parser-opengauss`， SQL 解析的 OpenGauss 方言实现
 - `org.apache.shardingsphere:shardingsphere-sql-parser-oracle`， SQL 解析的 Oracle 方言解析实现
