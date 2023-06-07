@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 // TODO consider add common ShardingSphereMetaDataValidateEngine for all features
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereMetaDataValidateUtils {
-    
+
     /**
      * Validate table exist.
      *

@@ -94,6 +94,11 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
     }
     
     @Override
+    public Reader getCharacterStream(final int columnIndex) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Get Character stream");
+    }
+    
+    @Override
     public final boolean wasNull() {
         return wasNull;
     }
