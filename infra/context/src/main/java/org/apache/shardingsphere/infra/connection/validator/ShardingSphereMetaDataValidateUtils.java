@@ -34,7 +34,7 @@ import java.util.List;
 // TODO consider add common ShardingSphereMetaDataValidateEngine for all features
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereMetaDataValidateUtils {
-
+    
     public static final List<String> EXCLUDE_VALIDATE_TABLE = Lists.newArrayList("DUAL");
     
     /**
