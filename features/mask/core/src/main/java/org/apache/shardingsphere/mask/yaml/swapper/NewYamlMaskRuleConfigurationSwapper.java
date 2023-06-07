@@ -20,17 +20,21 @@ package org.apache.shardingsphere.mask.yaml.swapper;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.constant.MaskOrder;
-import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.mask.metadata.converter.MaskNodeConverter;
+import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigurationSwapper;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -57,8 +61,18 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
     
     @Override
     public MaskRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        // TODO to be completed.
-        return new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
+        Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
+        Map<String, AlgorithmConfiguration> algorithms = new LinkedHashMap<>();
+        for (YamlDataNode each : dataNodes) {
+            if (MaskNodeConverter.isTablePath(each.getKey())) {
+                MaskNodeConverter.getTableName(each.getKey())
+                        .ifPresent(tableName -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlMaskTableRuleConfiguration.class))));
+            } else if (MaskNodeConverter.isAlgorithmPath(each.getKey())) {
+                MaskNodeConverter.getAlgorithmName(each.getKey())
+                        .ifPresent(loadBalancerName -> algorithms.put(loadBalancerName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
+            }
+        }
+        return new MaskRuleConfiguration(tables, algorithms);
     }
     
     @Override
