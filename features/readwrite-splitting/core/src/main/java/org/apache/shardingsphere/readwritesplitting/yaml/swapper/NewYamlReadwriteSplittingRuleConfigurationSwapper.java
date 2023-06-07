@@ -70,11 +70,11 @@ public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements 
     @Override
     public ReadwriteSplittingRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
-        Map<String, AlgorithmConfiguration> loadBalancerMap = new LinkedHashMap<>(dataNodes.size(), 1F);
+        Map<String, AlgorithmConfiguration> loadBalancerMap = new LinkedHashMap<>();
         for (YamlDataNode each : dataNodes) {
             if (ReadwriteSplittingNodeConverter.isDataSourcePath(each.getKey())) {
                 ReadwriteSplittingNodeConverter.getGroupName(each.getKey())
-                        .ifPresent(groupName -> dataSources.add(swapToObject(groupName, YamlEngine.unmarshal(each.getValue(), YamlReadwriteSplittingDataSourceRuleConfiguration.class))));
+                        .ifPresent(groupName -> dataSources.add(swapDataSource(groupName, YamlEngine.unmarshal(each.getValue(), YamlReadwriteSplittingDataSourceRuleConfiguration.class))));
             } else if (ReadwriteSplittingNodeConverter.isLoadBalancerPath(each.getKey())) {
                 ReadwriteSplittingNodeConverter.getLoadBalancerName(each.getKey())
                         .ifPresent(
@@ -84,7 +84,7 @@ public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements 
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancerMap);
     }
     
-    private ReadwriteSplittingDataSourceRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
+    private ReadwriteSplittingDataSourceRuleConfiguration swapDataSource(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
         return new ReadwriteSplittingDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getWriteDataSourceName(), yamlDataSourceRuleConfig.getReadDataSourceNames(),
                 getTransactionalReadQueryStrategy(yamlDataSourceRuleConfig), yamlDataSourceRuleConfig.getLoadBalancerName());
     }
