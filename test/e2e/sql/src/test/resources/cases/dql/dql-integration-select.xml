@@ -17,6 +17,8 @@
   -->
 
 <integration-test-cases>
+    <test-case sql="SELECT 1 FROM dual" />
+
     <test-case sql="SELECT 1 as a" />
     
     <test-case sql="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
