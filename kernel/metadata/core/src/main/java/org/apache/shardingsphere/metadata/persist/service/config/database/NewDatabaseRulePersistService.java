@@ -87,6 +87,13 @@ public final class NewDatabaseRulePersistService implements NewDatabaseRuleBased
         return new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(getDataNodes(result));
     }
     
+    @Deprecated
+    @Override
+    public Collection<RuleConfiguration> load(String databaseName, String version) {
+        // TODO
+        return Collections.emptyList();
+    }
+    
     private void getAllNodes(final Collection<String> keys, final String path) {
         keys.add(path);
         List<String> childrenKeys = repository.getChildrenKeys(path);
