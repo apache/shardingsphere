@@ -139,7 +139,7 @@ jobs:
     if: (github.repository == 'apache/shardingsphere')
     name: Check - Dead Links
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
       - run: sudo npm install -g markdown-link-check@3.10.0
@@ -149,5 +149,5 @@ jobs:
               if [ -d "$file" ]; then
                 continue
               fi
-            markdown-link-check -c .github/workflows/resources/linkcheck/.dlc.json -q "$file"
+            markdown-link-check -c .github/workflows/resources/linkcheck/markdown-link-check.json -q "$file"
           done
