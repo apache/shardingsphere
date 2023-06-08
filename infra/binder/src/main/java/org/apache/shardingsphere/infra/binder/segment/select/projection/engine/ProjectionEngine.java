@@ -105,7 +105,7 @@ public final class ProjectionEngine {
             return Optional.of(createProjection((AggregationProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
-            return Optional.of(createProjection((SubqueryProjectionSegment) projectionSegment));
+            return Optional.of(createProjection(table, (SubqueryProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(createProjection((ParameterMarkerExpressionSegment) projectionSegment));
@@ -117,8 +117,10 @@ public final class ProjectionEngine {
         return new ParameterMarkerProjection(projectionSegment.getParameterMarkerIndex(), projectionSegment.getParameterMarkerType(), projectionSegment.getAliasName().orElse(null));
     }
     
-    private SubqueryProjection createProjection(final SubqueryProjectionSegment projectionSegment) {
-        return new SubqueryProjection(projectionSegment.getText(), projectionSegment.getAliasName().orElse(null));
+    private SubqueryProjection createProjection(final TableSegment table, final SubqueryProjectionSegment projectionSegment) {
+        Projection subqueryProjection = createProjection(table, projectionSegment.getSubquery().getSelect().getProjections().getProjections().iterator().next())
+                .orElseThrow(() -> new IllegalArgumentException("Subquery projection must have at least one projection column."));
+        return new SubqueryProjection(projectionSegment.getText(), subqueryProjection, projectionSegment.getAliasName().orElse(null), databaseType);
     }
     
     private ShorthandProjection createProjection(final TableSegment table, final ShorthandProjectionSegment projectionSegment) {
