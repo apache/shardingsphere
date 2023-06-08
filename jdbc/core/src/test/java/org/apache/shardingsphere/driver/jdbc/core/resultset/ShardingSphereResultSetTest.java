@@ -391,14 +391,14 @@ class ShardingSphereResultSetTest {
     @Test
     void assertGetCharacterStreamWithColumnIndex() throws SQLException {
         Reader reader = mock(Reader.class);
-        when(mergeResultSet.getValue(1, Reader.class)).thenReturn(reader);
+        when(mergeResultSet.getCharacterStream(1)).thenReturn(reader);
         assertThat(shardingSphereResultSet.getCharacterStream(1), is(reader));
     }
     
     @Test
     void assertGetCharacterStreamWithColumnLabel() throws SQLException {
         Reader reader = mock(Reader.class);
-        when(mergeResultSet.getValue(1, Reader.class)).thenReturn(reader);
+        when(mergeResultSet.getCharacterStream(1)).thenReturn(reader);
         assertThat(shardingSphereResultSet.getCharacterStream("label"), is(reader));
     }
     
