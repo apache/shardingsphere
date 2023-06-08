@@ -110,7 +110,7 @@ class EncryptAlgorithmMetaDataTest {
     }
     
     @Test
-    public void assertFindEncryptContextWhenSubqueryContainsEncryptColumn() {
+    void assertFindEncryptContextWhenSubqueryContainsEncryptColumn() {
         ColumnProjection columnProjection = new ColumnProjection(null, "user_name", null);
         Map<String, String> columnTableNames = new HashMap<>();
         columnTableNames.put(columnProjection.getExpression(), "t_user");
