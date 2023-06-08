@@ -38,6 +38,8 @@ public final class ReadwriteSplittingNodeConverter {
     
     private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
     
+    private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
+    
     /**
      * Get group name path.
      *
@@ -71,25 +73,49 @@ public final class ReadwriteSplittingNodeConverter {
     }
     
     /**
+     * Is readwrite-splitting data sources path.
+     *
+     * @param rulePath rule path
+     * @return true or false
+     */
+    public static boolean isDataSourcePath(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find();
+    }
+    
+    /**
+     * Is readwrite-splitting load balancer path.
+     *
+     * @param rulePath rule path
+     * @return true or false
+     */
+    public static boolean isLoadBalancerPath(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find();
+    }
+    
+    /**
      * Get group name.
      *
      * @param rulePath rule path
      * @return group name
      */
     public static Optional<String> getGroupName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     *  Get group name.
+     * Get load balancer name.
      *
      * @param rulePath rule path
-     * @return group name
+     * @return load balancer name
      */
-    public static Optional<String> getLoadBalanceName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getLoadBalancerName(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }

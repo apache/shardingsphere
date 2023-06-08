@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * TODO Rename DatabaseRulePersistService when metadata structure adjustment completed. #25485
@@ -55,7 +56,7 @@ public final class NewDatabaseRulePersistService implements NewDatabaseRuleBased
     @Override
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
         Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (Map.Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
@@ -66,34 +67,38 @@ public final class NewDatabaseRulePersistService implements NewDatabaseRuleBased
     
     private void persistDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            if (Strings.isNullOrEmpty(repository.getDirectly(each.getKey()))) {
-                repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionPath(databaseName, ruleName, each.getKey()), DEFAULT_VERSION);
+            if (Strings.isNullOrEmpty(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()))) {
+                repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()), DEFAULT_VERSION);
             }
-            List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getDatabaseRuleVersionsPath(databaseName, ruleName, each.getKey()));
-            repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleVersionPath(databaseName, ruleName, each.getKey(), versions.isEmpty()
-                    ? DEFAULT_VERSION
-                    : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), each.getValue());
+            repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), DEFAULT_VERSION), each.getValue());
         }
     }
     
     @Override
-    public Collection<RuleConfiguration> load(final String databaseName, final String ruleName) {
+    public Collection<RuleConfiguration> load(final String databaseName) {
         Collection<String> result = new LinkedHashSet<>();
-        getAllKeys(result, NewDatabaseMetaDataNode.getDatabaseRulePath(databaseName, ruleName));
+        getAllNodes(result, NewDatabaseMetaDataNode.getRulesNode(databaseName));
         if (1 == result.size()) {
             return Collections.emptyList();
         }
-        return new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(ruleName, getDataNodes(result));
+        return new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(getDataNodes(result));
     }
     
-    private void getAllKeys(final Collection<String> keys, final String path) {
+    @Deprecated
+    @Override
+    public Collection<RuleConfiguration> load(final String databaseName, final String version) {
+        // TODO Remove this method when metadata structure adjustment completed. #25485
+        return Collections.emptyList();
+    }
+    
+    private void getAllNodes(final Collection<String> keys, final String path) {
         keys.add(path);
         List<String> childrenKeys = repository.getChildrenKeys(path);
         if (childrenKeys.isEmpty()) {
             return;
         }
         for (String each : childrenKeys) {
-            getAllKeys(keys, String.join("/", "", path, each));
+            getAllNodes(keys, String.join("/", "", path, each));
         }
     }
     

@@ -97,6 +97,11 @@ transaction:
   defaultType: XA
   providerType: Bitronix
 
+sqlFederation:
+  sqlFederationEnabled: true
+  executionPlanCache:
+    initialCapacity: 2000
+    maximumSize: 65535
+
 props:
   sql-show: true
-  sql-federation-type: ADVANCED

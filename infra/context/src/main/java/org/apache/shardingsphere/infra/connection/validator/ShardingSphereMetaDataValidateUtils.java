@@ -25,12 +25,21 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
  * ShardingSphere meta data validate utility class.
  */
 // TODO consider add common ShardingSphereMetaDataValidateEngine for all features
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereMetaDataValidateUtils {
+    
+    private static final Collection<String> EXCLUDE_VALIDATE_TABLES = new HashSet<>(1, 1F);
+    
+    static {
+        EXCLUDE_VALIDATE_TABLES.add("DUAL");
+    }
     
     /**
      * Validate table exist.
@@ -43,7 +52,7 @@ public final class ShardingSphereMetaDataValidateUtils {
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            if (!schema.containsTable(each)) {
+            if (!EXCLUDE_VALIDATE_TABLES.contains(each.toUpperCase()) && !schema.containsTable(each)) {
                 throw new NoSuchTableException(each);
             }
         }
