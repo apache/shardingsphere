@@ -48,10 +48,23 @@ public final class EncryptColumnAssert {
         } else {
             assertNotNull(actual, assertContext.getText("Actual encrypt column should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
-            assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getCipherColumn(), is(expected.getCipherColumn()));
-            assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getAssistedQueryColumn(), is(expected.getAssistedQueryColumn()));
-            AlgorithmAssert.assertIs(assertContext, actual.getEncryptor(), expected.getEncryptor());
-            AlgorithmAssert.assertIs(assertContext, actual.getAssistedQueryEncryptor(), expected.getAssistedQueryEncryptor());
+            assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())),
+                    actual.getCipher().getName(), is(expected.getCipher().getName()));
+            AlgorithmAssert.assertIs(assertContext, actual.getCipher().getEncryptor(), expected.getCipher().getEncryptor());
+            if (null == expected.getAssistedQuery()) {
+                assertNull(actual.getAssistedQuery(), assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())));
+            } else {
+                assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())),
+                        actual.getAssistedQuery().getName(), is(expected.getAssistedQuery().getName()));
+                AlgorithmAssert.assertIs(assertContext, actual.getAssistedQuery().getEncryptor(), expected.getAssistedQuery().getEncryptor());
+            }
+            if (null == expected.getLikeQuery()) {
+                assertNull(actual.getLikeQuery(), assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())));
+            } else {
+                assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())),
+                        actual.getLikeQuery().getName(), is(expected.getLikeQuery().getName()));
+                AlgorithmAssert.assertIs(assertContext, actual.getLikeQuery().getEncryptor(), expected.getLikeQuery().getEncryptor());
+            }
         }
     }
 }

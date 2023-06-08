@@ -20,9 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -32,15 +30,12 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedEncryptColumn extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlAttribute(name = "cipher-column")
-    private String cipherColumn;
+    @XmlElement(name = "cipher")
+    private ExpectedEncryptColumnItem cipher;
     
-    @XmlAttribute(name = "assisted-query-column")
-    private String assistedQueryColumn;
+    @XmlElement(name = "assisted-query")
+    private ExpectedEncryptColumnItem assistedQuery;
     
-    @XmlElement
-    private ExpectedAlgorithm encryptor;
-    
-    @XmlElement(name = "assisted-query-encryptor")
-    private ExpectedAlgorithm assistedQueryEncryptor;
+    @XmlElement(name = "like-query")
+    private ExpectedEncryptColumnItem likeQuery;
 }

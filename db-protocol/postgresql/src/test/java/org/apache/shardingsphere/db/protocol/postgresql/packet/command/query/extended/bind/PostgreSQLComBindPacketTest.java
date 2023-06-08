@@ -43,7 +43,7 @@ class PostgreSQLComBindPacketTest {
         PostgreSQLComBindPacket actual = new PostgreSQLComBindPacket(new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(BIND_MESSAGE_BYTES), StandardCharsets.UTF_8));
         assertThat(actual.getPortal(), is(""));
         assertThat(actual.getStatementId(), is("S_1"));
-        assertThat(actual.readParameters(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4)), is(Collections.singletonList(10)));
+        assertThat(actual.readParameters(Collections.singletonList(PostgreSQLColumnType.INT4)), is(Collections.singletonList(10)));
         assertTrue(actual.readResultFormats().isEmpty());
     }
 }

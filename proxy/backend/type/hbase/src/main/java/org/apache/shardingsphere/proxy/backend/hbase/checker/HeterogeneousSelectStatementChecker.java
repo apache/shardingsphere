@@ -38,15 +38,19 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Whe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+
 import java.util.Optional;
 
 /**
- * Checker for select statement.
+ * Select statement checker.
  */
-public final class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLStatementChecker<SelectStatement> {
+public final class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLStatementChecker {
+    
+    private final SelectStatement sqlStatement;
     
     public HeterogeneousSelectStatementChecker(final SelectStatement sqlStatement) {
         super(sqlStatement);
+        this.sqlStatement = sqlStatement;
     }
     
     @Override
@@ -58,10 +62,10 @@ public final class HeterogeneousSelectStatementChecker extends CommonHeterogeneo
     }
     
     private void checkDoNotSupportedSegment() {
-        Preconditions.checkArgument(getSqlStatement().getFrom() instanceof SimpleTableSegment, "Only supported simple table segment.");
-        Preconditions.checkArgument(!getSqlStatement().getHaving().isPresent(), "Do not supported having segment.");
-        Preconditions.checkArgument(!getSqlStatement().getGroupBy().isPresent(), "Do not supported group by segment.");
-        MySQLSelectStatement selectStatement = (MySQLSelectStatement) getSqlStatement();
+        Preconditions.checkArgument(sqlStatement.getFrom() instanceof SimpleTableSegment, "Only supported simple table segment.");
+        Preconditions.checkArgument(!sqlStatement.getHaving().isPresent(), "Do not supported having segment.");
+        Preconditions.checkArgument(!sqlStatement.getGroupBy().isPresent(), "Do not supported group by segment.");
+        MySQLSelectStatement selectStatement = (MySQLSelectStatement) sqlStatement;
         Preconditions.checkArgument(!selectStatement.getWindow().isPresent(), "Do not supported window segment.");
         Preconditions.checkArgument(!selectStatement.getLock().isPresent(), "Do not supported lock segment.");
         Optional<LimitSegment> limitSegment = selectStatement.getLimit();
@@ -74,7 +78,7 @@ public final class HeterogeneousSelectStatementChecker extends CommonHeterogeneo
     }
     
     private void checkProjectionsIsExpected() {
-        for (ProjectionSegment projectionSegment : getSqlStatement().getProjections().getProjections()) {
+        for (ProjectionSegment projectionSegment : sqlStatement.getProjections().getProjections()) {
             if (!(projectionSegment instanceof ShorthandProjectionSegment || projectionSegment instanceof ColumnProjectionSegment || HBaseHeterogeneousUtils.isCrcProjectionSegment(
                     projectionSegment))) {
                 throw new IllegalArgumentException("Only supported shorthand, column and crc32 expression projections.");
@@ -83,7 +87,7 @@ public final class HeterogeneousSelectStatementChecker extends CommonHeterogeneo
     }
     
     private void checkSupportedWhereSegment() {
-        Optional<WhereSegment> whereSegment = getSqlStatement().getWhere();
+        Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         if (!whereSegment.isPresent()) {
             return;
         }
@@ -111,10 +115,10 @@ public final class HeterogeneousSelectStatementChecker extends CommonHeterogeneo
     }
     
     private void checkSupportedOrderBySegment() {
-        if (!getSqlStatement().getOrderBy().isPresent()) {
+        if (!sqlStatement.getOrderBy().isPresent()) {
             return;
         }
-        for (OrderByItemSegment orderByItemSegment : getSqlStatement().getOrderBy().get().getOrderByItems()) {
+        for (OrderByItemSegment orderByItemSegment : sqlStatement.getOrderBy().get().getOrderByItems()) {
             if (!(orderByItemSegment instanceof ColumnOrderByItemSegment)) {
                 throw new IllegalArgumentException("Only simple row key order by.");
             }

@@ -64,7 +64,7 @@ public final class DataSourcePoolCreator {
             try {
                 dataSource = create(entry.getKey(), entry.getValue(), cacheEnabled);
                 // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
+            } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
                 if (!cacheEnabled) {
                     result.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);

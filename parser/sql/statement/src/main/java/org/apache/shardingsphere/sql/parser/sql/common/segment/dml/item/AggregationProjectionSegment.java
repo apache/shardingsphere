@@ -55,7 +55,12 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     }
     
     @Override
-    public final Optional<String> getAlias() {
+    public final Optional<String> getAliasName() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
+    }
+    
+    @Override
+    public final Optional<AliasSegment> getAlias() {
+        return Optional.ofNullable(alias);
     }
 }

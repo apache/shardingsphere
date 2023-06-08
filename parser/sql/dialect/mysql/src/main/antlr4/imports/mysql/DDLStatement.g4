@@ -189,8 +189,14 @@ dropTable
     ;
 
 dropIndex
-    : DROP INDEX indexName (ON tableName)?
-    (alterAlgorithmOption | alterLockOption)*
+    : DROP INDEX indexName (ON tableName)? algorithmOptionAndLockOption?
+    ;
+
+algorithmOptionAndLockOption
+    : alterLockOption
+    | alterAlgorithmOption
+    | alterLockOption alterAlgorithmOption
+    | alterAlgorithmOption alterLockOption
     ;
 
 alterAlgorithmOption
@@ -206,8 +212,7 @@ truncateTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification? INDEX indexName indexTypeClause? ON tableName keyListWithExpression indexOption?
-    (alterAlgorithmOption | alterLockOption)*
+    : CREATE createIndexSpecification? INDEX indexName indexTypeClause? ON tableName keyListWithExpression indexOption? algorithmOptionAndLockOption?
     ;
 
 createDatabase
@@ -349,6 +354,7 @@ createTablespaceInnodb
       (FILE_BLOCK_SIZE EQ_ fileSizeLiteral)?
       (ENCRYPTION EQ_ y_or_n=string_)?
       (ENGINE EQ_? identifier)?
+      (COMMENT EQ_? string_)?
     ;
 
 createTablespaceNdb

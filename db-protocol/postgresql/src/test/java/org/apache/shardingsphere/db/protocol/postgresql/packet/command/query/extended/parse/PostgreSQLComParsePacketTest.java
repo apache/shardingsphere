@@ -49,6 +49,6 @@ class PostgreSQLComParsePacketTest {
         assertThat(actual.getStatementId(), is("sql"));
         List<PostgreSQLColumnType> types = actual.readParameterTypes();
         assertThat(types.size(), is(1));
-        assertThat(types.get(0), is(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
+        assertThat(types.get(0), is(PostgreSQLColumnType.UNSPECIFIED));
     }
 }

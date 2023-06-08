@@ -20,7 +20,7 @@ lexer grammar Literals;
 import Alphabet, Symbol;
 
 IDENTIFIER_
-    : [A-Za-z\u0080-\uFFFF]+[A-Za-z_$#0-9\u0080-\uFFFF]*
+    : [A-Za-z\u0080-\uFF0B\uFF0D-\uFFFF]+[A-Za-z_$#0-9\u0080-\uFF0B\uFF0D-\uFFFF]*
     |  DQ_ ~'"'+ DQ_
     ;
 

@@ -75,28 +75,26 @@ public final class ConsulDistributedLock implements DistributedLock {
         }
         PutParams putParams = new PutParams();
         long remainingMillis = timeoutMillis;
-        try {
-            while (true) {
-                String sessionId = createSessionId();
-                putParams.setAcquireSession(sessionId);
-                Response<Boolean> response = client.setKVValue(lockPath, LOCK_VALUE, putParams);
-                if (response.getValue()) {
-                    lockSessionId.set(sessionId);
-                    SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> client.renewSession(sessionId, QueryParams.DEFAULT), 5L, 10L, TimeUnit.SECONDS);
-                    return true;
-                }
-                client.sessionDestroy(sessionId, null);
-                long waitingMillis = waitUntilRelease(response.getConsulIndex(), remainingMillis);
-                if (waitingMillis >= remainingMillis) {
-                    return false;
-                }
-                remainingMillis -= waitingMillis;
+        while (true) {
+            String sessionId = createSessionId();
+            putParams.setAcquireSession(sessionId);
+            Response<Boolean> response = client.setKVValue(lockPath, LOCK_VALUE, putParams);
+            if (response.getValue()) {
+                return tryLock(sessionId);
             }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ignored) {
-            // CHECKSTYLE:ON
-            return false;
+            client.sessionDestroy(sessionId, null);
+            long waitingMillis = waitUntilRelease(response.getConsulIndex(), remainingMillis);
+            if (waitingMillis >= remainingMillis) {
+                return false;
+            }
+            remainingMillis -= waitingMillis;
         }
+    }
+    
+    private boolean tryLock(final String sessionId) {
+        lockSessionId.set(sessionId);
+        SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> client.renewSession(sessionId, QueryParams.DEFAULT), 5L, 10L, TimeUnit.SECONDS);
+        return true;
     }
     
     private String createSessionId() {
@@ -164,9 +162,6 @@ public final class ConsulDistributedLock implements DistributedLock {
         try {
             client.setKVValue(lockPath, UNLOCK_VALUE, putParams);
             client.sessionDestroy(sessionId, null);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ignored) {
-            // CHECKSTYLE:ON
         } finally {
             lockSessionId.remove();
         }

@@ -56,7 +56,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -114,7 +114,7 @@ public final class MySQLClient {
                         socketChannel.pipeline().addLast(new MySQLCommandResponseHandler());
                     }
                 }).connect(connectInfo.getHost(), connectInfo.getPort()).channel();
-        serverInfo = waitExpectedResponse(ServerInfo.class);
+        serverInfo = waitExpectedResponse(ServerInfo.class).orElse(null);
         running = true;
     }
     
@@ -129,7 +129,7 @@ public final class MySQLClient {
         MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, true);
         resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
-        return null != waitExpectedResponse(MySQLOKPacket.class);
+        return waitExpectedResponse(MySQLOKPacket.class).isPresent();
     }
     
     /**
@@ -137,13 +137,18 @@ public final class MySQLClient {
      *
      * @param queryString query string
      * @return affected rows
+     * @throws PipelineInternalException if could not get MySQL OK packet
      */
     public synchronized int executeUpdate(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, false);
         resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
-        return (int) Objects.requireNonNull(waitExpectedResponse(MySQLOKPacket.class)).getAffectedRows();
+        Optional<MySQLOKPacket> packet = waitExpectedResponse(MySQLOKPacket.class);
+        if (!packet.isPresent()) {
+            throw new PipelineInternalException("Could not get MySQL OK packet");
+        }
+        return (int) packet.get().getAffectedRows();
     }
     
     /**
@@ -151,13 +156,18 @@ public final class MySQLClient {
      *
      * @param queryString query string
      * @return result set
+     * @throws PipelineInternalException if getting MySQL packet failed
      */
     public synchronized InternalResultSet executeQuery(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, false);
         resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
-        return waitExpectedResponse(InternalResultSet.class);
+        Optional<InternalResultSet> result = waitExpectedResponse(InternalResultSet.class);
+        if (!result.isPresent()) {
+            throw new PipelineInternalException("Could not get MySQL FieldCount/ColumnDefinition/TextResultSetRow packet");
+        }
+        return result.get();
     }
     
     /**
@@ -244,14 +254,14 @@ public final class MySQLClient {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> T waitExpectedResponse(final Class<T> type) {
+    private <T> Optional<T> waitExpectedResponse(final Class<T> type) {
         try {
             Object response = responseCallback.get(5L, TimeUnit.SECONDS);
             if (null == response) {
-                return null;
+                return Optional.empty();
             }
             if (type.equals(response.getClass())) {
-                return (T) response;
+                return Optional.of((T) response);
             }
             if (response instanceof MySQLErrPacket) {
                 throw new PipelineInternalException(((MySQLErrPacket) response).getErrorMessage());

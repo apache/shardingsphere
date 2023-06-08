@@ -63,7 +63,7 @@ public final class YamlShardingSphereDataSourceFactory {
         try {
             return createDataSource(dataSourceMap, rootConfig);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             dataSourceMap.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
             throw ex;
@@ -189,6 +189,9 @@ public final class YamlShardingSphereDataSourceFactory {
         }
         if (null != jdbcConfiguration.getLogging()) {
             jdbcConfiguration.getRules().add(jdbcConfiguration.getLogging());
+        }
+        if (null != jdbcConfiguration.getSqlFederation()) {
+            jdbcConfiguration.getRules().add(jdbcConfiguration.getSqlFederation());
         }
     }
 }

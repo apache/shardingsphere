@@ -30,6 +30,7 @@ public final class YamlSingleRuleConfigurationSwapper implements YamlRuleConfigu
     @Override
     public YamlSingleRuleConfiguration swapToYamlConfiguration(final SingleRuleConfiguration data) {
         YamlSingleRuleConfiguration result = new YamlSingleRuleConfiguration();
+        result.getTables().addAll(data.getTables());
         data.getDefaultDataSource().ifPresent(result::setDefaultDataSource);
         return result;
     }
@@ -37,6 +38,7 @@ public final class YamlSingleRuleConfigurationSwapper implements YamlRuleConfigu
     @Override
     public SingleRuleConfiguration swapToObject(final YamlSingleRuleConfiguration yamlConfig) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
+        result.getTables().addAll(yamlConfig.getTables());
         result.setDefaultDataSource(yamlConfig.getDefaultDataSource());
         return result;
     }

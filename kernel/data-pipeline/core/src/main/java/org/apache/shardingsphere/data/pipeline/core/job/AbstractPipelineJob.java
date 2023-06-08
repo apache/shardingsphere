@@ -94,7 +94,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             processFailed(jobItemContext, ex);
             throw ex;
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final SQLException ex) {
             // CHECKSTYLE:ON
             processFailed(jobItemContext, ex);
             throw new PipelineInternalException(ex);
@@ -103,7 +103,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
     
-    private void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
+    protected void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
         String jobId = jobItemContext.getJobId();
         log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
         jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);

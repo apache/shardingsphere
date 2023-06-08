@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.checker;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -33,24 +34,15 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Abstract checker.
- * 
- * @param <T> SQLStatement.
+ * Common heterogeneous SQL statement checker.
  */
+@RequiredArgsConstructor
 @Getter
-public class CommonHeterogeneousSQLStatementChecker<T extends SQLStatement> implements HeterogeneousSQLStatementChecker<T> {
+public class CommonHeterogeneousSQLStatementChecker implements HeterogeneousSQLStatementChecker {
     
     protected static final List<String> ALLOW_KEYS = Arrays.asList("rowKey", "row_key", "key", "pk", "id");
     
-    private final T sqlStatement;
-    
-    public CommonHeterogeneousSQLStatementChecker(final T sqlStatement) {
-        this.sqlStatement = sqlStatement;
-    }
-    
-    @Override
-    public void execute() {
-    }
+    private final SQLStatement sqlStatement;
     
     protected final void checkIsSinglePointQuery(final WhereSegment whereSegment) {
         ExpressionSegment whereExpr = whereSegment.getExpr();
@@ -77,9 +69,9 @@ public class CommonHeterogeneousSQLStatementChecker<T extends SQLStatement> impl
     /**
      * Check in expression.
      *
-     * @param whereExpr InExpression
+     * @param whereExpr In expression
      */
-    protected void checkInExpressionIsExpected(final ExpressionSegment whereExpr) {
+    protected final void checkInExpressionIsExpected(final ExpressionSegment whereExpr) {
         InExpression expression = (InExpression) whereExpr;
         Preconditions.checkArgument(expression.getLeft() instanceof ColumnSegment, "Left segment must column segment.");
         String rowKey = ((ColumnSegment) expression.getLeft()).getIdentifier().getValue();
@@ -87,5 +79,9 @@ public class CommonHeterogeneousSQLStatementChecker<T extends SQLStatement> impl
         Preconditions.checkArgument(isAllowKey, String.format("%s is not a allowed key.", rowKey));
         Preconditions.checkArgument(!expression.isNot(), "Do not supported `not in`.");
         Preconditions.checkArgument(expression.getRight() instanceof ListExpression, "Only supported list expression.");
+    }
+    
+    @Override
+    public void execute() {
     }
 }

@@ -17,15 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-
 import java.util.Optional;
 
 /**
  * Owner available.
  *
  */
-public interface OwnerAvailable extends SQLSegment {
+public interface OwnerAvailable {
     
     /**
      * Get owner.

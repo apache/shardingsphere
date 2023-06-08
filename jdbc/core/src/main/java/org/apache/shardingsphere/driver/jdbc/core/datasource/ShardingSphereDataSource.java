@@ -87,7 +87,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
             try {
                 each.onInitialized(databaseName, contextManager);
                 // CHECKSTYLE:OFF
-            } catch (final Exception ignored) {
+            } catch (final RuntimeException ignored) {
                 // CHECKSTYLE:ON
             }
         }
@@ -141,7 +141,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
             try {
                 each.onDestroyed(databaseName, InstanceType.JDBC);
                 // CHECKSTYLE:OFF
-            } catch (final Exception ignored) {
+            } catch (final RuntimeException ignored) {
                 // CHECKSTYLE:ON
             }
         }

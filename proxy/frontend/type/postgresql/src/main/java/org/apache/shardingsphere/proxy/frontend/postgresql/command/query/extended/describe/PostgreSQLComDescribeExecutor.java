@@ -158,7 +158,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         Collection<Integer> result = new HashSet<>();
         ListIterator<PostgreSQLColumnType> parameterTypesListIterator = preparedStatement.getParameterTypes().listIterator();
         for (int index = parameterTypesListIterator.nextIndex(); parameterTypesListIterator.hasNext(); index = parameterTypesListIterator.nextIndex()) {
-            if (PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == parameterTypesListIterator.next()) {
+            if (PostgreSQLColumnType.UNSPECIFIED == parameterTypesListIterator.next()) {
                 result.add(index);
             }
         }
@@ -187,7 +187,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
                 String columnName = segment.getColumn().getIdentifier().getValue();
                 ShardingSphereColumn column = table.containsColumn(columnName) ? table.getColumn(columnName) : generateDefaultColumn(segment);
-                String alias = segment.getAlias().orElseGet(column::getName);
+                String alias = segment.getAliasName().orElseGet(column::getName);
                 result.add(new PostgreSQLColumnDescription(alias, 0, column.getDataType(), estimateColumnLength(column.getDataType()), ""));
             }
             if (each instanceof ExpressionProjectionSegment) {
@@ -203,7 +203,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private PostgreSQLColumnDescription convertExpressionToDescription(final ExpressionProjectionSegment expressionProjectionSegment) {
         ExpressionSegment expressionSegment = expressionProjectionSegment.getExpr();
-        String columnName = expressionProjectionSegment.getAlias().orElse(ANONYMOUS_COLUMN_NAME);
+        String columnName = expressionProjectionSegment.getAliasName().orElse(ANONYMOUS_COLUMN_NAME);
         if (expressionSegment instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) expressionSegment).getLiterals();
             if (value instanceof String) {
@@ -255,13 +255,13 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private void populateParameterTypes(final PostgreSQLServerPreparedStatement logicPreparedStatement, final PreparedStatement actualPreparedStatement) throws SQLException {
         if (0 == logicPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount()
-                || logicPreparedStatement.getParameterTypes().stream().noneMatch(each -> PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == each)) {
+                || logicPreparedStatement.getParameterTypes().stream().noneMatch(each -> PostgreSQLColumnType.UNSPECIFIED == each)) {
             return;
         }
         ParameterMetaData parameterMetaData = actualPreparedStatement.getParameterMetaData();
         for (int i = 0; i < logicPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount(); i++) {
-            if (PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == logicPreparedStatement.getParameterTypes().get(i)) {
-                logicPreparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1)));
+            if (PostgreSQLColumnType.UNSPECIFIED == logicPreparedStatement.getParameterTypes().get(i)) {
+                logicPreparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1), parameterMetaData.getParameterTypeName(i + 1)));
             }
         }
     }

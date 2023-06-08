@@ -43,7 +43,7 @@ class MySQLDecimalBinlogProtocolValueTest {
     
     @BeforeEach
     void setUp() {
-        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL);
+        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.NEWDECIMAL);
         columnDef.setColumnMeta((14 << 8) + 4);
     }
     
@@ -65,7 +65,7 @@ class MySQLDecimalBinlogProtocolValueTest {
     
     @Test
     void assertDecodeNegativeNewDecimalWithLargeNumber() {
-        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL);
+        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.NEWDECIMAL);
         columnDef.setColumnMeta(32 << 8 | 6);
         byte[] newDecimalBytes = ByteBufUtil.decodeHexDump("7DFEFDB5CC2741EFDEBE4154FD52E7");
         when(payload.readStringFixByBytes(newDecimalBytes.length)).thenReturn(newDecimalBytes);

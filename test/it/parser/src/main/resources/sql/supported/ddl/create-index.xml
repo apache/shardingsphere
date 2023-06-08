@@ -17,6 +17,10 @@
   -->
 
 <sql-cases>
+    <sql-case id="create_index_with_lock_algorithm" value="CREATE INDEX idx_name ON t_order (name) LOCK=SHARED ALGORITHM=COPY" db-types="MySQL" />
+    <sql-case id="create_index_with_lock" value="CREATE INDEX idx_name ON t_order (name) LOCK=SHARED" db-types="MySQL" />
+    <sql-case id="create_index_with_algorithm" value="CREATE INDEX idx_name ON t_order (name) ALGORITHM=COPY" db-types="MySQL" />
+    <sql-case id="create_index_with_algorithm_lock" value="CREATE INDEX idx_name ON t_order (name) ALGORITHM=COPY LOCK=SHARED" db-types="MySQL" />
     <sql-case id="create_index" value="CREATE INDEX t_log_index ON t_log (id)" db-types="H2,MySQL,PostgreSQL,openGauss,Oracle,SQLServer" />
     <sql-case id="create_unique_index" value="CREATE UNIQUE INDEX t_log_index ON t_log (id)" db-types="H2,MySQL,PostgreSQL,openGauss,Oracle,SQLServer" />
     <sql-case id="create_composite_index" value="CREATE INDEX order_index ON t_order (order_id, user_id, status)" db-types="H2,MySQL,PostgreSQL,openGauss,Oracle,SQLServer" />

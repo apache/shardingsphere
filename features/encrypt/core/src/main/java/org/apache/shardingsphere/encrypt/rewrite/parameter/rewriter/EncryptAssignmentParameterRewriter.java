@@ -94,7 +94,7 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
         int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();
         Object originalValue = params.get(parameterMarkerIndex);
-        Object cipherValue = encryptRule.getEncryptValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
+        Object cipherValue = encryptRule.encrypt(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
         paramBuilder.addReplacedParameters(parameterMarkerIndex, cipherValue);
         Collection<Object> addedParams = new LinkedList<>();
         if (encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()) {

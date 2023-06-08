@@ -59,7 +59,7 @@ class ShowSQLParserRuleExecutorTest {
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("sql_comment_parse_enable"));
+        assertThat(iterator.next(), is("sql_comment_parse_enabled"));
         assertThat(iterator.next(), is("parse_tree_cache"));
         assertThat(iterator.next(), is("sql_statement_cache"));
     }

@@ -50,6 +50,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * WAL dumper of openGauss.
@@ -59,7 +60,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     private final DumperConfiguration dumperConfig;
     
-    private final WALPosition walPosition;
+    private final AtomicReference<WALPosition> walPosition;
     
     private final PipelineChannel channel;
     
@@ -76,13 +77,14 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support PipelineDataSourceConfiguration"));
         this.dumperConfig = dumperConfig;
-        walPosition = (WALPosition) position;
+        walPosition = new AtomicReference<>((WALPosition) position);
         this.channel = channel;
         walEventConverter = new WALEventConverter(dumperConfig, metaDataLoader);
         logicalReplication = new OpenGaussLogicalReplication();
         this.decodeWithTX = dumperConfig.isDecodeWithTX();
     }
     
+    @SneakyThrows(InterruptedException.class)
     @Override
     protected void runBlocking() {
         AtomicInteger reconnectTimes = new AtomicInteger();
@@ -93,6 +95,9 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
             } catch (final SQLException ex) {
                 int times = reconnectTimes.incrementAndGet();
                 log.error("Connect failed, reconnect times={}", times, ex);
+                if (isRunning()) {
+                    Thread.sleep(5000);
+                }
                 if (times >= 5) {
                     throw new IngestException(ex);
                 }
@@ -104,7 +109,8 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     private void dump() throws SQLException {
         PGReplicationStream stream = null;
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
-            stream = logicalReplication.createReplicationStream(connection, walPosition.getLogSequenceNumber(), OpenGaussPositionInitializer.getUniqueSlotName(connection, dumperConfig.getJobId()));
+            stream = logicalReplication.createReplicationStream(connection, walPosition.get().getLogSequenceNumber(),
+                    OpenGaussPositionInitializer.getUniqueSlotName(connection, dumperConfig.getJobId()));
             DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
@@ -118,6 +124,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
                 } else {
                     processEventIgnoreTX(event);
                 }
+                walPosition.set(new WALPosition(event.getLogSequenceNumber()));
             }
         } finally {
             if (null != stream) {

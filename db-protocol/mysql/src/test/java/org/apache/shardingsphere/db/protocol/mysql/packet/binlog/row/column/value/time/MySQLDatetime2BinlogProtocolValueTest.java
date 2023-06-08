@@ -47,7 +47,7 @@ class MySQLDatetime2BinlogProtocolValueTest {
     
     @BeforeEach
     void setUp() {
-        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_DATETIME2);
+        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.DATETIME2);
     }
     
     @Test

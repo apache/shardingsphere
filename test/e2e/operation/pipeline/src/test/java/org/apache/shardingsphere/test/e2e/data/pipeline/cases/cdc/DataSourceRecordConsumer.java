@@ -40,7 +40,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,26 +66,43 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
     
     @Override
     public void accept(final List<Record> records) {
-        long insertCount = records.stream().filter(each -> DataChangeType.INSERT == each.getDataChangeType()).count();
-        if (insertCount == records.size()) {
-            batchInsertRecords(records);
-            return;
-        }
-        for (Record record : records) {
-            write(record);
+        log.info("Records count: {}", records.size());
+        log.debug("Records: {}", records);
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            processRecords(records, connection);
+            connection.commit();
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
     
-    private void batchInsertRecords(final List<Record> records) {
+    private void processRecords(final List<Record> records, final Connection connection) throws SQLException {
+        long insertCount = records.stream().filter(each -> DataChangeType.INSERT == each.getDataChangeType()).count();
+        if (insertCount == records.size()) {
+            Map<String, List<Record>> recordsMap = new HashMap<>();
+            for (Record each : records) {
+                String key = buildTableNameWithSchema(each.getMetaData().getTable(), each.getMetaData().getSchema());
+                recordsMap.computeIfAbsent(key, ignored -> new LinkedList<>()).add(each);
+            }
+            for (List<Record> each : recordsMap.values()) {
+                batchInsertRecords(each, connection);
+            }
+            return;
+        }
+        for (Record each : records) {
+            write(each, connection);
+        }
+    }
+    
+    private void batchInsertRecords(final List<Record> records, final Connection connection) throws SQLException {
         Record firstRecord = records.get(0);
         MetaData metaData = firstRecord.getMetaData();
         PipelineTableMetaData tableMetaData = loadTableMetaData(metaData.getSchema(), metaData.getTable());
         List<String> columnNames = firstRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
         String tableName = buildTableNameWithSchema(metaData.getSchema(), metaData.getTable());
         String insertSQL = SQLBuilderUtils.buildInsertSQL(columnNames, tableName);
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
             for (Record each : records) {
                 List<TableColumn> tableColumns = each.getAfterList();
                 for (int i = 0; i < tableColumns.size(); i++) {
@@ -92,40 +111,36 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
         }
     }
     
-    private void write(final Record record) {
-        String sql = buildSQL(record);
-        MetaData metaData = record.getMetaData();
+    private void write(final Record ingestedRecord, final Connection connection) throws SQLException {
+        String sql = buildSQL(ingestedRecord);
+        MetaData metaData = ingestedRecord.getMetaData();
         PipelineTableMetaData tableMetaData = loadTableMetaData(metaData.getSchema(), metaData.getTable());
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            Map<String, TableColumn> afterMap = new LinkedHashMap<>(record.getBeforeList().size(), 1F);
-            record.getAfterList().forEach(each -> afterMap.put(each.getName(), each));
-            switch (record.getDataChangeType()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            Map<String, TableColumn> afterMap = new LinkedHashMap<>(ingestedRecord.getBeforeList().size(), 1F);
+            ingestedRecord.getAfterList().forEach(each -> afterMap.put(each.getName(), each));
+            switch (ingestedRecord.getDataChangeType()) {
                 case INSERT:
-                    for (int i = 0; i < record.getAfterCount(); i++) {
-                        TableColumn tableColumn = record.getAfterList().get(i);
+                    for (int i = 0; i < ingestedRecord.getAfterCount(); i++) {
+                        TableColumn tableColumn = ingestedRecord.getAfterList().get(i);
                         preparedStatement.setObject(i + 1, convertValueFromAny(tableMetaData, tableColumn));
                     }
                     break;
                 case UPDATE:
-                    for (int i = 0; i < record.getAfterCount(); i++) {
-                        TableColumn tableColumn = record.getAfterList().get(i);
+                    for (int i = 0; i < ingestedRecord.getAfterCount(); i++) {
+                        TableColumn tableColumn = ingestedRecord.getAfterList().get(i);
                         preparedStatement.setObject(i + 1, convertValueFromAny(tableMetaData, tableColumn));
                     }
-                    preparedStatement.setObject(record.getAfterCount() + 1, convertValueFromAny(tableMetaData, afterMap.get("order_id")));
+                    preparedStatement.setObject(ingestedRecord.getAfterCount() + 1, convertValueFromAny(tableMetaData, afterMap.get("order_id")));
                     int updateCount = preparedStatement.executeUpdate();
                     if (1 != updateCount) {
                         log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}", updateCount, sql, afterMap.keySet());
                     }
                     break;
                 case DELETE:
-                    TableColumn orderId = record.getBeforeList().stream().filter(each -> "order_id".equals(each.getName())).findFirst()
+                    TableColumn orderId = ingestedRecord.getBeforeList().stream().filter(each -> "order_id".equals(each.getName())).findFirst()
                             .orElseThrow(() -> new UnsupportedOperationException("No primary key found in the t_order"));
                     preparedStatement.setObject(1, convertValueFromAny(tableMetaData, orderId));
                     preparedStatement.execute();
@@ -133,8 +148,6 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                 default:
             }
             preparedStatement.execute();
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
         }
     }
     
@@ -152,11 +165,11 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
         return schema.isEmpty() ? tableName : String.join(".", schema, tableName);
     }
     
-    private String buildSQL(final Record record) {
-        List<String> columnNames = record.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
-        MetaData metaData = record.getMetaData();
+    private String buildSQL(final Record ingestedRecord) {
+        List<String> columnNames = ingestedRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
+        MetaData metaData = ingestedRecord.getMetaData();
         String tableName = buildTableNameWithSchema(metaData.getSchema(), metaData.getTable());
-        switch (record.getDataChangeType()) {
+        switch (ingestedRecord.getDataChangeType()) {
             case INSERT:
                 return SQLBuilderUtils.buildInsertSQL(columnNames, tableName);
             case UPDATE:

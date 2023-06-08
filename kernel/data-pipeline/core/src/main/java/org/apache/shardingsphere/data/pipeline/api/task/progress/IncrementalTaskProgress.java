@@ -35,11 +35,7 @@ public final class IncrementalTaskProgress implements TaskProgress {
         incrementalTaskDelay.set(new IncrementalTaskDelay());
     }
     
-    /**
-     * Get position.
-     * 
-     * @return position
-     */
+    @Override
     public IngestPosition getPosition() {
         return position.get();
     }

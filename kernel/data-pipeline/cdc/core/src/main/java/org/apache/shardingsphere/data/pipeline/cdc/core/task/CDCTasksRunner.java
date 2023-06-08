@@ -18,23 +18,49 @@
 package org.apache.shardingsphere.data.pipeline.cdc.core.task;
 
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryIncrementalTasksRunner;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
 
 import java.util.Collection;
 
 /**
  * CDC tasks runner.
  */
-public final class CDCTasksRunner extends InventoryIncrementalTasksRunner {
+public final class CDCTasksRunner implements PipelineTasksRunner {
     
-    public CDCTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<InventoryTask> inventoryTasks, final Collection<IncrementalTask> incrementalTasks) {
-        super(jobItemContext, inventoryTasks, incrementalTasks);
+    private final InventoryIncrementalJobItemContext jobItemContext;
+    
+    private final Collection<PipelineTask> inventoryTasks;
+    
+    private final Collection<PipelineTask> incrementalTasks;
+    
+    public CDCTasksRunner(final InventoryIncrementalJobItemContext jobItemContext) {
+        this.jobItemContext = jobItemContext;
+        inventoryTasks = jobItemContext.getInventoryTasks();
+        incrementalTasks = jobItemContext.getIncrementalTasks();
     }
     
     @Override
-    protected void inventorySuccessCallback() {
-        executeIncrementalTask();
+    public PipelineJobItemContext getJobItemContext() {
+        return jobItemContext;
+    }
+    
+    @Override
+    public void start() {
+    }
+    
+    @Override
+    public void stop() {
+        jobItemContext.setStopping(true);
+        for (PipelineTask each : inventoryTasks) {
+            each.stop();
+            CloseUtils.closeQuietly(each);
+        }
+        for (PipelineTask each : incrementalTasks) {
+            each.stop();
+            CloseUtils.closeQuietly(each);
+        }
     }
 }

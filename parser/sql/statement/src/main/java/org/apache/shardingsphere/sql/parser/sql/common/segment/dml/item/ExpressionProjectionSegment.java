@@ -59,8 +59,13 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     }
     
     @Override
-    public Optional<String> getAlias() {
+    public Optional<String> getAliasName() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
+    }
+    
+    @Override
+    public Optional<AliasSegment> getAlias() {
+        return Optional.ofNullable(alias);
     }
     
     @Override

@@ -47,10 +47,10 @@ public final class SQLParserDistSQLStatementVisitor extends SQLParserDistSQLStat
     
     @Override
     public ASTNode visitSqlParserRuleDefinition(final SqlParserRuleDefinitionContext ctx) {
-        Boolean sqlCommentParseEnable = null == ctx.sqlCommentParseEnable() ? null : Boolean.parseBoolean(getIdentifierValue(ctx.sqlCommentParseEnable()));
-        CacheOptionSegment parseTreeCache = null == ctx.parseTreeCache() ? null : visitCacheOption(ctx.parseTreeCache().cacheOption());
-        CacheOptionSegment sqlStatementCache = null == ctx.sqlStatementCache() ? null : visitCacheOption(ctx.sqlStatementCache().cacheOption());
-        return new AlterSQLParserRuleStatement(sqlCommentParseEnable, parseTreeCache, sqlStatementCache);
+        Boolean sqlCommentParseEnabled = null == ctx.commentDefinition() ? null : Boolean.parseBoolean(getIdentifierValue(ctx.commentDefinition().sqlCommentParseEnabled()));
+        CacheOptionSegment parseTreeCache = null == ctx.parseTreeCacheDefinition() ? null : visitCacheOption(ctx.parseTreeCacheDefinition().cacheOption());
+        CacheOptionSegment sqlStatementCache = null == ctx.sqlStatementCacheDefinition() ? null : visitCacheOption(ctx.sqlStatementCacheDefinition().cacheOption());
+        return new AlterSQLParserRuleStatement(sqlCommentParseEnabled, parseTreeCache, sqlStatementCache);
     }
     
     @Override

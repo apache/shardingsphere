@@ -41,7 +41,12 @@ public final class DeleteMultiTableSegment implements TableSegment {
     private TableSegment relationTable;
     
     @Override
-    public Optional<String> getAlias() {
+    public Optional<String> getAliasName() {
+        return Optional.empty();
+    }
+    
+    @Override
+    public Optional<AliasSegment> getAlias() {
         return Optional.empty();
     }
     

@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Encrypt column.
+ * Encrypt column item.
  */
 @RequiredArgsConstructor
 @Getter
@@ -30,8 +30,4 @@ public final class EncryptColumnItem {
     private final String name;
     
     private final String encryptorName;
-    
-    public EncryptColumnItem(final String name) {
-        this(name, null);
-    }
 }

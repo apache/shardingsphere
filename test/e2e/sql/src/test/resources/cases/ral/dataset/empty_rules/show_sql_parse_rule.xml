@@ -17,7 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="sql_comment_parse_enable" />
+        <column name="sql_comment_parse_enabled" />
         <column name="parse_tree_cache" />
         <column name="sql_statement_cache" />
     </metadata>

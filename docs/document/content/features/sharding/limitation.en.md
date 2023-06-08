@@ -46,7 +46,7 @@ e.g:
 ```sql
 SELECT * FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 1;
 ```
-Sub-query for [pagination](https://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/pagination/) can be stably supported by the kernel.
+Sub-query for [pagination](https://shardingsphere.apache.org/document/current/en/features/sharding/limitation/#pagination-query) can be stably supported by the kernel.
 e.g.:
 
 ```sql

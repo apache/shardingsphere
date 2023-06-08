@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.context.job;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
@@ -34,9 +35,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
+import org.apache.shardingsphere.data.pipeline.spi.importer.sink.PipelineSink;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -45,6 +45,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * CDC job item context.
  */
+@RequiredArgsConstructor
 @Getter
 public final class CDCJobItemContext implements InventoryIncrementalJobItemContext {
     
@@ -66,11 +67,11 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     private final PipelineDataSourceManager dataSourceManager;
     
-    private final ImporterConnector importerConnector;
+    private final PipelineSink sink;
     
-    private final Collection<InventoryTask> inventoryTasks = new LinkedList<>();
+    private final Collection<PipelineTask> inventoryTasks = new LinkedList<>();
     
-    private final Collection<IncrementalTask> incrementalTasks = new LinkedList<>();
+    private final Collection<PipelineTask> incrementalTasks = new LinkedList<>();
     
     private final AtomicLong processedRecordsCount = new AtomicLong(0);
     
@@ -91,17 +92,6 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
             return new StandardPipelineTableMetaDataLoader(sourceDataSourceLazyInitializer.get());
         }
     };
-    
-    public CDCJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem, final InventoryIncrementalJobItemProgress initProgress, final CDCProcessContext jobProcessContext,
-                             final CDCTaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager, final ImporterConnector importerConnector) {
-        this.jobConfig = jobConfig;
-        this.shardingItem = shardingItem;
-        this.initProgress = initProgress;
-        this.jobProcessContext = jobProcessContext;
-        this.taskConfig = taskConfig;
-        this.dataSourceManager = dataSourceManager;
-        this.importerConnector = importerConnector;
-    }
     
     @Override
     public String getJobId() {
@@ -135,9 +125,8 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
         return sourceMetaDataLoaderLazyInitializer.get();
     }
     
-    @Override
-    public ImporterConnector getImporterConnector() {
-        return importerConnector;
+    public PipelineSink getSink() {
+        return sink;
     }
     
     @Override

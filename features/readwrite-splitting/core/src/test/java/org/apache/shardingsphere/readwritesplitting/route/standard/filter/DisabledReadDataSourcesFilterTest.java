@@ -48,26 +48,26 @@ class DisabledReadDataSourcesFilterTest {
     
     @Test
     void assertGetReadDataSourceNamesWithDisabledDataSourceNames() {
-        rule.updateDisabledDataSourceNames("read_ds_0", true);
+        rule.disableDataSource("read_ds_0");
         assertThat(new DisabledReadDataSourcesFilter().filter(rule, Arrays.asList("read_ds_0", "read_ds_1")), is(Collections.singletonList("read_ds_1")));
     }
     
     @Test
-    void assertUpdateDisabledDataSourceNamesForDisabled() {
-        rule.updateDisabledDataSourceNames("read_ds_0", true);
+    void assertDisableDataSource() {
+        rule.disableDataSource("read_ds_0");
         assertThat(new DisabledReadDataSourcesFilter().filter(rule, Arrays.asList("read_ds_0", "read_ds_1")), is(Collections.singletonList("read_ds_1")));
     }
     
     @Test
-    void assertUpdateDisabledDataSourceNamesForEnabled() {
-        rule.updateDisabledDataSourceNames("read_ds_0", true);
-        rule.updateDisabledDataSourceNames("read_ds_0", false);
+    void assertEnableDataSource() {
+        rule.disableDataSource("read_ds_0");
+        rule.enableDataSource("read_ds_0");
         assertThat(new DisabledReadDataSourcesFilter().filter(rule, Arrays.asList("read_ds_0", "read_ds_1")), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
     @Test
     void assertGetEnabledReplicaDataSources() {
-        rule.updateDisabledDataSourceNames("read_ds_0", true);
+        rule.disableDataSource("read_ds_0");
         assertThat(new DisabledReadDataSourcesFilter().filter(rule, Arrays.asList("read_ds_0", "read_ds_1")), is(Collections.singletonList("read_ds_1")));
     }
 }

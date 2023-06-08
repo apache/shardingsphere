@@ -47,7 +47,7 @@ public final class ExternalMySQLTestParameterLoader extends AbstractTestParamete
         String delimiter = ";";
         for (String each : sqlCaseFileContent) {
             String line = each.trim();
-            if (line.isEmpty() || lines.isEmpty() && isComment(line)) {
+            if (line.isEmpty() || lines.isEmpty() && SQLLineComment.isComment(line)) {
                 continue;
             }
             if (lines.isEmpty() && line.toUpperCase().startsWith("DELIMITER")) {
@@ -66,10 +66,6 @@ public final class ExternalMySQLTestParameterLoader extends AbstractTestParamete
             }
         }
         return result;
-    }
-    
-    private boolean isComment(final String line) {
-        return line.startsWith("#") || line.startsWith("/") || line.startsWith("--") || line.startsWith(":") || line.startsWith("\\");
     }
     
     private String getNewDelimiter(final String sql, final String delimiter) {

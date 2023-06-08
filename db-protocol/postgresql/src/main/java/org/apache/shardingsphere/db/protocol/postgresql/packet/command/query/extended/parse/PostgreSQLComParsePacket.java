@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
@@ -38,6 +39,7 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket impl
     
     private final String statementId;
     
+    @Getter(AccessLevel.NONE)
     private final String sql;
     
     public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload) {
@@ -66,12 +68,12 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket impl
     }
     
     @Override
-    public PostgreSQLIdentifierTag getIdentifier() {
-        return PostgreSQLCommandPacketType.PARSE_COMMAND;
+    public String getSQL() {
+        return sql;
     }
     
     @Override
-    public String getSQL() {
-        return sql;
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLCommandPacketType.PARSE_COMMAND;
     }
 }

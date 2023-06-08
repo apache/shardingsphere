@@ -289,7 +289,7 @@ inheritClause
     ;
 
 partitionSpec
-    : PARTITION BY partStrategy LP_ partParams RP_
+    : PARTITION BY partStrategy LP_ partParams RP_ (LP_ partParams? RP_)*
     ;
 
 partParams
@@ -299,6 +299,7 @@ partParams
 partElem
     : colId (COLLATE anyName)?  anyName?
     | LP_ aExpr RP_ (COLLATE anyName)?  anyName?
+    | PARTITION anyName VALUES LESS THAN aExpr
     | funcExprWindowless (COLLATE anyName)?  anyName?
     ;
 

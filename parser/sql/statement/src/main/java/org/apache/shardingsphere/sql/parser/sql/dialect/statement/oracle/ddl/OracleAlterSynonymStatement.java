@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSynonymStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle alter synonym statement.
  */
-public final class OracleAlterSynonymStatement extends AlterSynonymStatement implements DDLStatement, OracleStatement {
+public final class OracleAlterSynonymStatement extends AlterSynonymStatement implements OracleStatement {
 }

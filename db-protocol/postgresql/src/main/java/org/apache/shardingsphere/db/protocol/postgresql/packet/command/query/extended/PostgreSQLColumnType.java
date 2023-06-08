@@ -22,6 +22,20 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.exception.PostgreSQLProtocolException;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLBitValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLBoolValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLDateValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLDoubleValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLFloatValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLIntValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLJsonValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLLongValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLNumericValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLTimeValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLTimestampValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLUnspecifiedValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLVarcharValueParser;
 
 import java.sql.Types;
 import java.util.HashMap;
@@ -34,151 +48,153 @@ import java.util.Map;
 @Getter
 public enum PostgreSQLColumnType implements BinaryColumnType {
     
-    POSTGRESQL_TYPE_UNSPECIFIED(0),
+    UNSPECIFIED(0, new PostgreSQLUnspecifiedValueParser()),
     
-    POSTGRESQL_TYPE_INT2(21),
+    INT2(21, new PostgreSQLIntValueParser()),
     
-    POSTGRESQL_TYPE_INT2_ARRAY(1005),
+    INT2_ARRAY(1005, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_INT4(23),
+    INT4(23, new PostgreSQLIntValueParser()),
     
-    POSTGRESQL_TYPE_INT4_ARRAY(1007),
+    INT4_ARRAY(1007, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_INT8(20),
+    INT8(20, new PostgreSQLLongValueParser()),
     
-    POSTGRESQL_TYPE_INT8_ARRAY(1016),
+    INT8_ARRAY(1016, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_TEXT(25),
+    TEXT(25, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_TEXT_ARRAY(1009),
+    TEXT_ARRAY(1009, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_NUMERIC(1700),
+    NUMERIC(1700, new PostgreSQLNumericValueParser()),
     
-    POSTGRESQL_TYPE_NUMERIC_ARRAY(1231),
+    NUMERIC_ARRAY(1231, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_FLOAT4(700),
+    FLOAT4(700, new PostgreSQLFloatValueParser()),
     
-    POSTGRESQL_TYPE_FLOAT4_ARRAY(1021),
+    FLOAT4_ARRAY(1021, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_FLOAT8(701),
+    FLOAT8(701, new PostgreSQLDoubleValueParser()),
     
-    POSTGRESQL_TYPE_FLOAT8_ARRAY(1022),
+    FLOAT8_ARRAY(1022, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_BOOL(16),
+    BOOL(16, new PostgreSQLBoolValueParser()),
     
-    POSTGRESQL_TYPE_BOOL_ARRAY(1000),
+    BOOL_ARRAY(1000, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_DATE(1082),
+    DATE(1082, new PostgreSQLDateValueParser()),
     
-    POSTGRESQL_TYPE_DATE_ARRAY(1182),
+    DATE_ARRAY(1182, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_TIME(1083),
+    TIME(1083, new PostgreSQLTimeValueParser()),
     
-    POSTGRESQL_TYPE_TIME_ARRAY(1183),
+    TIME_ARRAY(1183, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_TIMETZ(1266),
+    TIMETZ(1266, new PostgreSQLTimeValueParser()),
     
-    POSTGRESQL_TYPE_TIMETZ_ARRAY(1270),
+    TIMETZ_ARRAY(1270, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_TIMESTAMP(1114),
+    TIMESTAMP(1114, new PostgreSQLTimestampValueParser()),
     
-    POSTGRESQL_TYPE_TIMESTAMP_ARRAY(1115),
+    TIMESTAMP_ARRAY(1115, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_TIMESTAMPTZ(1184),
+    TIMESTAMPTZ(1184, new PostgreSQLTimestampValueParser()),
     
-    POSTGRESQL_TYPE_TIMESTAMPTZ_ARRAY(1185),
+    TIMESTAMPTZ_ARRAY(1185, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_BYTEA(17),
+    BYTEA(17, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_BYTEA_ARRAY(1001),
+    BYTEA_ARRAY(1001, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_VARCHAR(1043),
+    VARCHAR(1043, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_VARCHAR_ARRAY(1015),
+    VARCHAR_ARRAY(1015, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_OID(26),
+    OID(26, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_OID_ARRAY(1028),
+    OID_ARRAY(1028, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_BPCHAR(1042),
+    BPCHAR(1042, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_BPCHAR_ARRAY(1014),
+    BPCHAR_ARRAY(1014, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_MONEY(790),
+    MONEY(790, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_MONEY_ARRAY(791),
+    MONEY_ARRAY(791, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_NAME(19),
+    NAME(19, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_NAME_ARRAY(1003),
+    NAME_ARRAY(1003, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_BIT(1560),
+    BIT(1560, new PostgreSQLBitValueParser()),
     
-    POSTGRESQL_TYPE_BIT_ARRAY(1561),
+    BIT_ARRAY(1561, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_VOID(2278),
+    VOID(2278, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_INTERVAL(1186),
+    INTERVAL(1186, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_INTERVAL_ARRAY(1187),
+    INTERVAL_ARRAY(1187, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_CHAR(18),
+    CHAR(18, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_CHAR_ARRAY(1002),
+    CHAR_ARRAY(1002, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_VARBIT(1562),
+    VARBIT(1562, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_VARBIT_ARRAY(1563),
+    VARBIT_ARRAY(1563, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_UUID(2950),
+    UUID(2950, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_UUID_ARRAY(2951),
+    UUID_ARRAY(2951, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_XML(142),
+    XML(142, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_XML_ARRAY(143),
+    XML_ARRAY(143, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_POINT(600),
+    POINT(600, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_POINT_ARRAY(1017),
+    POINT_ARRAY(1017, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_BOX(603),
+    BOX(603, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_JSONB_ARRAY(3807),
+    JSONB_ARRAY(3807, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_JSON(114),
+    JSON(114, new PostgreSQLJsonValueParser()),
     
-    POSTGRESQL_TYPE_JSON_ARRAY(199),
+    JSON_ARRAY(199, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_REF_CURSOR(1790),
+    REF_CURSOR(1790, new PostgreSQLVarcharValueParser()),
     
-    POSTGRESQL_TYPE_REF_CURSOR_ARRAY(2201);
+    REF_CURSOR_ARRAY(2201, new PostgreSQLVarcharValueParser());
     
     private static final Map<Integer, PostgreSQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
     private final int value;
     
+    private final PostgreSQLTextValueParser<?> textValueParser;
+    
     static {
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TINYINT, POSTGRESQL_TYPE_INT2);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.SMALLINT, POSTGRESQL_TYPE_INT2);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.INTEGER, POSTGRESQL_TYPE_INT4);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BIGINT, POSTGRESQL_TYPE_INT8);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.NUMERIC, POSTGRESQL_TYPE_NUMERIC);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DECIMAL, POSTGRESQL_TYPE_NUMERIC);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.REAL, POSTGRESQL_TYPE_FLOAT4);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DOUBLE, POSTGRESQL_TYPE_FLOAT8);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.CHAR, POSTGRESQL_TYPE_CHAR);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.VARCHAR, POSTGRESQL_TYPE_VARCHAR);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BINARY, POSTGRESQL_TYPE_BYTEA);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BIT, POSTGRESQL_TYPE_BIT);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DATE, POSTGRESQL_TYPE_DATE);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIME, POSTGRESQL_TYPE_TIME);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIMESTAMP, POSTGRESQL_TYPE_TIMESTAMP);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.OTHER, POSTGRESQL_TYPE_JSON);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.SQLXML, POSTGRESQL_TYPE_XML);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BOOLEAN, POSTGRESQL_TYPE_BOOL);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TINYINT, INT2);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.SMALLINT, INT2);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.INTEGER, INT4);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BIGINT, INT8);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.NUMERIC, NUMERIC);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DECIMAL, NUMERIC);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.REAL, FLOAT4);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DOUBLE, FLOAT8);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.CHAR, CHAR);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.VARCHAR, VARCHAR);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BINARY, BYTEA);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BIT, BIT);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DATE, DATE);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIME, TIME);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIMESTAMP, TIMESTAMP);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.OTHER, JSON);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.SQLXML, XML);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BOOLEAN, BOOL);
         // TODO Temporary solution for https://github.com/apache/shardingsphere/issues/22522
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.STRUCT, POSTGRESQL_TYPE_VARCHAR);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.STRUCT, VARCHAR);
     }
     
     /**
@@ -190,6 +206,45 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     public static PostgreSQLColumnType valueOfJDBCType(final int jdbcType) {
         Preconditions.checkArgument(JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType), "Can not find JDBC type `%s` in PostgreSQL column type", jdbcType);
         return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
+    }
+    
+    /**
+     * Value of JDBC type.
+     *
+     * @param jdbcType JDBC type
+     * @param columnTypeName column type name
+     * @return PostgreSQL column type enum
+     */
+    public static PostgreSQLColumnType valueOfJDBCType(final int jdbcType, final String columnTypeName) {
+        if (isBit(jdbcType, columnTypeName)) {
+            return BIT;
+        }
+        if (isBool(jdbcType, columnTypeName)) {
+            return BOOL;
+        }
+        return valueOfJDBCType(jdbcType);
+    }
+    
+    /**
+     * Check if pg PostgreSQL type.
+     *
+     * @param jdbcType JDBC type
+     * @param columnTypeName column type name
+     * @return whether is PostgreSQL bit
+     */
+    public static boolean isBit(final int jdbcType, final String columnTypeName) {
+        return Types.BIT == jdbcType && "bit".equalsIgnoreCase(columnTypeName);
+    }
+    
+    /**
+     * Check if PostgreSQL bit type.
+     *
+     * @param jdbcType JDBC type
+     * @param columnTypeName column type name
+     * @return whether is PostgreSQL bit
+     */
+    public static boolean isBool(final int jdbcType, final String columnTypeName) {
+        return Types.BIT == jdbcType && "bool".equalsIgnoreCase(columnTypeName);
     }
     
     /**

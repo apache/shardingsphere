@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
@@ -72,5 +74,31 @@ public final class DropIndexStatementHandler implements SQLStatementHandler {
             return ((OpenGaussDropIndexStatement) dropIndexStatement).isIfExists();
         }
         return false;
+    }
+    
+    /**
+     * Get algorithm type segment.
+     *
+     * @param dropIndexStatement drop index statement
+     * @return algorithm type segment
+     */
+    public static Optional<AlgorithmTypeSegment> getAlgorithmTypeSegment(final DropIndexStatement dropIndexStatement) {
+        if (dropIndexStatement instanceof MySQLDropIndexStatement) {
+            return ((MySQLDropIndexStatement) dropIndexStatement).getGetAlgorithmSegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get lock table segment.
+     *
+     * @param dropIndexStatement drop index statement
+     * @return lock table segment
+     */
+    public static Optional<LockTableSegment> getLockTableSegment(final DropIndexStatement dropIndexStatement) {
+        if (dropIndexStatement instanceof MySQLDropIndexStatement) {
+            return ((MySQLDropIndexStatement) dropIndexStatement).getLockTableSegment();
+        }
+        return Optional.empty();
     }
 }

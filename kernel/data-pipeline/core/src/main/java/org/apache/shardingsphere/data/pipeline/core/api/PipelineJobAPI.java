@@ -118,7 +118,7 @@ public interface PipelineJobAPI extends TypedSPI {
      * @param contextKey context key
      * @return job info list
      */
-    List<? extends PipelineJobInfo> list(PipelineContextKey contextKey);
+    List<PipelineJobInfo> list(PipelineContextKey contextKey);
     
     /**
      * Persist job item progress.

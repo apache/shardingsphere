@@ -56,7 +56,7 @@ class OpenGaussComBatchBindPacketTest {
         assertThat(actual.getParameterFormats(), is(Arrays.asList(0, 0, 0)));
         assertTrue(actual.getResultFormats().isEmpty());
         List<List<Object>> actualParameterSets = actual.readParameterSets(
-                Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR, PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
+                Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR, PostgreSQLColumnType.INT4));
         assertThat(actualParameterSets.size(), is(3));
         List<List<Object>> expectedParameterSets = Arrays.asList(Arrays.asList(1, "Foo", 18), Arrays.asList(2, "Bar", 36), Arrays.asList(3, "Tom", 54));
         assertThat(actualParameterSets, is(expectedParameterSets));

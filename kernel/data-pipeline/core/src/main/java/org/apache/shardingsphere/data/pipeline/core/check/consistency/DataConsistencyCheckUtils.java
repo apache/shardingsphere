@@ -55,23 +55,26 @@ public final class DataConsistencyCheckUtils {
             ++columnIndex;
             Object thisColumnValue = thisRecordIterator.next();
             Object thatColumnValue = thatRecordIterator.next();
-            boolean matched;
-            if (thisColumnValue instanceof SQLXML && thatColumnValue instanceof SQLXML) {
-                matched = ((SQLXML) thisColumnValue).getString().equals(((SQLXML) thatColumnValue).getString());
-            } else if (thisColumnValue instanceof BigDecimal && thatColumnValue instanceof BigDecimal) {
-                matched = isBigDecimalEquals((BigDecimal) thisColumnValue, (BigDecimal) thatColumnValue);
-            } else if (thisColumnValue instanceof Array && thatColumnValue instanceof Array) {
-                matched = Objects.deepEquals(((Array) thisColumnValue).getArray(), ((Array) thatColumnValue).getArray());
-            } else {
-                matched = equalsBuilder.append(thisColumnValue, thatColumnValue).isEquals();
-            }
-            if (!matched) {
+            if (!isMatched(equalsBuilder, thisColumnValue, thatColumnValue)) {
                 log.warn("Record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}.", columnIndex, thisColumnValue, thatColumnValue,
-                        null != thisColumnValue ? thisColumnValue.getClass().getName() : "", null != thatColumnValue ? thatColumnValue.getClass().getName() : "");
+                        null != thisColumnValue ? thisColumnValue.getClass().getName() : "", null == thatColumnValue ? "" : thatColumnValue.getClass().getName());
                 return false;
             }
         }
         return true;
+    }
+    
+    private static boolean isMatched(final EqualsBuilder equalsBuilder, final Object thisColumnValue, final Object thatColumnValue) throws SQLException {
+        if (thisColumnValue instanceof SQLXML && thatColumnValue instanceof SQLXML) {
+            return ((SQLXML) thisColumnValue).getString().equals(((SQLXML) thatColumnValue).getString());
+        }
+        if (thisColumnValue instanceof BigDecimal && thatColumnValue instanceof BigDecimal) {
+            return isBigDecimalEquals((BigDecimal) thisColumnValue, (BigDecimal) thatColumnValue);
+        }
+        if (thisColumnValue instanceof Array && thatColumnValue instanceof Array) {
+            return Objects.deepEquals(((Array) thisColumnValue).getArray(), ((Array) thatColumnValue).getArray());
+        }
+        return equalsBuilder.append(thisColumnValue, thatColumnValue).isEquals();
     }
     
     /**

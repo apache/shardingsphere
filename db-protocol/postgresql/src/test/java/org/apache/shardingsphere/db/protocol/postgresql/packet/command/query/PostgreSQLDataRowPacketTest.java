@@ -102,7 +102,7 @@ class PostgreSQLDataRowPacketTest {
     
     @Test
     void assertWriteBinaryNull() {
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(new BinaryCell(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, null)));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(new BinaryCell(PostgreSQLColumnType.INT4, null)));
         actual.write(payload);
         verify(payload).writeInt2(1);
         verify(payload).writeInt4(0xFFFFFFFF);
@@ -111,7 +111,7 @@ class PostgreSQLDataRowPacketTest {
     @Test
     void assertWriteBinaryInt4() {
         final int value = 12345678;
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(new BinaryCell(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, value)));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(new BinaryCell(PostgreSQLColumnType.INT4, value)));
         actual.write(payload);
         verify(payload).writeInt2(1);
         verify(payload).writeInt4(4);

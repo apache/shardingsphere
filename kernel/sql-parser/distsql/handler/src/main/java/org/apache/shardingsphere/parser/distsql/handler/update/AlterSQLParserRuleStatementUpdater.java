@@ -34,7 +34,7 @@ public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUp
     
     @Override
     public SQLParserRuleConfiguration buildAlteredRuleConfiguration(final SQLParserRuleConfiguration currentRuleConfig, final AlterSQLParserRuleStatement sqlStatement) {
-        boolean sqlCommentParseEnabled = null == sqlStatement.getSqlCommentParseEnable() ? currentRuleConfig.isSqlCommentParseEnabled() : sqlStatement.getSqlCommentParseEnable();
+        boolean sqlCommentParseEnabled = null == sqlStatement.getSqlCommentParseEnabled() ? currentRuleConfig.isSqlCommentParseEnabled() : sqlStatement.getSqlCommentParseEnabled();
         CacheOption parseTreeCache =
                 null == sqlStatement.getParseTreeCache() ? currentRuleConfig.getParseTreeCache() : createCacheOption(currentRuleConfig.getParseTreeCache(), sqlStatement.getParseTreeCache());
         CacheOption sqlStatementCache =

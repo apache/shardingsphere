@@ -31,109 +31,121 @@ class PostgreSQLColumnTypeTest {
     @Test
     void assertValueOfJDBCTypeForTinyint() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.TINYINT);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT2));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.INT2));
     }
     
     @Test
     void assertValueOfJDBCTypeForSmallint() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.SMALLINT);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT2));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.INT2));
     }
     
     @Test
     void assertValueOfJDBCTypeForInteger() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.INTEGER);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.INT4));
     }
     
     @Test
     void assertValueOfJDBCTypeForBigint() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.BIGINT);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.INT8));
     }
     
     @Test
     void assertValueOfJDBCTypeForNumeric() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.NUMERIC);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_NUMERIC));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.NUMERIC));
     }
     
     @Test
     void assertValueOfJDBCTypeForDecimal() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.DECIMAL);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_NUMERIC));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.NUMERIC));
     }
     
     @Test
     void assertValueOfJDBCTypeForReal() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.REAL);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_FLOAT4));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.FLOAT4));
     }
     
     @Test
     void assertValueOfJDBCTypeForDouble() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.DOUBLE);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_FLOAT8));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.FLOAT8));
     }
     
     @Test
     void assertValueOfJDBCTypeForChar() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.CHAR);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_CHAR));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.CHAR));
     }
     
     @Test
     void assertValueOfJDBCTypeForVarchar() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.VARCHAR);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.VARCHAR));
     }
     
     @Test
     void assertValueOfJDBCTypeForBinary() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.BINARY);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_BYTEA));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.BYTEA));
     }
     
     @Test
     void assertValueOfJDBCTypeForBit() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.BIT);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_BIT));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.BIT));
+    }
+    
+    @Test
+    void assertValueOfPgTypeForBit() {
+        PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.BIT, "bit");
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.BIT));
+    }
+    
+    @Test
+    void assertValueOfPgTypeForBool() {
+        PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.BIT, "bool");
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.BOOL));
     }
     
     @Test
     void assertValueOfJDBCTypeForDate() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.DATE);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_DATE));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.DATE));
     }
     
     @Test
     void assertValueOfJDBCTypeForTime() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.TIME);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_TIME));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.TIME));
     }
     
     @Test
     void assertValueOfJDBCTypeForTimestamp() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.TIMESTAMP);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_TIMESTAMP));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.TIMESTAMP));
     }
     
     @Test
     void assertValueOfJDBCTypeForOther() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.OTHER);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_JSON));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.JSON));
     }
     
     @Test
     void assertValueOfJDBCTypeForSQLXML() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.SQLXML);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_XML));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.XML));
     }
     
     @Test
     void assertValueOfJDBCTypeForBoolean() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.BOOLEAN);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_BOOL));
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.BOOL));
     }
     
     @Test
@@ -143,8 +155,8 @@ class PostgreSQLColumnTypeTest {
     
     @Test
     void assertValueOf() {
-        PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOf(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8.getValue());
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8));
+        PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOf(PostgreSQLColumnType.INT8.getValue());
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.INT8));
     }
     
     @Test
@@ -154,6 +166,6 @@ class PostgreSQLColumnTypeTest {
     
     @Test
     void assertGetValue() {
-        assertThat(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8.getValue(), is(20));
+        assertThat(PostgreSQLColumnType.INT8.getValue(), is(20));
     }
 }

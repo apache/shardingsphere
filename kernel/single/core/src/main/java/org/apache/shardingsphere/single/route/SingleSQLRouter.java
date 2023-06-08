@@ -18,13 +18,10 @@
 package org.apache.shardingsphere.single.route;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.connection.validator.ShardingSphereMetaDataValidateUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -35,13 +32,20 @@ import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.route.engine.SingleRouteEngineFactory;
 import org.apache.shardingsphere.single.route.validator.SingleMetaDataValidator;
 import org.apache.shardingsphere.single.route.validator.SingleMetaDataValidatorFactory;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -61,13 +65,17 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         }
         RouteContext result = new RouteContext();
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        Optional<SingleMetaDataValidator> validator = SingleMetaDataValidatorFactory.newInstance(sqlStatementContext.getSqlStatement());
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        Optional<SingleMetaDataValidator> validator = SingleMetaDataValidatorFactory.newInstance(sqlStatement);
         validator.ifPresent(optional -> optional.validate(rule, sqlStatementContext, database));
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, database, rule, result);
         if (!singleTableNames.isEmpty()) {
-            validateSameDataSource(sqlStatementContext, rule, props, singleTableNames, result);
+            if (sqlStatement instanceof InsertStatement || sqlStatement instanceof DeleteStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof SelectStatement) {
+                ShardingSphereMetaDataValidateUtils.validateTableExist(sqlStatementContext, database);
+            }
+            validateSameDataSource(rule, singleTableNames, result);
         }
-        SingleRouteEngineFactory.newInstance(singleTableNames, sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.route(result, rule));
+        SingleRouteEngineFactory.newInstance(singleTableNames, sqlStatement).ifPresent(optional -> optional.route(result, rule));
         return result;
     }
     
@@ -79,7 +87,7 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         if (singleTableNames.isEmpty()) {
             return;
         }
-        validateSameDataSource(sqlStatementContext, rule, props, singleTableNames, routeContext);
+        validateSameDataSource(rule, singleTableNames, routeContext);
         SingleRouteEngineFactory.newInstance(singleTableNames, sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.route(routeContext, rule));
     }
     
@@ -94,7 +102,7 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
     private Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext sqlStatementContext,
                                                            final ShardingSphereDatabase database, final SingleRule rule, final RouteContext routeContext) {
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
-        Collection<QualifiedTable> result = getQualifiedTables(database, databaseType, sqlStatementContext.getTablesContext().getTables());
+        Collection<QualifiedTable> result = getQualifiedTables(database, databaseType, sqlStatementContext.getTablesContext().getSimpleTableSegments());
         if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
             result = IndexMetaDataUtils.getTableNames(database, databaseType, ((IndexAvailable) sqlStatementContext).getIndexes());
         }
@@ -111,13 +119,8 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         return result;
     }
     
-    private void validateSameDataSource(final SQLStatementContext sqlStatementContext, final SingleRule rule,
-                                        final ConfigurationProperties props, final Collection<QualifiedTable> singleTableNames, final RouteContext routeContext) {
-        String sqlFederationType = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
-        boolean allTablesInSameDataSource = "NONE".equals(sqlFederationType)
-                ? rule.isAllTablesInSameDataSource(routeContext, singleTableNames)
-                : sqlStatementContext instanceof SelectStatementContext || rule.isSingleTablesInSameDataSource(singleTableNames);
-        Preconditions.checkState(allTablesInSameDataSource, "All tables must be in the same datasource.");
+    private void validateSameDataSource(final SingleRule rule, final Collection<QualifiedTable> singleTableNames, final RouteContext routeContext) {
+        Preconditions.checkState(rule.isAllTablesInSameDataSource(routeContext, singleTableNames), "All tables must be in the same datasource.");
     }
     
     @Override
