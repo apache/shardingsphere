@@ -87,6 +87,16 @@ public final class ExecuteEngine {
     }
     
     /**
+     * Shutdown.
+     */
+    public void shutdown() {
+        if (executorService.isShutdown()) {
+            return;
+        }
+        executorService.shutdown();
+    }
+    
+    /**
      * Trigger.
      *
      * @param futures futures
