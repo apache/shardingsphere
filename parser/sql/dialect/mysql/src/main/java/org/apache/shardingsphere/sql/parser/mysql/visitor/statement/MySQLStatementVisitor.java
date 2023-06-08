@@ -782,11 +782,11 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     }
     
     private Collection<ExpressionSegment> getWindowSpecification(final WindowSpecificationContext ctx) {
-        Collection<ExpressionSegment> segments = new LinkedList<>();
+        Collection<ExpressionSegment> result = new LinkedList<>();
         for (ExprContext each : ctx.expr()) {
-            segments.add((ExpressionSegment) visit(each));
+            result.add((ExpressionSegment) visit(each));
         }
-        return segments;
+        return result;
     }
     
     @Override
