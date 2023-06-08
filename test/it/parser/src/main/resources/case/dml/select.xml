@@ -4967,4 +4967,15 @@
             <simple-table name="DUAL" start-index="88" stop-index="91" literal-start-index="91" literal-stop-index="94" />
         </from>
     </select>
+
+    <select sql-case-id="select_with_chinese_comma">
+        <projections start-index="7" stop-index="12" >
+            <expression-projection text="1" start-index="7" stop-index="7" />
+            <expression-projection text="2" start-index="10" stop-index="10" />
+            <expression-projection text="3" start-index="12" stop-index="12" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="19" stop-index="22" />
+        </from>
+    </select>
 </sql-parser-test-cases>
