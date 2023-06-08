@@ -375,7 +375,7 @@ public final class ShardingNodeConverter {
      */
     public static Optional<String> getAutoTableName(final String rulePath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUTO_TABLES_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-                Matcher matcher = pattern.matcher(rulePath);
+        Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
