@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
@@ -38,6 +40,7 @@ import java.util.Optional;
 /**
  * Inventory records count calculator.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class InventoryRecordsCountCalculator {
     
