@@ -64,9 +64,8 @@ public final class CreateReadwriteSplittingRuleStatementAssert {
             assertThat(assertContext.getText(String.format("Actual readwrite-splitting rule size should be %s , but it was %s",
                     expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
-            for (ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment : actual) {
-                ExceptedReadwriteSplittingRule exceptedReadwriteSplittingRule = expected.get(count);
-                ReadwriteSplittingRuleAssert.assertIs(assertContext, readwriteSplittingRuleSegment, exceptedReadwriteSplittingRule);
+            for (ReadwriteSplittingRuleSegment each : actual) {
+                ReadwriteSplittingRuleAssert.assertIs(assertContext, each, expected.get(count));
                 count++;
             }
         }

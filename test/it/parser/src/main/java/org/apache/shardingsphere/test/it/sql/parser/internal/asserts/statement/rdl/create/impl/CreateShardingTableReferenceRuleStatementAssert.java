@@ -64,9 +64,8 @@ public final class CreateShardingTableReferenceRuleStatementAssert {
             assertThat(assertContext.getText(String.format("Actual sharding table reference rule size should be %s , but it was %s",
                     expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
-            for (TableReferenceRuleSegment shardingTableReferenceRuleSegment : actual) {
-                ExpectedShardingTableReferenceRule expectedShardingTableReferenceRule = expected.get(count);
-                ShardingTableReferenceRuleAssert.assertIs(assertContext, shardingTableReferenceRuleSegment, expectedShardingTableReferenceRule);
+            for (TableReferenceRuleSegment each : actual) {
+                ShardingTableReferenceRuleAssert.assertIs(assertContext, each, expected.get(count));
                 count++;
             }
         }
