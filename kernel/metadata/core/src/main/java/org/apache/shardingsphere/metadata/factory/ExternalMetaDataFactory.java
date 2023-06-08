@@ -46,7 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExternalMetaDataFactory {
     
-    private static final Collection<String> MOCKED_URL_PREFIXES = new HashSet<>(Arrays.asList("jdbc:fixture", "jdbc:mock"));
+    private static final Collection<String> UNSUPPORTED_URL_PREFIXES = new HashSet<>(Arrays.asList("jdbc:fixture", "jdbc:mock", "jdbc:mysql:aws"));
     
     private static final Collection<DatabaseType> SUPPORTED_STORAGE_TYPES = new HashSet<>(8, 1F);
     
@@ -109,7 +109,7 @@ public final class ExternalMetaDataFactory {
         }
         try (Connection connection = dataSources.values().iterator().next().getConnection()) {
             String url = connection.getMetaData().getURL();
-            if (MOCKED_URL_PREFIXES.stream().anyMatch(url::startsWith)) {
+            if (UNSUPPORTED_URL_PREFIXES.stream().anyMatch(url::startsWith)) {
                 return;
             }
         }
