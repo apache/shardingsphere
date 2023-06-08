@@ -4,7 +4,7 @@ weight = 100
 chapter = true 
 +++
 
-![](https://shardingsphere.apache.org/blog/img/how_to_run_sql_trace_with_shardingsphere1.jpeg)
+![](https://shardingsphere.apache.org/blog/img/2023_06_07_how_to_run_sql_trace_with_shardingsphere1.jpeg)
 
 [Apache ShardingSphere](https://shardingsphere.apache.org/), a data service platform that follows the Database Plus concept for distributed database systems, offers a range of features, including data sharding, read/write splitting, data encryption, and shadow database. In production environment, especially in data-sharding scenarios, SQL tracing is critical for monitoring and analyzing slow queries and abnormal executions. Therefore, a thorough understanding of SQL rewriting and query execution is crucial.
 
@@ -63,17 +63,17 @@ For the convenience of viewing the tracing data, Zipkin or Jaeger is usually use
 * Create `demo_ds_0` and `demo_ds_1` under the MySQL database as the storage unit `ds_0` and `ds_1` .
 * Start Proxy, and connect to Proxy using a MySQL client tool; create logical database `sharding_db`, and register the storage units under this database using DistSQL (Distributed SQL). DistSQL is the specific SQL language for Apache ShardingSphere. It is used in exactly the same way as standard SQL, and is used to provide SQL-level operational capabilities for incremental functions. For details, please refer to the [DistSQL official document](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/) [2]
 
-![](https://shardingsphere.apache.org/blog/img/how_to__run_sql_trace_with_shardingsphere2.png)
+![](https://shardingsphere.apache.org/blog/img/2023_06_07_how_to_run_sql_trace_with_shardingsphere2.png)
 
 * Use DistSQL to create sharding `rule t_order`, set `ds_0` and `ds_1` as storage units, and set the number of shard to 4.
 
-![](https://shardingsphere.apache.org/blog/img/how_to__run_sql_trace_with_shardingsphere3.png)
+![](https://shardingsphere.apache.org/blog/img/2023_06_07_how_to_run_sql_trace_with_shardingsphere3.png)
 
 * Create table `t_order`
 
-![](https://shardingsphere.apache.org/blog/img/how_to__run_sql_trace_with_shardingsphere4.png)
+![](https://shardingsphere.apache.org/blog/img/2023_06_07_how_to_run_sql_trace_with_shardingsphere4.png)
 
-![](https://shardingsphere.apache.org/blog/img/how_to__run_sql_trace_with_shardingsphere5.png)
+![](https://shardingsphere.apache.org/blog/img/2023_06_07_how_to_run_sql_trace_with_shardingsphere5.png)
 
 Finally, there will be tables `t_order_0` and `t_order_2` created in the physical database `demo_ds_0`, and `t_order_1` and `t_order_3` tables in the physical database `demo_ds_1`.
 
@@ -108,7 +108,7 @@ plugins:
 
 * Use a MySQL client tool to connect to the Proxy and execute the following queries — `insert`, `select`, `update`, and `delete` in sequence.
 
-![](https://shardingsphere.apache.org/blog/img/how_to__run_sql_trace_with_shardingsphere6.png)
+![](https://shardingsphere.apache.org/blog/img/2023_06_07_how_to_run_sql_trace_with_shardingsphere6.png)
 
 * Visit [http://127.0.0.1:9411/zipkin/](http://127.0.0.1:9411/zipkin/) (Zipkin UI), and you can see 4 pieces of trace data, which is exactly the same number of SQL queries.
 
