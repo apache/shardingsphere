@@ -111,10 +111,8 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         if (projection instanceof ColumnProjection) {
             appendColumnProjection((ColumnProjection) projection, logicActualTableNames, builder);
         } else {
+            // TODO use alias quoteCharacter to avoid oracle rewrite error
             builder.append(quoteCharacter.wrap(projection.getColumnLabel()));
-            if (projection.getAlias().isPresent()) {
-                builder.append(" AS ").append(quoteCharacter.wrap(projection.getAlias().get()));
-            }
         }
         return builder.toString();
     }

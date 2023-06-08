@@ -22,9 +22,6 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -52,25 +49,20 @@ class SubstitutableColumnNameTokenTest {
     }
     
     @Test
-    void assertToStringWithAliasQuote() {
-        Collection<Projection> projections = Collections.singletonList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.BACK_QUOTE),
+    void assertToStringWithOwnerQuote() {
+        Collection<Projection> projectionsWithOwnerQuote = Collections.singletonList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.BACK_QUOTE),
                 new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE)));
-        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-        tableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("`temp`")));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("`temp`.`id` AS `id`"));
-        tableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("temp")));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("temp.`id` AS `id`"));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projectionsWithOwnerQuote, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("`temp`.`id` AS `id`"));
+        Collection<Projection> projectionsWithoutOwnerQuote = Collections.singletonList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.NONE),
+                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE)));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projectionsWithoutOwnerQuote, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("temp.`id` AS `id`"));
     }
     
     @Test
     void assertToStringWithSubqueryProjection() {
-        Collection<Projection> projections = Arrays.asList(new ColumnProjection("temp", "id", "id"), new SubqueryProjection("(SELECT name FROM t_order)", "name"));
-        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-        tableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("`temp`")));
+        Collection<Projection> projections = Arrays.asList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE),
+                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE)), new SubqueryProjection("(SELECT name FROM t_order)", "name"));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)),
-                is("`temp`.`id` AS `id`, (SELECT name FROM t_order) AS `name`"));
-        tableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("temp")));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)),
-                is("temp.`id` AS `id`, (SELECT name FROM t_order) AS `name`"));
+                is("`temp`.`id` AS `id`, `name`"));
     }
 }

@@ -123,8 +123,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         }
         int startIndex = segment.getOwner().isPresent() ? segment.getOwner().get().getStartIndex() : segment.getStartIndex();
         previousSQLTokens.removeIf(each -> each.getStartIndex() == startIndex);
-        return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, selectStatementContext.getDatabaseType().getQuoteCharacter()
-        );
+        return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, selectStatementContext.getDatabaseType().getQuoteCharacter());
     }
     
     private ColumnProjection buildColumnProjection(final ColumnProjectionSegment segment) {
