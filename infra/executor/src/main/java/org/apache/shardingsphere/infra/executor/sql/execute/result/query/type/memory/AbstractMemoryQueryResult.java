@@ -104,7 +104,7 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     
     @Override
     public Reader getCharacterStream(final int columnIndex) throws SQLException {
-        // TODO Support for streaming objects in memory.
+        // TODO Support connection property character encoding
         return new BufferedReader(new InputStreamReader(getInputStream(columnIndex)));
     }
     
