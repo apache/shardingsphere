@@ -49,9 +49,9 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
         if (groupName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createReadwriteSplittingConfigEvent(databaseName, groupName.get(), event);
         }
-        Optional<String> loadBalanceName = ReadwriteSplittingNodeConverter.getLoadBalanceName(event.getKey());
-        if (loadBalanceName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createLoadBalanceEvent(databaseName, loadBalanceName.get(), event);
+        Optional<String> loadBalancerName = ReadwriteSplittingNodeConverter.getLoadBalancerName(event.getKey());
+        if (loadBalancerName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
+            return createLoadBalanceEvent(databaseName, loadBalancerName.get(), event);
         }
         return Optional.empty();
     }

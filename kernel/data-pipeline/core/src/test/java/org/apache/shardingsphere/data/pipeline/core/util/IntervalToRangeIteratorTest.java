@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,8 +41,17 @@ class IntervalToRangeIteratorTest {
     }
     
     @Test
+    void assertInvalidNext() {
+        IntervalToRangeIterator iterator = new IntervalToRangeIterator(200L, 200L, 0L);
+        if (iterator.hasNext()) {
+            iterator.next();
+        }
+        assertThrows(NoSuchElementException.class, iterator::next);
+    }
+    
+    @Test
     void assertSmallRangeCorrect() {
-        IntervalToRangeIterator iterator = new IntervalToRangeIterator(200L, 200L, 100L);
+        IntervalToRangeIterator iterator = new IntervalToRangeIterator(200L, 200L, 0L);
         List<Range<Long>> actual = new LinkedList<>();
         while (iterator.hasNext()) {
             actual.add(iterator.next());

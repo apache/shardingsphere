@@ -24,7 +24,7 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDataba
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
-import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecideEngine;
+import org.apache.shardingsphere.sqlfederation.decider.SQLFederationDecideEngine;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
@@ -103,7 +103,7 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(connectionSession.getDatabaseName()));
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
-        Collection<ExecutionUnit> executionUnits = isUseFederation(queryContext, database, metaDataContexts, props, connectionSession)
+        Collection<ExecutionUnit> executionUnits = isUseFederation(queryContext, database, metaDataContexts, connectionSession)
                 ? getFederationExecutionUnits(queryContext, databaseName, metaDataContexts, connectionSession)
                 : kernelProcessor.generateExecutionContext(queryContext, database, globalRuleMetaData, props, connectionSession.getConnectionContext()).getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
@@ -119,9 +119,9 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(cursorStatementContext);
     }
     
-    private boolean isUseFederation(final QueryContext queryContext, final ShardingSphereDatabase database, final MetaDataContexts metaDataContexts, final ConfigurationProperties props,
+    private boolean isUseFederation(final QueryContext queryContext, final ShardingSphereDatabase database, final MetaDataContexts metaDataContexts,
                                     final ConnectionSession connectionSession) {
-        SQLFederationDecideEngine engine = new SQLFederationDecideEngine(database.getRuleMetaData().getRules(), props);
+        SQLFederationDecideEngine engine = new SQLFederationDecideEngine(database.getRuleMetaData().getRules());
         return engine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(),
                 metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()), metaDataContexts.getMetaData().getGlobalRuleMetaData());
     }

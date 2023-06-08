@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
@@ -102,6 +103,11 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     
     @Override
     public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
+        throw new SQLFeatureNotSupportedException("");
+    }
+    
+    @Override
+    public Reader getCharacterStream(final int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException("");
     }
     

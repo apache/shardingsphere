@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
@@ -99,7 +100,7 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
                 getColumnProjections(new IdentifierValue(optional, column.getColumnName().getIdentifier().getQuoteCharacter())), lastColumn));
     }
     
-    private Collection<ColumnProjection> getColumnProjections(final IdentifierValue columnIdentifier) {
+    private Collection<Projection> getColumnProjections(final IdentifierValue columnIdentifier) {
         return Collections.singletonList(new ColumnProjection(null, columnIdentifier, null));
     }
 }

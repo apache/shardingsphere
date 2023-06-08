@@ -58,11 +58,12 @@ class FilterableTableScanExecutorTest {
         when(schemaData.getTableData().get("test")).thenReturn(tableData);
         ShardingSphereTable shardingSphereTable = mock(ShardingSphereTable.class);
         when(shardingSphereTable.getName()).thenReturn("test");
-        Enumerable<Object[]> enumerable = new FilterableTableScanExecutor(null, null, null, optimizerContext, null, executorContext, shardingSphereData)
+        Enumerable<Object[]> enumerable = new TranslatableTableScanExecutor(null, null, null, optimizerContext, null, executorContext, shardingSphereData)
                 .execute(shardingSphereTable, Mockito.mock(ScanNodeExecutorContext.class));
-        Enumerator<Object[]> actual = enumerable.enumerator();
-        actual.moveNext();
-        Object[] row = actual.current();
-        assertThat(row[0], is(1));
+        try (Enumerator<Object[]> actual = enumerable.enumerator()) {
+            actual.moveNext();
+            Object[] row = actual.current();
+            assertThat(row[0], is(1));
+        }
     }
 }

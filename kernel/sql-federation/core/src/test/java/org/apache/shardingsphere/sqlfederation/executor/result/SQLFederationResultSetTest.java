@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sqlfederation.executor.resultset.SQLFederationResultSet;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,8 +69,7 @@ class SQLFederationResultSetTest {
     @BeforeEach
     void setUp() {
         enumerator = createEnumerator();
-        federationResultSet =
-                new SQLFederationResultSet(enumerator, mock(ShardingSphereSchema.class), Mockito.mock(FilterableSchema.class), createSelectStatementContext(), Mockito.mock(RelDataType.class));
+        federationResultSet = new SQLFederationResultSet(enumerator, mock(ShardingSphereSchema.class), mock(TranslatableSchema.class), createSelectStatementContext(), mock(RelDataType.class));
     }
     
     private SelectStatementContext createSelectStatementContext() {

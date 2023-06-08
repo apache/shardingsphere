@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.jupiter.api.Test;
@@ -343,7 +344,7 @@ class ResultSetGetterAdapterTest {
     void assertGetCharacterStreamForColumnIndex() throws SQLException {
         Reader reader = mock(Reader.class);
         MergedResult mergedResult = mock(MergedResult.class);
-        when(mergedResult.getValue(1, Reader.class)).thenReturn(reader);
+        when(mergedResult.getCharacterStream(1)).thenReturn(reader);
         assertThat(mockShardingSphereResultSet(mergedResult).getCharacterStream(1), is(reader));
     }
     
@@ -351,7 +352,7 @@ class ResultSetGetterAdapterTest {
     void assertGetCharacterStreamForColumnLabel() throws SQLException {
         Reader reader = mock(Reader.class);
         MergedResult mergedResult = mock(MergedResult.class);
-        when(mergedResult.getValue(1, Reader.class)).thenReturn(reader);
+        when(mergedResult.getCharacterStream(1)).thenReturn(reader);
         assertThat(mockShardingSphereResultSet(mergedResult).getCharacterStream("col"), is(reader));
     }
     
@@ -439,6 +440,9 @@ class ResultSetGetterAdapterTest {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mergedResult, mock(Statement.class), true, mock(ExecutionContext.class));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        ExecutionContext executionContext = mock(ExecutionContext.class);
+        when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mergedResult, mock(Statement.class), true, executionContext);
     }
 }

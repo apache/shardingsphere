@@ -80,7 +80,7 @@ public final class ShardingSphereRuleMetaData {
     }
     
     /**
-     * Find single rule by class.
+     * Get single rule by class.
      *
      * @param clazz target class
      * @param <T> type of rule

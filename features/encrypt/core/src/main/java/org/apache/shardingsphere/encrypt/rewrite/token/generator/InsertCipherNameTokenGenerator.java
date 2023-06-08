@@ -19,8 +19,9 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -62,8 +62,7 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : sqlSegment.get().getColumns()) {
             if (logicAndCipherColumns.containsKey(each.getIdentifier().getValue())) {
-                Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(null, new IdentifierValue(logicAndCipherColumns.get(each.getIdentifier().getValue()),
-                        each.getIdentifier().getQuoteCharacter()), null));
+                Collection<Projection> projections = Collections.singletonList(new ColumnProjection(null, logicAndCipherColumns.get(each.getIdentifier().getValue()), null));
                 result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), projections));
             }
         }

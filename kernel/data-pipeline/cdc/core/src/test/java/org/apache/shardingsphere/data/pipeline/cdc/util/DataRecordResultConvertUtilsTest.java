@@ -54,7 +54,7 @@ class DataRecordResultConvertUtilsTest {
     
     @Test
     void assertConvertDataRecordToRecord() throws InvalidProtocolBufferException, SQLException {
-        DataRecord dataRecord = new DataRecord(new IntegerPrimaryKeyPosition(0, 1), 2);
+        DataRecord dataRecord = new DataRecord("INSERT", "t_order", new IntegerPrimaryKeyPosition(0, 1), 2);
         dataRecord.addColumn(new Column("order_id", BigInteger.ONE, false, true));
         dataRecord.addColumn(new Column("price", BigDecimal.valueOf(123), false, false));
         dataRecord.addColumn(new Column("user_id", Long.MAX_VALUE, false, false));
@@ -73,8 +73,6 @@ class DataRecordResultConvertUtilsTest {
         when(mockedClob.getSubString(anyLong(), anyInt())).thenReturn("clob\n");
         dataRecord.addColumn(new Column("text_clob", mockedClob, false, false));
         dataRecord.addColumn(new Column("update_time", new Timestamp(System.currentTimeMillis()), false, false));
-        dataRecord.setTableName("t_order");
-        dataRecord.setType("INSERT");
         TypeRegistry registry = TypeRegistry.newBuilder().add(EmptyProto.getDescriptor().getMessageTypes()).add(TimestampProto.getDescriptor().getMessageTypes())
                 .add(WrappersProto.getDescriptor().getMessageTypes()).build();
         Record expectedRecord = DataRecordResultConvertUtils.convertDataRecordToRecord("test", null, dataRecord);
