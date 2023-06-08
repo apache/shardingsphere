@@ -4,7 +4,7 @@ weight = 100
 chapter = true 
 +++
 
-![](https://shardingsphere.apache.org/blog/img/how_to__run_sql_trace_with_shardingsphere1.jpeg)
+![](https://shardingsphere.apache.org/blog/img/how_to_run_sql_trace_with_shardingsphere1.jpeg)
 
 [Apache ShardingSphere](https://shardingsphere.apache.org/), a data service platform that follows the Database Plus concept for distributed database systems, offers a range of features, including data sharding, read/write splitting, data encryption, and shadow database. In production environment, especially in data-sharding scenarios, SQL tracing is critical for monitoring and analyzing slow queries and abnormal executions. Therefore, a thorough understanding of SQL rewriting and query execution is crucial.
 
