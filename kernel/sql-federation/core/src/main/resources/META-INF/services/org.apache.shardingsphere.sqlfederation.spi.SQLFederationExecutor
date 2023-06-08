@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sqlfederation.executor.resultset.AdvancedSQLFederationExecutor
+org.apache.shardingsphere.sqlfederation.executor.AdvancedSQLFederationExecutor

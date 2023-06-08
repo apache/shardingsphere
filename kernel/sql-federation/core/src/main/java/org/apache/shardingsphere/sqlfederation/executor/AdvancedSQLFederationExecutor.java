@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor.resultset;
+package org.apache.shardingsphere.sqlfederation.executor;
 
 import com.google.common.base.Preconditions;
 import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
@@ -45,9 +45,7 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sqlfederation.executor.SQLFederationDataContext;
-import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
-import org.apache.shardingsphere.sqlfederation.executor.TranslatableTableScanExecutor;
+import org.apache.shardingsphere.sqlfederation.executor.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLOptimizeContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLOptimizeEngine;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
