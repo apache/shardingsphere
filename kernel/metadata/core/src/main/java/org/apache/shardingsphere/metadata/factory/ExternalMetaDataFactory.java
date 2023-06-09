@@ -117,7 +117,7 @@ public final class ExternalMetaDataFactory {
                 return;
             }
             ShardingSpherePreconditions.checkState(UNSUPPORTED_URL_PREFIXES.stream()
-                    .anyMatch(url::startsWith), () -> new UnsupportedStorageTypeException(databaseName, dataSource.getKey()));
+                    .noneMatch(url::startsWith), () -> new UnsupportedStorageTypeException(databaseName, dataSource.getKey()));
         }
         storageTypes.forEach((key, value) -> ShardingSpherePreconditions.checkState(SUPPORTED_STORAGE_TYPES.stream()
                 .anyMatch(each -> each.getClass().equals(value.getClass())), () -> new UnsupportedStorageTypeException(databaseName, key)));
