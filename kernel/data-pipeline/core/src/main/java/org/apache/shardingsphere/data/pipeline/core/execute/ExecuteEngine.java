@@ -94,6 +94,7 @@ public final class ExecuteEngine {
             return;
         }
         executorService.shutdown();
+        executorService.shutdownNow();
     }
     
     /**
