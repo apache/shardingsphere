@@ -107,7 +107,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
             if (!(each instanceof TableContainedRule)) {
                 continue;
             }
-            result.addAll(((TableContainedRule) each).getLogicTableMapper().getTableNames());
+            result.addAll(((TableContainedRule) each).getDistributedTableMapper().getTableNames());
             result.addAll(((TableContainedRule) each).getActualTableMapper().getTableNames());
         }
         return result;
@@ -278,7 +278,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     
     @Override
     public TableNamesMapper getActualTableMapper() {
-        return getLogicTableMapper();
+        return new TableNamesMapper();
     }
     
     @Override

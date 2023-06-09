@@ -190,11 +190,11 @@ class SingleRuleTest {
         tableNames.add(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "teacher"));
         assertThat(singleRule.getSingleTableNames(tableNames).iterator().next().getSchemaName(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(singleRule.getSingleTableNames(tableNames).iterator().next().getTableName(), is("teacher"));
-        assertTrue(singleRule.getActualTableMapper().contains("employee"));
-        assertTrue(singleRule.getActualTableMapper().contains("student"));
-        assertTrue(singleRule.getActualTableMapper().contains("t_order_0"));
-        assertTrue(singleRule.getActualTableMapper().contains("t_order_1"));
-        assertTrue(singleRule.getActualTableMapper().contains("teacher"));
+        assertTrue(singleRule.getLogicTableMapper().contains("employee"));
+        assertTrue(singleRule.getLogicTableMapper().contains("student"));
+        assertTrue(singleRule.getLogicTableMapper().contains("t_order_0"));
+        assertTrue(singleRule.getLogicTableMapper().contains("t_order_1"));
+        assertTrue(singleRule.getLogicTableMapper().contains("teacher"));
     }
     
     @Test
@@ -206,9 +206,9 @@ class SingleRuleTest {
         Collection<QualifiedTable> tableNames = new LinkedList<>();
         tableNames.add(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "employee"));
         assertTrue(singleRule.getSingleTableNames(tableNames).isEmpty());
-        assertTrue(singleRule.getActualTableMapper().contains("student"));
-        assertTrue(singleRule.getActualTableMapper().contains("t_order_0"));
-        assertTrue(singleRule.getActualTableMapper().contains("t_order_1"));
+        assertTrue(singleRule.getLogicTableMapper().contains("student"));
+        assertTrue(singleRule.getLogicTableMapper().contains("t_order_0"));
+        assertTrue(singleRule.getLogicTableMapper().contains("t_order_1"));
     }
     
     @Test

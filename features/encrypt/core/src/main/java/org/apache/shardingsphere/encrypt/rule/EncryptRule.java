@@ -317,7 +317,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
     @Override
     public TableNamesMapper getActualTableMapper() {
-        return getLogicTableMapper();
+        return new TableNamesMapper();
     }
     
     @Override
