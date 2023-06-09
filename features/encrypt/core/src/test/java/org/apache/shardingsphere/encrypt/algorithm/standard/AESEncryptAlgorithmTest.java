@@ -52,7 +52,7 @@ class AESEncryptAlgorithmTest {
     
     @Test
     void assertDefaultDigestAlgorithm() throws NoSuchAlgorithmException {
-        final MockedStatic<DigestUtils> digestUtilsMockedStatic = mockStatic(DigestUtils.class);
+        MockedStatic<DigestUtils> digestUtilsMockedStatic = mockStatic(DigestUtils.class);
         digestUtilsMockedStatic.when(() -> DigestUtils.getDigest("SHA-1")).thenReturn(MessageDigest.getInstance("SHA-1"));
         TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
         digestUtilsMockedStatic.verify(() -> DigestUtils.getDigest("SHA-1"), times(1));
@@ -61,7 +61,7 @@ class AESEncryptAlgorithmTest {
     
     @Test
     void assertSHA512DigestAlgorithm() throws NoSuchAlgorithmException {
-        final MockedStatic<DigestUtils> digestUtilsMockedStatic = mockStatic(DigestUtils.class);
+        MockedStatic<DigestUtils> digestUtilsMockedStatic = mockStatic(DigestUtils.class);
         digestUtilsMockedStatic.when(() -> DigestUtils.getDigest("SHA-512")).thenReturn(MessageDigest.getInstance("SHA-512"));
         TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-512")));
         digestUtilsMockedStatic.verify(() -> DigestUtils.getDigest("SHA-512"), times(1));
