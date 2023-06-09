@@ -721,4 +721,12 @@
     <test-case sql="SELECT * FROM pg_catalog.pg_aggregate" db-types="PostgreSQL" scenario-types="db">
         <assertion expected-data-file="select_postgresql_pg_catalog_pg_aggregate.xml" />
     </test-case>
+
+    <test-case sql="select * FROM sys.sys_config" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_sys_sys_config.xml" />
+    </test-case>
+
+    <test-case sql="select * FROM sys.host_summary_by_statement_type" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_sys_host_summary_by_statement_type.xml" />
+    </test-case>
 </integration-test-cases>
