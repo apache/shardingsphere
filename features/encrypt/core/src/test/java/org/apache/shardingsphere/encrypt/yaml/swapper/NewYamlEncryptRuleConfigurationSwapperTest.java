@@ -57,7 +57,38 @@ class NewYamlEncryptRuleConfigurationSwapperTest {
     
     private EncryptRuleConfiguration createMaximumEncryptRule() {
         Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
-        tables.add(new EncryptTableRuleConfiguration("foo", Collections.singleton(new EncryptColumnRuleConfiguration("foo_column", new EncryptColumnItemRuleConfiguration("FIXTURE")))));
+        tables.add(new EncryptTableRuleConfiguration("foo", Collections.singleton(new EncryptColumnRuleConfiguration("foo_column", new EncryptColumnItemRuleConfiguration("FIXTURE", "FOO")))));
         return new EncryptRuleConfiguration(tables, Collections.singletonMap("FOO", new AlgorithmConfiguration("FOO", new Properties())));
+    }
+    
+    @Test
+    void assertSwapToObjectEmpty() {
+        Collection<YamlDataNode> config = new LinkedList<>();
+        EncryptRuleConfiguration result = swapper.swapToObject(config);
+        assertThat(result.getTables().size(), is(0));
+        assertThat(result.getEncryptors().size(), is(0));
+    }
+    
+    @Test
+    void assertSwapToObject() {
+        Collection<YamlDataNode> config = new LinkedList<>();
+        config.add(new YamlDataNode("/metadata/foo_db/rules/encrypt/tables/foo", "columns:\n"
+                + "  foo_column:\n"
+                + "    cipher:\n"
+                + "      encryptorName: FOO\n"
+                + "      name: FIXTURE\n"
+                + "    name: foo_column\n"
+                + "name: foo\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/encrypt/encryptors/FOO", "type: FOO\n"));
+        EncryptRuleConfiguration result = swapper.swapToObject(config);
+        assertThat(result.getTables().size(), is(1));
+        assertThat(result.getTables().iterator().next().getName(), is("foo"));
+        assertThat(result.getTables().iterator().next().getColumns().size(), is(1));
+        assertThat(result.getTables().iterator().next().getColumns().iterator().next().getName(), is("foo_column"));
+        assertThat(result.getTables().iterator().next().getColumns().iterator().next().getCipher().getName(), is("FIXTURE"));
+        assertThat(result.getTables().iterator().next().getColumns().iterator().next().getCipher().getEncryptorName(), is("FOO"));
+        assertThat(result.getEncryptors().size(), is(1));
+        assertThat(result.getEncryptors().get("FOO").getType(), is("FOO"));
+        assertThat(result.getEncryptors().get("FOO").getProps().size(), is(0));
     }
 }
