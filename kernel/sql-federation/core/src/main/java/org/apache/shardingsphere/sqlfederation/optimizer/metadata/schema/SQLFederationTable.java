@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.operator.TranslatableTableScan;
+import org.apache.shardingsphere.sqlfederation.optimizer.operator.physical.EnumerablePushDownTableScan;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtils;
 import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederationStatistic;
 
@@ -139,7 +139,7 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
     @Override
     public RelNode toRel(final ToRelContext context, final RelOptTable relOptTable) {
         int[] fields = getFieldIndexes(relOptTable.getRowType().getFieldCount());
-        return new TranslatableTableScan(context.getCluster(), relOptTable, this, fields);
+        return new EnumerablePushDownTableScan(context.getCluster(), relOptTable, this, fields);
     }
     
     @Override

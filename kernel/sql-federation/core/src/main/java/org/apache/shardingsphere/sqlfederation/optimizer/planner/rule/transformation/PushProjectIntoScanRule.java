@@ -15,30 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.planner.rule;
+package org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.transformation;
 
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalProject;
+import org.apache.calcite.rel.rules.TransformationRule;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilderFactory;
-import org.apache.shardingsphere.sqlfederation.optimizer.operator.TranslatableTableScan;
+import org.apache.shardingsphere.sqlfederation.optimizer.operator.physical.EnumerablePushDownTableScan;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Planner rule for pushing projections into table scan.
+ * Push project into scan rule.
  */
-public class TranslatableProjectRule extends RelOptRule {
+public final class PushProjectIntoScanRule extends RelOptRule implements TransformationRule {
     
-    public static final TranslatableProjectRule INSTANCE = new TranslatableProjectRule(RelFactories.LOGICAL_BUILDER);
+    public static final PushProjectIntoScanRule INSTANCE = new PushProjectIntoScanRule(RelFactories.LOGICAL_BUILDER);
     
-    public TranslatableProjectRule(final RelBuilderFactory relBuilderFactory) {
-        super(operand(LogicalProject.class, operand(TranslatableTableScan.class, none())), relBuilderFactory, "TranslatableProjectRule");
+    public PushProjectIntoScanRule(final RelBuilderFactory relBuilderFactory) {
+        super(operand(LogicalProject.class, operand(EnumerablePushDownTableScan.class, none())), relBuilderFactory, "TranslatableProjectRule");
     }
     
     @Override
@@ -48,12 +49,13 @@ public class TranslatableProjectRule extends RelOptRule {
         if (0 == fields.length) {
             return;
         }
-        TranslatableTableScan scan = call.rel(1);
+        EnumerablePushDownTableScan scan = call.rel(1);
         List<RexNode> expressions = project.getProjects();
         if (fields.length == expressions.size()) {
-            call.transformTo(new TranslatableTableScan(scan.getCluster(), scan.getTable(), scan.getTranslatableTable(), scan.getFilters(), fields));
+            call.transformTo(new EnumerablePushDownTableScan(scan.getCluster(), scan.getTable(), scan.getSqlFederationTable(), scan.getFilters(), fields));
         } else {
-            TranslatableTableScan tableScan = new TranslatableTableScan(scan.getCluster(), scan.getTable(), scan.getTranslatableTable(), scan.getFilters(), fields, expressions.size(), expressions);
+            EnumerablePushDownTableScan tableScan =
+                    new EnumerablePushDownTableScan(scan.getCluster(), scan.getTable(), scan.getSqlFederationTable(), scan.getFilters(), fields, expressions.size(), expressions);
             RelNode logicalProject = LogicalProject.create(tableScan, project.getHints(), project.getProjects(), project.getRowType());
             call.transformTo(logicalProject);
         }
