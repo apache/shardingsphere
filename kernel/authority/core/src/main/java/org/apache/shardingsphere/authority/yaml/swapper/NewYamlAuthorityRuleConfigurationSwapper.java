@@ -23,6 +23,8 @@ import org.apache.shardingsphere.authority.converter.YamlUsersConfigurationConve
 import org.apache.shardingsphere.authority.metadata.converter.AuthorityNodeConverter;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
@@ -64,9 +66,20 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlRu
             if (!version.isPresent()) {
                 continue;
             }
-            return YamlEngine.unmarshal(each.getValue(), AuthorityRuleConfiguration.class);
+            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAuthorityRuleConfiguration.class));
         }
         return new AuthorityRuleConfiguration(Collections.emptyList(), new DefaultAuthorityRuleConfigurationBuilder().build().getAuthorityProvider(), "");
+    }
+    
+    private AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {
+        Collection<ShardingSphereUser> users = YamlUsersConfigurationConverter.convertToShardingSphereUser(yamlConfig.getUsers());
+        AlgorithmConfiguration provider = algorithmSwapper.swapToObject(yamlConfig.getPrivilege());
+        if (null == provider) {
+            provider = new DefaultAuthorityRuleConfigurationBuilder().build().getAuthorityProvider();
+        }
+        AuthorityRuleConfiguration result = new AuthorityRuleConfiguration(users, provider, yamlConfig.getDefaultAuthenticator());
+        yamlConfig.getAuthenticators().forEach((key, value) -> result.getAuthenticators().put(key, algorithmSwapper.swapToObject(value)));
+        return result;
     }
     
     @Override
