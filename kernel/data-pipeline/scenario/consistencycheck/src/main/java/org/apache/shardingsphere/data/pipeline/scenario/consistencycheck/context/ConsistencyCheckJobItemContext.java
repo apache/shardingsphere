@@ -49,6 +49,8 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     
     private final ConsistencyCheckJobItemProgressContext progressContext;
     
+    private final ConsistencyCheckProcessContext processContext = new ConsistencyCheckProcessContext();
+    
     public ConsistencyCheckJobItemContext(final ConsistencyCheckJobConfiguration jobConfig, final int shardingItem, final JobStatus status, final ConsistencyCheckJobItemProgress jobItemProgress) {
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
@@ -63,6 +65,6 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     
     @Override
     public PipelineProcessContext getJobProcessContext() {
-        throw new UnsupportedOperationException();
+        return processContext;
     }
 }
