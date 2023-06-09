@@ -322,12 +322,12 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     @Override
     public TableNamesMapper getDistributedTableMapper() {
-        return logicalTableMapper;
+        return getLogicTableMapper();
     }
     
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
-        return logicalTableMapper;
+        return getLogicTableMapper();
     }
     
     /**
@@ -715,11 +715,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         }
         return shardingTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
     }
-    
-    private Collection<String> getAllActualTables() {
-        return tableRules.values().stream().flatMap(each -> each.getActualDataNodes().stream().map(DataNode::getTableName)).collect(Collectors.toSet());
-    }
-    
+
     @Override
     public Optional<String> findFirstActualTable(final String logicTable) {
         return findTableRule(logicTable).map(optional -> optional.getActualDataNodes().get(0).getTableName());

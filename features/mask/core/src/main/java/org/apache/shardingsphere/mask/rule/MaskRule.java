@@ -71,7 +71,7 @@ public final class MaskRule implements DatabaseRule, TableContainedRule {
     
     @Override
     public TableNamesMapper getActualTableMapper() {
-        return tableNamesMapper;
+        return getLogicTableMapper();
     }
     
     @Override
@@ -81,7 +81,7 @@ public final class MaskRule implements DatabaseRule, TableContainedRule {
     
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
-        return tableNamesMapper;
+        return getLogicTableMapper();
     }
     
     @Override

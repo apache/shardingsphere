@@ -49,7 +49,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 /**
  * Single rule.
@@ -103,8 +102,15 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     }
     
     private Collection<String> getLoadedTables(final Collection<ShardingSphereRule> builtRules) {
-        return builtRules.stream().filter(TableContainedRule.class::isInstance).flatMap(each -> ((TableContainedRule) each).getDistributedTableMapper().getTableNames().stream())
-                .collect(Collectors.toCollection(() -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)));
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        for (ShardingSphereRule each : builtRules) {
+            if (!(each instanceof TableContainedRule)) {
+                continue;
+            }
+            result.addAll(((TableContainedRule) each).getLogicTableMapper().getTableNames());
+            result.addAll(((TableContainedRule) each).getActualTableMapper().getTableNames());
+        }
+        return result;
     }
     
     /**
@@ -272,7 +278,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     
     @Override
     public TableNamesMapper getActualTableMapper() {
-        return tableNamesMapper;
+        return getLogicTableMapper();
     }
     
     @Override
