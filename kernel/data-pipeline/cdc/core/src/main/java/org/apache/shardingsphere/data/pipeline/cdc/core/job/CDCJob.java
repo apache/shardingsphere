@@ -98,6 +98,9 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
         prepare(jobItemContexts);
         executeInventoryTasks(jobItemContexts);
         executeIncrementalTasks(jobItemContexts);
+        for (PipelineTasksRunner each : getTasksRunners()) {
+            CloseUtils.closeQuietly(each.getJobItemContext().getJobProcessContext());
+        }
     }
     
     private CDCJobItemContext buildPipelineJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem) {
