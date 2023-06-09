@@ -40,6 +40,9 @@ class SystemSchemaBuilderRuleTest {
         SystemSchemaBuilderRule actualPerformanceSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "performance_schema");
         assertThat(actualPerformanceSchema, is(SystemSchemaBuilderRule.MYSQL_PERFORMANCE_SCHEMA));
         assertThat(actualPerformanceSchema.getTables().size(), is(87));
+        SystemSchemaBuilderRule actualPostgresqlInformationSchema = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "information_schema");
+        assertThat(actualPostgresqlInformationSchema, is(SystemSchemaBuilderRule.POSTGRESQL_INFORMATION_SCHEMA));
+        assertThat(actualPostgresqlInformationSchema.getTables().size(), is(7));
         SystemSchemaBuilderRule actualPgCatalog = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "pg_catalog");
         assertThat(actualPgCatalog, is(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG));
         assertThat(actualPgCatalog.getTables().size(), is(9));
@@ -53,6 +56,12 @@ class SystemSchemaBuilderRuleTest {
     @Test
     void assertIsisSystemTable() {
         assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "columns"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "tables"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "views"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "user_mappings"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "view_column_usage"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "view_routine_usage"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "view_table_usage"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_database"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_tables"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_aggregate"));
