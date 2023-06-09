@@ -124,18 +124,18 @@ class EncryptRuleTest {
     
     @Test
     void assertGetTables() {
-        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getTables(), is(Collections.singleton("t_encrypt")));
+        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getLogicTableMapper().getTableNames(), is(Collections.singleton("t_encrypt")));
     }
     
     @Test
     void assertGetTableWithLowercase() {
-        assertThat(new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable()).getTables(), is(Collections.singleton("t_encrypt")));
+        assertThat(new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable()).getLogicTableMapper().getTableNames(), is(Collections.singleton("t_encrypt")));
     }
     
     @Test
     void assertTheSameLogicTable() {
-        Collection<String> logicTables = new EncryptRule(createEncryptRuleConfiguration()).getTables();
-        Collection<String> theSameLogicTables = new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable()).getTables();
+        Collection<String> logicTables = new EncryptRule(createEncryptRuleConfiguration()).getLogicTableMapper().getTableNames();
+        Collection<String> theSameLogicTables = new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable()).getLogicTableMapper().getTableNames();
         assertThat(logicTables, is(theSameLogicTables));
     }
     

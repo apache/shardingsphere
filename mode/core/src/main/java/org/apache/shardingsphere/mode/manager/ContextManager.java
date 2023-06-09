@@ -44,9 +44,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
@@ -216,7 +216,7 @@ public final class ContextManager implements AutoCloseable {
     
     private synchronized void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable) {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-        if (!containsMutableDataNodeRule(database, beBoChangedTable.getName())) {
+        if (isSingleTable(database, beBoChangedTable.getName())) {
             database.reloadRules(MutableDataNodeRule.class);
         }
         database.getSchema(schemaName).putTable(beBoChangedTable.getName(), beBoChangedTable);
@@ -224,15 +224,14 @@ public final class ContextManager implements AutoCloseable {
     
     private synchronized void alterView(final String databaseName, final String schemaName, final ShardingSphereView beBoChangedView) {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-        if (!containsMutableDataNodeRule(database, beBoChangedView.getName())) {
+        if (isSingleTable(database, beBoChangedView.getName())) {
             database.reloadRules(MutableDataNodeRule.class);
         }
         database.getSchema(schemaName).putView(beBoChangedView.getName(), beBoChangedView);
     }
     
-    private boolean containsMutableDataNodeRule(final ShardingSphereDatabase database, final String tableName) {
-        return database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
-                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
+    private boolean isSingleTable(final ShardingSphereDatabase database, final String tableName) {
+        return database.getRuleMetaData().findRules(TableContainedRule.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
     }
     
     /**

@@ -414,7 +414,7 @@ class ShardingRuleTest {
     
     @Test
     void assertGetTables() {
-        assertThat(createMaximumShardingRule().getTables(), is(new LinkedHashSet<>(Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE", "BROADCAST_TABLE"))));
+        assertThat(createMaximumShardingRule().getLogicTableMapper().getTableNames(), is(Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE", "BROADCAST_TABLE")));
     }
     
     @Test
