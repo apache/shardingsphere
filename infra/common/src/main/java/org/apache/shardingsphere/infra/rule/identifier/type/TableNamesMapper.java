@@ -53,7 +53,7 @@ public final class TableNamesMapper {
     public Collection<String> getTableNames() {
         return lowerCaseTableNames.values();
     }
-
+    
     /**
      * Put.
      * 
@@ -62,7 +62,7 @@ public final class TableNamesMapper {
     public void put(final String tableName) {
         lowerCaseTableNames.put(tableName.toLowerCase(), tableName);
     }
-
+    
     /**
      * Remove.
      * 

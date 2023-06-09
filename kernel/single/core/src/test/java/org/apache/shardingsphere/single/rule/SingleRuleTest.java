@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -96,8 +95,9 @@ class SingleRuleTest {
     
     @Test
     void assertGetSingleTableDataNodes() {
-        TableContainedRule tableContainedRule = mock(TableContainedRule.class);
-        when(tableContainedRule.getDistributedTableMapper()).thenReturn(new TableNamesMapper(Arrays.asList("t_order", "t_order_0", "t_order_1")));
+        TableContainedRule tableContainedRule = mock(TableContainedRule.class, RETURNS_DEEP_STUBS);
+        when(tableContainedRule.getDistributedTableMapper().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(tableContainedRule.getActualTableMapper().getTableNames()).thenReturn(Arrays.asList("t_order_0", "t_order_1"));
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(tableContainedRule));
         Map<String, Collection<DataNode>> actual = singleRule.getSingleTableDataNodes();
         assertThat(actual.size(), is(2));
@@ -107,8 +107,9 @@ class SingleRuleTest {
     
     @Test
     void assertGetSingleTableDataNodesWithUpperCase() {
-        TableContainedRule tableContainedRule = mock(TableContainedRule.class);
-        when(tableContainedRule.getDistributedTableMapper()).thenReturn(new TableNamesMapper(Arrays.asList("T_ORDER", "T_ORDER_0", "T_ORDER_1")));
+        TableContainedRule tableContainedRule = mock(TableContainedRule.class, RETURNS_DEEP_STUBS);
+        when(tableContainedRule.getDistributedTableMapper().getTableNames()).thenReturn(Collections.singletonList("T_ORDER"));
+        when(tableContainedRule.getActualTableMapper().getTableNames()).thenReturn(Arrays.asList("T_ORDER_0", "T_ORDER_1"));
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(tableContainedRule));
         Map<String, Collection<DataNode>> actual = singleRule.getSingleTableDataNodes();
         assertThat(actual.size(), is(2));
