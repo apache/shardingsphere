@@ -17,6 +17,18 @@
   -->
 
 <sql-parser-test-cases>
+    <create-table sql-case-id="create_table_with_backtick">
+        <table name="`t_order" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="23" />
+        <column-definition type="int" start-index="26" stop-index="30">
+            <column name="i" />
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_column_with_backtick">
+        <table name="``t_o`r`d`e`r`" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="35" />
+        <column-definition type="int" start-delimiter="`" end-delimiter="`" start-index="38" stop-index="46">
+            <column name="`i" />
+        </column-definition>
+    </create-table>
     <create-table sql-case-id="create_table_with_like">
         <table name="t_log" start-index="13" stop-index="17" />
         <like-table name="t_old_log" start-index="24" stop-index="32" />
