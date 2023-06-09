@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.algorithm.standard;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
@@ -43,6 +44,8 @@ public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     private static final String AES_KEY = "aes-key-value";
     
+    private static final String DIGEST_ALGORITHM_NAME = "digest-algorithm-name";
+    
     private byte[] secretKey;
     
     @Override
@@ -54,7 +57,8 @@ public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Objec
         String aesKey = props.getProperty(AES_KEY);
         ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(aesKey),
                 () -> new EncryptAlgorithmInitializationException(getType(), String.format("%s can not be null or empty", AES_KEY)));
-        return Arrays.copyOf(DigestUtils.sha1(aesKey), 16);
+        String digestAlgorithm = props.getProperty(DIGEST_ALGORITHM_NAME, MessageDigestAlgorithms.SHA_1);
+        return Arrays.copyOf(DigestUtils.getDigest(digestAlgorithm.toUpperCase()).digest(aesKey.getBytes(StandardCharsets.UTF_8)), 16);
     }
     
     @SneakyThrows(GeneralSecurityException.class)
