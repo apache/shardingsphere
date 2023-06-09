@@ -18,9 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtils;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineLazyInitializer;
 
 /**
  * Consistency check process context.
@@ -28,12 +32,37 @@ import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProce
 @Getter
 public final class ConsistencyCheckProcessContext implements PipelineProcessContext {
     
+    private final PipelineLazyInitializer<ExecuteEngine> consistencyCheckExecuteEngineLazyInitializer;
+    
+    public ConsistencyCheckProcessContext(final String jobId) {
+        consistencyCheckExecuteEngineLazyInitializer = new PipelineLazyInitializer<ExecuteEngine>() {
+            
+            @Override
+            protected ExecuteEngine doInitialize() {
+                return ExecuteEngine.newFixedThreadInstance(1, jobId + "-check");
+            }
+        };
+    }
+    
     @Override
     public PipelineProcessConfiguration getPipelineProcessConfig() {
         return PipelineProcessConfigurationUtils.convertWithDefaultValue(null);
     }
     
+    /**
+     * Get consistency check execute engine.
+     *
+     * @return consistency check execute engine
+     */
+    @SneakyThrows(ConcurrentException.class)
+    public ExecuteEngine getConsistencyCheckExecuteEngine() {
+        return consistencyCheckExecuteEngineLazyInitializer.get();
+    }
+    
     @Override
     public void close() throws Exception {
+        if (consistencyCheckExecuteEngineLazyInitializer.isInitialized()) {
+            consistencyCheckExecuteEngineLazyInitializer.get().shutdown();
+        }
     }
 }

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobA
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
@@ -80,8 +79,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             return;
         }
         TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName()).persistJobItemProgress(jobItemContext);
-        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(1, checkJobId + "-check");
-        executeEngine.submit(checkExecutor, checkExecuteCallback);
+        jobItemContext.getProcessContext().getConsistencyCheckExecuteEngine().submit(checkExecutor, checkExecuteCallback);
     }
     
     @Override

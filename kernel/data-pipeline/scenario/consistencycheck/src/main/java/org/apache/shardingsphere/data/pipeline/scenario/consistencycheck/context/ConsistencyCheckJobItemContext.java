@@ -49,7 +49,7 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     
     private final ConsistencyCheckJobItemProgressContext progressContext;
     
-    private final ConsistencyCheckProcessContext processContext = new ConsistencyCheckProcessContext();
+    private final ConsistencyCheckProcessContext processContext;
     
     public ConsistencyCheckJobItemContext(final ConsistencyCheckJobConfiguration jobConfig, final int shardingItem, final JobStatus status, final ConsistencyCheckJobItemProgress jobItemProgress) {
         this.jobConfig = jobConfig;
@@ -61,6 +61,7 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
             progressContext.getCheckedRecordsCount().set(Optional.ofNullable(jobItemProgress.getCheckedRecordsCount()).orElse(0L));
             Optional.ofNullable(jobItemProgress.getTableCheckPositions()).ifPresent(progressContext.getTableCheckPositions()::putAll);
         }
+        processContext = new ConsistencyCheckProcessContext(jobId);
     }
     
     @Override
