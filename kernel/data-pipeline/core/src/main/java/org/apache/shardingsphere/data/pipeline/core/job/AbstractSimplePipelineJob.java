@@ -46,6 +46,14 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
     
     @Override
     public void execute(final ShardingContext shardingContext) {
+        try {
+            execute0(shardingContext);
+        } finally {
+            clean();
+        }
+    }
+    
+    private void execute0(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
         int shardingItem = shardingContext.getShardingItem();
         log.info("Execute job {}-{}", jobId, shardingItem);
@@ -62,6 +70,9 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
         prepare(jobItemContext);
         log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
         tasksRunner.start();
+    }
+    
+    private void clean() {
         for (PipelineTasksRunner each : getTasksRunners()) {
             CloseUtils.closeQuietly(each.getJobItemContext().getJobProcessContext());
         }

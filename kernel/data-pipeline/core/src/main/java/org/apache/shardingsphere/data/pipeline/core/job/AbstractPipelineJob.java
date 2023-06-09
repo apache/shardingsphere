@@ -177,7 +177,6 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     }
     
     private void innerClean() {
-        tasksRunnerMap.clear();
         PipelineJobProgressPersistService.remove(jobId);
     }
     
