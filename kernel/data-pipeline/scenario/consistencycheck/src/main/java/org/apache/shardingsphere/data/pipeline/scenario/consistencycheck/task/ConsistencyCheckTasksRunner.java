@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobA
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
@@ -38,7 +39,9 @@ import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -60,8 +63,6 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
     private final LifecycleExecutor checkExecutor;
     
-    private final ExecuteCallback checkExecuteCallback;
-    
     private final AtomicReference<DataConsistencyCalculateAlgorithm> calculateAlgorithm = new AtomicReference<>();
     
     public ConsistencyCheckTasksRunner(final ConsistencyCheckJobItemContext jobItemContext) {
@@ -70,7 +71,6 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         checkJobId = checkJobConfig.getJobId();
         parentJobId = checkJobConfig.getParentJobId();
         checkExecutor = new CheckLifecycleExecutor();
-        checkExecuteCallback = new CheckExecuteCallback();
     }
     
     @Override
@@ -79,7 +79,8 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             return;
         }
         TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName()).persistJobItemProgress(jobItemContext);
-        jobItemContext.getProcessContext().getConsistencyCheckExecuteEngine().submit(checkExecutor, checkExecuteCallback);
+        CompletableFuture<?> future = jobItemContext.getProcessContext().getConsistencyCheckExecuteEngine().submit(checkExecutor);
+        ExecuteEngine.trigger(Collections.singletonList(future), new CheckExecuteCallback());
     }
     
     @Override
