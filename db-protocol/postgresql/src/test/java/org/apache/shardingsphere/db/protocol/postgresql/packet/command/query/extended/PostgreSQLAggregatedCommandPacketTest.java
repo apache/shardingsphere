@@ -37,14 +37,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PostgreSQLAggregatedCommandPacketTest {
-
+    
     @Test
     void testPostgreSqlIdentifierTag() {
         PostgreSQLAggregatedCommandPacket postgreSQLAggregatedCommandPacket = new PostgreSQLAggregatedCommandPacket(new ArrayList<>());
         PostgreSQLIdentifierTag identifier = postgreSQLAggregatedCommandPacket.getIdentifier();
         assertEquals('?', identifier.getValue());
     }
-
+    
     @Test
     void testPostgreSqlParseCommandPacket() {
         PostgreSQLPacketPayload payload = getPostgreSQLPacketPayload();
@@ -54,7 +54,7 @@ class PostgreSQLAggregatedCommandPacketTest {
         assertEquals(-1, postgreSQLAggregatedCommandPacket.getFirstBindIndex());
         assertEquals(-1, postgreSQLAggregatedCommandPacket.getLastExecuteIndex());
     }
-
+    
     @Test
     void testMultiplePostgreSqlParseCommandPacket() {
         PostgreSQLPacketPayload payload = getPostgreSQLPacketPayload();
@@ -65,7 +65,7 @@ class PostgreSQLAggregatedCommandPacketTest {
         assertEquals(-1, postgreSQLAggregatedCommandPacket.getFirstBindIndex());
         assertEquals(-1, postgreSQLAggregatedCommandPacket.getLastExecuteIndex());
     }
-
+    
     @Test
     void testPostgreSqlExecCommandPacket() {
         PostgreSQLPacketPayload payload = getPostgreSQLPacketPayload();
@@ -75,7 +75,7 @@ class PostgreSQLAggregatedCommandPacketTest {
         assertEquals(-1, postgreSQLAggregatedCommandPacket.getFirstBindIndex());
         assertEquals(0, postgreSQLAggregatedCommandPacket.getLastExecuteIndex());
     }
-
+    
     @Test
     void testPostgreSqlBindCommandPacket() {
         PostgreSQLPacketPayload payload = getPostgreSQLPacketPayload();
@@ -85,7 +85,7 @@ class PostgreSQLAggregatedCommandPacketTest {
         assertEquals(0, postgreSQLAggregatedCommandPacket.getFirstBindIndex());
         assertEquals(-1, postgreSQLAggregatedCommandPacket.getLastExecuteIndex());
     }
-
+    
     @Test
     void testPostgreSqlBindAndParseCombinedCommandPacket() {
         PostgreSQLPacketPayload parsePayload = getPostgreSQLPacketPayload();
@@ -97,7 +97,7 @@ class PostgreSQLAggregatedCommandPacketTest {
         assertEquals(0, postgreSQLAggregatedCommandPacket.getFirstBindIndex());
         assertEquals(-1, postgreSQLAggregatedCommandPacket.getLastExecuteIndex());
     }
-
+    
     @Test
     void testPostgreSqlBindAndExecCombinedCommandPacket() {
         PostgreSQLPacketPayload execPayload = getPostgreSQLPacketPayload();
@@ -118,7 +118,7 @@ class PostgreSQLAggregatedCommandPacketTest {
         assertEquals(0, postgreSQLAggregatedCommandPacket.getFirstBindIndex());
         assertEquals(5, postgreSQLAggregatedCommandPacket.getLastExecuteIndex());
     }
-
+    
     @Test
     void testPostgreSqlAllCombinedCommandPacket() {
         PostgreSQLPacketPayload execPayload = getPostgreSQLPacketPayload();
@@ -132,7 +132,7 @@ class PostgreSQLAggregatedCommandPacketTest {
         assertEquals(2, postgreSQLAggregatedCommandPacket.getFirstBindIndex());
         assertEquals(1, postgreSQLAggregatedCommandPacket.getLastExecuteIndex());
     }
-
+    
     private static PostgreSQLPacketPayload getPostgreSQLPacketPayload() {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(StringUtil.decodeHexDump("000000000004010000002c0000000000000020001a9100000000000062696e6c6f672e3030303032394af65c24"));
