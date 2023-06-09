@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
+package org.apache.shardingsphere.sqlfederation.optimizer.planner.rule;
 
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
@@ -25,6 +25,7 @@ import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilderFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.operator.TranslatableTableScan;
 
 import java.util.ArrayList;
 import java.util.List;

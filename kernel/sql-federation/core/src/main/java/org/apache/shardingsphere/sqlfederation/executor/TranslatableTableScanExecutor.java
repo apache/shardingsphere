@@ -81,7 +81,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContex
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.ScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.rexnode.StringToRexNodeUtils;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtils;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
@@ -319,7 +319,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContext(databaseName).getDialectProps());
         ShardingSphereDatabase database = executorContext.getFederationContext().getMetaData().getDatabase(databaseName);
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtils.createCatalogReader(schemaName,
-                new TranslatableSchema(schemaName, database.getSchema(schemaName), database.getProtocolType(), JAVA_TYPE_FACTORY, null), JAVA_TYPE_FACTORY, connectionConfig);
+                new SQLFederationSchema(schemaName, database.getSchema(schemaName), database.getProtocolType(), JAVA_TYPE_FACTORY, null), JAVA_TYPE_FACTORY, connectionConfig);
         RelOptCluster relOptCluster = RelOptCluster.create(SQLFederationPlannerUtils.createVolcanoPlanner(), new RexBuilder(JAVA_TYPE_FACTORY));
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName());
         if (null != scanContext.getFilterValues()) {

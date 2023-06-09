@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
+package org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
@@ -39,22 +39,23 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
+import org.apache.shardingsphere.sqlfederation.optimizer.operator.TranslatableTableScan;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtils;
+import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederationStatistic;
 
 import java.lang.reflect.Type;
 
 /**
- * Federation translatable table.
+ * SQL federation table.
  */
 @RequiredArgsConstructor
-public final class FederationTranslatableTable extends AbstractTable implements QueryableTable, TranslatableTable {
+public final class SQLFederationTable extends AbstractTable implements QueryableTable, TranslatableTable {
     
     private final ShardingSphereTable table;
     
     private final TableScanExecutor executor;
     
-    private final FederationStatistic statistic;
+    private final SQLFederationStatistic statistic;
     
     private final DatabaseType protocolType;
     
@@ -143,7 +144,7 @@ public final class FederationTranslatableTable extends AbstractTable implements 
     
     @Override
     public String toString() {
-        return "FederationTranslatableTable";
+        return "SQLFederationTable";
     }
     
     @Override

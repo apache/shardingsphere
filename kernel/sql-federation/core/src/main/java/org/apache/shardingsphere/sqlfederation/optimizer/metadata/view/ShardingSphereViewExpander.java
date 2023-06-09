@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.metadata.expander;
+package org.apache.shardingsphere.sqlfederation.optimizer.metadata.view;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.plan.RelOptTable.ViewExpander;

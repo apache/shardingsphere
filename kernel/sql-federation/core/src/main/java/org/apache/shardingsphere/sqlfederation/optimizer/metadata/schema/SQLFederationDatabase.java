@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
+package org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema;
 
 import lombok.Getter;
 import org.apache.calcite.schema.Schema;
@@ -30,16 +30,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Translatable database.
+ * SQL federation database.
  */
 @Getter
-public final class TranslatableDatabase extends AbstractSchema {
+public final class SQLFederationDatabase extends AbstractSchema {
     
     private final String name;
     
     private final Map<String, Schema> subSchemaMap;
     
-    public TranslatableDatabase(final ShardingSphereDatabase database, final DatabaseType protocolType, final TableScanExecutor executor) {
+    public SQLFederationDatabase(final ShardingSphereDatabase database, final DatabaseType protocolType, final TableScanExecutor executor) {
         name = database.getName();
         subSchemaMap = createSubSchemaMap(database, protocolType, executor);
     }
@@ -47,7 +47,7 @@ public final class TranslatableDatabase extends AbstractSchema {
     private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final DatabaseType protocolType, final TableScanExecutor executor) {
         Map<String, Schema> result = new LinkedHashMap<>(database.getSchemas().size(), 1F);
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            result.put(entry.getKey(), new TranslatableSchema(entry.getKey(), entry.getValue(), protocolType, null, executor));
+            result.put(entry.getKey(), new SQLFederationSchema(entry.getKey(), entry.getValue(), protocolType, null, executor));
         }
         return result;
     }

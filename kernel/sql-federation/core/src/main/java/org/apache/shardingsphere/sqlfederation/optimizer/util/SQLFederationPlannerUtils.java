@@ -52,10 +52,10 @@ import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.expander.ShardingSphereViewExpander;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableFilterRule;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableProjectFilterRule;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableProjectRule;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.view.ShardingSphereViewExpander;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.TranslatableFilterRule;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.TranslatableProjectFilterRule;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.TranslatableProjectRule;
 
 import java.util.Arrays;
 import java.util.Collection;
