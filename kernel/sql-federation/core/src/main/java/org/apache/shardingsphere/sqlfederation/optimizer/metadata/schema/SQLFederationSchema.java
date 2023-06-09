@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
+package org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema;
 
 import lombok.Getter;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
+import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederationStatistic;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtils;
 
 import java.util.Collections;
@@ -37,16 +37,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Translatable schema.
+ * SQL federation schema.
  */
 @Getter
-public final class TranslatableSchema extends AbstractSchema {
+public final class SQLFederationSchema extends AbstractSchema {
     
     private final String name;
     
     private final Map<String, Table> tableMap;
     
-    public TranslatableSchema(final String schemaName, final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
+    public SQLFederationSchema(final String schemaName, final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
         name = schemaName;
         tableMap = createTableMap(schema, protocolType, javaTypeFactory, executor);
     }
@@ -58,7 +58,7 @@ public final class TranslatableSchema extends AbstractSchema {
                 result.put(each.getName(), getViewTable(schema, each, protocolType, javaTypeFactory));
             } else {
                 // TODO implement table statistic logic after using custom operators
-                result.put(each.getName(), new FederationTranslatableTable(each, executor, new FederationStatistic(), protocolType));
+                result.put(each.getName(), new SQLFederationTable(each, executor, new SQLFederationStatistic(), protocolType));
             }
         }
         return result;

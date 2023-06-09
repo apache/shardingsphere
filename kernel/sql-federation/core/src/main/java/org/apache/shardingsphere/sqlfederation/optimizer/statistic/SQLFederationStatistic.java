@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic;
+package org.apache.shardingsphere.sqlfederation.optimizer.statistic;
 
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelDistribution;
@@ -27,9 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Statistic of federation table.
+ * SQL federation statistic.
  */
-public final class FederationStatistic implements Statistic {
+public final class SQLFederationStatistic implements Statistic {
     
     @Override
     public List<RelReferentialConstraint> getReferentialConstraints() {

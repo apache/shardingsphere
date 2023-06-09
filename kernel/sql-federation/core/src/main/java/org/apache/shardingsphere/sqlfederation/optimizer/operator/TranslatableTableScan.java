@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
+package org.apache.shardingsphere.sqlfederation.optimizer.operator;
 
 import com.google.common.collect.ImmutableList;
 import lombok.Getter;
@@ -42,6 +42,10 @@ import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationTable;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.TranslatableFilterRule;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.TranslatableProjectFilterRule;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.TranslatableProjectRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +59,7 @@ import java.util.Map;
 @Getter
 public final class TranslatableTableScan extends TableScan implements EnumerableRel {
     
-    private final FederationTranslatableTable translatableTable;
+    private final SQLFederationTable translatableTable;
     
     private final int[] fields;
     
@@ -65,7 +69,7 @@ public final class TranslatableTableScan extends TableScan implements Enumerable
     
     private final List<RexNode> expressions;
     
-    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final FederationTranslatableTable translatableTable, final int[] fields) {
+    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final SQLFederationTable translatableTable, final int[] fields) {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
         this.translatableTable = translatableTable;
         this.fields = fields;
@@ -74,7 +78,7 @@ public final class TranslatableTableScan extends TableScan implements Enumerable
         this.expressions = new ArrayList<>();
     }
     
-    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final FederationTranslatableTable translatableTable, final int[] fields, final int number) {
+    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final SQLFederationTable translatableTable, final int[] fields, final int number) {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
         this.translatableTable = translatableTable;
         this.fields = fields;
@@ -83,7 +87,7 @@ public final class TranslatableTableScan extends TableScan implements Enumerable
         this.expressions = new ArrayList<>();
     }
     
-    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final FederationTranslatableTable translatableTable,
+    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final SQLFederationTable translatableTable,
                                  final List<RexNode> filters, final int[] fields) {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
         this.translatableTable = translatableTable;
@@ -93,7 +97,7 @@ public final class TranslatableTableScan extends TableScan implements Enumerable
         this.expressions = new ArrayList<>();
     }
     
-    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final FederationTranslatableTable translatableTable,
+    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final SQLFederationTable translatableTable,
                                  final List<RexNode> filters, final int[] fields, final int number, final List<RexNode> expressions) {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
         this.translatableTable = translatableTable;
@@ -164,19 +168,19 @@ public final class TranslatableTableScan extends TableScan implements Enumerable
     
     private Result generateCodeForNullFilters(final EnumerableRelImplementor implementor, final PhysType physType) {
         if (fields.length == 1) {
-            return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
+            return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(SQLFederationTable.class),
                     "projectScalar", implementor.getRootExpression(), Expressions.constant(fields))));
         }
-        return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
+        return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(SQLFederationTable.class),
                 "project", implementor.getRootExpression(), Expressions.constant(fields))));
     }
     
     private Result generateCodeForFilters(final EnumerableRelImplementor implementor, final PhysType physType, final String[] filterValues) {
         if (fields.length == 1) {
-            return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
+            return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(SQLFederationTable.class),
                     "projectAndFilterScalar", implementor.getRootExpression(), Expressions.constant(filterValues), Expressions.constant(fields))));
         }
-        return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
+        return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(SQLFederationTable.class),
                 "projectAndFilter", implementor.getRootExpression(), Expressions.constant(filterValues), Expressions.constant(fields))));
     }
     

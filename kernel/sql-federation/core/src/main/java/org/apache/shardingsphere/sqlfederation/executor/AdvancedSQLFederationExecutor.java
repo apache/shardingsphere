@@ -52,7 +52,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContex
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtils;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
@@ -126,7 +126,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
                                                      final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, props, federationContext);
         TableScanExecutor executor = new TranslatableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, data);
-        return new TranslatableSchema(schemaName, schema, protocolType, JAVA_TYPE_FACTORY, executor);
+        return new SQLFederationSchema(schemaName, schema, protocolType, JAVA_TYPE_FACTORY, executor);
     }
     
     @SuppressWarnings("unchecked")
