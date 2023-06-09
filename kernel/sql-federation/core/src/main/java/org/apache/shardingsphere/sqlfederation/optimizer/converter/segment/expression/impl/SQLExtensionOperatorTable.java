@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.SqlKind;
 
 /**
- * SQL Extension Operator Table.
+ * SQL extension operator table.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLExtensionOperatorTable {
     
     public static final SqlBinaryOperator DIV = new SqlBinaryOperator("DIV", SqlKind.OTHER, 60, true, null, null, null);

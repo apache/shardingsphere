@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.operator;
+package org.apache.shardingsphere.sqlfederation.optimizer.operator.physical;
 
 import com.google.common.collect.ImmutableList;
 import lombok.Getter;
@@ -43,9 +43,8 @@ import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationTable;
-import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.TranslatableFilterRule;
-import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.TranslatableProjectFilterRule;
-import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.TranslatableProjectRule;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.transformation.PushFilterIntoScanRule;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.transformation.PushProjectIntoScanRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,12 +53,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Translatable table scan.
+ * Enumerable push down table scan.
  */
 @Getter
-public final class TranslatableTableScan extends TableScan implements EnumerableRel {
+public final class EnumerablePushDownTableScan extends TableScan implements EnumerableRel {
     
-    private final SQLFederationTable translatableTable;
+    private final SQLFederationTable sqlFederationTable;
     
     private final int[] fields;
     
@@ -69,38 +68,38 @@ public final class TranslatableTableScan extends TableScan implements Enumerable
     
     private final List<RexNode> expressions;
     
-    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final SQLFederationTable translatableTable, final int[] fields) {
+    public EnumerablePushDownTableScan(final RelOptCluster cluster, final RelOptTable table, final SQLFederationTable sqlFederationTable, final int[] fields) {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
-        this.translatableTable = translatableTable;
+        this.sqlFederationTable = sqlFederationTable;
         this.fields = fields;
         this.number = fields.length;
         this.filters = null;
         this.expressions = new ArrayList<>();
     }
     
-    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final SQLFederationTable translatableTable, final int[] fields, final int number) {
+    public EnumerablePushDownTableScan(final RelOptCluster cluster, final RelOptTable table, final SQLFederationTable sqlFederationTable, final int[] fields, final int number) {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
-        this.translatableTable = translatableTable;
+        this.sqlFederationTable = sqlFederationTable;
         this.fields = fields;
         this.number = number;
         this.filters = null;
         this.expressions = new ArrayList<>();
     }
     
-    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final SQLFederationTable translatableTable,
-                                 final List<RexNode> filters, final int[] fields) {
+    public EnumerablePushDownTableScan(final RelOptCluster cluster, final RelOptTable table, final SQLFederationTable sqlFederationTable,
+                                       final List<RexNode> filters, final int[] fields) {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
-        this.translatableTable = translatableTable;
+        this.sqlFederationTable = sqlFederationTable;
         this.fields = fields;
         this.number = fields.length;
         this.filters = filters;
         this.expressions = new ArrayList<>();
     }
     
-    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final SQLFederationTable translatableTable,
-                                 final List<RexNode> filters, final int[] fields, final int number, final List<RexNode> expressions) {
+    public EnumerablePushDownTableScan(final RelOptCluster cluster, final RelOptTable table, final SQLFederationTable sqlFederationTable,
+                                       final List<RexNode> filters, final int[] fields, final int number, final List<RexNode> expressions) {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
-        this.translatableTable = translatableTable;
+        this.sqlFederationTable = sqlFederationTable;
         this.fields = fields;
         this.number = number;
         this.filters = filters;
@@ -109,17 +108,17 @@ public final class TranslatableTableScan extends TableScan implements Enumerable
     
     @Override
     public RelNode copy(final RelTraitSet traitSet, final List<RelNode> inputs) {
-        return new TranslatableTableScan(getCluster(), table, translatableTable, fields, number);
+        return new EnumerablePushDownTableScan(getCluster(), table, sqlFederationTable, fields, number);
     }
     
     @Override
     public String toString() {
         if (null == filters) {
-            return "TranslatableTableScan{translatableTable=" + translatableTable + ", fields=" + Arrays.toString(fields) + '}';
+            return "EnumerablePushDownTableScan{sqlFederationTable=" + sqlFederationTable + ", fields=" + Arrays.toString(fields) + '}';
         }
         String[] filterValues = new String[number];
         addFilter(filters, filterValues);
-        return "TranslatableTableScan{translatableTable=" + translatableTable + ", fields=" + Arrays.toString(fields) + ", filters=" + Arrays.toString(filterValues) + '}';
+        return "EnumerablePushDownTableScan{sqlFederationTable=" + sqlFederationTable + ", fields=" + Arrays.toString(fields) + ", filters=" + Arrays.toString(filterValues) + '}';
     }
     
     @Override
@@ -144,9 +143,8 @@ public final class TranslatableTableScan extends TableScan implements Enumerable
     
     @Override
     public void register(final RelOptPlanner planner) {
-        planner.addRule(TranslatableProjectFilterRule.INSTANCE);
-        planner.addRule(TranslatableFilterRule.INSTANCE);
-        planner.addRule(TranslatableProjectRule.INSTANCE);
+        planner.addRule(PushFilterIntoScanRule.INSTANCE);
+        planner.addRule(PushProjectIntoScanRule.INSTANCE);
     }
     
     @Override
@@ -206,7 +204,7 @@ public final class TranslatableTableScan extends TableScan implements Enumerable
                 RexInputRef reference = (RexInputRef) each;
                 String referenceName = reference.getName();
                 int columnId = Integer.parseInt(referenceName.replace("$", ""));
-                int columnType = translatableTable.getColumnType(columnId);
+                int columnType = sqlFederationTable.getColumnType(columnId);
                 columnMap.put(columnId, columnType);
             }
             if (each instanceof RexCall) {
