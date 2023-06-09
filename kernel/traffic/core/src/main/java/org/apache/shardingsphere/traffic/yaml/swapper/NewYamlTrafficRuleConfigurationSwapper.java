@@ -47,7 +47,7 @@ public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlRule
         return Collections.singletonList(new YamlDataNode(TrafficNodeConverter.getRootNode(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
-    public YamlTrafficRuleConfiguration swapToYamlConfiguration(final TrafficRuleConfiguration data) {
+    private YamlTrafficRuleConfiguration swapToYamlConfiguration(final TrafficRuleConfiguration data) {
         YamlTrafficRuleConfiguration result = new YamlTrafficRuleConfiguration();
         data.getTrafficStrategies().forEach(each -> result.getTrafficStrategies().put(each.getName(), strategySwapper.swapToYamlConfiguration(each)));
         setYamlAlgorithms(data, result);
@@ -66,7 +66,7 @@ public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlRule
     @Override
     public TrafficRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         TrafficRuleConfiguration result = new TrafficRuleConfiguration();
-        for(YamlDataNode each : dataNodes) {
+        for (YamlDataNode each : dataNodes) {
             Optional<String> version = TrafficNodeConverter.getVersion(each.getKey());
             if (!version.isPresent()) {
                 continue;
@@ -76,7 +76,7 @@ public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlRule
         return result;
     }
     
-    public TrafficRuleConfiguration swapToObject(final YamlTrafficRuleConfiguration yamlConfig) {
+    private TrafficRuleConfiguration swapToObject(final YamlTrafficRuleConfiguration yamlConfig) {
         
         TrafficRuleConfiguration result = new TrafficRuleConfiguration();
         for (Entry<String, YamlTrafficStrategyConfiguration> entry : yamlConfig.getTrafficStrategies().entrySet()) {

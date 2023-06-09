@@ -71,7 +71,7 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlRu
         return new AuthorityRuleConfiguration(Collections.emptyList(), new DefaultAuthorityRuleConfigurationBuilder().build().getAuthorityProvider(), "");
     }
     
-    public AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {
+    private AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {
         Collection<ShardingSphereUser> users = YamlUsersConfigurationConverter.convertToShardingSphereUser(yamlConfig.getUsers());
         AlgorithmConfiguration provider = algorithmSwapper.swapToObject(yamlConfig.getPrivilege());
         if (null == provider) {

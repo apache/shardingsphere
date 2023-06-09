@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
-
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
