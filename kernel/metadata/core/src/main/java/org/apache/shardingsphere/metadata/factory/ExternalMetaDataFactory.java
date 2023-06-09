@@ -34,6 +34,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -46,7 +47,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExternalMetaDataFactory {
     
-    private static final Collection<String> UNSUPPORTED_URL_PREFIXES = new HashSet<>(Arrays.asList("jdbc:fixture", "jdbc:mock", "jdbc:mysql:aws"));
+    private static final Collection<String> MOCKED_URL_PREFIXES = new HashSet<>(Arrays.asList("jdbc:fixture", "jdbc:mock"));
+    
+    private static final Collection<String> UNSUPPORTED_URL_PREFIXES = Collections.singletonList("jdbc:mysql:aws");
     
     private static final Collection<DatabaseType> SUPPORTED_STORAGE_TYPES = new HashSet<>(8, 1F);
     
@@ -107,11 +110,14 @@ public final class ExternalMetaDataFactory {
         if (dataSources.isEmpty()) {
             return;
         }
-        try (Connection connection = dataSources.values().iterator().next().getConnection()) {
+        Entry<String, DataSource> dataSource = dataSources.entrySet().iterator().next();
+        try (Connection connection = dataSource.getValue().getConnection()) {
             String url = connection.getMetaData().getURL();
-            if (UNSUPPORTED_URL_PREFIXES.stream().anyMatch(url::startsWith)) {
+            if (MOCKED_URL_PREFIXES.stream().anyMatch(url::startsWith)) {
                 return;
             }
+            ShardingSpherePreconditions.checkState(UNSUPPORTED_URL_PREFIXES.stream()
+                    .anyMatch(url::startsWith), () -> new UnsupportedStorageTypeException(databaseName, dataSource.getKey()));
         }
         storageTypes.forEach((key, value) -> ShardingSpherePreconditions.checkState(SUPPORTED_STORAGE_TYPES.stream()
                 .anyMatch(each -> each.getClass().equals(value.getClass())), () -> new UnsupportedStorageTypeException(databaseName, key)));
