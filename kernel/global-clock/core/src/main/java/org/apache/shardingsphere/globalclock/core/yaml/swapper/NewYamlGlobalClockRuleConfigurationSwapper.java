@@ -31,7 +31,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- *  TODO Rename YamlGlobalClockRuleConfigurationSwapper when metadata structure adjustment completed. #25485
+ * TODO Rename YamlGlobalClockRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * YAML global clock rule configuration swapper.
  */
 public final class NewYamlGlobalClockRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<GlobalClockRuleConfiguration> {
