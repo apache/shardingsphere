@@ -61,9 +61,8 @@ public final class CreateShadowRuleStatementAssert {
         } else {
             assertNotNull(actual, assertContext.getText("Actual shadow rule should exist."));
             int count = 0;
-            for (ShadowRuleSegment tableRuleSegment : actual) {
-                ExpectedShadowRule expectedTableRule = expected.get(count);
-                ShadowRuleAssert.assertIs(assertContext, tableRuleSegment, expectedTableRule);
+            for (ShadowRuleSegment each : actual) {
+                ShadowRuleAssert.assertIs(assertContext, each, expected.get(count));
                 count++;
             }
         }
