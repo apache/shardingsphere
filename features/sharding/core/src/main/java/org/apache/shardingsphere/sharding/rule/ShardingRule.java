@@ -715,7 +715,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         }
         return shardingTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
     }
-
+    
     @Override
     public Optional<String> findFirstActualTable(final String logicTable) {
         return findTableRule(logicTable).map(optional -> optional.getActualDataNodes().get(0).getTableName());
