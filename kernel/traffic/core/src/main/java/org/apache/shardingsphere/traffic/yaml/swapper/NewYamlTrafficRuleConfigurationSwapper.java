@@ -65,7 +65,6 @@ public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlRule
     
     @Override
     public TrafficRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        TrafficRuleConfiguration result = new TrafficRuleConfiguration();
         for (YamlDataNode each : dataNodes) {
             Optional<String> version = GlobalRuleNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
@@ -73,7 +72,7 @@ public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlRule
             }
             return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class));
         }
-        return result;
+        return new TrafficRuleConfiguration();
     }
     
     private TrafficRuleConfiguration swapToObject(final YamlTrafficRuleConfiguration yamlConfig) {
