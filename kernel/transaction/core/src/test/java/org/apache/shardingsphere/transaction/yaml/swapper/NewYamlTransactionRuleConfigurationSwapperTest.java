@@ -15,32 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.converter;
+package org.apache.shardingsphere.transaction.yaml.swapper;
 
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class GlobalRuleNodeConverterTest {
+// TODO Rename YamlTransactionRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
+class NewYamlTransactionRuleConfigurationSwapperTest {
+    
+    private final NewYamlTransactionRuleConfigurationSwapper swapper = new NewYamlTransactionRuleConfigurationSwapper();
     
     @Test
-    void assertGetRootNode() {
-        assertThat(GlobalRuleNodeConverter.getRootNode("transaction"), is("/rules/transaction"));
-    }
-    
-    @Test
-    void assertGetVersion() {
-        Optional<String> actual = GlobalRuleNodeConverter.getVersion("transaction", "/rules/transaction/versions/0");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("0"));
-    }
-    
-    @Test
-    void assertIsExpectRuleName() {
-        assertTrue(GlobalRuleNodeConverter.isExpectRuleName("transaction", "/rules/transaction/versions/0"));
+    void assertSwapToDataNodes() {
+        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new TransactionRuleConfiguration("", "", new Properties()));
+        assertThat(actual.iterator().next().getKey(), is("/rules/transaction"));
     }
 }
