@@ -19,23 +19,15 @@ package org.apache.shardingsphere.readwritesplitting.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
 import org.apache.shardingsphere.mode.event.config.RuleConfigurationChangedEvent;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.event.config.AddReadwriteSplittingConfigurationEvent;
-import org.apache.shardingsphere.readwritesplitting.event.config.AlterReadwriteSplittingConfigurationEvent;
-import org.apache.shardingsphere.readwritesplitting.event.config.DeleteReadwriteSplittingConfigurationEvent;
+import org.apache.shardingsphere.readwritesplitting.event.ReadwriteSplittingRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Map;
-import java.util.LinkedList;
 
 /**
  * Readwrite-splitting configuration subscriber.
@@ -56,58 +48,17 @@ public final class ReadwriteSplittingConfigurationSubscriber implements RuleConf
     }
     
     /**
-     * Renew with add readwrite-splitting configuration.
+     * Renew readwrite-splitting configuration.
      *
-     * @param event add readwrite-splitting configuration event
+     * @param event readwrite-splitting configuration changed event
      */
     @Subscribe
-    public synchronized void renew(final AddReadwriteSplittingConfigurationEvent<ReadwriteSplittingDataSourceRuleConfiguration> event) {
+    public synchronized void renew(final ReadwriteSplittingRuleConfigurationChangedEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ReadwriteSplittingDataSourceRuleConfiguration needToAddedConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        ReadwriteSplittingRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = (ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration();
-            config.getDataSources().add(needToAddedConfig);
-        } else {
-            config = new ReadwriteSplittingRuleConfiguration(Collections.singletonList(needToAddedConfig), Collections.emptyMap());
+        Optional<ReadwriteSplittingRule> readwriteSplittingRule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
+        if (!readwriteSplittingRule.isPresent()) {
+            return;
         }
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
-    }
-    
-    /**
-     * Renew with alter readwrite-splitting configuration.
-     *
-     * @param event alter readwrite-splitting configuration event
-     */
-    @Subscribe
-    public synchronized void renew(final AlterReadwriteSplittingConfigurationEvent<ReadwriteSplittingDataSourceRuleConfiguration> event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ReadwriteSplittingDataSourceRuleConfiguration needToAlteredConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
-        config.getDataSources().removeIf(each -> each.getName().equals(event.getGroupName()));
-        ruleConfigs.add(new ReadwriteSplittingRuleConfiguration(Collections.singletonList(needToAlteredConfig), Collections.emptyMap()));
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
-    }
-    
-    /**
-     * Renew with delete readwrite-splitting configuration.
-     *
-     * @param event delete readwrite-splitting configuration event
-     */
-    @Subscribe
-    public synchronized void renew(final DeleteReadwriteSplittingConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
-        config.getDataSources().removeIf(each -> each.getName().equals(event.getGroupName()));
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), readwriteSplittingRule.get().getConfiguration()));
     }
 }
