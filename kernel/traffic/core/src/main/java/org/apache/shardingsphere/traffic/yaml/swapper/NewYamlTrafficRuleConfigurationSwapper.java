@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
+import org.apache.shardingsphere.infra.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.constant.TrafficOrder;
-import org.apache.shardingsphere.traffic.metadata.converter.TrafficNodeConverter;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficStrategyConfiguration;
 
@@ -44,7 +44,7 @@ public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlRule
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final TrafficRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(TrafficNodeConverter.getRootNode(), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlTrafficRuleConfiguration swapToYamlConfiguration(final TrafficRuleConfiguration data) {
@@ -67,7 +67,7 @@ public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlRule
     public TrafficRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         TrafficRuleConfiguration result = new TrafficRuleConfiguration();
         for (YamlDataNode each : dataNodes) {
-            Optional<String> version = TrafficNodeConverter.getVersion(each.getKey());
+            Optional<String> version = GlobalRuleNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }
