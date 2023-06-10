@@ -32,7 +32,7 @@ public enum RedisTSOPropertyKey implements TypedPropertyKey {
     
     PORT("port", "6379", int.class),
     
-    PASSWORD("password", "", String.class),
+    PASSWORD("password", null, String.class),
     
     TIMEOUT_INTERVAL("timeoutInterval", "40000", int.class),
     

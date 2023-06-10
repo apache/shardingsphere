@@ -151,5 +151,8 @@ rules:
     roundRobin:
       type: ROUND_ROBIN
 
-props:
-  sql-federation-type: ADVANCED
+sqlFederation:
+  sqlFederationEnabled: true
+  executionPlanCache:
+    initialCapacity: 2000
+    maximumSize: 65535

@@ -59,7 +59,7 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
         MetaDataContexts metaDataContexts = NewMetaDataContextsFactory.create(persistService, param, instanceContext, registryCenter.getStorageNodeStatusService().loadStorageNodes());
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         setContextManagerAware(result);
-        registerOnline(persistService, registryCenter, param, result);
+        registerOnline(registryCenter, param, result);
         return result;
     }
     
@@ -79,13 +79,13 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
         ((ContextManagerAware) contextManager.getInstanceContext().getModeContextManager()).setContextManagerAware(contextManager);
     }
     
-    private void registerOnline(final NewMetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+    private void registerOnline(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+        registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());
         loadClusterStatus(registryCenter, contextManager);
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
-        new NewContextManagerSubscriberFacade(persistService, registryCenter, contextManager);
         registerRuleConfigurationSubscribers(contextManager.getMetaDataContexts(), contextManager.getInstanceContext());
-        registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());
+        new NewContextManagerSubscriberFacade(registryCenter, contextManager);
     }
     
     private void loadClusterStatus(final RegistryCenter registryCenter, final ContextManager contextManager) {

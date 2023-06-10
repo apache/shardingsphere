@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
+import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -36,11 +40,22 @@ public final class SubqueryProjection implements Projection {
     
     private final String expression;
     
+    private final Projection projection;
+    
     private final String alias;
+    
+    private final DatabaseType databaseType;
     
     @Override
     public Optional<String> getAlias() {
-        return Optional.ofNullable(alias);
+        return Strings.isNullOrEmpty(alias) ? buildDefaultAlias(databaseType) : Optional.of(alias);
+    }
+    
+    private Optional<String> buildDefaultAlias(final DatabaseType databaseType) {
+        if (databaseType instanceof OracleDatabaseType) {
+            return Optional.of(expression.replace(" ", "").toUpperCase());
+        }
+        return Optional.of(expression);
     }
     
     @Override
@@ -49,7 +64,7 @@ public final class SubqueryProjection implements Projection {
     }
     
     @Override
-    public Projection cloneWithOwner(final String ownerName) {
-        return new SubqueryProjection(expression, alias);
+    public Projection cloneWithOwner(final IdentifierValue ownerIdentifier) {
+        return new SubqueryProjection(expression, projection, alias, databaseType);
     }
 }

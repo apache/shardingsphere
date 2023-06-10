@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,22 +82,25 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     }
     
     private SQLToken getCipherColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column, final int stopIndex) {
-        return new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(encryptRule.getCipherColumn(tableName, columnName)));
+        return new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(new IdentifierValue(encryptRule.getCipherColumn(tableName, columnName),
+                column.getColumnName().getIdentifier().getQuoteCharacter())));
     }
     
     private Optional<? extends SQLToken> getAssistedQueryColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,
                                                                      final int stopIndex, final boolean lastColumn) {
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, columnName);
-        return assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
+        return assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(),
+                getColumnProjections(new IdentifierValue(optional, column.getColumnName().getIdentifier().getQuoteCharacter())), lastColumn));
     }
     
     private Optional<? extends SQLToken> getLikeQueryColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,
                                                                  final int stopIndex, final boolean lastColumn) {
         Optional<String> likeQueryColumn = encryptRule.findLikeQueryColumn(tableName, columnName);
-        return likeQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
+        return likeQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(),
+                getColumnProjections(new IdentifierValue(optional, column.getColumnName().getIdentifier().getQuoteCharacter())), lastColumn));
     }
     
-    private Collection<ColumnProjection> getColumnProjections(final String columnName) {
-        return Collections.singletonList(new ColumnProjection(null, columnName, null));
+    private Collection<Projection> getColumnProjections(final IdentifierValue columnIdentifier) {
+        return Collections.singletonList(new ColumnProjection(null, columnIdentifier, null));
     }
 }

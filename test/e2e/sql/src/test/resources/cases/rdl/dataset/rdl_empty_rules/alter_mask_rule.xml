@@ -22,5 +22,5 @@
         <column name="algorithm_type" />
         <column name="algorithm_props" />
     </metadata>
-    <row values="t_mask| order_id| MASK_FROM_X_TO_Y| to-y=2,from-x=1,replace-char=*" />
+    <row values="t_mask| order_id| MASK_FROM_X_TO_Y| from-x=1,replace-char=*,to-y=2" />
 </dataset>

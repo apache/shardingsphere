@@ -298,7 +298,8 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Reader getCharacterStream(final int columnIndex) throws SQLException {
-        return (Reader) mergeResultSet.getValue(columnIndex, Reader.class);
+        // TODO To be supported: encrypt, mask, and so on
+        return mergeResultSet.getCharacterStream(columnIndex);
     }
     
     @Override

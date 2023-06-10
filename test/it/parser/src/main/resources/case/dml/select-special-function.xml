@@ -335,6 +335,19 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_extract_function_for_oracle">
+        <projections start-index="7" stop-index="56">
+            <expression-projection text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" start-index="7" stop-index="56">
+                <expr>
+                    <function function-name="EXTRACT" start-index="7" stop-index="56" text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="63" stop-index="66" />
+        </from>
+    </select>
+
     <select sql-case-id="select_mod_function">
         <projections start-index="7" stop-index="22">
             <expression-projection text="MOD(order_id, 1)" start-index="7" stop-index="22">

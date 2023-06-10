@@ -31,7 +31,5 @@
     <modules>
         <module>api</module>
         <module>core</module>
-        <module>executor</module>
-        <module>optimizer</module>
     </modules>
 </project>

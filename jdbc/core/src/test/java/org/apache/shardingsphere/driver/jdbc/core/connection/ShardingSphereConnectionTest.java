@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -218,6 +219,16 @@ class ShardingSphereConnectionTest {
         connection.getDatabaseConnectionManager().getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
         assertNull(connection.createArrayOf("int", null));
         verify(physicalConnection).createArrayOf("int", null);
+    }
+    
+    @Test
+    void assertPrepareCall() throws SQLException {
+        CallableStatement expected = mock(CallableStatement.class);
+        Connection physicalConnection = mock(Connection.class);
+        when(physicalConnection.prepareCall("")).thenReturn(expected);
+        when(connection.getContextManager().getDataSourceMap(DefaultDatabase.LOGIC_NAME).get("ds").getConnection()).thenReturn(physicalConnection);
+        CallableStatement actual = connection.prepareCall("");
+        assertThat(actual, is(expected));
     }
     
     @Test

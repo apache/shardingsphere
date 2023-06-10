@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingDeleteStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -44,6 +45,7 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -84,10 +86,17 @@ class ShardingDeleteStatementValidatorTest {
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order_item"))));
         sqlStatement.setTable(tableSegment);
-        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement);
         Collection<String> tableNames = new HashSet<>(Arrays.asList("user", "order", "order_item"));
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
-        new ShardingDeleteStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(database.getSchema(any())).thenReturn(schema);
+        when(database.getName()).thenReturn("sharding_db");
+        when(schema.containsTable("user")).thenReturn(true);
+        when(schema.containsTable("order")).thenReturn(true);
+        when(schema.containsTable("order_item")).thenReturn(true);
+        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement);
+        new ShardingDeleteStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class));
     }
 }

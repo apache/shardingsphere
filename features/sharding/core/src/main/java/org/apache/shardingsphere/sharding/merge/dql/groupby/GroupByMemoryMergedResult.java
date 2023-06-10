@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
+import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
@@ -128,6 +129,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
                                                     final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
         for (SimpleTableSegment each : selectStatementContext.getAllTables()) {
             String tableName = each.getTableName().getIdentifier().getValue();
+            ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new NoSuchTableException(tableName));
             ShardingSphereTable table = schema.getTable(tableName);
             String columnName = queryResult.getMetaData().getColumnName(columnIndex);
             if (table.containsColumn(columnName)) {

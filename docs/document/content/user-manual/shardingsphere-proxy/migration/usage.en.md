@@ -714,10 +714,4 @@ Result example:
 COMMIT MIGRATION 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 ```
 
-8. Refresh table metadata.
-
-```sql
-REFRESH TABLE METADATA;
-```
-
 Please refer to [RAL#Migration](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#migration) for more details.

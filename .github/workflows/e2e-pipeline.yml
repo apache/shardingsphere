@@ -22,8 +22,7 @@ on:
     branches: [ master, dev ]
     paths:
       - '.github/workflows/e2e-pipeline.yml'
-      - 'infra/common/src/main/**'
-      - 'infra/executor/src/main/**'
+      - 'infra/**/src/main/**'
       - 'mode/**/src/main/**'
       - 'proxy/**/src/main/**'
       - 'jdbc/core/src/main/**'
@@ -42,8 +41,7 @@ on:
     branches: [ master ]
     paths:
       - '.github/workflows/e2e-pipeline.yml'
-      - 'infra/common/src/main/**'
-      - 'infra/executor/src/main/**'
+      - 'infra/**/src/main/**'
       - 'mode/**/src/main/**'
       - 'proxy/**/src/main/**'
       - 'jdbc/core/src/main/**'

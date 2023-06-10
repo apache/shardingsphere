@@ -90,8 +90,8 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
             }
             return;
         }
-        for (Record record : records) {
-            write(record, connection);
+        for (Record each : records) {
+            write(each, connection);
         }
     }
     
@@ -114,33 +114,33 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
         }
     }
     
-    private void write(final Record record, final Connection connection) throws SQLException {
-        String sql = buildSQL(record);
-        MetaData metaData = record.getMetaData();
+    private void write(final Record ingestedRecord, final Connection connection) throws SQLException {
+        String sql = buildSQL(ingestedRecord);
+        MetaData metaData = ingestedRecord.getMetaData();
         PipelineTableMetaData tableMetaData = loadTableMetaData(metaData.getSchema(), metaData.getTable());
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            Map<String, TableColumn> afterMap = new LinkedHashMap<>(record.getBeforeList().size(), 1F);
-            record.getAfterList().forEach(each -> afterMap.put(each.getName(), each));
-            switch (record.getDataChangeType()) {
+            Map<String, TableColumn> afterMap = new LinkedHashMap<>(ingestedRecord.getBeforeList().size(), 1F);
+            ingestedRecord.getAfterList().forEach(each -> afterMap.put(each.getName(), each));
+            switch (ingestedRecord.getDataChangeType()) {
                 case INSERT:
-                    for (int i = 0; i < record.getAfterCount(); i++) {
-                        TableColumn tableColumn = record.getAfterList().get(i);
+                    for (int i = 0; i < ingestedRecord.getAfterCount(); i++) {
+                        TableColumn tableColumn = ingestedRecord.getAfterList().get(i);
                         preparedStatement.setObject(i + 1, convertValueFromAny(tableMetaData, tableColumn));
                     }
                     break;
                 case UPDATE:
-                    for (int i = 0; i < record.getAfterCount(); i++) {
-                        TableColumn tableColumn = record.getAfterList().get(i);
+                    for (int i = 0; i < ingestedRecord.getAfterCount(); i++) {
+                        TableColumn tableColumn = ingestedRecord.getAfterList().get(i);
                         preparedStatement.setObject(i + 1, convertValueFromAny(tableMetaData, tableColumn));
                     }
-                    preparedStatement.setObject(record.getAfterCount() + 1, convertValueFromAny(tableMetaData, afterMap.get("order_id")));
+                    preparedStatement.setObject(ingestedRecord.getAfterCount() + 1, convertValueFromAny(tableMetaData, afterMap.get("order_id")));
                     int updateCount = preparedStatement.executeUpdate();
                     if (1 != updateCount) {
                         log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}", updateCount, sql, afterMap.keySet());
                     }
                     break;
                 case DELETE:
-                    TableColumn orderId = record.getBeforeList().stream().filter(each -> "order_id".equals(each.getName())).findFirst()
+                    TableColumn orderId = ingestedRecord.getBeforeList().stream().filter(each -> "order_id".equals(each.getName())).findFirst()
                             .orElseThrow(() -> new UnsupportedOperationException("No primary key found in the t_order"));
                     preparedStatement.setObject(1, convertValueFromAny(tableMetaData, orderId));
                     preparedStatement.execute();
@@ -165,11 +165,11 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
         return schema.isEmpty() ? tableName : String.join(".", schema, tableName);
     }
     
-    private String buildSQL(final Record record) {
-        List<String> columnNames = record.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
-        MetaData metaData = record.getMetaData();
+    private String buildSQL(final Record ingestedRecord) {
+        List<String> columnNames = ingestedRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
+        MetaData metaData = ingestedRecord.getMetaData();
         String tableName = buildTableNameWithSchema(metaData.getSchema(), metaData.getTable());
-        switch (record.getDataChangeType()) {
+        switch (ingestedRecord.getDataChangeType()) {
             case INSERT:
                 return SQLBuilderUtils.buildInsertSQL(columnNames, tableName);
             case UPDATE:

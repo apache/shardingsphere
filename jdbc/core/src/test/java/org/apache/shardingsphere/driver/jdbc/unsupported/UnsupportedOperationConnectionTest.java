@@ -48,21 +48,6 @@ class UnsupportedOperationConnectionTest {
     }
     
     @Test
-    void assertPrepareCall() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall(""));
-    }
-    
-    @Test
-    void assertPrepareCallWithResultSetTypeAndResultSetConcurrency() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall("", 0, 0));
-    }
-    
-    @Test
-    void assertPrepareCallWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall("", 0, 0, 0));
-    }
-    
-    @Test
     void assertNativeSQL() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.nativeSQL(""));
     }

@@ -20,17 +20,21 @@ package org.apache.shardingsphere.encrypt.yaml.swapper;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
+import org.apache.shardingsphere.encrypt.metadata.converter.EncryptNodeConverter;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.encrypt.metadata.converter.EncryptNodeConverter;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -39,7 +43,6 @@ import java.util.Map.Entry;
  */
 public final class NewYamlEncryptRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<EncryptRuleConfiguration> {
     
-    // TODO to be used
     private final YamlEncryptTableRuleConfigurationSwapper tableSwapper = new YamlEncryptTableRuleConfigurationSwapper();
     
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
@@ -48,18 +51,28 @@ public final class NewYamlEncryptRuleConfigurationSwapper implements NewYamlRule
     public Collection<YamlDataNode> swapToDataNodes(final EncryptRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (EncryptTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(EncryptNodeConverter.getTableNamePath(each.getName()), YamlEngine.marshal(each)));
+            result.add(new YamlDataNode(EncryptNodeConverter.getTableNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
         }
         for (Entry<String, AlgorithmConfiguration> entry : data.getEncryptors().entrySet()) {
-            result.add(new YamlDataNode(EncryptNodeConverter.getEncryptorPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
+            result.add(new YamlDataNode(EncryptNodeConverter.getEncryptorPath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         return result;
     }
     
     @Override
     public EncryptRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        // TODO to be completed
-        return new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
+        Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
+        Map<String, AlgorithmConfiguration> encryptors = new HashMap<>();
+        for (YamlDataNode each : dataNodes) {
+            if (EncryptNodeConverter.isTablePath(each.getKey())) {
+                EncryptNodeConverter.getTableName(each.getKey())
+                        .ifPresent(tableName -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlEncryptTableRuleConfiguration.class))));
+            } else if (EncryptNodeConverter.isEncryptorPath(each.getKey())) {
+                EncryptNodeConverter.getEncryptorName(each.getKey())
+                        .ifPresent(encryptorName -> encryptors.put(encryptorName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
+            }
+        }
+        return new EncryptRuleConfiguration(tables, encryptors);
     }
     
     @Override

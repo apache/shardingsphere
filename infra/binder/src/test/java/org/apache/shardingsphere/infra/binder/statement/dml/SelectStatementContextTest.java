@@ -60,7 +60,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -423,21 +422,15 @@ class SelectStatementContextTest {
     }
     
     private void assertContainsSubquery(final SelectStatement selectStatement, final SelectStatement subSelectStatement) {
-        SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
-        SubquerySegment subquery = mock(SubquerySegment.class);
-        when(projectionSegment.getSubquery()).thenReturn(subquery);
-        SelectStatement select = mock(SelectStatement.class);
-        when(subquery.getSelect()).thenReturn(select);
-        WhereSegment subWhere = mock(WhereSegment.class);
-        when(select.getWhere()).thenReturn(Optional.of(subWhere));
-        when(projectionSegment.getSubquery().getSelect().getWhere()).thenReturn(Optional.of(mock(WhereSegment.class)));
         WhereSegment whereSegment = new WhereSegment(0, 0, null);
         subSelectStatement.setWhere(whereSegment);
-        subSelectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement);
-        when(projectionSegment.getSubquery()).thenReturn(subquerySegment);
+        ProjectionsSegment subqueryProjections = new ProjectionsSegment(0, 0);
+        subqueryProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        subSelectStatement.setProjections(subqueryProjections);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(projectionSegment);
+        SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement);
+        SubqueryProjectionSegment subqueryProjectionSegment = new SubqueryProjectionSegment(subquerySegment, "");
+        projectionsSegment.getProjections().add(subqueryProjectionSegment);
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         assertTrue(new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME).isContainsSubquery());
@@ -474,7 +467,9 @@ class SelectStatementContextTest {
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "=", null);
         WhereSegment subWhereSegment = new WhereSegment(0, 0, expression);
         subSelectStatement.setWhere(subWhereSegment);
-        subSelectStatement.setProjections(new ProjectionsSegment(0, 0));
+        ProjectionsSegment subqueryProjections = new ProjectionsSegment(0, 0);
+        subqueryProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        subSelectStatement.setProjections(subqueryProjections);
         SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(new SubquerySegment(0, 0, subSelectStatement));
         SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
         WhereSegment whereSegment = new WhereSegment(0, 0, subqueryExpressionSegment);

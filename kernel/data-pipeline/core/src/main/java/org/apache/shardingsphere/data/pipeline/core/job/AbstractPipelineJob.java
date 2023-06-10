@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -120,6 +121,10 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         return new ArrayList<>(tasksRunnerMap.keySet());
     }
     
+    protected Collection<PipelineTasksRunner> getTasksRunners() {
+        return Collections.unmodifiableCollection(tasksRunnerMap.values());
+    }
+    
     protected boolean addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
         if (null != tasksRunnerMap.putIfAbsent(shardingItem, tasksRunner)) {
             log.warn("shardingItem {} tasks runner exists, ignore", shardingItem);
@@ -172,7 +177,6 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     }
     
     private void innerClean() {
-        tasksRunnerMap.clear();
         PipelineJobProgressPersistService.remove(jobId);
     }
     

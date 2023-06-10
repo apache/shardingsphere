@@ -47,9 +47,9 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
         for (Entry<String, DataSourceProperties> entry : dataSourceConfigs.entrySet()) {
             String activeVersion = getDatabaseActiveVersion(databaseName, entry.getKey());
             if (Strings.isNullOrEmpty(activeVersion)) {
-                repository.persist(NewDatabaseMetaDataNode.getDataSourceActiveVersionPath(databaseName, entry.getKey()), DEFAULT_VERSION);
+                repository.persist(NewDatabaseMetaDataNode.getDataSourceActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
             }
-            repository.persist(NewDatabaseMetaDataNode.getDataSourcePath(databaseName, entry.getKey(), DEFAULT_VERSION),
+            repository.persist(NewDatabaseMetaDataNode.getDataSourceNode(databaseName, entry.getKey(), DEFAULT_VERSION),
                     YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
         }
     }
@@ -57,7 +57,7 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
     @Override
     public Map<String, DataSourceProperties> load(final String databaseName) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
-        for (String each : repository.getChildrenKeys(NewDatabaseMetaDataNode.getDataSourcesPath(databaseName))) {
+        for (String each : repository.getChildrenKeys(NewDatabaseMetaDataNode.getDataSourcesNode(databaseName))) {
             result.put(each, getDataSourceProps(databaseName, each));
         }
         return result;
@@ -70,12 +70,12 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
     }
     
     private DataSourceProperties getDataSourceProps(final String databaseName, final String dataSourceName) {
-        String result = repository.getDirectly(NewDatabaseMetaDataNode.getDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName, dataSourceName), dataSourceName));
+        String result = repository.getDirectly(NewDatabaseMetaDataNode.getDataSourceNode(databaseName, getDatabaseActiveVersion(databaseName, dataSourceName), dataSourceName));
         Preconditions.checkState(!Strings.isNullOrEmpty(result), "Not found `%s` data source config in `%s` database", dataSourceName, databaseName);
         return YamlEngine.unmarshal(result, DataSourceProperties.class);
     }
     
     private String getDatabaseActiveVersion(final String databaseName, final String dataSourceName) {
-        return repository.getDirectly(NewDatabaseMetaDataNode.getDataSourceActiveVersionPath(databaseName, dataSourceName));
+        return repository.getDirectly(NewDatabaseMetaDataNode.getDataSourceActiveVersionNode(databaseName, dataSourceName));
     }
 }

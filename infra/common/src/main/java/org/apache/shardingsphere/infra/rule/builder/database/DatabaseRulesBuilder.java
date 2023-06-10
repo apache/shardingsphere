@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,6 +63,32 @@ public final class DatabaseRulesBuilder {
                 configChecker.check(databaseName, entry.getKey(), databaseConfig.getDataSources(), result);
             }
             result.add(entry.getValue().build(entry.getKey(), databaseName, databaseConfig.getDataSources(), result, instanceContext));
+        }
+        return result;
+    }
+    
+    /**
+     * Build database rules.
+     *
+     * @param databaseName database name
+     * @param dataSources data sources
+     * @param rules rules
+     * @param ruleConfigs rule configurations
+     * @param instanceContext instance context
+     * @return built rules
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static Collection<ShardingSphereRule> build(final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules,
+                                                       final RuleConfiguration ruleConfigs, final InstanceContext instanceContext) {
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        for (Entry<RuleConfiguration, DatabaseRuleBuilder> entry : OrderedSPILoader.getServices(DatabaseRuleBuilder.class,
+                Collections.singletonList(ruleConfigs), Comparator.reverseOrder()).entrySet()) {
+            RuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(
+                    RuleConfigurationChecker.class, Collections.singleton(entry.getKey().getClass())).get(entry.getKey().getClass());
+            if (null != configChecker) {
+                configChecker.check(databaseName, entry.getKey(), dataSources, rules);
+            }
+            result.add(entry.getValue().build(entry.getKey(), databaseName, dataSources, rules, instanceContext));
         }
         return result;
     }

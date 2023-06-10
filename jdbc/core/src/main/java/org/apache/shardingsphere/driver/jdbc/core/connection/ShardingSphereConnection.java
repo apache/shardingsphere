@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -125,6 +126,24 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         return new ShardingSphereStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
+    }
+    
+    @Override
+    public CallableStatement prepareCall(final String sql) throws SQLException {
+        // TODO Support single DataSource scenario for now. Implement ShardingSphereCallableStatement to support multi DataSource scenarios.
+        return databaseConnectionManager.getRandomConnection().prepareCall(sql);
+    }
+    
+    @Override
+    public CallableStatement prepareCall(final String sql, final int resultSetType, final int resultSetConcurrency) throws SQLException {
+        // TODO Support single DataSource scenario for now. Implement ShardingSphereCallableStatement to support multi DataSource scenarios.
+        return databaseConnectionManager.getRandomConnection().prepareCall(sql, resultSetType, resultSetConcurrency);
+    }
+    
+    @Override
+    public CallableStatement prepareCall(final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
+        // TODO Support single DataSource scenario for now. Implement ShardingSphereCallableStatement to support multi DataSource scenarios.
+        return databaseConnectionManager.getRandomConnection().prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
     @Override

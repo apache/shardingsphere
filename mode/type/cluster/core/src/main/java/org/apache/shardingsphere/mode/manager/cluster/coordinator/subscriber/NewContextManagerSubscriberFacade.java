@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
-import org.apache.shardingsphere.metadata.persist.NewMetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
@@ -28,7 +27,9 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proce
  */
 public final class NewContextManagerSubscriberFacade {
     
-    public NewContextManagerSubscriberFacade(final NewMetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
+    public NewContextManagerSubscriberFacade(final RegistryCenter registryCenter, final ContextManager contextManager) {
+        new NewConfigurationChangedSubscriber(contextManager);
+        // TODO replace all to new subscriber
         new ResourceMetaDataChangedSubscriber(contextManager);
         new DatabaseChangedSubscriber(contextManager);
         new StateChangedSubscriber(registryCenter, contextManager);
