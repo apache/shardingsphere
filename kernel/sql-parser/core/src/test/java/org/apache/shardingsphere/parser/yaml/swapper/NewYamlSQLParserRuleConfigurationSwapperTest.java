@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.yaml.swapper;
+package org.apache.shardingsphere.parser.yaml.swapper;
 
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-// TODO Rename YamlTrafficRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
-class NewYamlTrafficRuleConfigurationSwapperTest {
+// TODO Rename YamlSQLParserRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
+class NewYamlSQLParserRuleConfigurationSwapperTest {
     
-    private final NewYamlTrafficRuleConfigurationSwapper swapper = new NewYamlTrafficRuleConfigurationSwapper();
+    private final NewYamlSQLParserRuleConfigurationSwapper swapper = new NewYamlSQLParserRuleConfigurationSwapper();
     
     @Test
     void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new TrafficRuleConfiguration()).iterator().next().getKey(), is("/rules/traffic"));
+        assertThat(swapper.swapToDataNodes(new SQLParserRuleConfiguration(false, DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION,
+                DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION)).iterator().next().getKey(), is("/rules/sql_parser"));
     }
 }

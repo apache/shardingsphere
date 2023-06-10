@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.yaml.swapper;
+package org.apache.shardingsphere.logging.yaml.swapper;
 
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
+import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-// TODO Rename YamlTrafficRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
-class NewYamlTrafficRuleConfigurationSwapperTest {
+// TODO Rename YamlLoggingRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
+class NewYamlLoggingRuleConfigurationSwapperTest {
     
-    private final NewYamlTrafficRuleConfigurationSwapper swapper = new NewYamlTrafficRuleConfigurationSwapper();
+    private final NewYamlLoggingRuleConfigurationSwapper swapper = new NewYamlLoggingRuleConfigurationSwapper();
     
     @Test
     void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new TrafficRuleConfiguration()).iterator().next().getKey(), is("/rules/traffic"));
+        assertThat(swapper.swapToDataNodes(new DefaultLoggingRuleConfigurationBuilder().build()).iterator().next().getKey(), is("/rules/logging"));
     }
 }
