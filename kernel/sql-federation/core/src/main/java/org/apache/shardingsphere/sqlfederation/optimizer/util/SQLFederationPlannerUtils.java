@@ -52,10 +52,9 @@ import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.expander.ShardingSphereViewExpander;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableFilterRule;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableProjectFilterRule;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableProjectRule;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.view.ShardingSphereViewExpander;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.transformation.PushFilterIntoScanRule;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.transformation.PushProjectIntoScanRule;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -143,7 +142,7 @@ public final class SQLFederationPlannerUtils {
         result.add(CoreRules.PROJECT_JOIN_TRANSPOSE);
         result.add(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
         result.add(ProjectRemoveRule.Config.DEFAULT.toRule());
-        result.add(TranslatableProjectRule.INSTANCE);
+        result.add(PushProjectIntoScanRule.INSTANCE);
         return result;
     }
     
@@ -159,8 +158,7 @@ public final class SQLFederationPlannerUtils {
         result.add(CoreRules.FILTER_MERGE);
         result.add(CoreRules.JOIN_PUSH_EXPRESSIONS);
         result.add(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES);
-        result.add(TranslatableFilterRule.INSTANCE);
-        result.add(TranslatableProjectFilterRule.INSTANCE);
+        result.add(PushFilterIntoScanRule.INSTANCE);
         return result;
     }
     

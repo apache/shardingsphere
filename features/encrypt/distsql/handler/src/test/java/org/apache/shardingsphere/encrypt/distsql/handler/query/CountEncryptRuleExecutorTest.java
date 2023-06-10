@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -67,7 +68,7 @@ class CountEncryptRuleExecutorTest {
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
-        when(result.getTables()).thenReturn(Collections.singleton("encrypt_table"));
+        when(result.getLogicTableMapper()).thenReturn(new TableNamesMapper(Collections.singleton("encrypt_table")));
         return result;
     }
 }

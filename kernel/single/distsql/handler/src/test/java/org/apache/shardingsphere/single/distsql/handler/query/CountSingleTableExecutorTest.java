@@ -20,6 +20,7 @@ package org.apache.shardingsphere.single.distsql.handler.query;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 import org.apache.shardingsphere.single.distsql.statement.rql.CountSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,7 @@ class CountSingleTableExecutorTest {
     
     private SingleRule mockSingleRule() {
         SingleRule result = mock(SingleRule.class);
-        when(result.getAllTables()).thenReturn(Arrays.asList("single_table_1", "single_table_2"));
+        when(result.getLogicTableMapper()).thenReturn(new TableNamesMapper(Arrays.asList("single_table_1", "single_table_2")));
         return result;
     }
 }

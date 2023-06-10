@@ -33,8 +33,8 @@ import org.apache.shardingsphere.encrypt.exception.metadata.MissingEncryptorExce
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
@@ -49,7 +49,7 @@ import java.util.Optional;
 /**
  * Encrypt rule.
  */
-public final class EncryptRule implements DatabaseRule, TableContainedRule, ColumnContainedRule {
+public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
     @Getter
     private final RuleConfiguration configuration;
@@ -65,12 +65,15 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
+    private final TableNamesMapper tableNamesMapper = new TableNamesMapper();
+    
     public EncryptRule(final EncryptRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps())));
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
             each.getColumns().forEach(this::checkEncryptAlgorithmType);
             tables.put(each.getName().toLowerCase(), new EncryptTable(each));
+            tableNamesMapper.put(each.getName());
         }
     }
     
@@ -86,6 +89,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
             each.getColumns().forEach(this::checkEncryptAlgorithmType);
             tables.put(each.getName().toLowerCase(), new EncryptTable(each));
+            tableNamesMapper.put(each.getName());
         }
     }
     
@@ -307,8 +311,23 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
     }
     
     @Override
-    public Collection<String> getTables() {
-        return tables.keySet();
+    public TableNamesMapper getLogicTableMapper() {
+        return tableNamesMapper;
+    }
+    
+    @Override
+    public TableNamesMapper getActualTableMapper() {
+        return new TableNamesMapper();
+    }
+    
+    @Override
+    public TableNamesMapper getDistributedTableMapper() {
+        return new TableNamesMapper();
+    }
+    
+    @Override
+    public TableNamesMapper getEnhancedTableMapper() {
+        return getLogicTableMapper();
     }
     
     @Override
