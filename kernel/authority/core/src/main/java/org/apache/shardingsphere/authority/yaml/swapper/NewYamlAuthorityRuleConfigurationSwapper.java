@@ -20,10 +20,10 @@ package org.apache.shardingsphere.authority.yaml.swapper;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.converter.YamlUsersConfigurationConverter;
-import org.apache.shardingsphere.authority.metadata.converter.AuthorityNodeConverter;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
@@ -44,7 +44,7 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlRu
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final AuthorityRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(AuthorityNodeConverter.getRootNode(), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
         
     }
     
@@ -62,7 +62,7 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlRu
     @Override
     public AuthorityRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            Optional<String> version = AuthorityNodeConverter.getVersion(each.getKey());
+            Optional<String> version = GlobalRuleNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }

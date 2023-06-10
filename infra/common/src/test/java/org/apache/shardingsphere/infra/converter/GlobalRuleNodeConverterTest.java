@@ -15,18 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.core.exception;
+package org.apache.shardingsphere.infra.converter;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.junit.jupiter.api.Test;
 
-/**
- * Global clock not enabled exception.
- */
-public final class GlobalClockNotEnabledException extends GlobalClockSQLException {
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class GlobalRuleNodeConverterTest {
     
-    private static final long serialVersionUID = 2499130145956182704L;
+    @Test
+    void assertGetRootNode() {
+        assertThat(GlobalRuleNodeConverter.getRootNode("transaction"), is("/rules/transaction"));
+    }
     
-    public GlobalClockNotEnabledException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "The global clock rule has not been enabled");
+    @Test
+    void assertGetVersion() {
+        Optional<String> actual = GlobalRuleNodeConverter.getVersion("transaction", "/rules/transaction/versions/0");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("0"));
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.metadata.converter;
+package org.apache.shardingsphere.infra.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,33 +25,39 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Authority node converter.
+ * Global rule node converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AuthorityNodeConverter {
+public final class GlobalRuleNodeConverter {
     
-    private static final String ROOT_NODE = "authority/";
+    private static final String ROOT_NODE = "rules";
     
-    private static final String VERSION_NODE_PREFIX = "/rules/" + ROOT_NODE;
+    private static final String VERSIONS = "versions";
     
     /**
-     * Get group name path.
+     * Get root node.
      *
-     * @return group name path
+     * @param ruleName rule name
+     * @return root node
      */
-    public static String getRootNode() {
-        return ROOT_NODE;
+    public static String getRootNode(final String ruleName) {
+        return String.join("/", "", ROOT_NODE, ruleName);
     }
     
     /**
      * Get version.
      *
+     * @param ruleName rule name
      * @param rulePath rule path
      * @return version
      */
-    public static Optional<String> getVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(VERSION_NODE_PREFIX + "versions" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getVersion(final String ruleName, final String rulePath) {
+        Pattern pattern = Pattern.compile(getVersionsNode(ruleName) + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    private static String getVersionsNode(final String ruleName) {
+        return String.join(getRootNode(ruleName), VERSIONS);
     }
 }
