@@ -38,4 +38,9 @@ class GlobalRuleNodeConverterTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("0"));
     }
+    
+    @Test
+    void assertIsExpectRuleName() {
+        assertTrue(GlobalRuleNodeConverter.isExpectRuleName("transaction", "/rules/transaction/versions/0"));
+    }
 }

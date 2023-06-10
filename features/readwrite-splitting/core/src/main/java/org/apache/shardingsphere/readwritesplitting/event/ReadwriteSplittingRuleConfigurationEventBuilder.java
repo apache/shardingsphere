@@ -21,6 +21,8 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.config.RuleConfigurationEventBuilder;
@@ -32,6 +34,8 @@ import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AddLoadBal
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.metadata.converter.ReadwriteSplittingNodeConverter;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.swapper.YamlReadwriteSplittingRuleConfigurationSwapper;
 
 import java.util.Optional;
 
@@ -58,25 +62,32 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
     
     private Optional<GovernanceEvent> createReadwriteSplittingConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddReadwriteSplittingConfigurationEvent<>(databaseName,
-                    YamlEngine.unmarshal(event.getValue(), ReadwriteSplittingDataSourceRuleConfiguration.class)));
+            return Optional.of(new AddReadwriteSplittingConfigurationEvent<>(databaseName, swapReadwriteSplittingDataSourceRuleConfig(event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterReadwriteSplittingConfigurationEvent<>(databaseName, groupName,
-                    YamlEngine.unmarshal(event.getValue(), ReadwriteSplittingDataSourceRuleConfiguration.class)));
+            return Optional.of(new AlterReadwriteSplittingConfigurationEvent<>(databaseName, groupName, swapReadwriteSplittingDataSourceRuleConfig(event.getValue())));
         }
         return Optional.of(new DeleteReadwriteSplittingConfigurationEvent(databaseName, groupName));
     }
     
+    // TODO Consider extract ReadwriteSplittingDataSourceRuleConfigurationSwapper
+    private ReadwriteSplittingDataSourceRuleConfiguration swapReadwriteSplittingDataSourceRuleConfig(final String yamlContext) {
+        return new YamlReadwriteSplittingRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlReadwriteSplittingRuleConfiguration.class)).getDataSources().iterator().next();
+    }
+    
     private Optional<GovernanceEvent> createLoadBalanceEvent(final String databaseName, final String loadBalanceName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddLoadBalanceEvent<>(databaseName, loadBalanceName,
-                    YamlEngine.unmarshal(event.getValue(), AlgorithmConfiguration.class)));
+            new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlAlgorithmConfiguration.class));
+            
+            return Optional.of(new AddLoadBalanceEvent<>(databaseName, loadBalanceName, swapToAlgorithmConfig(event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterLoadBalanceEvent<>(databaseName, loadBalanceName,
-                    YamlEngine.unmarshal(event.getValue(), AlgorithmConfiguration.class)));
+            return Optional.of(new AlterLoadBalanceEvent<>(databaseName, loadBalanceName, swapToAlgorithmConfig(event.getValue())));
         }
         return Optional.of(new DeleteLoadBalanceEvent(databaseName, loadBalanceName));
+    }
+    
+    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
+        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAlgorithmConfiguration.class));
     }
 }

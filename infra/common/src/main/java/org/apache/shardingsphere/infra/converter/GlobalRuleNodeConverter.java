@@ -60,4 +60,17 @@ public final class GlobalRuleNodeConverter {
     private static String getVersionsNode(final String ruleName) {
         return String.join(getRootNode(ruleName), VERSIONS);
     }
+    
+    /**
+     * Is expect rule name.
+     *
+     * @param ruleName rule name
+     * @param rulePath rule path
+     * @return true or false
+     */
+    public static boolean isExpectRuleName(final String ruleName, final String rulePath) {
+        Pattern pattern = Pattern.compile(getRootNode(ruleName) + "\\.*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find();
+    }
 }
