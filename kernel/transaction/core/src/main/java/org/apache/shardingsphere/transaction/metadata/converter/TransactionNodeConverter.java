@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TransactionNodeConverter {
     
-    private static final String ROOT_NODE = "tansaction/";
+    private static final String ROOT_NODE = "transaction/";
     
     private static final String VERSION_NODE_PREFIX = "/rules/" + ROOT_NODE;
     
