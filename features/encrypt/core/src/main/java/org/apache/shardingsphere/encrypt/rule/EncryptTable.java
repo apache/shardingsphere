@@ -208,5 +208,4 @@ public final class EncryptTable {
     public Optional<EncryptColumn> findEncryptColumn(final String logicColumnName) {
         return Optional.ofNullable(columns.get(logicColumnName));
     }
-    
 }
