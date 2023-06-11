@@ -15,19 +15,4 @@
 # limitations under the License.
 #
 
-databaseName: logic_db
-
-rules:
-- !SINGLE
-  tables:
-    - "*.*"
-- !READWRITE_SPLITTING
-  dataSources:
-    test_ds:
-      writeDataSourceName: test_primary_ds
-      readDataSourceNames:
-        - test_replica_ds
-      loadBalancerName: roundRobin
-  loadBalancers:
-    roundRobin:
-      type: ROUND_ROBIN
+org.apache.shardingsphere.single.decorator.SingleRuleConfigurationDecorator

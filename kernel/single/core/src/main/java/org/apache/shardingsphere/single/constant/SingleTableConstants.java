@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.single.constant;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Invalid data nodes format exception.
+ * Single table constants.
  */
-public final class InvalidDataNodesFormatException extends MetaDataSQLException {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SingleTableConstants {
     
-    private static final long serialVersionUID = 192279170808654743L;
+    public static final String ASTERISK = "*";
     
-    public InvalidDataNodesFormatException(final String dataNode) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 3, "Invalid format for actual data node `%s`.", dataNode);
-    }
-    
-    public InvalidDataNodesFormatException(final String dataNode, final String reason) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 3, "Invalid format for data node `%s`, reason is: %s.", dataNode, reason);
-    }
+    public static final String ALL_TABLES = "*.*";
 }

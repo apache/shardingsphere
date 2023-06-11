@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.single.exception;
 
+import org.apache.shardingsphere.infra.exception.MetaDataSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Invalid data nodes format exception.
+ * Invalid single rule configuration exception.
  */
-public final class InvalidDataNodesFormatException extends MetaDataSQLException {
+public final class InvalidSingleRuleConfigurationException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 192279170808654743L;
+    private static final long serialVersionUID = 1337703808376580240L;
     
-    public InvalidDataNodesFormatException(final String dataNode) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 3, "Invalid format for actual data node `%s`.", dataNode);
-    }
-    
-    public InvalidDataNodesFormatException(final String dataNode, final String reason) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 3, "Invalid format for data node `%s`, reason is: %s.", dataNode, reason);
+    public InvalidSingleRuleConfigurationException(final String message) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 22, "Invalid single rule configuration, reason is: %s.", message);
     }
 }

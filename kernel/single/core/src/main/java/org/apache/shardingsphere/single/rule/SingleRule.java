@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.Exportabl
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
+import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -45,9 +46,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -72,43 +71,26 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
         configuration = ruleConfig;
         defaultDataSource = ruleConfig.getDefaultDataSource().orElse(null);
         Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSourceMap);
-        Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(enabledDataSources, builtRules);
+        Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(enabledDataSources, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
-        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, DatabaseTypeEngine.getStorageType(enabledDataSources.values()), aggregateDataSourceMap, getLoadedTables(builtRules));
+        DatabaseType databaseType = DatabaseTypeEngine.getStorageType(enabledDataSources.values());
+        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, databaseType, aggregateDataSourceMap,
+                SingleTableLoadUtils.getLoadedTables(builtRules), getConfiguredTables(databaseName, databaseType));
         singleTableDataNodes.forEach((key, value) -> tableNamesMapper.put(value.iterator().next().getTableName()));
     }
     
-    private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (ShardingSphereRule each : builtRules) {
-            if (each instanceof DataSourceContainedRule) {
-                result = getAggregateDataSourceMap(result, (DataSourceContainedRule) each);
-            }
+    private Map<String, Map<String, Collection<String>>> getConfiguredTables(final String databaseName, final DatabaseType databaseType) {
+        if (configuration.getTables().isEmpty()) {
+            return Collections.emptyMap();
         }
-        return result;
-    }
-    
-    private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceContainedRule builtRule) {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, Collection<String>> entry : builtRule.getDataSourceMapper().entrySet()) {
-            for (String each : entry.getValue()) {
-                if (dataSourceMap.containsKey(each)) {
-                    result.putIfAbsent(entry.getKey(), dataSourceMap.remove(each));
-                }
-            }
-        }
-        result.putAll(dataSourceMap);
-        return result;
-    }
-    
-    private Collection<String> getLoadedTables(final Collection<ShardingSphereRule> builtRules) {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        for (ShardingSphereRule each : builtRules) {
-            if (!(each instanceof TableContainedRule)) {
-                continue;
-            }
-            result.addAll(((TableContainedRule) each).getDistributedTableMapper().getTableNames());
-            result.addAll(((TableContainedRule) each).getActualTableMapper().getTableNames());
+        Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>();
+        Collection<DataNode> dataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, SingleTableLoadUtils.splitTableLines(configuration.getTables()));
+        for (DataNode each : dataNodes) {
+            Map<String, Collection<String>> schemaTables = result.getOrDefault(each.getDataSourceName(), new LinkedHashMap<>());
+            Collection<String> tables = schemaTables.getOrDefault(each.getSchemaName(), new LinkedList<>());
+            tables.add(each.getTableName());
+            schemaTables.putIfAbsent(each.getSchemaName(), tables);
+            result.putIfAbsent(each.getDataSourceName(), schemaTables);
         }
         return result;
     }

@@ -21,6 +21,9 @@ props:
   sql-show: true
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*"
 - !SHADOW
   dataSources:
     shadowDataSource0:

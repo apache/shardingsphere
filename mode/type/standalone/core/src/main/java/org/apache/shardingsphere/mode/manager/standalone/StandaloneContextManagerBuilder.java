@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.mode.manager.standalone;
 
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -30,10 +34,12 @@ import org.apache.shardingsphere.mode.manager.standalone.subscriber.StandalonePr
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -51,8 +57,20 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         new StandaloneProcessSubscriber(instanceContext.getEventBusContext());
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
+        reloadDatabaseRules(result);
         setContextManagerAware(result);
         return result;
+    }
+    
+    private void reloadDatabaseRules(final ContextManager contextManager) {
+        DatabaseBasedPersistService<Collection<RuleConfiguration>> metaDataBasedPersistService = contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService();
+        Map<String, ShardingSphereDatabase> databases = contextManager.getMetaDataContexts().getMetaData().getDatabases();
+        for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
+            if (entry.getValue().getProtocolType().getSystemSchemas().contains(entry.getKey())) {
+                continue;
+            }
+            contextManager.alterRuleConfiguration(entry.getKey(), metaDataBasedPersistService.load(entry.getKey()));
+        }
     }
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter param) {

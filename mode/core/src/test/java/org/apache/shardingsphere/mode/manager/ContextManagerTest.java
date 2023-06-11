@@ -218,7 +218,7 @@ class ContextManagerTest {
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         when(metaDataContexts.getPersistService()).thenReturn(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS));
         contextManager.alterRuleConfiguration("foo_db", Collections.singleton(new FixtureDistributedRuleConfiguration()));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getConfigurations().size(), is(1));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getConfigurations().size(), is(2));
     }
     
     @Test
@@ -299,7 +299,7 @@ class ContextManagerTest {
     }
     
     @Test
-    void assertClose() throws Exception {
+    void assertClose() {
         contextManager.close();
         verify(metaDataContexts).close();
     }
