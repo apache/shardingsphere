@@ -79,7 +79,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -148,7 +147,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private final StatementManager statementManager;
     
     @Getter
-    private final boolean transparentStatement;
+    private final boolean selectContainsEnhancedTable;
     
     private ExecutionContext executionContext;
     
@@ -205,24 +204,12 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         kernelProcessor = new KernelProcessor();
         statementsCacheable = isStatementsCacheable(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData());
         trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
-        transparentStatement = isTransparentStatement(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData());
+        selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
         statementManager = new StatementManager();
     }
     
     private boolean isStatementsCacheable(final ShardingSphereRuleMetaData databaseRuleMetaData) {
         return databaseRuleMetaData.findRules(StorageConnectorReusableRule.class).size() == databaseRuleMetaData.getRules().size() && !HintManager.isInstantiated();
-    }
-    
-    private boolean isTransparentStatement(final ShardingSphereRuleMetaData ruleMetaData) {
-        Collection<TableContainedRule> tableContainedRules = ruleMetaData.findRules(TableContainedRule.class);
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            for (TableContainedRule tableContainedRule : tableContainedRules) {
-                if (tableContainedRule.getEnhancedTableMapper().contains(each.toLowerCase())) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
     
     @Override
@@ -252,7 +239,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             if (null == columnLabelAndIndexMap) {
                 columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData());
             }
-            result = new ShardingSphereResultSet(resultSets, mergedResult, this, transparentStatement, executionContext, columnLabelAndIndexMap);
+            result = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext, columnLabelAndIndexMap);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -524,7 +511,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             if (null == columnLabelAndIndexMap) {
                 columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData());
             }
-            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, transparentStatement, executionContext, columnLabelAndIndexMap);
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext, columnLabelAndIndexMap);
         }
         return currentResultSet;
     }

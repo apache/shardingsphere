@@ -47,7 +47,6 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -109,7 +108,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private final ShardingSphereDatabase database;
     
-    private final boolean transparentStatement;
+    private final boolean selectContainsEnhancedTable;
     
     private final QueryContext queryContext;
     
@@ -126,8 +125,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         failedIfBackendNotReady(databaseConnectionManager.getConnectionSession(), sqlStatementContext);
         this.driverType = driverType;
         this.database = database;
-        this.transparentStatement = isTransparentStatement(sqlStatementContext);
         this.queryContext = queryContext;
+        this.selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
         this.databaseConnectionManager = databaseConnectionManager;
         if (sqlStatementContext instanceof CursorAvailable) {
             prepareCursorStatementContext((CursorAvailable) sqlStatementContext, databaseConnectionManager.getConnectionSession());
@@ -142,18 +141,6 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         if (!isSystemSchema && !database.isComplete()) {
             throw new RuleNotExistedException(connectionSession.getDatabaseName());
         }
-    }
-    
-    private boolean isTransparentStatement(final SQLStatementContext sqlStatementContext) {
-        Collection<TableContainedRule> tableContainedRules = database.getRuleMetaData().findRules(TableContainedRule.class);
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            for (TableContainedRule tableContainedRule : tableContainedRules) {
-                if (tableContainedRule.getEnhancedTableMapper().contains(each.toLowerCase())) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
     
     /**
@@ -349,10 +336,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
-        if (transparentStatement) {
-            return queryResultSample.getMetaData().getColumnCount();
-        }
-        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
+        return selectContainsEnhancedTable && hasSelectExpandProjections(executionContext.getSqlStatementContext())
                 ? ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext().getExpandProjections().size()
                 : queryResultSample.getMetaData().getColumnCount();
     }
@@ -363,10 +347,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final ExecutionContext executionContext,
                                           final QueryResult queryResultSample, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
-        if (transparentStatement) {
-            return queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
-        }
-        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
+        return selectContainsEnhancedTable && hasSelectExpandProjections(executionContext.getSqlStatementContext())
                 ? queryHeaderBuilderEngine.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), database, columnIndex)
                 : queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
     }
