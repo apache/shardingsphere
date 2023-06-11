@@ -34,12 +34,9 @@ public final class TruncateStatementContext extends CommonSQLStatementContext im
     
     private final TablesContext tablesContext;
     
-    private final boolean containsEnhancedTable;
-    
     public TruncateStatementContext(final TruncateStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
-        containsEnhancedTable = false;
     }
     
     @Override
