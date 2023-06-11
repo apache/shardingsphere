@@ -69,6 +69,7 @@ class EncryptAlterTableTokenGeneratorTest {
     
     private EncryptTable mockEncryptTable() {
         EncryptTable result = mock(EncryptTable.class);
+        when(result.getTable()).thenReturn("t_encrypt");
         when(result.getCipherColumn("certificate_number")).thenReturn("cipher_certificate_number");
         when(result.findAssistedQueryColumn("certificate_number")).thenReturn(Optional.of("assisted_certificate_number"));
         when(result.findLikeQueryColumn("certificate_number")).thenReturn(Optional.of("like_certificate_number"));
