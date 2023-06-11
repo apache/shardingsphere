@@ -35,7 +35,7 @@ import java.util.Properties;
  * New YAML Transaction rule configuration swapper.
  */
 public final class NewYamlTransactionRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<TransactionRuleConfiguration> {
-
+    
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final TransactionRuleConfiguration data) {
         return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
