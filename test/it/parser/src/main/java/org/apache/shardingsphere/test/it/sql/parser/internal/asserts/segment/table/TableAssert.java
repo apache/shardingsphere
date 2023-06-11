@@ -211,6 +211,12 @@ public final class TableAssert {
         assertThat(assertContext.getText("Function text assert error"), actual.getText(), is(expected.getText()));
     }
     
+    /**
+     * Assert actual table function segment is correct with expected table function.
+     * @param assertContext assert context
+     * @param actual actual table function
+     * @param expected expected table function
+     */
     private static void assertTableFunction(final SQLCaseAssertContext assertContext, final FunctionSegment actual, final ExpectedTableFunction expected) {
         assertThat(assertContext.getText("Function name assertion error"), actual.getFunctionName(), is(expected.getFunctionName()));
         assertThat(assertContext.getText("Function text assert error"), actual.getText(), is(expected.getText()));
