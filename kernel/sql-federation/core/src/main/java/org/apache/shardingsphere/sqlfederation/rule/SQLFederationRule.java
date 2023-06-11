@@ -22,37 +22,36 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
+import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutor;
 
 /**
  * SQL federation rule.
  */
+@Getter
 public final class SQLFederationRule implements GlobalRule {
     
-    @Getter
     private final SQLFederationRuleConfiguration configuration;
+    
+    private final SQLFederationExecutor sqlFederationExecutor;
     
     public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
+        sqlFederationExecutor = new SQLFederationExecutor();
     }
     
     /**
-     * Get SQL federation executor.
+     * Init SQL federation executor.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param metaData ShardingSphere meta data
      * @param shardingSphereData ShardingSphere data
      * @param jdbcExecutor jdbc executor
-     * @return created instance
      */
-    public SQLFederationExecutor getSQLFederationExecutor(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData shardingSphereData,
-                                                          final JDBCExecutor jdbcExecutor) {
-        SQLFederationExecutor result = TypedSPILoader.getService(SQLFederationExecutor.class, "ADVANCED");
-        result.init(databaseName, schemaName, metaData, shardingSphereData, jdbcExecutor);
-        return result;
+    public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData shardingSphereData,
+                     final JDBCExecutor jdbcExecutor) {
+        sqlFederationExecutor.init(databaseName, schemaName, metaData, shardingSphereData, jdbcExecutor);
     }
     
     @Override

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.spi;
+package org.apache.shardingsphere.sqlfederation.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

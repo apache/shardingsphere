@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
 
 import java.sql.SQLException;
@@ -54,8 +54,8 @@ public final class DriverExecutor implements AutoCloseable {
         DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(protocolType, connection.getDatabaseName());
         SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        federationExecutor = sqlFederationRule.getSQLFederationExecutor(
-                connection.getDatabaseName(), schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(), jdbcExecutor);
+        federationExecutor = sqlFederationRule.getSqlFederationExecutor();
+        federationExecutor.init(connection.getDatabaseName(), schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(), jdbcExecutor);
         trafficExecutor = new TrafficExecutor();
     }
     

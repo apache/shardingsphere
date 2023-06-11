@@ -55,11 +55,10 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
+import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutor;
+import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilder;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,6 +109,9 @@ class DatabaseConnectorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ResultSet resultSet;
     
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private SQLFederationRule sqlFederationRule;
+    
     @BeforeEach
     void setUp() {
         when(databaseConnectionManager.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
@@ -121,8 +123,7 @@ class DatabaseConnectorTest {
     
     private ContextManager mockContextManager() {
         ShardingSphereRuleMetaData globalRuleMetaData =
-                new ShardingSphereRuleMetaData(Arrays.asList(new SQLParserRule(new SQLParserRuleConfiguration(false, mock(CacheOption.class), mock(CacheOption.class))),
-                        new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class)))));
+                new ShardingSphereRuleMetaData(Arrays.asList(new SQLParserRule(new SQLParserRuleConfiguration(false, mock(CacheOption.class), mock(CacheOption.class))), sqlFederationRule));
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(mockDatabases(), globalRuleMetaData, new ConfigurationProperties(new Properties())));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -148,9 +149,9 @@ class DatabaseConnectorTest {
                 DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), databaseConnectionManager, true);
         when(databaseConnectionManager.getConnectionSession().getStatementManager()).thenReturn(new JDBCBackendStatement());
         SQLFederationExecutor federationExecutor = mock(SQLFederationExecutor.class);
+        when(sqlFederationRule.getSqlFederationExecutor()).thenReturn(federationExecutor);
         when(SystemSchemaUtils.containsSystemSchema(any(DatabaseType.class), any(), any(ShardingSphereDatabase.class))).thenReturn(true);
         try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
-            typedSPILoader.when(() -> TypedSPILoader.getService(SQLFederationExecutor.class, "ADVANCED")).thenReturn(federationExecutor);
             typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, "H2")).thenReturn(new QueryHeaderBuilderFixture());
             typedSPILoader.when(() -> TypedSPILoader.getService(OptimizerSQLDialectBuilder.class, "MySQL")).thenReturn(mock(OptimizerSQLDialectBuilder.class));
             typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, "H2")).thenReturn(new MySQLDatabaseType());
