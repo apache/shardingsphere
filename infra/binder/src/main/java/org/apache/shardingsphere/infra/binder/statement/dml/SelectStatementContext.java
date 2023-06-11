@@ -135,6 +135,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     }
     
     private Collection<TableContainedRule> getTableContainedRules(final ShardingSphereMetaData metaData, final String databaseName) {
+        if (null == databaseName) {
+            ShardingSpherePreconditions.checkState(tablesContext.getSimpleTableSegments().isEmpty(), NoDatabaseSelectedException::new);
+            return Collections.emptyList();
+        }
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
         return database.getRuleMetaData().findRules(TableContainedRule.class);
