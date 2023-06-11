@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.metadata;
+package org.apache.shardingsphere.transaction.yaml.swapper;
 
-import org.apache.shardingsphere.authority.metadata.converter.AuthorityNodeConverter;
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AuthorityNodeConverterTest {
+// TODO Rename YamlTransactionRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
+class NewYamlTransactionRuleConfigurationSwapperTest {
+    
+    private final NewYamlTransactionRuleConfigurationSwapper swapper = new NewYamlTransactionRuleConfigurationSwapper();
     
     @Test
-    void assetGetRootNode() {
-        assertThat(AuthorityNodeConverter.getRootNode(), is("authority/"));
-    }
-    
-    @Test
-    void assertGetVersion() {
-        Optional<String> actual = AuthorityNodeConverter.getVersion("/rules/authority/versions/0");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("0"));
+    void assertSwapToDataNodes() {
+        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new TransactionRuleConfiguration("", "", new Properties()));
+        assertThat(actual.iterator().next().getKey(), is("/rules/transaction"));
     }
 }

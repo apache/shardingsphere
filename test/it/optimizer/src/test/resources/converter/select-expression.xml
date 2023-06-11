@@ -27,4 +27,14 @@
     <test-cases sql-case-id="select_where_with_bit_expr_with_signed_right_shift" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`order_id` &gt;&gt; ?" db-types="MySQL" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="select_where_with_bit_expr_with_signed_left_shift" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`order_id` &lt;&lt; 1" db-types="MySQL" sql-case-types="LITERAL" />
     <test-cases sql-case-id="select_where_with_bit_expr_with_signed_left_shift" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`order_id` &lt;&lt; ?" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="select_where_with_bit_expr_with_mod" expected-sql="SELECT * FROM `t_order` WHERE MOD(`t_order`.`order_id`, 1)" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_where_with_bit_expr_with_mod" expected-sql="SELECT * FROM `t_order` WHERE MOD(`t_order`.`order_id`, ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="select_where_with_bit_expr_with_vertical_bar" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`order_id` | 1" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_where_with_bit_expr_with_vertical_bar" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`order_id` | ?" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="select_where_with_expr_with_not_sign" expected-sql="SELECT * FROM `t_order` WHERE ! 1 = `t_order`.`order_id`" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_where_with_expr_with_not_sign" expected-sql="SELECT * FROM `t_order` WHERE ! ? = `t_order`.`order_id`" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="select_where_with_predicate_with_in_subquery" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`order_id` NOT IN (SELECT `order_id` FROM `t_order_item` WHERE `status` &gt; 1)" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_where_with_predicate_with_in_subquery" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`order_id` NOT IN (SELECT `order_id` FROM `t_order_item` WHERE `status` &gt; ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="select_where_with_expr_with_not" expected-sql="SELECT * FROM `t_order` WHERE NOT 1 = `t_order`.`order_id`" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_where_with_expr_with_not" expected-sql="SELECT * FROM `t_order` WHERE NOT ? = `t_order`.`order_id`" db-types="MySQL" sql-case-types="PLACEHOLDER" />
 </sql-node-converter-test-cases>

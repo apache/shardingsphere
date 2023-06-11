@@ -88,7 +88,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 ColumnProjectionSegment columnSegment = (ColumnProjectionSegment) each;
                 ColumnProjection columnProjection = buildColumnProjection(columnSegment);
                 String tableName = columnTableNames.get(columnProjection.getExpression());
-                if (isEncryptColumn(tableName, columnProjection.getName())) {
+                if (null != tableName && encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnProjection.getName())).isPresent()) {
                     result.add(generateSQLToken(tableName, columnSegment, columnProjection, subqueryType));
                 }
             }
@@ -103,7 +103,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     }
     
     private boolean isEncryptColumn(final String tableName, final String columnName) {
-        return null != tableName && encryptRule.findEncryptColumn(tableName, columnName).isPresent();
+        return null != tableName && encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnName)).isPresent();
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final String tableName, final ColumnProjectionSegment columnSegment,
@@ -119,7 +119,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         List<Projection> projections = new LinkedList<>();
         for (Projection each : actualColumns) {
             String tableName = columnTableNames.get(each.getExpression());
-            if (!isEncryptColumn(tableName, each.getColumnLabel())) {
+            if (null == tableName || !encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(each.getColumnLabel())).isPresent()) {
                 projections.add(each.getAlias().map(optional -> (Projection) new ColumnProjection(null, optional, null)).orElse(each));
             } else if (each instanceof ColumnProjection) {
                 projections.addAll(generateProjections(tableName, (ColumnProjection) each, subqueryType, true, segment));

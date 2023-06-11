@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlPrefixOperator;
 
 /**
  * SQL extension operator table.
@@ -37,4 +38,6 @@ public final class SQLExtensionOperatorTable {
     public static final SqlBinaryOperator SIGNED_LEFT_SHIFT = new SqlBinaryOperator("<<", SqlKind.OTHER, 30, true, null, null, null);
     
     public static final SqlBinaryOperator SIGNED_RIGHT_SHIFT = new SqlBinaryOperator(">>", SqlKind.OTHER, 30, true, null, null, null);
+    
+    public static final SqlPrefixOperator NOT_SIGN = new SqlPrefixOperator("!", SqlKind.OTHER, 26, null, null, null);
 }

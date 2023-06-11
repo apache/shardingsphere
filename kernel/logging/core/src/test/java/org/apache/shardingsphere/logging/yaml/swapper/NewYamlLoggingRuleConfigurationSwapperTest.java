@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.core.exception;
+package org.apache.shardingsphere.logging.yaml.swapper;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
+import org.junit.jupiter.api.Test;
 
-/**
- * Global clock not enabled exception.
- */
-public final class GlobalClockNotEnabledException extends GlobalClockSQLException {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+// TODO Rename YamlLoggingRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
+class NewYamlLoggingRuleConfigurationSwapperTest {
     
-    private static final long serialVersionUID = 2499130145956182704L;
+    private final NewYamlLoggingRuleConfigurationSwapper swapper = new NewYamlLoggingRuleConfigurationSwapper();
     
-    public GlobalClockNotEnabledException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "The global clock rule has not been enabled");
+    @Test
+    void assertSwapToDataNodes() {
+        assertThat(swapper.swapToDataNodes(new DefaultLoggingRuleConfigurationBuilder().build()).iterator().next().getKey(), is("/rules/logging"));
     }
 }

@@ -126,17 +126,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * Find encrypt column.
-     * 
-     * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return encrypt column
-     */
-    public Optional<EncryptColumn> findEncryptColumn(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(logicColumnName));
-    }
-    
-    /**
      * Find standard encryptor.
      *
      * @param tableName table name

@@ -409,7 +409,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.orOperator()) {
             return createBinaryOperationExpression(ctx, ctx.orOperator().getText());
         }
-        return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)));
+        return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
     }
     
     private BinaryOperationExpression createBinaryOperationExpression(final ExprContext ctx, final String operator) {
@@ -604,11 +604,15 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (null != ctx.notOperator()) {
             ASTNode expression = visit(ctx.simpleExpr(0));
+            Boolean notSign = false;
             if (expression instanceof ExistsSubqueryExpression) {
                 ((ExistsSubqueryExpression) expression).setNot(true);
                 return expression;
             }
-            return new NotExpression(startIndex, stopIndex, (ExpressionSegment) expression);
+            if ("!".equalsIgnoreCase(ctx.notOperator().getText())) {
+                notSign = true;
+            }
+            return new NotExpression(startIndex, stopIndex, (ExpressionSegment) expression, notSign);
         }
         if (null != ctx.LP_() && 1 == ctx.expr().size()) {
             return visit(ctx.expr(0));

@@ -136,7 +136,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     }
     
     private EncryptColumn getEncryptColumn(final String tableName, final String columnName) {
-        return encryptRule.findEncryptColumn(tableName, columnName).orElseThrow(() -> new EncryptColumnNotFoundException(tableName, columnName));
+        return encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnName)).orElseThrow(() -> new EncryptColumnNotFoundException(tableName, columnName));
     }
     
     @SuppressWarnings("rawtypes")
