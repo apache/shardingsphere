@@ -4978,4 +4978,27 @@
             <simple-table name="DUAL" start-index="19" stop-index="22" />
         </from>
     </select>
+    
+    <select sql-case-id="select_with_keyword_system" parameters="0">
+        <from>
+            <simple-table name="vtx_project" start-index="14" stop-index="24" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="26" stop-index="41">
+            <expr>
+                <binary-operation-expression start-index="32" stop-index="41">
+                    <left>
+                        <column name="system" start-index="32" stop-index="37"/>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="0" start-index="41" stop-index="41"/>
+                        <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
