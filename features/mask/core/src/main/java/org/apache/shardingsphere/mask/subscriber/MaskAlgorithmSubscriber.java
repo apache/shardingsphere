@@ -54,9 +54,9 @@ public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribe
     }
     
     /**
-     * Renew with add load-balance.
+     * Renew with add algorithm.
      *
-     * @param event add load-balance event
+     * @param event add algorithm event
      */
     @Subscribe
     public synchronized void renew(final AddMaskAlgorithmEvent<AlgorithmConfiguration> event) {
@@ -64,9 +64,9 @@ public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribe
     }
     
     /**
-     * Renew with alter load-balance.
+     * Renew with alter algorithm.
      *
-     * @param event alter load-balance event
+     * @param event alter algorithm event
      */
     @Subscribe
     public synchronized void renew(final AlterMaskAlgorithmEvent<AlgorithmConfiguration> event) {
@@ -84,9 +84,9 @@ public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribe
     }
     
     /**
-     * Renew with delete load-balance.
+     * Renew with delete algorithm.
      *
-     * @param event delete load-balance event
+     * @param event delete algorithm event
      */
     @Subscribe
     public synchronized void renew(final DeleteMaskAlgorithmEvent event) {
