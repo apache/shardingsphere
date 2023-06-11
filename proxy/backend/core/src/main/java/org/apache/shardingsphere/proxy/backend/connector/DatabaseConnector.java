@@ -108,7 +108,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private final ShardingSphereDatabase database;
     
-//    private final boolean transparentStatement;
+    private final boolean selectContainsEnhancedTable;
     
     private final QueryContext queryContext;
     
@@ -126,6 +126,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         this.driverType = driverType;
         this.database = database;
         this.queryContext = queryContext;
+        this.selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
         this.databaseConnectionManager = databaseConnectionManager;
         if (sqlStatementContext instanceof CursorAvailable) {
             prepareCursorStatementContext((CursorAvailable) sqlStatementContext, databaseConnectionManager.getConnectionSession());
@@ -335,10 +336,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
-        if (transparentStatement) {
-            return queryResultSample.getMetaData().getColumnCount();
-        }
-        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
+        return selectContainsEnhancedTable && hasSelectExpandProjections(executionContext.getSqlStatementContext())
                 ? ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext().getExpandProjections().size()
                 : queryResultSample.getMetaData().getColumnCount();
     }
@@ -349,10 +347,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final ExecutionContext executionContext,
                                           final QueryResult queryResultSample, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
-        if (transparentStatement) {
-            return queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
-        }
-        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
+        return selectContainsEnhancedTable && hasSelectExpandProjections(executionContext.getSqlStatementContext())
                 ? queryHeaderBuilderEngine.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), database, columnIndex)
                 : queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
     }

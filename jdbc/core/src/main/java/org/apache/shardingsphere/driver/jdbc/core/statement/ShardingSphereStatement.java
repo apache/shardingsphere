@@ -40,7 +40,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.connection.util.SQLStatementTransparentUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -177,7 +176,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             executionContext = createExecutionContext(queryContext);
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, SQLStatementTransparentUtils.isTransparentStatement(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData(), queryContext.getSqlStatementContext()), executionContext);
+            boolean selectContainsEnhancedTable =
+                    executionContext.getSqlStatementContext() instanceof SelectStatementContext && ((SelectStatementContext) executionContext.getSqlStatementContext()).isContainsEnhancedTable();
+            result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, selectContainsEnhancedTable, executionContext);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -592,8 +593,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return currentResultSet;
             }
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
-            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, SQLStatementTransparentUtils.isTransparentStatement(
-                    metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData(), executionContext.getSqlStatementContext()), executionContext);
+            boolean selectContainsEnhancedTable =
+                    executionContext.getSqlStatementContext() instanceof SelectStatementContext && ((SelectStatementContext) executionContext.getSqlStatementContext()).isContainsEnhancedTable();
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext);
         }
         return currentResultSet;
     }

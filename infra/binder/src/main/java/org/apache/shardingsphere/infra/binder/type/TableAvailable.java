@@ -40,11 +40,4 @@ public interface TableAvailable {
      * @return tables context
      */
     TablesContext getTablesContext();
-
-    /**
-     * Judge whether sql statement contains enhanced table or not.
-     * 
-     * @return whether sql statement contains enhanced table or not
-     */
-    boolean isContainsEnhancedTable();
 }
