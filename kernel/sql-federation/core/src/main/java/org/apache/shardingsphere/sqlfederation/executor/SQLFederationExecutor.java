@@ -46,14 +46,14 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sqlfederation.executor.resultset.SQLFederationResultSet;
-import org.apache.shardingsphere.sqlfederation.optimizer.SQLOptimizeContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.SQLOptimizeEngine;
+import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationCompiler;
+import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtils;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationPlannerUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -151,10 +151,10 @@ public final class SQLFederationExecutor implements AutoCloseable {
         SqlToRelConverter converter = SQLFederationPlannerUtils.createSqlToRelConverter(catalogReader, validator,
                 SQLFederationPlannerUtils.createRelOptCluster(JAVA_TYPE_FACTORY), optimizerContext.getSqlParserRule(), parserContext.getDatabaseType(), true);
         RelOptPlanner hepPlanner = optimizerContext.getPlannerContext(databaseName).getHepPlanner();
-        SQLOptimizeContext optimizeContext = new SQLOptimizeEngine(converter, hepPlanner).optimize(selectStatementContext.getSqlStatement());
-        Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) optimizeContext.getBestPlan(), EnumerableRel.Prefer.ARRAY);
+        SQLFederationExecutionPlan executionPlan = new SQLFederationCompiler(converter, hepPlanner).compile(selectStatementContext.getSqlStatement());
+        Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) executionPlan.getPhysicalPlan(), EnumerableRel.Prefer.ARRAY);
         Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(validator, converter, params)).enumerator();
-        return new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, selectStatementContext, optimizeContext.getValidatedNodeType());
+        return new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, selectStatementContext, executionPlan.getResultColumnType());
     }
     
     /**

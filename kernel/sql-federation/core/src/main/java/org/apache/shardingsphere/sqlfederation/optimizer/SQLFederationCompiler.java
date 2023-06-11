@@ -30,41 +30,41 @@ import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConver
 import java.util.Objects;
 
 /**
- * SQL optimize engine.
+ * SQL federation compiler.
  */
 @RequiredArgsConstructor
-public final class SQLOptimizeEngine {
+public final class SQLFederationCompiler {
     
     private final SqlToRelConverter converter;
     
     private final RelOptPlanner hepPlanner;
     
     /**
-     * Optimize query execution plan.
+     * Compile sql statement to execution plan.
      *
      * @param sqlStatement SQL statement
-     * @return optimized relational node
+     * @return sql federation execution plan
      */
-    public SQLOptimizeContext optimize(final SQLStatement sqlStatement) {
+    public SQLFederationExecutionPlan compile(final SQLStatement sqlStatement) {
         SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
         RelNode logicPlan = converter.convertQuery(sqlNode, true, true).rel;
-        RelDataType validatedNodeType = Objects.requireNonNull(converter.validator).getValidatedNodeType(sqlNode);
-        RelNode ruleBasedPlan = optimizeWithRBO(logicPlan, hepPlanner);
-        RelNode bestPlan = optimizeWithCBO(ruleBasedPlan, converter);
-        return new SQLOptimizeContext(bestPlan, validatedNodeType);
+        RelDataType resultColumnType = Objects.requireNonNull(converter.validator).getValidatedNodeType(sqlNode);
+        RelNode rewritePlan = rewrite(logicPlan, hepPlanner);
+        RelNode physicalPlan = optimize(rewritePlan, converter);
+        return new SQLFederationExecutionPlan(physicalPlan, resultColumnType);
     }
     
-    private RelNode optimizeWithRBO(final RelNode logicPlan, final RelOptPlanner hepPlanner) {
+    private RelNode rewrite(final RelNode logicPlan, final RelOptPlanner hepPlanner) {
         hepPlanner.setRoot(logicPlan);
         return hepPlanner.findBestExp();
     }
     
-    private RelNode optimizeWithCBO(final RelNode bestPlan, final SqlToRelConverter converter) {
+    private RelNode optimize(final RelNode rewritePlan, final SqlToRelConverter converter) {
         RelOptPlanner planner = converter.getCluster().getPlanner();
-        if (bestPlan.getTraitSet().equals(converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE))) {
-            planner.setRoot(bestPlan);
+        if (rewritePlan.getTraitSet().equals(converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE))) {
+            planner.setRoot(rewritePlan);
         } else {
-            planner.setRoot(planner.changeTraits(bestPlan, converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE)));
+            planner.setRoot(planner.changeTraits(rewritePlan, converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE)));
         }
         return planner.findBestExp();
     }

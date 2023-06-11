@@ -36,9 +36,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.optimizer.SQLOptimizeEngine;
+import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationCompiler;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtils;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationPlannerUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -60,13 +60,13 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SQLOptimizeEngineIT {
+class SQLFederationCompilerIT {
     
     private static final String SCHEMA_NAME = "federate_jdbc";
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
-    private SQLOptimizeEngine optimizeEngine;
+    private SQLFederationCompiler sqlFederationCompiler;
     
     @BeforeEach
     void init() {
@@ -83,7 +83,7 @@ class SQLOptimizeEngineIT {
         tables.put("t_product_detail", createTProductDetailMetaData());
         tables.put("multi_types_first", createMultiTypesFirstTableMetaData());
         tables.put("multi_types_second", createMultiTypesSecondTableMetaData());
-        optimizeEngine = new SQLOptimizeEngine(createSqlToRelConverter(new ShardingSphereSchema(tables, Collections.emptyMap())), SQLFederationPlannerUtils.createHepPlanner());
+        sqlFederationCompiler = new SQLFederationCompiler(createSqlToRelConverter(new ShardingSphereSchema(tables, Collections.emptyMap())), SQLFederationPlannerUtils.createHepPlanner());
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {
@@ -245,9 +245,9 @@ class SQLOptimizeEngineIT {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertOptimize(final TestCase testcase) {
+    void assertCompile(final TestCase testcase) {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType())).parse(testcase.getSql(), false);
-        String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain().replaceAll("[\r\n]", "");
+        String actual = sqlFederationCompiler.compile(sqlStatement).getPhysicalPlan().explain().replaceAll("[\r\n]", "");
         assertThat(actual, is(testcase.getAssertion().getExpectedResult()));
     }
     

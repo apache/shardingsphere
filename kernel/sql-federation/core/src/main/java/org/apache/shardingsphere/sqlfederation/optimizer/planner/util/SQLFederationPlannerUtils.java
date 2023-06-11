@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.util;
+package org.apache.shardingsphere.sqlfederation.optimizer.planner.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.rexnode;
+package org.apache.shardingsphere.sqlfederation.executor.rexnode;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
