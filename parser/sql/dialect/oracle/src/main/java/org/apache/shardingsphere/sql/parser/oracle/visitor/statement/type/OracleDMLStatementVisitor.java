@@ -105,6 +105,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTab
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
@@ -149,6 +150,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegme
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.XmlTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
@@ -264,14 +266,13 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitTableCollectionExpr(final TableCollectionExprContext ctx) {
-        SubquerySegment result = null;
+        ExpressionSegment result = null;
         CollectionExprContext collectionExprContext = ctx.collectionExpr();
         if (null != collectionExprContext.selectSubquery()) {
             OracleSelectStatement subquery = (OracleSelectStatement) visit(collectionExprContext.selectSubquery());
             result = new SubquerySegment(collectionExprContext.selectSubquery().start.getStartIndex(), collectionExprContext.selectSubquery().stop.getStopIndex(), subquery);
         } else if (null != collectionExprContext.functionCall()) {
-            // TODO: functionCall()
-            result = new SubquerySegment(collectionExprContext.functionCall().start.getStartIndex(), collectionExprContext.functionCall().stop.getStopIndex(), new OracleSelectStatement());
+            result = (FunctionSegment) visit(collectionExprContext.functionCall());
         }
         return result;
     }
@@ -924,7 +925,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitQueryTableExpr(final QueryTableExprContext ctx) {
-        TableSegment result;
+        TableSegment result = null;
         if (null != ctx.queryTableExprSampleClause()) {
             result = (SimpleTableSegment) visit(ctx.queryTableExprSampleClause().queryTableExprTableClause().tableName());
         } else if (null != ctx.lateralClause()) {
@@ -932,8 +933,12 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             SubquerySegment subquerySegment = new SubquerySegment(ctx.lateralClause().selectSubquery().start.getStartIndex(), ctx.lateralClause().selectSubquery().stop.getStopIndex(), subquery);
             result = new SubqueryTableSegment(subquerySegment);
         } else {
-            SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.tableCollectionExpr());
-            result = new SubqueryTableSegment(subquerySegment);
+            ExpressionSegment segment = (ExpressionSegment) visit(ctx.tableCollectionExpr());
+            if (segment instanceof SubquerySegment) {
+                result = new SubqueryTableSegment((SubquerySegment) segment);
+            } else if (segment instanceof FunctionSegment) {
+                result = new TableFunctionSegment(segment.getStartIndex(), segment.getStopIndex(), (FunctionSegment) segment);
+            }
         }
         return result;
     }

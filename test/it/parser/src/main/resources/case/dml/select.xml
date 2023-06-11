@@ -4970,7 +4970,9 @@
     
     <select sql-case-id="select_with_table_function">
         <from>
-            <simple-table name="return_objects(5)" start-index="18" stop-index="32" />
+            <function-table start-index="18" stop-index = "32" >
+                <table-function function-name = "return_objects"  text = "return_objects(5)" />
+            </function-table>
         </from>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />

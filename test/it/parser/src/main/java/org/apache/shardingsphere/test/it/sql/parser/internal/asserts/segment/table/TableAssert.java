@@ -20,10 +20,12 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ta
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlTableFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.XmlTableSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
@@ -34,7 +36,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ide
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedTableFunction;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedXmlTableFunction;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedFunctionTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedJoinTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSubqueryTable;
@@ -72,9 +76,22 @@ public final class TableAssert {
             assertIs(assertContext, (SubqueryTableSegment) actual, expected.getSubqueryTable());
         } else if (actual instanceof XmlTableSegment) {
             assertIs(assertContext, (XmlTableSegment) actual, expected.getXmlTable());
-        } else {
+        } else if (actual instanceof TableFunctionSegment) {
+            assertIs(assertContext, (TableFunctionSegment) actual, expected.getFunctionTable());
+        }else {
             throw new UnsupportedOperationException(String.format("Unsupported table segment type `%s`.", actual.getClass()));
         }
+    }
+    
+    /**
+     * Assert actual function table segment is correct with expected function table.
+     *
+     * @param assertContext assert context
+     * @param actual actual function table
+     * @param expected expected function table
+     */
+    private static void assertIs(final SQLCaseAssertContext assertContext, final TableFunctionSegment actual, final ExpectedFunctionTable expected) {
+        assertTableFunction(assertContext, actual.getTableFunction(), expected.getTableFunction());
     }
     
     /**
@@ -190,6 +207,11 @@ public final class TableAssert {
      * @param expected expected xml table function
      */
     private static void assertXmlTableFunction(final SQLCaseAssertContext assertContext, final XmlTableFunctionSegment actual, final ExpectedXmlTableFunction expected) {
+        assertThat(assertContext.getText("Function name assertion error"), actual.getFunctionName(), is(expected.getFunctionName()));
+        assertThat(assertContext.getText("Function text assert error"), actual.getText(), is(expected.getText()));
+    }
+    
+    private static void assertTableFunction(final SQLCaseAssertContext assertContext, final FunctionSegment actual, final ExpectedTableFunction expected) {
         assertThat(assertContext.getText("Function name assertion error"), actual.getFunctionName(), is(expected.getFunctionName()));
         assertThat(assertContext.getText("Function text assert error"), actual.getText(), is(expected.getText()));
     }
