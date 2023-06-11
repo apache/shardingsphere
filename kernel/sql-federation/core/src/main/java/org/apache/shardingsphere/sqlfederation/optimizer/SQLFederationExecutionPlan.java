@@ -23,13 +23,13 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.type.RelDataType;
 
 /**
- * SQL optimize context.
+ * SQL federation execution plan.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLOptimizeContext {
+public final class SQLFederationExecutionPlan {
     
-    private final RelNode bestPlan;
+    private final RelNode physicalPlan;
     
-    private final RelDataType validatedNodeType;
+    private final RelDataType resultColumnType;
 }

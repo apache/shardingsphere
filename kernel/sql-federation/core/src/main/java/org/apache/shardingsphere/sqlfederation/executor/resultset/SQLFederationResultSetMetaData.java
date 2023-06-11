@@ -46,23 +46,23 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     private final SelectStatementContext selectStatementContext;
     
-    private final RelDataType validatedNodeType;
+    private final RelDataType resultColumnType;
     
     private final Map<Integer, String> indexAndColumnLabels;
     
     public SQLFederationResultSetMetaData(final ShardingSphereSchema schema, final AbstractSchema filterableSchema,
-                                          final SelectStatementContext selectStatementContext, final RelDataType validatedNodeType, final Map<Integer, String> indexAndColumnLabels) {
+                                          final SelectStatementContext selectStatementContext, final RelDataType resultColumnType, final Map<Integer, String> indexAndColumnLabels) {
         this.schema = schema;
         this.filterableSchema = filterableSchema;
         this.relDataTypeFactory = new JavaTypeFactoryImpl();
         this.selectStatementContext = selectStatementContext;
-        this.validatedNodeType = validatedNodeType;
+        this.resultColumnType = resultColumnType;
         this.indexAndColumnLabels = indexAndColumnLabels;
     }
     
     @Override
     public int getColumnCount() {
-        return validatedNodeType.getFieldCount();
+        return resultColumnType.getFieldCount();
     }
     
     @Override
@@ -144,12 +144,12 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getColumnType(final int column) {
-        return validatedNodeType.getFieldList().get(column - 1).getType().getSqlTypeName().getJdbcOrdinal();
+        return resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getJdbcOrdinal();
     }
     
     @Override
     public String getColumnTypeName(final int column) {
-        return validatedNodeType.getFieldList().get(column - 1).getType().getSqlTypeName().getName();
+        return resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getName();
     }
     
     @Override
@@ -169,7 +169,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public String getColumnClassName(final int column) {
-        return validatedNodeType.getFieldList().get(column - 1).getType().getSqlTypeName().getClass().getName();
+        return resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getClass().getName();
     }
     
     private Optional<String> findTableName(final int column) {
