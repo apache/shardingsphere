@@ -54,8 +54,6 @@ import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.Optimize
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtils;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -66,9 +64,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Advanced SQL federation executor.
+ * SQL federation executor.
  */
-public final class AdvancedSQLFederationExecutor implements SQLFederationExecutor {
+public final class SQLFederationExecutor implements AutoCloseable {
     
     private static final JavaTypeFactory JAVA_TYPE_FACTORY = new JavaTypeFactoryImpl();
     
@@ -88,7 +86,15 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     
     private ResultSet resultSet;
     
-    @Override
+    /**
+     * Init SQL federation executor.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param metaData ShardingSphere meta data
+     * @param data ShardingSphere data
+     * @param jdbcExecutor jdbc executor
+     */
     public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData data, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
@@ -99,7 +105,14 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
         this.jdbcExecutor = jdbcExecutor;
     }
     
-    @Override
+    /**
+     * Execute query.
+     *
+     * @param prepareEngine prepare engine
+     * @param callback callback
+     * @param federationContext federation context
+     * @return result set
+     */
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
@@ -144,25 +157,23 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
         return new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, selectStatementContext, optimizeContext.getValidatedNodeType());
     }
     
-    @Override
+    /**
+     * Get result set.
+     *
+     * @return result set
+     */
     public ResultSet getResultSet() {
         return resultSet;
     }
     
-    @Override
+    /**
+     * Close.
+     * 
+     * @throws SQLException sql exception
+     */
     public void close() throws SQLException {
         if (null != resultSet) {
             resultSet.close();
         }
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
-    
-    @Override
-    public String getType() {
-        return "ADVANCED";
     }
 }

@@ -56,10 +56,10 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
+import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutor;
+import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilder;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -150,7 +150,6 @@ class DatabaseConnectorTest {
         SQLFederationExecutor federationExecutor = mock(SQLFederationExecutor.class);
         when(SystemSchemaUtils.containsSystemSchema(any(DatabaseType.class), any(), any(ShardingSphereDatabase.class))).thenReturn(true);
         try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
-            typedSPILoader.when(() -> TypedSPILoader.getService(SQLFederationExecutor.class, "ADVANCED")).thenReturn(federationExecutor);
             typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, "H2")).thenReturn(new QueryHeaderBuilderFixture());
             typedSPILoader.when(() -> TypedSPILoader.getService(OptimizerSQLDialectBuilder.class, "MySQL")).thenReturn(mock(OptimizerSQLDialectBuilder.class));
             typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, "H2")).thenReturn(new MySQLDatabaseType());

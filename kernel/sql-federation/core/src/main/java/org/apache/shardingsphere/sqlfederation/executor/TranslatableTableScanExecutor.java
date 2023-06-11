@@ -84,7 +84,6 @@ import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableSc
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.rexnode.StringToRexNodeUtils;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtils;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
