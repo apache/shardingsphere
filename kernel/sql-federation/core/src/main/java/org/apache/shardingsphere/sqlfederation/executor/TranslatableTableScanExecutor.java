@@ -82,8 +82,8 @@ import org.apache.shardingsphere.sqlfederation.optimizer.executor.ScanNodeExecut
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.rexnode.StringToRexNodeUtils;
-import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtils;
+import org.apache.shardingsphere.sqlfederation.executor.rexnode.StringToRexNodeUtils;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationPlannerUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
