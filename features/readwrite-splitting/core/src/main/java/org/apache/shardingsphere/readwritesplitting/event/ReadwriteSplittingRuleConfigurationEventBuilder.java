@@ -77,8 +77,6 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
     
     private Optional<GovernanceEvent> createLoadBalanceEvent(final String databaseName, final String loadBalanceName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlAlgorithmConfiguration.class));
-            
             return Optional.of(new AddLoadBalanceEvent<>(databaseName, loadBalanceName, swapToAlgorithmConfig(event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
