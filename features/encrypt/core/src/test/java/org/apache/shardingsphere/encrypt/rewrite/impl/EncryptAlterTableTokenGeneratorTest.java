@@ -51,28 +51,32 @@ import static org.mockito.Mockito.when;
 
 class EncryptAlterTableTokenGeneratorTest {
     
-    private EncryptAlterTableTokenGenerator generator;
+    private final EncryptAlterTableTokenGenerator generator = new EncryptAlterTableTokenGenerator();
     
     @BeforeEach
     void setup() {
-        generator = new EncryptAlterTableTokenGenerator();
         generator.setEncryptRule(mockEncryptRule());
     }
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
-        when(result.getCipherColumn("t_encrypt", "certificate_number")).thenReturn("cipher_certificate_number");
-        when(result.findAssistedQueryColumn("t_encrypt", "certificate_number")).thenReturn(Optional.of("assisted_certificate_number"));
-        when(result.findLikeQueryColumn("t_encrypt", "certificate_number")).thenReturn(Optional.of("like_certificate_number"));
-        EncryptTable encryptTable = mock(EncryptTable.class);
-        when(encryptTable.getLogicColumns()).thenReturn(Collections.singleton("t_encrypt"));
-        when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(mockEncryptColumn()));
-        when(encryptTable.findEncryptColumn("certificate_number_new")).thenReturn(Optional.of(mockNewEncryptColumn()));
+        EncryptTable encryptTable = mockEncryptTable();
+        when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         StandardEncryptAlgorithm<?, ?> encryptAlgorithm = mock(StandardEncryptAlgorithm.class);
         when(result.findStandardEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(encryptAlgorithm));
         when(result.findStandardEncryptor("t_encrypt", "certificate_number_new")).thenReturn(Optional.of(encryptAlgorithm));
-        when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
-        when(result.getCipherColumn("t_encrypt", "certificate_number_new")).thenReturn("cipher_certificate_number_new");
+        return result;
+    }
+    
+    private EncryptTable mockEncryptTable() {
+        EncryptTable result = mock(EncryptTable.class);
+        when(result.getCipherColumn("certificate_number")).thenReturn("cipher_certificate_number");
+        when(result.findAssistedQueryColumn("certificate_number")).thenReturn(Optional.of("assisted_certificate_number"));
+        when(result.findLikeQueryColumn("certificate_number")).thenReturn(Optional.of("like_certificate_number"));
+        when(result.getLogicColumns()).thenReturn(Collections.singleton("t_encrypt"));
+        when(result.getEncryptColumn("certificate_number")).thenReturn(mockEncryptColumn());
+        when(result.getCipherColumn("certificate_number_new")).thenReturn("cipher_certificate_number_new");
+        when(result.getEncryptColumn("certificate_number_new")).thenReturn(mockNewEncryptColumn());
         return result;
     }
     
@@ -92,92 +96,93 @@ class EncryptAlterTableTokenGeneratorTest {
     
     @Test
     void assertAddColumnGenerateSQLTokens() {
-        Collection<SQLToken> sqlTokens = generator.generateSQLTokens(buildAddColumnStatementContext());
-        assertThat(sqlTokens.size(), is(4));
-        Iterator<SQLToken> iterator = sqlTokens.iterator();
-        assertThat(iterator.next(), instanceOf(RemoveToken.class));
-        EncryptAlterTableToken cipherToken = (EncryptAlterTableToken) iterator.next();
+        Collection<SQLToken> actual = generator.generateSQLTokens(mockAddColumnStatementContext());
+        assertThat(actual.size(), is(4));
+        Iterator<SQLToken> actualIterator = actual.iterator();
+        assertThat(actualIterator.next(), instanceOf(RemoveToken.class));
+        EncryptAlterTableToken cipherToken = (EncryptAlterTableToken) actualIterator.next();
         assertThat(cipherToken.toString(), is("cipher_certificate_number"));
         assertThat(cipherToken.getStartIndex(), is(51));
         assertThat(cipherToken.getStopIndex(), is(50));
-        EncryptAlterTableToken assistedToken = (EncryptAlterTableToken) iterator.next();
+        EncryptAlterTableToken assistedToken = (EncryptAlterTableToken) actualIterator.next();
         assertThat(assistedToken.toString(), is(", ADD COLUMN assisted_certificate_number"));
         assertThat(assistedToken.getStartIndex(), is(68));
         assertThat(assistedToken.getStopIndex(), is(50));
-        EncryptAlterTableToken likeToken = (EncryptAlterTableToken) iterator.next();
+        EncryptAlterTableToken likeToken = (EncryptAlterTableToken) actualIterator.next();
         assertThat(likeToken.toString(), is(", ADD COLUMN like_certificate_number"));
         assertThat(likeToken.getStartIndex(), is(68));
         assertThat(likeToken.getStopIndex(), is(50));
     }
     
-    private AlterTableStatementContext buildAddColumnStatementContext() {
+    private AlterTableStatementContext mockAddColumnStatementContext() {
         AlterTableStatementContext result = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
-        ColumnDefinitionSegment segment = new ColumnDefinitionSegment(33, 67, new ColumnSegment(33, 50, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false);
-        AddColumnDefinitionSegment addColumnDefinitionSegment = new AddColumnDefinitionSegment(22, 67, Collections.singletonList(segment));
-        when(result.getSqlStatement().getAddColumnDefinitions()).thenReturn(Collections.singletonList(addColumnDefinitionSegment));
+        ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
+                33, 67, new ColumnSegment(33, 50, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false);
+        when(result.getSqlStatement().getAddColumnDefinitions()).thenReturn(Collections.singleton(new AddColumnDefinitionSegment(22, 67, Collections.singleton(columnDefinitionSegment))));
         return result;
     }
     
     @Test
     void assertModifyColumnGenerateSQLTokens() {
-        Collection<SQLToken> sqlTokens = generator.generateSQLTokens(buildModifyColumnStatementContext());
-        assertThat(sqlTokens.size(), is(4));
-        Iterator<SQLToken> iterator = sqlTokens.iterator();
-        assertThat(iterator.next(), instanceOf(RemoveToken.class));
-        EncryptAlterTableToken cipherToken = (EncryptAlterTableToken) iterator.next();
+        Collection<SQLToken> actual = generator.generateSQLTokens(mockModifyColumnStatementContext());
+        assertThat(actual.size(), is(4));
+        Iterator<SQLToken> actualIterator = actual.iterator();
+        assertThat(actualIterator.next(), instanceOf(RemoveToken.class));
+        EncryptAlterTableToken cipherToken = (EncryptAlterTableToken) actualIterator.next();
         assertThat(cipherToken.toString(), is("cipher_certificate_number"));
         assertThat(cipherToken.getStartIndex(), is(54));
         assertThat(cipherToken.getStopIndex(), is(53));
-        EncryptAlterTableToken assistedToken = (EncryptAlterTableToken) iterator.next();
+        EncryptAlterTableToken assistedToken = (EncryptAlterTableToken) actualIterator.next();
         assertThat(assistedToken.toString(), is(", MODIFY COLUMN assisted_certificate_number"));
         assertThat(assistedToken.getStartIndex(), is(71));
         assertThat(assistedToken.getStopIndex(), is(53));
-        EncryptAlterTableToken likeToken = (EncryptAlterTableToken) iterator.next();
+        EncryptAlterTableToken likeToken = (EncryptAlterTableToken) actualIterator.next();
         assertThat(likeToken.toString(), is(", MODIFY COLUMN like_certificate_number"));
         assertThat(likeToken.getStartIndex(), is(71));
         assertThat(likeToken.getStopIndex(), is(53));
     }
     
-    private AlterTableStatementContext buildModifyColumnStatementContext() {
+    private AlterTableStatementContext mockModifyColumnStatementContext() {
         AlterTableStatementContext result = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
-        ColumnDefinitionSegment segment = new ColumnDefinitionSegment(36, 70, new ColumnSegment(36, 53, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false);
-        ModifyColumnDefinitionSegment modifyColumnDefinitionSegment = new ModifyColumnDefinitionSegment(22, 70, segment);
-        when(result.getSqlStatement().getModifyColumnDefinitions()).thenReturn(Collections.singletonList(modifyColumnDefinitionSegment));
+        ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
+                36, 70, new ColumnSegment(36, 53, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false);
+        when(result.getSqlStatement().getModifyColumnDefinitions()).thenReturn(Collections.singleton(new ModifyColumnDefinitionSegment(22, 70, columnDefinitionSegment)));
         return result;
     }
     
     @Test
     void assertChangeColumnGenerateSQLTokens() {
-        Collection<SQLToken> sqlTokens = generator.generateSQLTokens(buildChangeColumnStatementContext());
-        assertThat(sqlTokens.size(), is(6));
-        Iterator<SQLToken> iterator = sqlTokens.iterator();
-        assertThat(iterator.next(), instanceOf(RemoveToken.class));
-        EncryptAlterTableToken previous = (EncryptAlterTableToken) iterator.next();
+        Collection<SQLToken> actual = generator.generateSQLTokens(mockChangeColumnStatementContext());
+        assertThat(actual.size(), is(6));
+        Iterator<SQLToken> actualIterator = actual.iterator();
+        assertThat(actualIterator.next(), instanceOf(RemoveToken.class));
+        EncryptAlterTableToken previous = (EncryptAlterTableToken) actualIterator.next();
         assertThat(previous.toString(), is("cipher_certificate_number"));
-        assertThat(iterator.next(), instanceOf(RemoveToken.class));
-        EncryptAlterTableToken cipherToken = (EncryptAlterTableToken) iterator.next();
+        assertThat(actualIterator.next(), instanceOf(RemoveToken.class));
+        EncryptAlterTableToken cipherToken = (EncryptAlterTableToken) actualIterator.next();
         assertThat(cipherToken.toString(), is("cipher_certificate_number_new"));
         assertThat(cipherToken.getStartIndex(), is(77));
         assertThat(cipherToken.getStopIndex(), is(76));
-        EncryptAlterTableToken assistedToken = (EncryptAlterTableToken) iterator.next();
+        EncryptAlterTableToken assistedToken = (EncryptAlterTableToken) actualIterator.next();
         assertThat(assistedToken.toString(), is(", CHANGE COLUMN assisted_certificate_number assisted_certificate_number_new"));
         assertThat(assistedToken.getStartIndex(), is(94));
         assertThat(assistedToken.getStopIndex(), is(76));
-        EncryptAlterTableToken likeToken = (EncryptAlterTableToken) iterator.next();
+        EncryptAlterTableToken likeToken = (EncryptAlterTableToken) actualIterator.next();
         assertThat(likeToken.toString(), is(", CHANGE COLUMN like_certificate_number like_certificate_number_new"));
         assertThat(likeToken.getStartIndex(), is(94));
         assertThat(likeToken.getStopIndex(), is(76));
     }
     
-    private AlterTableStatementContext buildChangeColumnStatementContext() {
+    private AlterTableStatementContext mockChangeColumnStatementContext() {
         AlterTableStatementContext result = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
-        ColumnDefinitionSegment segment = new ColumnDefinitionSegment(55, 93, new ColumnSegment(55, 76, new IdentifierValue("certificate_number_new")), new DataTypeSegment(), false, false);
-        ChangeColumnDefinitionSegment changeColumnDefinitionSegment = new ChangeColumnDefinitionSegment(22, 93, segment);
+        ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
+                55, 93, new ColumnSegment(55, 76, new IdentifierValue("certificate_number_new")), new DataTypeSegment(), false, false);
+        ChangeColumnDefinitionSegment changeColumnDefinitionSegment = new ChangeColumnDefinitionSegment(22, 93, columnDefinitionSegment);
         changeColumnDefinitionSegment.setPreviousColumn(new ColumnSegment(36, 53, new IdentifierValue("certificate_number")));
-        when(result.getSqlStatement().getChangeColumnDefinitions()).thenReturn(Collections.singletonList(changeColumnDefinitionSegment));
+        when(result.getSqlStatement().getChangeColumnDefinitions()).thenReturn(Collections.singleton(changeColumnDefinitionSegment));
         return result;
     }
 }
