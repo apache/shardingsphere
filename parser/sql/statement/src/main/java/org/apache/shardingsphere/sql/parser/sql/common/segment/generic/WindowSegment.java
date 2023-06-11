@@ -38,12 +38,12 @@ public final class WindowSegment implements SQLSegment {
     
     private IdentifierValue identifierValue;
     
-    private Collection<ExpressionSegment> segments;
+    private Collection<ExpressionSegment> partitionListSegments;
     
-    public WindowSegment(final int startIndex, final int stopIndex, final IdentifierValue identifierValue, final Collection<ExpressionSegment> segments) {
+    public WindowSegment(final int startIndex, final int stopIndex, final IdentifierValue identifierValue, final Collection<ExpressionSegment> partitionListSegments) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.identifierValue = identifierValue;
-        this.segments = segments;
+        this.partitionListSegments = partitionListSegments;
     }
 }

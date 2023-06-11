@@ -37,7 +37,7 @@ public final class WindowConverter implements SQLSegmentConverter<WindowSegment,
     @Override
     public Optional<SqlNodeList> convert(final WindowSegment segment) {
         SqlIdentifier sqlIdentifier = new SqlIdentifier(segment.getIdentifierValue().getValue(), SqlParserPos.ZERO);
-        SqlNodeList partitionList = new SqlNodeList(Collections.singletonList(new ExpressionConverter().convert(segment.getSegments().iterator().next()).get()), SqlParserPos.ZERO);
+        SqlNodeList partitionList = new SqlNodeList(Collections.singletonList(new ExpressionConverter().convert(segment.getPartitionListSegments().iterator().next()).get()), SqlParserPos.ZERO);
         SqlNodeList orderList = new SqlNodeList(SqlParserPos.ZERO);
         SqlWindow sqlWindow = new SqlWindow(SqlParserPos.ZERO, sqlIdentifier, null, partitionList, orderList, SqlLiteral.createBoolean(false, SqlParserPos.ZERO), null, null, null);
         SqlNodeList result = new SqlNodeList(Collections.singletonList(sqlWindow), SqlParserPos.ZERO);
