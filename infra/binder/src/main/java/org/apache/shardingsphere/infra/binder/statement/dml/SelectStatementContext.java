@@ -98,6 +98,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     private final Collection<WhereSegment> whereSegments = new LinkedList<>();
     
     private final Collection<ColumnSegment> columnSegments = new LinkedList<>();
+
+    private final boolean containsEnhancedTable;
     
     private SubqueryType subqueryType;
     
@@ -117,6 +119,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         projectionsContext = new ProjectionsContextEngine(databaseName, getSchemas(metaData, databaseName), getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
+        containsEnhancedTable = false;
     }
     
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final List<Object> params, final String defaultDatabaseName) {

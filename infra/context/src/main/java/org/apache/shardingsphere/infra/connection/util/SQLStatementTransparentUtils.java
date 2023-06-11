@@ -17,7 +17,7 @@ public final class SQLStatementTransparentUtils {
         Collection<TableContainedRule> tableContainedRules = ruleMetaData.findRules(TableContainedRule.class);
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             for (TableContainedRule tableContainedRule : tableContainedRules) {
-                if (tableContainedRule.getEnhancedTableMapper().contains(each.toLowerCase())) {
+                if (tableContainedRule.getEnhancedTableMapper().contains(each)) {
                     return false;
                 }
             }

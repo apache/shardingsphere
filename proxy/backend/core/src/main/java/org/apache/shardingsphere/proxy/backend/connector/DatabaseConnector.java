@@ -47,7 +47,6 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -109,7 +108,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private final ShardingSphereDatabase database;
     
-    private final boolean transparentStatement;
+//    private final boolean transparentStatement;
     
     private final QueryContext queryContext;
     
@@ -126,7 +125,6 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         failedIfBackendNotReady(databaseConnectionManager.getConnectionSession(), sqlStatementContext);
         this.driverType = driverType;
         this.database = database;
-        this.transparentStatement = isTransparentStatement(sqlStatementContext);
         this.queryContext = queryContext;
         this.databaseConnectionManager = databaseConnectionManager;
         if (sqlStatementContext instanceof CursorAvailable) {
@@ -142,18 +140,6 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         if (!isSystemSchema && !database.isComplete()) {
             throw new RuleNotExistedException(connectionSession.getDatabaseName());
         }
-    }
-    
-    private boolean isTransparentStatement(final SQLStatementContext sqlStatementContext) {
-        Collection<TableContainedRule> tableContainedRules = database.getRuleMetaData().findRules(TableContainedRule.class);
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            for (TableContainedRule tableContainedRule : tableContainedRules) {
-                if (tableContainedRule.getEnhancedTableMapper().contains(each.toLowerCase())) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
     
     /**
