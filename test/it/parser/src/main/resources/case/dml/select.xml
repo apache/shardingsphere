@@ -4967,4 +4967,13 @@
             <simple-table name="DUAL" start-index="88" stop-index="91" literal-start-index="91" literal-stop-index="94" />
         </from>
     </select>
+    
+    <select sql-case-id="select_with_table_function">
+        <from>
+            <simple-table name="return_objects(5)" start-index="18" stop-index="32" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
 </sql-parser-test-cases>

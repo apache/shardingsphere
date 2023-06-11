@@ -264,8 +264,16 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitTableCollectionExpr(final TableCollectionExprContext ctx) {
-        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.collectionExpr().selectSubquery());
-        return new SubquerySegment(ctx.collectionExpr().selectSubquery().start.getStartIndex(), ctx.collectionExpr().selectSubquery().stop.getStopIndex(), subquery);
+        SubquerySegment result = null;
+        CollectionExprContext collectionExprContext = ctx.collectionExpr();
+        if (null != collectionExprContext.selectSubquery()) {
+            OracleSelectStatement subquery = (OracleSelectStatement) visit(collectionExprContext.selectSubquery());
+            result = new SubquerySegment(collectionExprContext.selectSubquery().start.getStartIndex(), collectionExprContext.selectSubquery().stop.getStopIndex(), subquery);
+        } else if (null != collectionExprContext.functionCall()) {
+            // TODO: functionCall()
+            result = new SubquerySegment(collectionExprContext.functionCall().start.getStartIndex(), collectionExprContext.functionCall().stop.getStopIndex(), new OracleSelectStatement());
+        }
+        return result;
     }
     
     @Override
