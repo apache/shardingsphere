@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sqlfederation.executor.resultset;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.Table;
-import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -40,7 +40,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     private final ShardingSphereSchema schema;
     
-    private final AbstractSchema filterableSchema;
+    private final Schema sqlFederationSchema;
     
     private final RelDataTypeFactory relDataTypeFactory;
     
@@ -50,10 +50,10 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     private final Map<Integer, String> indexAndColumnLabels;
     
-    public SQLFederationResultSetMetaData(final ShardingSphereSchema schema, final AbstractSchema filterableSchema,
+    public SQLFederationResultSetMetaData(final ShardingSphereSchema schema, final Schema sqlFederationSchema,
                                           final SelectStatementContext selectStatementContext, final RelDataType resultColumnType, final Map<Integer, String> indexAndColumnLabels) {
         this.schema = schema;
-        this.filterableSchema = filterableSchema;
+        this.sqlFederationSchema = sqlFederationSchema;
         this.relDataTypeFactory = new JavaTypeFactoryImpl();
         this.selectStatementContext = selectStatementContext;
         this.resultColumnType = resultColumnType;
@@ -87,7 +87,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int isNullable(final int column) {
-        Optional<Table> table = findTableName(column).flatMap(optional -> Optional.ofNullable(filterableSchema.getTable(optional)));
+        Optional<Table> table = findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.getTable(optional)));
         return !table.isPresent() || table.get().getRowType(relDataTypeFactory).isNullable() ? ResultSetMetaData.columnNullable : ResultSetMetaData.columnNoNulls;
     }
     
@@ -98,7 +98,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getColumnDisplaySize(final int column) {
-        return findTableName(column).flatMap(optional -> Optional.ofNullable(filterableSchema.getTable(optional))).map(optional -> optional.getRowType(relDataTypeFactory).getPrecision()).orElse(0);
+        return findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.getTable(optional))).map(optional -> optional.getRowType(relDataTypeFactory).getPrecision()).orElse(0);
     }
     
     @Override
@@ -122,13 +122,13 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getPrecision(final int column) {
-        Optional<Table> table = findTableName(column).flatMap(optional -> Optional.ofNullable(filterableSchema.getTable(optional)));
+        Optional<Table> table = findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.getTable(optional)));
         return !table.isPresent() || RelDataType.PRECISION_NOT_SPECIFIED == table.get().getRowType(relDataTypeFactory).getPrecision() ? 0 : table.get().getRowType(relDataTypeFactory).getPrecision();
     }
     
     @Override
     public int getScale(final int column) {
-        Optional<Table> table = findTableName(column).flatMap(optional -> Optional.ofNullable(filterableSchema.getTable(optional)));
+        Optional<Table> table = findTableName(column).flatMap(optional -> Optional.ofNullable(sqlFederationSchema.getTable(optional)));
         return !table.isPresent() || RelDataType.SCALE_NOT_SPECIFIED == table.get().getRowType(relDataTypeFactory).getScale() ? 0 : table.get().getRowType(relDataTypeFactory).getScale();
     }
     

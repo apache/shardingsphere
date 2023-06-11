@@ -70,7 +70,7 @@ class PreparedStatementAdapterTest {
                 new ShardingSphereRuleMetaData(Arrays.asList(
                         new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()),
                         new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()),
-                        new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build()))));
+                        new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap(), mock(ConfigurationProperties.class)))));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes())

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.decider.engine;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -59,7 +60,8 @@ class SQLFederationDecideEngineTest {
     
     @Test
     void assertDecideWhenNotConfigSqlFederationEnabled() {
-        Collection<ShardingSphereRule> rules = Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(false, mock(CacheOption.class))));
+        Collection<ShardingSphereRule> rules =
+                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         SQLFederationDecideEngine engine = new SQLFederationDecideEngine(rules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
@@ -69,7 +71,8 @@ class SQLFederationDecideEngineTest {
     
     @Test
     void assertDecideWhenExecuteNotSelectStatement() {
-        Collection<ShardingSphereRule> rules = Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class))));
+        Collection<ShardingSphereRule> rules =
+                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         SQLFederationDecideEngine engine = new SQLFederationDecideEngine(rules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
@@ -79,7 +82,9 @@ class SQLFederationDecideEngineTest {
     
     @Test
     void assertDecideWhenConfigSingleMatchedRule() {
-        Collection<ShardingSphereRule> rules = Arrays.asList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class))), new SQLFederationDeciderRuleMatchFixture());
+        Collection<ShardingSphereRule> rules =
+                Arrays.asList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)),
+                        new SQLFederationDeciderRuleMatchFixture());
         SQLFederationDecideEngine engine = new SQLFederationDecideEngine(rules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
@@ -89,7 +94,9 @@ class SQLFederationDecideEngineTest {
     
     @Test
     void assertDecideWhenConfigSingleNotMatchedRule() {
-        Collection<ShardingSphereRule> rules = Arrays.asList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class))), new SQLFederationDeciderRuleNotMatchFixture());
+        Collection<ShardingSphereRule> rules =
+                Arrays.asList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)),
+                        new SQLFederationDeciderRuleNotMatchFixture());
         SQLFederationDecideEngine engine = new SQLFederationDecideEngine(rules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
@@ -99,8 +106,10 @@ class SQLFederationDecideEngineTest {
     
     @Test
     void assertDecideWhenConfigMultiRule() {
-        Collection<ShardingSphereRule> rules = Arrays.asList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class))), new SQLFederationDeciderRuleNotMatchFixture(),
-                new SQLFederationDeciderRuleMatchFixture());
+        Collection<ShardingSphereRule> rules =
+                Arrays.asList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)),
+                        new SQLFederationDeciderRuleNotMatchFixture(),
+                        new SQLFederationDeciderRuleMatchFixture());
         SQLFederationDecideEngine engine = new SQLFederationDecideEngine(rules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());

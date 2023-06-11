@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.QueryProvider;
@@ -39,8 +40,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.operator.physical.EnumerablePushDownTableScan;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
+import org.apache.shardingsphere.sqlfederation.optimizer.operator.physical.EnumerablePushDownTableScan;
 import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederationStatistic;
 
 import java.lang.reflect.Type;
@@ -53,11 +54,12 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
     
     private final ShardingSphereTable table;
     
-    private final TableScanExecutor executor;
-    
     private final SQLFederationStatistic statistic;
     
     private final DatabaseType protocolType;
+    
+    @Setter
+    private TableScanExecutor executor;
     
     /**
      * Execute filter and project when query the federation translatable table.

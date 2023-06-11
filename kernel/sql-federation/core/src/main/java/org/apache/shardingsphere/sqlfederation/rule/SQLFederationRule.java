@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.sqlfederation.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutor;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
+
+import java.util.Map;
 
 /**
  * SQL federation rule.
@@ -35,23 +38,12 @@ public final class SQLFederationRule implements GlobalRule {
     
     private final SQLFederationExecutor sqlFederationExecutor;
     
-    public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig) {
+    private final OptimizerContext optimizerContext;
+    
+    public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         configuration = ruleConfig;
         sqlFederationExecutor = new SQLFederationExecutor();
-    }
-    
-    /**
-     * Init SQL federation executor.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param metaData ShardingSphere meta data
-     * @param shardingSphereData ShardingSphere data
-     * @param jdbcExecutor jdbc executor
-     */
-    public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData shardingSphereData,
-                     final JDBCExecutor jdbcExecutor) {
-        sqlFederationExecutor.init(databaseName, schemaName, metaData, shardingSphereData, jdbcExecutor);
+        optimizerContext = OptimizerContextFactory.create(databases, props);
     }
     
     @Override
