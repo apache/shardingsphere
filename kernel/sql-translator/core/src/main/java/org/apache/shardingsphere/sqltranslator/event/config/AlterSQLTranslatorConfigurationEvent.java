@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.config;
+package org.apache.shardingsphere.sqltranslator.event.config;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 
 /**
- * Rule configuration event builder.
+ * Alter sql translator configuration event.
  */
-public interface RuleConfigurationEventBuilder {
+@RequiredArgsConstructor
+@Getter
+public final class AlterSQLTranslatorConfigurationEvent implements GovernanceEvent {
     
-    /**
-     * Build rule changed event.
-     *
-     * @param databaseName database name
-     * @param event data changed event
-     * @return rule changed event
-     */
-    Optional<GovernanceEvent> build(String databaseName, DataChangedEvent event);
+    private final String databaseName;
+    
+    private final SQLTranslatorRuleConfiguration config;
 }
