@@ -103,8 +103,8 @@ class ShardingNodeConverterTest {
         assertFalse(ShardingNodeConverter.isAutoTablePath("/metadata/foo_db/rules/sharding/algorithms/MD5"));
         assertTrue(ShardingNodeConverter.isBindingTablePath("/metadata/foo_db/rules/sharding/binding_tables/foo_table"));
         assertFalse(ShardingNodeConverter.isBindingTablePath("/metadata/foo_db/rules/sharding/algorithms/MD5"));
-        assertTrue(ShardingNodeConverter.isBroadcastTablePath("/metadata/foo_db/rules/sharding/broadcast_tables/foo_table"));
-        assertFalse(ShardingNodeConverter.isBroadcastTablePath("/metadata/foo_db/rules/sharding/algorithms/MD5"));
+        assertTrue(ShardingNodeConverter.isBroadcastTablePath("/metadata/foo_db/rules/sharding/broadcast_tables"));
+        assertFalse(ShardingNodeConverter.isBroadcastTablePath("/metadata/foo_db/rules/sharding/broadcast_tables/foo"));
         assertTrue(ShardingNodeConverter.isDefaultDatabaseStrategyPath("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy"));
         assertFalse(ShardingNodeConverter.isDefaultDatabaseStrategyPath("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy/foo"));
         assertTrue(ShardingNodeConverter.isDefaultTableStrategyPath("/metadata/foo_db/rules/sharding/default_strategies/default_table_strategy"));
