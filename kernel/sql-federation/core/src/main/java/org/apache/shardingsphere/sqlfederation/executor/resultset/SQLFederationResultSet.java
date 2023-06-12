@@ -79,12 +79,12 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     private boolean closed;
     
     public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema,
-                                  final SelectStatementContext selectStatementContext, final RelDataType validatedNodeType) {
+                                  final SelectStatementContext selectStatementContext, final RelDataType resultColumnType) {
         this.enumerator = enumerator;
         columnLabelAndIndexes = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
         Map<Integer, String> indexAndColumnLabels = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
         handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, selectStatementContext);
-        resultSetMetaData = new SQLFederationResultSetMetaData(schema, filterableSchema, selectStatementContext, validatedNodeType, indexAndColumnLabels);
+        resultSetMetaData = new SQLFederationResultSetMetaData(schema, filterableSchema, selectStatementContext, resultColumnType, indexAndColumnLabels);
     }
     
     private void handleColumnLabelAndIndex(final Map<String, Integer> columnLabelAndIndexes, final Map<Integer, String> indexAndColumnLabels, final SelectStatementContext selectStatementContext) {

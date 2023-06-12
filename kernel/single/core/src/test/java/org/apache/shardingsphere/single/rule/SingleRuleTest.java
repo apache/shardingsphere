@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,9 +95,10 @@ class SingleRuleTest {
     
     @Test
     void assertGetSingleTableDataNodes() {
-        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        when(dataNodeContainedRule.getAllTables()).thenReturn(Arrays.asList("t_order", "t_order_0", "t_order_1"));
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        TableContainedRule tableContainedRule = mock(TableContainedRule.class, RETURNS_DEEP_STUBS);
+        when(tableContainedRule.getDistributedTableMapper().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(tableContainedRule.getActualTableMapper().getTableNames()).thenReturn(Arrays.asList("t_order_0", "t_order_1"));
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(tableContainedRule));
         Map<String, Collection<DataNode>> actual = singleRule.getSingleTableDataNodes();
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("employee"));
@@ -105,9 +107,10 @@ class SingleRuleTest {
     
     @Test
     void assertGetSingleTableDataNodesWithUpperCase() {
-        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        when(dataNodeContainedRule.getAllTables()).thenReturn(Arrays.asList("T_ORDER", "T_ORDER_0", "T_ORDER_1"));
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        TableContainedRule tableContainedRule = mock(TableContainedRule.class, RETURNS_DEEP_STUBS);
+        when(tableContainedRule.getDistributedTableMapper().getTableNames()).thenReturn(Collections.singletonList("T_ORDER"));
+        when(tableContainedRule.getActualTableMapper().getTableNames()).thenReturn(Arrays.asList("T_ORDER_0", "T_ORDER_1"));
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(tableContainedRule));
         Map<String, Collection<DataNode>> actual = singleRule.getSingleTableDataNodes();
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("employee"));
@@ -187,11 +190,11 @@ class SingleRuleTest {
         tableNames.add(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "teacher"));
         assertThat(singleRule.getSingleTableNames(tableNames).iterator().next().getSchemaName(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(singleRule.getSingleTableNames(tableNames).iterator().next().getTableName(), is("teacher"));
-        assertTrue(singleRule.getAllTables().contains("employee"));
-        assertTrue(singleRule.getAllTables().contains("student"));
-        assertTrue(singleRule.getAllTables().contains("t_order_0"));
-        assertTrue(singleRule.getAllTables().contains("t_order_1"));
-        assertTrue(singleRule.getAllTables().contains("teacher"));
+        assertTrue(singleRule.getLogicTableMapper().contains("employee"));
+        assertTrue(singleRule.getLogicTableMapper().contains("student"));
+        assertTrue(singleRule.getLogicTableMapper().contains("t_order_0"));
+        assertTrue(singleRule.getLogicTableMapper().contains("t_order_1"));
+        assertTrue(singleRule.getLogicTableMapper().contains("teacher"));
     }
     
     @Test
@@ -203,9 +206,9 @@ class SingleRuleTest {
         Collection<QualifiedTable> tableNames = new LinkedList<>();
         tableNames.add(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "employee"));
         assertTrue(singleRule.getSingleTableNames(tableNames).isEmpty());
-        assertTrue(singleRule.getAllTables().contains("student"));
-        assertTrue(singleRule.getAllTables().contains("t_order_0"));
-        assertTrue(singleRule.getAllTables().contains("t_order_1"));
+        assertTrue(singleRule.getLogicTableMapper().contains("student"));
+        assertTrue(singleRule.getLogicTableMapper().contains("t_order_0"));
+        assertTrue(singleRule.getLogicTableMapper().contains("t_order_1"));
     }
     
     @Test

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.result.query;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Calendar;
 
@@ -66,6 +67,15 @@ public interface QueryResult extends ExecuteResult, AutoCloseable {
      * @throws SQLException SQL exception
      */
     InputStream getInputStream(int columnIndex, String type) throws SQLException;
+    
+    /**
+     * Get CharacterStream.
+     *
+     * @param columnIndex column index
+     * @return reader
+     * @throws SQLException SQL exception
+     */
+    Reader getCharacterStream(int columnIndex) throws SQLException;
     
     /**
      * Judge result set is null or not.

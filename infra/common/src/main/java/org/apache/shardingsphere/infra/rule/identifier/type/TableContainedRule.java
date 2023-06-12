@@ -19,17 +19,36 @@ package org.apache.shardingsphere.infra.rule.identifier.type;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Collection;
-
 /**
  * ShardingSphere rule which contains table.
  */
 public interface TableContainedRule extends ShardingSphereRule {
     
     /**
-     * Get tables.
+     * Get logic table mapper.
      *
-     * @return tables
+     * @return logic table mapper
      */
-    Collection<String> getTables();
+    TableNamesMapper getLogicTableMapper();
+    
+    /**
+     * Get actual table mapper.
+     *
+     * @return actual table mapper
+     */
+    TableNamesMapper getActualTableMapper();
+    
+    /**
+     * Get distributed table mapper.
+     *
+     * @return distributed table mapper
+     */
+    TableNamesMapper getDistributedTableMapper();
+    
+    /**
+     * Get enhanced table mapper.
+     *
+     * @return enhanced table mapper
+     */
+    TableNamesMapper getEnhancedTableMapper();
 }

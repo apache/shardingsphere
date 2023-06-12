@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import org.apache.commons.lang3.Range;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Interval to range iterator.
@@ -54,6 +55,9 @@ public final class IntervalToRangeIterator implements Iterator<Range<Long>> {
     
     @Override
     public Range<Long> next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
         long upperLimit = Math.min(maximum, current + interval);
         Range<Long> result = Range.between(current, upperLimit);
         current = upperLimit + 1;

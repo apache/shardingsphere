@@ -34,10 +34,7 @@ import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfigu
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -77,27 +74,22 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
     
     @Override
     public ShadowRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        Collection<ShadowDataSourceConfiguration> dataSources = new LinkedList<>();
-        Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
-        Map<String, AlgorithmConfiguration> algorithms = new LinkedHashMap<>();
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         for (YamlDataNode each : dataNodes) {
             if (ShadowNodeConverter.isDataSourcePath(each.getKey())) {
                 ShadowNodeConverter.getDataSourceName(each.getKey())
-                        .ifPresent(dataSourceName -> dataSources.add(swapDataSource(dataSourceName, YamlEngine.unmarshal(each.getValue(), YamlShadowDataSourceConfiguration.class))));
+                        .ifPresent(dataSourceName -> result.getDataSources().add(swapDataSource(dataSourceName, YamlEngine.unmarshal(each.getValue(), YamlShadowDataSourceConfiguration.class))));
             } else if (ShadowNodeConverter.isTablePath(each.getKey())) {
                 ShadowNodeConverter.getTableName(each.getKey())
-                        .ifPresent(tableName -> tables.put(tableName, tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShadowTableConfiguration.class))));
+                        .ifPresent(tableName -> result.getTables().put(tableName, tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShadowTableConfiguration.class))));
             } else if (ShadowNodeConverter.isAlgorithmPath(each.getKey())) {
                 ShadowNodeConverter.getAlgorithmName(each.getKey())
-                        .ifPresent(algorithmName -> algorithms.put(algorithmName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
+                        .ifPresent(algorithmName -> result.getShadowAlgorithms().put(algorithmName,
+                                algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
             } else if (ShadowNodeConverter.isDefaultAlgorithmNamePath(each.getKey())) {
                 result.setDefaultShadowAlgorithmName(each.getValue());
             }
         }
-        result.setDataSources(dataSources);
-        result.setTables(tables);
-        result.setShadowAlgorithms(algorithms);
         return result;
     }
     

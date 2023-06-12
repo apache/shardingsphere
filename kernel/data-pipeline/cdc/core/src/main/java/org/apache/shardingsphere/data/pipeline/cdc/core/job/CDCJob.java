@@ -73,6 +73,14 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     
     @Override
     public void execute(final ShardingContext shardingContext) {
+        try {
+            execute0(shardingContext);
+        } finally {
+            clean();
+        }
+    }
+    
+    private void execute0(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
         log.info("Execute job {}", jobId);
         CDCJobConfiguration jobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
@@ -98,6 +106,12 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
         prepare(jobItemContexts);
         executeInventoryTasks(jobItemContexts);
         executeIncrementalTasks(jobItemContexts);
+    }
+    
+    private void clean() {
+        for (PipelineTasksRunner each : getTasksRunners()) {
+            CloseUtils.closeQuietly(each.getJobItemContext().getJobProcessContext());
+        }
     }
     
     private CDCJobItemContext buildPipelineJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem) {
