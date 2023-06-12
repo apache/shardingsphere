@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 class ShowSQLFederationRuleExecutorTest {
     
     @Test
-    void assertSQLParserRule() {
+    void assertSQLFederationRule() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShowSQLFederationRuleExecutor executor = new ShowSQLFederationRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowSQLFederationRuleStatement.class));
