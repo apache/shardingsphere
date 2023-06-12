@@ -80,9 +80,7 @@ public final class ConsulDistributedLock implements DistributedLock {
             putParams.setAcquireSession(sessionId);
             Response<Boolean> response = client.setKVValue(lockPath, LOCK_VALUE, putParams);
             if (response.getValue()) {
-                lockSessionId.set(sessionId);
-                SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> client.renewSession(sessionId, QueryParams.DEFAULT), 5L, 10L, TimeUnit.SECONDS);
-                return true;
+                return tryLock(sessionId);
             }
             client.sessionDestroy(sessionId, null);
             long waitingMillis = waitUntilRelease(response.getConsulIndex(), remainingMillis);
@@ -91,6 +89,12 @@ public final class ConsulDistributedLock implements DistributedLock {
             }
             remainingMillis -= waitingMillis;
         }
+    }
+    
+    private boolean tryLock(final String sessionId) {
+        lockSessionId.set(sessionId);
+        SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> client.renewSession(sessionId, QueryParams.DEFAULT), 5L, 10L, TimeUnit.SECONDS);
+        return true;
     }
     
     private String createSessionId() {

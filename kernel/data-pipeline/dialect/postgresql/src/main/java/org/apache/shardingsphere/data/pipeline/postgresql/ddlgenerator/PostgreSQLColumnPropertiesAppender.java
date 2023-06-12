@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -36,6 +37,11 @@ import java.util.stream.Collectors;
  * Column properties appender for PostgreSQL.
  */
 public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQLDDLAdapter {
+    
+    private static final Collection<String> TIME_TYPE_NAMES = new HashSet<>(Arrays.asList(
+            "time", "timetz", "time without time zone", "time with time zone", "timestamp", "timestamptz", "timestamp without time zone", "timestamp with time zone"));
+    
+    private static final Collection<String> BIT_TYPE_NAMES = new HashSet<>(Arrays.asList("bit", "bit varying", "varbit"));
     
     private static final Pattern LENGTH_PRECISION_PATTERN = Pattern.compile("(\\d+),(\\d+)");
     
@@ -262,9 +268,7 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
             int prec = (typmod - 4) & 0xffff;
             result += String.valueOf(len);
             result += "," + prec;
-        } else if ("time".equals(name) || "timetz".equals(name) || "time without time zone".equals(name) || "time with time zone".equals(name)
-                || "timestamp".equals(name) || "timestamptz".equals(name) || "timestamp without time zone".equals(name) || "timestamp with time zone".equals(name)
-                || "bit".equals(name) || "bit varying".equals(name) || "varbit".equals(name)) {
+        } else if (TIME_TYPE_NAMES.contains(name) || BIT_TYPE_NAMES.contains(name)) {
             int len = typmod;
             result += String.valueOf(len);
         } else if ("interval".equals(name)) {

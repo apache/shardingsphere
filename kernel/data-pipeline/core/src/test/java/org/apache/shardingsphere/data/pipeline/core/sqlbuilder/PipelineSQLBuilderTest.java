@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.junit.jupiter.api.Test;
@@ -112,8 +113,7 @@ class PipelineSQLBuilderTest {
     }
     
     private DataRecord mockDataRecord(final String tableName) {
-        DataRecord result = new DataRecord(new PlaceholderPosition(), 4);
-        result.setTableName(tableName);
+        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new PlaceholderPosition(), 4);
         result.addColumn(new Column("id", "", false, true));
         result.addColumn(new Column("sc", "", false, false));
         result.addColumn(new Column("c1", "", true, false));
@@ -137,8 +137,7 @@ class PipelineSQLBuilderTest {
     }
     
     private DataRecord mockDataRecordWithoutUniqueKey(final String tableName) {
-        DataRecord result = new DataRecord(new PlaceholderPosition(), 4);
-        result.setTableName(tableName);
+        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new PlaceholderPosition(), 4);
         result.addColumn(new Column("id", "", false, false));
         result.addColumn(new Column("name", "", true, false));
         return result;

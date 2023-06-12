@@ -31,8 +31,8 @@ public final class YamlShadowTableConfigurationSwapper implements YamlConfigurat
     @Override
     public YamlShadowTableConfiguration swapToYamlConfiguration(final ShadowTableConfiguration data) {
         YamlShadowTableConfiguration result = new YamlShadowTableConfiguration();
-        result.setDataSourceNames(data.getDataSourceNames());
-        result.setShadowAlgorithmNames(data.getShadowAlgorithmNames());
+        result.setDataSourceNames(new LinkedList<>(data.getDataSourceNames()));
+        result.setShadowAlgorithmNames(new LinkedList<>(data.getShadowAlgorithmNames()));
         return result;
     }
     

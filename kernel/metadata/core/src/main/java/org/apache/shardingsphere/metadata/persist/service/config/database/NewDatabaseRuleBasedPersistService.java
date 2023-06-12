@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @param <T> type of configuration
  */
-public interface NewDatabaseRuleBasedPersistService<T> extends NewDatabaseBasedPersistService<T> {
+public interface NewDatabaseRuleBasedPersistService<T> extends DatabaseBasedPersistService<T> {
     
     /**
      * Persist configurations.

@@ -96,11 +96,11 @@ public final class SingleTableInventoryDataConsistencyChecker {
         String schemaName = sourceTable.getSchemaName().getOriginal();
         String sourceTableName = sourceTable.getTableName().getOriginal();
         Map<String, Object> tableCheckPositions = progressContext.getTableCheckPositions();
-        DataConsistencyCalculateParameter sourceParam = buildParameter(
-                sourceDataSource, schemaName, sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey, tableCheckPositions.get(sourceTableName));
+        DataConsistencyCalculateParameter sourceParam = new DataConsistencyCalculateParameter(sourceDataSource,
+                schemaName, sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey, tableCheckPositions.get(sourceTableName));
         String targetTableName = targetTable.getTableName().getOriginal();
-        DataConsistencyCalculateParameter targetParam = buildParameter(targetDataSource, targetTable.getSchemaName().getOriginal(), targetTableName,
-                columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey, tableCheckPositions.get(targetTableName));
+        DataConsistencyCalculateParameter targetParam = new DataConsistencyCalculateParameter(targetDataSource,
+                targetTable.getSchemaName().getOriginal(), targetTableName, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey, tableCheckPositions.get(targetTableName));
         Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(sourceParam))).iterator();
         Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(targetParam))).iterator();
         try {
@@ -143,13 +143,6 @@ public final class SingleTableInventoryDataConsistencyChecker {
     // TODO use digest (crc32, murmurhash)
     private String getJobIdDigest(final String jobId) {
         return jobId.length() <= 6 ? jobId : jobId.substring(0, 6);
-    }
-    
-    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource,
-                                                             final String schemaName, final String tableName, final List<String> columnNames,
-                                                             final String sourceDatabaseType, final String targetDatabaseType, final PipelineColumnMetaData uniqueKey,
-                                                             final Object tableCheckPosition) {
-        return new DataConsistencyCalculateParameter(sourceDataSource, schemaName, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey, tableCheckPosition);
     }
     
     private <T> T waitFuture(final Future<T> future) {

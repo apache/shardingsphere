@@ -51,10 +51,10 @@ import java.util.Map;
 public final class ReadwriteSplittingRuleConfigurationChecker implements RuleConfigurationChecker<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final ReadwriteSplittingRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
+    public void check(final String databaseName, final ReadwriteSplittingRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs = config.getDataSources();
         Preconditions.checkArgument(!configs.isEmpty(), "Readwrite-splitting data source rules can not be empty.");
-        checkDataSources(databaseName, configs, dataSourceMap, rules);
+        checkDataSources(databaseName, configs, dataSourceMap, builtRules);
         checkLoadBalancerDataSourceName(databaseName, configs, getLoadBalancer(config));
     }
     

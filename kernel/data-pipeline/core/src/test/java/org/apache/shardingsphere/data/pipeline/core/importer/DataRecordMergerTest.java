@@ -165,9 +165,7 @@ class DataRecordMergerTest {
     }
     
     private DataRecord mockInsertDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
-        result.setType(IngestDataChangeType.INSERT);
-        result.setTableName(tableName);
+        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new PlaceholderPosition(), 3);
         result.addColumn(new Column("id", id, true, true));
         result.addColumn(new Column("user_id", userId, true, false));
         result.addColumn(new Column("total_price", totalPrice, true, false));
@@ -187,9 +185,7 @@ class DataRecordMergerTest {
     }
     
     private DataRecord mockUpdateDataRecord(final String tableName, final Integer oldId, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
-        result.setType(IngestDataChangeType.UPDATE);
-        result.setTableName(tableName);
+        DataRecord result = new DataRecord(IngestDataChangeType.UPDATE, tableName, new PlaceholderPosition(), 3);
         result.addColumn(new Column("id", oldId, id, null != oldId, true));
         result.addColumn(new Column("user_id", userId, true, false));
         result.addColumn(new Column("total_price", totalPrice, true, false));
@@ -201,9 +197,7 @@ class DataRecordMergerTest {
     }
     
     private DataRecord mockDeleteDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
-        result.setType(IngestDataChangeType.DELETE);
-        result.setTableName(tableName);
+        DataRecord result = new DataRecord(IngestDataChangeType.DELETE, tableName, new PlaceholderPosition(), 3);
         result.addColumn(new Column("id", id, null, true, true));
         result.addColumn(new Column("user_id", userId, null, true, false));
         result.addColumn(new Column("total_price", totalPrice, null, true, false));

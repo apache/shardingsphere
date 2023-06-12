@@ -19,7 +19,7 @@
 <rewrite-assertions yaml-rule="scenario/mix/config/query-with-cipher.yaml">
     <rewrite-assertion id="select_with_unqualified_shorthand" db-types="MySQL">
         <input sql="SELECT * FROM t_account" />
-        <output sql="SELECT `t_account_0`.`account_id`, `t_account_0`.`cipher_password` AS `password`, `t_account_0`.`cipher_amount` AS `amount` FROM t_account_0 UNION ALL SELECT `t_account_1`.`account_id`, `t_account_1`.`cipher_password` AS `password`, `t_account_1`.`cipher_amount` AS `amount` FROM t_account_1" />
+        <output sql="SELECT t_account_0.`account_id`, t_account_0.`cipher_password` AS `password`, t_account_0.`cipher_amount` AS `amount` FROM t_account_0 UNION ALL SELECT t_account_1.`account_id`, t_account_1.`cipher_password` AS `password`, t_account_1.`cipher_amount` AS `amount` FROM t_account_1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_qualified_shorthand" db-types="MySQL">
@@ -46,12 +46,12 @@
     
     <rewrite-assertion id="select_with_table_qualified_shorthand" db-types="MySQL">
         <input sql="SELECT t_account.* FROM t_account" />
-        <output sql="SELECT `t_account_0`.`account_id`, `t_account_0`.`cipher_password` AS `password`, `t_account_0`.`cipher_amount` AS `amount` FROM t_account_0 UNION ALL SELECT `t_account_1`.`account_id`, `t_account_1`.`cipher_password` AS `password`, `t_account_1`.`cipher_amount` AS `amount` FROM t_account_1" />
+        <output sql="SELECT t_account_0.`account_id`, t_account_0.`cipher_password` AS `password`, t_account_0.`cipher_amount` AS `amount` FROM t_account_0 UNION ALL SELECT t_account_1.`account_id`, t_account_1.`cipher_password` AS `password`, t_account_1.`cipher_amount` AS `amount` FROM t_account_1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_schema_name_in_shorthand_projection" db-types="MySQL">
         <input sql="SELECT logic_db.t_account.* FROM t_account WHERE account_id = ?" parameters="100" />
-        <output sql="SELECT `t_account_0`.`account_id`, `t_account_0`.`cipher_password` AS `password`, `t_account_0`.`cipher_amount` AS `amount` FROM t_account_0 WHERE account_id = ?" parameters="100" />
+        <output sql="SELECT t_account_0.`account_id`, t_account_0.`cipher_password` AS `password`, t_account_0.`cipher_amount` AS `amount` FROM t_account_0 WHERE account_id = ?" parameters="100" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_schema_name_in_column_projection" db-types="MySQL">

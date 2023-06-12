@@ -67,7 +67,7 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
         when(result.getCipherColumn("t_user", "mobile")).thenReturn("cipher_mobile");
         when(result.findStandardEncryptor("t_user", "mobile")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         when(result.findStandardEncryptor("t_user", "cipher_mobile")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
-        when(result.getEncryptValues(null, "db_test", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));
+        when(result.encrypt(null, "db_test", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));
         return result;
     }
     

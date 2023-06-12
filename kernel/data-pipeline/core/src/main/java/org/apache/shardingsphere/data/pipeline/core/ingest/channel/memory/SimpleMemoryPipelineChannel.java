@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -51,23 +52,36 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     @SneakyThrows(InterruptedException.class)
     // TODO thread-safe?
     @Override
-    public List<Record> fetchRecords(final int batchSize, final int timeout, final TimeUnit timeUnit) {
+    public List<Record> fetchRecords(final int batchSize, final long timeout, final TimeUnit timeUnit) {
         List<Record> result = new LinkedList<>();
-        long start = System.currentTimeMillis();
+        long startMillis = System.currentTimeMillis();
+        long timeoutMillis = timeUnit.toMillis(timeout);
         int recordsCount = 0;
-        while (batchSize > recordsCount) {
+        do {
             List<Record> records = queue.poll();
             if (null == records || records.isEmpty()) {
-                TimeUnit.MILLISECONDS.sleep(Math.min(100, timeUnit.toMillis(timeout)));
+                TimeUnit.MILLISECONDS.sleep(Math.min(100, timeoutMillis));
             } else {
                 recordsCount += records.size();
                 result.addAll(records);
             }
-            if (timeUnit.toMillis(timeout) <= System.currentTimeMillis() - start) {
+            if (recordsCount >= batchSize) {
                 break;
             }
-        }
+        } while (System.currentTimeMillis() - startMillis < timeoutMillis);
         return result;
+    }
+    
+    @Override
+    public List<Record> peekRecords() {
+        List<Record> result = queue.peek();
+        return null != result ? result : Collections.emptyList();
+    }
+    
+    @Override
+    public List<Record> pollRecords() {
+        List<Record> result = queue.poll();
+        return null != result ? result : Collections.emptyList();
     }
     
     @Override

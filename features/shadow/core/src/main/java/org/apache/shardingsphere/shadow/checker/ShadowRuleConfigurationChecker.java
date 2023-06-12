@@ -43,7 +43,7 @@ import java.util.Set;
 public final class ShadowRuleConfigurationChecker implements RuleConfigurationChecker<ShadowRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final ShadowRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
+    public void check(final String databaseName, final ShadowRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         Map<String, ShadowDataSourceConfiguration> dataSources = initShadowDataSources(config.getDataSources());
         checkDataSources(dataSources, dataSourceMap, databaseName);
         Map<String, ShadowTableConfiguration> shadowTables = config.getTables();

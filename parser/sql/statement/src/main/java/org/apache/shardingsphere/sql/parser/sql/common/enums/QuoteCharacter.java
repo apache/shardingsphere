@@ -68,4 +68,14 @@ public enum QuoteCharacter {
     public String wrap(final String value) {
         return startDelimiter + value + endDelimiter;
     }
+    
+    /**
+     * Is wrapped by quote character.
+     * 
+     * @param value value to be judged
+     * @return is wrapped or not
+     */
+    public boolean isWrapped(final String value) {
+        return value.startsWith(startDelimiter) && value.endsWith(endDelimiter);
+    }
 }

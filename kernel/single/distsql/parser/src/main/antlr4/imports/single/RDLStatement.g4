@@ -17,12 +17,27 @@
 
 grammar RDLStatement;
 
-import Symbol, Keyword, Literals;
+import BaseRule;
 
 setDefaultSingleTableStorageUnit
     : SET DEFAULT SINGLE TABLE STORAGE UNIT EQ_ (storageUnitName | RANDOM)
     ;
 
-storageUnitName
-    : IDENTIFIER_
+loadSingleTable
+    : LOAD SINGLE TABLE tableDefinition
+    ;
+
+unloadSingleTable
+    : UNLOAD SINGLE TABLE tableDefinition
+    ;
+
+tableDefinition
+    : tableIdentifier (COMMA_ tableIdentifier)*
+    ;
+
+tableIdentifier
+    : ASTERISK_ DOTASTERISK_ # allTables
+    | storageUnitName DOTASTERISK_ # allTablesFromStorageUnit
+    | storageUnitName DOT_ tableName # tableFromStorageUnit
+    | storageUnitName DOT_ schemaName DOT_ tableName # tableFromSchema
     ;

@@ -190,5 +190,8 @@ public final class YamlShardingSphereDataSourceFactory {
         if (null != jdbcConfiguration.getLogging()) {
             jdbcConfiguration.getRules().add(jdbcConfiguration.getLogging());
         }
+        if (null != jdbcConfiguration.getSqlFederation()) {
+            jdbcConfiguration.getRules().add(jdbcConfiguration.getSqlFederation());
+        }
     }
 }

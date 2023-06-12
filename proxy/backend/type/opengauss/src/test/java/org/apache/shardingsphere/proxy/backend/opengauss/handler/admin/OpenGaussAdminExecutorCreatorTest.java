@@ -39,9 +39,29 @@ class OpenGaussAdminExecutorCreatorTest {
     @Test
     void assertCreateExecutorForSelectDatabase() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getTablesContext().getTableNames().contains("pg_database")).thenReturn(true);
+        when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("pg_database"));
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator()
                 .create(selectStatementContext, "select datname, datcompatibility from pg_database where datname = 'sharding_db'", "postgres", Collections.emptyList());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(OpenGaussSystemCatalogAdminQueryExecutor.class));
+    }
+    
+    @Test
+    void assertCreateExecutorForSelectTables() {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("pg_tables"));
+        Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator()
+                .create(selectStatementContext, "select schemaname, tablename from pg_tables where schemaname = 'sharding_db'", "postgres", Collections.emptyList());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(OpenGaussSystemCatalogAdminQueryExecutor.class));
+    }
+    
+    @Test
+    void assertCreateExecutorForSelectRoles() {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("pg_roles"));
+        Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator()
+                .create(selectStatementContext, "select rolname from pg_roles", "postgres", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(OpenGaussSystemCatalogAdminQueryExecutor.class));
     }

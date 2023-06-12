@@ -24,5 +24,8 @@ execute
     | showDefaultSingleTableStorageUnit
     | showSingleTable
     | countSingleTable
+    | loadSingleTable
+    | unloadSingleTable
+    | showUnloadedSingleTables
     ) SEMI_? EOF
     ;

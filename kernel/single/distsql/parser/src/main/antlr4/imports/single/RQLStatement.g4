@@ -17,7 +17,7 @@
 
 grammar RQLStatement;
 
-import Symbol, Keyword, Literals;
+import BaseRule;
 
 showDefaultSingleTableStorageUnit
     : SHOW DEFAULT SINGLE TABLE STORAGE UNIT (FROM databaseName)?
@@ -27,16 +27,17 @@ showSingleTable
     : SHOW SINGLE (TABLES showLike? | TABLE tableName) (FROM databaseName)?
     ;
 
+showUnloadedSingleTables
+    : SHOW UNLOADED SINGLE TABLES (FROM fromClause)?
+    ;
+
+fromClause
+    : databaseName (STORAGE UNIT storageUnitName (SCHEMA schemaName)?)?
+    | STORAGE UNIT storageUnitName (SCHEMA schemaName)?
+    ;
+
 countSingleTable
     : COUNT SINGLE TABLE (FROM databaseName)?
-    ;
-
-databaseName
-    : IDENTIFIER_
-    ;
-
-tableName
-    : IDENTIFIER_
     ;
 
 showLike

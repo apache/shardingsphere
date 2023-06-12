@@ -184,6 +184,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * DDL statement visitor for MySQL.
@@ -252,6 +253,9 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
                 }
             }
         }
+        if (null != ctx.createLikeClause()) {
+            result.setLikeTable((SimpleTableSegment) visit(ctx.createLikeClause()));
+        }
         return result;
     }
     
@@ -283,35 +287,39 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
             return result;
         }
         for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterTableActions().alterCommandList().alterList())).getValue()) {
-            if (each instanceof AddColumnDefinitionSegment) {
-                result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) each);
-            } else if (each instanceof ModifyColumnDefinitionSegment) {
-                result.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) each);
-            } else if (each instanceof ChangeColumnDefinitionSegment) {
-                result.getChangeColumnDefinitions().add((ChangeColumnDefinitionSegment) each);
-            } else if (each instanceof DropColumnDefinitionSegment) {
-                result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
-            } else if (each instanceof AddConstraintDefinitionSegment) {
-                result.getAddConstraintDefinitions().add((AddConstraintDefinitionSegment) each);
-            } else if (each instanceof DropConstraintDefinitionSegment) {
-                result.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) each);
-            } else if (each instanceof RenameTableDefinitionSegment) {
-                result.setRenameTable(((RenameTableDefinitionSegment) each).getRenameTable());
-            } else if (each instanceof ConvertTableDefinitionSegment) {
-                result.setConvertTableDefinition((ConvertTableDefinitionSegment) each);
-            } else if (each instanceof DropIndexDefinitionSegment) {
-                result.getDropIndexDefinitions().add((DropIndexDefinitionSegment) each);
-            } else if (each instanceof RenameIndexDefinitionSegment) {
-                result.getRenameIndexDefinitions().add((RenameIndexDefinitionSegment) each);
-            } else if (each instanceof RenameColumnSegment) {
-                result.getRenameColumnDefinitions().add((RenameColumnSegment) each);
-            } else if (each instanceof AlgorithmTypeSegment) {
-                result.setAlgorithmSegment((AlgorithmTypeSegment) each);
-            } else if (each instanceof LockTableSegment) {
-                result.setLockTableSegment((LockTableSegment) each);
-            }
+            setAlterDefinition(result, each);
         }
         return result;
+    }
+    
+    private void setAlterDefinition(final MySQLAlterTableStatement alterTableStatement, final AlterDefinitionSegment alterDefinitionSegment) {
+        if (alterDefinitionSegment instanceof AddColumnDefinitionSegment) {
+            alterTableStatement.getAddColumnDefinitions().add((AddColumnDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof ModifyColumnDefinitionSegment) {
+            alterTableStatement.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof ChangeColumnDefinitionSegment) {
+            alterTableStatement.getChangeColumnDefinitions().add((ChangeColumnDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof DropColumnDefinitionSegment) {
+            alterTableStatement.getDropColumnDefinitions().add((DropColumnDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AddConstraintDefinitionSegment) {
+            alterTableStatement.getAddConstraintDefinitions().add((AddConstraintDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof DropConstraintDefinitionSegment) {
+            alterTableStatement.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof RenameTableDefinitionSegment) {
+            alterTableStatement.setRenameTable(((RenameTableDefinitionSegment) alterDefinitionSegment).getRenameTable());
+        } else if (alterDefinitionSegment instanceof ConvertTableDefinitionSegment) {
+            alterTableStatement.setConvertTableDefinition((ConvertTableDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof DropIndexDefinitionSegment) {
+            alterTableStatement.getDropIndexDefinitions().add((DropIndexDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof RenameIndexDefinitionSegment) {
+            alterTableStatement.getRenameIndexDefinitions().add((RenameIndexDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof RenameColumnSegment) {
+            alterTableStatement.getRenameColumnDefinitions().add((RenameColumnSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AlgorithmTypeSegment) {
+            alterTableStatement.setAlgorithmSegment((AlgorithmTypeSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof LockTableSegment) {
+            alterTableStatement.setLockTableSegment((LockTableSegment) alterDefinitionSegment);
+        }
     }
     
     private ColumnDefinitionSegment generateColumnDefinitionSegment(final ColumnSegment column, final FieldDefinitionContext ctx) {
@@ -346,48 +354,61 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     private Collection<AlterDefinitionSegment> getAlterDefinitionSegments(final AlterListContext ctx) {
         Collection<AlterDefinitionSegment> result = new LinkedList<>();
         for (AlterListItemContext each : ctx.alterListItem()) {
-            if (each instanceof AddColumnContext) {
-                result.add((AddColumnDefinitionSegment) visit(each));
-            }
-            if (each instanceof AlterConstraintContext || each instanceof AlterCheckContext) {
-                result.add((AlterDefinitionSegment) visit(each));
-            }
-            if (each instanceof ChangeColumnContext) {
-                result.add(generateModifyColumnDefinitionSegment((ChangeColumnContext) each));
-            }
-            if (each instanceof ModifyColumnContext) {
-                result.add(generateModifyColumnDefinitionSegment((ModifyColumnContext) each));
-            }
-            if (each instanceof AlterTableDropContext) {
-                AlterTableDropContext alterTableDrop = (AlterTableDropContext) each;
-                if (null != alterTableDrop.CHECK() || null != alterTableDrop.CONSTRAINT()) {
-                    ConstraintSegment constraintSegment = new ConstraintSegment(alterTableDrop.identifier().getStart().getStartIndex(), alterTableDrop.identifier().getStop().getStopIndex(),
-                            (IdentifierValue) visit(alterTableDrop.identifier()));
-                    result.add(new DropConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), constraintSegment));
-                } else if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
-                    result.add(generateDropColumnDefinitionSegment(alterTableDrop));
-                } else if (null != alterTableDrop.keyOrIndex()) {
-                    IndexSegment indexSegment = (IndexSegment) visit(alterTableDrop.indexName());
-                    result.add(new DropIndexDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexSegment));
-                }
-            }
-            if (each instanceof AddTableConstraintContext) {
-                result.add((AddConstraintDefinitionSegment) visit(each));
-            }
-            if (each instanceof AlterRenameTableContext) {
-                result.add((RenameTableDefinitionSegment) visit(each));
-            }
-            if (each instanceof AlterConvertContext) {
-                result.add((ConvertTableDefinitionSegment) visit(each));
-            }
-            if (each instanceof RenameColumnContext) {
-                result.add((RenameColumnSegment) visit(each));
-            }
-            if (each instanceof RenameIndexContext) {
-                result.add((RenameIndexDefinitionSegment) visit(each));
-            }
+            getAlterDefinitionSegment(ctx, each).ifPresent(result::add);
         }
         return result;
+    }
+    
+    private Optional<AlterDefinitionSegment> getAlterDefinitionSegment(final AlterListContext alterListContext, final AlterListItemContext alterListItemContext) {
+        if (alterListItemContext instanceof AddColumnContext) {
+            return Optional.of((AddColumnDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof AlterConstraintContext || alterListItemContext instanceof AlterCheckContext) {
+            return Optional.of((AlterDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof ChangeColumnContext) {
+            return Optional.of(generateModifyColumnDefinitionSegment((ChangeColumnContext) alterListItemContext));
+        }
+        if (alterListItemContext instanceof ModifyColumnContext) {
+            return Optional.of(generateModifyColumnDefinitionSegment((ModifyColumnContext) alterListItemContext));
+        }
+        if (alterListItemContext instanceof AlterTableDropContext) {
+            return getDropItemDefinitionSegment(alterListContext, (AlterTableDropContext) alterListItemContext);
+        }
+        if (alterListItemContext instanceof AddTableConstraintContext) {
+            return Optional.of((AddConstraintDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof AlterRenameTableContext) {
+            return Optional.of((RenameTableDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof AlterConvertContext) {
+            return Optional.of((ConvertTableDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof RenameColumnContext) {
+            return Optional.of((RenameColumnSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof RenameIndexContext) {
+            return Optional.of((RenameIndexDefinitionSegment) visit(alterListItemContext));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<AlterDefinitionSegment> getDropItemDefinitionSegment(final AlterListContext alterListContext, final AlterTableDropContext alterTableDrop) {
+        if (null != alterTableDrop.CHECK() || null != alterTableDrop.CONSTRAINT()) {
+            ConstraintSegment constraint = new ConstraintSegment(alterTableDrop.identifier().getStart().getStartIndex(), alterTableDrop.identifier().getStop().getStopIndex(),
+                    (IdentifierValue) visit(alterTableDrop.identifier()));
+            return Optional.of(new DropConstraintDefinitionSegment(alterListContext.getStart().getStartIndex(), alterListContext.getStop().getStopIndex(), constraint));
+        }
+        if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
+            ColumnSegment column = new ColumnSegment(alterTableDrop.columnInternalRef.start.getStartIndex(), alterTableDrop.columnInternalRef.stop.getStopIndex(),
+                    (IdentifierValue) visit(alterTableDrop.columnInternalRef));
+            return Optional.of(new DropColumnDefinitionSegment(alterTableDrop.getStart().getStartIndex(), alterTableDrop.getStop().getStopIndex(), Collections.singleton(column)));
+        }
+        if (null != alterTableDrop.keyOrIndex()) {
+            return Optional.of(
+                    new DropIndexDefinitionSegment(alterListContext.getStart().getStartIndex(), alterListContext.getStop().getStopIndex(), (IndexSegment) visit(alterTableDrop.indexName())));
+        }
+        return Optional.empty();
     }
     
     @Override
@@ -467,12 +488,6 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         result.setTable((SimpleTableSegment) visit(tableName));
         result.setRenameTable((SimpleTableSegment) visit(renameTableName));
         return result;
-    }
-    
-    private DropColumnDefinitionSegment generateDropColumnDefinitionSegment(final AlterTableDropContext ctx) {
-        ColumnSegment column = new ColumnSegment(ctx.columnInternalRef.start.getStartIndex(), ctx.columnInternalRef.stop.getStopIndex(),
-                (IdentifierValue) visit(ctx.columnInternalRef));
-        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList(column));
     }
     
     private ModifyColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ModifyColumnContext ctx) {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.node.config.proces
 
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 /**
  * Changed job configuration processor.

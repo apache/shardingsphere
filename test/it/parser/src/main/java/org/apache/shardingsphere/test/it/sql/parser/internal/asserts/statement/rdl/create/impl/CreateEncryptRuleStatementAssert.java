@@ -63,10 +63,10 @@ public final class CreateEncryptRuleStatementAssert {
             assertThat(assertContext.getText(String.format("Actual encrypt rule size should be %s , but it was %s",
                     expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
-            for (EncryptRuleSegment encryptRuleSegment : actual) {
+            for (EncryptRuleSegment each : actual) {
                 ExpectedEncryptRule expectedEncryptRule = expected.get(count);
-                assertThat(assertContext.getText("encrypt rule assertion error: "), encryptRuleSegment.getTableName(), is(expectedEncryptRule.getName()));
-                EncryptRuleAssert.assertIs(assertContext, encryptRuleSegment, expectedEncryptRule);
+                assertThat(assertContext.getText("encrypt rule assertion error: "), each.getTableName(), is(expectedEncryptRule.getName()));
+                EncryptRuleAssert.assertIs(assertContext, each, expectedEncryptRule);
                 count++;
             }
         }

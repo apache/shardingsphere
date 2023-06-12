@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry;
 
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 import java.util.Collection;
 import java.util.Optional;
 
-// TODO Rename GovernanceWatcher when metadata structure adjustment completed. #25485
 /**
+ * TODO Rename GovernanceWatcher when metadata structure adjustment completed. #25485
  * Governance watcher.
  * 
  * @param <T> type of event

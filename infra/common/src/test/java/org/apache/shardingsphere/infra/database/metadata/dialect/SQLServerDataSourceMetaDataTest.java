@@ -17,69 +17,49 @@
 
 package org.apache.shardingsphere.infra.database.metadata.dialect;
 
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Properties;
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SQLServerDataSourceMetaDataTest {
+class SQLServerDataSourceMetaDataTest extends AbstractDataSourceMetaDataTest {
     
-    @Test
-    void assertNewConstructorWithPortAndMicrosoft() {
-        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(9999));
-        assertThat(actual.getCatalog(), is("ds_0"));
-        assertNull(actual.getSchema());
-    }
-    
-    @Test
-    void assertNewConstructorWithPortAndWithoutMicrosoft() {
-        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:sqlserver://127.0.0.1:9999;DatabaseName=ds_0");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(9999));
-        assertNull(actual.getSchema());
-    }
-    
-    @Test
-    void assertNewConstructorWithDefaultPortAndMicrosoft() {
-        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=ds_0");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(1433));
-        assertNull(actual.getSchema());
-    }
-    
-    @Test
-    void assertNewConstructorWithDefaultPortWithoutMicrosoft() {
-        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:sqlserver://127.0.0.1;DatabaseName=ds_0");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(1433));
-        assertNull(actual.getSchema());
-    }
-    
-    @Test
-    void assertNewConstructorWithDataBaseNameContainDotAndMicrosoft() {
-        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0.0.0");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(9999));
-        assertThat(actual.getCatalog(), is("ds_0.0.0"));
-        assertNull(actual.getSchema());
-    }
-    
-    @Test
-    void assertNewConstructorWithDataBaseNameContainDotAndWithoutMicrosoft() {
-        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:sqlserver://127.0.0.1:9999;DatabaseName=ds_0.0.0");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(9999));
-        assertThat(actual.getCatalog(), is("ds_0.0.0"));
-        assertNull(actual.getSchema());
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
+    void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema) {
+        assertDataSourceMetaData(url, hostname, port, catalog, schema, new Properties());
     }
     
     @Test
     void assertNewConstructorFailure() {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new SQLServerDataSourceMetaData("jdbc:sqlserver:xxxxxxxx"));
+    }
+    
+    @Override
+    protected DataSourceMetaData createDataSourceMetaData(final String url) {
+        return new SQLServerDataSourceMetaData(url);
+    }
+    
+    private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("portAndMicrosoft", "jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=foo_ds", "127.0.0.1", 9999, "foo_ds", null),
+                    Arguments.of("portAndWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1:9999;DatabaseName=foo_ds", "127.0.0.1", 9999, "foo_ds", null),
+                    Arguments.of("defaultPortAndMicrosoft", "jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=foo_ds", "127.0.0.1", 1433, "foo_ds", null),
+                    Arguments.of("defaultPortWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1;DatabaseName=foo_ds", "127.0.0.1", 1433, "foo_ds", null),
+                    Arguments.of("databaseNameContainDotAndMicrosoft", "jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=foo_0.0.0", "127.0.0.1", 9999, "foo_0.0.0", null),
+                    Arguments.of("databaseNameContainDotAndWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1:9999;DatabaseName=foo_0.0.0", "127.0.0.1", 9999, "foo_0.0.0", null));
+        }
     }
 }

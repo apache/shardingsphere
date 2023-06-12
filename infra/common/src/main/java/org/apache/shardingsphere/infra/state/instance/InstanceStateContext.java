@@ -33,15 +33,19 @@ public final class InstanceStateContext {
      * Switch state.
      * 
      * @param state state
-     * @param on true if state is valid, false if not
      */
-    public void switchState(final InstanceState state, final boolean on) {
-        if (on) {
-            currentState.push(state);
-        } else {
-            if (getCurrentState() == state) {
-                recoverState();
-            }
+    public void switchToValidState(final InstanceState state) {
+        currentState.push(state);
+    }
+    
+    /**
+     * Switch state.
+     *
+     * @param state state
+     */
+    public void switchToInvalidState(final InstanceState state) {
+        if (getCurrentState() == state) {
+            recoverState();
         }
     }
     

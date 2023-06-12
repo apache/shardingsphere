@@ -21,29 +21,35 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatem
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.exception.UnavailableException;
-import org.apache.shardingsphere.proxy.backend.state.spi.ProxyClusterState;
+import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
+import org.apache.shardingsphere.proxy.backend.state.SupportedSQLStatementJudgeEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Unavailable proxy state.
  */
 public final class UnavailableProxyState implements ProxyClusterState {
     
+    private static final Collection<Class<? extends SQLStatement>> SUPPORTED_SQL_STATEMENTS = Arrays.asList(
+            ImportMetaDataStatement.class, ShowStatement.class, QueryableRALStatement.class,
+            RQLStatement.class, UnlockClusterStatement.class, MySQLShowDatabasesStatement.class, MySQLUseStatement.class);
+    
+    private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENTS = Collections.singleton(SQLStatement.class);
+    
+    private final SupportedSQLStatementJudgeEngine judgeEngine = new SupportedSQLStatementJudgeEngine(SUPPORTED_SQL_STATEMENTS, UNSUPPORTED_SQL_STATEMENTS);
+    
     @Override
     public void check(final SQLStatement sqlStatement) {
-        if (isSupportedStatement(sqlStatement)) {
-            return;
-        }
-        throw new UnavailableException();
-    }
-    
-    private boolean isSupportedStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof ImportMetaDataStatement || sqlStatement instanceof ShowStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof RQLStatement
-                || sqlStatement instanceof UnlockClusterStatement || sqlStatement instanceof MySQLShowDatabasesStatement || sqlStatement instanceof MySQLUseStatement;
+        ShardingSpherePreconditions.checkState(judgeEngine.isSupported(sqlStatement), UnavailableException::new);
     }
     
     @Override

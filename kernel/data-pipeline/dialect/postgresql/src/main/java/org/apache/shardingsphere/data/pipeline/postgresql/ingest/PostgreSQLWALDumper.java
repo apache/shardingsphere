@@ -52,6 +52,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * PostgreSQL WAL dumper.
@@ -61,7 +62,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     private final DumperConfiguration dumperConfig;
     
-    private final WALPosition walPosition;
+    private final AtomicReference<WALPosition> walPosition;
     
     private final PipelineChannel channel;
     
@@ -78,7 +79,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support PipelineDataSourceConfiguration"));
         this.dumperConfig = dumperConfig;
-        walPosition = (WALPosition) position;
+        walPosition = new AtomicReference<>((WALPosition) position);
         this.channel = channel;
         walEventConverter = new WALEventConverter(dumperConfig, metaDataLoader);
         logicalReplication = new PostgreSQLLogicalReplication();
@@ -112,7 +113,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
         try (
                 Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig());
                 PGReplicationStream stream = logicalReplication.createReplicationStream(connection, PostgreSQLPositionInitializer.getUniqueSlotName(connection, dumperConfig.getJobId()),
-                        walPosition.getLogSequenceNumber())) {
+                        walPosition.get().getLogSequenceNumber())) {
             PostgreSQLTimestampUtils utils = new PostgreSQLTimestampUtils(connection.unwrap(PgConnection.class).getTimestampUtils());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(utils);
             while (isRunning()) {
@@ -127,6 +128,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
                 } else {
                     processEventIgnoreTX(event);
                 }
+                walPosition.set(new WALPosition(event.getLogSequenceNumber()));
             }
         }
     }

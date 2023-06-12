@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.junit.jupiter.api.Test;
 
 import java.security.SecureRandom;
@@ -52,8 +53,8 @@ class MultiplexMemoryPipelineChannelTest {
         Record[] records = mockRecords();
         execute(ackRecords -> {
             AtomicInteger lastId = new AtomicInteger();
-            for (Record record : ackRecords) {
-                int currentId = ((IntPosition) record.getPosition()).getId();
+            for (Record each : ackRecords) {
+                int currentId = ((IntPosition) each.getPosition()).getId();
                 assertTrue(currentId > lastId.get());
                 lastId.set(currentId);
             }
@@ -97,7 +98,7 @@ class MultiplexMemoryPipelineChannelTest {
     private Record[] mockRecords() {
         Record[] result = new Record[100];
         for (int i = 1; i <= result.length; i++) {
-            result[i - 1] = random.nextBoolean() ? new DataRecord(new IntPosition(i), 0) : new PlaceholderRecord(new IntPosition(i));
+            result[i - 1] = random.nextBoolean() ? new DataRecord(IngestDataChangeType.INSERT, "t1", new IntPosition(i), 0) : new PlaceholderRecord(new IntPosition(i));
         }
         return result;
     }

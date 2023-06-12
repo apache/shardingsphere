@@ -93,5 +93,8 @@ rules:
     - t_broadcast_table
     - t_broadcast_table_for_ddl
 
-props:
-  sql-federation-type: ADVANCED
+sqlFederation:
+  sqlFederationEnabled: true
+  executionPlanCache:
+    initialCapacity: 2000
+    maximumSize: 65535

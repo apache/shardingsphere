@@ -23,7 +23,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -50,7 +49,6 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
         running = true;
         startTimeMillis = System.currentTimeMillis();
         runBlocking();
-        stop();
     }
     
     /**
@@ -77,13 +75,6 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     }
     
     protected abstract void doStop() throws SQLException;
-    
-    protected final void cancelStatement(final Statement statement) throws SQLException {
-        if (null == statement || statement.isClosed()) {
-            return;
-        }
-        statement.cancel();
-    }
     
     @Override
     public final void run() {

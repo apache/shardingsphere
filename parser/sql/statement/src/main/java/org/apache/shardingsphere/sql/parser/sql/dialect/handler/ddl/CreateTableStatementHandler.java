@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
@@ -85,5 +86,18 @@ public final class CreateTableStatementHandler implements SQLStatementHandler {
             return ((SQLServerCreateTableStatement) createTableStatement).getColumns();
         }
         return Collections.emptyList();
+    }
+    
+    /**
+     * Get like table.
+     *
+     * @param createTableStatement create table statement
+     * @return like table
+     */
+    public static Optional<SimpleTableSegment> getLikeTable(final CreateTableStatement createTableStatement) {
+        if (createTableStatement instanceof MySQLCreateTableStatement) {
+            return ((MySQLCreateTableStatement) createTableStatement).getLikeTable();
+        }
+        return Optional.empty();
     }
 }

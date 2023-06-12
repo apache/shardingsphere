@@ -47,13 +47,15 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLUtils {
     
+    private static final String BACKTICK = "`";
+    
     private static final String SQL_END = ";";
     
     private static final String COMMENT_PREFIX = "/*";
     
     private static final String COMMENT_SUFFIX = "*/";
     
-    private static final String EXCLUDED_CHARACTERS = "[]`'\"";
+    private static final String EXCLUDED_CHARACTERS = "[]'\"";
     
     private static final Pattern SINGLE_CHARACTER_PATTERN = Pattern.compile("([^\\\\])_|^_");
     
@@ -91,14 +93,14 @@ public final class SQLUtils {
     
     /**
      * Get exactly value for SQL expression.
-     * 
+     *
      * <p>remove special char for SQL expression</p>
-     * 
+     *
      * @param value SQL expression
      * @return exactly SQL expression
      */
     public static String getExactlyValue(final String value) {
-        return null == value ? null : CharMatcher.anyOf(EXCLUDED_CHARACTERS).removeFrom(value);
+        return null == value ? null : tryGetRealContentInBackticks(CharMatcher.anyOf(EXCLUDED_CHARACTERS).removeFrom(value));
     }
     
     /**
@@ -106,7 +108,7 @@ public final class SQLUtils {
      *
      * <p>remove special char for SQL expression</p>
      *
-     * @param value SQL expression
+     * @param value              SQL expression
      * @param reservedCharacters characters to be reserved
      * @return exactly SQL expression
      */
@@ -116,6 +118,36 @@ public final class SQLUtils {
         }
         String toBeExcludedCharacters = CharMatcher.anyOf(reservedCharacters).removeFrom(EXCLUDED_CHARACTERS);
         return CharMatcher.anyOf(toBeExcludedCharacters).removeFrom(value);
+    }
+    
+    /**
+     * Try get exactly value for backticks string.
+     *
+     * <p>try get content containing backticks exactly value</p>
+     *
+     * @param value SQL expression
+     * @return exactly SQL expression
+     */
+    public static String tryGetRealContentInBackticks(final String value) {
+        if (null == value) {
+            return null;
+        }
+        if (value.startsWith(BACKTICK) && value.endsWith(BACKTICK)) {
+            int startIndex = 1;
+            int stopIndex = value.length() - 1;
+            StringBuilder exactlyTableName = new StringBuilder();
+            while (startIndex < stopIndex) {
+                if (value.charAt(startIndex) == '`' && (startIndex + 1 >= stopIndex || value.charAt(startIndex + 1) != '`')) {
+                    return value;
+                } else if (value.charAt(startIndex) == '`' && value.charAt(startIndex + 1) == '`') {
+                    startIndex++;
+                }
+                exactlyTableName.append(value.charAt(startIndex));
+                startIndex++;
+            }
+            return 0 == exactlyTableName.length() ? value : exactlyTableName.toString();
+        }
+        return value;
     }
     
     /**
@@ -132,7 +164,7 @@ public final class SQLUtils {
     
     /**
      * Get exactly SQL expression without outside parentheses.
-     * 
+     *
      * @param value SQL expression
      * @return exactly SQL expression
      */
@@ -186,11 +218,11 @@ public final class SQLUtils {
     
     /**
      * Create literal expression.
-     * 
-     * @param astNode AST node
+     *
+     * @param astNode    AST node
      * @param startIndex start index
-     * @param stopIndex stop index
-     * @param text text
+     * @param stopIndex  stop index
+     * @param text       text
      * @return literal expression segment
      */
     public static ExpressionSegment createLiteralExpression(final ASTNode astNode, final int startIndex, final int stopIndex, final String text) {
@@ -241,7 +273,7 @@ public final class SQLUtils {
     
     /**
      * Convert like pattern to regex.
-     * 
+     *
      * @param pattern like pattern
      * @return regex
      */

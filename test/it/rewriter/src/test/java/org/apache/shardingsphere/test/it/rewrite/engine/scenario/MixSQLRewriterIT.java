@@ -61,10 +61,12 @@ class MixSQLRewriterIT extends SQLRewriterIT {
         when(accountTable.getColumns()).thenReturn(createColumns());
         when(accountTable.getIndexes()).thenReturn(Collections.singletonList(new ShardingSphereIndex("index_name")));
         when(result.containsTable("t_account")).thenReturn(true);
-        when(result.getTable("t_account")).thenReturn(accountTable);
+        when(result.containsTable("t_account_bak")).thenReturn(true);
+        when(result.containsTable("t_account_detail")).thenReturn(true);
         ShardingSphereTable accountBakTable = mock(ShardingSphereTable.class);
         when(accountBakTable.getColumns()).thenReturn(createColumns());
         when(result.containsTable("t_account_bak")).thenReturn(true);
+        when(result.getTable("t_account")).thenReturn(accountTable);
         when(result.getTable("t_account_bak")).thenReturn(accountBakTable);
         when(result.getTable("t_account_detail")).thenReturn(mock(ShardingSphereTable.class));
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));

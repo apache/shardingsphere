@@ -63,6 +63,7 @@ public final class DataRecordResultConvertUtils {
         } else if (IngestDataChangeType.DELETE.equals(dataRecord.getType())) {
             dataChangeType = DataChangeType.DELETE;
         }
-        return DataRecordResult.Record.newBuilder().setMetaData(metaData).addAllBefore(before).addAllAfter(after).setDataChangeType(dataChangeType).build();
+        return DataRecordResult.Record.newBuilder().setMetaData(metaData).addAllBefore(before).addAllAfter(after).setTransactionCommitMillis(dataRecord.getCommitTime())
+                .setDataChangeType(dataChangeType).build();
     }
 }
