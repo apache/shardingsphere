@@ -15,46 +15,50 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+lexer grammar Keyword;
 
-import Keyword, Literals;
+import Alphabet;
 
-showSQLParserRule
-    : SHOW SQL_PARSER RULE
+WS
+    : [ \t\r\n] + ->skip
     ;
 
-alterSQLParserRule
-    : ALTER SQL_PARSER RULE sqlParserRuleDefinition
+SHOW
+    : S H O W
     ;
 
-sqlParserRuleDefinition
-    : LP_ commentDefinition? (COMMA_? parseTreeCacheDefinition)? (COMMA_? sqlStatementCacheDefinition)? RP_
+ALTER
+    : A L T E R
     ;
 
-commentDefinition
-    : SQL_COMMENT_PARSE_ENABLED EQ_ sqlCommentParseEnabled
+RULE
+    : R U L E
     ;
 
-parseTreeCacheDefinition
-    : PARSE_TREE_CACHE LP_ cacheOption RP_
+SQL_FEDERATION
+    : S Q L UL_ F E D E R A T I O N
     ;
 
-sqlStatementCacheDefinition
-    : SQL_STATEMENT_CACHE LP_ cacheOption RP_
+SQL_FEDERATION_ENABLED
+    : S Q L UL_ F E D E R A T I O N UL_ E N A B L E D
     ;
 
-sqlCommentParseEnabled
-    : TRUE | FALSE
+EXECUTION_PLAN_CACHE
+    : E X E C U T I O N UL_ P L A N UL_ C A C H E
     ;
 
-cacheOption
-    : (INITIAL_CAPACITY EQ_ initialCapacity)? (COMMA_? MAXIMUM_SIZE EQ_ maximumSize)?
+INITIAL_CAPACITY
+    : I N I T I A L UL_ C A P A C I T Y
     ;
 
-initialCapacity
-    : INT_
+MAXIMUM_SIZE
+    : M A X I M U M UL_ S I Z E
     ;
 
-maximumSize
-    : INT_
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
     ;
