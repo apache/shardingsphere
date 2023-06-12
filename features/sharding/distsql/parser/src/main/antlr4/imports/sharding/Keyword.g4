@@ -95,10 +95,6 @@ REFERENCE
     : R E F E R E N C E
     ;
 
-BROADCAST
-    : B R O A D C A S T
-    ;
-
 RULES
     : R U L E S
     ;

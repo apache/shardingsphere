@@ -54,7 +54,7 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
         this.configuration = configuration;
         this.databaseName = databaseName;
         this.dataSources = dataSources;
-        broadcastTables = createBroadcastTables(configuration.getBroadcastTables());
+        broadcastTables = createBroadcastTables(configuration.getTables());
         tableDataNodes = createShardingTableDataNodes();
     }
     
@@ -139,7 +139,7 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
      * @param logicTableNames logic table names
      * @return broadcast rule table names.
      */
-    public Collection<String> getBroadcastRuleTableNames(final Collection<String> logicTableNames) {
+    public Collection<String> getBroadcastTableNames(final Collection<String> logicTableNames) {
         return logicTableNames.stream().filter(broadcastTables::contains).collect(Collectors.toSet());
     }
     

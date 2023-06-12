@@ -92,8 +92,7 @@ public abstract class ShardingDDLStatementValidator implements ShardingStatement
      * @return route unit and data node are different size or not
      */
     protected boolean isRouteUnitDataNodeDifferentSize(final ShardingRule shardingRule, final RouteContext routeContext, final String tableName) {
-        return (shardingRule.isShardingTable(tableName) || shardingRule.isBroadcastTable(tableName))
-                && shardingRule.getTableRule(tableName).getActualDataNodes().size() != routeContext.getRouteUnits().size();
+        return shardingRule.isShardingTable(tableName) && shardingRule.getTableRule(tableName).getActualDataNodes().size() != routeContext.getRouteUnits().size();
     }
     
     /**

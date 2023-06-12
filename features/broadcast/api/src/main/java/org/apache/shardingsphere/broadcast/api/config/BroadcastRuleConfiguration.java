@@ -32,5 +32,5 @@ import java.util.LinkedList;
 @Setter
 public final class BroadcastRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
-    private Collection<String> broadcastTables = new LinkedList<>();
+    private Collection<String> tables = new LinkedList<>();
 }

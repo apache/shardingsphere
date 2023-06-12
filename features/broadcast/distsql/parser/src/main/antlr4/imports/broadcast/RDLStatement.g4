@@ -20,9 +20,9 @@ grammar RDLStatement;
 import BaseRule;
 
 createBroadcastTableRule
-    : CREATE NEW BROADCAST TABLE RULE ifNotExists? tableName (COMMA_ tableName)*
+    : CREATE BROADCAST TABLE RULE ifNotExists? tableName (COMMA_ tableName)*
     ;
 
 dropBroadcastTableRule
-    : DROP NEW BROADCAST TABLE RULE ifExists? tableName (COMMA_ tableName)*
+    : DROP BROADCAST TABLE RULE ifExists? tableName (COMMA_ tableName)*
     ;

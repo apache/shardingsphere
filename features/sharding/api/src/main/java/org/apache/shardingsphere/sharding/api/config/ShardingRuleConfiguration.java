@@ -48,8 +48,6 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     
     private Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups = new LinkedList<>();
     
-    private Collection<String> broadcastTables = new LinkedList<>();
-    
     private ShardingStrategyConfiguration defaultDatabaseShardingStrategy;
     
     private ShardingStrategyConfiguration defaultTableShardingStrategy;

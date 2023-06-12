@@ -65,15 +65,6 @@ class ShardingRenameTableStatementValidatorTest {
     }
     
     @Test
-    void assertPreValidateBroadcastTable() {
-        SQLStatementContext sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(shardingRule.isBroadcastTable("t_order")).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingRenameTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
-    }
-    
-    @Test
     void assertPreValidateNormalCase() {
         SQLStatementContext sqlStatementContext = createRenameTableStatementContext("t_not_sharding_table", "t_not_sharding_table_new");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);

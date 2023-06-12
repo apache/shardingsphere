@@ -48,7 +48,6 @@ class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         assertTOrder(shardingRuleConfig.get());
         assertTOrderItem(shardingRuleConfig.get());
         assertBindingTable(shardingRuleConfig.get());
-        assertBroadcastTable(shardingRuleConfig.get());
         assertShardingCache(shardingRuleConfig.get());
         assertProps(actual);
         assertThat(shardingRuleConfig.get().getDefaultShardingColumn(), is("order_id"));
@@ -93,11 +92,6 @@ class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     private void assertBindingTable(final YamlShardingRuleConfiguration actual) {
         assertThat(actual.getBindingTables().size(), is(1));
         assertThat(actual.getBindingTables().iterator().next(), is("t_order, t_order_item"));
-    }
-    
-    private void assertBroadcastTable(final YamlShardingRuleConfiguration actual) {
-        assertThat(actual.getBroadcastTables().size(), is(1));
-        assertThat(actual.getBroadcastTables().iterator().next(), is("t_config"));
     }
     
     private void assertShardingCache(final YamlShardingRuleConfiguration actual) {

@@ -23,9 +23,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 /**
  * Show broadcast table rules statement.
  */
-public final class ShowNewBroadcastTableRulesStatement extends ShowRulesStatement {
+public final class ShowBroadcastTableRulesStatement extends ShowRulesStatement {
     
-    public ShowNewBroadcastTableRulesStatement(final DatabaseSegment database) {
+    public ShowBroadcastTableRulesStatement(final DatabaseSegment database) {
         super(database);
     }
 }

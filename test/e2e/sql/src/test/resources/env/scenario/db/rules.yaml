@@ -58,11 +58,6 @@ rules:
 
   bindingTables:
     - ref_0:t_order,t_order_item,t_order_details
-  broadcastTables:
-    - t_broadcast_table
-    - t_broadcast_table_for_ddl
-    - t_product_category
-    - t_country
 
   shardingAlgorithms:
     it_standard_fixture:
@@ -83,6 +78,13 @@ rules:
   auditors:
     auditor_constant:
       type: IT.AUDITOR.FIXTURE
+      
+- !BROADCAST
+  tables:
+    - t_broadcast_table
+    - t_broadcast_table_for_ddl
+    - t_product_category
+    - t_country
 
 props:
   sql-federation-type: ADVANCED

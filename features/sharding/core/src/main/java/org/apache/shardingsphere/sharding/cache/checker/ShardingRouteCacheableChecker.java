@@ -101,10 +101,9 @@ public final class ShardingRouteCacheableChecker {
     
     private ShardingRouteCacheableCheckResult checkSelectCacheable(final SelectStatementContext statementContext, final List<Object> params, final ShardingSphereDatabase database) {
         Collection<String> tableNames = new HashSet<>(statementContext.getTablesContext().getTableNames());
-        if (!shardingRule.isAllShardingTables(tableNames) || shardingRule.isAllBroadcastTables(tableNames)) {
+        if (!shardingRule.isAllShardingTables(tableNames)) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
-        tableNames.removeAll(shardingRule.getBroadcastTables());
         if (1 != tableNames.size() && !shardingRule.isAllBindingTables(tableNames) || containsNonCacheableShardingAlgorithm(tableNames)) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
@@ -123,7 +122,7 @@ public final class ShardingRouteCacheableChecker {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
         boolean isShardingTable = shardingRule.isAllShardingTables(tableNames);
-        if (isShardingTable && containsNonCacheableShardingAlgorithm(tableNames) || !isShardingTable && !shardingRule.isAllBroadcastTables(tableNames)) {
+        if (!isShardingTable || containsNonCacheableShardingAlgorithm(tableNames)) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
         Collection<InsertValuesSegment> values = statementContext.getSqlStatement().getValues();
@@ -150,7 +149,7 @@ public final class ShardingRouteCacheableChecker {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
         boolean isShardingTable = shardingRule.isAllShardingTables(tableNames);
-        if (isShardingTable && containsNonCacheableShardingAlgorithm(tableNames) || !isShardingTable && !shardingRule.isAllBroadcastTables(tableNames)) {
+        if (!isShardingTable || containsNonCacheableShardingAlgorithm(tableNames)) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
         List<ShardingCondition> shardingConditions = new WhereClauseShardingConditionEngine(database, shardingRule, timestampServiceRule).createShardingConditions(statementContext, params);

@@ -33,7 +33,7 @@ import java.util.LinkedList;
 @Setter
 public final class YamlBroadcastRuleConfiguration implements YamlRuleConfiguration {
     
-    private Collection<String> broadcastTables = new LinkedList<>();
+    private Collection<String> tables = new LinkedList<>();
     
     @Override
     public Class<? extends RuleConfiguration> getRuleConfigurationType() {

@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
@@ -32,8 +32,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,7 +47,6 @@ class ShardingUnicastRoutingEngineTest {
     void setUp() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..2}"));
-        shardingRuleConfig.getBroadcastTables().add("t_config");
         shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1", "ds_2"), mock(InstanceContext.class));
     }
     
@@ -69,15 +66,6 @@ class ShardingUnicastRoutingEngineTest {
     @Test
     void assertRoutingForNoTable() {
         RouteContext actual = new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), Collections.emptyList(), new ConnectionContext()).route(shardingRule);
-        assertThat(actual.getRouteUnits().size(), is(1));
-    }
-    
-    @Test
-    void assertRoutingForShardingTableAndBroadcastTable() {
-        Set<String> tables = new HashSet<>();
-        tables.add("t_order");
-        tables.add("t_config");
-        RouteContext actual = new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), tables, new ConnectionContext()).route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
     }
     

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.broadcast.distsql.handler.update;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.broadcast.distsql.parser.statement.CreateNewBroadcastTableRuleStatement;
+import org.apache.shardingsphere.broadcast.distsql.parser.statement.CreateBroadcastTableRuleStatement;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -30,41 +30,41 @@ import java.util.LinkedHashSet;
 /**
  * Create broadcast table rule statement updater.
  */
-public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateNewBroadcastTableRuleStatement, BroadcastRuleConfiguration> {
+public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateBroadcastTableRuleStatement, BroadcastRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateNewBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfNotExists()) {
             checkDuplicate(sqlStatement, currentRuleConfig);
         }
     }
     
     @Override
-    public BroadcastRuleConfiguration buildToBeCreatedRuleConfiguration(final BroadcastRuleConfiguration currentRuleConfig, final CreateNewBroadcastTableRuleStatement sqlStatement) {
+    public BroadcastRuleConfiguration buildToBeCreatedRuleConfiguration(final BroadcastRuleConfiguration currentRuleConfig, final CreateBroadcastTableRuleStatement sqlStatement) {
         BroadcastRuleConfiguration result = new BroadcastRuleConfiguration();
         Collection<String> tables = sqlStatement.getTables();
         if (sqlStatement.isIfNotExists()) {
             Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
             tables.removeIf(duplicatedRuleNames::contains);
         }
-        result.setBroadcastTables(tables);
+        result.setTables(tables);
         return result;
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final BroadcastRuleConfiguration currentRuleConfig, final BroadcastRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getBroadcastTables().addAll(toBeCreatedRuleConfig.getBroadcastTables());
+        currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
     }
     
-    private void checkDuplicate(final CreateNewBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
+    private void checkDuplicate(final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
         Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
         ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("Broadcast", sqlStatement.getTables()));
     }
     
-    private Collection<String> getDuplicatedRuleNames(final CreateNewBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
+    private Collection<String> getDuplicatedRuleNames(final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
-        if (null != currentRuleConfig && !currentRuleConfig.getBroadcastTables().isEmpty()) {
-            result.addAll(currentRuleConfig.getBroadcastTables());
+        if (null != currentRuleConfig && !currentRuleConfig.getTables().isEmpty()) {
+            result.addAll(currentRuleConfig.getTables());
         }
         result.retainAll(sqlStatement.getTables());
         return result;
@@ -77,6 +77,6 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
     
     @Override
     public String getType() {
-        return CreateNewBroadcastTableRuleStatement.class.getName();
+        return CreateBroadcastTableRuleStatement.class.getName();
     }
 }

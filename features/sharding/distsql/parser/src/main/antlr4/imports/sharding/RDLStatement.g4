@@ -43,14 +43,6 @@ dropShardingTableReferenceRule
     : DROP SHARDING TABLE REFERENCE RULE ifExists? ruleName (COMMA_ ruleName)*
     ;
 
-createBroadcastTableRule
-    : CREATE BROADCAST TABLE RULE ifNotExists? tableName (COMMA_ tableName)*
-    ;
-
-dropBroadcastTableRule
-    : DROP BROADCAST TABLE RULE ifExists? tableName (COMMA_ tableName)*
-    ;
-
 dropShardingAlgorithm
     : DROP SHARDING ALGORITHM ifExists? shardingAlgorithmName (COMMA_ shardingAlgorithmName)*
     ;

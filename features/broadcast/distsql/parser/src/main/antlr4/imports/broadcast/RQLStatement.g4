@@ -20,5 +20,5 @@ grammar RQLStatement;
 import BaseRule;
 
 showBroadcastTableRules
-    : SHOW NEW BROADCAST TABLE RULES (FROM databaseName)?
+    : SHOW BROADCAST TABLE RULES (FROM databaseName)?
     ;

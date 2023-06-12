@@ -51,7 +51,7 @@ public final class BroadcastTableBroadcastRoutingEngine implements BroadcastRout
     
     @Override
     public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
-        Collection<String> logicTableNames = getLogicTableNames();
+        Collection<String> logicTableNames = broadcastRule.getBroadcastTableNames(getLogicTableNames());
         if (routeContext.getRouteUnits().isEmpty()) {
             if (logicTableNames.isEmpty()) {
                 routeContext.getRouteUnits().addAll(getRouteContext(broadcastRule).getRouteUnits());
@@ -60,9 +60,11 @@ public final class BroadcastTableBroadcastRoutingEngine implements BroadcastRout
             }
         } else {
             Collection<RouteMapper> dataSourceMappers = routeContext.getRouteUnits().stream().map(RouteUnit::getDataSourceMapper).collect(Collectors.toList());
-            Collection<RouteMapper> tableRouteMappers = logicTableNames.stream().map(each -> new RouteMapper(each, each)).collect(Collectors.toList());
-            for (RouteMapper each : dataSourceMappers) {
-                routeContext.putRouteUnit(new RouteMapper(each.getLogicName(), each.getActualName()), tableRouteMappers);
+            Collection<RouteMapper> tableRouteMappers = getTableRouteMappers(logicTableNames);
+            if (!dataSourceMappers.isEmpty() && !tableRouteMappers.isEmpty()) {
+                for (RouteMapper each : dataSourceMappers) {
+                    routeContext.putRouteUnit(new RouteMapper(each.getLogicName(), each.getActualName()), tableRouteMappers);
+                }
             }
         }
         return routeContext;

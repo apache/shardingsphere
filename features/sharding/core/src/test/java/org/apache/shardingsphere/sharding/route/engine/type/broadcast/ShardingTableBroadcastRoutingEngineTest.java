@@ -57,7 +57,7 @@ class ShardingTableBroadcastRoutingEngineTest {
         Collection<String> tableNames = Collections.emptyList();
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine =
                 new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereDatabase.class), createSQLStatementContext(tableNames), tableNames);
-        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(false));
+        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule());
         assertRouteUnitWithoutTables(routeContext);
     }
     
@@ -66,7 +66,7 @@ class ShardingTableBroadcastRoutingEngineTest {
         Collection<String> tableNames = Collections.singletonList("t_order");
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine =
                 new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereDatabase.class), createSQLStatementContext(tableNames), tableNames);
-        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(false));
+        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule());
         assertThat(routeContext.getActualDataSourceNames().size(), is(2));
         assertThat(routeContext.getRouteUnits().size(), is(4));
         Iterator<RouteUnit> routeUnits = routeContext.getRouteUnits().iterator();
@@ -74,19 +74,6 @@ class ShardingTableBroadcastRoutingEngineTest {
         assertRouteUnit(routeUnits.next(), "ds0", "t_order_1");
         assertRouteUnit(routeUnits.next(), "ds1", "t_order_0");
         assertRouteUnit(routeUnits.next(), "ds1", "t_order_1");
-    }
-    
-    @Test
-    void assertRouteForBroadcastTable() {
-        Collection<String> tableNames = Collections.singletonList("t_order");
-        ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine =
-                new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereDatabase.class), createSQLStatementContext(tableNames), tableNames);
-        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(true));
-        assertThat(routeContext.getActualDataSourceNames().size(), is(2));
-        assertThat(routeContext.getRouteUnits().size(), is(2));
-        Iterator<RouteUnit> routeUnits = routeContext.getRouteUnits().iterator();
-        assertRouteUnit(routeUnits.next(), "ds0", "t_order");
-        assertRouteUnit(routeUnits.next(), "ds1", "t_order");
     }
     
     @Test
@@ -106,7 +93,7 @@ class ShardingTableBroadcastRoutingEngineTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 new MySQLDatabaseType(), mock(ShardingSphereResourceMetaData.class), mock(ShardingSphereRuleMetaData.class), schemas);
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, tableNames);
-        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(false));
+        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule());
         assertThat(routeContext.getActualDataSourceNames().size(), is(2));
         Iterator<RouteUnit> routeUnits = routeContext.getRouteUnits().iterator();
         assertRouteUnit(routeUnits.next(), "ds0", "t_order_0");
@@ -128,16 +115,13 @@ class ShardingTableBroadcastRoutingEngineTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 new MySQLDatabaseType(), mock(ShardingSphereResourceMetaData.class), mock(ShardingSphereRuleMetaData.class), schemas);
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, tableNames);
-        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(false));
+        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule());
         assertRouteUnitWithoutTables(routeContext);
     }
     
-    private ShardingRule createShardingRule(final boolean isContainBroadcastTable) {
+    private ShardingRule createShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..1}"));
-        if (isContainBroadcastTable) {
-            ruleConfig.getBroadcastTables().add("t_order");
-        }
         return new ShardingRule(ruleConfig, Arrays.asList("ds_0", "ds_1"), mock(InstanceContext.class));
     }
     

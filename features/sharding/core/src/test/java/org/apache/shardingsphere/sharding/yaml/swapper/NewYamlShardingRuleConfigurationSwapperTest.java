@@ -50,12 +50,11 @@ class NewYamlShardingRuleConfigurationSwapperTest {
     void assertSwapFullConfigToDataNodesEmpty() {
         ShardingRuleConfiguration config = createMaximumShardingRule();
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(14));
+        assertThat(result.size(), is(13));
         Iterator<YamlDataNode> iterator = result.iterator();
         assertThat(iterator.next().getKey(), is("tables/table_LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("tables/table_SUB_LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("binding_tables/binding_table_foo"));
-        assertThat(iterator.next().getKey(), is("broadcast_tables"));
         assertThat(iterator.next().getKey(), is("default_strategy/default_database_strategy"));
         assertThat(iterator.next().getKey(), is("default_strategy/default_table_strategy"));
         assertThat(iterator.next().getKey(), is("default_strategy/default_key_generate_strategy"));
@@ -77,7 +76,6 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         result.getTables().add(shardingTableRuleConfig);
         result.getTables().add(subTableRuleConfig);
         result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable()));
-        result.getBroadcastTables().add("BROADCAST_TABLE");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("ds_id", "standard"));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "standard"));
         result.setDefaultShardingColumn("table_id");

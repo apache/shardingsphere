@@ -111,14 +111,4 @@ class ShardingCreateViewStatementValidatorTest {
                 () -> new ShardingCreateViewStatementValidator().postValidate(shardingRule,
                         createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
     }
-    
-    @Test
-    void assertPreValidateCreateViewWithBroadcastTable() {
-        when(shardingRule.isAllBroadcastTables(any())).thenReturn(true);
-        when(shardingRule.isBroadcastTable("order_view")).thenReturn(false);
-        ConfigurationProperties props = mock(ConfigurationProperties.class);
-        when(props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE)).thenReturn("NONE");
-        assertThrows(EngagedViewException.class,
-                () -> new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), props));
-    }
 }

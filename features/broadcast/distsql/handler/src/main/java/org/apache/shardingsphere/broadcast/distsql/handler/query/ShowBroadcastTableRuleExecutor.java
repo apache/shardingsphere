@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.distsql.handler.query;
 
-import org.apache.shardingsphere.broadcast.distsql.parser.statement.ShowNewBroadcastTableRulesStatement;
+import org.apache.shardingsphere.broadcast.distsql.parser.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -31,10 +31,10 @@ import java.util.Optional;
 /**
  * Show broadcast table rule executor.
  */
-public final class ShowBroadcastTableRuleExecutor implements RQLExecutor<ShowNewBroadcastTableRulesStatement> {
+public final class ShowBroadcastTableRuleExecutor implements RQLExecutor<ShowBroadcastTableRulesStatement> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowNewBroadcastTableRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowBroadcastTableRulesStatement sqlStatement) {
         Optional<BroadcastRule> rule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
         if (!rule.isPresent()) {
             return Collections.emptyList();
@@ -51,6 +51,6 @@ public final class ShowBroadcastTableRuleExecutor implements RQLExecutor<ShowNew
     
     @Override
     public String getType() {
-        return ShowNewBroadcastTableRulesStatement.class.getName();
+        return ShowBroadcastTableRulesStatement.class.getName();
     }
 }

@@ -60,8 +60,6 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
     }
     
     private void validateBroadcastShardingView(final ShardingRule shardingRule, final String originView, final String targetView) {
-        ShardingSpherePreconditions.checkState(shardingRule.isBroadcastTable(originView) == shardingRule.isBroadcastTable(targetView),
-                () -> new RenamedViewWithoutSameConfigurationException(originView, targetView));
         ShardingSpherePreconditions.checkState(!shardingRule.isShardingTable(originView) && !shardingRule.isShardingTable(targetView)
                 || shardingRule.isAllBindingTables(Arrays.asList(originView, targetView)), () -> new RenamedViewWithoutSameConfigurationException(originView, targetView));
     }

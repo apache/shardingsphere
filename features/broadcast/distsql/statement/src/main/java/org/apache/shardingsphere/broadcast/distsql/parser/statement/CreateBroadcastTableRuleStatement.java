@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement;
+package org.apache.shardingsphere.broadcast.distsql.parser.statement;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;

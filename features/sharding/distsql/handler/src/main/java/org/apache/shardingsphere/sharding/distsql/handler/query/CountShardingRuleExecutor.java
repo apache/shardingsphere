@@ -50,7 +50,6 @@ public final class CountShardingRuleExecutor implements RQLExecutor<CountShardin
     private void fillRows(final Collection<LocalDataQueryResultRow> result, final ShardingRule rule, final String databaseName) {
         fillRows(result, "sharding_table", databaseName, rule.getTableRules().size());
         fillRows(result, "sharding_table_reference", databaseName, ((ShardingRuleConfiguration) rule.getConfiguration()).getBindingTableGroups().size());
-        fillRows(result, "broadcast_table", databaseName, rule.getBroadcastTables().size());
     }
     
     private void fillRows(final Collection<LocalDataQueryResultRow> result, final String ruleName, final String databaseName, final int count) {

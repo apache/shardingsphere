@@ -70,7 +70,3 @@ EXISTS
 COUNT
     : C O U N T
     ;
-
-NEW
-  : N E W
-  ;

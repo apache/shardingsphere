@@ -60,7 +60,6 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
         data.getTables().forEach(each -> result.getTables().put(each.getLogicTable(), tableSwapper.swapToYamlConfiguration(each)));
         data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableYamlSwapper.swapToYamlConfiguration(each)));
         result.getBindingTables().addAll(data.getBindingTableGroups().stream().map(YamlShardingTableReferenceRuleConfigurationConverter::convertToYamlString).collect(Collectors.toList()));
-        result.getBroadcastTables().addAll(data.getBroadcastTables());
         setYamlStrategies(data, result);
         setYamlAlgorithms(data, result);
         result.setDefaultShardingColumn(data.getDefaultShardingColumn());
@@ -111,7 +110,6 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
             result.getAutoTables().add(autoTableYamlSwapper.swapToObject(tableRuleConfig));
         }
         result.getBindingTableGroups().addAll(yamlConfig.getBindingTables().stream().map(YamlShardingTableReferenceRuleConfigurationConverter::convertToObject).collect(Collectors.toList()));
-        result.getBroadcastTables().addAll(yamlConfig.getBroadcastTables());
         setStrategies(yamlConfig, result);
         setAlgorithms(yamlConfig, result);
         result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());

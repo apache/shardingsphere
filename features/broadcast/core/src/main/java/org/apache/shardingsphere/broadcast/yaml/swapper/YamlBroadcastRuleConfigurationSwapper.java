@@ -30,14 +30,14 @@ public final class YamlBroadcastRuleConfigurationSwapper implements YamlRuleConf
     @Override
     public YamlBroadcastRuleConfiguration swapToYamlConfiguration(final BroadcastRuleConfiguration data) {
         YamlBroadcastRuleConfiguration result = new YamlBroadcastRuleConfiguration();
-        data.getBroadcastTables().forEach(each -> result.getBroadcastTables().add(each));
+        data.getTables().forEach(each -> result.getTables().add(each));
         return result;
     }
     
     @Override
     public BroadcastRuleConfiguration swapToObject(final YamlBroadcastRuleConfiguration yamlConfig) {
         BroadcastRuleConfiguration result = new BroadcastRuleConfiguration();
-        yamlConfig.getBroadcastTables().forEach(each -> result.getBroadcastTables().add(each));
+        yamlConfig.getTables().forEach(each -> result.getTables().add(each));
         return result;
     }
     

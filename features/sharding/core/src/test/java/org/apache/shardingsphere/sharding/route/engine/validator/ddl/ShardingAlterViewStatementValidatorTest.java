@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.exception.syntax.RenamedViewWithoutSameConfigurationException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterViewStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -81,21 +80,6 @@ class ShardingAlterViewStatementValidatorTest {
         selectStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
         SQLStatementContext sqlStatementContext = new AlterViewStatementContext(selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(shardingRule.isBroadcastTable("t_order")).thenReturn(true);
-        when(shardingRule.isBroadcastTable("t_order_new")).thenReturn(true);
         assertDoesNotThrow(() -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
-    }
-    
-    @Test
-    void assertPreValidateAlterRenamedViewWithoutSameConfig() {
-        OpenGaussAlterViewStatement selectStatement = new OpenGaussAlterViewStatement();
-        selectStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        selectStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
-        SQLStatementContext sqlStatementContext = new AlterViewStatementContext(selectStatement);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(shardingRule.isBroadcastTable("t_order")).thenReturn(true);
-        when(shardingRule.isBroadcastTable("t_order_new")).thenReturn(false);
-        assertThrows(RenamedViewWithoutSameConfigurationException.class,
-                () -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
 }
