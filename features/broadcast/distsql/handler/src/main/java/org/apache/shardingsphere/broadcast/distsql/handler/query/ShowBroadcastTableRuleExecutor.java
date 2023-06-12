@@ -40,7 +40,7 @@ public final class ShowBroadcastTableRuleExecutor implements RQLExecutor<ShowBro
             return Collections.emptyList();
         }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.get().getBroadcastTables().forEach(each -> result.add(new LocalDataQueryResultRow(each)));
+        rule.get().getTables().forEach(each -> result.add(new LocalDataQueryResultRow(each)));
         return result;
     }
     

@@ -93,6 +93,9 @@ public final class BroadcastRouteEngineFactory {
             return Optional.of(new BroadcastDatabaseBroadcastRoutingEngine());
         }
         if (sqlStatement instanceof DDLStatement) {
+            if (sqlStatementContext instanceof CursorAvailable) {
+                return getCursorRouteEngine(broadcastRule, sqlStatementContext, connectionContext);
+            }
             return getDDLRoutingEngine(broadcastRule, database, sqlStatementContext, props, connectionContext, globalRuleMetaData);
         }
         if (sqlStatement instanceof DALStatement) {
@@ -119,7 +122,7 @@ public final class BroadcastRouteEngineFactory {
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
                 : sqlStatementContext.getTablesContext().getTableNames();
-        Collection<String> broadcastRuleTableNames = broadcastRule.getBroadcastTableNames(tableNames);
+        Collection<String> broadcastRuleTableNames = broadcastRule.getBroadcastRuleTableNames(tableNames);
         
         boolean sqlFederationEnabled = null != globalRuleMetaData && globalRuleMetaData.getSingleRule(SQLFederationRule.class).getConfiguration().isSqlFederationEnabled();
         // TODO remove this logic when jdbc adapter can support executing create logic view
@@ -129,14 +132,13 @@ public final class BroadcastRouteEngineFactory {
         if (!tableNames.isEmpty() && broadcastRuleTableNames.isEmpty()) {
             return Optional.of(new BroadcastIgnoreRoutingEngine());
         }
-        if (sqlStatementContext instanceof CursorAvailable) {
-            return getCursorRouteEngine(broadcastRule, sqlStatementContext, tableNames, connectionContext);
-        }
         return Optional.of(new BroadcastTableBroadcastRoutingEngine(database, sqlStatementContext, broadcastRuleTableNames));
     }
     
-    private static Optional<BroadcastRouteEngine> getCursorRouteEngine(final BroadcastRule broadcastRule, final SQLStatementContext sqlStatementContext,
-                                                                       final Collection<String> tableNames, final ConnectionContext connectionContext) {
+    private static Optional<BroadcastRouteEngine> getCursorRouteEngine(final BroadcastRule broadcastRule, final SQLStatementContext sqlStatementContext, final ConnectionContext connectionContext) {
+        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
+                ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
+                : sqlStatementContext.getTablesContext().getTableNames();
         if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
             return Optional.of(new BroadcastDatabaseBroadcastRoutingEngine());
         }
@@ -160,7 +162,7 @@ public final class BroadcastRouteEngineFactory {
             return Optional.of(new BroadcastInstanceBroadcastRoutingEngine(database.getResourceMetaData()));
         }
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        Collection<String> broadcastRuleTableNames = broadcastRule.getBroadcastTableNames(tableNames);
+        Collection<String> broadcastRuleTableNames = broadcastRule.getBroadcastRuleTableNames(tableNames);
         if (!tableNames.isEmpty() && broadcastRuleTableNames.isEmpty()) {
             return Optional.of(new BroadcastIgnoreRoutingEngine());
         }
@@ -184,7 +186,7 @@ public final class BroadcastRouteEngineFactory {
     
     private static Optional<BroadcastRouteEngine> getDCLRoutingEngine(final BroadcastRule broadcastRule, final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
         if (isDCLForSingleTable(sqlStatementContext)) {
-            Collection<String> broadcastRuleTableNames = broadcastRule.getBroadcastTableNames(sqlStatementContext.getTablesContext().getTableNames());
+            Collection<String> broadcastRuleTableNames = broadcastRule.getBroadcastRuleTableNames(sqlStatementContext.getTablesContext().getTableNames());
             return broadcastRuleTableNames.isEmpty() ? Optional.of(new BroadcastIgnoreRoutingEngine())
                     : Optional.of(new BroadcastTableBroadcastRoutingEngine(database, sqlStatementContext, broadcastRuleTableNames));
         }

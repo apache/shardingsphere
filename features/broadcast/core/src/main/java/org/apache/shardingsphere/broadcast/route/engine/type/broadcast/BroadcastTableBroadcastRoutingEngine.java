@@ -51,7 +51,7 @@ public final class BroadcastTableBroadcastRoutingEngine implements BroadcastRout
     
     @Override
     public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
-        Collection<String> logicTableNames = broadcastRule.getBroadcastTableNames(getLogicTableNames());
+        Collection<String> logicTableNames = broadcastRule.getBroadcastRuleTableNames(getLogicTableNames());
         if (routeContext.getRouteUnits().isEmpty()) {
             if (logicTableNames.isEmpty()) {
                 routeContext.getRouteUnits().addAll(getRouteContext(broadcastRule).getRouteUnits());
