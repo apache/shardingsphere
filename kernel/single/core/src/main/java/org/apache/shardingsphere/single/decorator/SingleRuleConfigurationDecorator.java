@@ -70,7 +70,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         Collection<DataNode> configuredDataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, splitTables);
         checkRuleConfiguration(databaseName, aggregatedDataSources, excludedTables, configuredDataNodes);
         boolean isSchemaSupportedDatabaseType = databaseType instanceof SchemaSupportedDatabaseType;
-        if (splitTables.contains(SingleTableConstants.ALL_TABLES)) {
+        if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return loadAllTables(isSchemaSupportedDatabaseType, physicalTables);
         }
         Collection<String> featureRequiredSingleTables = SingleTableLoadUtils.getFeatureRequiredSingleTables(builtRules, excludedTables);

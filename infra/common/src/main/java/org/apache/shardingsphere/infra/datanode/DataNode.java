@@ -75,6 +75,8 @@ public final class DataNode {
      * @param dataNode string of data node. use {@code .} to split data source name and table name
      */
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
+        ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER),
+                () -> new InvalidDataNodesFormatException(dataNode, String.format("Invalid format for data node `%s`", dataNode)));
         boolean containsSchema = isValidDataNode(dataNode, 3);
         if (containsSchema) {
             ShardingSpherePreconditions.checkState(databaseType instanceof SchemaSupportedDatabaseType,

@@ -29,4 +29,6 @@ public final class SingleTableConstants {
     public static final String ASTERISK = "*";
     
     public static final String ALL_TABLES = "*.*";
+    
+    public static final String ALL_SCHEMA_TABLES = "*.*.*";
 }

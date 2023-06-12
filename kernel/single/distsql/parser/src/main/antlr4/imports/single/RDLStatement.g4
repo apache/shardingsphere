@@ -37,7 +37,10 @@ tableDefinition
 
 tableIdentifier
     : ASTERISK_ DOTASTERISK_ # allTables
+    | ASTERISK_ DOTASTERISK_ DOTASTERISK_ # allTablesWithSchema
     | storageUnitName DOTASTERISK_ # allTablesFromStorageUnit
+    | storageUnitName DOTASTERISK_ DOTASTERISK_ # allSchamesAndTablesFromStorageUnit
+    | storageUnitName DOT_ schemaName DOTASTERISK_ # allTablesFromSchema
     | storageUnitName DOT_ tableName # tableFromStorageUnit
     | storageUnitName DOT_ schemaName DOT_ tableName # tableFromSchema
     ;

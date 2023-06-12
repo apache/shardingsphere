@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.distsql.statement.rdl;
+package org.apache.shardingsphere.single.distsql.handler.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
-import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Unload single table statement.
+ * Missing required single table exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class UnloadSingleTableStatement extends AlterRuleStatement {
+public final class MissingRequiredSingleTableException extends RuleDefinitionViolationException {
     
-    private final Collection<SingleTableSegment> tables;
+    private static final long serialVersionUID = 3155006580453893122L;
+    
+    public MissingRequiredSingleTableException(final String storageUnitName, final String tableName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 106, String.format("Missing required table `%s` in storage unit `%s`.", tableName, storageUnitName));
+    }
 }
