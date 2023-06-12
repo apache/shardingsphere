@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
-import org.apache.shardingsphere.mode.event.config.RuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.event.algorithm.auditor.AddAuditorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.auditor.AlterAuditorEvent;
@@ -132,7 +132,7 @@ public final class ShardingAlgorithmSubscriber implements RuleConfigurationSubsc
         config.getShardingAlgorithms().remove(event.getAlgorithmName());
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -148,7 +148,7 @@ public final class ShardingAlgorithmSubscriber implements RuleConfigurationSubsc
         config.getKeyGenerators().remove(event.getKeyGeneratorName());
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -164,7 +164,7 @@ public final class ShardingAlgorithmSubscriber implements RuleConfigurationSubsc
         config.getAuditors().remove(event.getAuditorName());
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     private void renewShardingAlgorithm(final String databaseName, final String algorithmName, final AlgorithmConfiguration algorithmConfig) {
@@ -174,7 +174,7 @@ public final class ShardingAlgorithmSubscriber implements RuleConfigurationSubsc
         config.getShardingAlgorithms().put(algorithmName, algorithmConfig);
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(databaseName, config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
     }
     
     private void renewKeyGenerator(final String databaseName, final String algorithmName, final AlgorithmConfiguration algorithmConfig) {
@@ -184,7 +184,7 @@ public final class ShardingAlgorithmSubscriber implements RuleConfigurationSubsc
         config.getKeyGenerators().put(algorithmName, algorithmConfig);
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(databaseName, config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
     }
     
     private void renewAuditor(final String databaseName, final String algorithmName, final AlgorithmConfiguration algorithmConfig) {
@@ -194,6 +194,6 @@ public final class ShardingAlgorithmSubscriber implements RuleConfigurationSubsc
         config.getAuditors().put(algorithmName, algorithmConfig);
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(databaseName, config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
     }
 }
