@@ -49,7 +49,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
      */
     public void addParameterMarkerSegments(final Collection<ParameterMarkerSegment> parameterMarkerSegments) {
         for (ParameterMarkerSegment each : parameterMarkerSegments) {
-            parameterMarkerSegments.add(each);
+            this.parameterMarkerSegments.add(each);
             uniqueParameterIndexes.add(each.getParameterIndex());
         }
     }
