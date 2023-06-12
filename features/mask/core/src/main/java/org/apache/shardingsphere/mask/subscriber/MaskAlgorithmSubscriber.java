@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mask.event.algorithm.AddMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.apache.shardingsphere.mode.event.config.RuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -80,7 +80,7 @@ public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribe
         config.getMaskAlgorithms().put(algorithmName, algorithmConfig);
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(databaseName, config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
     }
     
     /**
@@ -96,6 +96,6 @@ public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribe
         config.getMaskAlgorithms().remove(event.getAlgorithmName());
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
 }

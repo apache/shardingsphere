@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.converter;
 
+import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -40,7 +41,7 @@ class GlobalRuleNodeConverterTest {
     }
     
     @Test
-    void assertIsExpectRuleName() {
-        assertTrue(GlobalRuleNodeConverter.isExpectRuleName("transaction", "/rules/transaction/versions/0"));
+    void assertIsExpectedRuleName() {
+        assertTrue(GlobalRuleNodeConverter.isExpectedRuleName("transaction", "/rules/transaction/versions/0"));
     }
 }

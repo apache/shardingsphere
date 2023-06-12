@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.config;
+package org.apache.shardingsphere.sharding.event.algorithm.keygenerator;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Rule configuration changed event.
+ * Add key generate event.
+ *
+ * @param <T> algorithm configuration
  */
-@Getter
 @RequiredArgsConstructor
-public final class RuleConfigurationChangedEvent {
+@Getter
+public final class AddKeyGeneratorEvent<T> implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final RuleConfiguration ruleConfig;
+    private final String keyGeneratorName;
+    
+    private final T config;
 }
