@@ -43,5 +43,5 @@ public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {
     private ExpectedXmlTable xmlTable;
     
     @XmlElement(name = "function-table")
-    private  ExpectedFunctionTable functionTable;
+    private ExpectedFunctionTable functionTable;
 }

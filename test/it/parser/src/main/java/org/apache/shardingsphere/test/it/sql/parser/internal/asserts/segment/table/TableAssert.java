@@ -78,7 +78,7 @@ public final class TableAssert {
             assertIs(assertContext, (XmlTableSegment) actual, expected.getXmlTable());
         } else if (actual instanceof TableFunctionSegment) {
             assertIs(assertContext, (TableFunctionSegment) actual, expected.getFunctionTable());
-        }else {
+        } else {
             throw new UnsupportedOperationException(String.format("Unsupported table segment type `%s`.", actual.getClass()));
         }
     }
