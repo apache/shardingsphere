@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
- * Alter tablespace statement.
+ * Tablespace segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public abstract class AlterTablespaceStatement extends AbstractSQLStatement implements DDLStatement {
+public final class TablespaceSegment implements AlterDefinitionSegment {
     
-    private TablespaceSegment tablespaceSegment;
+    private final int startIndex;
     
-    private TablespaceSegment renameTablespaceSegment;
+    private final int stopIndex;
     
-    /**
-     * Get rename tablespace.
-     *
-     * @return rename tablespace
-     */
-    public Optional<TablespaceSegment> getRenameTablespace() {
-        return Optional.ofNullable(renameTablespaceSegment);
-    }
+    private final IdentifierValue identifier;
 }
