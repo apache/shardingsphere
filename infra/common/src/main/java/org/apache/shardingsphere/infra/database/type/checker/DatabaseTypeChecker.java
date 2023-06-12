@@ -37,7 +37,7 @@ import java.util.Map;
  * Database type checker.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DatabaseTypeChecker {
+public final class DatabaseTypeChecker {
     
     private static final Collection<String> MOCKED_URL_PREFIXES = new HashSet<>(Arrays.asList("jdbc:fixture", "jdbc:mock", "mock:jdbc"));
     
