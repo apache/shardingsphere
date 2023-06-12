@@ -39,7 +39,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DatabaseTypeChecker {
     
-    private static final Collection<String> MOCKED_URL_PREFIXES = new HashSet<>(Arrays.asList("jdbc:fixture", "jdbc:mock"));
+    private static final Collection<String> MOCKED_URL_PREFIXES = new HashSet<>(Arrays.asList("jdbc:fixture", "jdbc:mock", "mock:jdbc"));
     
     private static final Collection<String> UNSUPPORTED_URL_PREFIXES = Collections.singletonList("jdbc:mysql:aws");
     
