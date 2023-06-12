@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.event.config;
+package org.apache.shardingsphere.infra.config.rule.global.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 
 /**
- * Add sql federation configuration event.
+ * Alter global rule configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddSQLFederationConfigurationEvent implements GovernanceEvent {
+public final class AlterGlobalRuleConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final SQLFederationRuleConfiguration config;
+    private final RuleConfiguration config;
+    
+    private final String ruleSimpleName;
 }

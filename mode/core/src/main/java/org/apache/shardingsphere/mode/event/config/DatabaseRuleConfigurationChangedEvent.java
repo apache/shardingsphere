@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.event.config;
+package org.apache.shardingsphere.mode.event.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 /**
- * Add authority configuration event.
+ * Database rule configuration changed event.
  */
-@RequiredArgsConstructor
 @Getter
-public final class AddAuthorityConfigurationEvent implements GovernanceEvent {
+@RequiredArgsConstructor
+public final class DatabaseRuleConfigurationChangedEvent {
     
     private final String databaseName;
     
-    private final AuthorityRuleConfiguration config;
+    private final RuleConfiguration ruleConfig;
 }
