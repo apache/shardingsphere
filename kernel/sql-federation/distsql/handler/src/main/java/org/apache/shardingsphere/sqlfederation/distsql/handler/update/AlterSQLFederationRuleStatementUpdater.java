@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegmen
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
 
 /**
- * Alter SQL parser rule statement handler.
+ * Alter SQL federation rule statement updater.
  */
 public final class AlterSQLFederationRuleStatementUpdater implements GlobalRuleRALUpdater<AlterSQLFederationRuleStatement, SQLFederationRuleConfiguration> {
     

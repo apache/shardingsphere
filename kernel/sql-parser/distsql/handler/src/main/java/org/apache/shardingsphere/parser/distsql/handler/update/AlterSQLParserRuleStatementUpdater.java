@@ -24,7 +24,7 @@ import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.Alter
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 /**
- * Alter SQL parser rule statement handler.
+ * Alter SQL parser rule statement updater.
  */
 public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUpdater<AlterSQLParserRuleStatement, SQLParserRuleConfiguration> {
     
