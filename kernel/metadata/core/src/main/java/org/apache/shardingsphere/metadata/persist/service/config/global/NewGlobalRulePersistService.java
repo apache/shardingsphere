@@ -44,7 +44,7 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
     
     private final PersistRepository repository;
     
-    public NewGlobalRulePersistService(PersistRepository repository) {
+    public NewGlobalRulePersistService(final PersistRepository repository) {
         super(repository);
         this.repository = repository;
     }

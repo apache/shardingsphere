@@ -43,7 +43,7 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     
     private final PersistRepository repository;
     
-    public NewDatabaseRulePersistService(PersistRepository repository) {
+    public NewDatabaseRulePersistService(final PersistRepository repository) {
         super(repository);
         this.repository = repository;
     }
