@@ -65,8 +65,6 @@ public final class SQLFederationExecutor implements AutoCloseable {
     
     private String schemaName;
     
-    private OptimizerContext optimizerContext;
-    
     private ShardingSphereRuleMetaData globalRuleMetaData;
     
     private ConfigurationProperties props;
@@ -89,7 +87,6 @@ public final class SQLFederationExecutor implements AutoCloseable {
     public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData data, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
-        this.optimizerContext = metaData.getDatabase(databaseName).getRuleMetaData().getSingleRule(SQLFederationRule.class).getOptimizerContext();
         this.globalRuleMetaData = metaData.getGlobalRuleMetaData();
         this.props = metaData.getProps();
         this.data = data;
@@ -110,10 +107,11 @@ public final class SQLFederationExecutor implements AutoCloseable {
         Preconditions.checkArgument(sqlStatementContext instanceof SelectStatementContext, "SQL statement context must be select statement context.");
         ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
         ShardingSphereSchema schema = database.getSchema(schemaName);
+        OptimizerContext optimizerContext = globalRuleMetaData.getSingleRule(SQLFederationRule.class).getOptimizerContext();
         Schema sqlFederationSchema = optimizerContext.getPlannerContext(databaseName).getValidators().get(schemaName).getCatalogReader().getRootSchema().plus();
-        registerTableScanExecutor(sqlFederationSchema, prepareEngine, callback, federationContext);
+        registerTableScanExecutor(sqlFederationSchema, prepareEngine, callback, federationContext, optimizerContext);
         Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());
-        resultSet = execute((SelectStatementContext) sqlStatementContext, schema, sqlFederationSchema, params);
+        resultSet = execute((SelectStatementContext) sqlStatementContext, schema, sqlFederationSchema, params, optimizerContext);
         return resultSet;
     }
     
@@ -127,7 +125,8 @@ public final class SQLFederationExecutor implements AutoCloseable {
     }
     
     private void registerTableScanExecutor(final Schema sqlFederationSchema, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                           final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
+                                           final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext,
+                                           final OptimizerContext optimizerContext) {
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, props, federationContext);
         TableScanExecutor executor = new TranslatableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, data);
         for (String each : federationContext.getQueryContext().getSqlStatementContext().getTablesContext().getTableNames()) {
@@ -139,7 +138,8 @@ public final class SQLFederationExecutor implements AutoCloseable {
     }
     
     @SuppressWarnings("unchecked")
-    private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final Schema sqlFederationSchema, final Map<String, Object> params) {
+    private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final Schema sqlFederationSchema, final Map<String, Object> params,
+                              final OptimizerContext optimizerContext) {
         OptimizerPlannerContext plannerContext = optimizerContext.getPlannerContext(databaseName);
         SqlValidator sqlValidator = plannerContext.getValidators().get(schemaName);
         SqlToRelConverter sqlToRelConverter = plannerContext.getConverters().get(schemaName);
