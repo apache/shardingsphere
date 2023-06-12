@@ -16,6 +16,3 @@
 #
 
 org.apache.shardingsphere.logging.event.LoggingRuleConfigurationEventBuilder
-
-
-

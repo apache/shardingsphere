@@ -16,5 +16,3 @@
 #
 
 org.apache.shardingsphere.transaction.event.TransactionRuleConfigurationEventBuilder
-
-

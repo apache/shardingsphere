@@ -16,5 +16,3 @@
 #
 
 org.apache.shardingsphere.globalclock.core.event.GlobalClockRuleConfigurationEventBuilder
-
-

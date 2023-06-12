@@ -16,5 +16,3 @@
 #
 
 org.apache.shardingsphere.parser.event.SQLParserRuleConfigurationEventBuilder
-
-

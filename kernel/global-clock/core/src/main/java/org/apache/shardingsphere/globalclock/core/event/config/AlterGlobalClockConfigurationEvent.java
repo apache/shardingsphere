@@ -24,12 +24,10 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
  * Alter global clock configuration event.
- *
- * @param <T> authority configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterGlobalClockConfigurationEvent<T> implements GovernanceEvent {
+public final class AlterGlobalClockConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
     
