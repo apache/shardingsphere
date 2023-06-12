@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.impl;
+package org.apache.shardingsphere.encrypt.rewrite.condition;
 
-import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
+import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class EncryptBinaryOperationConditionTest {
+class EncryptInConditionTest {
     
     @Test
     void assertGetConditionValues() {
-        List<Object> actual = new EncryptBinaryCondition("col", null, null,
-                0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
-        assertThat(actual.size(), is(1));
+        List<ExpressionSegment> expressions = Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2));
+        List<Object> actual = new EncryptInCondition("col", null, 0, 0, expressions).getValues(Collections.emptyList());
+        assertThat(actual.size(), is(2));
         assertThat(actual.get(0), is(1));
+        assertThat(actual.get(1), is(2));
     }
 }
