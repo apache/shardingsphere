@@ -190,7 +190,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
             result.setSelectSubquery(subquerySegment);
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -209,7 +209,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
         result.setSelectSubquery(subquerySegment);
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -318,7 +318,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -431,7 +431,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -451,7 +451,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         OracleSelectStatement result = (OracleSelectStatement) visit(ctx.selectSubquery());
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         if (null != ctx.forUpdateClause()) {
             result.setLock((LockSegment) visit(ctx.forUpdateClause()));
         }

@@ -690,7 +690,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         if (null != ctx.returningClause()) {
             result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -881,7 +881,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -899,7 +899,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -912,7 +912,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
         OpenGaussSelectStatement result = (OpenGaussSelectStatement) visit(ctx.selectNoParens());
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
