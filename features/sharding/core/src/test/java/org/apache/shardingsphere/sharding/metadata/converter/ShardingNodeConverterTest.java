@@ -147,13 +147,6 @@ class ShardingNodeConverterTest {
     }
     
     @Test
-    void assertGetBroadcastTableNameByRulePath() {
-        Optional<String> actual = ShardingNodeConverter.getBroadcastTableName("/metadata/foo_db/rules/sharding/broadcast_tables/foo_table");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_table"));
-    }
-    
-    @Test
     void assertGetAlgorithmNameByRulePath() {
         Optional<String> actual = ShardingNodeConverter.getShardingAlgorithmName("/metadata/foo_db/rules/sharding/algorithms/foo");
         assertTrue(actual.isPresent());

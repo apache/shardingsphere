@@ -32,7 +32,6 @@ import org.apache.shardingsphere.shadow.event.config.DeleteShadowConfigurationEv
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -72,7 +71,7 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
             config.getDataSources().add(needToAddedConfig);
         } else {
             config = new ShadowRuleConfiguration();
-            config.setDataSources(Collections.singletonList(needToAddedConfig));
+            config.getDataSources().add(needToAddedConfig);
         }
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
