@@ -138,8 +138,6 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
             } else if (ShardingNodeConverter.isBindingTablePath(each.getKey())) {
                 ShardingNodeConverter.getBindingTableName(each.getKey())
                         .ifPresent(bindingTableName -> result.getBindingTableGroups().add(YamlShardingTableReferenceRuleConfigurationConverter.convertToObject(each.getValue())));
-            } else if (ShardingNodeConverter.isBroadcastTablePath(each.getKey())) {
-                ShardingNodeConverter.getBroadcastTableName(each.getKey()).ifPresent(broadcastName -> result.getBroadcastTables().add(each.getValue()));
             } else if (ShardingNodeConverter.isDefaultDatabaseStrategyPath(each.getKey())) {
                 result.setDefaultDatabaseShardingStrategy(shardingStrategySwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingStrategyConfiguration.class)));
             } else if (ShardingNodeConverter.isDefaultTableStrategyPath(each.getKey())) {

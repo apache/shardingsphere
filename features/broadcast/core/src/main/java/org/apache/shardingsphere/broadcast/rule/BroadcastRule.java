@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -50,12 +51,30 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
     
     private final Map<String, Collection<DataNode>> tableDataNodes;
     
+    private final TableNamesMapper logicalTableMapper;
+    
+    private final TableNamesMapper actualTableMapper;
+    
     public BroadcastRule(final BroadcastRuleConfiguration configuration, final String databaseName, final Map<String, DataSource> dataSources) {
         this.configuration = configuration;
         this.databaseName = databaseName;
         this.dataSources = dataSources;
         broadcastTables = createBroadcastTables(configuration.getTables());
         tableDataNodes = createShardingTableDataNodes();
+        logicalTableMapper = createLogicalTableMapper();
+        actualTableMapper = createActualTableMapper();
+    }
+    
+    private TableNamesMapper createLogicalTableMapper() {
+        TableNamesMapper result = new TableNamesMapper();
+        broadcastTables.forEach(result::put);
+        return result;
+    }
+    
+    private TableNamesMapper createActualTableMapper() {
+        TableNamesMapper result = new TableNamesMapper();
+        broadcastTables.forEach(result::put);
+        return result;
     }
     
     private Collection<String> createBroadcastTables(final Collection<String> broadcastTables) {
@@ -121,18 +140,6 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
         return Optional.of(logicTable);
     }
     
-    @Override
-    public Collection<String> getAllTables() {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(broadcastTables);
-        return result;
-    }
-    
-    @Override
-    public Collection<String> getTables() {
-        return new LinkedList<>(broadcastTables);
-    }
-    
     /**
      * Get broadcast rule table names.
      * 
@@ -151,5 +158,25 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
         return !logicTableNames.isEmpty() && broadcastTables.containsAll(logicTableNames);
+    }
+    
+    @Override
+    public TableNamesMapper getLogicTableMapper() {
+        return logicalTableMapper;
+    }
+    
+    @Override
+    public TableNamesMapper getActualTableMapper() {
+        return actualTableMapper;
+    }
+    
+    @Override
+    public TableNamesMapper getDistributedTableMapper() {
+        return getLogicTableMapper();
+    }
+    
+    @Override
+    public TableNamesMapper getEnhancedTableMapper() {
+        return getLogicTableMapper();
     }
 }

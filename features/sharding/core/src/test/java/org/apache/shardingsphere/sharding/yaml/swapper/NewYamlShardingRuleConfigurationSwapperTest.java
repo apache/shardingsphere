@@ -56,7 +56,7 @@ class NewYamlShardingRuleConfigurationSwapperTest {
     void assertSwapFullConfigToDataNodes() {
         ShardingRuleConfiguration config = createMaximumShardingRule();
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(16));
+        assertThat(result.size(), is(15));
         Iterator<YamlDataNode> iterator = result.iterator();
         assertThat(iterator.next().getKey(), is("tables/LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("tables/SUB_LOGIC_TABLE"));
@@ -118,7 +118,6 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         assertThat(result.getTables().size(), is(0));
         assertThat(result.getAutoTables().size(), is(0));
         assertThat(result.getBindingTableGroups().size(), is(0));
-        assertThat(result.getBroadcastTables().size(), is(0));
         assertNull(result.getDefaultDatabaseShardingStrategy());
         assertNull(result.getDefaultTableShardingStrategy());
         assertNull(result.getDefaultKeyGenerateStrategy());
@@ -177,7 +176,6 @@ class NewYamlShardingRuleConfigurationSwapperTest {
                 + "    shardingAlgorithmName: hash_mod\n"
                 + "    shardingColumn: user_id\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/binding_tables/foo", "foo:LOGIC_TABLE,SUB_LOGIC_TABLE"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/broadcast_tables", "- BROADCAST_TABLE\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy", "standard:\n"
                 + "  shardingAlgorithmName: standard\n"
                 + "  shardingColumn: ds_id\n"));

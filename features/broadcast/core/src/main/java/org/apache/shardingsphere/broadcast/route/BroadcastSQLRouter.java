@@ -37,14 +37,14 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
     public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
                                            final BroadcastRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         RouteContext result = new RouteContext();
-        BroadcastRouteEngineFactory.newInstance(rule, database, queryContext, props, connectionContext).ifPresent(optional -> optional.route(result, rule));
+        BroadcastRouteEngineFactory.newInstance(rule, database, queryContext, props, connectionContext, globalRuleMetaData).ifPresent(optional -> optional.route(result, rule));
         return result;
     }
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final BroadcastRule rule,
                                      final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        BroadcastRouteEngineFactory.newInstance(rule, database, queryContext, props, connectionContext).ifPresent(optional -> optional.route(routeContext, rule));
+        BroadcastRouteEngineFactory.newInstance(rule, database, queryContext, props, connectionContext, null).ifPresent(optional -> optional.route(routeContext, rule));
     }
     
     @Override

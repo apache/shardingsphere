@@ -31,8 +31,8 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContex
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -62,6 +62,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -81,17 +82,18 @@ public final class BroadcastRouteEngineFactory {
      * @param queryContext query context
      * @param props props
      * @param connectionContext connection context
+     * @param globalRuleMetaData global rule metadata
      * @return broadcast route engine
      */
     public static Optional<BroadcastRouteEngine> newInstance(final BroadcastRule broadcastRule, final ShardingSphereDatabase database, final QueryContext queryContext,
-                                                             final ConfigurationProperties props, final ConnectionContext connectionContext) {
+                                                             final ConfigurationProperties props, final ConnectionContext connectionContext, final ShardingSphereRuleMetaData globalRuleMetaData) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof TCLStatement) {
             return Optional.of(new BroadcastDatabaseBroadcastRoutingEngine());
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLRoutingEngine(broadcastRule, database, sqlStatementContext, props, connectionContext);
+            return getDDLRoutingEngine(broadcastRule, database, sqlStatementContext, props, connectionContext, globalRuleMetaData);
         }
         if (sqlStatement instanceof DALStatement) {
             return getDALRoutingEngine(broadcastRule, database, sqlStatementContext, connectionContext);
@@ -103,7 +105,8 @@ public final class BroadcastRouteEngineFactory {
     }
     
     private static Optional<BroadcastRouteEngine> getDDLRoutingEngine(final BroadcastRule broadcastRule, final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
-                                                                      final ConfigurationProperties props, final ConnectionContext connectionContext) {
+                                                                      final ConfigurationProperties props, final ConnectionContext connectionContext,
+                                                                      final ShardingSphereRuleMetaData globalRuleMetaData) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
         boolean procedureStatement = sqlStatement instanceof CreateProcedureStatement || sqlStatement instanceof AlterProcedureStatement || sqlStatement instanceof DropProcedureStatement;
@@ -118,9 +121,9 @@ public final class BroadcastRouteEngineFactory {
                 : sqlStatementContext.getTablesContext().getTableNames();
         Collection<String> broadcastRuleTableNames = broadcastRule.getBroadcastTableNames(tableNames);
         
-        String sqlFederationType = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
+        boolean sqlFederationEnabled = null != globalRuleMetaData && globalRuleMetaData.getSingleRule(SQLFederationRule.class).getConfiguration().isSqlFederationEnabled();
         // TODO remove this logic when jdbc adapter can support executing create logic view
-        if (!"NONE".equals(sqlFederationType) && (sqlStatement instanceof CreateViewStatement || sqlStatement instanceof AlterViewStatement || sqlStatement instanceof DropViewStatement)) {
+        if (sqlFederationEnabled && (sqlStatement instanceof CreateViewStatement || sqlStatement instanceof AlterViewStatement || sqlStatement instanceof DropViewStatement)) {
             return Optional.of(new BroadcastUnicastRoutingEngine(sqlStatementContext, broadcastRuleTableNames, connectionContext));
         }
         if (!tableNames.isEmpty() && broadcastRuleTableNames.isEmpty()) {
