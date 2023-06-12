@@ -31,8 +31,8 @@ import org.apache.shardingsphere.mask.event.config.AddMaskConfigurationEvent;
 import org.apache.shardingsphere.mask.event.config.AlterMaskConfigurationEvent;
 import org.apache.shardingsphere.mask.event.config.DeleteMaskConfigurationEvent;
 import org.apache.shardingsphere.mask.metadata.converter.MaskNodeConverter;
-import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
-import org.apache.shardingsphere.mask.yaml.swapper.YamlMaskRuleConfigurationSwapper;
+import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
@@ -60,18 +60,18 @@ public final class MaskRuleConfigurationEventBuilder implements RuleConfiguratio
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createMaskConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createMaskConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return Optional.of(new AddMaskConfigurationEvent<>(databaseName, swapMaskTableRuleConfig(event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterMaskConfigurationEvent<>(databaseName, groupName, swapMaskTableRuleConfig(event.getValue())));
+            return Optional.of(new AlterMaskConfigurationEvent<>(databaseName, tableName, swapMaskTableRuleConfig(event.getValue())));
         }
-        return Optional.of(new DeleteMaskConfigurationEvent(databaseName, groupName));
+        return Optional.of(new DeleteMaskConfigurationEvent(databaseName, tableName));
     }
     
     private MaskTableRuleConfiguration swapMaskTableRuleConfig(final String yamlContext) {
-        return new YamlMaskRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlMaskRuleConfiguration.class)).getTables().iterator().next();
+        return new YamlMaskTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlMaskTableRuleConfiguration.class));
     }
     
     private Optional<GovernanceEvent> createMaskAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {

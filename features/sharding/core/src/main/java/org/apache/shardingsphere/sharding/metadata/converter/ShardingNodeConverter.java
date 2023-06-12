@@ -242,7 +242,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isBroadcastTablePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + BROADCAST_TABLES_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + BROADCAST_TABLES_NODE + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -387,18 +387,6 @@ public final class ShardingNodeConverter {
      */
     public static Optional<String> getBindingTableName(final String rulePath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + BINDING_TABLES_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get broadcast name.
-     *
-     * @param rulePath rule path
-     * @return broadcast name
-     */
-    public static Optional<String> getBroadcastTableName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + BROADCAST_TABLES_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
