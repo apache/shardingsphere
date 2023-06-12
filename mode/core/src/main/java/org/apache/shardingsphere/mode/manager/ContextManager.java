@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -133,6 +134,12 @@ public final class ContextManager implements AutoCloseable {
         }
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.get().getMetaData().getProps());
         metaDataContexts.get().getMetaData().addDatabase(databaseName, protocolType);
+        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+        alterMetaDataHeldRule(database);
+    }
+    
+    private void alterMetaDataHeldRule(final ShardingSphereDatabase database) {
+        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(MetaDataHeldRule.class).forEach(each -> each.alterDatabase(database));
     }
     
     /**
@@ -145,6 +152,7 @@ public final class ContextManager implements AutoCloseable {
             return;
         }
         metaDataContexts.get().getMetaData().dropDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName());
+        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(MetaDataHeldRule.class).forEach(each -> each.dropDatabase(databaseName));
     }
     
     /**
@@ -154,10 +162,12 @@ public final class ContextManager implements AutoCloseable {
      * @param schemaName schema name
      */
     public synchronized void addSchema(final String databaseName, final String schemaName) {
-        if (metaDataContexts.get().getMetaData().getDatabase(databaseName).containsSchema(schemaName)) {
+        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+        if (database.containsSchema(schemaName)) {
             return;
         }
-        metaDataContexts.get().getMetaData().getDatabase(databaseName).putSchema(schemaName, new ShardingSphereSchema());
+        database.putSchema(schemaName, new ShardingSphereSchema());
+        alterMetaDataHeldRule(database);
     }
     
     /**
@@ -167,10 +177,12 @@ public final class ContextManager implements AutoCloseable {
      * @param schemaName schema name
      */
     public synchronized void dropSchema(final String databaseName, final String schemaName) {
-        if (!metaDataContexts.get().getMetaData().getDatabase(databaseName).containsSchema(schemaName)) {
+        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+        if (!database.containsSchema(schemaName)) {
             return;
         }
-        metaDataContexts.get().getMetaData().getDatabase(databaseName).removeSchema(schemaName);
+        database.removeSchema(schemaName);
+        alterMetaDataHeldRule(database);
     }
     
     /**
@@ -184,6 +196,7 @@ public final class ContextManager implements AutoCloseable {
     public synchronized void alterSchema(final String databaseName, final String schemaName, final String toBeDeletedTableName, final String toBeDeletedViewName) {
         Optional.ofNullable(toBeDeletedTableName).ifPresent(optional -> dropTable(databaseName, schemaName, optional));
         Optional.ofNullable(toBeDeletedViewName).ifPresent(optional -> dropView(databaseName, schemaName, optional));
+        alterMetaDataHeldRule(metaDataContexts.get().getMetaData().getDatabase(databaseName));
     }
     
     /**
@@ -200,6 +213,7 @@ public final class ContextManager implements AutoCloseable {
         }
         Optional.ofNullable(toBeChangedTable).ifPresent(optional -> alterTable(databaseName, schemaName, optional));
         Optional.ofNullable(toBeChangedView).ifPresent(optional -> alterView(databaseName, schemaName, optional));
+        alterMetaDataHeldRule(metaDataContexts.get().getMetaData().getDatabase(databaseName));
     }
     
     private synchronized void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
@@ -513,6 +527,7 @@ public final class ContextManager implements AutoCloseable {
                 metaDataContexts.get().getPersistService().getDatabaseMetaDataService()
                         .compareAndPersist(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), schemaName, reloadedSchema);
             }
+            alterMetaDataHeldRule(metaDataContexts.get().getMetaData().getDatabase(databaseName));
         } catch (final SQLException ex) {
             log.error("Reload meta data of database: {} schema: {} with data source: {} failed", databaseName, schemaName, dataSourceName, ex);
         }
@@ -574,6 +589,7 @@ public final class ContextManager implements AutoCloseable {
             dropTable(databaseName, schemaName, tableName);
         }
         metaDataContexts.get().getPersistService().getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, database.getSchema(schemaName));
+        alterMetaDataHeldRule(metaDataContexts.get().getMetaData().getDatabase(databaseName));
     }
     
     /**
