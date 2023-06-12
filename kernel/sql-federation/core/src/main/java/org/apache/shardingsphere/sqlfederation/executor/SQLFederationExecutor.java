@@ -108,7 +108,7 @@ public final class SQLFederationExecutor implements AutoCloseable {
         ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
         ShardingSphereSchema schema = database.getSchema(schemaName);
         OptimizerContext optimizerContext = globalRuleMetaData.getSingleRule(SQLFederationRule.class).getOptimizerContext();
-        Schema sqlFederationSchema = optimizerContext.getPlannerContext(databaseName).getValidators().get(schemaName).getCatalogReader().getRootSchema().plus();
+        Schema sqlFederationSchema = optimizerContext.getPlannerContext(databaseName).getValidators().get(schemaName).getCatalogReader().getRootSchema().plus().getSubSchema(schemaName);
         registerTableScanExecutor(sqlFederationSchema, prepareEngine, callback, federationContext, optimizerContext);
         Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());
         resultSet = execute((SelectStatementContext) sqlStatementContext, schema, sqlFederationSchema, params, optimizerContext);

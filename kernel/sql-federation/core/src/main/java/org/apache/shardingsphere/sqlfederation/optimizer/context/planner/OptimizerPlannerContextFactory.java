@@ -24,10 +24,9 @@ import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.prepare.CalciteCatalogReader;
-import org.apache.calcite.schema.impl.AbstractSchema;
+import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -78,7 +77,7 @@ public final class OptimizerPlannerContextFactory {
         Map<String, SqlToRelConverter> converters = new LinkedHashMap<>();
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
             CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
-            AbstractSchema sqlFederationSchema = createSQLFederationSchema(entry.getKey(), entry.getValue(), database.getProtocolType());
+            Schema sqlFederationSchema = new SQLFederationSchema(entry.getKey(), entry.getValue(), database.getProtocolType(), DEFAULT_DATA_TYPE_FACTORY);
             CalciteCatalogReader catalogReader = SQLFederationPlannerUtils.createCatalogReader(entry.getKey(), sqlFederationSchema, DEFAULT_DATA_TYPE_FACTORY, connectionConfig);
             SqlValidator validator = SQLFederationPlannerUtils.createSqlValidator(catalogReader, DEFAULT_DATA_TYPE_FACTORY, parserContext.getDatabaseType(), connectionConfig);
             SqlToRelConverter converter = SQLFederationPlannerUtils.createSqlToRelConverter(catalogReader, validator, SQLFederationPlannerUtils.createRelOptCluster(DEFAULT_DATA_TYPE_FACTORY),
@@ -87,10 +86,5 @@ public final class OptimizerPlannerContextFactory {
             converters.put(entry.getKey(), converter);
         }
         return new OptimizerPlannerContext(SQLFederationPlannerUtils.createHepPlanner(), validators, converters);
-    }
-    
-    private static AbstractSchema createSQLFederationSchema(final String schemaName, final ShardingSphereSchema schema, final DatabaseType protocolType) {
-        // TODO register when execute sql
-        return new SQLFederationSchema(schemaName, schema, protocolType, DEFAULT_DATA_TYPE_FACTORY);
     }
 }
