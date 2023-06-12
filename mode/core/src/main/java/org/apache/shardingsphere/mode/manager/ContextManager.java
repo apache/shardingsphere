@@ -470,7 +470,6 @@ public final class ContextManager implements AutoCloseable {
             metaDataContexts.set(reloadedMetaDataContexts);
             metaDataContexts.get().getMetaData().getDatabases().values().forEach(each -> each.getSchemas()
                     .forEach((schemaName, schema) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().compareAndPersist(each.getName(), schemaName, schema)));
-            alterMetaDataHeldRule(database);
             switchingResource.closeStaleDataSources();
         } catch (final SQLException ex) {
             log.error("Reload database meta data: {} failed", databaseName, ex);
@@ -569,7 +568,6 @@ public final class ContextManager implements AutoCloseable {
             dropTable(databaseName, schemaName, tableName);
         }
         metaDataContexts.get().getPersistService().getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, database.getSchema(schemaName));
-        alterMetaDataHeldRule(metaDataContexts.get().getMetaData().getDatabase(databaseName));
     }
     
     /**
