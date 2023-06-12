@@ -35,7 +35,7 @@ import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.swapper.YamlMaskRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.config.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
 
 import java.util.Optional;
 

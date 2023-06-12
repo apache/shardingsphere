@@ -62,13 +62,13 @@ public final class GlobalRuleNodeConverter {
     }
     
     /**
-     * Is expect rule name.
+     * Is expected rule name.
      *
      * @param ruleName rule name
      * @param rulePath rule path
      * @return true or false
      */
-    public static boolean isExpectRuleName(final String ruleName, final String rulePath) {
+    public static boolean isExpectedRuleName(final String ruleName, final String rulePath) {
         Pattern pattern = Pattern.compile(getRootNode(ruleName) + "\\.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
