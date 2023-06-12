@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 public interface MetaDataHeldRule extends ShardingSphereRule {
     
     /**
-     * Alter database meta data.
+     * Alter database.
      * 
-     * @param database database meta data
+     * @param database database
      */
     void alterDatabase(ShardingSphereDatabase database);
     
