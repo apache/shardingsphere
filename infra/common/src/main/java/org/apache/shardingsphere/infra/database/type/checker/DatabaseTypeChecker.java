@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Database type checker.
@@ -44,6 +45,8 @@ public final class DatabaseTypeChecker {
     private static final Collection<String> UNSUPPORTED_URL_PREFIXES = Collections.singletonList("jdbc:mysql:aws");
     
     private static final Collection<DatabaseType> SUPPORTED_STORAGE_TYPES = new HashSet<>(8, 1F);
+
+    private static volatile boolean isChecked;
     
     static {
         Arrays.asList("MySQL", "PostgreSQL", "openGauss", "Oracle", "SQLServer", "H2", "MariaDB")
@@ -59,20 +62,22 @@ public final class DatabaseTypeChecker {
      * @throws SQLException SQL exception
      */
     public static void checkSupportedStorageTypes(final Map<String, DataSource> dataSources, final String databaseName, final Map<String, DatabaseType> storageTypes) throws SQLException {
-        if (dataSources.isEmpty()) {
+        if (isChecked || dataSources.isEmpty()) {
             return;
         }
-        Map.Entry<String, DataSource> dataSource = dataSources.entrySet().iterator().next();
-        try (Connection connection = dataSource.getValue().getConnection()) {
-            String url = connection.getMetaData().getURL();
-            if (MOCKED_URL_PREFIXES.stream().anyMatch(url::startsWith)) {
-                return;
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            try (Connection connection = entry.getValue().getConnection()) {
+                String url = connection.getMetaData().getURL();
+                if (MOCKED_URL_PREFIXES.stream().anyMatch(url::startsWith)) {
+                    return;
+                }
+                ShardingSpherePreconditions.checkState(UNSUPPORTED_URL_PREFIXES.stream()
+                        .noneMatch(url::startsWith), () -> new UnsupportedStorageTypeException(databaseName, entry.getKey()));
             }
-            ShardingSpherePreconditions.checkState(UNSUPPORTED_URL_PREFIXES.stream()
-                    .noneMatch(url::startsWith), () -> new UnsupportedStorageTypeException(databaseName, dataSource.getKey()));
         }
         storageTypes.forEach((key, value) -> ShardingSpherePreconditions.checkState(SUPPORTED_STORAGE_TYPES.stream()
                 .anyMatch(each -> each.getClass().equals(value.getClass())), () -> new UnsupportedStorageTypeException(databaseName, key)));
+        isChecked = true;
     }
     
     /**
