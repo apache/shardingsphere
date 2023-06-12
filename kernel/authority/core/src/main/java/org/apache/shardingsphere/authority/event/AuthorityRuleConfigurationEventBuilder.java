@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 public final class AuthorityRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
-    private final static String AUTHORITY = "authority";
+    private static final String AUTHORITY = "authority";
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {

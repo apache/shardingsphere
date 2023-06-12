@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 public final class LoggingRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
-    private final static String LOGGING = "logging";
+    private static final String LOGGING = "logging";
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {

@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 public final class GlobalClockRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
-    private final static String GLOBAL_CLOCK = "global_clock";
+    private static final String GLOBAL_CLOCK = "global_clock";
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
