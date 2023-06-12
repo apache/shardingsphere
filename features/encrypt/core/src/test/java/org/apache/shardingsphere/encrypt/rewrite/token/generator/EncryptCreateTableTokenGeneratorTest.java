@@ -48,54 +48,29 @@ import static org.mockito.Mockito.when;
 
 class EncryptCreateTableTokenGeneratorTest {
     
-    private EncryptCreateTableTokenGenerator generator;
+    private final EncryptCreateTableTokenGenerator generator = new EncryptCreateTableTokenGenerator();
     
     @BeforeEach
     void setup() {
-        generator = new EncryptCreateTableTokenGenerator();
-        generator.setEncryptRule(buildEncryptRule());
+        generator.setEncryptRule(mockEncryptRule());
     }
     
-    @Test
-    void assertGenerateSQLTokens() {
-        Collection<SQLToken> sqlTokens = generator.generateSQLTokens(buildCreateTableStatementContext());
-        assertThat(sqlTokens.size(), is(4));
-        Iterator<SQLToken> iterator = sqlTokens.iterator();
-        assertThat(iterator.next(), instanceOf(RemoveToken.class));
-        SubstitutableColumnNameToken cipherToken = (SubstitutableColumnNameToken) iterator.next();
-        assertThat(cipherToken.toString(mock(RouteUnit.class)), is("cipher_certificate_number"));
-        assertThat(cipherToken.getStartIndex(), is(79));
-        assertThat(cipherToken.getStopIndex(), is(42));
-        SubstitutableColumnNameToken assistedToken = (SubstitutableColumnNameToken) iterator.next();
-        assertThat(assistedToken.toString(mock(RouteUnit.class)), is(", assisted_certificate_number"));
-        assertThat(assistedToken.getStartIndex(), is(79));
-        assertThat(assistedToken.getStopIndex(), is(42));
-        SubstitutableColumnNameToken likeToken = (SubstitutableColumnNameToken) iterator.next();
-        assertThat(likeToken.toString(mock(RouteUnit.class)), is(", like_certificate_number"));
-        assertThat(likeToken.getStartIndex(), is(79));
-        assertThat(likeToken.getStopIndex(), is(42));
-    }
-    
-    private CreateTableStatementContext buildCreateTableStatementContext() {
-        CreateTableStatementContext result = mock(CreateTableStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
-        ColumnDefinitionSegment segment = new ColumnDefinitionSegment(25, 78,
-                new ColumnSegment(25, 42, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false);
-        when(result.getSqlStatement().getColumnDefinitions()).thenReturn(Collections.singletonList(segment));
+    private EncryptRule mockEncryptRule() {
+        EncryptRule result = mock(EncryptRule.class);
+        when(result.findStandardEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
+        EncryptTable encryptTable = mockEncryptTable();
+        when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         return result;
     }
     
-    private EncryptRule buildEncryptRule() {
-        EncryptRule result = mock(EncryptRule.class);
-        EncryptTable encryptTable = mock(EncryptTable.class);
-        when(encryptTable.getLogicColumns()).thenReturn(Collections.singletonList("t_encrypt"));
-        when(result.findStandardEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
-        when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
+    private EncryptTable mockEncryptTable() {
+        EncryptTable result = mock(EncryptTable.class);
         EncryptColumn column = mockEncryptColumn();
-        when(result.getCipherColumn("t_encrypt", "certificate_number")).thenReturn(column.getCipher().getName());
-        when(result.findAssistedQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getAssistedQuery().map(EncryptColumnItem::getName));
-        when(result.findLikeQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getLikeQuery().map(EncryptColumnItem::getName));
-        when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(column));
+        when(result.getLogicColumns()).thenReturn(Collections.singletonList("t_encrypt"));
+        when(result.getCipherColumn("certificate_number")).thenReturn(column.getCipher().getName());
+        when(result.findAssistedQueryColumn("certificate_number")).thenReturn(column.getAssistedQuery().map(EncryptColumnItem::getName));
+        when(result.findLikeQueryColumn("certificate_number")).thenReturn(column.getLikeQuery().map(EncryptColumnItem::getName));
+        when(result.findEncryptColumn("certificate_number")).thenReturn(Optional.of(column));
         return result;
     }
     
@@ -103,6 +78,34 @@ class EncryptCreateTableTokenGeneratorTest {
         EncryptColumn result = new EncryptColumn("certificate_number", new EncryptColumnItem("cipher_certificate_number", "test"));
         result.setAssistedQuery(new EncryptColumnItem("assisted_certificate_number", "assisted_encryptor"));
         result.setLikeQuery(new EncryptColumnItem("like_certificate_number", "like_encryptor"));
+        return result;
+    }
+    
+    @Test
+    void assertGenerateSQLTokens() {
+        Collection<SQLToken> actual = generator.generateSQLTokens(mockCreateTableStatementContext());
+        assertThat(actual.size(), is(4));
+        Iterator<SQLToken> actualIterator = actual.iterator();
+        assertThat(actualIterator.next(), instanceOf(RemoveToken.class));
+        SubstitutableColumnNameToken cipherToken = (SubstitutableColumnNameToken) actualIterator.next();
+        assertThat(cipherToken.toString(mock(RouteUnit.class)), is("cipher_certificate_number"));
+        assertThat(cipherToken.getStartIndex(), is(79));
+        assertThat(cipherToken.getStopIndex(), is(42));
+        SubstitutableColumnNameToken assistedToken = (SubstitutableColumnNameToken) actualIterator.next();
+        assertThat(assistedToken.toString(mock(RouteUnit.class)), is(", assisted_certificate_number"));
+        assertThat(assistedToken.getStartIndex(), is(79));
+        assertThat(assistedToken.getStopIndex(), is(42));
+        SubstitutableColumnNameToken likeToken = (SubstitutableColumnNameToken) actualIterator.next();
+        assertThat(likeToken.toString(mock(RouteUnit.class)), is(", like_certificate_number"));
+        assertThat(likeToken.getStartIndex(), is(79));
+        assertThat(likeToken.getStopIndex(), is(42));
+    }
+    
+    private CreateTableStatementContext mockCreateTableStatementContext() {
+        CreateTableStatementContext result = mock(CreateTableStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
+        ColumnDefinitionSegment segment = new ColumnDefinitionSegment(25, 78, new ColumnSegment(25, 42, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false);
+        when(result.getSqlStatement().getColumnDefinitions()).thenReturn(Collections.singletonList(segment));
         return result;
     }
 }
