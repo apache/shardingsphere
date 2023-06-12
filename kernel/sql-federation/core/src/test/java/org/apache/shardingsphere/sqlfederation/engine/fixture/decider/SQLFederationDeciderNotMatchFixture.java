@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.decider.fixture.decider;
+package org.apache.shardingsphere.sqlfederation.engine.fixture.decider;
 
+import org.apache.shardingsphere.sqlfederation.engine.fixture.rule.SQLFederationDeciderRuleNotMatchFixture;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.sqlfederation.decider.fixture.rule.SQLFederationDeciderRuleMatchFixture;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
 import java.util.Collection;
 import java.util.List;
 
-public final class SQLFederationDeciderMatchFixture implements SQLFederationDecider<SQLFederationDeciderRuleMatchFixture> {
+public final class SQLFederationDeciderNotMatchFixture implements SQLFederationDecider<SQLFederationDeciderRuleNotMatchFixture> {
     
     @Override
     public boolean decide(final SelectStatementContext selectStatementContext, final List<Object> parameters, final ShardingSphereRuleMetaData globalRuleMetaData,
-                          final ShardingSphereDatabase database, final SQLFederationDeciderRuleMatchFixture rule, final Collection<DataNode> includedDataNodes) {
-        return true;
+                          final ShardingSphereDatabase database, final SQLFederationDeciderRuleNotMatchFixture rule, final Collection<DataNode> includedDataNodes) {
+        return false;
     }
     
     @Override
     public int getOrder() {
-        return 0;
+        return 10;
     }
     
     @Override
-    public Class<SQLFederationDeciderRuleMatchFixture> getTypeClass() {
-        return SQLFederationDeciderRuleMatchFixture.class;
+    public Class<SQLFederationDeciderRuleNotMatchFixture> getTypeClass() {
+        return SQLFederationDeciderRuleNotMatchFixture.class;
     }
 }

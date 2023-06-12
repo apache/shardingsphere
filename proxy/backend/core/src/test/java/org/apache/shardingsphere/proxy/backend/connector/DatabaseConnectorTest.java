@@ -55,7 +55,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutor;
+import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilder;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
@@ -148,14 +148,13 @@ class DatabaseConnectorTest {
         DatabaseConnector engine =
                 DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), databaseConnectionManager, true);
         when(databaseConnectionManager.getConnectionSession().getStatementManager()).thenReturn(new JDBCBackendStatement());
-        SQLFederationExecutor federationExecutor = mock(SQLFederationExecutor.class);
-        when(sqlFederationRule.getSqlFederationExecutor()).thenReturn(federationExecutor);
+        SQLFederationEngine sqlFederationEngine = mock(SQLFederationEngine.class);
         when(SystemSchemaUtils.containsSystemSchema(any(DatabaseType.class), any(), any(ShardingSphereDatabase.class))).thenReturn(true);
         try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
             typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, "H2")).thenReturn(new QueryHeaderBuilderFixture());
             typedSPILoader.when(() -> TypedSPILoader.getService(OptimizerSQLDialectBuilder.class, "MySQL")).thenReturn(mock(OptimizerSQLDialectBuilder.class));
             typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, "H2")).thenReturn(new MySQLDatabaseType());
-            when(federationExecutor.executeQuery(any(DriverExecutionPrepareEngine.class), any(ProxyJDBCExecutorCallback.class), any(SQLFederationExecutorContext.class))).thenReturn(resultSet);
+            when(sqlFederationEngine.executeQuery(any(DriverExecutionPrepareEngine.class), any(ProxyJDBCExecutorCallback.class), any(SQLFederationExecutorContext.class))).thenReturn(resultSet);
             when(resultSet.getMetaData().getColumnCount()).thenReturn(1);
             when(resultSet.next()).thenReturn(true, false);
             when(resultSet.getObject(1)).thenReturn(Integer.MAX_VALUE);
@@ -167,7 +166,7 @@ class DatabaseConnectorTest {
         assertThat(actualRow.getCells().get(0).getData(), is(Integer.MAX_VALUE));
         assertFalse(engine.next());
         engine.close();
-        verify(federationExecutor).close();
+        verify(sqlFederationEngine).close();
     }
     
     @Test

@@ -79,7 +79,6 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sqlfederation.decider.SQLFederationDecideEngine;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.exception.metadata.EmptyTrafficExecutionUnitException;
@@ -192,7 +191,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private boolean decide(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData) {
-        return new SQLFederationDecideEngine(database.getRuleMetaData().getRules()).decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, globalRuleMetaData);
+        return executor.getSqlFederationEngine().decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, globalRuleMetaData);
     }
     
     private Optional<String> getInstanceIdAndSet(final QueryContext queryContext) {
@@ -231,7 +230,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), queryContext.getSqlStatementContext().getSqlStatement(),
                 SQLExecutorExceptionHandler.isExceptionThrown());
         SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, queryContext, metaDataContexts.getMetaData());
-        return executor.getFederationExecutor().executeQuery(createDriverExecutionPrepareEngine(), callback, context);
+        return executor.getSqlFederationEngine().executeQuery(createDriverExecutionPrepareEngine(), callback, context);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine() {
@@ -585,7 +584,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             return executor.getTrafficExecutor().getResultSet();
         }
         if (useFederation) {
-            return executor.getFederationExecutor().getResultSet();
+            return executor.getSqlFederationEngine().getResultSet();
         }
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();

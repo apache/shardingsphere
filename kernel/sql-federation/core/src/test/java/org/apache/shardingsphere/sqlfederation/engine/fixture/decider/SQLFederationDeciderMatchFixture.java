@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.decider.fixture.decider;
+package org.apache.shardingsphere.sqlfederation.engine.fixture.decider;
 
-import org.apache.shardingsphere.sqlfederation.decider.fixture.rule.SQLFederationDeciderRuleNotMatchFixture;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.sqlfederation.engine.fixture.rule.SQLFederationDeciderRuleMatchFixture;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
 import java.util.Collection;
 import java.util.List;
 
-public final class SQLFederationDeciderNotMatchFixture implements SQLFederationDecider<SQLFederationDeciderRuleNotMatchFixture> {
+public final class SQLFederationDeciderMatchFixture implements SQLFederationDecider<SQLFederationDeciderRuleMatchFixture> {
     
     @Override
     public boolean decide(final SelectStatementContext selectStatementContext, final List<Object> parameters, final ShardingSphereRuleMetaData globalRuleMetaData,
-                          final ShardingSphereDatabase database, final SQLFederationDeciderRuleNotMatchFixture rule, final Collection<DataNode> includedDataNodes) {
-        return false;
+                          final ShardingSphereDatabase database, final SQLFederationDeciderRuleMatchFixture rule, final Collection<DataNode> includedDataNodes) {
+        return true;
     }
     
     @Override
     public int getOrder() {
-        return 10;
+        return 0;
     }
     
     @Override
-    public Class<SQLFederationDeciderRuleNotMatchFixture> getTypeClass() {
-        return SQLFederationDeciderRuleNotMatchFixture.class;
+    public Class<SQLFederationDeciderRuleMatchFixture> getTypeClass() {
+        return SQLFederationDeciderRuleMatchFixture.class;
     }
 }

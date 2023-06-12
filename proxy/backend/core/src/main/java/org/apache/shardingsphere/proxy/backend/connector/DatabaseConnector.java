@@ -74,10 +74,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sqlfederation.decider.SQLFederationDecideEngine;
-import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutor;
+import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
-import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.sql.Connection;
@@ -114,7 +112,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private final ProxyDatabaseConnectionManager databaseConnectionManager;
     
-    private SQLFederationExecutor federationExecutor;
+    private SQLFederationEngine sqlFederationEngine;
     
     private List<QueryHeader> queryHeaders;
     
@@ -170,9 +168,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     @Override
     public ResponseHeader execute() throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        if (new SQLFederationDecideEngine(database.getRuleMetaData().getRules())
-                .decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
-            prepareFederationExecutor();
+        prepareFederationEngine();
+        if (sqlFederationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
             ResultSet resultSet = doExecuteFederation(queryContext, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);
         }
@@ -247,14 +244,12 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         return executeResultSample instanceof QueryResult ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample) : processExecuteUpdate(executionContext, result);
     }
     
-    private void prepareFederationExecutor() {
+    private void prepareFederationEngine() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = databaseConnectionManager.getConnectionSession().getDatabaseName();
         DatabaseType databaseType = queryContext.getSqlStatementContext().getDatabaseType();
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
-        SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        federationExecutor = sqlFederationRule.getSqlFederationExecutor();
-        federationExecutor.init(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
+        sqlFederationEngine = new SQLFederationEngine(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
                 new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), databaseConnectionManager.getConnectionSession().getConnectionContext()));
     }
     
@@ -267,7 +262,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
                 queryContext.getSqlStatementContext().getSqlStatement(), this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
         SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, queryContext, metaDataContexts.getMetaData());
-        return federationExecutor.executeQuery(prepareEngine, callback, context);
+        return sqlFederationEngine.executeQuery(prepareEngine, callback, context);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaData) {
@@ -418,7 +413,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         Collection<SQLException> result = new LinkedList<>();
         result.addAll(closeResultSets());
         result.addAll(closeStatements());
-        closeFederationExecutor().ifPresent(result::add);
+        closeSQLFederationEngine().ifPresent(result::add);
         if (result.isEmpty()) {
             return;
         }
@@ -454,10 +449,10 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         return result;
     }
     
-    private Optional<SQLException> closeFederationExecutor() {
-        if (null != federationExecutor) {
+    private Optional<SQLException> closeSQLFederationEngine() {
+        if (null != sqlFederationEngine) {
             try {
-                federationExecutor.close();
+                sqlFederationEngine.close();
             } catch (final SQLException ex) {
                 return Optional.of(ex);
             }
