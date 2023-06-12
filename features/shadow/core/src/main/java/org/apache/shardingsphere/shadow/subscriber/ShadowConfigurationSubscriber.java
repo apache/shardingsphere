@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.subscriber;
+package org.apache.shardingsphere.shadow.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +23,13 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.event.config.AddMaskConfigurationEvent;
-import org.apache.shardingsphere.mask.event.config.AlterMaskConfigurationEvent;
-import org.apache.shardingsphere.mask.event.config.DeleteMaskConfigurationEvent;
-import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mode.event.config.RuleConfigurationChangedEvent;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.event.config.AddShadowConfigurationEvent;
+import org.apache.shardingsphere.shadow.event.config.AlterShadowConfigurationEvent;
+import org.apache.shardingsphere.shadow.event.config.DeleteShadowConfigurationEvent;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,11 +38,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Mask configuration subscriber.
+ * Shadow configuration subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 @RequiredArgsConstructor
-public final class MaskConfigurationSubscriber implements RuleConfigurationSubscribeCoordinator {
+public final class ShadowConfigurationSubscriber implements RuleConfigurationSubscribeCoordinator {
     
     private Map<String, ShardingSphereDatabase> databases;
     
@@ -56,22 +56,23 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
     }
     
     /**
-     * Renew with add mask configuration.
+     * Renew with add shadow configuration.
      *
-     * @param event add mask configuration event
+     * @param event add shadow configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddMaskConfigurationEvent<MaskTableRuleConfiguration> event) {
+    public synchronized void renew(final AddShadowConfigurationEvent<ShadowDataSourceConfiguration> event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        MaskTableRuleConfiguration needToAddedConfig = event.getConfig();
+        ShadowDataSourceConfiguration needToAddedConfig = event.getConfig();
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
-        MaskRuleConfiguration config;
+        Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
+        ShadowRuleConfiguration config;
         if (rule.isPresent()) {
-            config = (MaskRuleConfiguration) rule.get().getConfiguration();
-            config.getTables().add(needToAddedConfig);
+            config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+            config.getDataSources().add(needToAddedConfig);
         } else {
-            config = new MaskRuleConfiguration(Collections.singletonList(needToAddedConfig), Collections.emptyMap());
+            config = new ShadowRuleConfiguration();
+            config.setDataSources(Collections.singletonList(needToAddedConfig));
         }
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
@@ -79,34 +80,34 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
     }
     
     /**
-     * Renew with alter mask configuration.
+     * Renew with alter shadow configuration.
      *
-     * @param event alter mask configuration event
+     * @param event alter shadow configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterMaskConfigurationEvent<MaskTableRuleConfiguration> event) {
+    public synchronized void renew(final AlterShadowConfigurationEvent<ShadowDataSourceConfiguration> event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        MaskTableRuleConfiguration needToAlteredConfig = event.getConfig();
+        ShadowDataSourceConfiguration needToAlteredConfig = event.getConfig();
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
-        config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
-        config.getTables().add(needToAlteredConfig);
+        ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
+        config.getDataSources().removeIf(each -> each.getName().equals(event.getDataSourceName()));
+        config.getDataSources().add(needToAlteredConfig);
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
-     * Renew with delete mask configuration.
+     * Renew with delete shadow configuration.
      *
-     * @param event delete mask configuration event
+     * @param event delete shadow configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteMaskConfigurationEvent event) {
+    public synchronized void renew(final DeleteShadowConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
-        config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
+        ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
+        config.getDataSources().removeIf(each -> each.getName().equals(event.getDataSourceName()));
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
