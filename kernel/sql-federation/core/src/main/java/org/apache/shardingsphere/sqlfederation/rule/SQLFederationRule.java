@@ -21,10 +21,13 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
 
 import java.util.Map;
 
@@ -32,7 +35,7 @@ import java.util.Map;
  * SQL federation rule.
  */
 @Getter
-public final class SQLFederationRule implements GlobalRule {
+public final class SQLFederationRule implements GlobalRule, MetaDataHeldRule {
     
     private final SQLFederationRuleConfiguration configuration;
     
@@ -44,6 +47,17 @@ public final class SQLFederationRule implements GlobalRule {
         configuration = ruleConfig;
         sqlFederationExecutor = new SQLFederationExecutor();
         optimizerContext = OptimizerContextFactory.create(databases, props);
+    }
+    
+    @Override
+    public void alterDatabase(final ShardingSphereDatabase database) {
+        OptimizerPlannerContext plannerContext = OptimizerPlannerContextFactory.create(database, optimizerContext.getParserContext(database.getName()), optimizerContext.getSqlParserRule());
+        optimizerContext.putPlannerContext(database.getName(), plannerContext);
+    }
+    
+    @Override
+    public void dropDatabase(final String databaseName) {
+        optimizerContext.removePlannerContext(databaseName);
     }
     
     @Override

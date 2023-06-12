@@ -15,20 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.config;
+package org.apache.shardingsphere.infra.rule.identifier.type;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Rule configuration changed event.
+ * ShardingSphere rule which held metadata.
  */
-@Getter
-@RequiredArgsConstructor
-public final class RuleConfigurationChangedEvent {
+public interface MetaDataHeldRule extends ShardingSphereRule {
     
-    private final String databaseName;
+    /**
+     * Alter database.
+     * 
+     * @param database database
+     */
+    void alterDatabase(ShardingSphereDatabase database);
     
-    private final RuleConfiguration ruleConfig;
+    /**
+     * Drop database.
+     * 
+     * @param databaseName database name
+     */
+    void dropDatabase(String databaseName);
 }

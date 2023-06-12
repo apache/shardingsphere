@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
+import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnNotFoundException;
@@ -34,6 +35,7 @@ import java.util.TreeMap;
  */
 public final class EncryptTable {
     
+    @Getter
     private final String table;
     
     private final Map<String, EncryptColumn> columns;
