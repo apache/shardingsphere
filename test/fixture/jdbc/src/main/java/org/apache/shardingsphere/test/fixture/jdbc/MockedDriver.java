@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Mocked driver.
@@ -46,7 +47,9 @@ public final class MockedDriver implements Driver {
         if (url.contains("invalid")) {
             throw new SQLException("Invalid URL.");
         }
-        return mock(Connection.class, RETURNS_DEEP_STUBS);
+        Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getURL()).thenReturn(url);
+        return result;
     }
     
     @Override
