@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.metadata.persist.service.config.global;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -26,13 +25,12 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.NewGlobalNode;
+import org.apache.shardingsphere.metadata.persist.service.config.AbstractPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.List;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -40,12 +38,16 @@ import java.util.Map.Entry;
  * TODO Rename GlobalRulePersistService when metadata structure adjustment completed. #25485
  * New Global rule persist service.
  */
-@RequiredArgsConstructor
-public final class NewGlobalRulePersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
+public final class NewGlobalRulePersistService extends AbstractPersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
     
     private static final String DEFAULT_VERSION = "0";
     
     private final PersistRepository repository;
+    
+    public NewGlobalRulePersistService(final PersistRepository repository) {
+        super(repository);
+        this.repository = repository;
+    }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
@@ -72,32 +74,8 @@ public final class NewGlobalRulePersistService implements GlobalPersistService<C
     @Override
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> load() {
-        Collection<String> result = new LinkedHashSet<>();
-        getAllNodes(result, NewGlobalNode.getGlobalRuleRootNode());
-        if (1 == result.size()) {
-            return Collections.emptyList();
-        }
-        return new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(getDataNodes(result));
-    }
-    
-    // TODO Consider merge NewGlobalRulePersistService and NewDatabaseRulePersistService load method.
-    private void getAllNodes(final Collection<String> keys, final String path) {
-        keys.add(path);
-        List<String> childrenKeys = repository.getChildrenKeys(path);
-        if (childrenKeys.isEmpty()) {
-            return;
-        }
-        for (String each : childrenKeys) {
-            getAllNodes(keys, String.join("/", "", path, each));
-        }
-    }
-    
-    private Collection<YamlDataNode> getDataNodes(final Collection<String> keys) {
-        Collection<YamlDataNode> result = new LinkedHashSet<>();
-        for (String each : keys) {
-            result.add(new YamlDataNode(each, repository.getDirectly(each)));
-        }
-        return result;
+        Collection<YamlDataNode> dataNodes = getDataNodes(NewGlobalNode.getGlobalRuleRootNode());
+        return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
     }
     
     /**
