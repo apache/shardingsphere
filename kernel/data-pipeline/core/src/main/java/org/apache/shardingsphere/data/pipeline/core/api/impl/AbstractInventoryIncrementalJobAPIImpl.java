@@ -238,8 +238,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     @Override
     public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, DataConsistencyCheckResult> checkResults) {
         if (checkResults.isEmpty()) {
-            log.info("aggregateDataConsistencyCheckResults, checkResults empty, jobId={}", jobId);
-            return false;
+            throw new IllegalArgumentException("checkResults empty, jobId:" + jobId);
         }
         for (Entry<String, DataConsistencyCheckResult> entry : checkResults.entrySet()) {
             DataConsistencyCheckResult checkResult = entry.getValue();

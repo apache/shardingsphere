@@ -240,7 +240,7 @@ public abstract class SQL92StatementVisitor extends SQL92StatementBaseVisitor<AS
         if (null != ctx.orOperator()) {
             return createBinaryOperationExpression(ctx, ctx.orOperator().getText());
         }
-        return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)));
+        return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
     }
     
     private ASTNode createBinaryOperationExpression(final ExprContext ctx, final String operator) {

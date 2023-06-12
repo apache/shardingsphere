@@ -39,6 +39,9 @@ public final class NotExpressionConverter implements SQLSegmentConverter<NotExpr
         SqlNode expression = new ExpressionConverter().convert(segment.getExpression()).orElseThrow(IllegalStateException::new);
         List<SqlNode> sqlNodes = new LinkedList<>();
         sqlNodes.add(expression);
+        if (segment.getNotSign().equals(true)) {
+            return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.NOT_SIGN, sqlNodes, SqlParserPos.ZERO));
+        }
         return Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, sqlNodes, SqlParserPos.ZERO));
     }
 }

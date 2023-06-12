@@ -195,7 +195,7 @@ class MigrationJobAPITest {
     
     @Test
     void assertAggregateEmptyDataConsistencyCheckResults() {
-        assertFalse(jobAPI.aggregateDataConsistencyCheckResults("foo_job", Collections.emptyMap()));
+        assertThrows(IllegalArgumentException.class, () -> jobAPI.aggregateDataConsistencyCheckResults("foo_job", Collections.emptyMap()));
     }
     
     @Test

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.optimizer.context.planner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtils;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationPlannerUtils;
 
 import java.util.Map;
 import java.util.Map.Entry;

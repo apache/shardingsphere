@@ -35,7 +35,7 @@ import java.util.HashSet;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereMetaDataValidateUtils {
     
-    public static final Collection<String> EXCLUDE_VALIDATE_TABLES = new HashSet<>(1, 1F);
+    private static final Collection<String> EXCLUDE_VALIDATE_TABLES = new HashSet<>(1, 1F);
     
     static {
         EXCLUDE_VALIDATE_TABLES.add("DUAL");

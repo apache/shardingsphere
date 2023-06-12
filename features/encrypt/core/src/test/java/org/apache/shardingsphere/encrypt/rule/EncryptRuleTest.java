@@ -32,9 +32,9 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -124,19 +124,12 @@ class EncryptRuleTest {
     
     @Test
     void assertGetTables() {
-        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getTables(), is(Collections.singleton("t_encrypt")));
+        assertThat(new LinkedList<>(new EncryptRule(createEncryptRuleConfiguration()).getLogicTableMapper().getTableNames()), is(Collections.singletonList("t_encrypt")));
     }
     
     @Test
     void assertGetTableWithLowercase() {
-        assertThat(new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable()).getTables(), is(Collections.singleton("t_encrypt")));
-    }
-    
-    @Test
-    void assertTheSameLogicTable() {
-        Collection<String> logicTables = new EncryptRule(createEncryptRuleConfiguration()).getTables();
-        Collection<String> theSameLogicTables = new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable()).getTables();
-        assertThat(logicTables, is(theSameLogicTables));
+        assertThat(new LinkedList<>(new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable()).getLogicTableMapper().getTableNames()), is(Collections.singletonList("T_ENCRYPT")));
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {

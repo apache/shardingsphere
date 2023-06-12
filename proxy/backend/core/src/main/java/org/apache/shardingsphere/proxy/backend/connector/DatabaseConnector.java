@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.connector;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
-import org.apache.shardingsphere.sqlfederation.decider.SQLFederationDecideEngine;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
@@ -47,9 +46,7 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
-import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -77,9 +74,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sqlfederation.decider.SQLFederationDecideEngine;
+import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutor;
+import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.sql.Connection;
@@ -110,7 +108,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private final ShardingSphereDatabase database;
     
-    private final boolean transparentStatement;
+    private final boolean selectContainsEnhancedTable;
     
     private final QueryContext queryContext;
     
@@ -127,8 +125,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         failedIfBackendNotReady(databaseConnectionManager.getConnectionSession(), sqlStatementContext);
         this.driverType = driverType;
         this.database = database;
-        this.transparentStatement = isTransparentStatement(sqlStatementContext);
         this.queryContext = queryContext;
+        this.selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
         this.databaseConnectionManager = databaseConnectionManager;
         if (sqlStatementContext instanceof CursorAvailable) {
             prepareCursorStatementContext((CursorAvailable) sqlStatementContext, databaseConnectionManager.getConnectionSession());
@@ -143,36 +141,6 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         if (!isSystemSchema && !database.isComplete()) {
             throw new RuleNotExistedException(connectionSession.getDatabaseName());
         }
-    }
-    
-    private boolean isTransparentStatement(final SQLStatementContext sqlStatementContext) {
-        Optional<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleForShardingRule(database.getRuleMetaData().findRules(DataNodeContainedRule.class));
-        Collection<ColumnContainedRule> columnContainedRules = database.getRuleMetaData().findRules(ColumnContainedRule.class);
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            if ((!dataNodeContainedRule.isPresent() || !dataNodeContainedRule.get().getAllTables().contains(each)) && !containsInColumnContainedRule(each, columnContainedRules)) {
-                continue;
-            }
-            return false;
-        }
-        return true;
-    }
-    
-    private Optional<DataNodeContainedRule> getDataNodeContainedRuleForShardingRule(final Collection<DataNodeContainedRule> dataNodeContainedRules) {
-        for (DataNodeContainedRule each : dataNodeContainedRules) {
-            if (!(each instanceof MutableDataNodeRule)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
-    }
-    
-    private boolean containsInColumnContainedRule(final String tableName, final Collection<ColumnContainedRule> columnContainedRules) {
-        for (ColumnContainedRule each : columnContainedRules) {
-            if (each.getTables().contains(tableName)) {
-                return true;
-            }
-        }
-        return false;
     }
     
     /**
@@ -285,11 +253,12 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         DatabaseType databaseType = queryContext.getSqlStatementContext().getDatabaseType();
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
         SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        federationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
+        federationExecutor = sqlFederationRule.getSqlFederationExecutor();
+        sqlFederationRule.init(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
                 new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), databaseConnectionManager.getConnectionSession().getConnectionContext()));
     }
     
-    private ResultSet doExecuteFederation(final QueryContext queryContext, final MetaDataContexts metaDataContexts) throws SQLException {
+    private ResultSet doExecuteFederation(final QueryContext queryContext, final MetaDataContexts metaDataContexts) {
         boolean isReturnGeneratedKeys = queryContext.getSqlStatementContext().getSqlStatement() instanceof MySQLInsertStatement;
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName());
         DatabaseType protocolType = database.getProtocolType();
@@ -368,10 +337,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
-        if (transparentStatement) {
-            return queryResultSample.getMetaData().getColumnCount();
-        }
-        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
+        return selectContainsEnhancedTable && hasSelectExpandProjections(executionContext.getSqlStatementContext())
                 ? ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext().getExpandProjections().size()
                 : queryResultSample.getMetaData().getColumnCount();
     }
@@ -382,10 +348,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final ExecutionContext executionContext,
                                           final QueryResult queryResultSample, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
-        if (transparentStatement) {
-            return queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
-        }
-        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
+        return selectContainsEnhancedTable && hasSelectExpandProjections(executionContext.getSqlStatementContext())
                 ? queryHeaderBuilderEngine.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), database, columnIndex)
                 : queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
     }

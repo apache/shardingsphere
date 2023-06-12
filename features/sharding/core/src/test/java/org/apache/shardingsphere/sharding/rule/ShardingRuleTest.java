@@ -64,6 +64,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -414,7 +415,7 @@ class ShardingRuleTest {
     
     @Test
     void assertGetTables() {
-        assertThat(createMaximumShardingRule().getTables(), is(new LinkedHashSet<>(Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE", "BROADCAST_TABLE"))));
+        assertThat(new LinkedList<>(createMaximumShardingRule().getLogicTableMapper().getTableNames()), is(Arrays.asList("BROADCAST_TABLE", "LOGIC_TABLE", "SUB_LOGIC_TABLE")));
     }
     
     @Test

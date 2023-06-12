@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge.common;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -58,9 +59,15 @@ class IteratorStreamMergedResultTest {
     @BeforeEach
     void setUp() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        ShardingSphereDatabase database = mockDatabase();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+    }
+    
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getRuleMetaData().findRules(TableContainedRule.class)).thenReturn(Collections.emptyList());
+        return result;
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
