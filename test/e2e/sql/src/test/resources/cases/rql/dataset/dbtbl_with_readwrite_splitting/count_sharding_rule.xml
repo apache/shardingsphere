@@ -23,5 +23,4 @@
     </metadata>
     <row values="sharding_table| dbtbl_with_readwrite_splitting| 5" />
     <row values="sharding_table_reference| dbtbl_with_readwrite_splitting| 1" />
-    <row values="broadcast_table| dbtbl_with_readwrite_splitting| 4" />
 </dataset>
