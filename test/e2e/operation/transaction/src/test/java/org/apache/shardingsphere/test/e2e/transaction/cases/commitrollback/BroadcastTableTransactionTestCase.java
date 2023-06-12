@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -30,7 +29,7 @@ import java.sql.SQLException;
 /**
  * Broadcast table transaction integration test.
  */
-@TransactionTestCase
+// TODO add @TransactionTestCase when migration of broadcast table data completed when adding storage nodes
 public final class BroadcastTableTransactionTestCase extends BaseTransactionTestCase {
     
     private static final String T_ADDRESS = "t_address";

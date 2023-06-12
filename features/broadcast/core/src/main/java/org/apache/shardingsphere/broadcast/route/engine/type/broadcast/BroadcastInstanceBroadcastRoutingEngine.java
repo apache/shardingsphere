@@ -41,7 +41,7 @@ public class BroadcastInstanceBroadcastRoutingEngine implements BroadcastRouteEn
     public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
         if (routeContext.getRouteUnits().isEmpty()) {
             Collection<String> allInstanceDataSourceNames = resourceMetaData.getAllInstanceDataSourceNames();
-            for (String each : broadcastRule.getDataSources().keySet()) {
+            for (String each : broadcastRule.getAvailableDataSourceNames()) {
                 if (allInstanceDataSourceNames.contains(each)) {
                     routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
                 }
@@ -50,7 +50,7 @@ public class BroadcastInstanceBroadcastRoutingEngine implements BroadcastRouteEn
             RouteContext result = new RouteContext();
             Collection<String> existentDataSourceNames = routeContext.getRouteUnits().stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toSet());
             Collection<String> allInstanceDataSourceNames = resourceMetaData.getAllInstanceDataSourceNames();
-            for (String each : broadcastRule.getDataSources().keySet()) {
+            for (String each : broadcastRule.getAvailableDataSourceNames()) {
                 if (!existentDataSourceNames.contains(each) && allInstanceDataSourceNames.contains(each)) {
                     result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
                 }

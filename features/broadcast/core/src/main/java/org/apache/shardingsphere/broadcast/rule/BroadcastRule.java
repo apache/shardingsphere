@@ -160,6 +160,14 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
         return !logicTableNames.isEmpty() && tables.containsAll(logicTableNames);
     }
     
+    /**
+     * Get available datasource names.
+     * @return datasource names
+     */
+    public Collection<String> getAvailableDataSourceNames() {
+        return dataSources.keySet();
+    }
+    
     @Override
     public TableNamesMapper getLogicTableMapper() {
         return logicalTableMapper;

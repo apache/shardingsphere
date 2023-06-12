@@ -89,7 +89,7 @@ public final class BroadcastTableBroadcastRoutingEngine implements BroadcastRout
     
     private RouteContext getRouteContext(final BroadcastRule broadcastRule) {
         RouteContext result = new RouteContext();
-        for (String each : broadcastRule.getDataSources().keySet()) {
+        for (String each : broadcastRule.getAvailableDataSourceNames()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.singletonList(new RouteMapper("", ""))));
         }
         return result;
@@ -97,7 +97,7 @@ public final class BroadcastTableBroadcastRoutingEngine implements BroadcastRout
     
     private RouteContext getRouteContext(final BroadcastRule broadcastRule, final Collection<String> logicTableNames) {
         RouteContext result = new RouteContext();
-        for (String each : broadcastRule.getDataSources().keySet()) {
+        for (String each : broadcastRule.getAvailableDataSourceNames()) {
             RouteMapper dataSourceMapper = new RouteMapper(each, each);
             result.getRouteUnits().add(new RouteUnit(dataSourceMapper, getTableRouteMappers(logicTableNames)));
         }

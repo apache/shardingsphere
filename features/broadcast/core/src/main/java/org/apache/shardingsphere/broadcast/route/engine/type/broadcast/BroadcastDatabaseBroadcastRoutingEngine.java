@@ -35,7 +35,7 @@ public final class BroadcastDatabaseBroadcastRoutingEngine implements BroadcastR
     @Override
     public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
         Collection<String> existentDataSourceNames = routeContext.getRouteUnits().stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toSet());
-        for (String each : broadcastRule.getDataSources().keySet()) {
+        for (String each : broadcastRule.getAvailableDataSourceNames()) {
             if (existentDataSourceNames.contains(each)) {
                 continue;
             }
