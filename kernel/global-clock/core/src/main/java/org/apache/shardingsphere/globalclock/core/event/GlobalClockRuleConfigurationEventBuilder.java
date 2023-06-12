@@ -19,12 +19,12 @@ package org.apache.shardingsphere.globalclock.core.event;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.globalclock.core.event.config.AddGlobalClockConfigurationEvent;
-import org.apache.shardingsphere.globalclock.core.event.config.AlterGlobalClockConfigurationEvent;
-import org.apache.shardingsphere.globalclock.core.event.config.DeleteGlobalClockConfigurationEvent;
+import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.core.yaml.swapper.YamlGlobalClockRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.rule.global.event.AlterGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.infra.config.rule.global.event.DeleteGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -40,6 +40,8 @@ public final class GlobalClockRuleConfigurationEventBuilder implements RuleConfi
     
     private static final String GLOBAL_CLOCK = "global_clock";
     
+    private static final String RULE_TYPE = GlobalClockRule.class.getSimpleName();
+    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
         if (!GlobalRuleNodeConverter.isExpectedRuleName(GLOBAL_CLOCK, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
@@ -49,13 +51,10 @@ public final class GlobalClockRuleConfigurationEventBuilder implements RuleConfi
     }
     
     private Optional<GovernanceEvent> buildGlobalClockRuleConfigurationEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddGlobalClockConfigurationEvent(databaseName, swapToConfig(event.getValue())));
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(databaseName, swapToConfig(event.getValue()), RULE_TYPE));
         }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterGlobalClockConfigurationEvent(databaseName, swapToConfig(event.getValue())));
-        }
-        return Optional.of(new DeleteGlobalClockConfigurationEvent(databaseName));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(databaseName, RULE_TYPE));
     }
     
     private GlobalClockRuleConfiguration swapToConfig(final String yamlContext) {

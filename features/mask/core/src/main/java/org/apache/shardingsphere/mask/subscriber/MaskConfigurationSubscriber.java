@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mask.event.config.AddMaskConfigurationEvent;
 import org.apache.shardingsphere.mask.event.config.AlterMaskConfigurationEvent;
 import org.apache.shardingsphere.mask.event.config.DeleteMaskConfigurationEvent;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.apache.shardingsphere.mode.event.config.RuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -75,7 +75,7 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
         }
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -93,7 +93,7 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
         config.getTables().add(needToAlteredConfig);
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -109,6 +109,6 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
         ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
 }

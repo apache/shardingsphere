@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.event.config;
+package org.apache.shardingsphere.infra.config.rule.global.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 
 /**
- * Alter sql translator configuration event.
+ * Delete global rule configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterSQLTranslatorConfigurationEvent implements GovernanceEvent {
+public final class DeleteGlobalRuleConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final SQLTranslatorRuleConfiguration config;
+    private final String ruleSimpleName;
 }

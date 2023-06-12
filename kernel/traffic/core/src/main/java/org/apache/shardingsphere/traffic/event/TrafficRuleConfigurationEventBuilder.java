@@ -19,15 +19,15 @@ package org.apache.shardingsphere.traffic.event;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.rule.global.event.AlterGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.infra.config.rule.global.event.DeleteGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
-import org.apache.shardingsphere.traffic.event.config.AddTrafficConfigurationEvent;
-import org.apache.shardingsphere.traffic.event.config.AlterTrafficConfigurationEvent;
-import org.apache.shardingsphere.traffic.event.config.DeleteTrafficConfigurationEvent;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.yaml.swapper.YamlTrafficRuleConfigurationSwapper;
 
@@ -38,24 +38,23 @@ import java.util.Optional;
  */
 public final class TrafficRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
-    private static final String SQL_FEDERATION = "sql_federation";
+    private static final String TRAFFIC = "traffic";
+    
+    private static final String RULE_TYPE = TrafficRule.class.getSimpleName();
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!GlobalRuleNodeConverter.isExpectedRuleName(SQL_FEDERATION, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!GlobalRuleNodeConverter.isExpectedRuleName(TRAFFIC, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
         return buildGlobalClockRuleConfigurationEvent(databaseName, event);
     }
     
     private Optional<GovernanceEvent> buildGlobalClockRuleConfigurationEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddTrafficConfigurationEvent(databaseName, swapToConfig(event.getValue())));
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(databaseName, swapToConfig(event.getValue()), RULE_TYPE));
         }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterTrafficConfigurationEvent(databaseName, swapToConfig(event.getValue())));
-        }
-        return Optional.of(new DeleteTrafficConfigurationEvent(databaseName));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(databaseName, RULE_TYPE));
     }
     
     private TrafficRuleConfiguration swapToConfig(final String yamlContext) {

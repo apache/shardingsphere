@@ -19,12 +19,12 @@ package org.apache.shardingsphere.authority.event;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.authority.event.config.AddAuthorityConfigurationEvent;
-import org.apache.shardingsphere.authority.event.config.AlterAuthorityConfigurationEvent;
-import org.apache.shardingsphere.authority.event.config.DeleteAuthorityConfigurationEvent;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.yaml.swapper.YamlAuthorityRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.rule.global.event.AlterGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.infra.config.rule.global.event.DeleteGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -40,6 +40,8 @@ public final class AuthorityRuleConfigurationEventBuilder implements RuleConfigu
     
     private static final String AUTHORITY = "authority";
     
+    private static final String RULE_TYPE = AuthorityRule.class.getSimpleName();
+    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
         if (!GlobalRuleNodeConverter.isExpectedRuleName(AUTHORITY, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
@@ -49,13 +51,10 @@ public final class AuthorityRuleConfigurationEventBuilder implements RuleConfigu
     }
     
     private Optional<GovernanceEvent> buildAuthorityRuleConfigurationEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddAuthorityConfigurationEvent(databaseName, swapToConfig(event.getValue())));
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(databaseName, swapToConfig(event.getValue()), RULE_TYPE));
         }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterAuthorityConfigurationEvent(databaseName, swapToConfig(event.getValue())));
-        }
-        return Optional.of(new DeleteAuthorityConfigurationEvent(databaseName));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(databaseName, RULE_TYPE));
     }
     
     private AuthorityRuleConfiguration swapToConfig(final String yamlContext) {

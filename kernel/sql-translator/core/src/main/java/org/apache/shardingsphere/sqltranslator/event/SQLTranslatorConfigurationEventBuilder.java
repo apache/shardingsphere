@@ -19,15 +19,15 @@ package org.apache.shardingsphere.sqltranslator.event;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.rule.global.event.AlterGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.infra.config.rule.global.event.DeleteGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
-import org.apache.shardingsphere.sqltranslator.event.config.AddSQLTranslatorConfigurationEvent;
-import org.apache.shardingsphere.sqltranslator.event.config.AlterSQLTranslatorConfigurationEvent;
-import org.apache.shardingsphere.sqltranslator.event.config.DeleteSQLTranslatorConfigurationEvent;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.yaml.swapper.YamlSQLTranslatorRuleConfigurationSwapper;
 
@@ -40,6 +40,8 @@ public final class SQLTranslatorConfigurationEventBuilder implements RuleConfigu
     
     private static final String SQL_TRANSLATOR = "sql_translator";
     
+    private static final String RULE_TYPE = SQLTranslatorRule.class.getSimpleName();
+    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
         if (!GlobalRuleNodeConverter.isExpectedRuleName(SQL_TRANSLATOR, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
@@ -49,13 +51,10 @@ public final class SQLTranslatorConfigurationEventBuilder implements RuleConfigu
     }
     
     private Optional<GovernanceEvent> buildGlobalClockRuleConfigurationEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddSQLTranslatorConfigurationEvent(databaseName, swapToConfig(event.getValue())));
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(databaseName, swapToConfig(event.getValue()), RULE_TYPE));
         }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterSQLTranslatorConfigurationEvent(databaseName, swapToConfig(event.getValue())));
-        }
-        return Optional.of(new DeleteSQLTranslatorConfigurationEvent(databaseName));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(databaseName, RULE_TYPE));
     }
     
     private SQLTranslatorRuleConfiguration swapToConfig(final String yamlContext) {

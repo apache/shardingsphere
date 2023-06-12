@@ -19,15 +19,15 @@ package org.apache.shardingsphere.single.event;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.rule.global.event.AlterGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.infra.config.rule.global.event.DeleteGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.event.config.AddSingleConfigurationEvent;
-import org.apache.shardingsphere.single.event.config.AlterSingleConfigurationEvent;
-import org.apache.shardingsphere.single.event.config.DeleteSingleConfigurationEvent;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
 
@@ -40,6 +40,8 @@ public final class SingleRuleConfigurationEventBuilder implements RuleConfigurat
     
     private static final String SINGLE = "single";
     
+    private static final String RULE_TYPE = SingleRule.class.getSimpleName();
+    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
         if (!GlobalRuleNodeConverter.isExpectedRuleName(SINGLE, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
@@ -49,13 +51,10 @@ public final class SingleRuleConfigurationEventBuilder implements RuleConfigurat
     }
     
     private Optional<GovernanceEvent> buildAuthorityRuleConfigurationEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddSingleConfigurationEvent(databaseName, swapToConfig(event.getValue())));
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(databaseName, swapToConfig(event.getValue()), RULE_TYPE));
         }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterSingleConfigurationEvent(databaseName, swapToConfig(event.getValue())));
-        }
-        return Optional.of(new DeleteSingleConfigurationEvent(databaseName));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(databaseName, RULE_TYPE));
     }
     
     private SingleRuleConfiguration swapToConfig(final String yamlContext) {

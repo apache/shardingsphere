@@ -19,12 +19,12 @@ package org.apache.shardingsphere.logging.event;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.rule.global.event.AlterGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.infra.config.rule.global.event.DeleteGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
-import org.apache.shardingsphere.logging.event.config.AddLoggingConfigurationEvent;
-import org.apache.shardingsphere.logging.event.config.AlterLoggingConfigurationEvent;
-import org.apache.shardingsphere.logging.event.config.DeleteLoggingConfigurationEvent;
+import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.yaml.swapper.YamlLoggingRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -40,6 +40,8 @@ public final class LoggingRuleConfigurationEventBuilder implements RuleConfigura
     
     private static final String LOGGING = "logging";
     
+    private static final String RULE_TYPE = LoggingRule.class.getSimpleName();
+    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
         if (!GlobalRuleNodeConverter.isExpectedRuleName(LOGGING, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
@@ -49,13 +51,10 @@ public final class LoggingRuleConfigurationEventBuilder implements RuleConfigura
     }
     
     private Optional<GovernanceEvent> buildLoggingRuleConfigurationEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddLoggingConfigurationEvent(databaseName, swapToConfig(event.getValue())));
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(databaseName, swapToConfig(event.getValue()), RULE_TYPE));
         }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterLoggingConfigurationEvent(databaseName, swapToConfig(event.getValue())));
-        }
-        return Optional.of(new DeleteLoggingConfigurationEvent(databaseName));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(databaseName, RULE_TYPE));
     }
     
     private LoggingRuleConfiguration swapToConfig(final String yamlContext) {
