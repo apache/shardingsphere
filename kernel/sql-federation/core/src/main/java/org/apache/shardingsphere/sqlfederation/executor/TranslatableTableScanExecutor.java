@@ -318,7 +318,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContext(databaseName).getDialectProps());
         ShardingSphereDatabase database = executorContext.getFederationContext().getMetaData().getDatabase(databaseName);
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtils.createCatalogReader(schemaName,
-                new SQLFederationSchema(schemaName, database.getSchema(schemaName), database.getProtocolType(), JAVA_TYPE_FACTORY, null), JAVA_TYPE_FACTORY, connectionConfig);
+                new SQLFederationSchema(schemaName, database.getSchema(schemaName), database.getProtocolType(), JAVA_TYPE_FACTORY), JAVA_TYPE_FACTORY, connectionConfig);
         RelOptCluster relOptCluster = RelOptCluster.create(SQLFederationPlannerUtils.createVolcanoPlanner(), new RexBuilder(JAVA_TYPE_FACTORY));
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName());
         if (null != scanContext.getFilterValues()) {

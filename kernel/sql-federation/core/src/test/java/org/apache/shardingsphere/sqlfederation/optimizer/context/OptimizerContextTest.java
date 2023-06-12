@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.context;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
 import org.junit.jupiter.api.Test;
@@ -39,19 +37,19 @@ class OptimizerContextTest {
     
     @Test
     void assertGetSqlParserRule() {
-        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), createShardingSphereRuleMetaData());
+        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), mock(ConfigurationProperties.class));
         assertThat(actual.getSqlParserRule(), instanceOf(SQLParserRule.class));
     }
     
     @Test
     void assertGetParserContext() {
-        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), createShardingSphereRuleMetaData());
+        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), mock(ConfigurationProperties.class));
         assertThat(actual.getParserContext(DefaultDatabase.LOGIC_NAME.toLowerCase()), instanceOf(OptimizerParserContext.class));
     }
     
     @Test
     void assertGetPlannerContext() {
-        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), createShardingSphereRuleMetaData());
+        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), mock(ConfigurationProperties.class));
         assertThat(actual.getPlannerContext(DefaultDatabase.LOGIC_NAME.toLowerCase()), instanceOf(OptimizerPlannerContext.class));
     }
     
@@ -59,10 +57,5 @@ class OptimizerContextTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getProtocolType().getType()).thenReturn("MySQL");
         return result;
-    }
-    
-    private ShardingSphereRuleMetaData createShardingSphereRuleMetaData() {
-        CacheOption cacheOption = new CacheOption(10, 1000);
-        return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption))));
     }
 }

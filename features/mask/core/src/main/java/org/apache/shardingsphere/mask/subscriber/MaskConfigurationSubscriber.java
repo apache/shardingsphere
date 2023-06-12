@@ -90,7 +90,8 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
-        ruleConfigs.add(new MaskRuleConfiguration(Collections.singletonList(needToAlteredConfig), Collections.emptyMap()));
+        config.getTables().add(needToAlteredConfig);
+        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new RuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }

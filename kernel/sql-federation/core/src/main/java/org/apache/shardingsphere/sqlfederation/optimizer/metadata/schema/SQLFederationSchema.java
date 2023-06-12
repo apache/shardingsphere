@@ -28,9 +28,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
-import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederationStatistic;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
+import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederationStatistic;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -46,19 +45,19 @@ public final class SQLFederationSchema extends AbstractSchema {
     
     private final Map<String, Table> tableMap;
     
-    public SQLFederationSchema(final String schemaName, final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
+    public SQLFederationSchema(final String schemaName, final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
         name = schemaName;
-        tableMap = createTableMap(schema, protocolType, javaTypeFactory, executor);
+        tableMap = createTableMap(schema, protocolType, javaTypeFactory);
     }
     
-    private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
+    private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
         Map<String, Table> result = new LinkedHashMap<>(schema.getTables().size(), 1F);
         for (ShardingSphereTable each : schema.getTables().values()) {
             if (schema.containsView(each.getName())) {
                 result.put(each.getName(), getViewTable(schema, each, protocolType, javaTypeFactory));
             } else {
                 // TODO implement table statistic logic after using custom operators
-                result.put(each.getName(), new SQLFederationTable(each, executor, new SQLFederationStatistic(), protocolType));
+                result.put(each.getName(), new SQLFederationTable(each, new SQLFederationStatistic(), protocolType));
             }
         }
         return result;

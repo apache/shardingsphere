@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.impl;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptCreateTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;

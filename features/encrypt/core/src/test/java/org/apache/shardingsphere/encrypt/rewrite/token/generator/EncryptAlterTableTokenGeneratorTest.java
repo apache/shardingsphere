@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.impl;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptAlterTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
@@ -70,6 +69,7 @@ class EncryptAlterTableTokenGeneratorTest {
     
     private EncryptTable mockEncryptTable() {
         EncryptTable result = mock(EncryptTable.class);
+        when(result.getTable()).thenReturn("t_encrypt");
         when(result.getCipherColumn("certificate_number")).thenReturn("cipher_certificate_number");
         when(result.findAssistedQueryColumn("certificate_number")).thenReturn(Optional.of("assisted_certificate_number"));
         when(result.findLikeQueryColumn("certificate_number")).thenReturn(Optional.of("like_certificate_number"));

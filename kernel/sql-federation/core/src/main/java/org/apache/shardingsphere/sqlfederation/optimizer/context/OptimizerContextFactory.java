@@ -19,13 +19,15 @@ package org.apache.shardingsphere.sqlfederation.optimizer.context;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.parser.rule.builder.SQLParserRuleBuilder;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
 import java.util.Map;
 
@@ -39,13 +41,13 @@ public final class OptimizerContextFactory {
      * Create optimize context.
      *
      * @param databases databases
-     * @param globalRuleMetaData global rule meta data
+     * @param props props
      * @return created optimizer context
      */
-    public static OptimizerContext create(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData) {
+    public static OptimizerContext create(final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         Map<String, OptimizerParserContext> parserContexts = OptimizerParserContextFactory.create(databases);
-        Map<String, OptimizerPlannerContext> plannerContexts = OptimizerPlannerContextFactory.create(databases);
-        SQLParserRule sqlParserRule = globalRuleMetaData.getSingleRule(SQLParserRule.class);
+        SQLParserRule sqlParserRule = new SQLParserRuleBuilder().build(new DefaultSQLParserRuleConfigurationBuilder().build(), databases, props);
+        Map<String, OptimizerPlannerContext> plannerContexts = OptimizerPlannerContextFactory.create(databases, parserContexts, sqlParserRule);
         return new OptimizerContext(sqlParserRule, parserContexts, plannerContexts);
     }
 }

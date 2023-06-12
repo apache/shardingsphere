@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.executor.resultset;
 
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.schema.impl.AbstractSchema;
+import org.apache.calcite.schema.Schema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -78,13 +78,13 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     private boolean closed;
     
-    public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema,
+    public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final Schema sqlFederationSchema,
                                   final SelectStatementContext selectStatementContext, final RelDataType resultColumnType) {
         this.enumerator = enumerator;
         columnLabelAndIndexes = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
         Map<Integer, String> indexAndColumnLabels = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
         handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, selectStatementContext);
-        resultSetMetaData = new SQLFederationResultSetMetaData(schema, filterableSchema, selectStatementContext, resultColumnType, indexAndColumnLabels);
+        resultSetMetaData = new SQLFederationResultSetMetaData(schema, sqlFederationSchema, selectStatementContext, resultColumnType, indexAndColumnLabels);
     }
     
     private void handleColumnLabelAndIndex(final Map<String, Integer> columnLabelAndIndexes, final Map<Integer, String> indexAndColumnLabels, final SelectStatementContext selectStatementContext) {

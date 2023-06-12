@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.impl;
+package org.apache.shardingsphere.shadow.event.config;
 
-import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.junit.jupiter.api.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
-import java.util.Collections;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class EncryptBinaryOperationConditionTest {
+/**
+ * Add shadow configuration event.
+ *
+ * @param <T> shadow configuration
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AddShadowConfigurationEvent<T> implements GovernanceEvent {
     
-    @Test
-    void assertGetConditionValues() {
-        List<Object> actual = new EncryptBinaryCondition("col", null, null,
-                0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), is(1));
-    }
+    private final String databaseName;
+    
+    private final T config;
 }

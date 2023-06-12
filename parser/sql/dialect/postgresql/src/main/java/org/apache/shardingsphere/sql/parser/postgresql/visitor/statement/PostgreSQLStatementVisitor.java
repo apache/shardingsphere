@@ -687,7 +687,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.returningClause()) {
             result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -848,7 +848,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -866,7 +866,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -879,7 +879,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
         PostgreSQLSelectStatement result = (PostgreSQLSelectStatement) visit(ctx.selectNoParens());
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     

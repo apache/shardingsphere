@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.impl;
+package org.apache.shardingsphere.encrypt.rewrite.context;
 
-import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;

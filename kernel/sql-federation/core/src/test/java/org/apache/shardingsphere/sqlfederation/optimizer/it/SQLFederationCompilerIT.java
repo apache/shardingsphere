@@ -236,7 +236,7 @@ class SQLFederationCompilerIT {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(new Properties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType("H2");
-        SQLFederationSchema sqlFederationSchema = new SQLFederationSchema(SCHEMA_NAME, schema, databaseType, new JavaTypeFactoryImpl(), null);
+        SQLFederationSchema sqlFederationSchema = new SQLFederationSchema(SCHEMA_NAME, schema, databaseType, new JavaTypeFactoryImpl());
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtils.createCatalogReader(SCHEMA_NAME, sqlFederationSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = SQLFederationPlannerUtils.createSqlValidator(catalogReader, relDataTypeFactory, databaseType, connectionConfig);
         RelOptCluster cluster = RelOptCluster.create(SQLFederationPlannerUtils.createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
