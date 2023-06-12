@@ -106,6 +106,8 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Wh
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WhereOrCurrentClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBaseVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
@@ -980,7 +982,20 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitWindowClause(final WindowClauseContext ctx) {
+        if (null != ctx.windowDefinitionList()) {
+            return new WindowSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getWindowItem(ctx.windowDefinitionList().windowDefinition()),
+                    getWindowSpecification(ctx.windowDefinitionList().windowDefinition().windowSpecification()));
+        }
         return new WindowSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+    }
+    
+    private IdentifierValue getWindowItem(final WindowDefinitionContext ctx) {
+        return new IdentifierValue(ctx.colId().identifier().getText());
+    }
+    
+    private Collection<ExpressionSegment> getWindowSpecification(final WindowSpecificationContext ctx) {
+        Collection<ExpressionSegment> result = createInsertValuesSegments(ctx.partitionClause().exprList());
+        return result;
     }
     
     @Override
