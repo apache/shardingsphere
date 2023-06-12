@@ -481,15 +481,17 @@ public final class ContextManager implements AutoCloseable {
      */
     public synchronized void reloadDatabaseMetaData(final String databaseName) {
         try {
-            ShardingSphereResourceMetaData currentResourceMetaData = metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData();
+            ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+            ShardingSphereResourceMetaData currentResourceMetaData = database.getResourceMetaData();
             Map<String, DataSourceProperties> dataSourceProps = metaDataContexts.get().getPersistService().getDataSourceService().load(databaseName);
             SwitchingResource switchingResource = new ResourceSwitchManager().createByAlterDataSourceProps(currentResourceMetaData, dataSourceProps);
-            metaDataContexts.get().getMetaData().getDatabases().putAll(renewDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName), switchingResource));
+            metaDataContexts.get().getMetaData().getDatabases().putAll(renewDatabase(database, switchingResource));
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(databaseName, switchingResource);
-            deletedSchemaNames(databaseName, reloadedMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
+            deletedSchemaNames(databaseName, reloadedMetaDataContexts.getMetaData().getDatabase(databaseName), database);
             metaDataContexts.set(reloadedMetaDataContexts);
             metaDataContexts.get().getMetaData().getDatabases().values().forEach(each -> each.getSchemas()
                     .forEach((schemaName, schema) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().compareAndPersist(each.getName(), schemaName, schema)));
+            alterMetaDataHeldRule(database);
             switchingResource.closeStaleDataSources();
         } catch (final SQLException ex) {
             log.error("Reload database meta data: {} failed", databaseName, ex);
