@@ -20,7 +20,6 @@ package org.apache.shardingsphere.traffic.event.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 
 /**
