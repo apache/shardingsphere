@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.event.config;
+package org.apache.shardingsphere.transaction.event.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
 /**
- * Add authority configuration event.
+ * Alter transaction configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddAuthorityConfigurationEvent implements GovernanceEvent {
+public final class AlterTransactionConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final AuthorityRuleConfiguration config;
+    private final TransactionRuleConfiguration config;
 }

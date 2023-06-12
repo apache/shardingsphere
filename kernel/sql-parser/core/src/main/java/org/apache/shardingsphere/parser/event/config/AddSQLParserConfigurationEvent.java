@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.event.config;
+package org.apache.shardingsphere.parser.event.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 
 /**
- * Add authority configuration event.
+ * Add sql parser configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddAuthorityConfigurationEvent implements GovernanceEvent {
+public final class AddSQLParserConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final AuthorityRuleConfiguration config;
+    private final SQLParserRuleConfiguration config;
 }

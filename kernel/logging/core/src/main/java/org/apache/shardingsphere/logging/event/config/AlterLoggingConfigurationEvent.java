@@ -20,17 +20,16 @@ package org.apache.shardingsphere.logging.event.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 
 /**
  * Alter logging configuration event.
- *
- * @param <T> authority configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterLoggingConfigurationEvent<T> implements GovernanceEvent {
+public final class AlterLoggingConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final T config;
+    private final LoggingRuleConfiguration config;
 }

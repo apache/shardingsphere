@@ -19,6 +19,7 @@ package org.apache.shardingsphere.globalclock.core.event.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
@@ -32,5 +33,5 @@ public final class AlterGlobalClockConfigurationEvent<T> implements GovernanceEv
     
     private final String databaseName;
     
-    private final T config;
+    private final GlobalClockRuleConfiguration config;
 }

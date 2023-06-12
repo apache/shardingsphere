@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.converter;
 
+import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

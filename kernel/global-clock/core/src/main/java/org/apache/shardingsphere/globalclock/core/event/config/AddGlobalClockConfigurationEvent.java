@@ -19,18 +19,17 @@ package org.apache.shardingsphere.globalclock.core.event.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
  * Add global clock configuration event.
- *
- * @param <T> authority configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddGlobalClockConfigurationEvent<T> implements GovernanceEvent {
+public final class AddGlobalClockConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final T config;
+    private final GlobalClockRuleConfiguration config;
 }

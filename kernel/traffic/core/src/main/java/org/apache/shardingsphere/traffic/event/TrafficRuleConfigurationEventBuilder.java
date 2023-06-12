@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.core.event;
+package org.apache.shardingsphere.traffic.event;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.globalclock.core.event.config.AddGlobalClockConfigurationEvent;
-import org.apache.shardingsphere.globalclock.core.event.config.AlterGlobalClockConfigurationEvent;
-import org.apache.shardingsphere.globalclock.core.event.config.DeleteGlobalClockConfigurationEvent;
-import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration;
-import org.apache.shardingsphere.globalclock.core.yaml.swapper.YamlGlobalClockRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
+import org.apache.shardingsphere.traffic.event.config.AddTrafficConfigurationEvent;
+import org.apache.shardingsphere.traffic.event.config.AlterTrafficConfigurationEvent;
+import org.apache.shardingsphere.traffic.event.config.DeleteTrafficConfigurationEvent;
+import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
+import org.apache.shardingsphere.traffic.yaml.swapper.YamlTrafficRuleConfigurationSwapper;
 
 import java.util.Optional;
 
 /**
- * Global clock rule configuration event builder.
+ * Traffic rule configuration event builder.
  */
-public final class GlobalClockRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
+public final class TrafficRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
-    private static final String GLOBAL_CLOCK = "global_clock";
+    private static final String SQL_FEDERATION = "sql_federation";
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!GlobalRuleNodeConverter.isExpectedRuleName(GLOBAL_CLOCK, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!GlobalRuleNodeConverter.isExpectedRuleName(SQL_FEDERATION, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
         return buildGlobalClockRuleConfigurationEvent(databaseName, event);
@@ -50,15 +50,15 @@ public final class GlobalClockRuleConfigurationEventBuilder implements RuleConfi
     
     private Optional<GovernanceEvent> buildGlobalClockRuleConfigurationEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddGlobalClockConfigurationEvent(databaseName, swapToConfig(event.getValue())));
+            return Optional.of(new AddTrafficConfigurationEvent(databaseName, swapToConfig(event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterGlobalClockConfigurationEvent(databaseName, swapToConfig(event.getValue())));
+            return Optional.of(new AlterTrafficConfigurationEvent(databaseName, swapToConfig(event.getValue())));
         }
-        return Optional.of(new DeleteGlobalClockConfigurationEvent(databaseName));
+        return Optional.of(new DeleteTrafficConfigurationEvent(databaseName));
     }
     
-    private GlobalClockRuleConfiguration swapToConfig(final String yamlContext) {
-        return new YamlGlobalClockRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlGlobalClockRuleConfiguration.class));
+    private TrafficRuleConfiguration swapToConfig(final String yamlContext) {
+        return new YamlTrafficRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlTrafficRuleConfiguration.class));
     }
 }

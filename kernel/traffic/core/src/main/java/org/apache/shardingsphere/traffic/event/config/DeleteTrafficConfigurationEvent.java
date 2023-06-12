@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.event.config;
+package org.apache.shardingsphere.traffic.event.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Add authority configuration event.
+ * Delete traffic configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddAuthorityConfigurationEvent implements GovernanceEvent {
+public final class DeleteTrafficConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
-    
-    private final AuthorityRuleConfiguration config;
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.authority.event.config.AlterAuthorityConfigurat
 import org.apache.shardingsphere.authority.event.config.DeleteAuthorityConfigurationEvent;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.yaml.swapper.YamlAuthorityRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -50,15 +50,15 @@ public final class AuthorityRuleConfigurationEventBuilder implements RuleConfigu
     
     private Optional<GovernanceEvent> buildAuthorityRuleConfigurationEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddAuthorityConfigurationEvent<>(databaseName, swapToAuthorityRuleConfig(event.getValue())));
+            return Optional.of(new AddAuthorityConfigurationEvent(databaseName, swapToConfig(event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterAuthorityConfigurationEvent<>(databaseName, swapToAuthorityRuleConfig(event.getValue())));
+            return Optional.of(new AlterAuthorityConfigurationEvent(databaseName, swapToConfig(event.getValue())));
         }
         return Optional.of(new DeleteAuthorityConfigurationEvent(databaseName));
     }
     
-    private AuthorityRuleConfiguration swapToAuthorityRuleConfig(final String yamlContext) {
+    private AuthorityRuleConfiguration swapToConfig(final String yamlContext) {
         return new YamlAuthorityRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAuthorityRuleConfiguration.class));
     }
 }

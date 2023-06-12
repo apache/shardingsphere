@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.converter;
+package org.apache.shardingsphere.infra.config.rule.global.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -19,18 +19,17 @@ package org.apache.shardingsphere.authority.event.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
  * Alter authority configuration event.
- *
- * @param <T> authority configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterAuthorityConfigurationEvent<T> implements GovernanceEvent {
+public final class AlterAuthorityConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final T config;
+    private final AuthorityRuleConfiguration config;
 }
