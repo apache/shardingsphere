@@ -38,11 +38,11 @@ public final class NewGlobalNode {
     /**
      * Get global rule active version node.
      *
-     * @param ruleName rule name
+     * @param rulePath rule path
      * @return global rule active version node
      */
-    public static String getGlobalRuleActiveVersionNode(final String ruleName) {
-        return String.join("/", getGlobalRuleRootNode(), ruleName, ACTIVE_VERSION);
+    public static String getGlobalRuleActiveVersionNode(final String rulePath) {
+        return String.join("/", rulePath, ACTIVE_VERSION);
     }
     
     /**

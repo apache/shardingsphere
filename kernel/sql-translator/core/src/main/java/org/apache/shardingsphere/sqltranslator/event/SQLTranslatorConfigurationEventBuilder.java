@@ -47,10 +47,10 @@ public final class SQLTranslatorConfigurationEventBuilder implements RuleConfigu
         if (!GlobalRuleNodeConverter.isExpectedRuleName(SQL_TRANSLATOR, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        return buildGlobalClockRuleConfigurationEvent(databaseName, event);
+        return buildEvent(databaseName, event);
     }
     
-    private Optional<GovernanceEvent> buildGlobalClockRuleConfigurationEvent(final String databaseName, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> buildEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return Optional.of(new AlterGlobalRuleConfigurationEvent(databaseName, swapToConfig(event.getValue()), RULE_TYPE));
         }
