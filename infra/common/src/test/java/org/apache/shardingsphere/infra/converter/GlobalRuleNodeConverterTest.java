@@ -40,7 +40,7 @@ class GlobalRuleNodeConverterTest {
     }
     
     @Test
-    void assertIsExpectRuleName() {
-        assertTrue(GlobalRuleNodeConverter.isExpectRuleName("transaction", "/rules/transaction/versions/0"));
+    void assertIsExpectedRuleName() {
+        assertTrue(GlobalRuleNodeConverter.isExpectedRuleName("transaction", "/rules/transaction/versions/0"));
     }
 }
