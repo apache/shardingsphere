@@ -131,7 +131,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     public boolean isSingleTablesInSameDataSource(final Collection<QualifiedTable> singleTableNames) {
         String firstFoundDataSourceName = null;
         for (QualifiedTable each : singleTableNames) {
-            Optional<DataNode> dataNode = findSingleTableDataNode(each.getSchemaName(), each.getTableName());
+            Optional<DataNode> dataNode = findTableDataNode(each.getSchemaName(), each.getTableName());
             if (!dataNode.isPresent()) {
                 continue;
             }
@@ -158,7 +158,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
             return false;
         }
         QualifiedTable sampleTable = singleTableNames.iterator().next();
-        Optional<DataNode> dataNode = findSingleTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
+        Optional<DataNode> dataNode = findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
         if (dataNode.isPresent()) {
             for (RouteUnit each : routeContext.getRouteUnits()) {
                 if (!each.getDataSourceMapper().getLogicName().equals(dataNode.get().getDataSourceName())) {
@@ -225,7 +225,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     }
     
     @Override
-    public Optional<DataNode> findSingleTableDataNode(final String schemaName, final String tableName) {
+    public Optional<DataNode> findTableDataNode(final String schemaName, final String tableName) {
         Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(tableName.toLowerCase(), new LinkedHashSet<>());
         for (DataNode each : dataNodes) {
             if (schemaName.equalsIgnoreCase(each.getSchemaName())) {

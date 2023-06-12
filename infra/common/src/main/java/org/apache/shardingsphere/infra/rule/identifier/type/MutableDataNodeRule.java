@@ -57,13 +57,13 @@ public interface MutableDataNodeRule extends ShardingSphereRule {
     void remove(Collection<String> schemaNames, String tableName);
     
     /**
-     * Find single data node.
+     * Find table data node.
      *
      * @param schemaName schema name
      * @param tableName table name
-     * @return single table data node
+     * @return table data node
      */
-    Optional<DataNode> findSingleTableDataNode(String schemaName, String tableName);
+    Optional<DataNode> findTableDataNode(String schemaName, String tableName);
     
     /**
      * Reload single rule.

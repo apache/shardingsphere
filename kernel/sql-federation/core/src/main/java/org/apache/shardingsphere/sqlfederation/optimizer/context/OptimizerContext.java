@@ -57,4 +57,23 @@ public final class OptimizerContext {
     public OptimizerPlannerContext getPlannerContext(final String databaseName) {
         return plannerContexts.get(databaseName.toLowerCase());
     }
+    
+    /**
+     * Put planner context.
+     * 
+     * @param databaseName database name
+     * @param plannerContext planner context
+     */
+    public void putPlannerContext(final String databaseName, final OptimizerPlannerContext plannerContext) {
+        plannerContexts.put(databaseName.toLowerCase(), plannerContext);
+    }
+    
+    /**
+     * Remove planner context.
+     * 
+     * @param databaseName database name
+     */
+    public void removePlannerContext(final String databaseName) {
+        plannerContexts.remove(databaseName.toLowerCase());
+    }
 }
