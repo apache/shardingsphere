@@ -15,7 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.executor;
+package org.apache.shardingsphere.sqlfederation.resultset;
 
-public interface ScanNodeExecutorContext {
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Wrapper;
+
+/**
+ * Adapter for {@code java.sql.Wrapper}.
+ */
+public abstract class WrapperAdapter implements Wrapper {
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public final <T> T unwrap(final Class<T> iface) throws SQLException {
+        if (isWrapperFor(iface)) {
+            return (T) this;
+        }
+        throw new SQLFeatureNotSupportedException(String.format("`%s` cannot be unwrapped as `%s`", getClass().getName(), iface.getName()));
+    }
+    
+    @Override
+    public final boolean isWrapperFor(final Class<?> iface) {
+        return iface.isInstance(this);
+    }
 }

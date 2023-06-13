@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor.resultset;
+package org.apache.shardingsphere.sqlfederation.resultset;
 
 import java.io.InputStream;
 import java.io.Reader;

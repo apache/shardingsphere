@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.executor;
+package org.apache.shardingsphere.sqlfederation.executor.enumerable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 
 /**
- * Table scan executor context.
+ * Enumerable push down table scan executor context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TranslatableScanNodeExecutorContext implements ScanNodeExecutorContext {
+public final class EnumerablePushDownTableScanExecutorContext {
     
     private final DataContext root;
     

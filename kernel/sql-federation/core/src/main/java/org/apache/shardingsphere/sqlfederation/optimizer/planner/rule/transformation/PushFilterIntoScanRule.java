@@ -25,7 +25,7 @@ import org.apache.calcite.rel.rules.TransformationRule;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilderFactory;
-import org.apache.shardingsphere.sqlfederation.optimizer.operator.physical.EnumerablePushDownTableScan;
+import org.apache.shardingsphere.sqlfederation.optimizer.operator.physical.enumerable.EnumerablePushDownTableScan;
 
 import java.util.Collections;
 import java.util.regex.Pattern;

@@ -46,14 +46,13 @@ import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationDataContext;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
-import org.apache.shardingsphere.sqlfederation.executor.TranslatableTableScanExecutor;
-import org.apache.shardingsphere.sqlfederation.executor.resultset.SQLFederationResultSet;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutor;
+import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationCompilerEngine;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.optimizer.compiler.SQLStatementCompiler;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationTable;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.cache.ExecutionPlanCacheKey;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
@@ -193,11 +192,12 @@ public final class SQLFederationEngine implements AutoCloseable {
                                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext,
                                            final OptimizerContext optimizerContext) {
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, metaData.getProps(), federationContext);
-        TableScanExecutor executor = new TranslatableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, metaData.getGlobalRuleMetaData(), executorContext, statistics);
+        EnumerablePushDownTableScanExecutor pushDownTableScanExecutor =
+                new EnumerablePushDownTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, metaData.getGlobalRuleMetaData(), executorContext, statistics);
         for (String each : federationContext.getQueryContext().getSqlStatementContext().getTablesContext().getTableNames()) {
             Table table = sqlFederationSchema.getTable(each);
             if (table instanceof SQLFederationTable) {
-                ((SQLFederationTable) table).setExecutor(executor);
+                ((SQLFederationTable) table).setPushDownTableScanExecutor(pushDownTableScanExecutor);
             }
         }
     }
