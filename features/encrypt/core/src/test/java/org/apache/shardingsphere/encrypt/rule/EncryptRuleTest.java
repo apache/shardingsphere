@@ -74,17 +74,6 @@ class EncryptRuleTest {
     }
     
     @Test
-    void assertGetCipherColumnWhenEncryptColumnExist() {
-        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getCipherColumn("t_encrypt", "pwd"), is("pwd_cipher"));
-    }
-    
-    @Test
-    void assertGetCipherColumnWhenNoEncryptColumn() {
-        // TODO should not throw NPE
-        assertThrows(NullPointerException.class, () -> new EncryptRule(createEncryptRuleConfiguration()).getCipherColumn("t_encrypt", "pwd_cipher"));
-    }
-    
-    @Test
     void assertGetLogicAndCipherColumns() {
         assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getLogicAndCipherColumnsMap("t_encrypt").isEmpty());
     }
