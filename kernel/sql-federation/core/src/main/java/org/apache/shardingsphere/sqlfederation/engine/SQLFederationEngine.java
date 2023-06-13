@@ -174,7 +174,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         registerTableScanExecutor(sqlFederationSchema, prepareEngine, callback, federationContext, sqlFederationRule.getOptimizerContext());
         SQLFederationCompilerEngine compilerEngine = new SQLFederationCompilerEngine(new SQLStatementCompiler(plannerContext.getConverter(schemaName), plannerContext.getHepPlanner()),
                 sqlFederationRule.getConfiguration().getExecutionPlanCache());
-        return compilerEngine.compile(buildCacheKey(federationContext, selectStatementContext), federationContext.getQueryContext().isUseCache());
+        return compilerEngine.compile(buildCacheKey(federationContext, selectStatementContext), false);
     }
     
     private ExecutionPlanCacheKey buildCacheKey(final SQLFederationExecutorContext federationContext, final SelectStatementContext selectStatementContext) {
