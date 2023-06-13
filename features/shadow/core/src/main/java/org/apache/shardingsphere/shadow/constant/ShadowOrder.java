@@ -29,5 +29,5 @@ public final class ShadowOrder {
     /**
      * Shadow order.
      */
-    public static final int ORDER = 60;
+    public static final int ORDER = 50;
 }
