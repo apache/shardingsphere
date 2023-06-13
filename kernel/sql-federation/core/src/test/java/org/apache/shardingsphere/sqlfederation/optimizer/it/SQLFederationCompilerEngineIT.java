@@ -27,6 +27,7 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -86,7 +87,7 @@ class SQLFederationCompilerEngineIT {
         tables.put("t_product_detail", createTProductDetailMetaData());
         tables.put("multi_types_first", createMultiTypesFirstTableMetaData());
         tables.put("multi_types_second", createMultiTypesSecondTableMetaData());
-        sqlFederationCompilerEngine = new SQLFederationCompilerEngine(
+        sqlFederationCompilerEngine = new SQLFederationCompilerEngine(DefaultDatabase.LOGIC_NAME,
                 new SQLStatementCompiler(createSqlToRelConverter(new ShardingSphereSchema(tables, Collections.emptyMap())), SQLFederationPlannerUtils.createHepPlanner()),
                 DefaultSQLFederationRuleConfigurationBuilder.DEFAULT_EXECUTION_PLAN_CACHE_OPTION);
     }

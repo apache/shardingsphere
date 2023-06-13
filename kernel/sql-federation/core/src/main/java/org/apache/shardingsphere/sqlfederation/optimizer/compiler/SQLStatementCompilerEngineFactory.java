@@ -32,19 +32,18 @@ public final class SQLStatementCompilerEngineFactory {
     
     private static final Map<String, SQLStatementCompilerEngine> COMPILER_ENGINES = new ConcurrentHashMap<>(1, 1F);
     
-    private static final String DEFAULT_COMPILER_ENGINE = "DEFAULT_COMPILER_ENGINE";
-    
     /**
      * Get SQL statement compiler engine.
      *
+     * @param schemaName schema name
      * @param sqlStatementCompiler sql statement compiler
      * @param cacheOption execution plan cache option
      * @return SQL statement compiler engine
      */
-    public static SQLStatementCompilerEngine getSQLStatementCompilerEngine(final SQLStatementCompiler sqlStatementCompiler, final CacheOption cacheOption) {
-        SQLStatementCompilerEngine result = COMPILER_ENGINES.get(DEFAULT_COMPILER_ENGINE);
+    public static SQLStatementCompilerEngine getSQLStatementCompilerEngine(final String schemaName, final SQLStatementCompiler sqlStatementCompiler, final CacheOption cacheOption) {
+        SQLStatementCompilerEngine result = COMPILER_ENGINES.get(schemaName);
         if (null == result) {
-            result = COMPILER_ENGINES.computeIfAbsent(DEFAULT_COMPILER_ENGINE, unused -> new SQLStatementCompilerEngine(sqlStatementCompiler, cacheOption));
+            result = COMPILER_ENGINES.computeIfAbsent(schemaName, unused -> new SQLStatementCompilerEngine(sqlStatementCompiler, cacheOption));
         }
         return result;
     }

@@ -30,8 +30,8 @@ public final class SQLFederationCompilerEngine {
     
     private final SQLStatementCompilerEngine sqlStatementCompilerEngine;
     
-    public SQLFederationCompilerEngine(final SQLStatementCompiler sqlStatementCompiler, final CacheOption cacheOption) {
-        sqlStatementCompilerEngine = SQLStatementCompilerEngineFactory.getSQLStatementCompilerEngine(sqlStatementCompiler, cacheOption);
+    public SQLFederationCompilerEngine(final String schemaName, final SQLStatementCompiler sqlStatementCompiler, final CacheOption cacheOption) {
+        sqlStatementCompilerEngine = SQLStatementCompilerEngineFactory.getSQLStatementCompilerEngine(schemaName, sqlStatementCompiler, cacheOption);
     }
     
     /**
