@@ -45,7 +45,7 @@ public final class DatabaseTypeChecker {
     private static final Collection<String> UNSUPPORTED_URL_PREFIXES = Collections.singletonList("jdbc:mysql:aws");
     
     private static final Collection<DatabaseType> SUPPORTED_STORAGE_TYPES = new HashSet<>(8, 1F);
-
+    
     private static volatile boolean isChecked;
     
     static {
