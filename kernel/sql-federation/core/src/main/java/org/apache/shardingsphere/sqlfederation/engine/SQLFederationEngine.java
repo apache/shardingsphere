@@ -24,8 +24,7 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.runtime.Bindable;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.Table;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -39,6 +38,7 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -48,13 +48,14 @@ import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorCon
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.TranslatableTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.executor.resultset.SQLFederationResultSet;
-import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationCompiler;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationCompilerEngine;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
+import org.apache.shardingsphere.sqlfederation.optimizer.compiler.SQLStatementCompiler;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationTable;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.cache.ExecutionPlanCacheKey;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
@@ -74,6 +75,8 @@ import java.util.Map.Entry;
  */
 @Getter
 public final class SQLFederationEngine implements AutoCloseable {
+    
+    private static final int DEFAULT_METADATA_VERSION = 0;
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLFederationDecider> deciders;
@@ -149,24 +152,41 @@ public final class SQLFederationEngine implements AutoCloseable {
     @SuppressWarnings("unchecked")
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
+        SQLFederationExecutionPlan executionPlan = compileQuery(prepareEngine, callback, federationContext);
+        Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) executionPlan.getPhysicalPlan(), EnumerableRel.Prefer.ARRAY);
+        Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());
+        OptimizerPlannerContext plannerContext = sqlFederationRule.getOptimizerContext().getPlannerContext(databaseName);
+        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(plannerContext.getValidator(schemaName), plannerContext.getConverter(schemaName), params)).enumerator();
+        ShardingSphereSchema schema = federationContext.getMetaData().getDatabase(databaseName).getSchema(schemaName);
+        Schema sqlFederationSchema = plannerContext.getValidator(schemaName).getCatalogReader().getRootSchema().plus().getSubSchema(schemaName);
+        resultSet = new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext(),
+                executionPlan.getResultColumnType());
+        return resultSet;
+    }
+    
+    private SQLFederationExecutionPlan compileQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                                    final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof SelectStatementContext, () -> new IllegalArgumentException("SQL statement context must be select statement context."));
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-        Schema sqlFederationSchema =
-                sqlFederationRule.getOptimizerContext().getPlannerContext(databaseName).getValidators().get(schemaName).getCatalogReader().getRootSchema().plus().getSubSchema(schemaName);
-        registerTableScanExecutor(sqlFederationSchema, prepareEngine, callback, federationContext, sqlFederationRule.getOptimizerContext());
         OptimizerPlannerContext plannerContext = sqlFederationRule.getOptimizerContext().getPlannerContext(databaseName);
-        SqlValidator sqlValidator = plannerContext.getValidators().get(schemaName);
-        SqlToRelConverter sqlToRelConverter = plannerContext.getConverters().get(schemaName);
-        SQLFederationCompilerEngine compilerEngine =
-                new SQLFederationCompilerEngine(new SQLFederationCompiler(sqlToRelConverter, plannerContext.getHepPlanner()), sqlFederationRule.getConfiguration().getExecutionPlanCache());
-        SQLFederationExecutionPlan executionPlan = compilerEngine.compile(selectStatementContext.getSqlStatement(), false);
-        Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) executionPlan.getPhysicalPlan(), EnumerableRel.Prefer.ARRAY);
-        Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());
-        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(sqlValidator, sqlToRelConverter, params)).enumerator();
+        Schema sqlFederationSchema = plannerContext.getValidator(schemaName).getCatalogReader().getRootSchema().plus().getSubSchema(schemaName);
+        registerTableScanExecutor(sqlFederationSchema, prepareEngine, callback, federationContext, sqlFederationRule.getOptimizerContext());
+        SQLFederationCompilerEngine compilerEngine = new SQLFederationCompilerEngine(schemaName, new SQLStatementCompiler(plannerContext.getConverter(schemaName), plannerContext.getHepPlanner()),
+                sqlFederationRule.getConfiguration().getExecutionPlanCache());
+        return compilerEngine.compile(buildCacheKey(federationContext, selectStatementContext), federationContext.getQueryContext().isUseCache());
+    }
+    
+    private ExecutionPlanCacheKey buildCacheKey(final SQLFederationExecutorContext federationContext, final SelectStatementContext selectStatementContext) {
         ShardingSphereSchema schema = federationContext.getMetaData().getDatabase(databaseName).getSchema(schemaName);
-        resultSet = new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, selectStatementContext, executionPlan.getResultColumnType());
-        return resultSet;
+        ExecutionPlanCacheKey result = new ExecutionPlanCacheKey(federationContext.getQueryContext().getSql(), selectStatementContext.getSqlStatement());
+        for (String each : selectStatementContext.getTablesContext().getTableNames()) {
+            ShardingSphereTable table = schema.getTable(each);
+            ShardingSpherePreconditions.checkState(null != table, () -> new NoSuchTableException(each));
+            // TODO replace DEFAULT_METADATA_VERSION with actual version in ShardingSphereTable
+            result.getTableMetaDataVersions().put(table.getName(), DEFAULT_METADATA_VERSION);
+        }
+        return result;
     }
     
     private void registerTableScanExecutor(final Schema sqlFederationSchema, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
