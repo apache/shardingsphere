@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor.resultset;
+package org.apache.shardingsphere.sqlfederation.resultset;
 
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;

@@ -38,10 +38,10 @@ import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
-import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
-import org.apache.shardingsphere.sqlfederation.optimizer.operator.physical.EnumerablePushDownTableScan;
+import org.apache.shardingsphere.sqlfederation.optimizer.operator.physical.enumerable.EnumerablePushDownTableScan;
 import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederationStatistic;
 
 import java.lang.reflect.Type;
@@ -59,7 +59,7 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
     private final DatabaseType protocolType;
     
     @Setter
-    private TableScanExecutor executor;
+    private EnumerablePushDownTableScanExecutor pushDownTableScanExecutor;
     
     /**
      * Execute filter and project when query the federation translatable table.
@@ -70,7 +70,7 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
      * @return enumerable result
      */
     public Enumerable<Object> projectAndFilterScalar(final DataContext root, final String[] filterValues, final int[] projects) {
-        return executor.executeScalar(table, new TranslatableScanNodeExecutorContext(root, filterValues, projects));
+        return pushDownTableScanExecutor.executeScalar(table, new EnumerablePushDownTableScanExecutorContext(root, filterValues, projects));
     }
     
     /**
@@ -81,7 +81,7 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
      * @return enumerable result
      */
     public Enumerable<Object> projectScalar(final DataContext root, final int[] projects) {
-        return executor.executeScalar(table, new TranslatableScanNodeExecutorContext(root, null, projects));
+        return pushDownTableScanExecutor.executeScalar(table, new EnumerablePushDownTableScanExecutorContext(root, null, projects));
     }
     
     /**
@@ -93,7 +93,7 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
      * @return enumerable result
      */
     public Enumerable<Object[]> projectAndFilter(final DataContext root, final String[] filterValues, final int[] projects) {
-        return executor.execute(table, new TranslatableScanNodeExecutorContext(root, filterValues, projects));
+        return pushDownTableScanExecutor.execute(table, new EnumerablePushDownTableScanExecutorContext(root, filterValues, projects));
     }
     
     /**
@@ -104,7 +104,7 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
      * @return enumerable result
      */
     public Enumerable<Object[]> project(final DataContext root, final int[] projects) {
-        return executor.execute(table, new TranslatableScanNodeExecutorContext(root, null, projects));
+        return pushDownTableScanExecutor.execute(table, new EnumerablePushDownTableScanExecutorContext(root, null, projects));
     }
     
     /**
