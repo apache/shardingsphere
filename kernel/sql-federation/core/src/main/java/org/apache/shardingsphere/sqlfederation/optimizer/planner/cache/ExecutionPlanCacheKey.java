@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.planner.cache;
 
-import com.github.benmanes.caffeine.cache.CacheLoader;
-import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
-import org.apache.shardingsphere.sqlfederation.optimizer.compiler.SQLStatementCompiler;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Execution plan cache loader.
+ * Execution plan cache key.
  */
-public final class ExecutionPlanCacheLoader implements CacheLoader<ExecutionPlanCacheKey, SQLFederationExecutionPlan> {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode(of = {"sql", "tableMetaDataVersions"})
+public final class ExecutionPlanCacheKey {
     
-    private final SQLStatementCompiler sqlStatementCompiler;
+    // TODO replace sql with parameterized sql
+    private final String sql;
     
-    public ExecutionPlanCacheLoader(final SQLStatementCompiler sqlStatementCompiler) {
-        this.sqlStatementCompiler = sqlStatementCompiler;
-    }
+    private final SQLStatement sqlStatement;
     
-    @ParametersAreNonnullByDefault
-    @Override
-    public SQLFederationExecutionPlan load(final ExecutionPlanCacheKey cacheKey) {
-        return sqlStatementCompiler.compile(cacheKey.getSqlStatement());
-    }
+    private final Map<String, Integer> tableMetaDataVersions = new LinkedHashMap<>();
 }

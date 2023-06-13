@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer;
+package org.apache.shardingsphere.sqlfederation.optimizer.compiler;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
@@ -27,15 +27,16 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
 
 import java.util.Objects;
 
 /**
- * SQL federation compiler.
+ * SQL statement compiler.
  */
 @RequiredArgsConstructor
-public final class SQLFederationCompiler {
+public final class SQLStatementCompiler {
     
     private final SqlToRelConverter converter;
     
