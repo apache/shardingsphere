@@ -51,6 +51,9 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
 rules:
+  - !SINGLE
+    tables:
+      - "*.*"
   - !READWRITE_SPLITTING
     dataSources:
       readwrite_ds:

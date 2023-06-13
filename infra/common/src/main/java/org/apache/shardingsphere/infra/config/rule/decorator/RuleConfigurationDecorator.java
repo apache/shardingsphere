@@ -15,34 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.fixture;
+package org.apache.shardingsphere.infra.config.rule.decorator;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Fixture distributed rule builder.
+ * Rule configuration decorator.
+ * 
+ * @param <T> type of rule configuration
  */
-public final class FixtureDistributedRuleBuilder implements DatabaseRuleBuilder<FixtureDistributedRuleConfiguration> {
+@SingletonSPI
+public interface RuleConfigurationDecorator<T extends RuleConfiguration> extends TypedSPI {
     
-    @Override
-    public FixtureDatabaseRule build(final FixtureDistributedRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources,
-                                     final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new FixtureDatabaseRule();
-    }
-    
-    @Override
-    public int getOrder() {
-        return 1;
-    }
-    
-    @Override
-    public Class<FixtureDistributedRuleConfiguration> getTypeClass() {
-        return FixtureDistributedRuleConfiguration.class;
-    }
+    /**
+     * Decorate rule configuration.
+     * 
+     * @param databaseName database name
+     * @param dataSources data sources
+     * @param builtRules built rules
+     * @param ruleConfig rule configuration to be decorated
+     * @return  decorated rule configuration
+     */
+    T decorate(String databaseName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, T ruleConfig);
 }

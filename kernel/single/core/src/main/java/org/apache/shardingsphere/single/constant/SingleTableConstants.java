@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.distsql.statement.rdl;
+package org.apache.shardingsphere.single.constant;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
-import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
-
-import java.util.Collection;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Unload single table statement.
+ * Single table constants.
  */
-@RequiredArgsConstructor
-@Getter
-public final class UnloadSingleTableStatement extends AlterRuleStatement {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SingleTableConstants {
     
-    private final Collection<SingleTableSegment> tables;
+    public static final String ASTERISK = "*";
+    
+    public static final String ALL_TABLES = "*.*";
+    
+    public static final String ALL_SCHEMA_TABLES = "*.*.*";
 }

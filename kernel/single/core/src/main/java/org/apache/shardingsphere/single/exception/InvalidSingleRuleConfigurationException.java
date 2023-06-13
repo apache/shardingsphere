@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.distsql.statement.rdl;
+package org.apache.shardingsphere.single.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
-import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.exception.MetaDataSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Unload single table statement.
+ * Invalid single rule configuration exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class UnloadSingleTableStatement extends AlterRuleStatement {
+public final class InvalidSingleRuleConfigurationException extends MetaDataSQLException {
     
-    private final Collection<SingleTableSegment> tables;
+    private static final long serialVersionUID = 1337703808376580240L;
+    
+    public InvalidSingleRuleConfigurationException(final String message) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 22, "Invalid single rule configuration, reason is: %s.", message);
+    }
 }
