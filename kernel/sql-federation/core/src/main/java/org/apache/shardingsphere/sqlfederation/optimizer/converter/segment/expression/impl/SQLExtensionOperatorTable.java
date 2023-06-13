@@ -50,4 +50,6 @@ public final class SQLExtensionOperatorTable {
     public static final SqlBinaryOperator NOT_REGEXP = new SqlBinaryOperator("NOT REGEXP", SqlKind.OTHER, 30, true, null, null, null);
     
     public static final SqlBinaryOperator SOUNDS_LIKE = new SqlBinaryOperator("SOUNDS LIKE", SqlKind.OTHER, 30, true, null, null, null);
+    
+    public static final MySQLMatchAgainstFunction MATCH_AGAINST = new MySQLMatchAgainstFunction();
 }
