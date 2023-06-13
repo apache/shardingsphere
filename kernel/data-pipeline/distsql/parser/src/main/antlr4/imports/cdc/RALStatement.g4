@@ -27,10 +27,6 @@ showStreamingStatus
     : SHOW STREAMING STATUS jobId
     ;
 
-rollbackStreaming
-    : ROLLBACK STREAMING jobId
-    ;
-
 commitStreaming
     : COMMIT STREAMING jobId
     ;

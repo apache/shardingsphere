@@ -29,14 +29,12 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCLoginException;
-import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCServerException;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.handler.CDCBackendHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CommitStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody.BasicBody;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.RollbackStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StopStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
@@ -55,7 +53,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -123,9 +120,6 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
                 break;
             case START_STREAMING:
                 processStartStreamingRequest(ctx, request, connectionContext);
-                break;
-            case ROLLBACK_STREAMING:
-                processRollbackStreamingRequest(ctx, request, connectionContext);
                 break;
             case COMMIT_STREAMING:
                 processCommitStreamingRequest(ctx, request, connectionContext);
@@ -213,18 +207,6 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         backendHandler.stopStreaming(connectionContext.getJobId(), ctx.channel().id());
         connectionContext.setJobId(null);
         ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
-    }
-    
-    private void processRollbackStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
-        RollbackStreamingRequestBody requestBody = request.getRollbackStreamingRequestBody();
-        checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId()));
-        try {
-            backendHandler.rollbackStreaming(connectionContext.getJobId());
-            connectionContext.setJobId(null);
-            ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
-        } catch (final SQLException ex) {
-            throw new CDCExceptionWrapper(request.getRequestId(), new CDCServerException(ex.getMessage()));
-        }
     }
     
     private void processCommitStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {

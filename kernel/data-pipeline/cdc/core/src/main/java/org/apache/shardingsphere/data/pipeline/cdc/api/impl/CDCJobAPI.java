@@ -365,7 +365,6 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     @Override
     public void rollback(final String jobId) throws SQLException {
-        stopAndDropJob(jobId);
     }
     
     @Override
