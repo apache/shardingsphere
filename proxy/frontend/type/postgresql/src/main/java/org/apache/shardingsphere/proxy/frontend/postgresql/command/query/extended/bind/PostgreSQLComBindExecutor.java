@@ -31,6 +31,7 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Command bind executor for PostgreSQL.
@@ -48,7 +49,8 @@ public final class PostgreSQLComBindExecutor implements CommandExecutor {
     public Collection<DatabasePacket> execute() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
-        Portal portal = new Portal(packet.getPortal(), preparedStatement, packet.readParameters(preparedStatement.getParameterTypes()), packet.readResultFormats(), databaseConnectionManager);
+        List<Object> parameters = preparedStatement.adjustParametersOrder(packet.readParameters(preparedStatement.getParameterTypes()));
+        Portal portal = new Portal(packet.getPortal(), preparedStatement, parameters, packet.readResultFormats(), databaseConnectionManager);
         portalContext.add(portal);
         portal.bind();
         return Collections.singleton(PostgreSQLBindCompletePacket.getInstance());

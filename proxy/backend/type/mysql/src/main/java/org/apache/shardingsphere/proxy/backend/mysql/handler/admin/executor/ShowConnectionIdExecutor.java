@@ -62,7 +62,7 @@ public final class ShowConnectionIdExecutor implements DatabaseAdminQueryExecuto
         Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
         for (ProjectionSegment each : projections) {
             if (each instanceof ExpressionProjectionSegment) {
-                return ((ExpressionProjectionSegment) each).getAlias().orElse(FUNCTION_NAME);
+                return ((ExpressionProjectionSegment) each).getAliasName().orElse(FUNCTION_NAME);
             }
         }
         return FUNCTION_NAME;

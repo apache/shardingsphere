@@ -22,8 +22,7 @@ on:
     branches: [ master, dev ]
     paths:
       - '.github/workflows/e2e-pipeline.yml'
-      - 'infra/common/src/main/**'
-      - 'infra/executor/src/main/**'
+      - 'infra/**/src/main/**'
       - 'mode/**/src/main/**'
       - 'proxy/**/src/main/**'
       - 'jdbc/core/src/main/**'
@@ -42,8 +41,7 @@ on:
     branches: [ master ]
     paths:
       - '.github/workflows/e2e-pipeline.yml'
-      - 'infra/common/src/main/**'
-      - 'infra/executor/src/main/**'
+      - 'infra/**/src/main/**'
       - 'mode/**/src/main/**'
       - 'proxy/**/src/main/**'
       - 'jdbc/core/src/main/**'
@@ -79,7 +77,7 @@ jobs:
       postgresql_version: postgres:12-alpine
       mysql_version: mysql:5.7
       opengauss_version: enmotech/opengauss:2.1.0
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos

@@ -20,20 +20,25 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class PostgreSQLCommandCompletePacketTest {
     
-    @Test
-    void assertSelectReadWrite() {
-        String sqlCommand = "SELECT";
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertReadWrite(final String sqlCommand, final String expectedDelimiter) {
         long rowCount = 1;
-        String expectedString = sqlCommand + " " + rowCount;
+        String expectedString = sqlCommand + expectedDelimiter + rowCount;
         int expectedStringLength = expectedString.length();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1), StandardCharsets.ISO_8859_1);
         PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
@@ -42,29 +47,14 @@ class PostgreSQLCommandCompletePacketTest {
         assertThat(payload.readStringNul(), is(expectedString));
     }
     
-    @Test
-    void assertInsertReadWrite() {
-        String sqlCommand = "INSERT";
-        long rowCount = 1;
-        String expectedString = sqlCommand + " 0 " + rowCount;
-        int expectedStringLength = expectedString.length();
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1), StandardCharsets.ISO_8859_1);
-        PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
-        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.COMMAND_COMPLETE));
-        packet.write(payload);
-        assertThat(payload.readStringNul(), is(expectedString));
-    }
-    
-    @Test
-    void assertMoveReadWrite() {
-        String sqlCommand = "MOVE";
-        long rowCount = 1;
-        String expectedString = sqlCommand + " " + rowCount;
-        int expectedStringLength = expectedString.length();
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1), StandardCharsets.ISO_8859_1);
-        PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
-        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.COMMAND_COMPLETE));
-        packet.write(payload);
-        assertThat(payload.readStringNul(), is(expectedString));
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("SELECT", " "),
+                    Arguments.of("INSERT", " 0 "),
+                    Arguments.of("MOVE", " "));
+        }
     }
 }

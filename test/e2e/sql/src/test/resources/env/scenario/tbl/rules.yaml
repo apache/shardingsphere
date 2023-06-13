@@ -91,5 +91,8 @@ rules:
     auditor_constant:
       type: IT.AUDITOR.FIXTURE
 
-props:
-  sql-federation-type: ADVANCED
+sqlFederation:
+  sqlFederationEnabled: true
+  executionPlanCache:
+    initialCapacity: 2000
+    maximumSize: 65535

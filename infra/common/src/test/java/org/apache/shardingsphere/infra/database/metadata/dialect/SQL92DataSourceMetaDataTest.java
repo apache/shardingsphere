@@ -19,25 +19,40 @@ package org.apache.shardingsphere.infra.database.metadata.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.util.Properties;
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SQL92DataSourceMetaDataTest {
+class SQL92DataSourceMetaDataTest extends AbstractDataSourceMetaDataTest {
     
-    @Test
-    void assertNewConstructorSuccess() {
-        SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData("jdbc:sql92_db:ds_0");
-        assertThat(actual.getHostname(), is(""));
-        assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getCatalog(), is(""));
-        assertNull(actual.getSchema());
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
+    void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema) {
+        assertDataSourceMetaData(url, hostname, port, catalog, schema, new Properties());
     }
     
     @Test
     void assertNewConstructorFailure() {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new SQL92DataSourceMetaData("xxx:xxxx:xxxxxxxx"));
+    }
+    
+    @Override
+    protected SQL92DataSourceMetaData createDataSourceMetaData(final String url) {
+        return new SQL92DataSourceMetaData(url);
+    }
+    
+    private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of("simple", "jdbc:sql92_db:foo_ds", "", -1, "", null));
+        }
     }
 }

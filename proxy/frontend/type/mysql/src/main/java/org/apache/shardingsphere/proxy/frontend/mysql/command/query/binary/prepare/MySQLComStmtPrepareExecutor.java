@@ -133,7 +133,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
                 result.add(createMySQLColumnDefinition41Packet(characterSet, columnDefinitionFlag, MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())));
                 serverPreparedStatement.getParameterColumnDefinitionFlags().add(columnDefinitionFlag);
             } else {
-                result.add(createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING));
+                result.add(createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING));
                 serverPreparedStatement.getParameterColumnDefinitionFlags().add(0);
             }
         }
@@ -151,9 +151,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             if (each instanceof ColumnProjection) {
                 result.add(Optional.ofNullable(columnToTableMap.get(each.getExpression())).map(schema::getTable).map(table -> table.getColumn(((ColumnProjection) each).getName()))
                         .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column), MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
-                        .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING)));
+                        .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING)));
             } else {
-                result.add(createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING));
+                result.add(createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING));
             }
         }
         return result;

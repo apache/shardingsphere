@@ -262,7 +262,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         for (String each : ignoredTables) {
             ConsistencyCheckJobItemInfo info = new ConsistencyCheckJobItemInfo();
             info.setTableNames(each);
-            info.setCheckSuccess(false);
+            info.setCheckSuccess(null);
             DataConsistencyCheckResult checkResult = checkJobResult.get(each);
             if (null != checkResult && checkResult.isIgnored()) {
                 info.setErrorMessage(checkResult.getIgnoredType().getMessage());
@@ -285,7 +285,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         ConsistencyCheckJobItemProgress jobItemProgress = progressOptional.get();
         if (null == jobItemProgress.getRecordsCount() || null == jobItemProgress.getCheckedRecordsCount()) {
             result.setFinishedPercentage(0);
-            result.setCheckSuccess(false);
+            result.setCheckSuccess(null);
             return result;
         }
         LocalDateTime checkBeginTime = new Timestamp(jobItemProgress.getCheckBeginTimeMillis()).toLocalDateTime();
@@ -315,9 +315,13 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         result.setCheckBeginTime(DATE_TIME_FORMATTER.format(checkBeginTime));
         result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
         Map<String, DataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, checkJobId);
-        InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(
-                PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(parentJobId).getTypeName());
-        result.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
+        if (checkJobResult.isEmpty()) {
+            result.setCheckSuccess(null);
+        } else {
+            InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(
+                    PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(parentJobId).getTypeName());
+            result.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
+        }
         result.setCheckFailedTableNames(checkJobResult.entrySet().stream().filter(each -> !each.getValue().isIgnored() && !each.getValue().isMatched())
                 .map(Entry::getKey).collect(Collectors.joining(",")));
         return result;

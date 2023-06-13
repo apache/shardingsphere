@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLBinaryTimestampUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.sql.Timestamp;
@@ -38,6 +39,6 @@ public final class PostgreSQLTimeBinaryProtocolValue implements PostgreSQLBinary
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeInt8(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime((Timestamp) value, false));
+        payload.writeInt8(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime((Timestamp) value));
     }
 }

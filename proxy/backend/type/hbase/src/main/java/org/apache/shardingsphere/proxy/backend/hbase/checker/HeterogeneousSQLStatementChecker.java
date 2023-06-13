@@ -21,17 +21,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Check where clause.
- * 
- * @param <T> SQL statement
  */
-public interface HeterogeneousSQLStatementChecker<T extends SQLStatement> {
+public interface HeterogeneousSQLStatementChecker {
     
     /**
      * Get SQL statement.
      *
      * @return SQL statement
      */
-    T getSqlStatement();
+    SQLStatement getSqlStatement();
     
     /**
      * do check.

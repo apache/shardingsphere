@@ -24,12 +24,14 @@ import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEng
 import org.apache.shardingsphere.infra.merge.fixture.rule.DecoratorRuleFixture;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
+import java.util.Optional;
+
 public final class ResultDecoratorEngineFixture implements ResultDecoratorEngine<DecoratorRuleFixture> {
     
     @Override
-    public ResultDecorator<?> newInstance(final ShardingSphereDatabase database,
-                                          final DecoratorRuleFixture rule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
-        return new ResultDecoratorFixture();
+    public Optional<ResultDecorator<DecoratorRuleFixture>> newInstance(final ShardingSphereDatabase database,
+                                                                       final DecoratorRuleFixture rule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
+        return Optional.of(new ResultDecoratorFixture());
     }
     
     @Override

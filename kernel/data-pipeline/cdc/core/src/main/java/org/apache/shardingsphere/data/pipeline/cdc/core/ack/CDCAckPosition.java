@@ -42,20 +42,6 @@ public final class CDCAckPosition {
         createTimeMills = System.currentTimeMillis();
     }
     
-    public CDCAckPosition(final Record lastRecord, final long createTimeMills) {
-        this.lastRecord = lastRecord;
-        this.createTimeMills = createTimeMills;
-    }
-    
-    /**
-     * Add data record count.
-     *
-     * @param count count.
-     */
-    public void addDataRecordCount(final int count) {
-        dataRecordCount.addAndGet(count);
-    }
-    
     /**
      * Get data record count.
      *

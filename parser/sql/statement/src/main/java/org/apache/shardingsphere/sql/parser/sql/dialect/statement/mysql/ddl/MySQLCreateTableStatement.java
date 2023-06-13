@@ -19,15 +19,31 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+
+import java.util.Optional;
 
 /**
  * MySQL create table statement.
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class MySQLCreateTableStatement extends CreateTableStatement implements MySQLStatement {
     
     private final boolean ifNotExists;
+    
+    private SimpleTableSegment likeTable;
+    
+    /**
+     * Get like table.
+     *
+     * @return like table
+     */
+    public Optional<SimpleTableSegment> getLikeTable() {
+        return Optional.ofNullable(likeTable);
+    }
 }

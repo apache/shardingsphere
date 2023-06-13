@@ -22,7 +22,6 @@ Apache ShardingSphere 提供了丰富的系统配置属性，用户可通过 `se
 | proxy-backend-query-fetch-size (?)        | int       | Proxy 后端与数据库交互的每次获取数据行数（使用游标的情况下）。数值增大可能会增加 ShardingSphere Proxy 的内存使用。默认值为 -1，代表设置为 JDBC 驱动的最小值。                                      | -1       | 是      |
 | proxy-frontend-executor-size (?)          | int       | Proxy 前端 Netty 线程池线程数量，默认值 0 代表使用 Netty 默认值。                                                                                           | 0        | 否      |
 | proxy-frontend-max-connections (?)        | int       | 允许连接 Proxy 的最大客户端数量，默认值 0 代表不限制。                                                                                                       | 0        | 是      |
-| sql-federation-type (?)                   | String    | 联邦查询执行器类型，包括：NONE，ORIGINAL，ADVANCED。                                                                                                   | NONE     | 是      |
 | proxy-default-port (?)                    | String    | Proxy 通过配置文件指定默认端口。                                                                                                                    | 3307     | 否      |
 | proxy-netty-backlog (?)                   | int       | Proxy 通过配置文件指定默认netty back_log参数。                                                                                                      | 1024     | 否      |
 | proxy-frontend-database-protocol-type (?) | String    | Proxy 前端协议类型，支持 MySQL，PostgreSQL 和 openGauss                                                                                           | \"\"     | 否      |

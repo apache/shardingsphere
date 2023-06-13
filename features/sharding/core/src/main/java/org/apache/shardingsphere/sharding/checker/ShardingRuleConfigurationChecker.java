@@ -44,7 +44,7 @@ import java.util.Map;
 public final class ShardingRuleConfigurationChecker implements RuleConfigurationChecker<ShardingRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final ShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
+    public void check(final String databaseName, final ShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         Collection<String> keyGenerators = config.getKeyGenerators().keySet();
         Collection<String> auditors = config.getAuditors().keySet();
         Collection<String> shardingAlgorithms = config.getShardingAlgorithms().keySet();

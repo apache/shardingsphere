@@ -71,7 +71,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
         
         return encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()
                 ? encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, tableName, columnName, originalValues)
-                : encryptRule.getEncryptValues(databaseName, schemaName, tableName, columnName, originalValues);
+                : encryptRule.encrypt(databaseName, schemaName, tableName, columnName, originalValues);
     }
     
     private void encryptParameters(final ParameterBuilder paramBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {

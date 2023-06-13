@@ -50,7 +50,12 @@ public final class JoinTableSegment implements TableSegment {
     private List<ColumnSegment> using = Collections.emptyList();
     
     @Override
-    public Optional<String> getAlias() {
+    public Optional<String> getAliasName() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
+    }
+    
+    @Override
+    public Optional<AliasSegment> getAlias() {
+        return Optional.ofNullable(alias);
     }
 }

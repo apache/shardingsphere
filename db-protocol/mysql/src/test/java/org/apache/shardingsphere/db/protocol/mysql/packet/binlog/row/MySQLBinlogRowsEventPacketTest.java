@@ -67,7 +67,7 @@ class MySQLBinlogRowsEventPacketTest {
     
     private void mockColumnDefs() {
         columnDefs = new ArrayList<>();
-        columnDefs.add(new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_LONGLONG));
+        columnDefs.add(new MySQLBinlogColumnDef(MySQLBinaryColumnType.LONGLONG));
     }
     
     @Test

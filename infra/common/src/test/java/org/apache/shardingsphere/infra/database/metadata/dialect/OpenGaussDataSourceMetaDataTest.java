@@ -18,39 +18,46 @@
 package org.apache.shardingsphere.infra.database.metadata.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.util.Properties;
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class OpenGaussDataSourceMetaDataTest {
+class OpenGaussDataSourceMetaDataTest extends AbstractDataSourceMetaDataTest {
     
-    @Test
-    void assertNewConstructorWithSimpleJdbcUrl() {
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:opengauss://127.0.0.1/foo_ds");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(5432));
-        assertThat(actual.getCatalog(), is("foo_ds"));
-        assertNull(actual.getSchema());
-        assertTrue(actual.getQueryProperties().isEmpty());
-    }
-    
-    @Test
-    void assertNewConstructorWithComplexJdbcUrl() {
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:opengauss://127.0.0.1:9999,127.0.0.2:9999,127.0.0.3:9999/foo_ds?targetServerType=master");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(9999));
-        assertThat(actual.getCatalog(), is("foo_ds"));
-        assertNull(actual.getSchema());
-        assertThat(actual.getQueryProperties().size(), is(1));
-        assertThat(actual.getQueryProperties().getProperty("targetServerType"), is("master"));
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
+    void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema, final Properties queryProps) {
+        assertDataSourceMetaData(url, hostname, port, catalog, schema, queryProps);
     }
     
     @Test
     void assertNewConstructorFailure() {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new PostgreSQLDataSourceMetaData("jdbc:opengauss:xxxxxxxx"));
+    }
+    
+    @Override
+    protected OpenGaussDataSourceMetaData createDataSourceMetaData(final String url) {
+        return new OpenGaussDataSourceMetaData(url);
+    }
+    
+    private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("simple", "jdbc:opengauss://127.0.0.1/foo_ds", "127.0.0.1", 5431, "foo_ds", null, new Properties()),
+                    Arguments.of("complex", "jdbc:opengauss://127.0.0.1:9999,127.0.0.2:9999,127.0.0.3:9999/foo_ds?targetServerType=master", "127.0.0.1", 9999, "foo_ds", null,
+                            PropertiesBuilder.build(new Property("targetServerType", "master"))));
+        }
     }
 }

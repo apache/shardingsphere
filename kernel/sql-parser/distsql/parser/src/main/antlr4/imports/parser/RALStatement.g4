@@ -28,23 +28,27 @@ alterSQLParserRule
     ;
 
 sqlParserRuleDefinition
-    : SQL_COMMENT_PARSE_ENABLE EQ_ sqlCommentParseEnable (COMMA_ PARSE_TREE_CACHE LP_ parseTreeCache RP_)? (COMMA_ SQL_STATEMENT_CACHE LP_ sqlStatementCache RP_)?
+    : LP_ commentDefinition? (COMMA_? parseTreeCacheDefinition)? (COMMA_? sqlStatementCacheDefinition)? RP_
     ;
 
-sqlCommentParseEnable
+commentDefinition
+    : SQL_COMMENT_PARSE_ENABLED EQ_ sqlCommentParseEnabled
+    ;
+
+parseTreeCacheDefinition
+    : PARSE_TREE_CACHE LP_ cacheOption RP_
+    ;
+
+sqlStatementCacheDefinition
+    : SQL_STATEMENT_CACHE LP_ cacheOption RP_
+    ;
+
+sqlCommentParseEnabled
     : TRUE | FALSE
     ;
 
-parseTreeCache
-    : cacheOption
-    ;
-
-sqlStatementCache
-    : cacheOption
-    ;
-
 cacheOption
-    : (INITIAL_CAPACITY EQ_ initialCapacity)? (COMMA_? MAXIMUM_SIZE EQ_ maximumSize)? (COMMA_? CONCURRENCY_LEVEL EQ_ concurrencyLevel)?
+    : (INITIAL_CAPACITY EQ_ initialCapacity)? (COMMA_? MAXIMUM_SIZE EQ_ maximumSize)?
     ;
 
 initialCapacity
@@ -52,9 +56,5 @@ initialCapacity
     ;
 
 maximumSize
-    : INT_
-    ;
-
-concurrencyLevel
     : INT_
     ;

@@ -96,15 +96,13 @@ public final class WALEventConverter {
     }
     
     private DataRecord handleWriteRowEvent(final WriteRowEvent writeRowEvent, final PipelineTableMetaData tableMetaData) {
-        DataRecord result = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
-        result.setType(IngestDataChangeType.INSERT);
+        DataRecord result = createDataRecord(IngestDataChangeType.INSERT, writeRowEvent, writeRowEvent.getAfterRow().size());
         putColumnsIntoDataRecord(result, tableMetaData, writeRowEvent.getTableName(), writeRowEvent.getAfterRow());
         return result;
     }
     
     private DataRecord handleUpdateRowEvent(final UpdateRowEvent updateRowEvent, final PipelineTableMetaData tableMetaData) {
-        DataRecord result = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
-        result.setType(IngestDataChangeType.UPDATE);
+        DataRecord result = createDataRecord(IngestDataChangeType.UPDATE, updateRowEvent, updateRowEvent.getAfterRow().size());
         String actualTableName = updateRowEvent.getTableName();
         putColumnsIntoDataRecord(result, tableMetaData, actualTableName, updateRowEvent.getAfterRow());
         return result;
@@ -112,8 +110,7 @@ public final class WALEventConverter {
     
     private DataRecord handleDeleteRowEvent(final DeleteRowEvent event, final PipelineTableMetaData tableMetaData) {
         // TODO completion columns
-        DataRecord result = createDataRecord(event, event.getPrimaryKeys().size());
-        result.setType(IngestDataChangeType.DELETE);
+        DataRecord result = createDataRecord(IngestDataChangeType.DELETE, event, event.getPrimaryKeys().size());
         // TODO Unique key may be a column within unique index
         List<String> primaryKeyColumns = tableMetaData.getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
@@ -122,9 +119,9 @@ public final class WALEventConverter {
         return result;
     }
     
-    private DataRecord createDataRecord(final AbstractRowEvent rowsEvent, final int columnCount) {
-        DataRecord result = new DataRecord(new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
-        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getOriginal());
+    private DataRecord createDataRecord(final String type, final AbstractRowEvent rowsEvent, final int columnCount) {
+        String tableName = dumperConfig.getLogicTableName(rowsEvent.getTableName()).getOriginal();
+        DataRecord result = new DataRecord(type, tableName, new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
         result.setCsn(rowsEvent.getCsn());
         return result;
     }
@@ -137,7 +134,7 @@ public final class WALEventConverter {
                 continue;
             }
             boolean isUniqueKey = columnMetaData.isUniqueKey();
-            Object uniqueKeyOldValue = isUniqueKey ? values.get(i) : null;
+            Object uniqueKeyOldValue = isUniqueKey && IngestDataChangeType.UPDATE.equals(dataRecord.getType()) ? values.get(i) : null;
             Column column = new Column(columnMetaData.getName(), uniqueKeyOldValue, values.get(i), true, isUniqueKey);
             dataRecord.addColumn(column);
         }

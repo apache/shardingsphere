@@ -76,7 +76,7 @@ public final class DropIndexStatementAssert {
             }
         }
     }
-
+    
     private static void assertLockTable(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
         if (null == expected.getLockOption()) {
             assertFalse(DropIndexStatementHandler.getLockTableSegment(actual).isPresent(), assertContext.getText("Actual lock table segments should not exist."));
@@ -86,7 +86,7 @@ public final class DropIndexStatementAssert {
                     DropIndexStatementHandler.getLockTableSegment(actual).get().getLockTableOption().name(), is(expected.getLockOption().getType()));
         }
     }
-
+    
     private static void assertAlgorithm(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
         if (null == expected.getAlgorithmOption()) {
             assertFalse(DropIndexStatementHandler.getAlgorithmTypeSegment(actual).isPresent(), assertContext.getText("Actual algorithm segments should not exist."));

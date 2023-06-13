@@ -238,6 +238,15 @@ class JDBCStreamQueryResultTest {
     }
     
     @Test
+    void assertGetCharacterStream() throws SQLException {
+        ResultSet resultSet = getResultSet();
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
+        queryResult.next();
+        queryResult.getCharacterStream(1);
+        verify(resultSet).getCharacterStream(1);
+    }
+    
+    @Test
     void assertWasNull() throws SQLException {
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
         queryResult.next();

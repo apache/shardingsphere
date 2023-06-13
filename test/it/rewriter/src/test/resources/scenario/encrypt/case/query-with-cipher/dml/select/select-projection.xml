@@ -19,17 +19,17 @@
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
     <rewrite-assertion id="select_with_unqualified_shorthand_for_cipher" db-types="MySQL">
         <input sql="SELECT * FROM t_account_bak" />
-        <output sql="SELECT `t_account_bak`.`account_id`, `t_account_bak`.`cipher_certificate_number` AS `certificate_number`, `t_account_bak`.`cipher_password` AS `password`, `t_account_bak`.`cipher_amount` AS `amount` FROM t_account_bak" />
+        <output sql="SELECT t_account_bak.`account_id`, t_account_bak.`cipher_certificate_number` AS `certificate_number`, t_account_bak.`cipher_password` AS `password`, t_account_bak.`cipher_amount` AS `amount` FROM t_account_bak" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_qualified_shorthand_for_cipher" db-types="MySQL">
         <input sql="SELECT a.* FROM t_account_bak a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount` FROM t_account_bak a" />
+        <output sql="SELECT a.`account_id`, a.`cipher_certificate_number` AS `certificate_number`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_bak a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_mix_qualified_shorthand_and_other_projection_for_cipher" db-types="MySQL">
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account_bak a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, account_id, 1+1 FROM t_account_bak a" />
+        <output sql="SELECT a.`account_id`, a.`cipher_certificate_number` AS `certificate_number`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount`, account_id, 1+1 FROM t_account_bak a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_for_predicate_and_right_value_should_be_matched_for_cipher_for_parameters" db-types="MySQL">
@@ -44,32 +44,32 @@
     
     <rewrite-assertion id="select_with_unqualified_shorthand_for_parameters" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE certificate_number = ? AND certificate_number LIKE ?" parameters="1, 1" />
-        <output sql="SELECT `t_account`.`account_id`, `t_account`.`cipher_certificate_number` AS `certificate_number`, `t_account`.`cipher_password` AS `password`, `t_account`.`cipher_amount` AS `amount` FROM t_account WHERE assisted_query_certificate_number = ? AND like_query_certificate_number LIKE ?" parameters="assisted_query_1, like_query_1" />
+        <output sql="SELECT t_account.`account_id`, t_account.`cipher_certificate_number` AS `certificate_number`, t_account.`cipher_password` AS `password`, t_account.`cipher_amount` AS `amount` FROM t_account WHERE assisted_query_certificate_number = ? AND like_query_certificate_number LIKE ?" parameters="assisted_query_1, like_query_1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_unqualified_shorthand_for_literals" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE certificate_number = 1 AND certificate_number LIKE 1" />
-        <output sql="SELECT `t_account`.`account_id`, `t_account`.`cipher_certificate_number` AS `certificate_number`, `t_account`.`cipher_password` AS `password`, `t_account`.`cipher_amount` AS `amount` FROM t_account WHERE assisted_query_certificate_number = 'assisted_query_1' AND like_query_certificate_number LIKE 'like_query_1'" />
+        <output sql="SELECT t_account.`account_id`, t_account.`cipher_certificate_number` AS `certificate_number`, t_account.`cipher_password` AS `password`, t_account.`cipher_amount` AS `amount` FROM t_account WHERE assisted_query_certificate_number = 'assisted_query_1' AND like_query_certificate_number LIKE 'like_query_1'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_qualified_shorthand" db-types="MySQL">
         <input sql="SELECT a.* FROM t_account a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount` FROM t_account a" />
+        <output sql="SELECT a.`account_id`, a.`cipher_certificate_number` AS `certificate_number`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_mix_qualified_shorthand_and_other_projection" db-types="MySQL">
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, account_id, 1+1 FROM t_account a" />
+        <output sql="SELECT a.`account_id`, a.`cipher_certificate_number` AS `certificate_number`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount`, account_id, 1+1 FROM t_account a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_schema_name_in_shorthand_projection_for_parameters" db-types="MySQL">
         <input sql="SELECT logic_db.t_account.* FROM t_account WHERE account_id = ? AND certificate_number = ? AND certificate_number LIKE ?" parameters="100, 200, 300" />
-        <output sql="SELECT `t_account`.`account_id`, `t_account`.`cipher_certificate_number` AS `certificate_number`, `t_account`.`cipher_password` AS `password`, `t_account`.`cipher_amount` AS `amount` FROM t_account WHERE account_id = ? AND assisted_query_certificate_number = ? AND like_query_certificate_number LIKE ?" parameters="100, assisted_query_200, like_query_300" />
+        <output sql="SELECT t_account.`account_id`, t_account.`cipher_certificate_number` AS `certificate_number`, t_account.`cipher_password` AS `password`, t_account.`cipher_amount` AS `amount` FROM t_account WHERE account_id = ? AND assisted_query_certificate_number = ? AND like_query_certificate_number LIKE ?" parameters="100, assisted_query_200, like_query_300" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_schema_name_in_shorthand_projection_for_literals" db-types="MySQL">
         <input sql="SELECT logic_db.t_account.* FROM t_account WHERE account_id = 100 AND certificate_number = 200 AND certificate_number LIKE 300" />
-        <output sql="SELECT `t_account`.`account_id`, `t_account`.`cipher_certificate_number` AS `certificate_number`, `t_account`.`cipher_password` AS `password`, `t_account`.`cipher_amount` AS `amount` FROM t_account WHERE account_id = 100 AND assisted_query_certificate_number = 'assisted_query_200' AND like_query_certificate_number LIKE 'like_query_300'" />
+        <output sql="SELECT t_account.`account_id`, t_account.`cipher_certificate_number` AS `certificate_number`, t_account.`cipher_password` AS `password`, t_account.`cipher_amount` AS `amount` FROM t_account WHERE account_id = 100 AND assisted_query_certificate_number = 'assisted_query_200' AND like_query_certificate_number LIKE 'like_query_300'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_schema_name_in_column_projection_for_parameters" db-types="MySQL">

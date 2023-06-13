@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 /**
  * Classpath driver URL provider.
@@ -62,16 +61,10 @@ public final class ClasspathDriverURLProvider implements ShardingSphereDriverURL
     }
     
     private InputStream getResourceAsStream(final String resource) {
-        for (ClassLoader each : Arrays.asList(Thread.currentThread().getContextClassLoader(), getClass().getClassLoader(), ClassLoader.getSystemClassLoader())) {
-            if (null != each) {
-                InputStream result = each.getResourceAsStream(resource);
-                if (null == result) {
-                    result = each.getResourceAsStream("/" + resource);
-                }
-                if (null != result) {
-                    return result;
-                }
-            }
+        InputStream result = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
+        result = null == result ? Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + resource) : result;
+        if (null != result) {
+            return result;
         }
         throw new IllegalArgumentException(String.format("Can not find configuration file `%s`.", resource));
     }

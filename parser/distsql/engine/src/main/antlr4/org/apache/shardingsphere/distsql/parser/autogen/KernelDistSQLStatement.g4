@@ -35,12 +35,8 @@ execute
     | showComputeNodeMode
     | labelComputeNode
     | unlabelComputeNode
-    | countSingleTable
     | alterComputeNode
     | showLogicalTables
-    | showSingleTable
-    | showDefaultSingleTableStorageUnit
-    | setDefaultSingleTableStorageUnit
     | refreshDatabaseMetadata
     | refreshTableMetadata
     | showTableMetadata

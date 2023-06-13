@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -103,7 +104,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
     
-    private void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
+    protected void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
         String jobId = jobItemContext.getJobId();
         log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
         jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
@@ -118,6 +119,10 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     @Override
     public Collection<Integer> getShardingItems() {
         return new ArrayList<>(tasksRunnerMap.keySet());
+    }
+    
+    protected Collection<PipelineTasksRunner> getTasksRunners() {
+        return Collections.unmodifiableCollection(tasksRunnerMap.values());
     }
     
     protected boolean addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
@@ -172,7 +177,6 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     }
     
     private void innerClean() {
-        tasksRunnerMap.clear();
         PipelineJobProgressPersistService.remove(jobId);
     }
     

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataFactory
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
@@ -35,8 +35,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,19 +61,13 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         String instanceId = ComputeNode.getInstanceIdByComputeNode(event.getKey());
         if (!Strings.isNullOrEmpty(instanceId)) {
-            if (event.getKey().equals(ComputeNode.getInstanceStatusNodePath(instanceId)) && Type.DELETED != event.getType()) {
-                return Optional.of(new StateEvent(instanceId, event.getValue()));
-            }
-            if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId)) && Type.DELETED != event.getType()) {
-                return Optional.of(new LabelsEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class)));
-            }
-            if (event.getKey().equals(ComputeNode.getInstanceWorkerIdNodePath(instanceId))) {
-                return Optional.of(new WorkerIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Integer.valueOf(event.getValue())));
+            Optional<GovernanceEvent> result = createInstanceGovernanceEvent(event, instanceId);
+            if (result.isPresent()) {
+                return result;
             }
         }
         if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
@@ -84,6 +78,20 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         }
         if (event.getKey().startsWith(ComputeNode.getKillProcessTriggerNodePath())) {
             return createKillLocalProcessEvent(event);
+        }
+        return Optional.empty();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Optional<GovernanceEvent> createInstanceGovernanceEvent(final DataChangedEvent event, final String instanceId) {
+        if (event.getKey().equals(ComputeNode.getInstanceStatusNodePath(instanceId)) && Type.DELETED != event.getType()) {
+            return Optional.of(new StateEvent(instanceId, event.getValue()));
+        }
+        if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId)) && Type.DELETED != event.getType()) {
+            return Optional.of(new LabelsEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class)));
+        }
+        if (event.getKey().equals(ComputeNode.getInstanceWorkerIdNodePath(instanceId))) {
+            return Optional.of(new WorkerIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Integer.valueOf(event.getValue())));
         }
         return Optional.empty();
     }

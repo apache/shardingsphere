@@ -205,7 +205,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
             return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
         }
         if (DatabaseTypeUtils.isPostgreSQL(databaseType) || DatabaseTypeUtils.isOpenGauss(databaseType)) {
-            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified"), new Property("bitToString", Boolean.TRUE.toString())));
+            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified"),
+                    new Property("bitToString", Boolean.TRUE.toString()), new Property("TimeZone", "UTC")));
         }
         return jdbcUrl;
     }
@@ -377,13 +378,16 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @throws RuntimeException runtime exception
      */
     public List<Map<String, Object>> queryForListWithLog(final String sql) {
+        log.info("Query SQL: {}", sql);
         int retryNumber = 0;
         while (retryNumber <= 3) {
             try (Connection connection = proxyDataSource.getConnection()) {
                 ResultSet resultSet = connection.createStatement().executeQuery(sql);
                 return transformResultSetToList(resultSet);
-            } catch (final SQLException ex) {
-                log.error("Data access error.", ex);
+                // CHECKSTYLE:OFF
+            } catch (final SQLException | RuntimeException ex) {
+                // CHECKSTYLE:ON
+                log.error("Data access error, sql: {}.", sql, ex);
             }
             Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
             retryNumber++;
@@ -427,13 +431,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
      *
      * @param distSQL dist SQL
      * @return result
-     * @throws InterruptedException interrupted exception
      */
     // TODO use DAO to query via DistSQL
-    public List<Map<String, Object>> waitIncrementTaskFinished(final String distSQL) throws InterruptedException {
-        if (null != increaseTaskThread) {
-            TimeUnit.SECONDS.timedJoin(increaseTaskThread, 30);
-        }
+    public List<Map<String, Object>> waitIncrementTaskFinished(final String distSQL) {
         for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> listJobStatus = queryForListWithLog(distSQL);
             log.info("show status result: {}", listJobStatus);

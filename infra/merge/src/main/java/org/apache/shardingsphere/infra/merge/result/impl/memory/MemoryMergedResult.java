@@ -31,7 +31,10 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,6 +44,8 @@ import java.util.List;
  * @param <T> type of rule
  */
 public abstract class MemoryMergedResult<T extends ShardingSphereRule> implements MergedResult {
+    
+    private static final Collection<Class<?>> INVALID_MEMORY_TYPES = new HashSet<>(Arrays.asList(Blob.class, Clob.class, Reader.class, InputStream.class, SQLXML.class));
     
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
@@ -69,8 +74,7 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
     
     @Override
     public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        ShardingSpherePreconditions.checkState(Blob.class != type && Clob.class != type && Reader.class != type && InputStream.class != type && SQLXML.class != type,
-                () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
+        ShardingSpherePreconditions.checkState(!INVALID_MEMORY_TYPES.contains(type), () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
         Object result = currentResultSetRow.getCell(columnIndex);
         wasNull = null == result;
         return result;
@@ -87,6 +91,11 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
     @Override
     public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         throw new SQLFeatureNotSupportedException(String.format("Get input stream from `%s`", type));
+    }
+    
+    @Override
+    public Reader getCharacterStream(final int columnIndex) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Get Character stream");
     }
     
     @Override

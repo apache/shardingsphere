@@ -136,7 +136,6 @@ public interface PipelineSQLBuilder extends TypedSPI {
      * @param tableName table name
      * @return count SQL
      */
-    // TODO keep it for now, it might be used later
     String buildCountSQL(String schemaName, String tableName);
     
     /**
@@ -147,6 +146,16 @@ public interface PipelineSQLBuilder extends TypedSPI {
      * @return estimated count SQL
      */
     Optional<String> buildEstimatedCountSQL(String schemaName, String tableName);
+    
+    /**
+     * Build unique key minimum maximum values SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param uniqueKey unique key
+     * @return min max unique key SQL
+     */
+    String buildUniqueKeyMinMaxValuesSQL(String schemaName, String tableName, String uniqueKey);
     
     /**
      * Build query all ordering SQL.
@@ -168,16 +177,6 @@ public interface PipelineSQLBuilder extends TypedSPI {
      * @return check SQL
      */
     String buildCheckEmptySQL(String schemaName, String tableName);
-    
-    /**
-     * Build split by primary key range SQL.
-     *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param uniqueKey unique key
-     * @return split SQL
-     */
-    String buildSplitByPrimaryKeyRangeSQL(String schemaName, String tableName, String uniqueKey);
     
     /**
      * Build CRC32 SQL.

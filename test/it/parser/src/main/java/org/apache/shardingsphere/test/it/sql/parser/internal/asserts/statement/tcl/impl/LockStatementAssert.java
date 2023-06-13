@@ -27,6 +27,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.LockStatementTestCase;
 
+import java.util.Collection;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -45,29 +47,22 @@ public final class LockStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final LockStatement actual, final LockStatementTestCase expected) {
         if (actual instanceof MySQLLockStatement) {
-            MySQLLockStatement lockStatement = (MySQLLockStatement) actual;
-            if (null == expected.getTables() || expected.getTables().isEmpty()) {
-                assertTrue(lockStatement.getTables().isEmpty(), assertContext.getText("Actual lock statement should not exist."));
-            } else {
-                assertFalse(lockStatement.getTables().isEmpty(), assertContext.getText("Actual lock statement should exist."));
-                int count = 0;
-                for (SimpleTableSegment each : lockStatement.getTables()) {
-                    TableAssert.assertIs(assertContext, each, expected.getTables().get(count));
-                    count++;
-                }
-            }
+            assertIs(assertContext, ((MySQLLockStatement) actual).getTables(), expected);
         } else if (actual instanceof PostgreSQLLockStatement) {
-            PostgreSQLLockStatement lockStatement = (PostgreSQLLockStatement) actual;
-            if (null == expected.getTables() || expected.getTables().isEmpty()) {
-                assertTrue(lockStatement.getTables().isEmpty(), assertContext.getText("Actual lock statement should not exist."));
-            } else {
-                assertFalse(lockStatement.getTables().isEmpty(), assertContext.getText("Actual lock statement should exist."));
-                int count = 0;
-                for (SimpleTableSegment each : lockStatement.getTables()) {
-                    TableAssert.assertIs(assertContext, each, expected.getTables().get(count));
-                    count++;
-                }
-            }
+            assertIs(assertContext, ((PostgreSQLLockStatement) actual).getTables(), expected);
+        }
+    }
+    
+    private static void assertIs(final SQLCaseAssertContext assertContext, final Collection<SimpleTableSegment> actual, final LockStatementTestCase expected) {
+        if (null == expected.getTables() || expected.getTables().isEmpty()) {
+            assertTrue(actual.isEmpty(), assertContext.getText("Actual lock statement should not exist."));
+            return;
+        }
+        assertFalse(actual.isEmpty(), assertContext.getText("Actual lock statement should exist."));
+        int count = 0;
+        for (SimpleTableSegment each : actual) {
+            TableAssert.assertIs(assertContext, each, expected.getTables().get(count));
+            count++;
         }
     }
 }

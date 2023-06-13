@@ -87,6 +87,27 @@ public final class ExecuteEngine {
     }
     
     /**
+     * Submit a {@code LifecycleExecutor} to execute.
+     *
+     * @param lifecycleExecutor lifecycle executor
+     * @return execute future
+     */
+    public CompletableFuture<?> submit(final LifecycleExecutor lifecycleExecutor) {
+        return CompletableFuture.runAsync(lifecycleExecutor, executorService);
+    }
+    
+    /**
+     * Shutdown.
+     */
+    public void shutdown() {
+        if (executorService.isShutdown()) {
+            return;
+        }
+        executorService.shutdown();
+        executorService.shutdownNow();
+    }
+    
+    /**
      * Trigger.
      *
      * @param futures futures

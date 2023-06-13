@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle drop directory statement.
  */
-public final class OracleDropDirectoryStatement extends DropDirectoryStatement implements DDLStatement, OracleStatement {
+public final class OracleDropDirectoryStatement extends DropDirectoryStatement implements OracleStatement {
 }

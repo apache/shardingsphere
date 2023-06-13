@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -57,7 +58,7 @@ public final class ParameterMarkerProjection implements Projection {
     }
     
     @Override
-    public Projection cloneWithOwner(final String ownerName) {
+    public Projection cloneWithOwner(final IdentifierValue ownerIdentifier) {
         return new ParameterMarkerProjection(parameterMarkerIndex, parameterMarkerType, alias);
     }
 }

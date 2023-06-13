@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Optional;
@@ -60,6 +61,11 @@ public final class MaskMergedResult implements MergedResult {
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         return mergedResult.getInputStream(columnIndex, type);
+    }
+    
+    @Override
+    public Reader getCharacterStream(final int columnIndex) throws SQLException {
+        return mergedResult.getCharacterStream(columnIndex);
     }
     
     @Override

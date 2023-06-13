@@ -38,7 +38,6 @@ import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskPr
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmChooser;
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
@@ -52,7 +51,6 @@ import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -189,7 +187,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     @Override
     public Optional<InventoryIncrementalJobItemProgress> getJobItemProgress(final String jobId, final int shardingItem) {
         Optional<String> progress = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProgress(jobId, shardingItem);
-        return progress.map(s -> jobItemProgressSwapper.swapToObject(YamlEngine.unmarshal(s, YamlInventoryIncrementalJobItemProgress.class)));
+        return progress.map(optional -> jobItemProgressSwapper.swapToObject(YamlEngine.unmarshal(optional, YamlInventoryIncrementalJobItemProgress.class)));
     }
     
     @Override
@@ -220,13 +218,8 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     }
     
     @Override
-    public DataConsistencyCalculateAlgorithm buildDataConsistencyCalculateAlgorithm(final PipelineJobConfiguration jobConfig, final String algorithmType, final Properties algorithmProps) {
-        ShardingSpherePreconditions.checkState(null != algorithmType || null != jobConfig, () -> new IllegalArgumentException("Algorithm type and job configuration are null."));
-        return null == algorithmType
-                ? DataConsistencyCalculateAlgorithmChooser.choose(
-                        TypedSPILoader.getService(DatabaseType.class, jobConfig.getSourceDatabaseType()),
-                        TypedSPILoader.getService(DatabaseType.class, getTargetDatabaseType(jobConfig)))
-                : TypedSPILoader.getService(DataConsistencyCalculateAlgorithm.class, algorithmType, algorithmProps);
+    public DataConsistencyCalculateAlgorithm buildDataConsistencyCalculateAlgorithm(final String algorithmType, final Properties algorithmProps) {
+        return TypedSPILoader.getService(DataConsistencyCalculateAlgorithm.class, null == algorithmType ? "DATA_MATCH" : algorithmType, algorithmProps);
     }
     
     @Override
@@ -245,8 +238,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     @Override
     public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, DataConsistencyCheckResult> checkResults) {
         if (checkResults.isEmpty()) {
-            log.info("aggregateDataConsistencyCheckResults, checkResults empty, jobId={}", jobId);
-            return false;
+            throw new IllegalArgumentException("checkResults empty, jobId:" + jobId);
         }
         for (Entry<String, DataConsistencyCheckResult> entry : checkResults.entrySet()) {
             DataConsistencyCheckResult checkResult = entry.getValue();

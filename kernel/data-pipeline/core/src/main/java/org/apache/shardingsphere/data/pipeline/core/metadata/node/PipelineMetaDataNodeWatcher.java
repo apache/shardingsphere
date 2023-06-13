@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstan
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
 
 import java.util.Map;
 import java.util.Map.Entry;

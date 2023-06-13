@@ -37,7 +37,7 @@ public final class HBaseCheckerFactory {
      * @param sqlStatement SQL statement
      * @return created instance
      */
-    public static HeterogeneousSQLStatementChecker<?> newInstance(final SQLStatement sqlStatement) {
+    public static HeterogeneousSQLStatementChecker newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return new HeterogeneousSelectStatementChecker((SelectStatement) sqlStatement);
         }
@@ -50,6 +50,6 @@ public final class HBaseCheckerFactory {
         if (sqlStatement instanceof UpdateStatement) {
             return new HeterogeneousUpdateStatementChecker((UpdateStatement) sqlStatement);
         }
-        return new CommonHeterogeneousSQLStatementChecker<>(sqlStatement);
+        return new CommonHeterogeneousSQLStatementChecker(sqlStatement);
     }
 }

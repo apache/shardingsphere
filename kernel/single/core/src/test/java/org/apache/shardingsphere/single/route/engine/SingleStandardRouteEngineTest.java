@@ -106,7 +106,7 @@ class SingleStandardRouteEngineTest {
     @Test
     void assertRouteWithDefaultSingleRule() throws SQLException {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false));
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration("ds_0"), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -149,7 +149,7 @@ class SingleStandardRouteEngineTest {
     private SingleRule mockSingleRule() {
         SingleRule result = mock(SingleRule.class);
         DataNode dataNode = mock(DataNode.class);
-        when(result.findSingleTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(dataNode));
+        when(result.findTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(dataNode));
         return result;
     }
 }
