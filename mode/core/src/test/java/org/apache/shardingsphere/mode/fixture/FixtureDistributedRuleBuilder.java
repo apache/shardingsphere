@@ -38,7 +38,7 @@ public final class FixtureDistributedRuleBuilder implements DatabaseRuleBuilder<
     
     @Override
     public int getOrder() {
-        return 1;
+        return 2;
     }
     
     @Override
