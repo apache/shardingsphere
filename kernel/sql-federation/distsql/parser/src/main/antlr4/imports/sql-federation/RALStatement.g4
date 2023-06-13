@@ -19,31 +19,27 @@ grammar RALStatement;
 
 import Keyword, Literals;
 
-showSQLParserRule
-    : SHOW SQL_PARSER RULE
+showSQLFederationRule
+    : SHOW SQL_FEDERATION RULE
     ;
 
-alterSQLParserRule
-    : ALTER SQL_PARSER RULE sqlParserRuleDefinition
+alterSQLFederationRule
+    : ALTER SQL_FEDERATION RULE sqlFederationRuleDefinition
     ;
 
-sqlParserRuleDefinition
-    : LP_ commentDefinition? (COMMA_? parseTreeCacheDefinition)? (COMMA_? sqlStatementCacheDefinition)? RP_
+sqlFederationRuleDefinition
+    : LP_ sqlFederationEnabled? COMMA_ executionPlanCache RP_
     ;
 
-commentDefinition
-    : SQL_COMMENT_PARSE_ENABLED EQ_ sqlCommentParseEnabled
+sqlFederationEnabled
+    : SQL_FEDERATION_ENABLED EQ_ boolean_
     ;
 
-parseTreeCacheDefinition
-    : PARSE_TREE_CACHE LP_ cacheOption RP_
+executionPlanCache
+    : EXECUTION_PLAN_CACHE LP_ cacheOption RP_
     ;
 
-sqlStatementCacheDefinition
-    : SQL_STATEMENT_CACHE LP_ cacheOption RP_
-    ;
-
-sqlCommentParseEnabled
+boolean_
     : TRUE | FALSE
     ;
 

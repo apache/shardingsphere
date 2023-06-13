@@ -15,46 +15,20 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+lexer grammar Literals;
 
-import Keyword, Literals;
+import Alphabet, Symbol;
 
-showSQLParserRule
-    : SHOW SQL_PARSER RULE
+IDENTIFIER_
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    | BQ_ ~'`'+ BQ_
     ;
 
-alterSQLParserRule
-    : ALTER SQL_PARSER RULE sqlParserRuleDefinition
+STRING_
+    : (DQ_ ('\\'. | '""' | ~('"' | '\\'))* DQ_)
+    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
     ;
 
-sqlParserRuleDefinition
-    : LP_ commentDefinition? (COMMA_? parseTreeCacheDefinition)? (COMMA_? sqlStatementCacheDefinition)? RP_
-    ;
-
-commentDefinition
-    : SQL_COMMENT_PARSE_ENABLED EQ_ sqlCommentParseEnabled
-    ;
-
-parseTreeCacheDefinition
-    : PARSE_TREE_CACHE LP_ cacheOption RP_
-    ;
-
-sqlStatementCacheDefinition
-    : SQL_STATEMENT_CACHE LP_ cacheOption RP_
-    ;
-
-sqlCommentParseEnabled
-    : TRUE | FALSE
-    ;
-
-cacheOption
-    : (INITIAL_CAPACITY EQ_ initialCapacity)? (COMMA_? MAXIMUM_SIZE EQ_ maximumSize)?
-    ;
-
-initialCapacity
-    : INT_
-    ;
-
-maximumSize
-    : INT_
+INT_
+    : [0-9]+
     ;

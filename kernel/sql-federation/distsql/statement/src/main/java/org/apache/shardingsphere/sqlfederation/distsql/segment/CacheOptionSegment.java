@@ -15,46 +15,20 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.sqlfederation.distsql.segment;
 
-import Keyword, Literals;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
-showSQLParserRule
-    : SHOW SQL_PARSER RULE
-    ;
-
-alterSQLParserRule
-    : ALTER SQL_PARSER RULE sqlParserRuleDefinition
-    ;
-
-sqlParserRuleDefinition
-    : LP_ commentDefinition? (COMMA_? parseTreeCacheDefinition)? (COMMA_? sqlStatementCacheDefinition)? RP_
-    ;
-
-commentDefinition
-    : SQL_COMMENT_PARSE_ENABLED EQ_ sqlCommentParseEnabled
-    ;
-
-parseTreeCacheDefinition
-    : PARSE_TREE_CACHE LP_ cacheOption RP_
-    ;
-
-sqlStatementCacheDefinition
-    : SQL_STATEMENT_CACHE LP_ cacheOption RP_
-    ;
-
-sqlCommentParseEnabled
-    : TRUE | FALSE
-    ;
-
-cacheOption
-    : (INITIAL_CAPACITY EQ_ initialCapacity)? (COMMA_? MAXIMUM_SIZE EQ_ maximumSize)?
-    ;
-
-initialCapacity
-    : INT_
-    ;
-
-maximumSize
-    : INT_
-    ;
+/**
+ * Cache option segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CacheOptionSegment implements ASTNode {
+    
+    private final Integer initialCapacity;
+    
+    private final Long maximumSize;
+}
