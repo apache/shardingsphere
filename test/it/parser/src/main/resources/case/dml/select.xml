@@ -4977,7 +4977,8 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-
+    </select>
+    
     <select sql-case-id="select_with_chinese_comma">
         <projections start-index="7" stop-index="12" >
             <expression-projection text="1" start-index="7" stop-index="7" />
