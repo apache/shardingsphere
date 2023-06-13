@@ -67,6 +67,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * SQL federation engine.
@@ -123,7 +124,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             return false;
         }
         Collection<DataNode> includedDataNodes = new HashSet<>();
-        for (Map.Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
+        for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
             boolean isUseSQLFederation = entry.getValue().decide((SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey(), includedDataNodes);
             if (isUseSQLFederation) {
                 return true;
