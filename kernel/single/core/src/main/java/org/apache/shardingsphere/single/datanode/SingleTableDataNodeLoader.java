@@ -50,7 +50,7 @@ public final class SingleTableDataNodeLoader {
      * @param databaseName database name
      * @param databaseType database type
      * @param dataSourceMap data source map
-     * @param builtRules built ruls
+     * @param builtRules built rules
      * @param configuredTables configured tables
      * @return single table data node map
      */
