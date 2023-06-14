@@ -201,16 +201,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * Get logic and cipher columns map.
-     *
-     * @param tableName table name 
-     * @return logic and cipher columns map
-     */
-    public Map<String, String> getLogicAndCipherColumnsMap(final String tableName) {
-        return findEncryptTable(tableName).map(EncryptTable::getLogicAndCipherColumns).orElse(Collections.emptyMap());
-    }
-    
-    /**
      * Get assisted query columns.
      * 
      * @param tableName table name
