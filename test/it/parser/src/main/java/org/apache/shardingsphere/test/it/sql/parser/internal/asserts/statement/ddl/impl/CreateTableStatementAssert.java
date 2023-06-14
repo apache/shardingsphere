@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.engine.EngineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -62,6 +63,7 @@ public final class CreateTableStatementAssert {
         assertCreateTableAsSelectStatement(assertContext, actual, expected);
         assertCreateTableAsSelectStatementColumns(assertContext, actual, expected);
         assertLikeTableStatement(assertContext, actual, expected);
+        assertEngine(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
@@ -113,6 +115,17 @@ public final class CreateTableStatementAssert {
         } else {
             assertTrue(likeTableSegment.isPresent(), "actual like table statement should exist");
             TableAssert.assertIs(assertContext, likeTableSegment.get(), expected.getLikeTable());
+        }
+    }
+    
+    private static void assertEngine(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
+        Optional<EngineSegment> engine = CreateTableStatementHandler.getEngine(actual);
+        if (null == expected.getEngine()) {
+            assertFalse(engine.isPresent(), assertContext.getText("Actual engine segments should not exist."));
+        } else {
+            assertTrue(engine.isPresent(), assertContext.getText("Actual engine segments should exist."));
+            assertThat(assertContext.getText(String.format("`%s`'s engine assertion error: ", actual.getClass().getSimpleName())), engine.get().getEngine().name().toLowerCase(),
+                    is(expected.getEngine().getName().toLowerCase()));
         }
     }
 }

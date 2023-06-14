@@ -143,13 +143,16 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EngineRefContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.EngineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.engine.EngineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -1854,6 +1857,31 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         parameterMarkerSegments.add(segment);
         return segment;
+    }
+    
+    @Override
+    public ASTNode visitEngineRef(final EngineRefContext ctx) {
+        EngineType engineType = null;
+        if (null != ctx.INNODB()) {
+            engineType = EngineType.INNODB;
+        } else if (null != ctx.FEDERATED()) {
+            engineType = EngineType.FEDERATED;
+        } else if (null != ctx.MEMORY()) {
+            engineType = EngineType.MEMORY;
+        } else if (null != ctx.PERFORMANCE_SCHEMA()) {
+            engineType = EngineType.PERFORMANCE_SCHEMA;
+        } else if (null != ctx.MYISAM()) {
+            engineType = EngineType.MYISAM;
+        } else if (null != ctx.MRG_MYISAM()) {
+            engineType = EngineType.MRG_MYISAM;
+        } else if (null != ctx.BLACKHOLE()) {
+            engineType = EngineType.BLACKHOLE;
+        } else if (null != ctx.CSV()) {
+            engineType = EngineType.CSV;
+        } else if (null != ctx.ARCHIVE()) {
+            engineType = EngineType.ARCHIVE;
+        }
+        return new EngineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), engineType);
     }
     
     /**

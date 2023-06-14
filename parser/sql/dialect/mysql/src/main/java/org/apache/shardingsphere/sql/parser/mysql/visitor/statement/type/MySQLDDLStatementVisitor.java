@@ -99,6 +99,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNa
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhileStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTableOptionContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AlgorithmOption;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.LockTableOption;
@@ -111,6 +112,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.RenameColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.engine.EngineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnAfterPositionSegment;
@@ -255,6 +257,13 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         }
         if (null != ctx.createLikeClause()) {
             result.setLikeTable((SimpleTableSegment) visit(ctx.createLikeClause()));
+        }
+        if (null != ctx.createTableOptions()) {
+            for (CreateTableOptionContext each : ctx.createTableOptions().createTableOption()) {
+                if (null != each.engineRef()) {
+                    result.setEngine((EngineSegment) visit(each.engineRef()));
+                }
+            }
         }
         return result;
     }
