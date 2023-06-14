@@ -721,4 +721,8 @@
     <test-case sql="SELECT * FROM pg_catalog.pg_aggregate" db-types="PostgreSQL" scenario-types="db">
         <assertion expected-data-file="select_postgresql_pg_catalog_pg_aggregate.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_user_mapping" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_user_mapping.xml" />
+    </test-case>
 </integration-test-cases>
