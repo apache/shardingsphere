@@ -40,4 +40,14 @@ public final class SQLExtensionOperatorTable {
     public static final SqlBinaryOperator SIGNED_RIGHT_SHIFT = new SqlBinaryOperator(">>", SqlKind.OTHER, 30, true, null, null, null);
     
     public static final SqlPrefixOperator NOT_SIGN = new SqlPrefixOperator("!", SqlKind.OTHER, 26, null, null, null);
+    
+    public static final SqlBinaryOperator XOR = new SqlBinaryOperator("XOR", SqlKind.OTHER, 30, true, null, null, null);
+    
+    public static final SqlBinaryOperator NULL_SAFE = new SqlBinaryOperator("<=>", SqlKind.OTHER, 30, true, null, null, null);
+    
+    public static final SqlBinaryOperator LOGICAL_AND = new SqlBinaryOperator("&&", SqlKind.OTHER, 24, true, null, null, null);
+    
+    public static final SqlBinaryOperator NOT_REGEXP = new SqlBinaryOperator("NOT REGEXP", SqlKind.OTHER, 30, true, null, null, null);
+    
+    public static final SqlBinaryOperator SOUNDS_LIKE = new SqlBinaryOperator("SOUNDS LIKE", SqlKind.OTHER, 30, true, null, null, null);
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.Alter
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 /**
- * Alter SQL parser rule statement handler.
+ * Alter SQL parser rule statement updater.
  */
 public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUpdater<AlterSQLParserRuleStatement, SQLParserRuleConfiguration> {
     
@@ -35,11 +35,12 @@ public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUp
     @Override
     public SQLParserRuleConfiguration buildAlteredRuleConfiguration(final SQLParserRuleConfiguration currentRuleConfig, final AlterSQLParserRuleStatement sqlStatement) {
         boolean sqlCommentParseEnabled = null == sqlStatement.getSqlCommentParseEnabled() ? currentRuleConfig.isSqlCommentParseEnabled() : sqlStatement.getSqlCommentParseEnabled();
-        CacheOption parseTreeCache =
-                null == sqlStatement.getParseTreeCache() ? currentRuleConfig.getParseTreeCache() : createCacheOption(currentRuleConfig.getParseTreeCache(), sqlStatement.getParseTreeCache());
-        CacheOption sqlStatementCache =
-                null == sqlStatement.getSqlStatementCache() ? currentRuleConfig.getSqlStatementCache()
-                        : createCacheOption(currentRuleConfig.getSqlStatementCache(), sqlStatement.getSqlStatementCache());
+        CacheOption parseTreeCache = null == sqlStatement.getParseTreeCache()
+                ? currentRuleConfig.getParseTreeCache()
+                : createCacheOption(currentRuleConfig.getParseTreeCache(), sqlStatement.getParseTreeCache());
+        CacheOption sqlStatementCache = null == sqlStatement.getSqlStatementCache()
+                ? currentRuleConfig.getSqlStatementCache()
+                : createCacheOption(currentRuleConfig.getSqlStatementCache(), sqlStatement.getSqlStatementCache());
         return new SQLParserRuleConfiguration(sqlCommentParseEnabled, parseTreeCache, sqlStatementCache);
     }
     

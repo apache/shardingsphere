@@ -29,12 +29,32 @@ import java.util.Map;
  * Optimize planner context.
  */
 @RequiredArgsConstructor
-@Getter
 public final class OptimizerPlannerContext {
     
+    @Getter
     private final RelOptPlanner hepPlanner;
     
     private final Map<String, SqlValidator> validators;
     
     private final Map<String, SqlToRelConverter> converters;
+    
+    /**
+     * Get validator.
+     * 
+     * @param schemaName schema name
+     * @return validator
+     */
+    public SqlValidator getValidator(final String schemaName) {
+        return validators.get(schemaName.toLowerCase());
+    }
+    
+    /**
+     * Get converter.
+     *
+     * @param schemaName schema name
+     * @return converter
+     */
+    public SqlToRelConverter getConverter(final String schemaName) {
+        return converters.get(schemaName.toLowerCase());
+    }
 }

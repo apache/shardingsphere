@@ -18,6 +18,9 @@
 databaseName: logic_db
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*"
 - !SHARDING
   tables:
     t_order:

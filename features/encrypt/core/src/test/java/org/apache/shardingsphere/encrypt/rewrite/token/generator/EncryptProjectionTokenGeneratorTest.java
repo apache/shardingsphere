@@ -51,11 +51,10 @@ import static org.mockito.Mockito.when;
 
 class EncryptProjectionTokenGeneratorTest {
     
-    private EncryptProjectionTokenGenerator generator;
+    private final EncryptProjectionTokenGenerator generator = new EncryptProjectionTokenGenerator();
     
     @BeforeEach
     void setup() {
-        generator = new EncryptProjectionTokenGenerator();
         generator.setEncryptRule(mockEncryptRule());
         generator.setDatabaseName("db_schema");
         generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
@@ -65,8 +64,8 @@ class EncryptProjectionTokenGeneratorTest {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable1 = mock(EncryptTable.class);
         EncryptTable encryptTable2 = mock(EncryptTable.class);
-        when(encryptTable1.getLogicColumns()).thenReturn(Collections.singletonList("mobile"));
-        when(encryptTable2.getLogicColumns()).thenReturn(Collections.singletonList("mobile"));
+        when(encryptTable1.getLogicColumns()).thenReturn(Collections.singleton("mobile"));
+        when(encryptTable2.getLogicColumns()).thenReturn(Collections.singleton("mobile"));
         when(result.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable1));
         when(result.findEncryptTable("doctor1")).thenReturn(Optional.of(encryptTable2));
         EncryptColumn column = new EncryptColumn("mobile", new EncryptColumnItem("mobile", "standard_encryptor"));

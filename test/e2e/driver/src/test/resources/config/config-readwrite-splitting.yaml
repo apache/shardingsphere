@@ -18,6 +18,9 @@
 databaseName: logic_db
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*"
 - !READWRITE_SPLITTING
   dataSources:
     test_ds:

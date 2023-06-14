@@ -299,7 +299,7 @@ class ContextManagerTest {
     }
     
     @Test
-    void assertClose() throws Exception {
+    void assertClose() {
         contextManager.close();
         verify(metaDataContexts).close();
     }

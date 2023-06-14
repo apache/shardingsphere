@@ -28,7 +28,7 @@ alterSQLParserRule
     ;
 
 sqlParserRuleDefinition
-    : LP_ commentDefinition? (COMMA_ parseTreeCacheDefinition)? (COMMA_ sqlStatementCacheDefinition)? RP_
+    : LP_ commentDefinition? (COMMA_? parseTreeCacheDefinition)? (COMMA_? sqlStatementCacheDefinition)? RP_
     ;
 
 commentDefinition

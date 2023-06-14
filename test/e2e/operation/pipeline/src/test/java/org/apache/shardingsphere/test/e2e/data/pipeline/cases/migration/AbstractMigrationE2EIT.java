@@ -97,6 +97,10 @@ public abstract class AbstractMigrationE2EIT {
         }
     }
     
+    protected void loadAllSingleTables(final PipelineContainerComposer containerComposer) throws SQLException {
+        containerComposer.proxyExecuteWithLog("LOAD SINGLE TABLE *.*", 5);
+    }
+    
     protected void createTargetOrderTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderTableRule(), 0);
         Awaitility.await().atMost(4L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());

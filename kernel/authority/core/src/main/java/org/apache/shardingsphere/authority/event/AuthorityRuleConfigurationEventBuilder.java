@@ -47,10 +47,10 @@ public final class AuthorityRuleConfigurationEventBuilder implements RuleConfigu
         if (!GlobalRuleNodeConverter.isExpectedRuleName(AUTHORITY, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        return buildAuthorityRuleConfigurationEvent(databaseName, event);
+        return buildEvent(databaseName, event);
     }
     
-    private Optional<GovernanceEvent> buildAuthorityRuleConfigurationEvent(final String databaseName, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> buildEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return Optional.of(new AlterGlobalRuleConfigurationEvent(databaseName, swapToConfig(event.getValue()), RULE_TYPE));
         }

@@ -42,7 +42,7 @@ class NewGlobalNodeTest {
     
     @Test
     void assertGetGlobalRuleActiveVersionNode() {
-        assertThat(NewGlobalNode.getGlobalRuleActiveVersionNode("transaction"), is("/rules/transaction/active_version"));
+        assertThat(NewGlobalNode.getGlobalRuleActiveVersionNode("transaction"), is("transaction/active_version"));
     }
     
     @Test

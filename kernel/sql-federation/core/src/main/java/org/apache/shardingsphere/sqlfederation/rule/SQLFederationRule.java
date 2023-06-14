@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
@@ -39,13 +38,10 @@ public final class SQLFederationRule implements GlobalRule, MetaDataHeldRule {
     
     private final SQLFederationRuleConfiguration configuration;
     
-    private final SQLFederationExecutor sqlFederationExecutor;
-    
     private final OptimizerContext optimizerContext;
     
     public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         configuration = ruleConfig;
-        sqlFederationExecutor = new SQLFederationExecutor();
         optimizerContext = OptimizerContextFactory.create(databases, props);
     }
     

@@ -46,7 +46,7 @@ public final class NewPropertiesPersistService implements GlobalPersistService<P
     
     @Override
     public Properties load() {
-        // TODO
-        return new Properties();
+        String yamlContext = repository.getDirectly(NewGlobalNode.getPropsVersionNode(DEFAULT_VERSION));
+        return Strings.isNullOrEmpty(yamlContext) ? new Properties() : YamlEngine.unmarshal(yamlContext, Properties.class);
     }
 }

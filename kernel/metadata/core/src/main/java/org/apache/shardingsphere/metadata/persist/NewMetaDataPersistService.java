@@ -88,14 +88,6 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
         propsService.persist(props);
     }
     
-    /**
-     * Persist configurations.
-     *
-     * @param databaseName database name
-     * @param databaseConfigs database configurations
-     * @param dataSources data sources
-     * @param rules rules
-     */
     @Override
     public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs,
                                       final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {

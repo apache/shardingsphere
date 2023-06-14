@@ -35,7 +35,7 @@ public final class FixtureDatabaseRuleBuilder implements DatabaseRuleBuilder<Fix
     
     @Override
     public int getOrder() {
-        return 0;
+        return 1;
     }
     
     @Override
