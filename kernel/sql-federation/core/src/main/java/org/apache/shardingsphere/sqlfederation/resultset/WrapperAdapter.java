@@ -15,31 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.executor;
+package org.apache.shardingsphere.sqlfederation.resultset;
 
-import org.apache.calcite.linq4j.Enumerable;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Wrapper;
 
 /**
- * Table scan executor.
+ * Adapter for {@code java.sql.Wrapper}.
  */
-public interface TableScanExecutor {
+public abstract class WrapperAdapter implements Wrapper {
     
-    /**
-     * Execute.
-     *
-     * @param table table meta data
-     * @param scanContext filterable table scan context
-     * @return query results
-     */
-    Enumerable<Object[]> execute(ShardingSphereTable table, ScanNodeExecutorContext scanContext);
+    @SuppressWarnings("unchecked")
+    @Override
+    public final <T> T unwrap(final Class<T> iface) throws SQLException {
+        if (isWrapperFor(iface)) {
+            return (T) this;
+        }
+        throw new SQLFeatureNotSupportedException(String.format("`%s` cannot be unwrapped as `%s`", getClass().getName(), iface.getName()));
+    }
     
-    /**
-     * Execute.
-     *
-     * @param table table meta data
-     * @param scanContext filterable table scan context
-     * @return query results
-     */
-    Enumerable<Object> executeScalar(ShardingSphereTable table, ScanNodeExecutorContext scanContext);
+    @Override
+    public final boolean isWrapperFor(final Class<?> iface) {
+        return iface.isInstance(this);
+    }
 }

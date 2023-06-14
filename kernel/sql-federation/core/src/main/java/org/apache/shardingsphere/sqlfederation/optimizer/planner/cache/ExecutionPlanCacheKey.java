@@ -15,7 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.executor;
+package org.apache.shardingsphere.sqlfederation.optimizer.planner.cache;
 
-public interface ScanNodeExecutorContext {
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ * Execution plan cache key.
+ */
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode(of = {"sql", "tableMetaDataVersions"})
+public final class ExecutionPlanCacheKey {
+    
+    // TODO replace sql with parameterized sql
+    private final String sql;
+    
+    private final SQLStatement sqlStatement;
+    
+    private final Map<String, Integer> tableMetaDataVersions = new LinkedHashMap<>();
 }

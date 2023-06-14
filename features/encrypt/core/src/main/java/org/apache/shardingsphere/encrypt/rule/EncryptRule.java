@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -186,19 +185,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
             result.add(null == each ? null : encryptor.encrypt(each, context));
         }
         return result;
-    }
-    
-    /**
-     * Get cipher column.
-     *
-     * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return cipher column
-     */
-    public String getCipherColumn(final String tableName, final String logicColumnName) {
-        Optional<EncryptTable> table = findEncryptTable(tableName);
-        Preconditions.checkState(table.isPresent());
-        return table.get().getCipherColumn(logicColumnName);
     }
     
     /**

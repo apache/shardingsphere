@@ -18,26 +18,25 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.planner.cache;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationCompiler;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
+import org.apache.shardingsphere.sqlfederation.optimizer.compiler.SQLStatementCompiler;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Execution plan cache loader.
  */
-public final class ExecutionPlanCacheLoader implements CacheLoader<SQLStatement, SQLFederationExecutionPlan> {
+public final class ExecutionPlanCacheLoader implements CacheLoader<ExecutionPlanCacheKey, SQLFederationExecutionPlan> {
     
-    private final SQLFederationCompiler sqlFederationCompiler;
+    private final SQLStatementCompiler sqlStatementCompiler;
     
-    public ExecutionPlanCacheLoader(final SQLFederationCompiler sqlFederationCompiler) {
-        this.sqlFederationCompiler = sqlFederationCompiler;
+    public ExecutionPlanCacheLoader(final SQLStatementCompiler sqlStatementCompiler) {
+        this.sqlStatementCompiler = sqlStatementCompiler;
     }
     
     @ParametersAreNonnullByDefault
     @Override
-    public SQLFederationExecutionPlan load(final SQLStatement sqlStatement) {
-        return sqlFederationCompiler.compile(sqlStatement);
+    public SQLFederationExecutionPlan load(final ExecutionPlanCacheKey cacheKey) {
+        return sqlStatementCompiler.compile(cacheKey.getSqlStatement());
     }
 }

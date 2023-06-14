@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema;
 
 import lombok.Getter;
+import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,15 +39,15 @@ public final class SQLFederationDatabase extends AbstractSchema {
     
     private final Map<String, Schema> subSchemaMap;
     
-    public SQLFederationDatabase(final ShardingSphereDatabase database, final DatabaseType protocolType, final TableScanExecutor executor) {
+    public SQLFederationDatabase(final ShardingSphereDatabase database, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
         name = database.getName();
-        subSchemaMap = createSubSchemaMap(database, protocolType, executor);
+        subSchemaMap = createSubSchemaMap(database, protocolType, javaTypeFactory);
     }
     
-    private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final DatabaseType protocolType, final TableScanExecutor executor) {
+    private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
         Map<String, Schema> result = new LinkedHashMap<>(database.getSchemas().size(), 1F);
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            result.put(entry.getKey(), new SQLFederationSchema(entry.getKey(), entry.getValue(), protocolType, null));
+            result.put(entry.getKey(), new SQLFederationSchema(entry.getKey(), entry.getValue(), protocolType, javaTypeFactory));
         }
         return result;
     }

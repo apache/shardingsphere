@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer;
+package org.apache.shardingsphere.sqlfederation.optimizer.compiler;
 
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sqlfederation.optimizer.compiler.SQLStatementCompiler;
-import org.apache.shardingsphere.sqlfederation.optimizer.compiler.SQLStatementCompilerEngine;
-import org.apache.shardingsphere.sqlfederation.optimizer.compiler.SQLStatementCompilerEngineFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.cache.ExecutionPlanCacheBuilder;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.cache.ExecutionPlanCacheKey;
 
 /**
- * SQL federation compiler engine.
+ * SQL statement compiler engine.
  */
-public final class SQLFederationCompilerEngine {
+public final class SQLStatementCompilerEngine {
     
-    private final SQLStatementCompilerEngine sqlStatementCompilerEngine;
+    private final SQLStatementCompiler sqlFederationCompiler;
     
-    public SQLFederationCompilerEngine(final String schemaName, final SQLStatementCompiler sqlStatementCompiler, final CacheOption cacheOption) {
-        sqlStatementCompilerEngine = SQLStatementCompilerEngineFactory.getSQLStatementCompilerEngine(schemaName, sqlStatementCompiler, cacheOption);
+    private final LoadingCache<ExecutionPlanCacheKey, SQLFederationExecutionPlan> executionPlanCache;
+    
+    public SQLStatementCompilerEngine(final SQLStatementCompiler sqlFederationCompiler, final CacheOption cacheOption) {
+        this.sqlFederationCompiler = sqlFederationCompiler;
+        executionPlanCache = ExecutionPlanCacheBuilder.build(cacheOption, sqlFederationCompiler);
     }
     
     /**
@@ -42,6 +45,6 @@ public final class SQLFederationCompilerEngine {
      * @return sql federation execution plan
      */
     public SQLFederationExecutionPlan compile(final ExecutionPlanCacheKey cacheKey, final boolean useCache) {
-        return sqlStatementCompilerEngine.compile(cacheKey, useCache);
+        return useCache ? executionPlanCache.get(cacheKey) : sqlFederationCompiler.compile(cacheKey.getSqlStatement());
     }
 }

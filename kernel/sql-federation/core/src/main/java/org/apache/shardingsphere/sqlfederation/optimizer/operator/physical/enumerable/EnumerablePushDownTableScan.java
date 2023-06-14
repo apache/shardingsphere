@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.operator.physical;
+package org.apache.shardingsphere.sqlfederation.optimizer.operator.physical.enumerable;
 
 import com.google.common.collect.ImmutableList;
 import lombok.Getter;
