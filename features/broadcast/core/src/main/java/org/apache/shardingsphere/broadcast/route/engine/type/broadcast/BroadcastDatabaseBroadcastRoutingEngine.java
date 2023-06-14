@@ -23,9 +23,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 /**
  * Broadcast routing engine for tables.
@@ -34,11 +32,7 @@ public final class BroadcastDatabaseBroadcastRoutingEngine implements BroadcastR
     
     @Override
     public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
-        Collection<String> existentDataSourceNames = routeContext.getRouteUnits().stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toSet());
         for (String each : broadcastRule.getAvailableDataSourceNames()) {
-            if (existentDataSourceNames.contains(each)) {
-                continue;
-            }
             routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
         return routeContext;

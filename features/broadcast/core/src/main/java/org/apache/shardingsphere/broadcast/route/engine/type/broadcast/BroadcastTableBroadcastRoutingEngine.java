@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 /**
  * Broadcast routing engine for databases.
@@ -52,20 +51,10 @@ public final class BroadcastTableBroadcastRoutingEngine implements BroadcastRout
     @Override
     public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
         Collection<String> logicTableNames = broadcastRule.getBroadcastRuleTableNames(getLogicTableNames());
-        if (routeContext.getRouteUnits().isEmpty()) {
-            if (logicTableNames.isEmpty()) {
-                routeContext.getRouteUnits().addAll(getRouteContext(broadcastRule).getRouteUnits());
-            } else {
-                routeContext.getRouteUnits().addAll(getRouteContext(broadcastRule, logicTableNames).getRouteUnits());
-            }
+        if (logicTableNames.isEmpty()) {
+            routeContext.getRouteUnits().addAll(getRouteContext(broadcastRule).getRouteUnits());
         } else {
-            Collection<RouteMapper> dataSourceMappers = routeContext.getRouteUnits().stream().map(RouteUnit::getDataSourceMapper).collect(Collectors.toList());
-            Collection<RouteMapper> tableRouteMappers = getTableRouteMappers(logicTableNames);
-            if (!dataSourceMappers.isEmpty() && !tableRouteMappers.isEmpty()) {
-                for (RouteMapper each : dataSourceMappers) {
-                    routeContext.putRouteUnit(new RouteMapper(each.getLogicName(), each.getActualName()), tableRouteMappers);
-                }
-            }
+            routeContext.getRouteUnits().addAll(getRouteContext(broadcastRule, logicTableNames).getRouteUnits());
         }
         return routeContext;
     }
@@ -97,9 +86,10 @@ public final class BroadcastTableBroadcastRoutingEngine implements BroadcastRout
     
     private RouteContext getRouteContext(final BroadcastRule broadcastRule, final Collection<String> logicTableNames) {
         RouteContext result = new RouteContext();
+        Collection<RouteMapper> tableRouteMappers = getTableRouteMappers(logicTableNames);
         for (String each : broadcastRule.getAvailableDataSourceNames()) {
             RouteMapper dataSourceMapper = new RouteMapper(each, each);
-            result.getRouteUnits().add(new RouteUnit(dataSourceMapper, getTableRouteMappers(logicTableNames)));
+            result.getRouteUnits().add(new RouteUnit(dataSourceMapper, tableRouteMappers));
         }
         return result;
     }
