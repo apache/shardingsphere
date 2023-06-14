@@ -69,11 +69,12 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
         MaskRuleConfiguration config;
         if (rule.isPresent()) {
             config = (MaskRuleConfiguration) rule.get().getConfiguration();
+            config.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
             config.getTables().add(needToAddedConfig);
         } else {
             config = new MaskRuleConfiguration(Collections.singletonList(needToAddedConfig), Collections.emptyMap());
+            ruleConfigs.add(config);
         }
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -91,7 +92,6 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
         config.getTables().add(needToAlteredConfig);
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -107,7 +107,6 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
