@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
@@ -33,10 +33,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Assist query and plain insert columns token generator.
+ * Insert derived columns token generator for encrypt.
  */
 @Setter
-public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, EncryptRuleAware {
+public final class EncryptInsertDerivedColumnsTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, EncryptRuleAware {
     
     private EncryptRule encryptRule;
     
@@ -50,15 +50,15 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements Col
         Collection<SQLToken> result = new LinkedList<>();
         EncryptTable encryptTable = encryptRule.getEncryptTable(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
         for (ColumnSegment each : insertStatementContext.getSqlStatement().getColumns()) {
-            List<String> columns = getColumns(encryptTable, each);
-            if (!columns.isEmpty()) {
-                result.add(new InsertColumnsToken(each.getStopIndex() + 1, columns));
+            List<String> derivedColumnNames = getDerivedColumnNames(encryptTable, each);
+            if (!derivedColumnNames.isEmpty()) {
+                result.add(new InsertColumnsToken(each.getStopIndex() + 1, derivedColumnNames));
             }
         }
         return result;
     }
     
-    private List<String> getColumns(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
+    private List<String> getDerivedColumnNames(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
         List<String> result = new LinkedList<>();
         encryptTable.findAssistedQueryColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
         encryptTable.findLikeQueryColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
