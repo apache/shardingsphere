@@ -91,10 +91,7 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     
     private void deleteDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            if (Strings.isNullOrEmpty(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()))) {
-                repository.delete(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()));
-            }
-            repository.delete(NewDatabaseMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), DEFAULT_VERSION));
+            repository.delete(NewDatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey()));
         }
     }
     

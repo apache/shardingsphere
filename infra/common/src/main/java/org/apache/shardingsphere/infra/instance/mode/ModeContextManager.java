@@ -114,10 +114,27 @@ public interface ModeContextManager {
      * Alter rule configuration.
      *
      * @param databaseName database name
-     * @param toBeSavedRuleConfig to be saved rule config
+     * @param toBeAlteredRuleConfig to be altered rule config
+     */
+    default void alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
+    }
+    
+    /**
+     * Remove rule configuration.
+     *
+     * @param databaseName database name
      * @param toBeRemovedRuleConfig to be removed rule config
      */
-    default void alterRuleConfiguration(String databaseName, RuleConfiguration toBeSavedRuleConfig, RuleConfiguration toBeRemovedRuleConfig) {
+    default void removeRuleConfiguration(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
+    }
+    
+    /**
+     * Remove rule configuration.
+     *
+     * @param databaseName database name
+     * @param toBeRemovedRuleConfig to be removed rule config
+     */
+    default void removeAllRuleConfiguration(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
     }
     
     /**
