@@ -99,24 +99,19 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> toBeDroppedDataSources = new LinkedList<>();
         Map<String, AlgorithmConfiguration> toBeDroppedLoadBalancers = new HashMap<>();
         for (String each : sqlStatement.getNames()) {
-            compareAndGetToBeDroppedRule(currentRuleConfig, toBeDroppedDataSources, toBeDroppedLoadBalancers, each , sqlStatement.getNames());
+            compareAndGetToBeDroppedRule(currentRuleConfig, toBeDroppedDataSources, toBeDroppedLoadBalancers, each, sqlStatement.getNames());
         }
         return new ReadwriteSplittingRuleConfiguration(toBeDroppedDataSources, toBeDroppedLoadBalancers);
     }
     
     private void compareAndGetToBeDroppedRule(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> toBeDroppedDataSources,
-                                              final Map<String, AlgorithmConfiguration> toBeDroppedLoadBalancers, final String toBeDroppedDataSourceName, Collection<String> dataSourceNames) {
+                                              final Map<String, AlgorithmConfiguration> toBeDroppedLoadBalancers, final String toBeDroppedDataSourceName, final Collection<String> dataSourceNames) {
         toBeDroppedDataSources.add(new ReadwriteSplittingDataSourceRuleConfiguration(toBeDroppedDataSourceName, null, null, null));
         currentRuleConfig.getDataSources().stream().filter(dataSource -> toBeDroppedDataSourceName.equals(dataSource.getName())).findAny().ifPresent(toBeDroppedDataSourceRuleConfig -> {
             if (null != toBeDroppedDataSourceRuleConfig.getLoadBalancerName() && isLoadBalancerNotInUse(currentRuleConfig, toBeDroppedDataSourceRuleConfig.getLoadBalancerName(), dataSourceNames)) {
                 toBeDroppedLoadBalancers.put(toBeDroppedDataSourceRuleConfig.getLoadBalancerName(), currentRuleConfig.getLoadBalancers().get(toBeDroppedDataSourceRuleConfig.getLoadBalancerName()));
             }
         });
-    }
-    
-    private boolean isLoadBalancerNotInUse(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String toBeDroppedLoadBalancerName,final Collection<String> dataSourceNames) {
-        return currentRuleConfig.getDataSources().stream().filter(each -> !dataSourceNames.contains(each.getName())).map(ReadwriteSplittingDataSourceRuleConfiguration::getLoadBalancerName)
-                .filter(Objects::nonNull).noneMatch(toBeDroppedLoadBalancerName::equals);
     }
     
     @Override
@@ -139,6 +134,11 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     
     private boolean isLoadBalancerNotInUse(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String toBeDroppedLoadBalancerName) {
         return currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getLoadBalancerName)
+                .filter(Objects::nonNull).noneMatch(toBeDroppedLoadBalancerName::equals);
+    }
+    
+    private boolean isLoadBalancerNotInUse(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String toBeDroppedLoadBalancerName, final Collection<String> dataSourceNames) {
+        return currentRuleConfig.getDataSources().stream().filter(each -> !dataSourceNames.contains(each.getName())).map(ReadwriteSplittingDataSourceRuleConfiguration::getLoadBalancerName)
                 .filter(Objects::nonNull).noneMatch(toBeDroppedLoadBalancerName::equals);
     }
     
