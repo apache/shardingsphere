@@ -16,7 +16,9 @@
 #
 
 rules:
-
+- !SINGLE
+  tables:
+    - "*.*"
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds:

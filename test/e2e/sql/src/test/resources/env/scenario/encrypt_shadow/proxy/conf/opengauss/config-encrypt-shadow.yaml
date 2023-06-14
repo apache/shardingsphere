@@ -38,6 +38,9 @@ dataSources:
     minPoolSize: 2
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*.*"
 - !SHADOW
   dataSources:
     shadowDataSource:
