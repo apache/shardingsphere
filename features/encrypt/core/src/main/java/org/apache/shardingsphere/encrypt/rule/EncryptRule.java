@@ -198,28 +198,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * Find assisted query column.
-     *
-     * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return assisted query column
-     */
-    public Optional<String> findAssistedQueryColumn(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findAssistedQueryColumn(logicColumnName));
-    }
-    
-    /**
-     * Find like query column.
-     *
-     * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return like query column
-     */
-    public Optional<String> findLikeQueryColumn(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findLikeQueryColumn(logicColumnName));
-    }
-    
-    /**
      * Get assisted query columns.
      * 
      * @param tableName table name
