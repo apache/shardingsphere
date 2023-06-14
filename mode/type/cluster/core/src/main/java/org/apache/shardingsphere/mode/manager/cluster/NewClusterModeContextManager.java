@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerAware;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -110,6 +111,16 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     @Override
     public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
         contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persist(databaseName, ruleConfigs);
+    }
+    
+    @Override
+    public void alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeSavedRuleConfig, final RuleConfiguration toBeRemovedRuleConfig) {
+        if (null != toBeSavedRuleConfig) {
+            contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persist(databaseName, Collections.singleton(toBeSavedRuleConfig));
+        }
+        if (null != toBeRemovedRuleConfig) {
+            contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
+        }
     }
     
     @Override

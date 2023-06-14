@@ -33,7 +33,7 @@ public interface RuleDefinitionCreateUpdater<T extends SQLStatement, R extends R
      *
      * @param currentRuleConfig current rule configuration to be updated
      * @param sqlStatement SQL statement
-     * @return built to be created rule configuration
+     * @return to be created rule configuration
      */
     R buildToBeCreatedRuleConfiguration(R currentRuleConfig, T sqlStatement);
     

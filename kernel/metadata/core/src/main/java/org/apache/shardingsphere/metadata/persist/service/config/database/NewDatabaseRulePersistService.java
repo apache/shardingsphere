@@ -76,6 +76,28 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
         }
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public void delete(final String databaseName, final Collection<RuleConfiguration> configs) {
+        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+            Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
+            if (dataNodes.isEmpty()) {
+                continue;
+            }
+            deleteDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), dataNodes);
+        }
+    }
+    
+    private void deleteDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
+        for (YamlDataNode each : dataNodes) {
+            if (Strings.isNullOrEmpty(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()))) {
+                repository.delete(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()));
+            }
+            repository.delete(NewDatabaseMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), DEFAULT_VERSION));
+        }
+    }
+    
     @Override
     public Collection<RuleConfiguration> load(final String databaseName) {
         Collection<YamlDataNode> dataNodes = getDataNodes(NewDatabaseMetaDataNode.getRulesNode(databaseName));
