@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.yaml.config.swapper;
 
-import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
@@ -27,7 +27,6 @@ import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfigura
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * TODO Rename YamlSingleRuleConfigurationSwapper when metadata structure adjustment completed. #25485
@@ -35,9 +34,12 @@ import java.util.Optional;
  */
 public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<SingleRuleConfiguration> {
     
+    private static final String ROOT_NODE = "tables";
+    
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final SingleRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        // TODO Consider whether to split tables and defaultDataSource
+        return Collections.singletonList(new YamlDataNode(ROOT_NODE, YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlSingleRuleConfiguration swapToYamlConfiguration(final SingleRuleConfiguration data) {
@@ -50,8 +52,7 @@ public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleC
     @Override
     public SingleRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            Optional<String> version = GlobalRuleNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
-            if (!version.isPresent()) {
+            if (Strings.isNullOrEmpty(each.getValue())) {
                 continue;
             }
             return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class));
