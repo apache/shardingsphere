@@ -56,13 +56,14 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
-        Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
-        Preconditions.checkState(sqlSegment.isPresent());
-        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumnsMap(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
+        Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
+        Preconditions.checkState(insertColumnsSegment.isPresent());
+        Map<String, String> logicAndCipherColumns = encryptRule.getEncryptTable(
+                insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).getLogicAndCipherColumns();
         Collection<SQLToken> result = new LinkedList<>();
-        for (ColumnSegment each : sqlSegment.get().getColumns()) {
+        for (ColumnSegment each : insertColumnsSegment.get().getColumns()) {
             if (logicAndCipherColumns.containsKey(each.getIdentifier().getValue())) {
-                Collection<Projection> projections = Collections.singletonList(new ColumnProjection(null, logicAndCipherColumns.get(each.getIdentifier().getValue()), null));
+                Collection<Projection> projections = Collections.singleton(new ColumnProjection(null, logicAndCipherColumns.get(each.getIdentifier().getValue()), null));
                 result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), projections));
             }
         }
