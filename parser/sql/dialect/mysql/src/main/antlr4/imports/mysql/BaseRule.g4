@@ -796,6 +796,7 @@ engineRef
     | BLACKHOLE
     | CSV
     | ARCHIVE
+    | string_
     ;
     
 triggerName

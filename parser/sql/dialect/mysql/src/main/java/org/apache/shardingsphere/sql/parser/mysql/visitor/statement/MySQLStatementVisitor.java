@@ -1880,6 +1880,8 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             engineType = EngineType.CSV;
         } else if (null != ctx.ARCHIVE()) {
             engineType = EngineType.ARCHIVE;
+        } else if (null != ctx.string_()) {
+            engineType = EngineType.getEngineType(SQLUtils.getExactlyValue(ctx.string_().getText()));
         }
         return new EngineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), engineType);
     }

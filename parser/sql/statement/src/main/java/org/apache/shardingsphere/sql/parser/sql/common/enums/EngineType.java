@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
+import java.util.Arrays;
+
 /**
  * Engine type.
  */
@@ -38,5 +40,15 @@ public enum EngineType {
     
     CSV,
     
-    ARCHIVE
+    ARCHIVE;
+    
+    /**
+     * Get engine type.
+     *
+     * @param engineType engine type
+     * @return engine type
+     */
+    public static EngineType getEngineType(final String engineType) {
+        return Arrays.stream(values()).filter(each -> engineType.equalsIgnoreCase(each.name())).findFirst().orElse(null);
+    }
 }
