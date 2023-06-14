@@ -22,6 +22,6 @@ import Symbol, RALStatement;
 execute
     : (showStreamingList
     | showStreamingStatus
-    | commitStreaming
+    | dropStreaming
     ) SEMI_? EOF
     ;

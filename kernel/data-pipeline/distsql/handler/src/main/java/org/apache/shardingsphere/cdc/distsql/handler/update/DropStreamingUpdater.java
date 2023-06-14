@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc;
+package org.apache.shardingsphere.cdc.distsql.handler.update;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.cdc.distsql.statement.DropStreamingStatement;
+import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
+import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.sql.SQLException;
 
 /**
- * Commit streaming statement test case.
+ * Drop streaming updater.
  */
-@Getter
-@Setter
-public final class CommitStreamingStatementTestCase extends SQLParserTestCase {
+public final class DropStreamingUpdater implements RALUpdater<DropStreamingStatement> {
     
-    @XmlElement(name = "job-id")
-    private String jobId;
+    private final CDCJobAPI jobAPI = new CDCJobAPI();
+    
+    @Override
+    public void executeUpdate(final String databaseName, final DropStreamingStatement sqlStatement) throws SQLException {
+        jobAPI.stopAndDrop(sqlStatement.getJobId());
+    }
+    
+    @Override
+    public String getType() {
+        return DropStreamingStatement.class.getName();
+    }
 }

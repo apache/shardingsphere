@@ -350,10 +350,14 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     @Override
     public void commit(final String jobId) {
-        stopAndDropJob(jobId);
     }
     
-    private void stopAndDropJob(final String jobId) {
+    /**
+     * Stop and drop job.
+     *
+     * @param jobId job id
+     */
+    public void stopAndDrop(final String jobId) {
         CDCJobConfiguration jobConfig = getJobConfiguration(jobId);
         if (CDCSinkType.SOCKET == jobConfig.getSinkConfig().getSinkType()) {
             PipelineJobCenter.stop(jobId);

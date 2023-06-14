@@ -33,7 +33,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerato
 import org.apache.shardingsphere.data.pipeline.cdc.handler.CDCBackendHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CommitStreamingRequestBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.DropStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody.BasicBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StopStreamingRequestBody;
@@ -121,8 +121,8 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             case START_STREAMING:
                 processStartStreamingRequest(ctx, request, connectionContext);
                 break;
-            case COMMIT_STREAMING:
-                processCommitStreamingRequest(ctx, request, connectionContext);
+            case DROP_STREAMING:
+                processDropStreamingRequest(ctx, request, connectionContext);
                 break;
             default:
                 log.warn("can't handle this type of request {}", request);
@@ -209,10 +209,10 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
     }
     
-    private void processCommitStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
-        CommitStreamingRequestBody requestBody = request.getCommitStreamingRequestBody();
+    private void processDropStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
+        DropStreamingRequestBody requestBody = request.getDropStreamingRequestBody();
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId()));
-        backendHandler.commitStreaming(connectionContext.getJobId());
+        backendHandler.dropStreaming(connectionContext.getJobId());
         connectionContext.setJobId(null);
         ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
     }

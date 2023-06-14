@@ -27,8 +27,8 @@ showStreamingStatus
     : SHOW STREAMING STATUS jobId
     ;
 
-commitStreaming
-    : COMMIT STREAMING jobId
+dropStreaming
+    : DROP STREAMING jobId
     ;
 
 jobId

@@ -176,12 +176,12 @@ public final class CDCBackendHandler {
     }
     
     /**
-     * Commit streaming.
+     * Drop streaming.
      *
      * @param jobId job ID
      */
-    public void commitStreaming(final String jobId) {
-        jobAPI.commit(jobId);
+    public void dropStreaming(final String jobId) {
+        jobAPI.stopAndDrop(jobId);
     }
     
     /**
