@@ -29,6 +29,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class NewDatabaseMetaDataNodeTest {
     
     @Test
+    void assertGetDatabaseName() {
+        assertThat(NewDatabaseMetaDataNode.getDatabaseName("/metadata/foo_db"), is("foo_db"));
+    }
+    
+    @Test
     void assertGetMetaDataDataSourcesPath() {
         assertThat(NewDatabaseMetaDataNode.getDataSourcesNode("foo_db"), is("/metadata/foo_db/data_sources"));
     }

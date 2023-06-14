@@ -18,8 +18,21 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher;
 
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlViewSwapper;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.event.schema.table.AlterTableEvent;
+import org.apache.shardingsphere.mode.event.schema.table.DropTableEvent;
+import org.apache.shardingsphere.mode.event.schema.view.AlterViewEvent;
+import org.apache.shardingsphere.mode.event.schema.view.DropViewEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.NewGovernanceWatcher;
@@ -52,17 +65,66 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return createRuleEvent(event);
-    }
-    
-    // TODO Change to map to avoid loops.
-    private Optional<GovernanceEvent> createRuleEvent(final DataChangedEvent event) {
-        Optional<String> databaseName = NewDatabaseMetaDataNode.getDatabaseNameByNode(event.getKey());
+        Optional<String> databaseName = NewDatabaseMetaDataNode.getDatabaseName(event.getKey());
+        if (databaseName.isPresent()) {
+            return createDatabaseChangedEvent(databaseName.get(), event);
+        }
+        databaseName = NewDatabaseMetaDataNode.getDatabaseNameBySchemaPath(event.getKey());
+        Optional<String> schemaName = NewDatabaseMetaDataNode.getSchemaName(event.getKey());
+        if (databaseName.isPresent() && schemaName.isPresent()) {
+            return createSchemaChangedEvent(databaseName.get(), schemaName.get(), event);
+        }
+        schemaName = NewDatabaseMetaDataNode.getSchemaNameByTablePath(event.getKey());
+        Optional<String> tableName = NewDatabaseMetaDataNode.getTableName(event.getKey());
+        if (databaseName.isPresent() && schemaName.isPresent() && tableName.isPresent()) {
+            return createTableChangedEvent(databaseName.get(), schemaName.get(), tableName.get(), event);
+        }
+        Optional<String> viewName = NewDatabaseMetaDataNode.getViewName(event.getKey());
+        if (databaseName.isPresent() && schemaName.isPresent() && viewName.isPresent()) {
+            return createViewChangedEvent(databaseName.get(), schemaName.get(), viewName.get(), event);
+        }
         if (!databaseName.isPresent()) {
             return Optional.empty();
         }
+        return createRuleEvent(databaseName.get(), event);
+    }
+    
+    private Optional<GovernanceEvent> createDatabaseChangedEvent(final String databaseName, final DataChangedEvent event) {
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new DatabaseAddedEvent(databaseName));
+        }
+        if (Type.DELETED == event.getType()) {
+            return Optional.of(new DatabaseDeletedEvent(databaseName));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<GovernanceEvent> createSchemaChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new SchemaAddedEvent(databaseName, schemaName));
+        }
+        if (Type.DELETED == event.getType()) {
+            return Optional.of(new SchemaDeletedEvent(databaseName, schemaName));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<GovernanceEvent> createTableChangedEvent(final String databaseName, final String schemaName, final String tableName, final DataChangedEvent event) {
+        return Type.DELETED == event.getType()
+                ? Optional.of(new DropTableEvent(databaseName, schemaName, tableName))
+                : Optional.of(new AlterTableEvent(databaseName, schemaName, null, new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereTable.class))));
+    }
+    
+    private Optional<GovernanceEvent> createViewChangedEvent(final String databaseName, final String schemaName, final String viewName, final DataChangedEvent event) {
+        return Type.DELETED == event.getType()
+                ? Optional.of(new DropViewEvent(databaseName, schemaName, viewName))
+                : Optional.of(new AlterViewEvent(databaseName, schemaName, null, new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereView.class))));
+    }
+    
+    // TODO Change to map to avoid loops.
+    private Optional<GovernanceEvent> createRuleEvent(final String databaseName, final DataChangedEvent event) {
         for (RuleConfigurationEventBuilder each : EVENT_BUILDERS) {
-            Optional<GovernanceEvent> result = each.build(databaseName.get(), event);
+            Optional<GovernanceEvent> result = each.build(databaseName, event);
             if (!result.isPresent()) {
                 continue;
             }

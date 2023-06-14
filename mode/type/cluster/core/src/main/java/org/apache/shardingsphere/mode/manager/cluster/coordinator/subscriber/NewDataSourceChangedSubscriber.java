@@ -32,15 +32,15 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * TODO Rename ConfigurationChangedSubscriber when metadata structure adjustment completed. #25485
- * New configuration changed subscriber.
+ * TODO Rename DataSourceChangedSubscriber when metadata structure adjustment completed. #25485
+ * New data source changed subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class NewConfigurationChangedSubscriber {
+public final class NewDataSourceChangedSubscriber {
     
     private final ContextManager contextManager;
     
-    public NewConfigurationChangedSubscriber(final ContextManager contextManager) {
+    public NewDataSourceChangedSubscriber(final ContextManager contextManager) {
         this.contextManager = contextManager;
         contextManager.getInstanceContext().getEventBusContext().register(this);
     }

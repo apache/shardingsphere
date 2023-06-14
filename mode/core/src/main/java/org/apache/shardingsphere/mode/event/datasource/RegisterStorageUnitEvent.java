@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema;
+package org.apache.shardingsphere.mode.event.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Table meta data changed event.
+ * Add data source event.
  */
-@RequiredArgsConstructor
 @Getter
-public final class TableMetaDataChangedEvent implements GovernanceEvent {
+@RequiredArgsConstructor
+public final class RegisterStorageUnitEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final String schemaName;
+    private final String StorageUnitName;
     
-    private final ShardingSphereTable changedTableMetaData;
-    
-    private final String deletedTable;
+    private final DataSourceProperties dataSourceProps;
 }

@@ -41,6 +41,78 @@ public final class NewDatabaseMetaDataNode {
     private static final String VERSIONS = "versions";
     
     /**
+     * Get database name.
+     *
+     * @param path path
+     * @return database name
+     */
+    public static Optional<String> getDatabaseName(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
+     * Get database name by schema path.
+     *
+     * @param schemaPath database path
+     * @return database name
+     */
+    public static Optional<String> getDatabaseNameBySchemaPath(final String schemaPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(schemaPath);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @param path path
+     * @return schema name
+     */
+    public static Optional<String> getSchemaName(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Get schema name by table path.
+     *
+     * @param tablePath table path
+     * @return schema name
+     */
+    public static Optional<String> getSchemaNameByTablePath(final String tablePath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(tablePath);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Get table name.
+     *
+     * @param path path
+     * @return table name
+     */
+    public static Optional<String> getTableName(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Get view name.
+     *
+     * @param path path
+     * @return view name
+     */
+    public static Optional<String> getViewName(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/views" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
      * Get data Sources node.
      *
      * @param databaseName database name
