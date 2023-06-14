@@ -50,7 +50,7 @@ class RDLBackendHandlerFactoryTest {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(UnregisterStorageUnitStatement.class), mock(ConnectionSession.class)), instanceOf(UnregisterStorageUnitBackendHandler.class));
     }
     
-    // TODO Open this when metadata structure adjustment completed.
+    // TODO enable this when metadata structure adjustment completed.
     @Disabled
     @Test
     void assertNewInstanceWithRuleDefinitionStatement() {

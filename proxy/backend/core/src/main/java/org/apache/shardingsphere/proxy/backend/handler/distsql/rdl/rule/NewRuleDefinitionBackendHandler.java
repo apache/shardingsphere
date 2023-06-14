@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Optional;
 
 /**
+ * TODO Rename to RuleDefinitionBackendHandler when metadata structure adjustment completed. #25485
  * Rule definition backend handler.
  *
  * @param <T> type of rule definition statement
