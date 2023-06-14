@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.cdc.distsql.parser.core;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.cdc.distsql.statement.CommitStreamingStatement;
-import org.apache.shardingsphere.cdc.distsql.statement.RollbackStreamingStatement;
+import org.apache.shardingsphere.cdc.distsql.statement.DropStreamingStatement;
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingListStatement;
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingStatusStatement;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.CommitStreamingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.RollbackStreamingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.DropStreamingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.ShowStreamingListContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.ShowStreamingStatusContext;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
@@ -47,13 +45,8 @@ public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVis
     }
     
     @Override
-    public ASTNode visitRollbackStreaming(final RollbackStreamingContext ctx) {
-        return new RollbackStreamingStatement(getIdentifierValue(ctx.jobId()));
-    }
-    
-    @Override
-    public ASTNode visitCommitStreaming(final CommitStreamingContext ctx) {
-        return new CommitStreamingStatement(getIdentifierValue(ctx.jobId()));
+    public ASTNode visitDropStreaming(final DropStreamingContext ctx) {
+        return new DropStreamingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     private String getIdentifierValue(final ParseTree ctx) {

@@ -53,7 +53,6 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -177,22 +176,12 @@ public final class CDCBackendHandler {
     }
     
     /**
-     * Rollback streaming.
-     *
-     * @param jobId job ID
-     * @throws SQLException SQL exception
-     */
-    public void rollbackStreaming(final String jobId) throws SQLException {
-        jobAPI.rollback(jobId);
-    }
-    
-    /**
-     * Commit streaming.
+     * Drop streaming.
      *
      * @param jobId job ID
      */
-    public void commitStreaming(final String jobId) {
-        jobAPI.commit(jobId);
+    public void dropStreaming(final String jobId) {
+        jobAPI.stopAndDrop(jobId);
     }
     
     /**

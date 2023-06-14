@@ -15,18 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cdc.distsql.statement;
+package org.apache.shardingsphere.cdc.distsql.handler.update;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.cdc.UpdatableCDCRALStatement;
+import org.apache.shardingsphere.cdc.distsql.statement.DropStreamingStatement;
+import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
+import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
+
+import java.sql.SQLException;
 
 /**
- * Rollback streaming statement.
+ * Drop streaming updater.
  */
-@RequiredArgsConstructor
-@Getter
-public final class RollbackStreamingStatement extends UpdatableCDCRALStatement {
+public final class DropStreamingUpdater implements RALUpdater<DropStreamingStatement> {
     
-    private final String jobId;
+    private final CDCJobAPI jobAPI = new CDCJobAPI();
+    
+    @Override
+    public void executeUpdate(final String databaseName, final DropStreamingStatement sqlStatement) throws SQLException {
+        jobAPI.stopAndDrop(sqlStatement.getJobId());
+    }
+    
+    @Override
+    public String getType() {
+        return DropStreamingStatement.class.getName();
+    }
 }
