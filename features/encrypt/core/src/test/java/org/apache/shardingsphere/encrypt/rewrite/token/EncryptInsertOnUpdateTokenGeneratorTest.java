@@ -65,7 +65,7 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mockEncryptTable();
-        when(result.findEncryptTable("t_user")).thenReturn(Optional.of(encryptTable));
+        when(result.getEncryptTable("t_user")).thenReturn(encryptTable);
         when(result.findStandardEncryptor("t_user", "mobile")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         when(result.findStandardEncryptor("t_user", "cipher_mobile")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         when(result.encrypt(null, "db_test", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));

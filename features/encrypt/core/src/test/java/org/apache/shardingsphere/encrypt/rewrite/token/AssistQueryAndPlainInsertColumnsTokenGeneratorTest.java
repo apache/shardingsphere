@@ -90,7 +90,7 @@ class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptTable.findAssistedQueryColumn("foo_col")).thenReturn(Optional.of("assisted_query_col"));
-        when(result.findEncryptTable("foo_tbl")).thenReturn(Optional.of(encryptTable));
+        when(result.getEncryptTable("foo_tbl")).thenReturn(encryptTable);
         return result;
     }
     
