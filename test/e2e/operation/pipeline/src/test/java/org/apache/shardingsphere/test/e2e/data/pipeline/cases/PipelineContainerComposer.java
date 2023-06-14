@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
@@ -378,10 +379,22 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @throws RuntimeException runtime exception
      */
     public List<Map<String, Object>> queryForListWithLog(final String sql) {
+        return queryForListWithLog(proxyDataSource, sql);
+    }
+    
+    /**
+     * Query for list with log.
+     *
+     * @param dataSource data source
+     * @param sql SQL
+     * @return query result
+     * @throws RuntimeException runtime exception
+     */
+    public List<Map<String, Object>> queryForListWithLog(final DataSource dataSource, final String sql) {
         log.info("Query SQL: {}", sql);
         int retryNumber = 0;
         while (retryNumber <= 3) {
-            try (Connection connection = proxyDataSource.getConnection()) {
+            try (Connection connection = dataSource.getConnection()) {
                 ResultSet resultSet = connection.createStatement().executeQuery(sql);
                 return transformResultSetToList(resultSet);
                 // CHECKSTYLE:OFF
@@ -457,47 +470,50 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
-     * Assert proxy order record exist.
+     * Assert order record exists in proxy.
      *
+     * @param dataSource data source
      * @param tableName table name
      * @param orderId order id
      */
-    public void assertProxyOrderRecordExist(final String tableName, final Object orderId) {
+    public void assertOrderRecordExist(final DataSource dataSource, final String tableName, final Object orderId) {
         String sql;
         if (orderId instanceof String) {
             sql = String.format("SELECT 1 FROM %s WHERE order_id = '%s'", tableName, orderId);
         } else {
             sql = String.format("SELECT 1 FROM %s WHERE order_id = %s", tableName, orderId);
         }
-        assertProxyOrderRecordExist(sql);
+        assertOrderRecordExist(dataSource, sql);
     }
     
     /**
      * Assert proxy order record exist.
      *
+     * @param dataSource data source
      * @param sql SQL
      */
-    public void assertProxyOrderRecordExist(final String sql) {
+    public void assertOrderRecordExist(final DataSource dataSource, final String sql) {
         boolean recordExist = false;
         for (int i = 0; i < 5; i++) {
-            List<Map<String, Object>> result = queryForListWithLog(sql);
+            List<Map<String, Object>> result = queryForListWithLog(dataSource, sql);
             recordExist = !result.isEmpty();
             if (recordExist) {
                 break;
             }
             Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
         }
-        assertTrue(recordExist, "The insert record must exist after the stop");
+        assertTrue(recordExist, "Order record does not exist");
     }
     
     /**
      * Get target table records count.
      *
+     * @param dataSource data source
      * @param tableName table name
      * @return target table records count
      */
-    public int getTargetTableRecordsCount(final String tableName) {
-        List<Map<String, Object>> targetList = queryForListWithLog("SELECT COUNT(1) AS count FROM " + tableName);
+    public int getTargetTableRecordsCount(final DataSource dataSource, final String tableName) {
+        List<Map<String, Object>> targetList = queryForListWithLog(dataSource, "SELECT COUNT(1) AS count FROM " + tableName);
         assertFalse(targetList.isEmpty());
         return ((Number) targetList.get(0).get("count")).intValue();
     }
@@ -505,12 +521,13 @@ public final class PipelineContainerComposer implements AutoCloseable {
     /**
      * Assert greater than order table init rows.
      *
+     * @param dataSource data source
      * @param tableInitRows table init rows
      * @param schema schema
      */
-    public void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) {
+    public void assertGreaterThanOrderTableInitRows(final DataSource dataSource, final int tableInitRows, final String schema) {
         String tableName = Strings.isNullOrEmpty(schema) ? "t_order" : String.format("%s.t_order", schema);
-        int recordsCount = getTargetTableRecordsCount(tableName);
+        int recordsCount = getTargetTableRecordsCount(dataSource, tableName);
         assertTrue(recordsCount > tableInitRows, "actual count " + recordsCount);
     }
     
@@ -522,8 +539,10 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
     public DataSource generateShardingSphereDataSourceFromProxy() throws SQLException {
-        Awaitility.await().atMost(5L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !getYamlRootConfig().getRules().isEmpty());
+        Awaitility.await().atMost(5L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> null != getYamlRootConfig().getRules());
         YamlRootConfiguration rootConfig = getYamlRootConfig();
+        ShardingSpherePreconditions.checkNotNull(rootConfig.getDataSources(), () -> new IllegalStateException("dataSources is null"));
+        ShardingSpherePreconditions.checkNotNull(rootConfig.getRules(), () -> new IllegalStateException("rules is null"));
         if (PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
             String sourceUrl = String.join(":", storageContainer.getNetworkAliases().get(0), Integer.toString(storageContainer.getExposedPort()));
