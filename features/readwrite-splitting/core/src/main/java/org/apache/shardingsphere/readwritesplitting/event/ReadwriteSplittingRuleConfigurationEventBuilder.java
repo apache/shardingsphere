@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.event.config.AddReadwriteSplittingConfigurationEvent;
 import org.apache.shardingsphere.readwritesplitting.event.config.AlterReadwriteSplittingConfigurationEvent;
 import org.apache.shardingsphere.readwritesplitting.event.config.DeleteReadwriteSplittingConfigurationEvent;
@@ -34,8 +35,7 @@ import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AddLoadBal
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.metadata.converter.ReadwriteSplittingNodeConverter;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.swapper.YamlReadwriteSplittingRuleConfigurationSwapper;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
 import java.util.Optional;
 
@@ -62,17 +62,24 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
     
     private Optional<GovernanceEvent> createReadwriteSplittingConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddReadwriteSplittingConfigurationEvent<>(databaseName, swapReadwriteSplittingDataSourceRuleConfig(event.getValue())));
+            return Optional.of(new AddReadwriteSplittingConfigurationEvent<>(databaseName, swapDataSource(groupName, event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterReadwriteSplittingConfigurationEvent<>(databaseName, groupName, swapReadwriteSplittingDataSourceRuleConfig(event.getValue())));
+            return Optional.of(new AlterReadwriteSplittingConfigurationEvent<>(databaseName, groupName, swapDataSource(groupName, event.getValue())));
         }
         return Optional.of(new DeleteReadwriteSplittingConfigurationEvent(databaseName, groupName));
     }
     
-    // TODO Consider extract ReadwriteSplittingDataSourceRuleConfigurationSwapper
-    private ReadwriteSplittingDataSourceRuleConfiguration swapReadwriteSplittingDataSourceRuleConfig(final String yamlContext) {
-        return new YamlReadwriteSplittingRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlReadwriteSplittingRuleConfiguration.class)).getDataSources().iterator().next();
+    private ReadwriteSplittingDataSourceRuleConfiguration swapDataSource(final String name, final String yamlContext) {
+        YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig = YamlEngine.unmarshal(yamlContext, YamlReadwriteSplittingDataSourceRuleConfiguration.class);
+        return new ReadwriteSplittingDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getWriteDataSourceName(), yamlDataSourceRuleConfig.getReadDataSourceNames(),
+                getTransactionalReadQueryStrategy(yamlDataSourceRuleConfig), yamlDataSourceRuleConfig.getLoadBalancerName());
+    }
+    
+    private TransactionalReadQueryStrategy getTransactionalReadQueryStrategy(final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
+        return Strings.isNullOrEmpty(yamlDataSourceRuleConfig.getTransactionalReadQueryStrategy())
+                ? TransactionalReadQueryStrategy.DYNAMIC
+                : TransactionalReadQueryStrategy.valueOf(yamlDataSourceRuleConfig.getTransactionalReadQueryStrategy());
     }
     
     private Optional<GovernanceEvent> createLoadBalanceEvent(final String databaseName, final String loadBalanceName, final DataChangedEvent event) {

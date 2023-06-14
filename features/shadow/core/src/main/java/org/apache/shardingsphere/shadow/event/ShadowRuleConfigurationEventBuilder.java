@@ -38,9 +38,8 @@ import org.apache.shardingsphere.shadow.event.table.AddShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.DeleteShadowTableEvent;
 import org.apache.shardingsphere.shadow.metadata.converter.ShadowNodeConverter;
-import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.YamlShadowRuleConfigurationSwapper;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
 import java.util.Optional;
@@ -72,16 +71,17 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
     
     private Optional<GovernanceEvent> createShadowConfigEvent(final String databaseName, final String dataSourceName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddShadowConfigurationEvent<>(databaseName, swapShadowDataSourceRuleConfig(event.getValue())));
+            return Optional.of(new AddShadowConfigurationEvent<>(databaseName, swapShadowDataSourceRuleConfig(dataSourceName, event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterShadowConfigurationEvent<>(databaseName, dataSourceName, swapShadowDataSourceRuleConfig(event.getValue())));
+            return Optional.of(new AlterShadowConfigurationEvent<>(databaseName, dataSourceName, swapShadowDataSourceRuleConfig(dataSourceName, event.getValue())));
         }
         return Optional.of(new DeleteShadowConfigurationEvent(databaseName, dataSourceName));
     }
     
-    private ShadowDataSourceConfiguration swapShadowDataSourceRuleConfig(final String yamlContext) {
-        return new YamlShadowRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlShadowRuleConfiguration.class)).getDataSources().iterator().next();
+    private ShadowDataSourceConfiguration swapShadowDataSourceRuleConfig(final String dataSourceName, final String yamlContext) {
+        YamlShadowDataSourceConfiguration yamlConfig = YamlEngine.unmarshal(yamlContext, YamlShadowDataSourceConfiguration.class);
+        return new ShadowDataSourceConfiguration(dataSourceName, yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
     }
     
     private Optional<GovernanceEvent> createShadowTableConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
