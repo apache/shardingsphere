@@ -79,11 +79,6 @@ class EncryptRuleTest {
     }
     
     @Test
-    void assertFindAssistedQueryColumn() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).findAssistedQueryColumn("t_encrypt", "pwd_cipher").isPresent());
-    }
-    
-    @Test
     void assertGetEncryptAssistedQueryValues() {
         List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration())
                 .getEncryptAssistedQueryValues(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
@@ -95,11 +90,6 @@ class EncryptRuleTest {
     @Test
     void assertGetAssistedQueryColumns() {
         assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getAssistedQueryColumns("t_encrypt").isEmpty());
-    }
-    
-    @Test
-    void assertFindLikeQueryColumn() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).findLikeQueryColumn("t_encrypt", "pwd_cipher").isPresent());
     }
     
     @Test

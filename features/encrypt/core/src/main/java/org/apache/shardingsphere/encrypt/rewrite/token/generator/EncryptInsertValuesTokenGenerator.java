@@ -27,6 +27,7 @@ import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.expression.DerivedParameterMarkerExpressionSegment;
@@ -89,10 +90,14 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     
     private void processPreviousSQLToken(final InsertStatementContext insertStatementContext, final InsertValuesToken insertValuesToken) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent()) {
+            return;
+        }
         int count = 0;
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
-            encryptToken(insertValuesToken.getInsertValues().get(count), schemaName, tableName, insertStatementContext, each);
+            encryptToken(encryptTable.get(), insertValuesToken.getInsertValues().get(count), schemaName, tableName, insertStatementContext, each);
             count++;
         }
     }
@@ -101,10 +106,14 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Collection<InsertValuesSegment> insertValuesSegments = insertStatementContext.getSqlStatement().getValues();
         InsertValuesToken result = new EncryptInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent()) {
+            return result;
+        }
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = new InsertValue(each.getValueExpressions());
-            encryptToken(insertValueToken, schemaName, tableName, insertStatementContext, each);
+            encryptToken(encryptTable.get(), insertValueToken, schemaName, tableName, insertStatementContext, each);
             result.getInsertValues().add(insertValueToken);
         }
         return result;
@@ -126,7 +135,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         return result;
     }
     
-    private void encryptToken(final InsertValue insertValueToken, final String schemaName, final String tableName,
+    private void encryptToken(final EncryptTable encryptTable, final InsertValue insertValueToken, final String schemaName, final String tableName,
                               final InsertStatementContext insertStatementContext, final InsertValueContext insertValueContext) {
         Optional<SQLToken> useDefaultInsertColumnsToken = findPreviousSQLToken(UseDefaultInsertColumnsToken.class);
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
@@ -141,21 +150,22 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                 setCipherColumn(insertValueToken, standardEncryptor.get(), columnIndex, encryptContext, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
                 int indexDelta = 1;
                 if (encryptRule.findAssistedQueryEncryptor(tableName, columnName).isPresent()) {
-                    addAssistedQueryColumn(insertValueToken, encryptRule.findAssistedQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext,
-                            insertValueContext, originalValue, indexDelta);
+                    addAssistedQueryColumn(encryptTable,
+                            insertValueToken, encryptRule.findAssistedQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue, indexDelta);
                     indexDelta++;
                 }
                 if (encryptRule.findLikeQueryEncryptor(tableName, columnName).isPresent()) {
-                    addLikeQueryColumn(insertValueToken, encryptRule.findLikeQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue, indexDelta);
+                    addLikeQueryColumn(encryptTable,
+                            insertValueToken, encryptRule.findLikeQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue, indexDelta);
                 }
             }
         }
     }
     
-    private void addAssistedQueryColumn(final InsertValue insertValueToken, final AssistedEncryptAlgorithm assistQueryEncryptor, final int columnIndex,
+    private void addAssistedQueryColumn(final EncryptTable encryptTable, final InsertValue insertValueToken, final AssistedEncryptAlgorithm assistQueryEncryptor, final int columnIndex,
                                         final EncryptContext encryptContext, final InsertValueContext insertValueContext,
                                         final Object originalValue, final int indexDelta) {
-        if (encryptRule.findAssistedQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
+        if (encryptTable.findAssistedQueryColumn(encryptContext.getColumnName()).isPresent()) {
             DerivedSimpleExpressionSegment derivedExpressionSegment = isAddLiteralExpressionSegment(insertValueContext, columnIndex)
                     ? new DerivedLiteralExpressionSegment(assistQueryEncryptor.encrypt(originalValue, encryptContext))
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
@@ -163,10 +173,10 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         }
     }
     
-    private void addLikeQueryColumn(final InsertValue insertValueToken, final LikeEncryptAlgorithm likeQueryEncryptor, final int columnIndex,
+    private void addLikeQueryColumn(final EncryptTable encryptTable, final InsertValue insertValueToken, final LikeEncryptAlgorithm likeQueryEncryptor, final int columnIndex,
                                     final EncryptContext encryptContext, final InsertValueContext insertValueContext,
                                     final Object originalValue, final int indexDelta) {
-        if (encryptRule.findLikeQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
+        if (encryptTable.findLikeQueryColumn(encryptContext.getColumnName()).isPresent()) {
             DerivedSimpleExpressionSegment derivedExpressionSegment = isAddLiteralExpressionSegment(insertValueContext, columnIndex)
                     ? new DerivedLiteralExpressionSegment(likeQueryEncryptor.encrypt(originalValue, encryptContext))
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
