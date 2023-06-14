@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import java.util.Collections;
 
 /**
- * Broadcast routing engine for tables.
+ * Broadcast routing engine for database.
  */
 public final class BroadcastDatabaseBroadcastRoutingEngine implements BroadcastRouteEngine {
     

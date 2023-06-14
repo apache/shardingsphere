@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Broadcast routing engine for databases.
+ * Broadcast routing engine for table.
  */
 @RequiredArgsConstructor
 public final class BroadcastTableBroadcastRoutingEngine implements BroadcastRouteEngine {
