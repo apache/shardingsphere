@@ -72,6 +72,9 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     }
     
     private void checkTableRuleExist(final SingleRuleConfiguration currentRuleConfig, final SingleTableSegment segment) {
+        if (null == currentRuleConfig) {
+            return;
+        }
         ShardingSpherePreconditions.checkState(!currentRuleConfig.getTables().contains(segment.toString()),
                 () -> new InvalidSingleRuleConfigurationException(String.format("Duplicated table definition `%s`", segment)));
     }

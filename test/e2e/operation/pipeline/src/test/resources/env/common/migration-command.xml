@@ -85,8 +85,4 @@
     <migration-single-table-with-schema>
         MIGRATE TABLE ds_0.test.%s INTO sharding_DB.%s;
     </migration-single-table-with-schema>
-    
-    <load-single-table>
-        LOAD SINGLE TABLE *.*;
-    </load-single-table>
 </command>

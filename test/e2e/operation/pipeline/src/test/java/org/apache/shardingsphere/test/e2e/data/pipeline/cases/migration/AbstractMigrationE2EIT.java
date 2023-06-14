@@ -98,7 +98,7 @@ public abstract class AbstractMigrationE2EIT {
     }
     
     protected void loadAllSingleTables(final PipelineContainerComposer containerComposer) throws SQLException {
-        containerComposer.proxyExecuteWithLog(migrationDistSQL.getLoadSingleTable(), 5);
+        containerComposer.proxyExecuteWithLog("LOAD SINGLE TABLE *.*", 5);
     }
     
     protected void createTargetOrderTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
