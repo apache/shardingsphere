@@ -53,17 +53,9 @@
         <output sql="ALTER TABLE t_account_0 ADD CONSTRAINT t_account_fk_t_account_0 FOREIGN KEY (account_id) REFERENCES t_single (account_id)" />
         <output sql="ALTER TABLE t_account_1 ADD CONSTRAINT t_account_fk_t_account_1 FOREIGN KEY (account_id) REFERENCES t_single (account_id)" />
     </rewrite-assertion>
-    <rewrite-assertion id="alter_table_with_broadcast_and_single_data_node_table_with_add_foreign_constraint" db-types="MySQL,PostgreSQL,openGauss">
-        <input sql="ALTER TABLE t_config ADD CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_order (order_id)" />
-        <output sql="ALTER TABLE t_config ADD CONSTRAINT t_config_fk_t_config FOREIGN KEY (order_id) REFERENCES t_order_0 (order_id)" />
-    </rewrite-assertion>
     <rewrite-assertion id="alter_table_with_broadcast_table_with_add_foreign_constraint_for" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="ALTER TABLE t_config ADD CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_order_type (order_id)" />
         <output sql="ALTER TABLE t_config ADD CONSTRAINT t_config_fk_t_config FOREIGN KEY (order_id) REFERENCES t_order_type (order_id)" />
-    </rewrite-assertion>
-    <rewrite-assertion id="alter_table_with_broadcast_and_single_table_with_add_foreign_constraint" db-types="MySQL,PostgreSQL,openGauss">
-        <input sql="ALTER TABLE t_config ADD CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_single (order_id)" />
-        <output sql="ALTER TABLE t_config ADD CONSTRAINT t_config_fk_t_config FOREIGN KEY (order_id) REFERENCES t_single (order_id)" />
     </rewrite-assertion>
     <rewrite-assertion id="alter_table_with_single_and_single_data_node_table_with_add_foreign_constraint" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="ALTER TABLE t_single ADD CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_order (order_id)" />

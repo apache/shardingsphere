@@ -54,7 +54,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Broadcast SQL router.
@@ -108,7 +111,22 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
             if (broadcastRule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
                 routeToAllDatabaseInstance(routeContext, database, broadcastRule);
             }
+            return;
         }
+        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
+                ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
+                : sqlStatementContext.getTablesContext().getTableNames();
+        if (broadcastRule.isAllBroadcastTables(tableNames)) {
+            routeToAllDatabaseInstance(routeContext, database, broadcastRule);
+        }
+    }
+    
+    private Collection<RouteMapper> getTableRouteMappers(final Collection<String> logicTableNames) {
+        Collection<RouteMapper> result = new LinkedList<>();
+        for (String logicTableName : logicTableNames) {
+            result.add(new RouteMapper(logicTableName, logicTableName));
+        }
+        return result;
     }
     
     private void decorateDALStatement(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final BroadcastRule broadcastRule) {
