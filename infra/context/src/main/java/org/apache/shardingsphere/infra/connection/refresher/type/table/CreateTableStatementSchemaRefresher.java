@@ -48,7 +48,8 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
                         final String schemaName, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
-        if (isSingleTable(tableName, database)) {
+        boolean isSingleTable = isSingleTable(tableName, database);
+        if (isSingleTable) {
             ruleMetaData.findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
@@ -59,6 +60,9 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
             AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
             alterSchemaMetaDataPOJO.getAlteredTables().add(actualTableMetaData.get());
             modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
+            if (isSingleTable) {
+                modeContextManager.alterRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
+            }
         }
     }
     

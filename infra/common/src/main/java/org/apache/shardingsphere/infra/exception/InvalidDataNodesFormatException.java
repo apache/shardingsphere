@@ -29,4 +29,8 @@ public final class InvalidDataNodesFormatException extends MetaDataSQLException 
     public InvalidDataNodesFormatException(final String dataNode) {
         super(XOpenSQLState.INVALID_DATA_TYPE, 3, "Invalid format for actual data node `%s`.", dataNode);
     }
+    
+    public InvalidDataNodesFormatException(final String dataNode, final String reason) {
+        super(XOpenSQLState.INVALID_DATA_TYPE, 3, "Invalid format for data node `%s`, reason is: %s.", dataNode, reason);
+    }
 }

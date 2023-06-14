@@ -209,6 +209,9 @@ dataSources:
     minPoolSize: 2
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*.*"
 - !SHARDING
   autoTables:
     t_user:

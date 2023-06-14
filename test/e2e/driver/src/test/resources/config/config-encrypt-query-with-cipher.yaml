@@ -18,6 +18,9 @@
 databaseName: logic_db_cipher
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*"
 - !ENCRYPT
   tables:
     t_encrypt:

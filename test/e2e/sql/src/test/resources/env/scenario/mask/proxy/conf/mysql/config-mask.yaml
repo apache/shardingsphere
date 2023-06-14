@@ -29,6 +29,9 @@ dataSources:
     minPoolSize: 2
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*"
 - !MASK
   maskAlgorithms:
     md5_mask:
