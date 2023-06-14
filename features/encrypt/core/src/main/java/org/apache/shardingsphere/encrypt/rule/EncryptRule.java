@@ -38,8 +38,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -198,16 +196,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
             result.add(null == each ? null : encryptor.encrypt(each, context));
         }
         return result;
-    }
-    
-    /**
-     * Get assisted query columns.
-     * 
-     * @param tableName table name
-     * @return assisted query columns
-     */
-    public Collection<String> getAssistedQueryColumns(final String tableName) {
-        return findEncryptTable(tableName).map(EncryptTable::getAssistedQueryColumns).orElse(Collections.emptyList());
     }
     
     /**

@@ -94,11 +94,6 @@ class EncryptRuleTest {
     }
     
     @Test
-    void assertGetAssistedQueryColumns() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getAssistedQueryColumns("t_encrypt").isEmpty());
-    }
-    
-    @Test
     void assertGetEncryptLikeQueryValues() {
         List<Object> encryptLikeQueryValues = new EncryptRule(createEncryptRuleConfiguration())
                 .getEncryptLikeQueryValues(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
