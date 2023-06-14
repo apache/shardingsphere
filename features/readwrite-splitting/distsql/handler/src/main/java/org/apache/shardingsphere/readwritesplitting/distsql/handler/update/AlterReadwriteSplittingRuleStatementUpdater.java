@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -26,7 +27,14 @@ import org.apache.shardingsphere.readwritesplitting.distsql.handler.checker.Read
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Alter readwrite-splitting rule statement updater.
@@ -41,6 +49,26 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     @Override
     public ReadwriteSplittingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterReadwriteSplittingRuleStatement sqlStatement) {
         return ReadwriteSplittingRuleStatementConverter.convert(sqlStatement.getRules());
+    }
+    
+    @Override
+    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(
+            final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig) {
+        Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
+        List<String> toBeAlteredDataSourceNames = toBeAlteredRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+        for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
+            if (!toBeAlteredDataSourceNames.contains(each.getName())) {
+                dataSources.add(each);
+            }
+        }
+        Map<String, AlgorithmConfiguration> loadBalancers = new HashMap<>();
+        for (String each : currentRuleConfig.getLoadBalancers().keySet()) {
+            Set<String> toBeAlteredLoadBalancerNames = toBeAlteredRuleConfig.getLoadBalancers().keySet();
+            if (!toBeAlteredLoadBalancerNames.contains(each)) {
+                loadBalancers.put(each, null);
+            }
+        }
+        return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);
     }
     
     @Override

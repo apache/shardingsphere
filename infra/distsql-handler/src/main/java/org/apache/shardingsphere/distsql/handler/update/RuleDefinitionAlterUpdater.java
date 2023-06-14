@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Alter rule rule definition updater.
- * 
+ *
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
@@ -32,9 +32,21 @@ public interface RuleDefinitionAlterUpdater<T extends SQLStatement, R extends Ru
      * Build to be altered rule configuration.
      *
      * @param sqlStatement SQL statement
-     * @return built to be altered rule configuration
+     * @return to be altered rule configuration
      */
     R buildToBeAlteredRuleConfiguration(T sqlStatement);
+    
+    /**
+     * TODO Remove temporary default implementation
+     * Build to be dropped rule configuration.
+     *
+     * @param currentRuleConfig current rule configuration
+     * @param toBeAlteredRuleConfig new rule configuration to be renewed
+     * @return to be dropped rule configuration
+     */
+    default R buildToBeDroppedRuleConfiguration(R currentRuleConfig, R toBeAlteredRuleConfig) {
+        return null;
+    }
     
     /**
      * Update current rule configuration.
