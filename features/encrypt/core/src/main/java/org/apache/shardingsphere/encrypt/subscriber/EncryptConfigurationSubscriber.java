@@ -69,11 +69,12 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
         EncryptRuleConfiguration config;
         if (rule.isPresent()) {
             config = (EncryptRuleConfiguration) rule.get().getConfiguration();
+            config.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
             config.getTables().add(needToAddedConfig);
         } else {
             config = new EncryptRuleConfiguration(Collections.singletonList(needToAddedConfig), Collections.emptyMap());
+            ruleConfigs.add(config);
         }
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -91,7 +92,6 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
         config.getTables().add(needToAlteredConfig);
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -107,7 +107,6 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }

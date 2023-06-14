@@ -78,7 +78,6 @@ public final class ShadowAlgorithmSubscriber implements RuleConfigurationSubscri
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getShadowAlgorithms().put(algorithmName, algorithmConfig);
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
     }
@@ -94,7 +93,6 @@ public final class ShadowAlgorithmSubscriber implements RuleConfigurationSubscri
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getShadowAlgorithms().remove(event.getAlgorithmName());
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
