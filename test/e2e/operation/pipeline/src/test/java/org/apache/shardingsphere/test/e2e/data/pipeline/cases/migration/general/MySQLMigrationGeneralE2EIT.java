@@ -61,6 +61,7 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     void assertMigrationSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             addMigrationProcessConfig(containerComposer);
+            loadAllSingleTables(containerComposer);
             containerComposer.createSourceOrderTable(SOURCE_TABLE_NAME);
             containerComposer.createSourceOrderItemTable();
             addMigrationSourceResource(containerComposer);

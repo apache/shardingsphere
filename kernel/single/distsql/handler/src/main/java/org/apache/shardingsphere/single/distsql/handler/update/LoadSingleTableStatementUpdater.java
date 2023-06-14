@@ -34,6 +34,7 @@ import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.single.distsql.handler.exception.MissingRequiredSingleTableException;
 import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
+import org.apache.shardingsphere.single.exception.InvalidSingleRuleConfigurationException;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
 import javax.sql.DataSource;
@@ -51,16 +52,17 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(database.getProtocolType(), database.getName());
-        checkTables(database, sqlStatement, defaultSchemaName);
+        checkTables(database, sqlStatement, currentRuleConfig, defaultSchemaName);
         checkStorageUnits(database, sqlStatement);
         checkActualTableExist(database, sqlStatement, defaultSchemaName);
     }
     
-    private void checkTables(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final String defaultSchemaName) {
+    private void checkTables(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig, final String defaultSchemaName) {
         Collection<SingleTableSegment> tableSegments = sqlStatement.getTables();
         boolean isSchemaSupportedDatabaseType = database.getProtocolType() instanceof SchemaSupportedDatabaseType;
         ShardingSphereSchema schema = database.getSchema(defaultSchemaName);
         for (SingleTableSegment each : tableSegments) {
+            checkTableRuleExist(currentRuleConfig, each);
             checkDatabaseTypeAndTableNodeStyle(isSchemaSupportedDatabaseType, each);
             if (SingleTableConstants.ASTERISK.equals(each.getTableName())) {
                 continue;
@@ -69,7 +71,15 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
         }
     }
     
+    private void checkTableRuleExist(final SingleRuleConfiguration currentRuleConfig, final SingleTableSegment segment) {
+        ShardingSpherePreconditions.checkState(!currentRuleConfig.getTables().contains(segment.toString()),
+                () -> new InvalidSingleRuleConfigurationException(String.format("Duplicated table definition `%s`", segment)));
+    }
+    
     private void checkDatabaseTypeAndTableNodeStyle(final boolean isSchemaSupportedDatabaseType, final SingleTableSegment singleTableSegment) {
+        if (SingleTableConstants.ALL_TABLES.equals(singleTableSegment.toString()) || SingleTableConstants.ALL_SCHEMA_TABLES.equals(singleTableSegment.toString())) {
+            return;
+        }
         if (isSchemaSupportedDatabaseType) {
             ShardingSpherePreconditions.checkState(singleTableSegment.getSchemaName().isPresent(),
                     () -> new InvalidDataNodesFormatException(singleTableSegment.toString(), "Current database is schema required, please use format `db.schema.table`"));
@@ -101,6 +111,9 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     
     private void checkActualTableExist(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final String defaultSchemaName) {
         Collection<String> requiredDataSources = getRequiredDataSources(sqlStatement);
+        if (requiredDataSources.isEmpty()) {
+            return;
+        }
         ShardingSphereResourceMetaData resourceMetaData = database.getResourceMetaData();
         Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(resourceMetaData.getDataSources(), database.getRuleMetaData().getRules());
         Map<String, Map<String, Collection<String>>> actualTableNodes = new LinkedHashMap<>();

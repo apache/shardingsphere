@@ -60,6 +60,10 @@ public final class MigrationDistSQLCommand {
     @XmlElement(name = "migration-single-table-with-schema")
     private String migrationSingleTableWithSchema;
     
+    @XmlElement(name = "load-single-table")
+    @Getter
+    private String loadSingleTable;
+    
     /**
      * Get migration single table DistSQL.
      *
