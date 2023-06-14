@@ -126,8 +126,9 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     private EncryptAssignmentToken generateValuesSQLToken(final EncryptTable encryptTable, final AssignmentSegment assignmentSegment, final FunctionSegment functionSegment) {
         ColumnSegment columnSegment = assignmentSegment.getColumns().get(0);
         String column = columnSegment.getIdentifier().getValue();
-        ColumnSegment valueColumnSegment = (ColumnSegment) functionSegment.getParameters().stream().findFirst().get();
-        String valueColumn = valueColumnSegment.getIdentifier().getValue();
+        Optional<ExpressionSegment> valueColumnSegment = functionSegment.getParameters().stream().findFirst();
+        Preconditions.checkState(valueColumnSegment.isPresent());
+        String valueColumn = ((ColumnSegment) valueColumnSegment.get()).getIdentifier().getValue();
         EncryptFunctionAssignmentToken result = new EncryptFunctionAssignmentToken(columnSegment.getStartIndex(), assignmentSegment.getStopIndex());
         boolean cipherColumnPresent = encryptRule.findStandardEncryptor(encryptTable.getTable(), column).isPresent();
         boolean cipherValueColumnPresent = encryptRule.findStandardEncryptor(encryptTable.getTable(), valueColumn).isPresent();
