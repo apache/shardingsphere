@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
@@ -38,10 +38,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Insert cipher column name token generator.
+ * Insert cipher column name token generator for encrypt.
  */
 @Setter
-public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, EncryptRuleAware {
+public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, EncryptRuleAware {
     
     private EncryptRule encryptRule;
     
