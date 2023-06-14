@@ -133,7 +133,9 @@ public final class DistSQLScriptConstants {
             + System.lineSeparator()
             + "WRITE_STORAGE_UNIT=%s,"
             + System.lineSeparator()
-            + "READ_STORAGE_UNITS(%s)%s"
+            + "READ_STORAGE_UNITS(%s),"
+            + System.lineSeparator()
+            + "TRANSACTIONAL_READ_QUERY_STRATEGY='%s'%s"
             + System.lineSeparator()
             + ")";
     

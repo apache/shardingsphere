@@ -50,6 +50,7 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds:
+      transactionalReadQueryStrategy: PRIMARY
       writeDataSourceName: write_ds_0
       readDataSourceNames:
         - read_ds_0
