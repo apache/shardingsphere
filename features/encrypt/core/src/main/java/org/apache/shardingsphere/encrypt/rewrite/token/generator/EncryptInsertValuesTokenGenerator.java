@@ -90,14 +90,11 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     
     private void processPreviousSQLToken(final InsertStatementContext insertStatementContext, final InsertValuesToken insertValuesToken) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return;
-        }
+        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         int count = 0;
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
-            encryptToken(encryptTable.get(), insertValuesToken.getInsertValues().get(count), schemaName, tableName, insertStatementContext, each);
+            encryptToken(encryptTable, insertValuesToken.getInsertValues().get(count), schemaName, tableName, insertStatementContext, each);
             count++;
         }
     }
@@ -106,14 +103,11 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Collection<InsertValuesSegment> insertValuesSegments = insertStatementContext.getSqlStatement().getValues();
         InsertValuesToken result = new EncryptInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return result;
-        }
+        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = new InsertValue(each.getValueExpressions());
-            encryptToken(encryptTable.get(), insertValueToken, schemaName, tableName, insertStatementContext, each);
+            encryptToken(encryptTable, insertValueToken, schemaName, tableName, insertStatementContext, each);
             result.getInsertValues().add(insertValueToken);
         }
         return result;
@@ -185,8 +179,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     }
     
     private boolean isAddLiteralExpressionSegment(final InsertValueContext insertValueContext, final int columnIndex) {
-        return insertValueContext.getParameters().isEmpty()
-                || insertValueContext.getValueExpressions().get(columnIndex) instanceof LiteralExpressionSegment;
+        return insertValueContext.getParameters().isEmpty() || insertValueContext.getValueExpressions().get(columnIndex) instanceof LiteralExpressionSegment;
     }
     
     private int getParameterIndexCount(final InsertValue insertValueToken) {

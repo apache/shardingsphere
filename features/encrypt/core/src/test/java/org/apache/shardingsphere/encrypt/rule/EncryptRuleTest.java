@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleCo
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.exception.algorithm.MismatchedEncryptAlgorithmTypeException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,16 @@ class EncryptRuleTest {
     @Test
     void assertFindEncryptTable() {
         assertTrue(new EncryptRule(createEncryptRuleConfiguration()).findEncryptTable("t_encrypt").isPresent());
+    }
+    
+    @Test
+    void assertGetEncryptTable() {
+        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getEncryptTable("t_encrypt").getTable(), is("t_encrypt"));
+    }
+    
+    @Test
+    void assertGetNotExistedEncryptTable() {
+        assertThrows(EncryptTableNotFoundException.class, () -> new EncryptRule(createEncryptRuleConfiguration()).getEncryptTable("not_existed_tbl"));
     }
     
     @Test

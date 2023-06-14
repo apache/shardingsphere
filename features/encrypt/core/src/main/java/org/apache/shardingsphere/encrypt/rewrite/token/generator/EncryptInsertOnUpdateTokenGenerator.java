@@ -74,10 +74,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         }
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return Collections.emptyList();
-        }
+        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
         for (AssignmentSegment each : onDuplicateKeyColumnsSegments) {
             boolean leftEncryptorPresent = encryptRule.findStandardEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent();
@@ -91,7 +88,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
             if (!leftEncryptorPresent) {
                 continue;
             }
-            generateSQLToken(schemaName, encryptTable.get(), each).ifPresent(result::add);
+            generateSQLToken(schemaName, encryptTable, each).ifPresent(result::add);
         }
         return result;
     }

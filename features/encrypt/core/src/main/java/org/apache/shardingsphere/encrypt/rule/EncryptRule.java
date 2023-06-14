@@ -28,6 +28,7 @@ import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.exception.algorithm.MismatchedEncryptAlgorithmTypeException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingEncryptorException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -122,6 +123,18 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      */
     public Optional<EncryptTable> findEncryptTable(final String tableName) {
         return Optional.ofNullable(tables.get(tableName.toLowerCase()));
+    }
+    
+    /**
+     * Get encrypt table.
+     *
+     * @param tableName table name
+     * @return encrypt table
+     */
+    public EncryptTable getEncryptTable(final String tableName) {
+        Optional<EncryptTable> encryptTable = findEncryptTable(tableName);
+        ShardingSpherePreconditions.checkState(encryptTable.isPresent(), () -> new EncryptTableNotFoundException(tableName));
+        return encryptTable.get();
     }
     
     /**
