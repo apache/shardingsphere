@@ -20,13 +20,11 @@ package org.apache.shardingsphere.metadata.persist;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.NewDataSourcePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.NewDatabaseRulePersistService;
@@ -39,7 +37,6 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -99,22 +96,8 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
             databaseMetaDataService.addDatabase(databaseName);
         } else {
             dataSourceService.persist(databaseName, getDataSourcePropertiesMap(databaseConfigs.getDataSources()));
-            databaseRulePersistService.persist(databaseName, decorateRuleConfigs(databaseName, dataSources, rules));
+            databaseRulePersistService.persist(databaseName, databaseConfigs.getRuleConfigurations());
         }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Collection<RuleConfiguration> decorateRuleConfigs(final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
-        Collection<RuleConfiguration> result = new LinkedList<>();
-        for (ShardingSphereRule each : rules) {
-            RuleConfiguration ruleConfig = each.getConfiguration();
-            if (TypedSPILoader.contains(RuleConfigurationDecorator.class, ruleConfig.getClass().getName())) {
-                result.add(TypedSPILoader.getService(RuleConfigurationDecorator.class, ruleConfig.getClass().getName()).decorate(databaseName, dataSources, rules, ruleConfig));
-            } else {
-                result.add(each.getConfiguration());
-            }
-        }
-        return result;
     }
     
     private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {

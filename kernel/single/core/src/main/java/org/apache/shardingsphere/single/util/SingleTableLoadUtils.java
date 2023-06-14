@@ -21,16 +21,17 @@ import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.single.constant.SingleTableConstants;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
@@ -74,12 +75,12 @@ public final class SingleTableLoadUtils {
     }
     
     /**
-     * Get loaded tables.
+     * Get excluded tables.
      *
      * @param builtRules built rules
-     * @return loaded tables
+     * @return excluded tables
      */
-    public static Collection<String> getLoadedTables(final Collection<ShardingSphereRule> builtRules) {
+    public static Collection<String> getExcludedTables(final Collection<ShardingSphereRule> builtRules) {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ShardingSphereRule each : builtRules) {
             if (!(each instanceof TableContainedRule)) {
@@ -95,10 +96,9 @@ public final class SingleTableLoadUtils {
      * Get feature required single tables.
      *
      * @param builtRules built rules
-     * @param excludedTables excluded tables
      * @return feature required single tables
      */
-    public static Collection<String> getFeatureRequiredSingleTables(final Collection<ShardingSphereRule> builtRules, final Collection<String> excludedTables) {
+    public static Collection<String> getFeatureRequiredSingleTables(final Collection<ShardingSphereRule> builtRules) {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ShardingSphereRule each : builtRules) {
             if (!(each instanceof TableContainedRule)) {
@@ -108,17 +108,7 @@ public final class SingleTableLoadUtils {
             if (tableContainedRule.getEnhancedTableMapper().getTableNames().isEmpty() || !tableContainedRule.getDistributedTableMapper().getTableNames().isEmpty()) {
                 continue;
             }
-            result.addAll(getRequiredTables(tableContainedRule.getEnhancedTableMapper().getTableNames(), excludedTables));
-        }
-        return result;
-    }
-    
-    private static Collection<String> getRequiredTables(final Collection<String> requiredTables, final Collection<String> excludedTables) {
-        Collection<String> result = new LinkedList<>();
-        for (final String each : requiredTables) {
-            if (!excludedTables.contains(each)) {
-                result.add(each);
-            }
+            result.addAll(tableContainedRule.getEnhancedTableMapper().getTableNames());
         }
         return result;
     }
@@ -155,5 +145,52 @@ public final class SingleTableLoadUtils {
             result.add(new DataNode(databaseName, databaseType, each));
         }
         return result;
+    }
+    
+    /**
+     * Get all tables node string.
+     *
+     * @param databaseType database type
+     * @return node string for all tables
+     */
+    public static String getAllTablesNodeStr(final DatabaseType databaseType) {
+        return databaseType instanceof SchemaSupportedDatabaseType ? SingleTableConstants.ALL_SCHEMA_TABLES : SingleTableConstants.ALL_TABLES;
+    }
+    
+    /**
+     * Get all tables node string for data source.
+     *
+     * @param databaseType database type
+     * @param dataSourceName data source name
+     * @param schemaName schema name
+     * @return node string for all tables
+     */
+    public static String getAllTablesNodeStrFromDataSource(final DatabaseType databaseType, final String dataSourceName, final String schemaName) {
+        return databaseType instanceof SchemaSupportedDatabaseType
+                ? formatDataNode(dataSourceName, schemaName, SingleTableConstants.ASTERISK)
+                : formatDataNode(dataSourceName, SingleTableConstants.ASTERISK);
+    }
+    
+    /**
+     * Get data node String.
+     *
+     * @param databaseType database type
+     * @param dataSourceName data source name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return data node string
+     */
+    public static String getDataNodeString(final DatabaseType databaseType, final String dataSourceName, final String schemaName, final String tableName) {
+        return databaseType instanceof SchemaSupportedDatabaseType
+                ? formatDataNode(dataSourceName, schemaName, tableName)
+                : formatDataNode(dataSourceName, tableName);
+    }
+    
+    private static String formatDataNode(final String dataSourceName, final String tableName) {
+        return String.format("%s.%s", dataSourceName, tableName);
+    }
+    
+    private static String formatDataNode(final String dataSourceName, final String schemaName, final String tableName) {
+        return String.format("%s.%s.%s", dataSourceName, schemaName, tableName);
     }
 }

@@ -20,6 +20,8 @@ package org.apache.shardingsphere.single.datanode;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,20 +60,14 @@ class SingleTableDataNodeLoaderTest {
     
     private Map<String, DataSource> dataSourceMap;
     
-    private Map<String, Map<String, Collection<String>>> configuredSingleTables;
+    private Collection<String> configuredSingleTables;
     
     @BeforeEach
     void setUp() throws SQLException {
         dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("ds0", mockDataSource("ds0", Arrays.asList("employee", "dept", "salary")));
         dataSourceMap.put("ds1", mockDataSource("ds1", Arrays.asList("student", "teacher", "class", "salary")));
-        configuredSingleTables = new LinkedHashMap<>();
-        Map<String, Collection<String>> tablesOfSchema0 = new LinkedHashMap<>();
-        Map<String, Collection<String>> tablesOfSchema1 = new LinkedHashMap<>();
-        tablesOfSchema0.put(DefaultDatabase.LOGIC_NAME, Arrays.asList("employee", "dept", "salary"));
-        tablesOfSchema1.put(DefaultDatabase.LOGIC_NAME, Arrays.asList("student", "teacher", "class", "salary"));
-        configuredSingleTables.put("ds0", tablesOfSchema0);
-        configuredSingleTables.put("ds1", tablesOfSchema1);
+        configuredSingleTables = Collections.singletonList("*.*");
     }
     
     private DataSource mockDataSource(final String dataSourceName, final List<String> tableNames) throws SQLException {
@@ -95,8 +91,8 @@ class SingleTableDataNodeLoaderTest {
     
     @Test
     void assertLoad() {
-        Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, excludedTables, configuredSingleTables);
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
+                dataSourceMap, getBuiltRulesWithExcludedTables(), configuredSingleTables);
         assertFalse(actual.containsKey("employee"));
         assertFalse(actual.containsKey("salary"));
         assertFalse(actual.containsKey("student"));
@@ -106,6 +102,13 @@ class SingleTableDataNodeLoaderTest {
         assertThat(actual.get("dept").iterator().next().getDataSourceName(), is("ds0"));
         assertThat(actual.get("teacher").iterator().next().getDataSourceName(), is("ds1"));
         assertThat(actual.get("class").iterator().next().getDataSourceName(), is("ds1"));
+    }
+    
+    private Collection<ShardingSphereRule> getBuiltRulesWithExcludedTables() {
+        Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
+        TableContainedRule tableContainedRule = mock(TableContainedRule.class, RETURNS_DEEP_STUBS);
+        when(tableContainedRule.getDistributedTableMapper().getTableNames()).thenReturn(excludedTables);
+        return Collections.singletonList(tableContainedRule);
     }
     
     @Test

@@ -89,7 +89,7 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     }
     
     private void checkStorageUnits(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement) {
-        Collection<String> requiredDataSources = getRequiredDataSources(sqlStatement);;
+        Collection<String> requiredDataSources = getRequiredDataSources(sqlStatement);
         if (requiredDataSources.isEmpty()) {
             return;
         }

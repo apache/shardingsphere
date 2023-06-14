@@ -73,51 +73,47 @@
 #
 ######################################################################################################
 #
-databaseName: encrypt_db
-
-dataSources:
-  ds_0:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
-    username: root
-    password: 123456
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-    minPoolSize: 1
-  ds_1:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
-    username: root
-    password: 123456
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-    minPoolSize: 1
-
-rules:
-#- !SINGLE
+#databaseName: encrypt_db
+#
+#dataSources:
+#  ds_0:
+#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+#    username: root
+#    password:
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#    minPoolSize: 1
+#  ds_1:
+#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+#    username: root
+#    password:
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#    minPoolSize: 1
+#
+#rules:
+#- !ENCRYPT
+#  encryptors:
+#    aes_encryptor:
+#      type: AES
+#      props:
+#        aes-key-value: 123456abc
+#    rc4_encryptor:
+#      type: RC4
+#      props:
+#        rc4-key-value: 123456abc
 #  tables:
-#    - ds_0.t_single
-#    - ds_0.*
-- !ENCRYPT
-  encryptors:
-    aes_encryptor:
-      type: AES
-      props:
-        aes-key-value: 123456abc
-    rc4_encryptor:
-      type: RC4
-      props:
-        rc4-key-value: 123456abc
-  tables:
-    t_encrypt:
-      columns:
-        user_id:
-          cipher:
-            name: user_cipher
-            encryptorName: aes_encryptor
-        order_id:
-          cipher:
-            name: order_encrypt
-            encryptorName: rc4_encryptor
+#    t_encrypt:
+#      columns:
+#        user_id:
+#          cipher:
+#            name: user_cipher
+#            encryptorName: aes_encryptor
+#        order_id:
+#          cipher:
+#            name: order_encrypt
+#            encryptorName: rc4_encryptor

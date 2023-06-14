@@ -42,7 +42,7 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -67,32 +67,17 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     
     private final TableNamesMapper tableNamesMapper = new TableNamesMapper();
     
+    private final DatabaseType databaseType;
+    
     public SingleRule(final SingleRuleConfiguration ruleConfig, final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
         defaultDataSource = ruleConfig.getDefaultDataSource().orElse(null);
         Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSourceMap);
         Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(enabledDataSources, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
-        DatabaseType databaseType = DatabaseTypeEngine.getStorageType(enabledDataSources.values());
-        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, databaseType, aggregateDataSourceMap,
-                SingleTableLoadUtils.getLoadedTables(builtRules), getConfiguredTables(databaseName, databaseType));
+        databaseType = DatabaseTypeEngine.getStorageType(enabledDataSources.values());
+        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, databaseType, aggregateDataSourceMap, builtRules, configuration.getTables());
         singleTableDataNodes.forEach((key, value) -> tableNamesMapper.put(value.iterator().next().getTableName()));
-    }
-    
-    private Map<String, Map<String, Collection<String>>> getConfiguredTables(final String databaseName, final DatabaseType databaseType) {
-        if (configuration.getTables().isEmpty()) {
-            return Collections.emptyMap();
-        }
-        Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>();
-        Collection<DataNode> dataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, SingleTableLoadUtils.splitTableLines(configuration.getTables()));
-        for (DataNode each : dataNodes) {
-            Map<String, Collection<String>> schemaTables = result.getOrDefault(each.getDataSourceName(), new LinkedHashMap<>());
-            Collection<String> tables = schemaTables.getOrDefault(each.getSchemaName(), new LinkedList<>());
-            tables.add(each.getTableName());
-            schemaTables.putIfAbsent(each.getSchemaName(), tables);
-            result.putIfAbsent(each.getDataSourceName(), schemaTables);
-        }
-        return result;
     }
     
     /**
@@ -185,6 +170,19 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
             dataNode.setSchemaName(schemaName);
             dataNodes.add(dataNode);
             tableNamesMapper.put(tableName);
+            addTableConfiguration(dataSourceName, schemaName, tableName);
+        }
+    }
+    
+    private void addTableConfiguration(final String dataSourceName, final String schemaName, final String tableName) {
+        Collection<String> splitTables = SingleTableLoadUtils.splitTableLines(configuration.getTables());
+        if (splitTables.contains(SingleTableLoadUtils.getAllTablesNodeStr(databaseType))
+                || splitTables.contains(SingleTableLoadUtils.getAllTablesNodeStrFromDataSource(databaseType, dataSourceName, schemaName))) {
+            return;
+        }
+        String dataNodeString = SingleTableLoadUtils.getDataNodeString(databaseType, dataSourceName, schemaName, tableName);
+        if (!configuration.getTables().contains(dataNodeString)) {
+            configuration.getTables().add(dataNodeString);
         }
     }
     
@@ -199,7 +197,14 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
             return;
         }
         Collection<DataNode> dataNodes = singleTableDataNodes.get(tableName.toLowerCase());
-        dataNodes.removeIf(each -> schemaNames.contains(each.getSchemaName().toLowerCase()));
+        Iterator<DataNode> iterator = dataNodes.iterator();
+        while (iterator.hasNext()) {
+            DataNode each = iterator.next();
+            if (schemaNames.contains(each.getSchemaName().toLowerCase())) {
+                iterator.remove();
+                configuration.getTables().remove(SingleTableLoadUtils.getDataNodeString(databaseType, each.getDataSourceName(), each.getSchemaName(), tableName));
+            }
+        }
         if (dataNodes.isEmpty()) {
             singleTableDataNodes.remove(tableName.toLowerCase());
             tableNamesMapper.remove(tableName);
