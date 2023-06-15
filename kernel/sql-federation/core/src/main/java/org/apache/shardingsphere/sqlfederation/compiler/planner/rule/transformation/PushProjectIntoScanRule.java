@@ -17,61 +17,40 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.planner.rule.transformation;
 
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
-import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.core.RelFactories;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.rules.TransformationRule;
-import org.apache.calcite.rex.RexInputRef;
-import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.tools.RelBuilderFactory;
-import org.apache.shardingsphere.sqlfederation.compiler.operator.physical.enumerable.EnumerablePushDownTableScan;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.shardingsphere.sqlfederation.compiler.operator.logical.LogicalScan;
+import org.immutables.value.Value;
 
 /**
  * Push project into scan rule.
  */
-public final class PushProjectIntoScanRule extends RelOptRule implements TransformationRule {
+@Value.Enclosing
+public final class PushProjectIntoScanRule extends RelRule<PushProjectIntoScanRule.Config> implements TransformationRule {
     
-    public static final PushProjectIntoScanRule INSTANCE = new PushProjectIntoScanRule(RelFactories.LOGICAL_BUILDER);
-    
-    public PushProjectIntoScanRule(final RelBuilderFactory relBuilderFactory) {
-        super(operand(LogicalProject.class, operand(EnumerablePushDownTableScan.class, none())), relBuilderFactory, "TranslatableProjectRule");
+    private PushProjectIntoScanRule(final Config config) {
+        super(config);
     }
     
     @Override
     public void onMatch(final RelOptRuleCall call) {
-        LogicalProject project = call.rel(0);
-        int[] fields = getProjectFields(project.getProjects());
-        if (0 == fields.length) {
-            return;
-        }
-        EnumerablePushDownTableScan scan = call.rel(1);
-        List<RexNode> expressions = project.getProjects();
-        if (fields.length == expressions.size()) {
-            call.transformTo(new EnumerablePushDownTableScan(scan.getCluster(), scan.getTable(), scan.getSqlFederationTable(), scan.getFilters(), fields));
-        } else {
-            EnumerablePushDownTableScan tableScan =
-                    new EnumerablePushDownTableScan(scan.getCluster(), scan.getTable(), scan.getSqlFederationTable(), scan.getFilters(), fields, expressions.size(), expressions);
-            RelNode logicalProject = LogicalProject.create(tableScan, project.getHints(), project.getProjects(), project.getRowType());
-            call.transformTo(logicalProject);
-        }
+        LogicalProject logicalProject = call.rel(0);
+        LogicalScan logicalScan = call.rel(1);
+        logicalScan.pushDown(logicalProject);
+        call.transformTo(logicalScan);
     }
     
-    private int[] getProjectFields(final List<RexNode> rexNodes) {
-        List<Integer> rexInputRefs = new ArrayList<>();
-        for (RexNode exp : rexNodes) {
-            if (exp instanceof RexInputRef) {
-                rexInputRefs.add(((RexInputRef) exp).getIndex());
-            }
+    @Value.Immutable
+    public interface Config extends RelRule.Config {
+        
+        Config DEFAULT = ImmutablePushProjectIntoScanRule.Config.builder().description(PushProjectIntoScanRule.class.getSimpleName())
+                .operandSupplier(b0 -> b0.operand(LogicalProject.class).inputs(b1 -> b1.operand(LogicalScan.class).anyInputs())).build();
+        
+        @Override
+        default PushProjectIntoScanRule toRule() {
+            return new PushProjectIntoScanRule(this);
         }
-        int[] result = new int[rexInputRefs.size()];
-        for (int index = 0; index < rexInputRefs.size(); index++) {
-            result[index] = rexInputRefs.get(index);
-        }
-        return result;
     }
 }

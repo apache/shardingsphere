@@ -25,16 +25,14 @@ import java.util.Iterator;
 
 /**
  * Memory enumerator.
- * 
- * @param <T> type of row
  */
-public final class MemoryEnumerator<T> implements Enumerator<T> {
+public final class MemoryEnumerator implements Enumerator<Object[]> {
     
     private final Collection<ShardingSphereRowData> rows;
     
     private Iterator<ShardingSphereRowData> rowDataIterator;
     
-    private T current;
+    private Object[] current;
     
     public MemoryEnumerator(final Collection<ShardingSphereRowData> rows) {
         this.rows = rows;
@@ -42,14 +40,14 @@ public final class MemoryEnumerator<T> implements Enumerator<T> {
     }
     
     @Override
-    public T current() {
+    public Object[] current() {
         return current;
     }
     
     @Override
     public boolean moveNext() {
         if (rowDataIterator.hasNext()) {
-            current = (T) rowDataIterator.next().getRows().toArray();
+            current = rowDataIterator.next().getRows().toArray();
             return true;
         }
         current = null;

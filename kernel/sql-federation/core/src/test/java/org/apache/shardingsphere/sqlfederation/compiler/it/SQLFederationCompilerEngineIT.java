@@ -252,8 +252,9 @@ class SQLFederationCompilerEngineIT {
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertCompile(final TestCase testcase) {
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType())).parse(testcase.getSql(), false);
-        String actual = sqlFederationCompilerEngine.compile(new ExecutionPlanCacheKey(testcase.getSql(), sqlStatement), false).getPhysicalPlan().explain().replaceAll("[\r\n]", "");
+        String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType());
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(testcase.getSql(), false);
+        String actual = sqlFederationCompilerEngine.compile(new ExecutionPlanCacheKey(testcase.getSql(), sqlStatement, databaseType), false).getPhysicalPlan().explain().replaceAll("[\r\n]", "");
         assertThat(actual, is(testcase.getAssertion().getExpectedResult()));
     }
     

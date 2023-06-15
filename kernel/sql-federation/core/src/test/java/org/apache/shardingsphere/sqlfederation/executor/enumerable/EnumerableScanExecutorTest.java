@@ -39,7 +39,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class EnumerablePushDownTableScanExecutorTest {
+class EnumerableScanExecutorTest {
     
     @Test
     void assertExecuteWithShardingSphereData() {
@@ -58,8 +58,8 @@ class EnumerablePushDownTableScanExecutorTest {
         when(schemaData.getTableData().get("test")).thenReturn(tableData);
         ShardingSphereTable shardingSphereTable = mock(ShardingSphereTable.class);
         when(shardingSphereTable.getName()).thenReturn("test");
-        Enumerable<Object[]> enumerable = new EnumerablePushDownTableScanExecutor(null, null, null, optimizerContext, null, executorContext, shardingSphereData)
-                .execute(shardingSphereTable, mock(EnumerablePushDownTableScanExecutorContext.class));
+        Enumerable<Object[]> enumerable = new EnumerableScanExecutor(null, null, null, optimizerContext, null, executorContext, shardingSphereData)
+                .execute(shardingSphereTable, mock(EnumerableScanExecutorContext.class));
         try (Enumerator<Object[]> actual = enumerable.enumerator()) {
             actual.moveNext();
             Object[] row = actual.current();

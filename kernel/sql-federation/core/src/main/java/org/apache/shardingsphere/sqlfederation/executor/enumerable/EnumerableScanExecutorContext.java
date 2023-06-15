@@ -21,16 +21,18 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 
+import java.util.List;
+
 /**
  * Enumerable push down table scan executor context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class EnumerablePushDownTableScanExecutorContext {
+public final class EnumerableScanExecutorContext {
     
     private final DataContext root;
     
-    private final String[] filterValues;
+    private final String sql;
     
-    private final int[] projects;
+    private final Object[] parameterIndexes;
 }
