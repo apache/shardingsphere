@@ -65,7 +65,6 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
         EncryptRuleConfiguration config;
         if (rule.isPresent()) {
             config = (EncryptRuleConfiguration) rule.get().getConfiguration();
-            config.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
             config.getTables().add(needToAddedConfig);
         } else {
             config = new EncryptRuleConfiguration(Collections.singletonList(needToAddedConfig), Collections.emptyMap());
