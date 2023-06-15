@@ -109,6 +109,16 @@ public final class DataNode {
         return dataSourceName + DELIMITER + tableName;
     }
     
+    /**
+     * Format data node as string.
+     *
+     * @param databaseType database type
+     * @return formatted data node
+     */
+    public String format(final DatabaseType databaseType) {
+        return databaseType instanceof SchemaSupportedDatabaseType ? dataSourceName + DELIMITER + schemaName + DELIMITER + tableName : dataSourceName + DELIMITER + tableName;
+    }
+    
     @Override
     public boolean equals(final Object object) {
         if (this == object) {

@@ -68,12 +68,13 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
         ShadowRuleConfiguration config;
         if (rule.isPresent()) {
             config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+            config.getDataSources().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
             config.getDataSources().add(needToAddedConfig);
         } else {
             config = new ShadowRuleConfiguration();
             config.getDataSources().add(needToAddedConfig);
+            ruleConfigs.add(config);
         }
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -91,7 +92,6 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(event.getDataSourceName()));
         config.getDataSources().add(needToAlteredConfig);
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -107,7 +107,6 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(event.getDataSourceName()));
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }

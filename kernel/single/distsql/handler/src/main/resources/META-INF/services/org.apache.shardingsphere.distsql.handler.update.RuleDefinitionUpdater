@@ -17,3 +17,4 @@
 
 org.apache.shardingsphere.single.distsql.handler.update.SetDefaultSingleTableStorageUnitStatementUpdater
 org.apache.shardingsphere.single.distsql.handler.update.LoadSingleTableStatementUpdater
+org.apache.shardingsphere.single.distsql.handler.update.UnloadSingleTableStatementUpdater

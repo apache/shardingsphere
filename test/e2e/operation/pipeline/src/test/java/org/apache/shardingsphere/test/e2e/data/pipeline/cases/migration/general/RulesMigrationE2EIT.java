@@ -89,8 +89,7 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
         containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
         commitMigrationByJobId(containerComposer, jobId);
-        containerComposer.proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
-        assertThat(containerComposer.getTargetTableRecordsCount(SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT));
+        assertThat(containerComposer.getTargetTableRecordsCount(containerComposer.getProxyDataSource(), SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT));
     }
     
     private static boolean isEnabled() {

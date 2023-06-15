@@ -67,8 +67,17 @@ public final class SingleTableDataNodeLoader {
         return loadSpecifiedDataNodes(actualDataNodes, featureRequiredSingleTables, configuredTableMap);
     }
     
-    private static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType,
-                                                          final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTables) {
+    /**
+     * Load single table data nodes.
+     *
+     * @param databaseName database name
+     * @param databaseType database type
+     * @param dataSourceMap data source map
+     * @param excludedTables excluded tables
+     * @return single table data node map
+     */
+    public static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType,
+                                                         final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTables) {
         Map<String, Collection<DataNode>> result = new ConcurrentHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             Map<String, Collection<DataNode>> dataNodeMap = load(databaseName, databaseType, entry.getKey(), entry.getValue(), excludedTables);
