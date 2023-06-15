@@ -20,7 +20,6 @@ package org.apache.shardingsphere.readwritesplitting.subscriber;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
@@ -32,8 +31,6 @@ import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoad
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Map;
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Readwrite-splitting load-balance subscriber.
@@ -75,11 +72,8 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleConfig
     
     private void renew(final String databaseName, final String loadBalanceName, final AlgorithmConfiguration algorithmConfig) {
         ShardingSphereDatabase database = databases.get(databaseName);
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
         config.getLoadBalancers().put(loadBalanceName, algorithmConfig);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
     }
     
     /**
@@ -90,10 +84,8 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleConfig
     @Subscribe
     public synchronized void renew(final DeleteLoadBalanceEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
         config.getLoadBalancers().remove(event.getLoadBalanceName());
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
 }
