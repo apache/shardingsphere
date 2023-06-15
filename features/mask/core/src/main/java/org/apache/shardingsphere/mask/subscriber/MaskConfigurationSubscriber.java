@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mask.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
@@ -31,9 +30,7 @@ import org.apache.shardingsphere.mask.event.config.DeleteMaskConfigurationEvent;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -64,7 +61,6 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
     public synchronized void renew(final AddMaskConfigurationEvent<MaskTableRuleConfiguration> event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         MaskTableRuleConfiguration needToAddedConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
         MaskRuleConfiguration config;
         if (rule.isPresent()) {
@@ -73,9 +69,7 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
             config.getTables().add(needToAddedConfig);
         } else {
             config = new MaskRuleConfiguration(Collections.singletonList(needToAddedConfig), Collections.emptyMap());
-            ruleConfigs.add(config);
         }
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -88,11 +82,9 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
     public synchronized void renew(final AlterMaskConfigurationEvent<MaskTableRuleConfiguration> event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         MaskTableRuleConfiguration needToAlteredConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
         config.getTables().add(needToAlteredConfig);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -104,10 +96,8 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
     @Subscribe
     public synchronized void renew(final DeleteMaskConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
 }
