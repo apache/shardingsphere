@@ -56,8 +56,9 @@ public final class DropDefaultShadowAlgorithmStatementUpdater implements RuleDef
     @Override
     public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final DropDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setShadowAlgorithms(Collections.singletonMap(currentRuleConfig.getDefaultShadowAlgorithmName(), null));
-        result.setDefaultShadowAlgorithmName("toBeDropped");
+        result.setShadowAlgorithms(Collections.singletonMap(currentRuleConfig.getDefaultShadowAlgorithmName(),
+                currentRuleConfig.getShadowAlgorithms().get(currentRuleConfig.getDefaultShadowAlgorithmName())));
+        result.setDefaultShadowAlgorithmName(currentRuleConfig.getDefaultShadowAlgorithmName());
         return result;
     }
     
