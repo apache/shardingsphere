@@ -28,11 +28,17 @@ loadSingleTable
     ;
 
 unloadSingleTable
-    : UNLOAD SINGLE TABLE tableDefinition
+    : UNLOAD SINGLE TABLE tableNames
+    | UNLOAD SINGLE TABLE ASTERISK_
+    | UNLOAD ALL SINGLE TABLES
     ;
 
 tableDefinition
     : tableIdentifier (COMMA_ tableIdentifier)*
+    ;
+
+tableNames
+    : tableName (COMMA_ tableName)*
     ;
 
 tableIdentifier

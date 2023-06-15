@@ -69,11 +69,12 @@ public final class ReadwriteSplittingConfigurationSubscriber implements RuleConf
         ReadwriteSplittingRuleConfiguration config;
         if (rule.isPresent()) {
             config = (ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration();
+            config.getDataSources().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
             config.getDataSources().add(needToAddedConfig);
         } else {
             config = new ReadwriteSplittingRuleConfiguration(Collections.singletonList(needToAddedConfig), Collections.emptyMap());
+            ruleConfigs.add(config);
         }
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -91,7 +92,6 @@ public final class ReadwriteSplittingConfigurationSubscriber implements RuleConf
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(event.getGroupName()));
         config.getDataSources().add(needToAlteredConfig);
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -107,7 +107,6 @@ public final class ReadwriteSplittingConfigurationSubscriber implements RuleConf
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(event.getGroupName()));
-        ruleConfigs.add(config);
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.executor.SQLDialectFactory;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.test.it.optimizer.converter.cases.SQLNodeConverterTestCases;
 import org.apache.shardingsphere.test.it.optimizer.converter.cases.SQLNodeConverterTestCasesRegistry;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserTestParameter;

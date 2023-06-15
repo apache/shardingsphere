@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -85,8 +86,10 @@ public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementB
     
     @Override
     public ASTNode visitUnloadSingleTable(final UnloadSingleTableContext ctx) {
-        Collection<SingleTableSegment> tables = ctx.tableDefinition().tableIdentifier().stream().map(this::getSingleTableSegment).collect(Collectors.toSet());
-        return new UnloadSingleTableStatement(tables);
+        if (null != ctx.ALL() || null != ctx.ASTERISK_()) {
+            return new UnloadSingleTableStatement(true, Collections.emptyList());
+        }
+        return new UnloadSingleTableStatement(false, ctx.tableNames().tableName().stream().map(this::getIdentifierValue).collect(Collectors.toSet()));
     }
     
     private SingleTableSegment getSingleTableSegment(final TableIdentifierContext ctx) {

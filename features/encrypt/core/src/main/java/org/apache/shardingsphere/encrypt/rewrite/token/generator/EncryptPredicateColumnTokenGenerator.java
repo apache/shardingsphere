@@ -85,10 +85,9 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         for (ColumnSegment each : columnSegments) {
             String tableName = Optional.ofNullable(columnExpressionTableNames.get(each.getExpression())).orElse("");
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent() || !encryptTable.get().findEncryptColumn(each.getIdentifier().getValue()).isPresent()) {
-                continue;
+            if (encryptTable.isPresent() && encryptTable.get().findEncryptColumn(each.getIdentifier().getValue()).isPresent()) {
+                result.add(buildSubstitutableColumnNameToken(each, whereSegments, encryptTable.get()));
             }
-            result.add(buildSubstitutableColumnNameToken(each, whereSegments, encryptTable.get()));
         }
         return result;
     }

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.exception.algorithm.MismatchedEncryptAlgorithmTypeException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingEncryptorException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -37,8 +38,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -125,6 +124,18 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
+     * Get encrypt table.
+     *
+     * @param tableName table name
+     * @return encrypt table
+     */
+    public EncryptTable getEncryptTable(final String tableName) {
+        Optional<EncryptTable> encryptTable = findEncryptTable(tableName);
+        ShardingSpherePreconditions.checkState(encryptTable.isPresent(), () -> new EncryptTableNotFoundException(tableName));
+        return encryptTable.get();
+    }
+    
+    /**
      * Find standard encryptor.
      *
      * @param tableName table name
@@ -185,48 +196,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
             result.add(null == each ? null : encryptor.encrypt(each, context));
         }
         return result;
-    }
-    
-    /**
-     * Get logic and cipher columns map.
-     *
-     * @param tableName table name 
-     * @return logic and cipher columns map
-     */
-    public Map<String, String> getLogicAndCipherColumnsMap(final String tableName) {
-        return findEncryptTable(tableName).map(EncryptTable::getLogicAndCipherColumns).orElse(Collections.emptyMap());
-    }
-    
-    /**
-     * Find assisted query column.
-     *
-     * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return assisted query column
-     */
-    public Optional<String> findAssistedQueryColumn(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findAssistedQueryColumn(logicColumnName));
-    }
-    
-    /**
-     * Find like query column.
-     *
-     * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return like query column
-     */
-    public Optional<String> findLikeQueryColumn(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findLikeQueryColumn(logicColumnName));
-    }
-    
-    /**
-     * Get assisted query columns.
-     * 
-     * @param tableName table name
-     * @return assisted query columns
-     */
-    public Collection<String> getAssistedQueryColumns(final String tableName) {
-        return findEncryptTable(tableName).map(EncryptTable::getAssistedQueryColumns).orElse(Collections.emptyList());
     }
     
     /**
