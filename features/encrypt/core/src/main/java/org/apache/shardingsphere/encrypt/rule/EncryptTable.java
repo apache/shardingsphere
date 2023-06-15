@@ -123,6 +123,16 @@ public final class EncryptTable {
     }
     
     /**
+     * Is encrypt column or not.
+     *
+     * @param logicColumnName logic column name
+     * @return encrypt column or not
+     */
+    public boolean isEncryptColumn(final String logicColumnName) {
+        return columns.containsKey(logicColumnName);
+    }
+    
+    /**
      * Is cipher column or not.
      *
      * @param logicColumnName logic column name

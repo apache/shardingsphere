@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
+import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
@@ -135,15 +136,16 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            Optional<StandardEncryptAlgorithm> standardEncryptor = encryptRule.findStandardEncryptor(encryptTable.getTable(), columnName);
-            if (!standardEncryptor.isPresent()) {
+            if (!encryptTable.isEncryptColumn(columnName)) {
                 continue;
             }
             int columnIndex = useDefaultInsertColumnsToken.map(optional -> ((UseDefaultInsertColumnsToken) optional).getColumns().indexOf(columnName))
                     .orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
             Object originalValue = insertValueContext.getLiteralValue(columnIndex).orElse(null);
             EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, encryptTable.getTable(), columnName);
-            setCipherColumn(insertValueToken, standardEncryptor.get(), columnIndex, encryptContext, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
+            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findStandardEncryptor(encryptTable.getTable(), columnName);
+            Preconditions.checkState(encryptor.isPresent());
+            setCipherColumn(insertValueToken, encryptor.get(), columnIndex, encryptContext, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
             int indexDelta = 1;
             if (encryptRule.findAssistedQueryEncryptor(encryptTable.getTable(), columnName).isPresent()) {
                 addAssistedQueryColumn(encryptTable, insertValueToken,

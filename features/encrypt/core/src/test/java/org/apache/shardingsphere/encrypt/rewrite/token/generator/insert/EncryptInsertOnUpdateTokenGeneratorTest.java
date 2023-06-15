@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
@@ -65,8 +64,6 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mockEncryptTable();
         when(result.getEncryptTable("t_user")).thenReturn(encryptTable);
-        when(result.findStandardEncryptor("t_user", "mobile")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
-        when(result.findStandardEncryptor("t_user", "cipher_mobile")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         when(result.encrypt(null, "db_test", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));
         return result;
     }
@@ -74,6 +71,7 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
     private static EncryptTable mockEncryptTable() {
         EncryptTable result = mock(EncryptTable.class);
         when(result.getTable()).thenReturn("t_user");
+        when(result.isEncryptColumn("mobile")).thenReturn(true);
         when(result.getCipherColumn("mobile")).thenReturn("cipher_mobile");
         return result;
     }
