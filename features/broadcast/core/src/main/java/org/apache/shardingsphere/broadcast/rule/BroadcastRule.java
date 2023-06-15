@@ -121,7 +121,7 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
     
     @Override
     public boolean isNeedAccumulate(final Collection<String> tables) {
-        return false;
+        return !isAllBroadcastTables(tables);
     }
     
     @Override

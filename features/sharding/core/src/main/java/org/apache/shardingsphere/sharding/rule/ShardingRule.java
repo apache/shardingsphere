@@ -685,7 +685,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     @Override
     public boolean isNeedAccumulate(final Collection<String> tables) {
-        return true;
+        return !tables.isEmpty() && tables.stream().anyMatch(this::isShardingTable);
     }
     
     @Override

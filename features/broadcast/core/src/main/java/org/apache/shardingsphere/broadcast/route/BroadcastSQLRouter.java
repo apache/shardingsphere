@@ -35,9 +35,6 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.LoadStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterProcedureStatement;
@@ -52,11 +49,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTablesp
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -121,20 +117,10 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
         }
     }
     
-    private Collection<RouteMapper> getTableRouteMappers(final Collection<String> logicTableNames) {
-        Collection<RouteMapper> result = new LinkedList<>();
-        for (String logicTableName : logicTableNames) {
-            result.add(new RouteMapper(logicTableName, logicTableName));
-        }
-        return result;
-    }
-    
     private void decorateDALStatement(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final BroadcastRule broadcastRule) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof SetStatement || sqlStatement instanceof ResetParameterStatement
-                || sqlStatement instanceof MySQLShowDatabasesStatement || sqlStatement instanceof LoadStatement) {
-            routeToAllDatabase(routeContext, broadcastRule);
+        if (sqlStatement instanceof MySQLUseStatement) {
             return;
         }
         if (isResourceGroupStatement(sqlStatement)) {
