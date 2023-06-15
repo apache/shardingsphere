@@ -294,11 +294,11 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public Connection getRandomConnection() throws SQLException {
-        return getConnections(getRandomPhysicalDataSourceName(), 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        return getConnections(getRandomPhysicalDataSourceName(), 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
     @Override
-    public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+    public List<Connection> getConnections(final String dataSourceName, final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         DataSource dataSource = dataSourceMap.get(dataSourceName);
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
@@ -306,18 +306,21 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
             connections = cachedConnections.get(dataSourceName);
         }
         List<Connection> result;
-        if (connections.size() >= connectionSize) {
-            result = new ArrayList<>(connections).subList(0, connectionSize);
+        int maxConnectionSize = connectionOffset + connectionSize;
+        if (connections.size() >= maxConnectionSize) {
+            result = new ArrayList<>(connections).subList(connectionOffset, maxConnectionSize);
         } else if (connections.isEmpty()) {
-            result = new ArrayList<>(createConnections(dataSourceName, dataSource, connectionSize, connectionMode));
+            Collection<Connection> newConnections = createConnections(dataSourceName, dataSource, maxConnectionSize, connectionMode);
+            result = new ArrayList<>(newConnections).subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(dataSourceName, result);
+                cachedConnections.putAll(dataSourceName, newConnections);
             }
         } else {
-            result = new ArrayList<>(connectionSize);
-            result.addAll(connections);
-            List<Connection> newConnections = createConnections(dataSourceName, dataSource, connectionSize - connections.size(), connectionMode);
-            result.addAll(newConnections);
+            List<Connection> allConnections = new ArrayList<>(maxConnectionSize);
+            allConnections.addAll(connections);
+            Collection<Connection> newConnections = createConnections(dataSourceName, dataSource, maxConnectionSize - connections.size(), connectionMode);
+            allConnections.addAll(newConnections);
+            result = allConnections.subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, newConnections);
             }

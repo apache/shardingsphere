@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,13 +57,19 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     @Override
     public final ExecutionGroupContext<T> prepare(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits,
                                                   final ExecutionGroupReportContext reportContext) throws SQLException {
+        return prepare(routeContext, Collections.emptyMap(), executionUnits, reportContext);
+    }
+    
+    @Override
+    public final ExecutionGroupContext<T> prepare(final RouteContext routeContext, final Map<String, Integer> connectionOffsets, final Collection<ExecutionUnit> executionUnits,
+                                                  final ExecutionGroupReportContext reportContext) throws SQLException {
         Collection<ExecutionGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
             String dataSourceName = entry.getKey();
             List<SQLUnit> sqlUnits = entry.getValue();
             List<List<SQLUnit>> sqlUnitGroups = group(sqlUnits);
             ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
-            result.addAll(group(dataSourceName, sqlUnitGroups, connectionMode));
+            result.addAll(group(dataSourceName, connectionOffsets.getOrDefault(dataSourceName, 0), sqlUnitGroups, connectionMode));
         }
         return decorate(routeContext, result, reportContext);
     }
@@ -72,7 +79,7 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
         return Lists.partition(sqlUnits, desiredPartitionSize);
     }
     
-    protected abstract List<ExecutionGroup<T>> group(String dataSourceName, List<List<SQLUnit>> sqlUnitGroups, ConnectionMode connectionMode) throws SQLException;
+    protected abstract List<ExecutionGroup<T>> group(String dataSourceName, int connectionOffset, List<List<SQLUnit>> sqlUnitGroups, ConnectionMode connectionMode) throws SQLException;
     
     private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1F);
