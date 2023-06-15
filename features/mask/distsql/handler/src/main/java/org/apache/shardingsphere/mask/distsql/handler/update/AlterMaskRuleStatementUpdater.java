@@ -32,7 +32,6 @@ import org.apache.shardingsphere.mask.distsql.parser.statement.AlterMaskRuleStat
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -69,8 +68,8 @@ public final class AlterMaskRuleStatementUpdater implements RuleDefinitionAlterU
 
     @Override
     public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
-        List<String> toBeAlteredTableNames = toBeAlteredRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
-        List<MaskColumnRuleConfiguration> columns = currentRuleConfig.getTables().stream().filter(each -> !toBeAlteredTableNames.contains(each.getName()))
+        Collection<String> toBeAlteredTableNames = toBeAlteredRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<MaskColumnRuleConfiguration> columns = currentRuleConfig.getTables().stream().filter(each -> !toBeAlteredTableNames.contains(each.getName()))
                 .flatMap(each -> each.getColumns().stream()).collect(Collectors.toList());
         columns.addAll(toBeAlteredRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).collect(Collectors.toList()));
         Collection<String> inUsedAlgorithmNames = columns.stream().map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toSet());
