@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
@@ -32,8 +30,6 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,8 +77,6 @@ class EncryptAlgorithmMetaDataTest {
     @Mock
     private ProjectionsContext projectionsContext;
     
-    private StandardEncryptAlgorithm<?, ?> encryptAlgorithm;
-    
     @BeforeEach
     void setUp() {
         when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
@@ -93,8 +87,6 @@ class EncryptAlgorithmMetaDataTest {
         when(selectStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        encryptAlgorithm =
-                (StandardEncryptAlgorithm<?, ?>) TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new PropertiesBuilder.Property("aes-key-value", "123456abc")));
     }
     
     @Test
@@ -147,15 +139,5 @@ class EncryptAlgorithmMetaDataTest {
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(database, encryptRule, selectStatementContext);
         Optional<EncryptContext> actual = encryptAlgorithmMetaData.findEncryptContext(1);
         assertFalse(actual.isPresent());
-    }
-    
-    @SuppressWarnings("rawtypes")
-    @Test
-    void assertFindStandardEncryptor() {
-        when(encryptRule.findStandardEncryptor("t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));
-        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(database, encryptRule, selectStatementContext);
-        Optional<StandardEncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findStandardEncryptor("t_order", "id");
-        assertTrue(actualEncryptor.isPresent());
-        assertThat(actualEncryptor.get().getType(), is("AES"));
     }
 }

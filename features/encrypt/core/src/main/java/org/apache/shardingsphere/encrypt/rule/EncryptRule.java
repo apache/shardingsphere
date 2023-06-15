@@ -136,18 +136,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * Find standard encryptor.
-     *
-     * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return standard encryptor
-     */
-    @SuppressWarnings("rawtypes")
-    public Optional<StandardEncryptAlgorithm> findStandardEncryptor(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findEncryptorName(logicColumnName).map(standardEncryptors::get));
-    }
-    
-    /**
      * Find assisted encryptor.
      *
      * @param tableName table name
@@ -179,15 +167,18 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @param tableName table name
      * @param logicColumnName logic column name
      * @param originalValue original value
-     * @return encrypted values
+     * @return encrypted value
      */
     @SuppressWarnings("unchecked")
     public Object encrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final Object originalValue) {
+        if (null == originalValue) {
+            return null;
+        }
         @SuppressWarnings("rawtypes")
         Optional<StandardEncryptAlgorithm> encryptor = findStandardEncryptor(tableName, logicColumnName);
         ShardingSpherePreconditions.checkState(encryptor.isPresent(), () -> new MissingEncryptorException(tableName, logicColumnName, "STANDARD"));
         EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
-        return null == originalValue ? null : encryptor.get().encrypt(originalValue, context);
+        return encryptor.get().encrypt(originalValue, context);
     }
     
     /**
@@ -215,6 +206,33 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
             result.add(null == each ? null : encryptor.encrypt(each, context));
         }
         return result;
+    }
+    
+    /**
+     * Decrypt.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param logicColumnName logic column name
+     * @param cipherValue cipher value
+     * @return decrypted value
+     */
+    @SuppressWarnings("unchecked")
+    public Object decrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final Object cipherValue) {
+        if (null == cipherValue) {
+            return null;
+        }
+        @SuppressWarnings("rawtypes")
+        Optional<StandardEncryptAlgorithm> encryptor = findStandardEncryptor(tableName, logicColumnName);
+        ShardingSpherePreconditions.checkState(encryptor.isPresent(), () -> new MissingEncryptorException(tableName, logicColumnName, "STANDARD"));
+        EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
+        return encryptor.get().decrypt(cipherValue, context);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private Optional<StandardEncryptAlgorithm> findStandardEncryptor(final String tableName, final String logicColumnName) {
+        return findEncryptTable(tableName).flatMap(optional -> optional.findEncryptorName(logicColumnName).map(standardEncryptors::get));
     }
     
     /**
