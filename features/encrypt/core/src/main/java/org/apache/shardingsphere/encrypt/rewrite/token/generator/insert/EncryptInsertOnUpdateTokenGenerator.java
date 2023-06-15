@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQL
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -67,23 +67,20 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         InsertStatement insertStatement = insertStatementContext.getSqlStatement();
         Preconditions.checkState(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).isPresent());
-        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).get();
-        Collection<AssignmentSegment> onDuplicateKeyColumnsSegments = onDuplicateKeyColumnsSegment.getColumns();
+        Collection<AssignmentSegment> onDuplicateKeyColumnsSegments = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).get().getColumns();
         if (onDuplicateKeyColumnsSegments.isEmpty()) {
             return Collections.emptyList();
         }
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return Collections.emptyList();
-        }
+        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
         for (AssignmentSegment each : onDuplicateKeyColumnsSegments) {
             boolean leftEncryptorPresent = encryptRule.findStandardEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent();
             if (each.getValue() instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) each.getValue()).getFunctionName())) {
-                ColumnSegment rightColumn = (ColumnSegment) ((FunctionSegment) each.getValue()).getParameters().stream().findFirst().get();
-                boolean rightEncryptorPresent = encryptRule.findStandardEncryptor(tableName, rightColumn.getIdentifier().getValue()).isPresent();
+                Optional<ExpressionSegment> rightColumnSegment = ((FunctionSegment) each.getValue()).getParameters().stream().findFirst();
+                Preconditions.checkState(rightColumnSegment.isPresent());
+                boolean rightEncryptorPresent = encryptRule.findStandardEncryptor(tableName, ((ColumnSegment) rightColumnSegment.get()).getIdentifier().getValue()).isPresent();
                 if (!leftEncryptorPresent && !rightEncryptorPresent) {
                     continue;
                 }
@@ -91,7 +88,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
             if (!leftEncryptorPresent) {
                 continue;
             }
-            generateSQLToken(schemaName, encryptTable.get(), each).ifPresent(result::add);
+            generateSQLToken(schemaName, encryptTable, each).ifPresent(result::add);
         }
         return result;
     }
@@ -129,8 +126,9 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     private EncryptAssignmentToken generateValuesSQLToken(final EncryptTable encryptTable, final AssignmentSegment assignmentSegment, final FunctionSegment functionSegment) {
         ColumnSegment columnSegment = assignmentSegment.getColumns().get(0);
         String column = columnSegment.getIdentifier().getValue();
-        ColumnSegment valueColumnSegment = (ColumnSegment) functionSegment.getParameters().stream().findFirst().get();
-        String valueColumn = valueColumnSegment.getIdentifier().getValue();
+        Optional<ExpressionSegment> valueColumnSegment = functionSegment.getParameters().stream().findFirst();
+        Preconditions.checkState(valueColumnSegment.isPresent());
+        String valueColumn = ((ColumnSegment) valueColumnSegment.get()).getIdentifier().getValue();
         EncryptFunctionAssignmentToken result = new EncryptFunctionAssignmentToken(columnSegment.getStartIndex(), assignmentSegment.getStopIndex());
         boolean cipherColumnPresent = encryptRule.findStandardEncryptor(encryptTable.getTable(), column).isPresent();
         boolean cipherValueColumnPresent = encryptRule.findStandardEncryptor(encryptTable.getTable(), valueColumn).isPresent();

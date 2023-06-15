@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -30,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-class InsertCipherNameTokenGeneratorTest {
+class EncryptInsertCipherNameTokenGeneratorTest {
     
-    private final InsertCipherNameTokenGenerator generator = new InsertCipherNameTokenGenerator();
+    private final EncryptInsertCipherNameTokenGenerator generator = new EncryptInsertCipherNameTokenGenerator();
     
     @BeforeEach
     void setup() {

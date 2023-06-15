@@ -58,17 +58,14 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     public Collection<SQLToken> generateSQLTokens(final CreateTableStatementContext createTableStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
         String tableName = createTableStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return Collections.emptyList();
-        }
+        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         List<ColumnDefinitionSegment> columns = new ArrayList<>(createTableStatementContext.getSqlStatement().getColumnDefinitions());
         for (int index = 0; index < columns.size(); index++) {
             ColumnDefinitionSegment each = columns.get(index);
             String columnName = each.getColumnName().getIdentifier().getValue();
             Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findStandardEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
-                result.addAll(getColumnTokens(encryptTable.get(), columnName, each, columns, index));
+                result.addAll(getColumnTokens(encryptTable, columnName, each, columns, index));
             }
         }
         return result;

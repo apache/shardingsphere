@@ -63,14 +63,11 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     @Override
     public Collection<SQLToken> generateSQLTokens(final AlterTableStatementContext alterTableStatementContext) {
         String tableName = alterTableStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return Collections.emptyList();
-        }
-        Collection<SQLToken> result = new LinkedList<>(getAddColumnTokens(encryptTable.get(), alterTableStatementContext.getSqlStatement().getAddColumnDefinitions()));
-        result.addAll(getModifyColumnTokens(encryptTable.get(), alterTableStatementContext.getSqlStatement().getModifyColumnDefinitions()));
-        result.addAll(getChangeColumnTokens(encryptTable.get(), alterTableStatementContext.getSqlStatement().getChangeColumnDefinitions()));
-        List<SQLToken> dropColumnTokens = getDropColumnTokens(encryptTable.get(), alterTableStatementContext.getSqlStatement().getDropColumnDefinitions());
+        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
+        Collection<SQLToken> result = new LinkedList<>(getAddColumnTokens(encryptTable, alterTableStatementContext.getSqlStatement().getAddColumnDefinitions()));
+        result.addAll(getModifyColumnTokens(encryptTable, alterTableStatementContext.getSqlStatement().getModifyColumnDefinitions()));
+        result.addAll(getChangeColumnTokens(encryptTable, alterTableStatementContext.getSqlStatement().getChangeColumnDefinitions()));
+        List<SQLToken> dropColumnTokens = getDropColumnTokens(encryptTable, alterTableStatementContext.getSqlStatement().getDropColumnDefinitions());
         String databaseName = alterTableStatementContext.getDatabaseType().getType();
         if ("SQLServer".equals(databaseName)) {
             result.addAll(mergeDropColumnStatement(dropColumnTokens, "", ""));

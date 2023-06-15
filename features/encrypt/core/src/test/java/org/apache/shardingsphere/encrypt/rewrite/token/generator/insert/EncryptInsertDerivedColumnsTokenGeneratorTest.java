@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.AssistQueryAndPlainInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -38,28 +37,28 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
+class EncryptInsertDerivedColumnsTokenGeneratorTest {
     
     @Test
     void assertIsNotGenerateSQLTokenWithNotInsertStatementContext() {
-        assertFalse(new AssistQueryAndPlainInsertColumnsTokenGenerator().isGenerateSQLToken(mock(SQLStatementContext.class)));
+        assertFalse(new EncryptInsertDerivedColumnsTokenGenerator().isGenerateSQLToken(mock(SQLStatementContext.class)));
     }
     
     @Test
     void assertIsNotGenerateSQLTokenWithoutInsertColumns() {
-        assertFalse(new AssistQueryAndPlainInsertColumnsTokenGenerator().isGenerateSQLToken(mock(InsertStatementContext.class, RETURNS_DEEP_STUBS)));
+        assertFalse(new EncryptInsertDerivedColumnsTokenGenerator().isGenerateSQLToken(mock(InsertStatementContext.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
     void assertIsGenerateSQLTokenWithInsertColumns() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.containsInsertColumns()).thenReturn(true);
-        assertTrue(new AssistQueryAndPlainInsertColumnsTokenGenerator().isGenerateSQLToken(insertStatementContext));
+        assertTrue(new EncryptInsertDerivedColumnsTokenGenerator().isGenerateSQLToken(insertStatementContext));
     }
     
     @Test
     void assertGenerateSQLTokensNotContainColumns() {
-        AssistQueryAndPlainInsertColumnsTokenGenerator tokenGenerator = new AssistQueryAndPlainInsertColumnsTokenGenerator();
+        EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(mockEncryptRule());
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("foo_tbl");
@@ -68,7 +67,7 @@ class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokensNotExistColumns() {
-        AssistQueryAndPlainInsertColumnsTokenGenerator tokenGenerator = new AssistQueryAndPlainInsertColumnsTokenGenerator();
+        EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(mockEncryptRule());
         ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
         when(columnSegment.getIdentifier().getValue()).thenReturn("bar_col");
@@ -79,7 +78,7 @@ class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokensExistColumns() {
-        AssistQueryAndPlainInsertColumnsTokenGenerator tokenGenerator = new AssistQueryAndPlainInsertColumnsTokenGenerator();
+        EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(mockEncryptRule());
         Collection<SQLToken> actual = tokenGenerator.generateSQLTokens(mockInsertStatementContext());
         assertThat(actual.size(), is(1));
@@ -90,7 +89,7 @@ class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptTable.findAssistedQueryColumn("foo_col")).thenReturn(Optional.of("assisted_query_col"));
-        when(result.findEncryptTable("foo_tbl")).thenReturn(Optional.of(encryptTable));
+        when(result.getEncryptTable("foo_tbl")).thenReturn(encryptTable);
         return result;
     }
     

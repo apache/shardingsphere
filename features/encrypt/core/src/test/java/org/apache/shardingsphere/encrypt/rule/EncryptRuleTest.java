@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleCo
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.exception.algorithm.MismatchedEncryptAlgorithmTypeException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,16 @@ class EncryptRuleTest {
     }
     
     @Test
+    void assertGetEncryptTable() {
+        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getEncryptTable("t_encrypt").getTable(), is("t_encrypt"));
+    }
+    
+    @Test
+    void assertGetNotExistedEncryptTable() {
+        assertThrows(EncryptTableNotFoundException.class, () -> new EncryptRule(createEncryptRuleConfiguration()).getEncryptTable("not_existed_tbl"));
+    }
+    
+    @Test
     void assertFindStandardEncryptor() {
         assertTrue(new EncryptRule(createEncryptRuleConfiguration()).findStandardEncryptor("t_encrypt", "pwd").isPresent());
     }
@@ -74,22 +85,12 @@ class EncryptRuleTest {
     }
     
     @Test
-    void assertGetLogicAndCipherColumns() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getLogicAndCipherColumnsMap("t_encrypt").isEmpty());
-    }
-    
-    @Test
     void assertGetEncryptAssistedQueryValues() {
         List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration())
                 .getEncryptAssistedQueryValues(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
         for (Object each : encryptAssistedQueryValues) {
             assertNull(each);
         }
-    }
-    
-    @Test
-    void assertGetAssistedQueryColumns() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getAssistedQueryColumns("t_encrypt").isEmpty());
     }
     
     @Test

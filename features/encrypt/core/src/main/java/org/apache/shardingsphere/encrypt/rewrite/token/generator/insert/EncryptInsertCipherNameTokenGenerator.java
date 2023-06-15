@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
@@ -38,10 +38,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Insert cipher column name token generator.
+ * Insert cipher column name token generator for encrypt.
  */
 @Setter
-public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, EncryptRuleAware {
+public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, EncryptRuleAware {
     
     private EncryptRule encryptRule;
     
@@ -56,13 +56,14 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
-        Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
-        Preconditions.checkState(sqlSegment.isPresent());
-        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumnsMap(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
+        Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
+        Preconditions.checkState(insertColumnsSegment.isPresent());
+        Map<String, String> logicAndCipherColumns = encryptRule.getEncryptTable(
+                insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).getLogicAndCipherColumns();
         Collection<SQLToken> result = new LinkedList<>();
-        for (ColumnSegment each : sqlSegment.get().getColumns()) {
+        for (ColumnSegment each : insertColumnsSegment.get().getColumns()) {
             if (logicAndCipherColumns.containsKey(each.getIdentifier().getValue())) {
-                Collection<Projection> projections = Collections.singletonList(new ColumnProjection(null, logicAndCipherColumns.get(each.getIdentifier().getValue()), null));
+                Collection<Projection> projections = Collections.singleton(new ColumnProjection(null, logicAndCipherColumns.get(each.getIdentifier().getValue()), null));
                 result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), projections));
             }
         }

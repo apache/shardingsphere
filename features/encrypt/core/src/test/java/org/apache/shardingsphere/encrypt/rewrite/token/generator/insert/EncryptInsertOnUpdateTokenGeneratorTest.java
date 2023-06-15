@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptInsertOnUpdateTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
@@ -65,7 +64,7 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mockEncryptTable();
-        when(result.findEncryptTable("t_user")).thenReturn(Optional.of(encryptTable));
+        when(result.getEncryptTable("t_user")).thenReturn(encryptTable);
         when(result.findStandardEncryptor("t_user", "mobile")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         when(result.findStandardEncryptor("t_user", "cipher_mobile")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         when(result.encrypt(null, "db_test", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));
