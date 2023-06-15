@@ -129,7 +129,6 @@ class ShardingUpdateStatementValidatorTest {
     @Test
     void assertPostValidateWhenTableNameIsBroadcastTable() {
         mockShardingRuleForUpdateShardingColumn();
-        when(shardingRule.isBroadcastTable("user")).thenReturn(true);
         assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().postValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()),
                 new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), createSingleRouteContext()));
     }

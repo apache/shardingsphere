@@ -112,7 +112,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         UnusedAlgorithmFinder.find(currentRuleConfig).forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
         dropUnusedKeyGenerator(currentRuleConfig);
         dropUnusedAuditor(currentRuleConfig);
-        return isEmptyShardingTables(currentRuleConfig) && currentRuleConfig.getBroadcastTables().isEmpty() && isEmptyShardingStrategy(currentRuleConfig);
+        return isEmptyShardingTables(currentRuleConfig) && isEmptyShardingStrategy(currentRuleConfig);
     }
     
     private void dropShardingTable(final ShardingRuleConfiguration currentRuleConfig, final String tableName) {

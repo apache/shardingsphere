@@ -56,13 +56,12 @@ class NewYamlShardingRuleConfigurationSwapperTest {
     void assertSwapFullConfigToDataNodes() {
         ShardingRuleConfiguration config = createMaximumShardingRule();
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(16));
+        assertThat(result.size(), is(15));
         Iterator<YamlDataNode> iterator = result.iterator();
         assertThat(iterator.next().getKey(), is("tables/LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("tables/SUB_LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("auto_tables/auto_table"));
         assertThat(iterator.next().getKey(), is("binding_tables/foo"));
-        assertThat(iterator.next().getKey(), is("broadcast_tables"));
         assertThat(iterator.next().getKey(), is("default_strategies/default_database_strategy"));
         assertThat(iterator.next().getKey(), is("default_strategies/default_table_strategy"));
         assertThat(iterator.next().getKey(), is("default_strategies/default_key_generate_strategy"));
@@ -91,8 +90,6 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         autoTableRuleConfiguration.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("audit_algorithm"), true));
         result.getAutoTables().add(autoTableRuleConfiguration);
         result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable()));
-        result.getBroadcastTables().add("BROADCAST_TABLE");
-        result.getBroadcastTables().add("BROADCAST_TABLE_SUB");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("ds_id", "standard"));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "standard"));
         result.setDefaultShardingColumn("table_id");
@@ -121,7 +118,6 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         assertThat(result.getTables().size(), is(0));
         assertThat(result.getAutoTables().size(), is(0));
         assertThat(result.getBindingTableGroups().size(), is(0));
-        assertThat(result.getBroadcastTables().size(), is(0));
         assertNull(result.getDefaultDatabaseShardingStrategy());
         assertNull(result.getDefaultTableShardingStrategy());
         assertNull(result.getDefaultKeyGenerateStrategy());
@@ -180,8 +176,6 @@ class NewYamlShardingRuleConfigurationSwapperTest {
                 + "    shardingAlgorithmName: hash_mod\n"
                 + "    shardingColumn: user_id\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/binding_tables/foo", "foo:LOGIC_TABLE,SUB_LOGIC_TABLE"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/broadcast_tables", "- BROADCAST_TABLE\n"
-                + "- BROADCAST_TABLE_SUB\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy", "standard:\n"
                 + "  shardingAlgorithmName: standard\n"
                 + "  shardingColumn: ds_id\n"));
@@ -234,10 +228,6 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         assertThat(result.getBindingTableGroups().size(), is(1));
         assertThat(result.getBindingTableGroups().iterator().next().getName(), is("foo"));
         assertThat(result.getBindingTableGroups().iterator().next().getReference(), is("LOGIC_TABLE,SUB_LOGIC_TABLE"));
-        assertThat(result.getBroadcastTables().size(), is(2));
-        Iterator<String> broadcastIterator = result.getBroadcastTables().iterator();
-        assertThat(broadcastIterator.next(), is("BROADCAST_TABLE"));
-        assertThat(broadcastIterator.next(), is("BROADCAST_TABLE_SUB"));
         assertTrue(result.getDefaultDatabaseShardingStrategy() instanceof StandardShardingStrategyConfiguration);
         assertThat(((StandardShardingStrategyConfiguration) result.getDefaultDatabaseShardingStrategy()).getType(), is("STANDARD"));
         assertThat(((StandardShardingStrategyConfiguration) result.getDefaultDatabaseShardingStrategy()).getShardingColumn(), is("ds_id"));

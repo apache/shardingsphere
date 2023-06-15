@@ -109,10 +109,6 @@ rules:
   bindingTables:
     - ref_0:t_user,t_user_details
     - ref_1:t_order,t_order_item
-  broadcastTables:
-    - t_product_category
-    - t_country
-
   shardingAlgorithms:
     it_standard_fixture:
       type: IT.STANDARD.FIXTURE
@@ -193,6 +189,11 @@ rules:
   loadBalancers:
     roundRobin:
       type: ROUND_ROBIN
+
+- !BROADCAST
+  tables:
+    - t_product_category
+    - t_country
 
 - !ENCRYPT
   encryptors:
