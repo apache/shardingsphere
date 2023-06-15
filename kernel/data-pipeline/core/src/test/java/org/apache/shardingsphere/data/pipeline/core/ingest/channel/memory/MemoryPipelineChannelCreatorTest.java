@@ -41,7 +41,7 @@ class MemoryPipelineChannelCreatorTest {
     @Test
     void assertInitWithoutBlockQueueSize() throws Exception {
         PipelineChannelCreator creator = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY");
-        assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannelCreator.class.getDeclaredField("blockQueueSize"), creator), is(10000));
+        assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannelCreator.class.getDeclaredField("blockQueueSize"), creator), is(2000));
     }
     
     @Test
