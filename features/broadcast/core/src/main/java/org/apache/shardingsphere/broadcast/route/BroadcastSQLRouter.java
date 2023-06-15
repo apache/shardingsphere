@@ -49,7 +49,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTablesp
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -74,21 +73,24 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof TCLStatement) {
-            decorateTCLStatement(routeContext, broadcastRule);
-        } else if (sqlStatement instanceof DDLStatement) {
-            decorateDDLStatement(routeContext, queryContext, database, broadcastRule);
-        } else if (sqlStatement instanceof DALStatement) {
-            decorateDALStatement(routeContext, queryContext, database, broadcastRule);
-        } else if (sqlStatement instanceof DCLStatement) {
-            decorateDCLStatement(routeContext, queryContext, database, broadcastRule);
+            routeToAllDatabase(routeContext, broadcastRule);
+        }
+        if (sqlStatement instanceof DDLStatement) {
+            decorateRouteContextWhenDDLStatement(routeContext, queryContext, database, broadcastRule);
+        }
+        if (sqlStatement instanceof DALStatement) {
+            if (isResourceGroupStatement(sqlStatement)) {
+                routeToAllDatabaseInstance(routeContext, database, broadcastRule);
+            }
+        }
+        if (sqlStatement instanceof DCLStatement) {
+            if (!isDCLForSingleTable(queryContext.getSqlStatementContext())) {
+                routeToAllDatabaseInstance(routeContext, database, broadcastRule);
+            }
         }
     }
     
-    private void decorateTCLStatement(final RouteContext routeContext, final BroadcastRule broadcastRule) {
-        routeToAllDatabase(routeContext, broadcastRule);
-    }
-    
-    private void decorateDDLStatement(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final BroadcastRule broadcastRule) {
+    private void decorateRouteContextWhenDDLStatement(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final BroadcastRule broadcastRule) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         if (sqlStatementContext instanceof CursorAvailable) {
             if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
@@ -117,26 +119,9 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
         }
     }
     
-    private void decorateDALStatement(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final BroadcastRule broadcastRule) {
-        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof MySQLUseStatement) {
-            return;
-        }
-        if (isResourceGroupStatement(sqlStatement)) {
-            routeToAllDatabaseInstance(routeContext, database, broadcastRule);
-        }
-    }
-    
     private static boolean isResourceGroupStatement(final SQLStatement sqlStatement) {
         // TODO add dropResourceGroupStatement, alterResourceGroupStatement
         return sqlStatement instanceof MySQLCreateResourceGroupStatement || sqlStatement instanceof MySQLSetResourceGroupStatement;
-    }
-    
-    private void decorateDCLStatement(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final BroadcastRule broadcastRule) {
-        if (!isDCLForSingleTable(queryContext.getSqlStatementContext())) {
-            routeToAllDatabaseInstance(routeContext, database, broadcastRule);
-        }
     }
     
     private static boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
