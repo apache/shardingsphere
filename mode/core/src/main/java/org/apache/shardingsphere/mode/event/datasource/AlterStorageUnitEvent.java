@@ -31,7 +31,9 @@ public final class AlterStorageUnitEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final String StorageUnitName;
+    private final String storageUnitName;
+    
+    private final String version;
     
     private final DataSourceProperties dataSourceProps;
 }

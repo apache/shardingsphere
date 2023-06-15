@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.List;
 
 /**
  * TODO Rename DatabaseRulePersistService when metadata structure adjustment completed. #25485
@@ -72,7 +73,11 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
             if (Strings.isNullOrEmpty(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()))) {
                 repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()), DEFAULT_VERSION);
             }
-            repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), DEFAULT_VERSION), each.getValue());
+            List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getDatabaseRuleVersionsNode(databaseName, ruleName, each.getKey()));
+            repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), versions.isEmpty()
+                    ? DEFAULT_VERSION
+                    : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), each.getValue());
+            
         }
     }
     
