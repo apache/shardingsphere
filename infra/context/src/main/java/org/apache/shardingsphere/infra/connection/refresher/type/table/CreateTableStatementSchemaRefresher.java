@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.connection.refresher.type.table;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -60,7 +61,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
             AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
             alterSchemaMetaDataPOJO.getAlteredTables().add(actualTableMetaData.get());
             modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
-            if (isSingleTable) {
+            if (isSingleTable && TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, tableName)) {
                 modeContextManager.alterRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
             }
         }

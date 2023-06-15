@@ -52,9 +52,9 @@ public final class SingleRuleConfigurationEventBuilder implements RuleConfigurat
     
     private Optional<GovernanceEvent> buildEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterGlobalRuleConfigurationEvent(databaseName, swapToConfig(event.getValue()), RULE_TYPE));
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE));
         }
-        return Optional.of(new DeleteGlobalRuleConfigurationEvent(databaseName, RULE_TYPE));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE));
     }
     
     private SingleRuleConfiguration swapToConfig(final String yamlContext) {

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
@@ -31,11 +30,9 @@ import org.apache.shardingsphere.readwritesplitting.event.config.AlterReadwriteS
 import org.apache.shardingsphere.readwritesplitting.event.config.DeleteReadwriteSplittingConfigurationEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Map;
-import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Readwrite-splitting configuration subscriber.
@@ -64,7 +61,6 @@ public final class ReadwriteSplittingConfigurationSubscriber implements RuleConf
     public synchronized void renew(final AddReadwriteSplittingConfigurationEvent<ReadwriteSplittingDataSourceRuleConfiguration> event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ReadwriteSplittingDataSourceRuleConfiguration needToAddedConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
         ReadwriteSplittingRuleConfiguration config;
         if (rule.isPresent()) {
@@ -73,9 +69,7 @@ public final class ReadwriteSplittingConfigurationSubscriber implements RuleConf
             config.getDataSources().add(needToAddedConfig);
         } else {
             config = new ReadwriteSplittingRuleConfiguration(Collections.singletonList(needToAddedConfig), Collections.emptyMap());
-            ruleConfigs.add(config);
         }
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -88,11 +82,9 @@ public final class ReadwriteSplittingConfigurationSubscriber implements RuleConf
     public synchronized void renew(final AlterReadwriteSplittingConfigurationEvent<ReadwriteSplittingDataSourceRuleConfiguration> event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ReadwriteSplittingDataSourceRuleConfiguration needToAlteredConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(event.getGroupName()));
         config.getDataSources().add(needToAlteredConfig);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -104,10 +96,8 @@ public final class ReadwriteSplittingConfigurationSubscriber implements RuleConf
     @Subscribe
     public synchronized void renew(final DeleteReadwriteSplittingConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(event.getGroupName()));
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
 }

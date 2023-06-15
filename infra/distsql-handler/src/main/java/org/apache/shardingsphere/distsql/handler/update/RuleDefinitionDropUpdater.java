@@ -44,6 +44,17 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
     }
     
     /**
+     * Build to be altered rule configuration.
+     *
+     * @param currentRuleConfig current rule configuration to be updated
+     * @param sqlStatement SQL statement
+     * @return to be altered rule configuration
+     */
+    default R buildToBeAlteredRuleConfiguration(R currentRuleConfig, T sqlStatement) {
+        return null;
+    }
+    
+    /**
      * Update current rule configuration.
      *
      * @param sqlStatement SQL statement

@@ -76,16 +76,16 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
         for (AssignmentSegment each : onDuplicateKeyColumnsSegments) {
-            boolean leftEncryptorPresent = encryptRule.findStandardEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent();
+            boolean leftColumnIsEncrypt = encryptTable.isEncryptColumn(each.getColumns().get(0).getIdentifier().getValue());
             if (each.getValue() instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) each.getValue()).getFunctionName())) {
                 Optional<ExpressionSegment> rightColumnSegment = ((FunctionSegment) each.getValue()).getParameters().stream().findFirst();
                 Preconditions.checkState(rightColumnSegment.isPresent());
-                boolean rightEncryptorPresent = encryptRule.findStandardEncryptor(tableName, ((ColumnSegment) rightColumnSegment.get()).getIdentifier().getValue()).isPresent();
-                if (!leftEncryptorPresent && !rightEncryptorPresent) {
+                boolean rightColumnIsEncrypt = encryptTable.isEncryptColumn(((ColumnSegment) rightColumnSegment.get()).getIdentifier().getValue());
+                if (!leftColumnIsEncrypt && !rightColumnIsEncrypt) {
                     continue;
                 }
             }
-            if (!leftEncryptorPresent) {
+            if (!leftColumnIsEncrypt) {
                 continue;
             }
             generateSQLToken(schemaName, encryptTable, each).ifPresent(result::add);
@@ -130,13 +130,13 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         Preconditions.checkState(valueColumnSegment.isPresent());
         String valueColumn = ((ColumnSegment) valueColumnSegment.get()).getIdentifier().getValue();
         EncryptFunctionAssignmentToken result = new EncryptFunctionAssignmentToken(columnSegment.getStartIndex(), assignmentSegment.getStopIndex());
-        boolean cipherColumnPresent = encryptRule.findStandardEncryptor(encryptTable.getTable(), column).isPresent();
-        boolean cipherValueColumnPresent = encryptRule.findStandardEncryptor(encryptTable.getTable(), valueColumn).isPresent();
-        if (cipherColumnPresent && cipherValueColumnPresent) {
+        boolean isEncryptColumn = encryptTable.isEncryptColumn(column);
+        boolean isEncryptValueColumn = encryptTable.isEncryptColumn(valueColumn);
+        if (isEncryptColumn && isEncryptValueColumn) {
             String cipherColumn = encryptTable.getCipherColumn(column);
             String cipherValueColumn = encryptTable.getCipherColumn(valueColumn);
             result.addAssignment(cipherColumn, "VALUES(" + cipherValueColumn + ")");
-        } else if (cipherColumnPresent != cipherValueColumnPresent) {
+        } else if (isEncryptColumn != isEncryptValueColumn) {
             throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
         }
         Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(column);

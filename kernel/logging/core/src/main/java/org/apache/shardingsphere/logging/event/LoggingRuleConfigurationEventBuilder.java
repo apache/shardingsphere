@@ -29,32 +29,32 @@ import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguratio
 import org.apache.shardingsphere.logging.yaml.swapper.YamlLoggingRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.spi.GlobalRuleConfigurationEventBuilder;
 
 import java.util.Optional;
 
 /**
  *  Logging rule configuration event builder.
  */
-public final class LoggingRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
+public final class LoggingRuleConfigurationEventBuilder implements GlobalRuleConfigurationEventBuilder {
     
     private static final String LOGGING = "logging";
     
     private static final String RULE_TYPE = LoggingRule.class.getSimpleName();
     
     @Override
-    public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
+    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
         if (!GlobalRuleNodeConverter.isExpectedRuleName(LOGGING, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        return buildEvent(databaseName, event);
+        return buildEvent(event);
     }
     
-    private Optional<GovernanceEvent> buildEvent(final String databaseName, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterGlobalRuleConfigurationEvent(databaseName, swapToConfig(event.getValue()), RULE_TYPE));
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE));
         }
-        return Optional.of(new DeleteGlobalRuleConfigurationEvent(databaseName, RULE_TYPE));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE));
     }
     
     private LoggingRuleConfiguration swapToConfig(final String yamlContext) {

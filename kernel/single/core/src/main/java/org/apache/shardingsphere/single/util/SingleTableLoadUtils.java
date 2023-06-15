@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.single.constant.SingleTableConstants;
+import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 
 import javax.sql.DataSource;
 import java.util.Collection;

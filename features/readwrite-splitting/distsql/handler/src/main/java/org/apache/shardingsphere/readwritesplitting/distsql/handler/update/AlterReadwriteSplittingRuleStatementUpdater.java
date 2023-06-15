@@ -33,7 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -52,20 +51,16 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig,
+    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(
+                                                                                 final ReadwriteSplittingRuleConfiguration currentRuleConfig,
                                                                                  final ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
+        Map<String, AlgorithmConfiguration> loadBalancers = new HashMap<>();
         List<String> toBeAlteredDataSourceNames = toBeAlteredRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
-            if (!toBeAlteredDataSourceNames.contains(each.getName())) {
+            if (toBeAlteredDataSourceNames.contains(each.getName())) {
                 dataSources.add(each);
-            }
-        }
-        Map<String, AlgorithmConfiguration> loadBalancers = new HashMap<>();
-        for (String each : currentRuleConfig.getLoadBalancers().keySet()) {
-            Set<String> toBeAlteredLoadBalancerNames = toBeAlteredRuleConfig.getLoadBalancers().keySet();
-            if (!toBeAlteredLoadBalancerNames.contains(each)) {
-                loadBalancers.put(each, null);
+                loadBalancers.put(each.getLoadBalancerName(), currentRuleConfig.getLoadBalancers().get(each));
             }
         }
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);

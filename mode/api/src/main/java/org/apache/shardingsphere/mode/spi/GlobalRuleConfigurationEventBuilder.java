@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.constant;
+package org.apache.shardingsphere.mode.spi;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+
+import java.util.Optional;
 
 /**
- * Single table constants.
+ * Rule configuration event builder.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SingleTableConstants {
+public interface GlobalRuleConfigurationEventBuilder {
     
-    public static final String ASTERISK = "*";
-    
-    public static final String ALL_TABLES = "*.*";
-    
-    public static final String ALL_SCHEMA_TABLES = "*.*.*";
+    /**
+     * Build global rule changed event.
+     *
+     * @param event data changed event
+     * @return rule changed event
+     */
+    Optional<GovernanceEvent> build(DataChangedEvent event);
 }
