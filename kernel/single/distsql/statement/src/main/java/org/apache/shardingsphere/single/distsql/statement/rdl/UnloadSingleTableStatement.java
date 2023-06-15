@@ -30,7 +30,7 @@ import java.util.Collection;
 @Getter
 public final class UnloadSingleTableStatement extends AlterRuleStatement {
     
-    final boolean isUnloadAllTables;
+    private final boolean isUnloadAllTables;
     
     private final Collection<String> tables;
 }
