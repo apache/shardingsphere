@@ -41,7 +41,6 @@ import org.apache.shardingsphere.sharding.event.table.sharding.AlterShardingTabl
 import org.apache.shardingsphere.sharding.event.table.sharding.DeleteShardingTableConfigurationEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -200,7 +199,6 @@ public final class ShardingTableConfigurationSubscriber implements RuleConfigura
     @Subscribe
     public synchronized void renew(final AlterBroadcastTableConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<String> needToAlteredConfig = event.getConfig();
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
