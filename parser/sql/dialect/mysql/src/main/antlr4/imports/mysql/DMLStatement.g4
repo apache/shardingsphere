@@ -144,6 +144,7 @@ queryExpressionBody
 
 combineClause
     : UNION combineOption? (queryPrimary | queryExpressionParens)
+    | EXCEPT combineOption? (queryPrimary | queryExpressionParens)
     ;
 
 queryExpressionParens

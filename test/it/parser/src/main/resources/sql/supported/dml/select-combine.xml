@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_with_except" value="(SELECT * FROM t1) EXCEPT (SELECT * FROM t2)" db-types="MySQL" />
     <sql-case id="select_union" value="SELECT * FROM table1 UNION SELECT * FROM table2" db-types="MySQL,PostgreSQL,openGauss" />
     <sql-case id="select_union_all" value="SELECT * FROM table1 UNION ALL SELECT * FROM table2" db-types="MySQL,PostgreSQL,openGauss" />
     <sql-case id="select_union_all_order_by" value="SELECT * FROM table1 UNION ALL SELECT * FROM table2 ORDER BY id" db-types="MySQL,PostgreSQL,openGauss" />
