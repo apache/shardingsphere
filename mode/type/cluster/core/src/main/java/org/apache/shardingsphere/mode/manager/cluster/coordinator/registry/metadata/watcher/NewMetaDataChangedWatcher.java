@@ -75,12 +75,12 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
         if (databaseName.isPresent()) {
             return createDatabaseChangedEvent(databaseName.get(), event);
         }
-        databaseName = NewDatabaseMetaDataNode.getDatabaseNameBySchemaPath(key);
+        databaseName = NewDatabaseMetaDataNode.getDatabaseNameBySchemaNode(key);
         Optional<String> schemaName = NewDatabaseMetaDataNode.getSchemaName(key);
         if (databaseName.isPresent() && schemaName.isPresent()) {
             return createSchemaChangedEvent(databaseName.get(), schemaName.get(), event);
         }
-        schemaName = NewDatabaseMetaDataNode.getSchemaNameByTablePath(key);
+        schemaName = NewDatabaseMetaDataNode.getSchemaNameByTableNode(key);
         Optional<String> tableName = NewDatabaseMetaDataNode.getTableName(key);
         if (databaseName.isPresent() && schemaName.isPresent() && tableName.isPresent()) {
             return createTableChangedEvent(databaseName.get(), schemaName.get(), tableName.get(), event);

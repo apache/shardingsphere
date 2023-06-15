@@ -60,7 +60,7 @@ public final class DropMaskRuleStatementUpdater implements RuleDefinitionDropUpd
         return null != currentRuleConfig
                 && !getIdenticalData(currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables()).isEmpty();
     }
-
+    
     @Override
     public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final DropMaskRuleStatement sqlStatement) {
         Collection<MaskTableRuleConfiguration> toBeDroppedTables = new LinkedList<>();
