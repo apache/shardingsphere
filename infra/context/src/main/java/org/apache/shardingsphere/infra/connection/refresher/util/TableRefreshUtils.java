@@ -62,9 +62,7 @@ public final class TableRefreshUtils {
             return false;
         }
         DataNode actualNode = dataNode.get();
-        return !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), actualNode.getSchemaName(), actualNode.getTableName()))
-                && !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), SingleTableConstants.ASTERISK))
-                && !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), actualNode.getTableName()))
+        return !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), SingleTableConstants.ASTERISK))
                 && !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), SingleTableConstants.ASTERISK, SingleTableConstants.ASTERISK))
                 && !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), actualNode.getSchemaName(), SingleTableConstants.ASTERISK));
     }
