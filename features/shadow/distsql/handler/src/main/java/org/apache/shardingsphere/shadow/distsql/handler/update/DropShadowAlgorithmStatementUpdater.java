@@ -81,7 +81,7 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final DropShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
-            result.getShadowAlgorithms().put(each, null);
+            result.getShadowAlgorithms().put(each, currentRuleConfig.getShadowAlgorithms().get(each));
         }
         return result;
     }

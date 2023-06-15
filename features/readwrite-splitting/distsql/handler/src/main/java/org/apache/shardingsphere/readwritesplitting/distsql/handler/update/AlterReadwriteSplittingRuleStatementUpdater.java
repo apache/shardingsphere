@@ -60,7 +60,7 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
         for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
             if (toBeAlteredDataSourceNames.contains(each.getName())) {
                 dataSources.add(each);
-                loadBalancers.put(each.getLoadBalancerName(), null);
+                loadBalancers.put(each.getLoadBalancerName(), currentRuleConfig.getLoadBalancers().get(each));
             }
         }
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);
