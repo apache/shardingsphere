@@ -57,6 +57,7 @@ public final class NewConfigurationChangedSubscriber {
         Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
         rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(),
                 event.getRuleConfig(), contextManager.getInstanceContext()));
+        database.getRuleMetaData().getRules().clear();
         database.getRuleMetaData().getRules().addAll(rules);
     }
     
