@@ -65,7 +65,7 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
         for (String each : currentRuleConfig.getLoadBalancers().keySet()) {
             Set<String> toBeAlteredLoadBalancerNames = toBeAlteredRuleConfig.getLoadBalancers().keySet();
             if (!toBeAlteredLoadBalancerNames.contains(each)) {
-                loadBalancers.put(each, null);
+                loadBalancers.put(each, currentRuleConfig.getLoadBalancers().get(each));
             }
         }
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);
