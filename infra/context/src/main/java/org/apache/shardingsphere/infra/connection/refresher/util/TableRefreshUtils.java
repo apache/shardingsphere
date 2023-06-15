@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.infra.connection.refresher.util;
 
+import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.single.constant.SingleTableConstants;
-import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -38,17 +39,22 @@ public final class TableRefreshUtils {
     /**
      * Get aggregated data source map.
      * 
-     * @param databaseName database name
-     * @param databaseType database type
      * @param ruleMetaData rule meta data
      * @param schemaName schema name
      * @param tableName table name
      * @return aggregated data source map
      */
-    public static boolean isRuleRefreshRequired(final String databaseName, final DatabaseType databaseType, final ShardingSphereRuleMetaData ruleMetaData,
-                                                final String schemaName, final String tableName) {
-        Optional<SingleRule> singleRule = ruleMetaData.findSingleRule(SingleRule.class);
+    public static boolean isRuleRefreshRequired(final ShardingSphereRuleMetaData ruleMetaData, final String schemaName, final String tableName) {
+        Optional<MutableDataNodeRule> singleRule = ruleMetaData.findSingleRule(MutableDataNodeRule.class);
         if (!singleRule.isPresent()) {
+            return false;
+        }
+        RuleConfiguration ruleConfiguration = singleRule.get().getConfiguration();
+        if (!(ruleConfiguration instanceof SingleRuleConfiguration)) {
+            return false;
+        }
+        Collection<String> tablesConfig = ((SingleRuleConfiguration) ruleConfiguration).getTables();
+        if (tablesConfig.contains(SingleTableConstants.ALL_TABLES) || tablesConfig.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return false;
         }
         Optional<DataNode> dataNode = singleRule.get().findTableDataNode(schemaName, tableName);
@@ -56,17 +62,14 @@ public final class TableRefreshUtils {
             return false;
         }
         DataNode actualNode = dataNode.get();
-        Collection<String> tablesConfig = SingleTableLoadUtils.splitTableLines(singleRule.get().getConfiguration().getTables());
-        if (tablesConfig.contains(SingleTableConstants.ALL_TABLES) || tablesConfig.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
-            return false;
-        }
-        Collection<DataNode> dataNods = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, tablesConfig);
-        for (DataNode each : dataNods) {
-            if (each.equals(actualNode) || SingleTableConstants.ASTERISK.equals(each.getSchemaName())
-                    || each.getDataSourceName().equals(actualNode.getDataSourceName()) && SingleTableConstants.ASTERISK.equals(each.getTableName())) {
-                return false;
-            }
-        }
-        return true;
+        return !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), actualNode.getSchemaName(), actualNode.getTableName()))
+                && !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), SingleTableConstants.ASTERISK))
+                && !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), actualNode.getTableName()))
+                && !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), SingleTableConstants.ASTERISK, SingleTableConstants.ASTERISK))
+                && !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), actualNode.getSchemaName(), SingleTableConstants.ASTERISK));
+    }
+    
+    private static String joinDataNodeSegments(final String... segments) {
+        return Joiner.on(".").join(segments);
     }
 }

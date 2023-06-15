@@ -45,7 +45,7 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
         for (SimpleTableSegment each : sqlStatement.getTables()) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (isSingleTable(tableName, ruleMetaData)
-                    && TableRefreshUtils.isRuleRefreshRequired(database.getName(), database.getProtocolType(), ruleMetaData, schemaName, tableName)) {
+                    && TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, tableName)) {
                 modeContextManager.alterRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
                 break;
             }

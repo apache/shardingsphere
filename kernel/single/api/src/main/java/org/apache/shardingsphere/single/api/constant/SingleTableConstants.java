@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.constant;
+package org.apache.shardingsphere.single.api.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

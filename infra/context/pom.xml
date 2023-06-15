@@ -55,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-single-core</artifactId>
+            <artifactId>shardingsphere-single-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

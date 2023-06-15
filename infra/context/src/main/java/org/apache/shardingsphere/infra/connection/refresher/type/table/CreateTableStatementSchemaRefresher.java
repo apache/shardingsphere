@@ -61,7 +61,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
             AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
             alterSchemaMetaDataPOJO.getAlteredTables().add(actualTableMetaData.get());
             modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
-            if (isSingleTable && TableRefreshUtils.isRuleRefreshRequired(database.getName(), database.getProtocolType(), ruleMetaData, schemaName, tableName)) {
+            if (isSingleTable && TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, tableName)) {
                 modeContextManager.alterRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
             }
         }
