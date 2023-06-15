@@ -237,7 +237,7 @@ public final class NewDatabaseMetaDataNode {
      * @return view version node
      */
     public static String getViewVersionNode(final String databaseName, final String schemaName, final String viewName, final String version) {
-        return String.join("/", getTableVersionsNode(databaseName, schemaName, viewName), version);
+        return String.join("/", getViewVersionsNode(databaseName, schemaName, viewName), version);
     }
     
     /**

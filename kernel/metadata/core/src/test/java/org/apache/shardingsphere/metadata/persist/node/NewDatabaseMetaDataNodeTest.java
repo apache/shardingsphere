@@ -60,8 +60,8 @@ class NewDatabaseMetaDataNodeTest {
     }
     
     @Test
-    void assertGetDatabaseNameBySchemaPath() {
-        Optional<String> actual = NewDatabaseMetaDataNode.getDatabaseNameBySchemaPath("/metadata/foo_db/schemas/foo_schema");
+    void assertGetDatabaseNameBySchemaNode() {
+        Optional<String> actual = NewDatabaseMetaDataNode.getDatabaseNameBySchemaNode("/metadata/foo_db/schemas/foo_schema");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_db"));
     }
@@ -74,8 +74,8 @@ class NewDatabaseMetaDataNodeTest {
     }
     
     @Test
-    void assertGetSchemaNameByTablePath() {
-        Optional<String> actual = NewDatabaseMetaDataNode.getSchemaNameByTablePath("/metadata/foo_db/schemas/foo_schema/tables");
+    void assertGetSchemaNameByTableNode() {
+        Optional<String> actual = NewDatabaseMetaDataNode.getSchemaNameByTableNode("/metadata/foo_db/schemas/foo_schema/tables");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_schema"));
     }
@@ -127,5 +127,45 @@ class NewDatabaseMetaDataNodeTest {
     @Test
     void assertGetDatabaseRuleVersionNode() {
         assertThat(NewDatabaseMetaDataNode.getDatabaseRuleVersionNode("foo_db", "foo_rule", "foo_tables", "1"), is("/metadata/foo_db/rules/foo_rule/foo_tables/versions/1"));
+    }
+    
+    @Test
+    void assertGetTableActiveVersionNode() {
+        assertThat(NewDatabaseMetaDataNode.getTableActiveVersionNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/active_version"));
+    }
+    
+    @Test
+    void assertGetTableVersionsNode() {
+        assertThat(NewDatabaseMetaDataNode.getTableVersionsNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions"));
+    }
+    
+    @Test
+    void assertGetTableVersionNode() {
+        assertThat(NewDatabaseMetaDataNode.getTableVersionNode("foo_db", "foo_schema", "foo_table", "0"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions/0"));
+    }
+    
+    @Test
+    void assertGetTableNode() {
+        assertThat(NewDatabaseMetaDataNode.getTableNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table"));
+    }
+    
+    @Test
+    void assertGetViewActiveVersionNode() {
+        assertThat(NewDatabaseMetaDataNode.getViewActiveVersionNode("foo_db", "foo_schema", "foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
+    }
+    
+    @Test
+    void assertGetViewVersionsNode() {
+        assertThat(NewDatabaseMetaDataNode.getViewVersionsNode("foo_db", "foo_schema", "foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
+    }
+    
+    @Test
+    void assertGetViewVersionNode() {
+        assertThat(NewDatabaseMetaDataNode.getViewVersionNode("foo_db", "foo_schema", "foo_view", "0"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
+    }
+    
+    @Test
+    void assertGetViewNode() {
+        assertThat(NewDatabaseMetaDataNode.getViewNode("foo_db", "foo_schema", "foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
 }
