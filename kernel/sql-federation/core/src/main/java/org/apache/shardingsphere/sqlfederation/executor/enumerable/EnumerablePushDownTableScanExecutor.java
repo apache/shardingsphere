@@ -82,9 +82,9 @@ import org.apache.shardingsphere.sqlfederation.executor.util.StringToRexNodeUtil
 import org.apache.shardingsphere.sqlfederation.executor.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.executor.row.MemoryEnumerator;
 import org.apache.shardingsphere.sqlfederation.executor.row.SQLFederationRowEnumerator;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationPlannerUtils;
+import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
+import org.apache.shardingsphere.sqlfederation.compiler.planner.util.SQLFederationPlannerUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

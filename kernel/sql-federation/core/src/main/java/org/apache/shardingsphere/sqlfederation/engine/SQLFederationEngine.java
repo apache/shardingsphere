@@ -48,13 +48,13 @@ import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorCon
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
-import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationCompilerEngine;
-import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
-import org.apache.shardingsphere.sqlfederation.optimizer.compiler.SQLStatementCompiler;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationTable;
-import org.apache.shardingsphere.sqlfederation.optimizer.planner.cache.ExecutionPlanCacheKey;
+import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
+import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
+import org.apache.shardingsphere.sqlfederation.compiler.statement.SQLStatementCompiler;
+import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
+import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
