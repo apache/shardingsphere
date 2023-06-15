@@ -33,6 +33,7 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class BroadcastTableBroadcastRoutingEngine implements BroadcastRouteEngine {
+    
     private final Collection<String> broadcastRuleTableNames;
     
     @Override

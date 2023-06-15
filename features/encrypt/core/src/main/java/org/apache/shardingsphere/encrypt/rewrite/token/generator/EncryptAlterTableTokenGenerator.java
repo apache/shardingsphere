@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnAlterException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
@@ -32,6 +31,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQL
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
@@ -180,19 +180,15 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         return result;
     }
     
-    @SuppressWarnings("rawtypes")
     private void isSameEncryptColumn(final EncryptTable encryptTable, final ChangeColumnDefinitionSegment segment) {
-        Optional<StandardEncryptAlgorithm> previousAlgorithm = encryptRule.findStandardEncryptor(encryptTable.getTable(), segment.getPreviousColumn().getIdentifier().getValue());
-        Optional<StandardEncryptAlgorithm> currentAlgorithm = encryptRule.findStandardEncryptor(encryptTable.getTable(), segment.getColumnDefinition().getColumnName().getIdentifier().getValue());
-        if (!previousAlgorithm.isPresent() && !currentAlgorithm.isPresent()) {
+        Optional<String> previousEncryptorName = encryptTable.findEncryptorName(segment.getPreviousColumn().getIdentifier().getValue());
+        Optional<String> currentEncryptorName = encryptTable.findEncryptorName(segment.getColumnDefinition().getColumnName().getIdentifier().getValue());
+        if (!previousEncryptorName.isPresent() && !currentEncryptorName.isPresent()) {
             return;
         }
-        if (previousAlgorithm.isPresent()
-                && currentAlgorithm.isPresent() && previousAlgorithm.get().equals(currentAlgorithm.get()) && checkPreviousAndAfterHasSameColumnNumber(encryptTable, segment)) {
-            return;
-        }
-        throw new EncryptColumnAlterException(
-                encryptTable.getTable(), segment.getColumnDefinition().getColumnName().getIdentifier().getValue(), segment.getPreviousColumn().getIdentifier().getValue());
+        ShardingSpherePreconditions.checkState(previousEncryptorName.equals(currentEncryptorName) && checkPreviousAndAfterHasSameColumnNumber(encryptTable, segment),
+                () -> new EncryptColumnAlterException(
+                        encryptTable.getTable(), segment.getColumnDefinition().getColumnName().getIdentifier().getValue(), segment.getPreviousColumn().getIdentifier().getValue()));
     }
     
     private boolean checkPreviousAndAfterHasSameColumnNumber(final EncryptTable encryptTable, final ChangeColumnDefinitionSegment changeColumnDefinitionSegment) {
