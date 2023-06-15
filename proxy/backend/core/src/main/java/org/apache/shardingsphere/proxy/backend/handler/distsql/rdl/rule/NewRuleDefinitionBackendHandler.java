@@ -101,8 +101,8 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
         RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
         RuleConfiguration toBeDroppedRuleConfig = updater.buildToBeDroppedRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
         ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().removeRuleConfiguration(database.getName(), toBeDroppedRuleConfig);
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
