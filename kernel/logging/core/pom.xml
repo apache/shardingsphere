@@ -33,6 +33,11 @@
             <artifactId>shardingsphere-logging-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-mode-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>ch.qos.logback</groupId>

@@ -65,6 +65,13 @@ class LocalDataMergedResultTest {
     }
     
     @Test
+    void assertGetCharacterStream() {
+        List<Object> row = Collections.singletonList("value");
+        LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow(row)));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getCharacterStream(1));
+    }
+    
+    @Test
     void assertWasNull() {
         List<Object> row = Collections.singletonList("value");
         LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow(row)));

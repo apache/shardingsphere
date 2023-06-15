@@ -63,8 +63,8 @@ public final class AlterStorageUnitStatementAssert {
             assertNotNull(actual, assertContext.getText("Actual storage unit should exist."));
             assertThat(assertContext.getText(String.format("Actual storage unit size should be %s , but it was %s", expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
-            for (DataSourceSegment actualDataSource : actual) {
-                DataSourceAssert.assertIs(assertContext, actualDataSource, expected.get(count));
+            for (DataSourceSegment each : actual) {
+                DataSourceAssert.assertIs(assertContext, each, expected.get(count));
                 count++;
             }
         }

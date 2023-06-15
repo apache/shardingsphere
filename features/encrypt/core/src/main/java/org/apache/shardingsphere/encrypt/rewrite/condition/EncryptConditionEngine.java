@@ -118,7 +118,7 @@ public final class EncryptConditionEngine {
         }
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
             String tableName = expressionTableNames.getOrDefault(each.getExpression(), "");
-            Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptColumn(tableName, each.getIdentifier().getValue());
+            Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(each.getIdentifier().getValue()));
             Optional<EncryptCondition> encryptCondition = encryptColumn.isPresent() ? createEncryptCondition(expression, tableName) : Optional.empty();
             encryptCondition.ifPresent(encryptConditions::add);
         }

@@ -161,8 +161,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         Set<ColumnName> columnNameSet = dumperConfig.getColumnNameSet(event.getTableName()).orElse(null);
         List<DataRecord> result = new LinkedList<>();
         for (Serializable[] each : event.getAfterRows()) {
-            DataRecord dataRecord = createDataRecord(event, each.length);
-            dataRecord.setType(IngestDataChangeType.INSERT);
+            DataRecord dataRecord = createDataRecord(IngestDataChangeType.INSERT, event, each.length);
             for (int i = 0; i < each.length; i++) {
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
                 if (isColumnUnneeded(columnNameSet, columnMetaData.getName())) {
@@ -185,8 +184,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         for (int i = 0; i < event.getBeforeRows().size(); i++) {
             Serializable[] beforeValues = event.getBeforeRows().get(i);
             Serializable[] afterValues = event.getAfterRows().get(i);
-            DataRecord dataRecord = createDataRecord(event, beforeValues.length);
-            dataRecord.setType(IngestDataChangeType.UPDATE);
+            DataRecord dataRecord = createDataRecord(IngestDataChangeType.UPDATE, event, beforeValues.length);
             for (int j = 0; j < beforeValues.length; j++) {
                 Serializable oldValue = beforeValues[j];
                 Serializable newValue = afterValues[j];
@@ -208,8 +206,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         Set<ColumnName> columnNameSet = dumperConfig.getColumnNameSet(event.getTableName()).orElse(null);
         List<DataRecord> result = new LinkedList<>();
         for (Serializable[] each : event.getBeforeRows()) {
-            DataRecord dataRecord = createDataRecord(event, each.length);
-            dataRecord.setType(IngestDataChangeType.DELETE);
+            DataRecord dataRecord = createDataRecord(IngestDataChangeType.DELETE, event, each.length);
             for (int i = 0, length = each.length; i < length; i++) {
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
                 if (isColumnUnneeded(columnNameSet, columnMetaData.getName())) {
@@ -233,9 +230,10 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         return dataTypeHandler.isPresent() ? dataTypeHandler.get().handle(value) : value;
     }
     
-    private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {
-        DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId()), columnCount);
-        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getOriginal());
+    private DataRecord createDataRecord(final String type, final AbstractRowsEvent rowsEvent, final int columnCount) {
+        String tableName = dumperConfig.getLogicTableName(rowsEvent.getTableName()).getOriginal();
+        IngestPosition position = new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId());
+        DataRecord result = new DataRecord(type, tableName, position, columnCount);
         result.setCommitTime(rowsEvent.getTimestamp() * 1000);
         return result;
     }

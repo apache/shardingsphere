@@ -34,10 +34,15 @@ authority:
   privilege:
     type: ALL_PERMITTED
 
+sqlFederation:
+  sqlFederationEnabled: true
+  executionPlanCache:
+    initialCapacity: 2000
+    maximumSize: 65535
+
 props:
   max-connections-size-per-query: 1
   kernel-executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
   sql-show: true
-  sql-federation-type: ADVANCED
   proxy-frontend-ssl-enabled: true

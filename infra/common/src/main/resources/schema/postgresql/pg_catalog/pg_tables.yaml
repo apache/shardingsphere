@@ -17,13 +17,19 @@
 
 name: pg_tables
 columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: false
+    visible: false
   schemaname:
     caseSensitive: true
     dataType: 12
     generated: false
     name: schemaname
     primaryKey: false
-    unsigned: false
     visible: true
   tablename:
     caseSensitive: true
@@ -31,7 +37,6 @@ columns:
     generated: false
     name: tablename
     primaryKey: false
-    unsigned: false
     visible: true
   tableowner:
     caseSensitive: true
@@ -39,7 +44,6 @@ columns:
     generated: false
     name: tableowner
     primaryKey: false
-    unsigned: false
     visible: true
   tablespace:
     caseSensitive: true
@@ -47,7 +51,6 @@ columns:
     generated: false
     name: tablespace
     primaryKey: false
-    unsigned: false
     visible: true
   hasindexes:
     caseSensitive: true
@@ -55,7 +58,6 @@ columns:
     generated: false
     name: hasindexes
     primaryKey: false
-    unsigned: false
     visible: true
   hasrules:
     caseSensitive: true
@@ -63,7 +65,6 @@ columns:
     generated: false
     name: hasrules
     primaryKey: false
-    unsigned: false
     visible: true
   hastriggers:
     caseSensitive: true
@@ -71,13 +72,25 @@ columns:
     generated: false
     name: hastriggers
     primaryKey: false
-    unsigned: false
     visible: true
-  rowsecurity:
+  tablecreator:
     caseSensitive: true
-    dataType: -7
+    dataType: 12
     generated: false
-    name: rowsecurity
+    name: tablecreator
     primaryKey: false
-    unsigned: false
+    visible: true
+  created:
+    caseSensitive: true
+    dataType: 2014
+    generated: false
+    name: created
+    primaryKey: false
+    visible: true
+  last_ddl_time:
+    caseSensitive: true
+    dataType: 2014
+    generated: false
+    name: last_ddl_time
+    primaryKey: false
     visible: true

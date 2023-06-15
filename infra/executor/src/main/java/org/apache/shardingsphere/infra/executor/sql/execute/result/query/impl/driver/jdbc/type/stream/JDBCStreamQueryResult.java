@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.stream.AbstractStreamQueryResult;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Blob;
@@ -133,6 +134,11 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
             default:
                 throw new UnsupportedStreamCharsetConversionException(type).toSQLException();
         }
+    }
+    
+    @Override
+    public Reader getCharacterStream(final int columnIndex) throws SQLException {
+        return resultSet.getCharacterStream(columnIndex);
     }
     
     @Override

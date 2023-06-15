@@ -94,6 +94,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSour
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
@@ -422,6 +423,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         final long startTimeMillis = System.currentTimeMillis();
         dropCheckJobs(jobId);
         stop(jobId);
+        MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
+        refreshTableMetadata(jobId, jobConfig.getTargetDatabaseName());
         dropJob(jobId);
         log.info("Commit cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
@@ -502,6 +505,19 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             return standardProps.get(key).toString();
         }
         return "";
+    }
+    
+    /**
+     * Refresh table metadata.
+     *
+     * @param jobId job id
+     * @param databaseName database name
+     */
+    public void refreshTableMetadata(final String jobId, final String databaseName) {
+        // TODO use origin database name now, wait reloadDatabaseMetaData fix case-sensitive probelm
+        ContextManager contextManager = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobId)).getContextManager();
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
+        contextManager.reloadDatabaseMetaData(database.getName());
     }
     
     @Override

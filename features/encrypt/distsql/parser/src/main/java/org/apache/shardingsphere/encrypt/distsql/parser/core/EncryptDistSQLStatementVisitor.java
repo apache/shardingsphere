@@ -87,11 +87,16 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
         return new EncryptColumnSegment(getIdentifierValue(ctx.columnDefinition().columnName()),
                 new EncryptColumnItemSegment(getIdentifierValue(ctx.cipherColumnDefinition().cipherColumnName()), (AlgorithmSegment) visit(ctx.encryptAlgorithm().algorithmDefinition())),
                 null == ctx.assistedQueryColumnDefinition() ? null
-                        : new EncryptColumnItemSegment(getIdentifierValue(ctx.assistedQueryColumnDefinition().assistedQueryColumnName()),
-                                null == ctx.assistedQueryAlgorithm() ? null : (AlgorithmSegment) visit(ctx.assistedQueryAlgorithm().algorithmDefinition())),
-                null == ctx.likeQueryColumnDefinition() ? null
-                        : new EncryptColumnItemSegment(getIdentifierValue(ctx.likeQueryColumnDefinition().likeQueryColumnName()),
-                                null == ctx.likeQueryAlgorithm() ? null : (AlgorithmSegment) visit(ctx.likeQueryAlgorithm().algorithmDefinition())));
+                        : new EncryptColumnItemSegment(getIdentifierValue(ctx.assistedQueryColumnDefinition().assistedQueryColumnName()), getAssistedEncryptor(ctx)),
+                null == ctx.likeQueryColumnDefinition() ? null : new EncryptColumnItemSegment(getIdentifierValue(ctx.likeQueryColumnDefinition().likeQueryColumnName()), getLikeEncryptor(ctx)));
+    }
+    
+    private AlgorithmSegment getAssistedEncryptor(final EncryptColumnDefinitionContext ctx) {
+        return null == ctx.assistedQueryAlgorithm() ? null : (AlgorithmSegment) visit(ctx.assistedQueryAlgorithm().algorithmDefinition());
+    }
+    
+    private AlgorithmSegment getLikeEncryptor(final EncryptColumnDefinitionContext ctx) {
+        return null == ctx.likeQueryAlgorithm() ? null : (AlgorithmSegment) visit(ctx.likeQueryAlgorithm().algorithmDefinition());
     }
     
     @Override

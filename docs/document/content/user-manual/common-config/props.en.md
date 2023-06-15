@@ -17,7 +17,6 @@ Apache ShardingSphere provides the way of property configuration to configure sy
 | kernel-executor-size (?)           | int         | The max thread size of worker group to execute SQL. One ShardingSphereDataSource will use a independent thread pool, it does not share thread pool even different data source in same JVM                                                                   | infinite        |
 | max-connections-size-per-query (?) | int         | Max opened connection size for each query                                                                                                                                                                                                                   | 1               |
 | check-table-metadata-enabled (?)   | boolean     | Whether validate table meta data consistency when application startup or updated                                                                                                                                                                            | false           |
-| sql-federation-type (?)            | String      | SQL federation executor type, including: NONE, ORIGINAL, ADVANCED                                                                                                                                                                                           | NONE            | 
 
 ## Procedure
 

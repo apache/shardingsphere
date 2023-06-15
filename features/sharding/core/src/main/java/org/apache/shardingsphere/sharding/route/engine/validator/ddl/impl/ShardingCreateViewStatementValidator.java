@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.exception.metadata.EngagedViewException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedCreateViewException;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,7 +45,10 @@ import java.util.List;
 /**
  * Sharding create view statement validator.
  */
+@RequiredArgsConstructor
 public final class ShardingCreateViewStatementValidator extends ShardingDDLStatementValidator {
+    
+    private final ShardingSphereRuleMetaData globalRuleMetaData;
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
@@ -51,11 +56,11 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromSelect(((CreateViewStatement) sqlStatementContext.getSqlStatement()).getSelect());
         Collection<SimpleTableSegment> tableSegments = extractor.getRewriteTables();
-        String sqlFederationType = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
-        if ("NONE".equals(sqlFederationType) && isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, tableSegments)) {
+        boolean sqlFederationEnabled = globalRuleMetaData.getSingleRule(SQLFederationRule.class).getConfiguration().isSqlFederationEnabled();
+        if (!sqlFederationEnabled && isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, tableSegments)) {
             throw new EngagedViewException("sharding");
         }
-        if ("NONE".equals(sqlFederationType) && isAllBroadcastTablesWithoutConfigView(shardingRule, sqlStatementContext, tableSegments)) {
+        if (!sqlFederationEnabled && isAllBroadcastTablesWithoutConfigView(shardingRule, sqlStatementContext, tableSegments)) {
             throw new EngagedViewException("broadcast");
         }
     }

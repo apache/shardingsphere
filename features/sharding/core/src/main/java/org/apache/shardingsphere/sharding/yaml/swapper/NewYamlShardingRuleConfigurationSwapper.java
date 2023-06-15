@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.yaml.swapper;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -28,6 +29,12 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReference
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.metadata.converter.ShardingNodeConverter;
+import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.cache.YamlShardingCacheConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingAutoTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
@@ -123,7 +130,45 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
     
     @Override
     public ShardingRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        return new ShardingRuleConfiguration();
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        for (YamlDataNode each : dataNodes) {
+            if (ShardingNodeConverter.isTablePath(each.getKey())) {
+                ShardingNodeConverter.getTableName(each.getKey())
+                        .ifPresent(tableName -> result.getTables().add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTableRuleConfiguration.class))));
+            } else if (ShardingNodeConverter.isAutoTablePath(each.getKey())) {
+                ShardingNodeConverter.getAutoTableName(each.getKey())
+                        .ifPresent(autoTableName -> result.getAutoTables().add(autoTableYamlSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingAutoTableRuleConfiguration.class))));
+            } else if (ShardingNodeConverter.isBindingTablePath(each.getKey())) {
+                ShardingNodeConverter.getBindingTableName(each.getKey())
+                        .ifPresent(bindingTableName -> result.getBindingTableGroups().add(YamlShardingTableReferenceRuleConfigurationConverter.convertToObject(each.getValue())));
+            } else if (ShardingNodeConverter.isBroadcastTablePath(each.getKey())) {
+                result.getBroadcastTables().addAll(YamlEngine.unmarshal(each.getValue(), Collection.class));
+            } else if (ShardingNodeConverter.isDefaultDatabaseStrategyPath(each.getKey())) {
+                result.setDefaultDatabaseShardingStrategy(shardingStrategySwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingStrategyConfiguration.class)));
+            } else if (ShardingNodeConverter.isDefaultTableStrategyPath(each.getKey())) {
+                result.setDefaultTableShardingStrategy(shardingStrategySwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingStrategyConfiguration.class)));
+            } else if (ShardingNodeConverter.isDefaultKeyGenerateStrategyPath(each.getKey())) {
+                result.setDefaultKeyGenerateStrategy(keyGenerateStrategySwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlKeyGenerateStrategyConfiguration.class)));
+            } else if (ShardingNodeConverter.isDefaultAuditStrategyPath(each.getKey())) {
+                result.setDefaultAuditStrategy(auditStrategySwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingAuditStrategyConfiguration.class)));
+            } else if (ShardingNodeConverter.isDefaultShardingColumnPath(each.getKey())) {
+                result.setDefaultShardingColumn(each.getValue());
+            } else if (ShardingNodeConverter.isShardingAlgorithmPath(each.getKey())) {
+                ShardingNodeConverter.getShardingAlgorithmName(each.getKey())
+                        .ifPresent(algorithmName -> result.getShardingAlgorithms().put(algorithmName,
+                                algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
+            } else if (ShardingNodeConverter.isKeyGeneratorPath(each.getKey())) {
+                ShardingNodeConverter.getKeyGeneratorName(each.getKey())
+                        .ifPresent(keyGeneratorName -> result.getKeyGenerators().put(keyGeneratorName,
+                                algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
+            } else if (ShardingNodeConverter.isAuditorPath(each.getKey())) {
+                ShardingNodeConverter.getAuditorName(each.getKey())
+                        .ifPresent(auditorName -> result.getAuditors().put(auditorName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
+            } else if (ShardingNodeConverter.isShardingCachePath(each.getKey())) {
+                result.setShardingCache(shardingCacheYamlSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingCacheConfiguration.class)));
+            }
+        }
+        return result;
     }
     
     @Override

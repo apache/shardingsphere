@@ -103,6 +103,9 @@ public final class ProxyConfigurationLoader {
         if (null != serverConfiguration.getLogging()) {
             serverConfiguration.getRules().add(serverConfiguration.getLogging());
         }
+        if (null != serverConfiguration.getSqlFederation()) {
+            serverConfiguration.getRules().add(serverConfiguration.getSqlFederation());
+        }
         return serverConfiguration;
     }
     

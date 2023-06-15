@@ -39,7 +39,9 @@ import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -61,8 +63,6 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
     private final LifecycleExecutor checkExecutor;
     
-    private final ExecuteCallback checkExecuteCallback;
-    
     private final AtomicReference<DataConsistencyCalculateAlgorithm> calculateAlgorithm = new AtomicReference<>();
     
     public ConsistencyCheckTasksRunner(final ConsistencyCheckJobItemContext jobItemContext) {
@@ -71,7 +71,6 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         checkJobId = checkJobConfig.getJobId();
         parentJobId = checkJobConfig.getParentJobId();
         checkExecutor = new CheckLifecycleExecutor();
-        checkExecuteCallback = new CheckExecuteCallback();
     }
     
     @Override
@@ -80,8 +79,8 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             return;
         }
         TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName()).persistJobItemProgress(jobItemContext);
-        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(1, checkJobId + "-check");
-        executeEngine.submit(checkExecutor, checkExecuteCallback);
+        CompletableFuture<?> future = jobItemContext.getProcessContext().getConsistencyCheckExecuteEngine().submit(checkExecutor);
+        ExecuteEngine.trigger(Collections.singletonList(future), new CheckExecuteCallback());
     }
     
     @Override

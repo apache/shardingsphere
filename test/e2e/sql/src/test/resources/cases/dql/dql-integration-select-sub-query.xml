@@ -83,4 +83,24 @@
                scenario-comments="Test single table's LIKE operator underscore wildcard in subquery select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in subquery select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+    
+    <test-case sql="SELECT business_code, telephone, (SELECT password FROM t_user LIMIT 1) AS password FROM t_merchant" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt"
+               scenario-comments="Test subquery projection contains encrypt column and config alias when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM (SELECT business_code, telephone, (SELECT password FROM t_user LIMIT 1) AS password FROM t_merchant) AS temp" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt"
+               scenario-comments="Test shorthand expansion contains subquery projection and subquery projection contains encrypt column and config alias when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT m.business_code, m.telephone, u.user_id FROM t_merchant AS m INNER JOIN t_user AS u ON m.merchant_id = u.user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt"
+               scenario-comments="Test join contains some encrypt columns in multi tables when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM (SELECT m.business_code, m.telephone, u.user_id FROM t_merchant AS m INNER JOIN t_user AS u ON m.merchant_id = u.user_id) AS temp" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt"
+               scenario-comments="Test shorthand expansion contains subquery join and join contains some encrypt columns in multi tables when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 </integration-test-cases>

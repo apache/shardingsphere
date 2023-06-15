@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReadwriteSplittingNodeConverterTest {
@@ -38,8 +39,13 @@ class ReadwriteSplittingNodeConverterTest {
     }
     
     @Test
-    void assertGetRuleTagNameByRulePath() {
-        assertTrue(ReadwriteSplittingNodeConverter.isReadwriteSplittingPath("/metadata/foo_db/rules/readwrite_splitting/group_0"));
+    void assertCheckIsTargetRuleByRulePath() {
+        assertTrue(ReadwriteSplittingNodeConverter.isReadwriteSplittingPath("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0"));
+        assertFalse(ReadwriteSplittingNodeConverter.isReadwriteSplittingPath("/metadata/foo_db/rules/foo/data_sources/group_0"));
+        assertTrue(ReadwriteSplittingNodeConverter.isDataSourcePath("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0"));
+        assertFalse(ReadwriteSplittingNodeConverter.isDataSourcePath("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random"));
+        assertTrue(ReadwriteSplittingNodeConverter.isLoadBalancerPath("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random"));
+        assertFalse(ReadwriteSplittingNodeConverter.isLoadBalancerPath("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0"));
     }
     
     @Test
@@ -50,8 +56,8 @@ class ReadwriteSplittingNodeConverterTest {
     }
     
     @Test
-    void assertGetLoadBalanceNameByRulePath() {
-        Optional<String> actual = ReadwriteSplittingNodeConverter.getLoadBalanceName("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random");
+    void assertGetLoadBalancerNameByRulePath() {
+        Optional<String> actual = ReadwriteSplittingNodeConverter.getLoadBalancerName("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("random"));
     }

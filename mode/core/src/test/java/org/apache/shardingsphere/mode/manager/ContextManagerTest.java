@@ -96,7 +96,7 @@ class ContextManagerTest {
         when(result.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(result.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
         MutableDataNodeRule mutableDataNodeRule = mock(MutableDataNodeRule.class, RETURNS_DEEP_STUBS);
-        when(mutableDataNodeRule.findSingleTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(mock(DataNode.class)));
+        when(mutableDataNodeRule.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(mock(DataNode.class)));
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mutableDataNodeRule)));
         when(result.getSchemas()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", new ShardingSphereSchema())));
         return result;
@@ -299,7 +299,7 @@ class ContextManagerTest {
     }
     
     @Test
-    void assertClose() throws Exception {
+    void assertClose() {
         contextManager.close();
         verify(metaDataContexts).close();
     }

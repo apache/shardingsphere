@@ -198,9 +198,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private DataRecord loadDataRecord(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData, final PipelineTableMetaData tableMetaData) throws SQLException {
         int columnCount = resultSetMetaData.getColumnCount();
-        DataRecord result = new DataRecord(newPosition(resultSet), columnCount);
-        result.setType(IngestDataChangeType.INSERT);
-        result.setTableName(dumperConfig.getLogicTableName());
+        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, dumperConfig.getLogicTableName(), newPosition(resultSet), columnCount);
         List<String> insertColumnNames = Optional.ofNullable(dumperConfig.getInsertColumnNames()).orElse(Collections.emptyList());
         ShardingSpherePreconditions.checkState(insertColumnNames.isEmpty() || insertColumnNames.size() == resultSetMetaData.getColumnCount(),
                 () -> new PipelineInvalidParameterException("Insert colum names count not equals ResultSet column count"));

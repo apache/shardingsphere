@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -68,8 +69,8 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
-                Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
-                result.addAll(generateSQLTokensWithColumnSegments(Collections.singletonList(columnSegment), columnTableNames));
+                Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Collections.singleton(columnSegment), schema);
+                result.addAll(generateSQLTokensWithColumnSegments(Collections.singleton(columnSegment), columnTableNames));
             }
         }
         return result;
@@ -124,7 +125,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         return false;
     }
     
-    private Collection<ColumnProjection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter) {
-        return Collections.singletonList(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null));
+    private Collection<Projection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter) {
+        return Collections.singleton(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null));
     }
 }

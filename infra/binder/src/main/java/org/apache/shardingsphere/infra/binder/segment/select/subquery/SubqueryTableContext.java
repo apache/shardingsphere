@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Subquery table context.
@@ -31,7 +32,7 @@ public final class SubqueryTableContext {
     
     private final String tableName;
     
-    private final String alias;
+    private final String aliasName;
     
-    private final Collection<String> columnNames;
+    private final Collection<String> columnNames = new LinkedList<>();
 }

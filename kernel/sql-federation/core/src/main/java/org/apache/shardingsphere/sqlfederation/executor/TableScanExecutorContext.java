@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sqlfederation.executor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 /**
  * Translatable table scan executor context.

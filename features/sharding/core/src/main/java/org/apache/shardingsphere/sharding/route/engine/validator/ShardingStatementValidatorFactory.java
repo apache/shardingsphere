@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterIndexStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterTableStatementValidator;
@@ -75,11 +76,12 @@ public final class ShardingStatementValidatorFactory {
      * 
      * @param sqlStatement SQL statement
      * @param shardingConditions sharding conditions
+     * @param globalRuleMetaData global rule meta data
      * @return created instance
      */
-    public static Optional<ShardingStatementValidator> newInstance(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
+    public static Optional<ShardingStatementValidator> newInstance(final SQLStatement sqlStatement, final ShardingConditions shardingConditions, final ShardingSphereRuleMetaData globalRuleMetaData) {
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementValidator(sqlStatement);
+            return getDDLStatementValidator(sqlStatement, globalRuleMetaData);
         }
         if (sqlStatement instanceof DMLStatement) {
             return getDMLStatementValidator(sqlStatement, shardingConditions);
@@ -87,7 +89,7 @@ public final class ShardingStatementValidatorFactory {
         return Optional.empty();
     }
     
-    private static Optional<ShardingStatementValidator> getDDLStatementValidator(final SQLStatement sqlStatement) {
+    private static Optional<ShardingStatementValidator> getDDLStatementValidator(final SQLStatement sqlStatement, final ShardingSphereRuleMetaData globalRuleMetaData) {
         if (sqlStatement instanceof CreateTableStatement) {
             return Optional.of(new ShardingCreateTableStatementValidator());
         }
@@ -98,7 +100,7 @@ public final class ShardingStatementValidatorFactory {
             return Optional.of(new ShardingCreateProcedureStatementValidator());
         }
         if (sqlStatement instanceof CreateViewStatement) {
-            return Optional.of(new ShardingCreateViewStatementValidator());
+            return Optional.of(new ShardingCreateViewStatementValidator(globalRuleMetaData));
         }
         if (sqlStatement instanceof CreateIndexStatement) {
             return Optional.of(new ShardingCreateIndexStatementValidator());

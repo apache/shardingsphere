@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
@@ -71,6 +72,13 @@ class MaskMergedResultTest {
         InputStream inputStream = mock(InputStream.class);
         when(mergedResult.getInputStream(1, "asc")).thenReturn(inputStream);
         assertThat(new MaskMergedResult(metaData, mergedResult).getInputStream(1, "asc"), is(inputStream));
+    }
+    
+    @Test
+    void assertGetCharacterStream() throws SQLException {
+        Reader reader = mock(Reader.class);
+        when(mergedResult.getCharacterStream(1)).thenReturn(reader);
+        assertThat(new MaskMergedResult(metaData, mergedResult).getCharacterStream(1), is(reader));
     }
     
     @Test

@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
 
+import java.util.LinkedList;
+
 /**
  * YAML sharding audit strategy configuration swapper.
  */
@@ -29,7 +31,7 @@ public final class YamlShardingAuditStrategyConfigurationSwapper implements Yaml
     @Override
     public YamlShardingAuditStrategyConfiguration swapToYamlConfiguration(final ShardingAuditStrategyConfiguration data) {
         YamlShardingAuditStrategyConfiguration result = new YamlShardingAuditStrategyConfiguration();
-        result.setAuditorNames(data.getAuditorNames());
+        result.setAuditorNames(new LinkedList<>(data.getAuditorNames()));
         result.setAllowHintDisable(data.isAllowHintDisable());
         return result;
     }

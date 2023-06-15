@@ -18,12 +18,14 @@
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         Properties props = new Properties();
         props.setProperty("aes-key-value", "123456");
-        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("phone", "phone", "", "", "phone_plain", "phone_encryptor", null);
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("status", "status", "assisted_query_status", "", "", "string_encryptor", "string_encryptor", null, null);
-        EncryptTableRuleConfiguration orderItemRule = new EncryptTableRuleConfiguration("t_order_item", Collections.singleton(columnConfigAes), true);
-        EncryptTableRuleConfiguration orderRule = new EncryptTableRuleConfiguration("t_order", Collections.singleton(columnConfigTest), true);
+        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("phone", new EncryptColumnItemRuleConfiguration("phone", "standard_encryptor"));
+        EncryptTableRuleConfiguration orderItemRule = new EncryptTableRuleConfiguration("t_order_item", Collections.singleton(columnConfigAes));
+        EncryptColumnRuleConfiguration statusColumnConfig =
+            new EncryptColumnRuleConfiguration("status", new EncryptColumnItemRuleConfiguration("status", "standard_encryptor"));
+        statusColumnConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("status_assisted", "assisted_encryptor"));
+        EncryptTableRuleConfiguration orderRule = new EncryptTableRuleConfiguration("t_order", Collections.singleton(statusColumnConfig)); 
         Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>();
-        encryptAlgorithmConfigs.put("phone_encryptor", new AlgorithmConfiguration("AES", props));
-        encryptAlgorithmConfigs.put("string_encryptor", new AlgorithmConfiguration("assistedTest", props));
+        encryptAlgorithmConfigs.put("standard_encryptor", new AlgorithmConfiguration("AES", props));
+        encryptAlgorithmConfigs.put("assisted_encryptor", new AlgorithmConfiguration("assistedTest", props));
         return new EncryptRuleConfiguration(Arrays.asList(orderRule, orderItemRule), encryptAlgorithmConfigs);
     }

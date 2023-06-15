@@ -30,7 +30,7 @@ Java API 形式配置的读写分离可以方便的适用于各种场景，不�
 |------------------------------------|--------------------------------|-----------------------------------------------------------------------------|----------|
 | name                               | String                         | 读写分离数据源名称                                                                   | -        |
 | writeDataSourceName                | String                         | 写库数据源名称                                                                     | -        |
-| readDataSourceNames                | List\<String\>                 | 写库数据源名称                                                                     | -        |
+| readDataSourceNames                | List\<String\>                 | 读库数据源名称                                                                     | -        |
 | transactionalReadQueryStrategy (?) | TransactionalReadQueryStrategy | 事务内读请求的路由策略，可选值：PRIMARY（路由至主库）、FIXED（同一事务内路由至固定数据源）、DYNAMIC（同一事务内路由至非固定数据源） | DYNAMIC  |
 | loadBalancerName (?)               | String                         | 读库负载均衡算法名称                                                                  | 轮询负载均衡算法 |
 

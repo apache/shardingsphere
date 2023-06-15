@@ -33,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineDataSourceSink;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.sink.PipelineSink;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -145,9 +146,7 @@ class PipelineDataSourceSinkTest {
     }
     
     private DataRecord getUpdatePrimaryKeyDataRecord() {
-        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
-        result.setTableName(TABLE_NAME);
-        result.setType("UPDATE");
+        DataRecord result = new DataRecord(IngestDataChangeType.UPDATE, TABLE_NAME, new PlaceholderPosition(), 3);
         result.addColumn(new Column("id", 1, 2, true, true));
         result.addColumn(new Column("user", 0, 10, true, false));
         result.addColumn(new Column("status", null, "UPDATE", true, false));
@@ -162,9 +161,6 @@ class PipelineDataSourceSinkTest {
     }
     
     private DataRecord getDataRecord(final String recordType) {
-        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
-        result.setTableName(TABLE_NAME);
-        result.setType(recordType);
         Integer idOldValue = null;
         Integer userOldValue = null;
         Integer idValue = null;
@@ -188,6 +184,7 @@ class PipelineDataSourceSinkTest {
             userOldValue = 10;
             statusOldValue = recordType;
         }
+        DataRecord result = new DataRecord(recordType, TABLE_NAME, new PlaceholderPosition(), 3);
         result.addColumn(new Column("id", idOldValue, idValue, false, true));
         result.addColumn(new Column("user", userOldValue, userValue, true, false));
         result.addColumn(new Column("status", statusOldValue, statusValue, true, false));

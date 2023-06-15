@@ -23,11 +23,15 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.io.Reader;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
@@ -96,6 +100,12 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
         objectOutputStream.flush();
         objectOutputStream.close();
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+    }
+    
+    @Override
+    public Reader getCharacterStream(final int columnIndex) throws SQLException {
+        // TODO Support connection property character encoding
+        return new BufferedReader(new InputStreamReader(getInputStream(columnIndex)));
     }
     
     @Override

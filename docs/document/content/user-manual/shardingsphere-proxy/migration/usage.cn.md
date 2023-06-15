@@ -714,10 +714,4 @@ SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 COMMIT MIGRATION 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 ```
 
-8. 刷新元数据。
-
-```sql
-REFRESH TABLE METADATA;
-```
-
 更多 DistSQL 请参见 [RAL #数据迁移](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB)。

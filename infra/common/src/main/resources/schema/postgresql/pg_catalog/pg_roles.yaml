@@ -17,13 +17,19 @@
 
 name: pg_roles
 columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: false
+    visible: false
   rolname:
     caseSensitive: true
     dataType: 12
     generated: false
     name: rolname
     primaryKey: false
-    unsigned: false
     visible: true
   rolsuper:
     caseSensitive: true
@@ -31,15 +37,6 @@ columns:
     generated: false
     name: rolsuper
     primaryKey: false
-    unsigned: false
-    visible: true
-  rolinherit:
-    caseSensitive: true
-    dataType: -7
-    generated: false
-    name: rolinherit
-    primaryKey: false
-    unsigned: false
     visible: true
   rolcreaterole:
     caseSensitive: true
@@ -47,7 +44,6 @@ columns:
     generated: false
     name: rolcreaterole
     primaryKey: false
-    unsigned: false
     visible: true
   rolcreatedb:
     caseSensitive: true
@@ -55,7 +51,13 @@ columns:
     generated: false
     name: rolcreatedb
     primaryKey: false
-    unsigned: false
+    visible: true
+  rolcatupdate:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rolcatupdate
+    primaryKey: false
     visible: true
   rolcanlogin:
     caseSensitive: true
@@ -63,7 +65,6 @@ columns:
     generated: false
     name: rolcanlogin
     primaryKey: false
-    unsigned: false
     visible: true
   rolreplication:
     caseSensitive: true
@@ -71,7 +72,20 @@ columns:
     generated: false
     name: rolreplication
     primaryKey: false
-    unsigned: false
+    visible: true
+  rolauditadmin:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rolauditadmin
+    primaryKey: false
+    visible: true
+  rolsystemadmin:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rolsystemadmin
+    primaryKey: false
     visible: true
   rolconnlimit:
     caseSensitive: true
@@ -79,7 +93,6 @@ columns:
     generated: false
     name: rolconnlimit
     primaryKey: false
-    unsigned: false
     visible: true
   rolpassword:
     caseSensitive: true
@@ -87,37 +100,102 @@ columns:
     generated: false
     name: rolpassword
     primaryKey: false
-    unsigned: false
+    visible: true
+  rolvalidbegin:
+    caseSensitive: true
+    dataType: 2014
+    generated: false
+    name: rolpassword
+    primaryKey: false
     visible: true
   rolvaliduntil:
     caseSensitive: true
-    dataType: 93
+    dataType: 2014
     generated: false
     name: rolvaliduntil
     primaryKey: false
-    unsigned: false
     visible: true
-  rolbypassrls:
+  rolrespool:
     caseSensitive: true
-    dataType: -7
+    dataType: 12
     generated: false
-    name: rolbypassrls
+    name: rolrespool
     primaryKey: false
-    unsigned: false
     visible: true
-  rolconfig:
-    caseSensitive: true
-    dataType: 2003
-    generated: false
-    name: rolconfig
-    primaryKey: false
-    unsigned: false
-    visible: true
-  oid:
+  rolparentid:
     caseSensitive: true
     dataType: -5
     generated: false
-    name: oid
+    name: rolparentid
     primaryKey: false
-    unsigned: false
+    visible: true
+  roltabspace:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: roltabspace
+    primaryKey: false
+    visible: true
+  rolconfig:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: rolconfig
+    primaryKey: false
+    visible: true
+  roluseft:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: roluseft
+    primaryKey: false
+    visible: true
+  rolkind:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: rolkind
+    primaryKey: false
+    visible: true
+  nodegroup:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: nodegroup
+    primaryKey: false
+    visible: true
+  roltempspace:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: roltempspace
+    primaryKey: false
+    visible: true
+  rolspillspace:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: rolspillspace
+    primaryKey: false
+    visible: true
+  rolmonitoradmin:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rolmonitoradmin
+    primaryKey: false
+    visible: true
+  roloperatoradmin:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: roloperatoradmin
+    primaryKey: false
+    visible: true
+  rolpolicyadmin:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rolpolicyadmin
+    primaryKey: false
     visible: true

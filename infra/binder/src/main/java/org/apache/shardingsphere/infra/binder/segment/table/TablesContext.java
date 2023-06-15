@@ -97,11 +97,11 @@ public final class TablesContext {
     
     private Map<String, Collection<SubqueryTableContext>> createSubqueryTables(final Map<Integer, SelectStatementContext> subqueryContexts, final SubqueryTableSegment subqueryTable) {
         SelectStatementContext subqueryContext = subqueryContexts.get(subqueryTable.getSubquery().getStartIndex());
-        Collection<SubqueryTableContext> subqueryTableContexts = new SubqueryTableContextEngine().createSubqueryTableContexts(subqueryContext, subqueryTable.getAliasName().orElse(null));
+        Map<String, SubqueryTableContext> subqueryTableContexts = new SubqueryTableContextEngine().createSubqueryTableContexts(subqueryContext, subqueryTable.getAliasName().orElse(null));
         Map<String, Collection<SubqueryTableContext>> result = new HashMap<>();
-        for (SubqueryTableContext subQuery : subqueryTableContexts) {
-            if (null != subQuery.getAlias()) {
-                result.computeIfAbsent(subQuery.getAlias(), unused -> new LinkedList<>()).add(subQuery);
+        for (SubqueryTableContext each : subqueryTableContexts.values()) {
+            if (null != each.getAliasName()) {
+                result.computeIfAbsent(each.getAliasName(), unused -> new LinkedList<>()).add(each);
             }
         }
         return result;

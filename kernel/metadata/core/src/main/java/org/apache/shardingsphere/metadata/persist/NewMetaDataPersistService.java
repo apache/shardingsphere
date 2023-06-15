@@ -27,11 +27,11 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.NewDataSourcePersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.NewDatabaseRulePersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.global.NewGlobalRulePersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.global.NewPropertiesPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import javax.sql.DataSource;
@@ -55,11 +55,11 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
     
     private final DatabaseMetaDataPersistService databaseMetaDataService;
     
-    private final DatabaseRulePersistService databaseRulePersistService;
+    private final NewDatabaseRulePersistService databaseRulePersistService;
     
-    private final GlobalRulePersistService globalRuleService;
+    private final NewGlobalRulePersistService globalRuleService;
     
-    private final PropertiesPersistService propsService;
+    private final NewPropertiesPersistService propsService;
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
@@ -69,9 +69,9 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
         this.repository = repository;
         dataSourceService = new NewDataSourcePersistService(repository);
         databaseMetaDataService = new DatabaseMetaDataPersistService(repository);
-        databaseRulePersistService = new DatabaseRulePersistService(repository);
-        globalRuleService = new GlobalRulePersistService(repository);
-        propsService = new PropertiesPersistService(repository);
+        databaseRulePersistService = new NewDatabaseRulePersistService(repository);
+        globalRuleService = new NewGlobalRulePersistService(repository);
+        propsService = new NewPropertiesPersistService(repository);
         metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         shardingSphereDataPersistService = new ShardingSphereDataPersistService(repository);
     }
@@ -88,14 +88,6 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
         propsService.persist(props);
     }
     
-    /**
-     * Persist configurations.
-     *
-     * @param databaseName database name
-     * @param databaseConfigs database configurations
-     * @param dataSources data sources
-     * @param rules rules
-     */
     @Override
     public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs,
                                       final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {

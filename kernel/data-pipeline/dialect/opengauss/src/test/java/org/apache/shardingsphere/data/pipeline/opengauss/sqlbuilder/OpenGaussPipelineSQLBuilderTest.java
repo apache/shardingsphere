@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -39,8 +40,7 @@ class OpenGaussPipelineSQLBuilderTest {
     }
     
     private DataRecord mockDataRecord(final String tableName) {
-        DataRecord result = new DataRecord(new PlaceholderPosition(), 4);
-        result.setTableName(tableName);
+        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new PlaceholderPosition(), 4);
         result.addColumn(new Column("id", "", false, true));
         result.addColumn(new Column("c0", "", false, false));
         result.addColumn(new Column("c1", "", true, false));

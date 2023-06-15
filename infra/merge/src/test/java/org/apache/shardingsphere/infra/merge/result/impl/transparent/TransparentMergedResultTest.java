@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.sql.Date;
 import java.sql.SQLException;
 
@@ -65,6 +66,15 @@ class TransparentMergedResultTest {
         when(queryResult.getInputStream(1, "Ascii")).thenReturn(value);
         TransparentMergedResult actual = new TransparentMergedResult(queryResult);
         assertThat(actual.getInputStream(1, "Ascii"), is(value));
+    }
+    
+    @Test
+    void assertGetCharacterStream() throws SQLException {
+        QueryResult queryResult = mock(QueryResult.class);
+        Reader value = mock(Reader.class);
+        when(queryResult.getCharacterStream(1)).thenReturn(value);
+        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
+        assertThat(actual.getCharacterStream(1), is(value));
     }
     
     @Test

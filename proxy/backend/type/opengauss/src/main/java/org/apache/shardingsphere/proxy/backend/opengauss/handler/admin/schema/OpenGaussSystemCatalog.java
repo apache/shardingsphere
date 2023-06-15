@@ -28,5 +28,9 @@ public final class OpenGaussSystemCatalog {
     
     // CHECKSTYLE:OFF
     public final OpenGaussDatabase[] pg_database;
+    
+    public final OpenGaussTables[] pg_tables;
+    
+    public final OpenGaussRoles[] pg_roles;
     // CHECKSTYLE:ON
 }

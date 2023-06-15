@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.single.decider;
 
-import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDa
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -91,7 +91,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
             return false;
         }
         QualifiedTable sampleTable = singleTableNames.iterator().next();
-        Optional<DataNode> dataNode = rule.findSingleTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
+        Optional<DataNode> dataNode = rule.findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
         if (!dataNode.isPresent()) {
             return true;
         }
@@ -106,7 +106,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
     private Collection<DataNode> getTableDataNodes(final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
         Collection<DataNode> result = new HashSet<>();
         for (QualifiedTable each : singleTableNames) {
-            rule.findSingleTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(result::add);
+            rule.findTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(result::add);
         }
         return result;
     }

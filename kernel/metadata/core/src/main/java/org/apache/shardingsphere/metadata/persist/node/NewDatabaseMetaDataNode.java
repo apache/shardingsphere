@@ -41,103 +41,114 @@ public final class NewDatabaseMetaDataNode {
     private static final String VERSIONS = "versions";
     
     /**
-     * Get data Sources path.
+     * Get data Sources node.
      *
      * @param databaseName database name
-     * @return data sources path
+     * @return data sources node
      */
-    public static String getDataSourcesPath(final String databaseName) {
-        return String.join("/", getMetaDataNodePath(), DataSourceNodeConverter.getDataSourcesPath(databaseName));
+    public static String getDataSourcesNode(final String databaseName) {
+        return String.join("/", getMetaDataNodeNode(), DataSourceNodeConverter.getDataSourcesPath(databaseName));
     }
     
     /**
-     * Get data Source path.
+     * Get data Source node.
      *
      * @param databaseName database name
      * @param dataSourceName data source name
      * @param version version
-     * @return data source path
+     * @return data source node
      */
-    public static String getDataSourcePath(final String databaseName, final String dataSourceName, final String version) {
-        return String.join("/", getMetaDataNodePath(), DataSourceNodeConverter.getDataSourcePath(databaseName, dataSourceName, version));
+    public static String getDataSourceNode(final String databaseName, final String dataSourceName, final String version) {
+        return String.join("/", getMetaDataNodeNode(), DataSourceNodeConverter.getDataSourcePath(databaseName, dataSourceName, version));
     }
     
     /**
-     * Get data Source active version path.
+     * Get data Source active version node.
      *
      * @param databaseName database name
      * @param dataSourceName data source name
-     * @return data source active version path
+     * @return data source active version node
      */
-    public static String getDataSourceActiveVersionPath(final String databaseName, final String dataSourceName) {
-        return String.join("/", getMetaDataNodePath(), DataSourceNodeConverter.getActiveVersionPath(databaseName, dataSourceName));
+    public static String getDataSourceActiveVersionNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getMetaDataNodeNode(), DataSourceNodeConverter.getActiveVersionPath(databaseName, dataSourceName));
     }
     
     /**
-     * Get database rule active version path.
+     * Get database rule active version node.
      *
      * @param databaseName database name
      * @param ruleName rule name
      * @param key key
-     * @return database rule active version path
+     * @return database rule active version node
      */
-    public static String getDatabaseRuleActiveVersionPath(final String databaseName, final String ruleName, final String key) {
-        return String.join("/", getDatabaseRulePath(databaseName, ruleName), key, ACTIVE_VERSION);
+    public static String getDatabaseRuleActiveVersionNode(final String databaseName, final String ruleName, final String key) {
+        return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key, ACTIVE_VERSION);
     }
     
     /**
-     * Get database rule versions path.
+     * Get database rule versions node.
      *
      * @param databaseName database name
      * @param ruleName rule name
      * @param key key
-     * @return database rule versions path
+     * @return database rule versions node
      */
-    public static String getDatabaseRuleVersionsPath(final String databaseName, final String ruleName, final String key) {
-        return String.join("/", getDatabaseRulePath(databaseName, ruleName), key, VERSIONS);
+    public static String getDatabaseRuleVersionsNode(final String databaseName, final String ruleName, final String key) {
+        return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key, VERSIONS);
     }
     
     /**
-     * Get database rule version path.
+     * Get database rule version node.
      *
      * @param databaseName database name
      * @param ruleName rule name
      * @param key key
-     * @param nextVersion next version
+     * @param version version
      * @return database rule next version
      */
-    public static String getDatabaseRuleVersionPath(final String databaseName, final String ruleName, final String key, final String nextVersion) {
-        return String.join("/", getDatabaseRulePath(databaseName, ruleName), key, VERSIONS, nextVersion);
+    public static String getDatabaseRuleVersionNode(final String databaseName, final String ruleName, final String key, final String version) {
+        return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key, VERSIONS, version);
     }
     
     /**
-     * Get database rule path.
+     * Get database rule node.
      *
      * @param databaseName database name
      * @param ruleName rule name
-     * @return database rule path
+     * @param key key
+     * @return database rule node without version
      */
-    public static String getDatabaseRulePath(final String databaseName, final String ruleName) {
-        return String.join("/", getRulesPath(databaseName), ruleName);
+    public static String getDatabaseRuleNode(final String databaseName, final String ruleName, final String key) {
+        return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key);
+    }
+    
+    private static String getDatabaseRuleNode(final String databaseName, final String ruleName) {
+        return String.join("/", getRulesNode(databaseName), ruleName);
     }
     
     /**
-     * Get database name by path.
+     * Get database rules node.
+     *
+     * @param databaseName database name
+     * @return database rules node
+     */
+    public static String getRulesNode(final String databaseName) {
+        return String.join("/", getMetaDataNodeNode(), databaseName, RULE_NODE);
+    }
+    
+    /**
+     * Get database name by node.
      *
      * @param path config path
      * @return database name
      */
-    public static Optional<String> getDatabaseNameByPath(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getDatabaseNameByNode(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
-    private static String getRulesPath(final String databaseName) {
-        return String.join("/", getMetaDataNodePath(), databaseName, RULE_NODE);
-    }
-    
-    private static String getMetaDataNodePath() {
+    private static String getMetaDataNodeNode() {
         return String.join("/", "", ROOT_NODE);
     }
 }

@@ -37,20 +37,22 @@ import java.util.List;
 @ToString
 public final class DataRecord extends Record {
     
+    private final String type;
+    
+    private final String tableName;
+    
     private final List<Column> columns;
     
     private final List<Object> uniqueKeyValue = new LinkedList<>();
     
     private final List<Object> oldUniqueKeyValues = new ArrayList<>();
     
-    private String type;
-    
-    private String tableName;
-    
     private Long csn;
     
-    public DataRecord(final IngestPosition position, final int columnCount) {
+    public DataRecord(final String type, final String tableName, final IngestPosition position, final int columnCount) {
         super(position);
+        this.type = type;
+        this.tableName = tableName;
         columns = new ArrayList<>(columnCount);
     }
     

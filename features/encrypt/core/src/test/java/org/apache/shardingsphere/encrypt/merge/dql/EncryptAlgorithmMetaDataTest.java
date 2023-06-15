@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
@@ -106,6 +107,22 @@ class EncryptAlgorithmMetaDataTest {
         assertThat(actual.get().getDatabaseName(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.get().getTableName(), is("t_order"));
         assertThat(actual.get().getColumnName(), is("id"));
+    }
+    
+    @Test
+    void assertFindEncryptContextWhenSubqueryContainsEncryptColumn() {
+        ColumnProjection columnProjection = new ColumnProjection(null, "user_name", null);
+        Map<String, String> columnTableNames = new HashMap<>();
+        columnTableNames.put(columnProjection.getExpression(), "t_user");
+        when(projectionsContext.getExpandProjections())
+                .thenReturn(Collections.singletonList(new SubqueryProjection("(SELECT user_name FROM t_user)", columnProjection, null, new MySQLDatabaseType())));
+        when(tablesContext.findTableNamesByColumnProjection(Collections.singletonList(columnProjection), schema)).thenReturn(columnTableNames);
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(database, encryptRule, selectStatementContext);
+        Optional<EncryptContext> actual = encryptAlgorithmMetaData.findEncryptContext(1);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getDatabaseName(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.get().getTableName(), is("t_user"));
+        assertThat(actual.get().getColumnName(), is("user_name"));
     }
     
     @Test

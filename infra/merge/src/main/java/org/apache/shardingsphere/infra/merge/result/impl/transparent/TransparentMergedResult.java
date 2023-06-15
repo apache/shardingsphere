@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Calendar;
 
@@ -51,6 +52,11 @@ public final class TransparentMergedResult implements MergedResult {
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         return queryResult.getInputStream(columnIndex, type);
+    }
+    
+    @Override
+    public Reader getCharacterStream(final int columnIndex) throws SQLException {
+        return queryResult.getCharacterStream(columnIndex);
     }
     
     @Override

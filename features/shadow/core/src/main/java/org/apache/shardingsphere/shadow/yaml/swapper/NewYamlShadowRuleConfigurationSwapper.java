@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguratio
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.metadata.converter.ShadowNodeConverter;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
 import java.util.Collection;
@@ -41,7 +43,7 @@ import java.util.Map.Entry;
  */
 public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<ShadowRuleConfiguration> {
     
-    private final YamlShadowTableConfigurationSwapper tableConfigurationSwapper = new YamlShadowTableConfigurationSwapper();
+    private final YamlShadowTableConfigurationSwapper tableSwapper = new YamlShadowTableConfigurationSwapper();
     
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
@@ -52,7 +54,7 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
             result.add(new YamlDataNode(ShadowNodeConverter.getDataSourcePath(each.getName()), YamlEngine.marshal(swapToDataSourceYamlConfiguration(each))));
         }
         for (Entry<String, ShadowTableConfiguration> entry : data.getTables().entrySet()) {
-            result.add(new YamlDataNode(ShadowNodeConverter.getTableNamePath(entry.getKey()), YamlEngine.marshal(tableConfigurationSwapper.swapToYamlConfiguration(entry.getValue()))));
+            result.add(new YamlDataNode(ShadowNodeConverter.getTableNamePath(entry.getKey()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         for (Entry<String, AlgorithmConfiguration> entry : data.getShadowAlgorithms().entrySet()) {
             result.add(new YamlDataNode(ShadowNodeConverter.getShadowAlgorithmPath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
@@ -72,8 +74,27 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
     
     @Override
     public ShadowRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        // TODO to be completed
-        return new ShadowRuleConfiguration();
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+        for (YamlDataNode each : dataNodes) {
+            if (ShadowNodeConverter.isDataSourcePath(each.getKey())) {
+                ShadowNodeConverter.getDataSourceName(each.getKey())
+                        .ifPresent(dataSourceName -> result.getDataSources().add(swapDataSource(dataSourceName, YamlEngine.unmarshal(each.getValue(), YamlShadowDataSourceConfiguration.class))));
+            } else if (ShadowNodeConverter.isTablePath(each.getKey())) {
+                ShadowNodeConverter.getTableName(each.getKey())
+                        .ifPresent(tableName -> result.getTables().put(tableName, tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShadowTableConfiguration.class))));
+            } else if (ShadowNodeConverter.isAlgorithmPath(each.getKey())) {
+                ShadowNodeConverter.getAlgorithmName(each.getKey())
+                        .ifPresent(algorithmName -> result.getShadowAlgorithms().put(algorithmName,
+                                algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
+            } else if (ShadowNodeConverter.isDefaultAlgorithmNamePath(each.getKey())) {
+                result.setDefaultShadowAlgorithmName(each.getValue());
+            }
+        }
+        return result;
+    }
+    
+    private ShadowDataSourceConfiguration swapDataSource(final String name, final YamlShadowDataSourceConfiguration yamlConfig) {
+        return new ShadowDataSourceConfiguration(name, yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
     }
     
     @Override

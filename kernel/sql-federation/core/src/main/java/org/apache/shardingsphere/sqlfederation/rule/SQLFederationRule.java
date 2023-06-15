@@ -17,53 +17,43 @@
 
 package org.apache.shardingsphere.sqlfederation.rule;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.enums.SQLFederationTypeEnum;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
+import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContextFactory;
+import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContextFactory;
+
+import java.util.Map;
 
 /**
  * SQL federation rule.
  */
-public final class SQLFederationRule implements GlobalRule {
+@Getter
+public final class SQLFederationRule implements GlobalRule, MetaDataHeldRule {
     
-    @Getter
     private final SQLFederationRuleConfiguration configuration;
     
-    private SQLFederationExecutor sqlFederationExecutor;
+    private final OptimizerContext optimizerContext;
     
-    public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig) {
+    public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         configuration = ruleConfig;
-        sqlFederationExecutor = TypedSPILoader.getService(SQLFederationExecutor.class, configuration.getSqlFederationType());
+        optimizerContext = OptimizerContextFactory.create(databases, props);
     }
     
-    /**
-     * Get SQL federation executor.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param metaData ShardingSphere meta data
-     * @param shardingSphereData ShardingSphere data
-     * @param jdbcExecutor jdbc executor
-     * @return created instance
-     */
-    public SQLFederationExecutor getSQLFederationExecutor(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData shardingSphereData,
-                                                          final JDBCExecutor jdbcExecutor) {
-        String sqlFederationType = metaData.getProps().getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
-        Preconditions.checkArgument(SQLFederationTypeEnum.isValidSQLFederationType(sqlFederationType), "%s is not a valid sqlFederationType.", sqlFederationType);
-        if (!configuration.getSqlFederationType().equals(sqlFederationType)) {
-            configuration.setSqlFederationType(sqlFederationType);
-            sqlFederationExecutor = TypedSPILoader.getService(SQLFederationExecutor.class, configuration.getSqlFederationType());
-        }
-        sqlFederationExecutor.init(databaseName, schemaName, metaData, shardingSphereData, jdbcExecutor);
-        return sqlFederationExecutor;
+    @Override
+    public void alterDatabase(final ShardingSphereDatabase database) {
+        OptimizerPlannerContext plannerContext = OptimizerPlannerContextFactory.create(database, optimizerContext.getParserContext(database.getName()), optimizerContext.getSqlParserRule());
+        optimizerContext.putPlannerContext(database.getName(), plannerContext);
+    }
+    
+    @Override
+    public void dropDatabase(final String databaseName) {
+        optimizerContext.removePlannerContext(databaseName);
     }
     
     @Override

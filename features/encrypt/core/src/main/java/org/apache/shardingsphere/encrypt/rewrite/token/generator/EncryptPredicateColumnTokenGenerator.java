@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLE
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
@@ -84,10 +85,9 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         for (ColumnSegment each : columnSegments) {
             String tableName = Optional.ofNullable(columnExpressionTableNames.get(each.getExpression())).orElse("");
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent() || !encryptTable.get().findEncryptColumn(each.getIdentifier().getValue()).isPresent()) {
-                continue;
+            if (encryptTable.isPresent() && encryptTable.get().findEncryptColumn(each.getIdentifier().getValue()).isPresent()) {
+                result.add(buildSubstitutableColumnNameToken(each, whereSegments, encryptTable.get()));
             }
-            result.add(buildSubstitutableColumnNameToken(each, whereSegments, encryptTable.get()));
         }
         return result;
     }
@@ -102,7 +102,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             ShardingSpherePreconditions.checkState(likeQueryColumn.isPresent(), () -> new UnsupportedEncryptSQLException("LIKE"));
             return new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(likeQueryColumn.get(), columnSegment.getIdentifier().getQuoteCharacter()));
         }
-        Collection<ColumnProjection> columnProjections =
+        Collection<Projection> columnProjections =
                 encryptTable.findAssistedQueryColumn(logicColumn).map(optional -> createColumnProjections(optional, columnSegment.getIdentifier().getQuoteCharacter()))
                         .orElseGet(() -> createColumnProjections(encryptTable.getCipherColumn(logicColumn),
                                 columnSegment.getIdentifier().getQuoteCharacter()));
@@ -135,7 +135,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return columnSegment instanceof ColumnSegment && columnSegment.getStartIndex() == targetColumnSegment.getStartIndex() && columnSegment.getStopIndex() == targetColumnSegment.getStopIndex();
     }
     
-    private Collection<ColumnProjection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter) {
+    private Collection<Projection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter) {
         return Collections.singletonList(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null));
     }
 }

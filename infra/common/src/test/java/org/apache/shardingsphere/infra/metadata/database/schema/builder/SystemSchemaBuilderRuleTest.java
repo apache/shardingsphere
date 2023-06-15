@@ -54,7 +54,9 @@ class SystemSchemaBuilderRuleTest {
     void assertIsisSystemTable() {
         assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "columns"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_database"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_tables"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_aggregate"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_roles"));
         assertFalse(SystemSchemaBuilderRule.isSystemTable("sharding_db", "t_order"));
     }
 }
