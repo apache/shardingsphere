@@ -111,11 +111,13 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
             return;
         }
         RuleConfiguration toBeDroppedRuleConfig = updater.buildToBeDroppedRuleConfiguration(currentRuleConfig, sqlStatement);
+        RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
         if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
             database.getRuleMetaData().getConfigurations().remove(currentRuleConfig);
             // TODO remove rule root node
         }
         ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().removeRuleConfiguration(database.getName(), toBeDroppedRuleConfig);
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
         if (updater instanceof DropReadwriteSplittingRuleStatementUpdater) {
             database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class)
                     .ifPresent(optional -> ((DropReadwriteSplittingRuleStatement) sqlStatement).getNames().forEach(optional::cleanStorageNodeDataSource));
