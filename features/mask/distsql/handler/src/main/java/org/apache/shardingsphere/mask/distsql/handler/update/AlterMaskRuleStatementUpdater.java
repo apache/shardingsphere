@@ -65,7 +65,7 @@ public final class AlterMaskRuleStatementUpdater implements RuleDefinitionAlterU
     public MaskRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterMaskRuleStatement sqlStatement) {
         return MaskRuleStatementConverter.convert(sqlStatement.getRules());
     }
-
+    
     @Override
     public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
         Collection<String> toBeAlteredTableNames = toBeAlteredRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
