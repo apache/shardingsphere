@@ -41,9 +41,6 @@ import org.apache.shardingsphere.sharding.event.table.sharding.AlterShardingTabl
 import org.apache.shardingsphere.sharding.event.table.sharding.DeleteShardingTableConfigurationEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -139,15 +136,12 @@ public final class ShardingTableConfigurationSubscriber implements RuleConfigura
     @Subscribe
     public synchronized void renew(final AddBroadcastTableConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<String> needToAddedConfig = event.getConfig();
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         ShardingRuleConfiguration config;
         if (rule.isPresent()) {
             config = (ShardingRuleConfiguration) rule.get().getConfiguration();
-            config.setBroadcastTables(new LinkedList<>(needToAddedConfig));
         } else {
             config = new ShardingRuleConfiguration();
-            config.getBroadcastTables().addAll(needToAddedConfig);
         }
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -205,9 +199,7 @@ public final class ShardingTableConfigurationSubscriber implements RuleConfigura
     @Subscribe
     public synchronized void renew(final AlterBroadcastTableConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<String> needToAlteredConfig = event.getConfig();
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
-        config.setBroadcastTables(new LinkedList<>(needToAlteredConfig));
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -259,7 +251,6 @@ public final class ShardingTableConfigurationSubscriber implements RuleConfigura
     public synchronized void renew(final DeleteBroadcastTableConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
-        config.setBroadcastTables(new ArrayList<>());
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
 }
