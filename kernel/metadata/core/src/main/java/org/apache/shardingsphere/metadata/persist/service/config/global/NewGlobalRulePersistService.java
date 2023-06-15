@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Map;
+import java.util.List;
 import java.util.Map.Entry;
 
 /**
@@ -67,7 +68,10 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
             if (Strings.isNullOrEmpty(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()))) {
                 repository.persist(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), DEFAULT_VERSION);
             }
-            repository.persist(NewGlobalNode.getGlobalRuleVersionNode(each.getKey(), DEFAULT_VERSION), each.getValue());
+            List<String> versions = repository.getChildrenKeys(NewGlobalNode.getGlobalRuleVersionsNode(each.getKey()));
+            repository.persist(NewGlobalNode.getGlobalRuleVersionNode(each.getKey(), versions.isEmpty()
+                    ? DEFAULT_VERSION
+                    : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), each.getValue());
         }
     }
     
@@ -79,6 +83,7 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
     }
     
     /**
+     * TODO Avoid load all keys.
      * Load all users.
      * 
      * @return collection of user
