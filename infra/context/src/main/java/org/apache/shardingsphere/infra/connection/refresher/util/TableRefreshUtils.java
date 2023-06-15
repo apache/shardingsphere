@@ -37,12 +37,12 @@ import java.util.Optional;
 public final class TableRefreshUtils {
     
     /**
-     * Get aggregated data source map.
+     * Judge whether the rule need to be refreshed.
      * 
      * @param ruleMetaData rule meta data
      * @param schemaName schema name
      * @param tableName table name
-     * @return aggregated data source map
+     * @return whether the rule need to be refreshed
      */
     public static boolean isRuleRefreshRequired(final ShardingSphereRuleMetaData ruleMetaData, final String schemaName, final String tableName) {
         Optional<MutableDataNodeRule> singleRule = ruleMetaData.findSingleRule(MutableDataNodeRule.class);
