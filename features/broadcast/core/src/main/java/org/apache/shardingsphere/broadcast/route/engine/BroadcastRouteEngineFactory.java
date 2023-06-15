@@ -28,23 +28,28 @@ import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
+import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -69,7 +74,7 @@ public final class BroadcastRouteEngineFactory {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof TCLStatement) {
-            return new BroadcastIgnoreRoutingEngine();
+            return new BroadcastDatabaseBroadcastRoutingEngine();
         }
         if (sqlStatement instanceof DDLStatement) {
             return getDDLRoutingEngine(broadcastRule, database, queryContext, connectionContext);
@@ -89,13 +94,31 @@ public final class BroadcastRouteEngineFactory {
         if (sqlStatementContext instanceof CursorAvailable) {
             return getCursorRouteEngine(broadcastRule, sqlStatementContext, connectionContext);
         }
+        Collection<String> tableNames = getTableNames(database, sqlStatementContext);
+        if (broadcastRule.isAllBroadcastTables(tableNames)) {
+            return new BroadcastTableBroadcastRoutingEngine(tableNames);
+        }
+        return new BroadcastIgnoreRoutingEngine();
+    }
+    
+    private static Collection<String> getTableNames(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
                 : sqlStatementContext.getTablesContext().getTableNames();
-        if (broadcastRule.isAllBroadcastTables(tableNames)) {
-            return new BroadcastTableBroadcastRoutingEngine(database, sqlStatementContext, tableNames);
+        if (!tableNames.isEmpty()) {
+            return tableNames;
         }
-        return new BroadcastIgnoreRoutingEngine();
+        return sqlStatementContext instanceof IndexAvailable
+                ? getTableNames(database, sqlStatementContext.getDatabaseType(), ((IndexAvailable) sqlStatementContext).getIndexes())
+                : Collections.emptyList();
+    }
+    
+    private static Collection<String> getTableNames(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<IndexSegment> indexes) {
+        Collection<String> result = new LinkedList<>();
+        for (QualifiedTable each : IndexMetaDataUtils.getTableNames(database, databaseType, indexes)) {
+            result.add(each.getTableName());
+        }
+        return result;
     }
     
     private static BroadcastRouteEngine getCursorRouteEngine(final BroadcastRule broadcastRule, final SQLStatementContext sqlStatementContext, final ConnectionContext connectionContext) {
@@ -119,15 +142,8 @@ public final class BroadcastRouteEngineFactory {
         }
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Collection<String> broadcastRuleTableNames = broadcastRule.getBroadcastRuleTableNames(tableNames);
-        if (!tableNames.isEmpty() && broadcastRuleTableNames.isEmpty()) {
-            return new BroadcastIgnoreRoutingEngine();
-        }
-        if (sqlStatement instanceof MySQLOptimizeTableStatement) {
-            return new BroadcastTableBroadcastRoutingEngine(database, sqlStatementContext, broadcastRuleTableNames);
-        }
-        if (sqlStatement instanceof AnalyzeTableStatement) {
-            return broadcastRuleTableNames.isEmpty() ? new BroadcastDatabaseBroadcastRoutingEngine()
-                    : new BroadcastTableBroadcastRoutingEngine(database, sqlStatementContext, broadcastRuleTableNames);
+        if (broadcastRule.isAllBroadcastTables(broadcastRuleTableNames)) {
+            return new BroadcastTableBroadcastRoutingEngine(broadcastRuleTableNames);
         }
         return new BroadcastIgnoreRoutingEngine();
     }
@@ -135,8 +151,8 @@ public final class BroadcastRouteEngineFactory {
     private static BroadcastRouteEngine getDCLRoutingEngine(final BroadcastRule broadcastRule, final ShardingSphereDatabase database, final QueryContext queryContext) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         Collection<String> broadcastRuleTableNames = broadcastRule.getBroadcastRuleTableNames(sqlStatementContext.getTablesContext().getTableNames());
-        if (isDCLForSingleTable(sqlStatementContext) && !broadcastRuleTableNames.isEmpty()) {
-            return new BroadcastTableBroadcastRoutingEngine(database, sqlStatementContext, broadcastRuleTableNames);
+        if (isDCLForSingleTable(sqlStatementContext) && !broadcastRuleTableNames.isEmpty() || broadcastRule.isAllBroadcastTables(broadcastRuleTableNames)) {
+            return new BroadcastTableBroadcastRoutingEngine(broadcastRuleTableNames);
         }
         return new BroadcastIgnoreRoutingEngine();
     }
