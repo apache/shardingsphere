@@ -29,7 +29,11 @@ import org.apache.shardingsphere.mask.distsql.handler.converter.MaskRuleStatemen
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.parser.statement.AlterMaskRuleStatement;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -62,9 +66,9 @@ public final class AlterMaskRuleStatementUpdater implements RuleDefinitionAlterU
     public MaskRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterMaskRuleStatement sqlStatement) {
         return MaskRuleStatementConverter.convert(sqlStatement.getRules());
     }
-    
+
     @Override
-    public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(MaskRuleConfiguration currentRuleConfig, MaskRuleConfiguration toBeAlteredRuleConfig) {
+    public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
         List<String> toBeAlteredTableNames = toBeAlteredRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
         List<MaskColumnRuleConfiguration> columns = currentRuleConfig.getTables().stream().filter(each -> !toBeAlteredTableNames.contains(each.getName()))
                 .flatMap(each -> each.getColumns().stream()).collect(Collectors.toList());

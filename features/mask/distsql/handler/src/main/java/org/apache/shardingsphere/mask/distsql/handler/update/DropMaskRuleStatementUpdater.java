@@ -27,7 +27,12 @@ import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguratio
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.parser.statement.DropMaskRuleStatement;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -55,14 +60,14 @@ public final class DropMaskRuleStatementUpdater implements RuleDefinitionDropUpd
         return null != currentRuleConfig
                 && !getIdenticalData(currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables()).isEmpty();
     }
-    
+
     @Override
-    public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(MaskRuleConfiguration currentRuleConfig, DropMaskRuleStatement sqlStatement) {
+    public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final DropMaskRuleStatement sqlStatement) {
         Collection<MaskTableRuleConfiguration> toBeDroppedTables = new LinkedList<>();
         for (String each : sqlStatement.getTables()) {
             toBeDroppedTables.add(new MaskTableRuleConfiguration(each, Collections.emptyList()));
         }
-        List<MaskColumnRuleConfiguration> columns = currentRuleConfig.getTables().stream().filter(each -> !sqlStatement.getTables().contains(each.getName()))
+        Collection<MaskColumnRuleConfiguration> columns = currentRuleConfig.getTables().stream().filter(each -> !sqlStatement.getTables().contains(each.getName()))
                 .flatMap(each -> each.getColumns().stream()).collect(Collectors.toList());
         Collection<String> inUsedAlgorithmNames = columns.stream().map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toSet());
         Map<String, AlgorithmConfiguration> toBeDroppedAlgorithms = new HashMap<>();
