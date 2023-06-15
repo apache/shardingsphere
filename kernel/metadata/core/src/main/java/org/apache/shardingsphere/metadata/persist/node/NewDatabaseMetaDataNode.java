@@ -19,7 +19,6 @@ package org.apache.shardingsphere.metadata.persist.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.metadata.persist.node.metadata.datasource.DataSourceNodeConverter;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -34,11 +33,49 @@ public final class NewDatabaseMetaDataNode {
     
     private static final String ROOT_NODE = "metadata";
     
+    private static final String DATA_SOURCES_NODE = "data_sources";
+    
     private static final String RULE_NODE = "rules";
     
     private static final String ACTIVE_VERSION = "active_version";
     
     private static final String VERSIONS = "versions";
+    
+    /**
+     * Is data sources node.
+     *
+     * @param path path
+     * @return true or false
+     */
+    public static boolean isDataSourcesNode(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find();
+    }
+    
+    /**
+     * Get data source name by data source node.
+     *
+     * @param path path
+     * @return data source name
+     */
+    public static Optional<String> getDataSourceNameByDataSourceNode(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Get version by data source node.
+     *
+     * @param path path
+     * @return data source version
+     */
+    public static Optional<String> getVersionByDataSourceNode(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/([\\w\\-]+)/versions/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
     
     /**
      * Get data Sources node.
@@ -47,7 +84,7 @@ public final class NewDatabaseMetaDataNode {
      * @return data sources node
      */
     public static String getDataSourcesNode(final String databaseName) {
-        return String.join("/", getMetaDataNodeNode(), DataSourceNodeConverter.getDataSourcesPath(databaseName));
+        return String.join("/", getMetaDataNodeNode(), databaseName, DATA_SOURCES_NODE);
     }
     
     /**
@@ -59,7 +96,7 @@ public final class NewDatabaseMetaDataNode {
      * @return data source node
      */
     public static String getDataSourceNode(final String databaseName, final String dataSourceName, final String version) {
-        return String.join("/", getMetaDataNodeNode(), DataSourceNodeConverter.getDataSourcePath(databaseName, dataSourceName, version));
+        return String.join("/", getDataSourceVersionsNode(databaseName, dataSourceName), version);
     }
     
     /**
@@ -70,7 +107,18 @@ public final class NewDatabaseMetaDataNode {
      * @return data source active version node
      */
     public static String getDataSourceActiveVersionNode(final String databaseName, final String dataSourceName) {
-        return String.join("/", getMetaDataNodeNode(), DataSourceNodeConverter.getActiveVersionPath(databaseName, dataSourceName));
+        return String.join("/", getDataSourcesNode(databaseName), dataSourceName, ACTIVE_VERSION);
+    }
+    
+    /**
+     * Get data source versions node.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return data source versions node
+     */
+    public static String getDataSourceVersionsNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourcesNode(databaseName), dataSourceName, VERSIONS);
     }
     
     /**
@@ -137,15 +185,75 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
-     * Get database name by node.
+     * Get database name.
      *
-     * @param path config path
+     * @param path path
      * @return database name
      */
-    public static Optional<String> getDatabaseNameByNode(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getDatabaseName(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
+     * Get database name by schema path.
+     *
+     * @param schemaPath database path
+     * @return database name
+     */
+    public static Optional<String> getDatabaseNameBySchemaPath(final String schemaPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(schemaPath);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @param path path
+     * @return schema name
+     */
+    public static Optional<String> getSchemaName(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Get schema name by table path.
+     *
+     * @param tablePath table path
+     * @return schema name
+     */
+    public static Optional<String> getSchemaNameByTablePath(final String tablePath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(tablePath);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Get table name.
+     *
+     * @param path path
+     * @return table name
+     */
+    public static Optional<String> getTableName(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get view name.
+     *
+     * @param path path
+     * @return view name
+     */
+    public static Optional<String> getViewName(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/views" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     private static String getMetaDataNodeNode() {

@@ -29,7 +29,7 @@ public final class NewContextManagerSubscriberFacade {
     
     public NewContextManagerSubscriberFacade(final RegistryCenter registryCenter, final ContextManager contextManager) {
         new NewConfigurationChangedSubscriber(contextManager);
-        // TODO replace all to new subscriber
+        new NewDataSourceChangedSubscriber(contextManager);
         new ResourceMetaDataChangedSubscriber(contextManager);
         new DatabaseChangedSubscriber(contextManager);
         new StateChangedSubscriber(registryCenter, contextManager);

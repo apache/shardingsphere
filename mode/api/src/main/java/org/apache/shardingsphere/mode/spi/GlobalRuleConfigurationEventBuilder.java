@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rule.global.event;
+package org.apache.shardingsphere.mode.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+
+import java.util.Optional;
 
 /**
- * Delete global rule configuration event.
+ * Rule configuration event builder.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DeleteGlobalRuleConfigurationEvent implements GovernanceEvent {
+public interface GlobalRuleConfigurationEventBuilder {
     
-    private final String ruleSimpleName;
+    /**
+     * Build global rule changed event.
+     *
+     * @param event data changed event
+     * @return rule changed event
+     */
+    Optional<GovernanceEvent> build(DataChangedEvent event);
 }

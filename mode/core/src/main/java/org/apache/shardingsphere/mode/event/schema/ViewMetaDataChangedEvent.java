@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rule.global.event;
+package org.apache.shardingsphere.mode.event.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Delete global rule configuration event.
+ * View meta data changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DeleteGlobalRuleConfigurationEvent implements GovernanceEvent {
+public final class ViewMetaDataChangedEvent implements GovernanceEvent {
     
-    private final String ruleSimpleName;
+    private final String databaseName;
+    
+    private final String schemaName;
+    
+    private final ShardingSphereView changedViewMetaData;
+    
+    private final String deletedView;
 }

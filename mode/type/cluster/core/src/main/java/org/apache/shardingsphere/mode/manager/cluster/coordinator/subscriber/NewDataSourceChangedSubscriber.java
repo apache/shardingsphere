@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
- * Table meta data changed event.
+ * TODO Rename DataSourceChangedSubscriber when metadata structure adjustment completed. #25485
+ * New data source changed subscriber.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TableMetaDataChangedEvent implements GovernanceEvent {
+@SuppressWarnings("UnstableApiUsage")
+public final class NewDataSourceChangedSubscriber {
     
-    private final String databaseName;
-    
-    private final String schemaName;
-    
-    private final ShardingSphereTable changedTableMetaData;
-    
-    private final String deletedTable;
+    public NewDataSourceChangedSubscriber(final ContextManager contextManager) {
+        contextManager.getInstanceContext().getEventBusContext().register(this);
+    }
 }
