@@ -51,7 +51,8 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig,
+    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(
+                                                                                 final ReadwriteSplittingRuleConfiguration currentRuleConfig,
                                                                                  final ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         Map<String, AlgorithmConfiguration> loadBalancers = new HashMap<>();

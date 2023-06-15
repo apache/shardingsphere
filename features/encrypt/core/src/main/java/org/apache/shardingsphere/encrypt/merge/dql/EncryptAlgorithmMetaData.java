@@ -99,7 +99,7 @@ public final class EncryptAlgorithmMetaData {
             return Optional.of(tableName);
         }
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            if (encryptRule.findStandardEncryptor(each, columnProjection.getName()).isPresent()) {
+            if (encryptRule.findEncryptTable(each).map(optional -> optional.isEncryptColumn(columnProjection.getName())).orElse(false)) {
                 return Optional.of(each);
             }
         }

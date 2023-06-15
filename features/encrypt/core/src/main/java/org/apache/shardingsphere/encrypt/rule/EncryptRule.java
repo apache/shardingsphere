@@ -178,6 +178,25 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @param schemaName schema name
      * @param tableName table name
      * @param logicColumnName logic column name
+     * @param originalValue original value
+     * @return encrypted values
+     */
+    @SuppressWarnings("unchecked")
+    public Object encrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final Object originalValue) {
+        @SuppressWarnings("rawtypes")
+        Optional<StandardEncryptAlgorithm> encryptor = findStandardEncryptor(tableName, logicColumnName);
+        ShardingSpherePreconditions.checkState(encryptor.isPresent(), () -> new MissingEncryptorException(tableName, logicColumnName, "STANDARD"));
+        EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
+        return null == originalValue ? null : encryptor.get().encrypt(originalValue, context);
+    }
+    
+    /**
+     * Encrypt.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param logicColumnName logic column name
      * @param originalValues original values
      * @return encrypted values
      */

@@ -87,13 +87,11 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         return result;
     }
     
-    @SuppressWarnings("rawtypes")
     private Collection<SQLToken> getAddColumnTokens(final EncryptTable encryptTable, final AddColumnDefinitionSegment addColumnDefinitionSegment) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnDefinitionSegment each : addColumnDefinitionSegment.getColumnDefinitions()) {
             String columnName = each.getColumnName().getIdentifier().getValue();
-            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findStandardEncryptor(encryptTable.getTable(), columnName);
-            if (encryptor.isPresent()) {
+            if (encryptTable.isEncryptColumn(columnName)) {
                 result.addAll(getAddColumnTokens(encryptTable, columnName, addColumnDefinitionSegment, each));
             }
         }
@@ -114,20 +112,22 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         return result;
     }
     
-    @SuppressWarnings("rawtypes")
     private Optional<SQLToken> getAddColumnPositionToken(final EncryptTable encryptTable, final AddColumnDefinitionSegment addColumnDefinitionSegment) {
-        Optional<StandardEncryptAlgorithm> encryptor = addColumnDefinitionSegment.getColumnPosition().filter(optional -> null != optional.getColumnName())
-                .flatMap(optional -> encryptRule.findStandardEncryptor(encryptTable.getTable(), optional.getColumnName().getIdentifier().getValue()));
-        return encryptor.isPresent() ? Optional.of(getPositionColumnToken(encryptTable, addColumnDefinitionSegment.getColumnPosition().get())) : Optional.empty();
+        Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinitionSegment.getColumnPosition().filter(optional -> null != optional.getColumnName());
+        if (columnPositionSegment.isPresent()) {
+            String columnName = columnPositionSegment.get().getColumnName().getIdentifier().getValue();
+            if (encryptTable.isEncryptColumn(columnName)) {
+                return Optional.of(getPositionColumnToken(encryptTable, addColumnDefinitionSegment.getColumnPosition().get()));
+            }
+        }
+        return Optional.empty();
     }
     
-    @SuppressWarnings("rawtypes")
     private Collection<SQLToken> getModifyColumnTokens(final EncryptTable encryptTable, final Collection<ModifyColumnDefinitionSegment> columnDefinitionSegments) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ModifyColumnDefinitionSegment each : columnDefinitionSegments) {
             String columnName = each.getColumnDefinition().getColumnName().getIdentifier().getValue();
-            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findStandardEncryptor(encryptTable.getTable(), columnName);
-            if (encryptor.isPresent()) {
+            if (encryptTable.isEncryptColumn(columnName)) {
                 result.addAll(getModifyColumnTokens(encryptTable, columnName, each));
             }
             each.getColumnPosition().flatMap(optional -> getColumnPositionToken(encryptTable, optional)).ifPresent(result::add);
@@ -153,11 +153,10 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
                 encryptTable.getCipherColumn(positionSegment.getColumnName().getIdentifier().getValue()), null);
     }
     
-    @SuppressWarnings("rawtypes")
     private Optional<SQLToken> getColumnPositionToken(final EncryptTable encryptTable, final ColumnPositionSegment columnPositionSegment) {
-        Optional<StandardEncryptAlgorithm> encryptor = Optional.of(columnPositionSegment).filter(optional -> null != optional.getColumnName())
-                .flatMap(optional -> encryptRule.findStandardEncryptor(encryptTable.getTable(), optional.getColumnName().getIdentifier().getValue()));
-        return encryptor.isPresent() ? Optional.of(getPositionColumnToken(encryptTable, columnPositionSegment)) : Optional.empty();
+        return null != columnPositionSegment.getColumnName() && encryptTable.isEncryptColumn(columnPositionSegment.getColumnName().getIdentifier().getValue())
+                ? Optional.of(getPositionColumnToken(encryptTable, columnPositionSegment))
+                : Optional.empty();
     }
     
     private Collection<SQLToken> getChangeColumnTokens(final EncryptTable encryptTable, final Collection<ChangeColumnDefinitionSegment> changeColumnDefinitions) {
@@ -171,8 +170,8 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     
     private Collection<? extends SQLToken> getChangeColumnTokens(final EncryptTable encryptTable, final ChangeColumnDefinitionSegment segment) {
         isSameEncryptColumn(encryptTable, segment);
-        if (!encryptRule.findStandardEncryptor(encryptTable.getTable(), segment.getPreviousColumn().getIdentifier().getValue()).isPresent()
-                || !encryptRule.findStandardEncryptor(encryptTable.getTable(), segment.getColumnDefinition().getColumnName().getIdentifier().getValue()).isPresent()) {
+        if (!encryptTable.isEncryptColumn(segment.getPreviousColumn().getIdentifier().getValue())
+                || !encryptTable.isEncryptColumn(segment.getColumnDefinition().getColumnName().getIdentifier().getValue())) {
             return Collections.emptyList();
         }
         Collection<SQLToken> result = new LinkedList<>();
@@ -242,13 +241,11 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         return result;
     }
     
-    @SuppressWarnings("rawtypes")
     private Collection<SQLToken> getDropColumnTokens(final EncryptTable encryptTable, final DropColumnDefinitionSegment dropColumnDefinitionSegment) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : dropColumnDefinitionSegment.getColumns()) {
             String columnName = each.getQualifiedName();
-            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findStandardEncryptor(encryptTable.getTable(), columnName);
-            if (encryptor.isPresent()) {
+            if (encryptTable.isEncryptColumn(columnName)) {
                 result.addAll(getDropColumnTokens(encryptTable, columnName, each, dropColumnDefinitionSegment));
             }
         }
