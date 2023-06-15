@@ -148,7 +148,6 @@ public final class ShardingTableConfigurationSubscriber implements RuleConfigura
     @Subscribe
     public synchronized void renew(final AddBroadcastTableConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<String> needToAddedConfig = event.getConfig();
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         ShardingRuleConfiguration config;
