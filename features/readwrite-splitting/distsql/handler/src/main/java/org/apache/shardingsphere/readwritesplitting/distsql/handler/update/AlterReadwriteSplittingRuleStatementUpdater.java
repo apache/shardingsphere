@@ -52,8 +52,8 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(
-            final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig) {
+    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig,
+                                                                                 final ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         List<String> toBeAlteredDataSourceNames = toBeAlteredRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {

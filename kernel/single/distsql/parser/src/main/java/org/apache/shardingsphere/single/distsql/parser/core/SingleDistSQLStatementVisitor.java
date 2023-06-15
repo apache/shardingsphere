@@ -19,6 +19,9 @@ package org.apache.shardingsphere.single.distsql.parser.core;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.AllSchamesAndTablesFromStorageUnitContext;
+import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.AllTablesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.AllTablesFromSchemaContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.AllTablesFromStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.CountSingleTableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.DatabaseNameContext;
