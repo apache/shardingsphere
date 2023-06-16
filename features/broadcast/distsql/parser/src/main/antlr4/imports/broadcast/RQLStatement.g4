@@ -22,3 +22,7 @@ import BaseRule;
 showBroadcastTableRules
     : SHOW BROADCAST TABLE RULES (FROM databaseName)?
     ;
+
+countBroadcastRule
+    : COUNT BROADCAST RULE (FROM databaseName)?
+    ;

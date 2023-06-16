@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.broadcast.distsql.handler.query.ShowBroadcastTableRuleExecutor
+org.apache.shardingsphere.broadcast.distsql.handler.query.CountBroadcastRuleExecutor

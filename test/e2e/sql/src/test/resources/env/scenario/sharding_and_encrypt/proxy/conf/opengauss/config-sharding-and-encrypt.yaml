@@ -235,8 +235,8 @@ rules:
 
 - !BROADCAST
   tables:
-    - t_product_category
     - t_country
+    - t_product_category
 
 - !ENCRYPT
   encryptors:

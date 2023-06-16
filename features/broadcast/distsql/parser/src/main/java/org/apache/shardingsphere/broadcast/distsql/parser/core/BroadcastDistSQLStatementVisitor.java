@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.broadcast.distsql.parser.core;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.broadcast.distsql.parser.statement.CountBroadcastRuleStatement;
 import org.apache.shardingsphere.broadcast.distsql.parser.statement.CreateBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.distsql.parser.statement.DropBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.distsql.parser.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementParser.CountBroadcastRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementParser.CreateBroadcastTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementParser.DropBroadcastTableRuleContext;
@@ -53,6 +55,11 @@ public final class BroadcastDistSQLStatementVisitor extends BroadcastDistSQLStat
     @Override
     public ASTNode visitShowBroadcastTableRules(final ShowBroadcastTableRulesContext ctx) {
         return new ShowBroadcastTableRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+    }
+    
+    @Override
+    public ASTNode visitCountBroadcastRule(final CountBroadcastRuleContext ctx) {
+        return new CountBroadcastRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override

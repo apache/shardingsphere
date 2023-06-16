@@ -29,6 +29,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -43,11 +44,11 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
     
     private final BroadcastRuleConfiguration configuration;
     
-    private final Collection<String> tables;
-    
     private final String databaseName;
     
-    private final Map<String, DataSource> dataSources;
+    private final Collection<String> tables;
+    
+    private final Collection<String> dataSourceNames;
     
     private final Map<String, Collection<DataNode>> tableDataNodes;
     
@@ -58,11 +59,19 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
     public BroadcastRule(final BroadcastRuleConfiguration configuration, final String databaseName, final Map<String, DataSource> dataSources) {
         this.configuration = configuration;
         this.databaseName = databaseName;
-        this.dataSources = dataSources;
+        dataSourceNames = getDataSourceNames(dataSources);
         tables = createBroadcastTables(configuration.getTables());
-        tableDataNodes = createShardingTableDataNodes();
         logicalTableMapper = createLogicalTableMapper();
         actualTableMapper = createActualTableMapper();
+        tableDataNodes = createShardingTableDataNodes(dataSourceNames);
+    }
+    
+    private Collection<String> getDataSourceNames(final Map<String, DataSource> dataSources) {
+        Collection<String> result = new LinkedHashSet<>();
+        if (null != dataSources) {
+            result.addAll(dataSources.keySet());
+        }
+        return result;
     }
     
     private TableNamesMapper createLogicalTableMapper() {
@@ -83,10 +92,10 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
         return result;
     }
     
-    private Map<String, Collection<DataNode>> createShardingTableDataNodes() {
+    private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Collection<String> dataSourceNames) {
         Map<String, Collection<DataNode>> result = new HashMap<>(tables.size(), 1F);
         for (String each : tables) {
-            result.put(each.toLowerCase(), generateDataNodes(each, dataSources.keySet()));
+            result.put(each.toLowerCase(), generateDataNodes(each, dataSourceNames));
         }
         return result;
     }
@@ -165,7 +174,7 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
      * @return datasource names
      */
     public Collection<String> getAvailableDataSourceNames() {
-        return dataSources.keySet();
+        return dataSourceNames;
     }
     
     @Override
