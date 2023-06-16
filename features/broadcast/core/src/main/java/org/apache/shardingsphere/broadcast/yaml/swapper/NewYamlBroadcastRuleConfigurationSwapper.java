@@ -36,6 +36,9 @@ public final class NewYamlBroadcastRuleConfigurationSwapper implements NewYamlRu
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final BroadcastRuleConfiguration data) {
+        if (data.getTables().isEmpty()) {
+            return Collections.emptyList();
+        }
         YamlBroadcastRuleConfiguration yamlBroadcastRuleConfiguration = new YamlBroadcastRuleConfiguration();
         yamlBroadcastRuleConfiguration.getTables().addAll(data.getTables());
         return Collections.singleton(new YamlDataNode(BroadcastNodeConverter.getTablesPath(), YamlEngine.marshal(yamlBroadcastRuleConfiguration)));
@@ -44,8 +47,10 @@ public final class NewYamlBroadcastRuleConfigurationSwapper implements NewYamlRu
     @Override
     public BroadcastRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         BroadcastRuleConfiguration result = new BroadcastRuleConfiguration();
-        YamlBroadcastRuleConfiguration yamlBroadcastRuleConfiguration = YamlEngine.unmarshal(dataNodes.iterator().next().getValue(), YamlBroadcastRuleConfiguration.class);
-        result.setTables(yamlBroadcastRuleConfiguration.getTables());
+        if (!dataNodes.isEmpty()) {
+            YamlBroadcastRuleConfiguration yamlBroadcastRuleConfiguration = YamlEngine.unmarshal(dataNodes.iterator().next().getValue(), YamlBroadcastRuleConfiguration.class);
+            result.setTables(yamlBroadcastRuleConfiguration.getTables());
+        }
         return result;
     }
     
