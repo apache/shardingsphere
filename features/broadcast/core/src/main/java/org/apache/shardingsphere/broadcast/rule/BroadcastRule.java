@@ -59,11 +59,11 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
     public BroadcastRule(final BroadcastRuleConfiguration configuration, final String databaseName, final Map<String, DataSource> dataSources) {
         this.configuration = configuration;
         this.databaseName = databaseName;
+        dataSourceNames = getDataSourceNames(dataSources);
         tables = createBroadcastTables(configuration.getTables());
-        tableDataNodes = createShardingTableDataNodes();
         logicalTableMapper = createLogicalTableMapper();
         actualTableMapper = createActualTableMapper();
-        dataSourceNames = getDataSourceNames(dataSources);
+        tableDataNodes = createShardingTableDataNodes(dataSourceNames);
     }
     
     private Collection<String> getDataSourceNames(final Map<String, DataSource> dataSources) {
@@ -92,7 +92,7 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
         return result;
     }
     
-    private Map<String, Collection<DataNode>> createShardingTableDataNodes() {
+    private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Collection<String> dataSourceNames) {
         Map<String, Collection<DataNode>> result = new HashMap<>(tables.size(), 1F);
         for (String each : tables) {
             result.put(each.toLowerCase(), generateDataNodes(each, dataSourceNames));
