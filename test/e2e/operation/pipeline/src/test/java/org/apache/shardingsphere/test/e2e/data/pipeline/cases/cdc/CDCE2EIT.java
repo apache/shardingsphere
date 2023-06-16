@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.TableName;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRe
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTableInventoryDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -49,7 +51,6 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.Pipeline
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -136,9 +137,8 @@ class CDCE2EIT {
             SchemaTableName schemaTableName = containerComposer.getDatabaseType().isSchemaAvailable()
                     ? new SchemaTableName(new SchemaName(PipelineContainerComposer.SCHEMA_NAME), new TableName(SOURCE_TABLE_NAME))
                     : new SchemaTableName(new SchemaName(null), new TableName(SOURCE_TABLE_NAME));
-            PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(StorageContainerUtils.generateDataSource(
-                    containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
-                    containerComposer.getUsername(), containerComposer.getPassword()), containerComposer.getDatabaseType());
+            PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(createStandardDataSource(containerComposer, PipelineContainerComposer.DS_4),
+                    containerComposer.getDatabaseType());
             PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(jdbcDataSource, containerComposer.getDatabaseType());
             StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
             PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(PipelineContainerComposer.SCHEMA_NAME, "t_order");
@@ -167,9 +167,13 @@ class CDCE2EIT {
         }
     }
     
+    private DataSource createStandardDataSource(final PipelineContainerComposer containerComposer, final String storageUnitName) {
+        return PipelineDataSourceFactory.newInstance(new StandardPipelineDataSourceConfiguration(containerComposer.getActualJdbcUrlTemplate(storageUnitName, false),
+                containerComposer.getUsername(), containerComposer.getPassword()));
+    }
+    
     private void startCDCClient(final PipelineContainerComposer containerComposer) {
-        DataSource dataSource = StorageContainerUtils.generateDataSource(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
-                containerComposer.getUsername(), containerComposer.getPassword());
+        DataSource dataSource = createStandardDataSource(containerComposer, PipelineContainerComposer.DS_4);
         StartCDCClientParameter parameter = new StartCDCClientParameter();
         parameter.setAddress("localhost");
         parameter.setPort(containerComposer.getContainerComposer().getProxyCDCPort());
