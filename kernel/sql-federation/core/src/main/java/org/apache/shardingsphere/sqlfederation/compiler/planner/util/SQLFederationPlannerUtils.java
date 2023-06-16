@@ -220,10 +220,10 @@ public final class SQLFederationPlannerUtils {
     /**
      * Create sql validator.
      *
-     * @param catalogReader      catalog reader
+     * @param catalogReader catalog reader
      * @param relDataTypeFactory rel data type factory
-     * @param databaseType       database type
-     * @param connectionConfig   connection config
+     * @param databaseType database type
+     * @param connectionConfig connection config
      * @return sql validator
      */
     public static SqlValidator createSqlValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory,
@@ -244,12 +244,12 @@ public final class SQLFederationPlannerUtils {
     
     /**
      * Create sql to rel converter.
-     *
-     * @param catalogReader   catalog reader
-     * @param validator       validator
-     * @param cluster         cluster
-     * @param sqlParserRule   sql parser rule
-     * @param databaseType    database type
+     * 
+     * @param catalogReader catalog reader
+     * @param validator validator
+     * @param cluster cluster
+     * @param sqlParserRule sql parser rule
+     * @param databaseType database type
      * @param needsViewExpand whether sql needs view expand or not
      * @return sql to rel converter
      */
