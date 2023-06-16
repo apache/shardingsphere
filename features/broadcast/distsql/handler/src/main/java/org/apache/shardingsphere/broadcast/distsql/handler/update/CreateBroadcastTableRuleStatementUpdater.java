@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 /**
@@ -42,11 +43,12 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
     @Override
     public BroadcastRuleConfiguration buildToBeCreatedRuleConfiguration(final BroadcastRuleConfiguration currentRuleConfig, final CreateBroadcastTableRuleStatement sqlStatement) {
         BroadcastRuleConfiguration result = new BroadcastRuleConfiguration();
-        Collection<String> tables = sqlStatement.getTables();
+        Collection<String> tables = new HashSet<>(currentRuleConfig.getTables());
         if (sqlStatement.isIfNotExists()) {
             Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
             tables.removeIf(duplicatedRuleNames::contains);
         }
+        tables.addAll(sqlStatement.getTables());
         result.setTables(tables);
         return result;
     }

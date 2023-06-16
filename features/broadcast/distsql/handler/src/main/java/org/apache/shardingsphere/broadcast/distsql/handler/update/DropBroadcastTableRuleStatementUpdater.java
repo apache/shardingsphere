@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -63,6 +64,14 @@ public final class DropBroadcastTableRuleStatementUpdater implements RuleDefinit
     @Override
     public boolean hasAnyOneToBeDropped(final DropBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
         return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(currentRuleConfig.getTables(), sqlStatement.getTables()).isEmpty();
+    }
+    
+    @Override
+    public BroadcastRuleConfiguration buildToBeAlteredRuleConfiguration(final BroadcastRuleConfiguration currentRuleConfig, final DropBroadcastTableRuleStatement sqlStatement) {
+        BroadcastRuleConfiguration result = new BroadcastRuleConfiguration();
+        result.setTables(new HashSet<>(currentRuleConfig.getTables()));
+        result.getTables().removeIf(each -> containsIgnoreCase(sqlStatement.getTables(), each));
+        return result;
     }
     
     @Override
