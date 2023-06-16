@@ -23,7 +23,6 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -37,7 +36,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class YamlReadwriteSplittingRuleConfigurationSwapperTest {
-
+    
     @Test
     void assertSwapToYamlConfiguration() {
         YamlReadwriteSplittingRuleConfiguration actual = getSwapper().swapToYamlConfiguration(creatReadwriteSplittingRuleConfiguration());
@@ -45,28 +44,28 @@ public class YamlReadwriteSplittingRuleConfigurationSwapperTest {
         assertThat(actual.getLoadBalancers().size(), is(1));
         assertReadwriteSplittingRule(actual);
     }
-
+    
     void assertReadwriteSplittingRule(final YamlReadwriteSplittingRuleConfiguration actual) {
         assertNotNull(actual.getDataSources().get("readwrite"));
         YamlReadwriteSplittingDataSourceRuleConfiguration config = actual.getDataSources().get("readwrite");
-        assertThat(config.getWriteDataSourceName(), CoreMatchers.is("write_ds"));
-        assertThat(actual.getDataSources().get("readwrite").getLoadBalancerName(), CoreMatchers.is("random"));
+        assertThat(config.getWriteDataSourceName(), is("write_ds"));
+        assertThat(actual.getDataSources().get("readwrite").getLoadBalancerName(), is("random"));
     }
-
+    
     void assertReadwriteSplittingRule(final ReadwriteSplittingRuleConfiguration actual) {
         ReadwriteSplittingDataSourceRuleConfiguration config = actual.getDataSources().iterator().next();
-        assertThat(config.getName(), CoreMatchers.is("t_readwrite"));
-        assertThat(config.getWriteDataSourceName(), CoreMatchers.is("write_ds"));
-        assertThat(config.getLoadBalancerName(), CoreMatchers.is("random"));
+        assertThat(config.getName(), is("t_readwrite"));
+        assertThat(config.getWriteDataSourceName(), is("write_ds"));
+        assertThat(config.getLoadBalancerName(), is("random"));
     }
-
+    
     private ReadwriteSplittingRuleConfiguration creatReadwriteSplittingRuleConfiguration() {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = Collections.singletonList(
                 new ReadwriteSplittingDataSourceRuleConfiguration("readwrite", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random"));
         Map<String, AlgorithmConfiguration> loadBalancers = Collections.singletonMap("myLoadBalancer", new AlgorithmConfiguration("RANDOM", new Properties()));
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);
     }
-
+    
     @Test
     void assertSwapToObject() {
         ReadwriteSplittingRuleConfiguration actual = getSwapper().swapToObject(createYamlReadwriteSplittingRuleConfiguration());
@@ -74,7 +73,7 @@ public class YamlReadwriteSplittingRuleConfigurationSwapperTest {
         assertThat(actual.getLoadBalancers().size(), is(1));
         assertReadwriteSplittingRule(actual);
     }
-
+    
     private YamlReadwriteSplittingRuleConfiguration createYamlReadwriteSplittingRuleConfiguration() {
         YamlReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new YamlReadwriteSplittingDataSourceRuleConfiguration();
         dataSourceRuleConfig.setReadDataSourceNames(Arrays.asList("read_ds_0", "read_ds_1"));
@@ -87,7 +86,7 @@ public class YamlReadwriteSplittingRuleConfigurationSwapperTest {
         result.getLoadBalancers().put("random_loadbalancer", algorithmConfig);
         return result;
     }
-
+    
     private YamlReadwriteSplittingRuleConfigurationSwapper getSwapper() {
         return new YamlReadwriteSplittingRuleConfigurationSwapper();
     }
