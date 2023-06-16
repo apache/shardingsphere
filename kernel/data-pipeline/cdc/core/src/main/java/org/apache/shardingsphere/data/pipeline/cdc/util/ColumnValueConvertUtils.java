@@ -110,6 +110,9 @@ public final class ColumnValueConvertUtils {
             Time time = (Time) object;
             long millis = (int) (time.getTime() % MILLISECONDS_PER_SECOND);
             int nanosOfSecond = (int) (millis * NANOSECONDS_PER_MILLISECOND);
+            if (nanosOfSecond < 0) {
+                nanosOfSecond = (int) (nanosOfSecond + TimeUnit.SECONDS.toNanos(1));
+            }
             LocalTime localTime = LocalTime.of(time.getHours(), time.getMinutes(), time.getSeconds(), nanosOfSecond);
             return Int64Value.of(localTime.toNanoOfDay());
         }
