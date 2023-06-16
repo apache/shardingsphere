@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
@@ -152,9 +153,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
             Map<String, Object> jobInfo = queryForListWithLog(String.format("SHOW %s STATUS '%s'", jobTypeName, jobId)).get(0);
             String status = jobInfo.get("status").toString();
             if (JobStatus.FINISHED.name().equals(status)) {
-                connection.createStatement().execute(String.format("COMMIT %s '%s'", jobTypeName, jobId));
+                connection.createStatement().execute(String.format((jobType instanceof CDCJobType ? "DROP" : "COMMIT") + " %s '%s'", jobTypeName, jobId));
             } else {
-                connection.createStatement().execute(String.format("ROLLBACK %s '%s'", jobTypeName, jobId));
+                connection.createStatement().execute(String.format((jobType instanceof CDCJobType ? "DROP" : "ROLLBACK") + " %s '%s'", jobTypeName, jobId));
             }
         }
     }
