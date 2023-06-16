@@ -30,7 +30,7 @@ public final class MemoryPipelineChannelCreator implements PipelineChannelCreato
     
     private static final String BLOCK_QUEUE_SIZE_KEY = "block-queue-size";
     
-    private static final String BLOCK_QUEUE_SIZE_DEFAULT_VALUE = "10000";
+    private static final String BLOCK_QUEUE_SIZE_DEFAULT_VALUE = "2000";
     
     private int blockQueueSize;
     
