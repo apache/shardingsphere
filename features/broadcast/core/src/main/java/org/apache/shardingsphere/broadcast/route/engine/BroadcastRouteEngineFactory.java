@@ -77,6 +77,9 @@ public final class BroadcastRouteEngineFactory {
             return new BroadcastDatabaseBroadcastRoutingEngine();
         }
         if (sqlStatement instanceof DDLStatement) {
+            if (sqlStatementContext instanceof CursorAvailable) {
+                return getCursorRouteEngine(broadcastRule, sqlStatementContext, connectionContext);
+            }
             return getDDLRoutingEngine(broadcastRule, database, queryContext, connectionContext);
         }
         if (sqlStatement instanceof DALStatement) {
@@ -88,12 +91,22 @@ public final class BroadcastRouteEngineFactory {
         return getDQLRoutingEngine(broadcastRule, queryContext, connectionContext);
     }
     
+    private static BroadcastRouteEngine getCursorRouteEngine(final BroadcastRule broadcastRule, final SQLStatementContext sqlStatementContext, final ConnectionContext connectionContext) {
+        if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
+            return new BroadcastDatabaseBroadcastRoutingEngine();
+        }
+        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
+                ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
+                : sqlStatementContext.getTablesContext().getTableNames();
+        if (broadcastRule.isAllBroadcastTables(tableNames)) {
+            return new BroadcastUnicastRoutingEngine(sqlStatementContext, tableNames, connectionContext);
+        }
+        return new BroadcastIgnoreRoutingEngine();
+    }
+    
     private static BroadcastRouteEngine getDDLRoutingEngine(final BroadcastRule broadcastRule, final ShardingSphereDatabase database,
                                                             final QueryContext queryContext, final ConnectionContext connectionContext) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        if (sqlStatementContext instanceof CursorAvailable) {
-            return getCursorRouteEngine(broadcastRule, sqlStatementContext, connectionContext);
-        }
         Collection<String> tableNames = getTableNames(database, sqlStatementContext);
         if (broadcastRule.isAllBroadcastTables(tableNames)) {
             return new BroadcastTableBroadcastRoutingEngine(tableNames);
@@ -119,19 +132,6 @@ public final class BroadcastRouteEngineFactory {
             result.add(each.getTableName());
         }
         return result;
-    }
-    
-    private static BroadcastRouteEngine getCursorRouteEngine(final BroadcastRule broadcastRule, final SQLStatementContext sqlStatementContext, final ConnectionContext connectionContext) {
-        if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
-            return new BroadcastIgnoreRoutingEngine();
-        }
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
-                : sqlStatementContext.getTablesContext().getTableNames();
-        if (broadcastRule.isAllBroadcastTables(tableNames)) {
-            return new BroadcastUnicastRoutingEngine(sqlStatementContext, tableNames, connectionContext);
-        }
-        return new BroadcastIgnoreRoutingEngine();
     }
     
     private static BroadcastRouteEngine getDALRoutingEngine(final BroadcastRule broadcastRule, final ShardingSphereDatabase database, final QueryContext queryContext) {

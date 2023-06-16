@@ -324,8 +324,8 @@ rules:
 
 - !BROADCAST
   tables:
-    - t_product_category
     - t_country
+    - t_product_category
 
 - !READWRITE_SPLITTING
   dataSources:

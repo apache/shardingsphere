@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
 public final class DropBroadcastTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropBroadcastTableRuleStatement, BroadcastRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database,
-                                  final DropBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final DropBroadcastTableRuleStatement sqlStatement,
+                                  final BroadcastRuleConfiguration currentRuleConfig) {
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
         }
