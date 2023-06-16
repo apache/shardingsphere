@@ -721,4 +721,20 @@
     <test-case sql="SELECT * FROM pg_catalog.pg_aggregate" db-types="PostgreSQL" scenario-types="db">
         <assertion expected-data-file="select_postgresql_pg_catalog_pg_aggregate.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_am" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_am.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_amop" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_amop.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_amproc" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_amproc.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_attrdef" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_attrdef.xml" />
+    </test-case>
 </integration-test-cases>
