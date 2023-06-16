@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-grammar BroadcastDistSQLStatement;
+package org.apache.shardingsphere.broadcast.distsql.parser.statement;
 
-import Symbol, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
-execute
-    : (createBroadcastTableRule
-    | dropBroadcastTableRule
-    | showBroadcastTableRules
-    | countBroadcastRule
-    ) SEMI_? EOF
-    ;
+/**
+ * Count broadcast rule statement.
+ */
+public final class CountBroadcastRuleStatement extends ShowRulesStatement {
+    
+    public CountBroadcastRuleStatement(final DatabaseSegment database) {
+        super(database);
+    }
+}
