@@ -264,7 +264,7 @@ public final class SQLFederationPlannerUtils {
     
     /**
      * Create rel opt cluster.
-     *
+     * 
      * @param relDataTypeFactory rel data type factory
      * @return rel opt cluster
      */

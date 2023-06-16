@@ -24,6 +24,9 @@ import org.apache.calcite.rel.convert.ConverterRule;
 import org.apache.shardingsphere.sqlfederation.compiler.operator.logical.LogicalScan;
 import org.apache.shardingsphere.sqlfederation.compiler.operator.physical.EnumerableScan;
 
+/**
+ * Enumerable scan converter rule.
+ */
 public final class EnumerableScanConverterRule extends ConverterRule {
     
     public static final Config DEFAULT_CONFIG = Config.INSTANCE.withConversion(LogicalScan.class, Convention.NONE, EnumerableConvention.INSTANCE, EnumerableScanConverterRule.class.getSimpleName())
