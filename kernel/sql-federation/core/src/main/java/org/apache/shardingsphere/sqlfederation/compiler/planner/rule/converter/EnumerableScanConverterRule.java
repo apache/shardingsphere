@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sqlfederation.compiler.planner.rule.converter;
 
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
-import org.apache.calcite.adapter.enumerable.EnumerableTableScan;
 import org.apache.calcite.plan.Convention;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.convert.ConverterRule;
@@ -27,9 +26,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.operator.physical.Enumer
 
 public final class EnumerableScanConverterRule extends ConverterRule {
     
-    public static final Config DEFAULT_CONFIG = Config.INSTANCE
-            .withConversion(LogicalScan.class, r -> EnumerableTableScan.canHandle(r.getTable()), Convention.NONE,
-                    EnumerableConvention.INSTANCE, EnumerableScanConverterRule.class.getSimpleName())
+    public static final Config DEFAULT_CONFIG = Config.INSTANCE.withConversion(LogicalScan.class, Convention.NONE, EnumerableConvention.INSTANCE, EnumerableScanConverterRule.class.getSimpleName())
             .withRuleFactory(EnumerableScanConverterRule::new);
     
     private EnumerableScanConverterRule(final Config config) {

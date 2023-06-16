@@ -47,6 +47,7 @@ public final class SQLStatementCompiler {
      * Compile sql statement to execution plan.
      *
      * @param sqlStatement SQL statement
+     * @param databaseType database type
      * @return sql federation execution plan
      */
     public SQLFederationExecutionPlan compile(final SQLStatement sqlStatement, final String databaseType) {

@@ -24,6 +24,8 @@ import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.shardingsphere.sqlfederation.compiler.operator.util.LogicalScanPushDownRelBuilder;
 
+import java.util.Collections;
+
 /**
  * Logical scan.
  */
@@ -35,7 +37,7 @@ public final class LogicalScan extends TableScan {
     private final String databaseType;
     
     public LogicalScan(final TableScan tableScan, final String databaseType) {
-        super(tableScan.getCluster(), tableScan.getTraitSet(), tableScan.getTable());
+        super(tableScan.getCluster(), tableScan.getTraitSet(), Collections.emptyList(), tableScan.getTable());
         this.databaseType = databaseType;
         relBuilder = LogicalScanPushDownRelBuilder.create(tableScan);
         relBuilder.scan(tableScan.getTable().getQualifiedName());

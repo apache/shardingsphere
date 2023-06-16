@@ -38,7 +38,8 @@ import org.apache.calcite.sql.util.SqlString;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
 import org.apache.shardingsphere.sqlfederation.executor.SQLDialectFactory;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,7 +54,7 @@ public final class EnumerableScan extends TableScan implements EnumerableRel {
     private final String databaseType;
     
     public EnumerableScan(final RelOptCluster cluster, final RelTraitSet traitSet, final RelNode pushDownRelNode, final RelOptTable table, final String databaseType) {
-        super(cluster, traitSet, table);
+        super(cluster, traitSet, Collections.emptyList(), table);
         this.traitSet = this.traitSet.replace(EnumerableConvention.INSTANCE);
         this.pushDownRelNode = pushDownRelNode;
         this.databaseType = databaseType;
@@ -66,7 +67,7 @@ public final class EnumerableScan extends TableScan implements EnumerableRel {
     
     @Override
     public String toString() {
-        return "EnumerableScan{sqlFederationTable=" + table;
+        return "EnumerableScan{sqlFederationTable=" + table + "}";
     }
     
     @Override
@@ -82,15 +83,23 @@ public final class EnumerableScan extends TableScan implements EnumerableRel {
     @Override
     public Result implement(final EnumerableRelImplementor implementor, final Prefer pref) {
         PhysType physType = PhysTypeImpl.of(implementor.getTypeFactory(), getRowType(), pref.preferArray());
-        final SqlString sqlString = createSQLString(pushDownRelNode, databaseType);
-        return implementor.result(physType, Blocks.toBlock(Expressions.call(Objects.requireNonNull(table.getExpression(SQLFederationTable.class)), "implement", 
-                implementor.getRootExpression(), Expressions.constant(sqlString.getSql()), Expressions.constant(sqlString.getDynamicParameters().toArray()))));
+        SqlString sqlString = createSQLString(pushDownRelNode, databaseType);
+        int[] paramIndexes = null == sqlString.getDynamicParameters() ? new int[]{} : getParamIndexes(sqlString.getDynamicParameters());
+        return implementor.result(physType, Blocks.toBlock(Expressions.call(Objects.requireNonNull(table.getExpression(SQLFederationTable.class)),
+                "execute", implementor.getRootExpression(), Expressions.constant(sqlString.getSql()), Expressions.constant(paramIndexes))));
     }
     
     private SqlString createSQLString(final RelNode scanContext, final String databaseType) {
         final SqlDialect sqlDialect = SQLDialectFactory.getSQLDialect(databaseType);
-        String conditionSql = new RelToSqlConverter(sqlDialect).visitRoot(scanContext)
-                .asStatement().toSqlString(sqlDialect).getSql().replace("u&'\\", "'\\u");
-        return new SqlString(sqlDialect, conditionSql);
+        return new RelToSqlConverter(sqlDialect).visitRoot(scanContext).asStatement().toSqlString(sqlDialect);
+    }
+    
+    private int[] getParamIndexes(final Collection<Integer> dynamicParameters) {
+        int[] result = new int[dynamicParameters.size()];
+        int index = 0;
+        for (Integer each : dynamicParameters) {
+            result[index++] = each;
+        }
+        return result;
     }
 }

@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 
-import java.util.List;
-
 /**
  * Enumerable push down table scan executor context.
  */
@@ -34,5 +32,5 @@ public final class EnumerableScanExecutorContext {
     
     private final String sql;
     
-    private final Object[] parameterIndexes;
+    private final int[] paramIndexes;
 }

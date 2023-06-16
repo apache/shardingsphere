@@ -343,12 +343,12 @@ public final class EnumerableScanExecutor {
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getType(),
                 optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(),
                 optimizerContext.getSqlParserRule().isSqlCommentParseEnabled()).parse(sql, useCache);
-        List<Object> params = getParameters(sqlString.getParameterIndexes());
+        List<Object> params = getParameters(sqlString.getParamIndexes());
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, params, sqlStatement, executorContext.getDatabaseName());
         return new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), useCache);
     }
     
-    private List<Object> getParameters(final Object[] paramIndexes) {
+    private List<Object> getParameters(final int[] paramIndexes) {
         if (null == paramIndexes) {
             return Collections.emptyList();
         }

@@ -45,7 +45,6 @@ import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableSca
 import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableScanExecutorContext;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -62,28 +61,6 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
     
     @Setter
     private EnumerableScanExecutor scanExecutor;
-    
-    /**
-     * Execute filter and project when query the federation translatable table.
-     *
-     * @param root data context
-     * @param projects fields to be projected
-     * @return enumerable result
-     */
-    public Enumerable<Object[]> implement(final DataContext root, final String sql, final Object[] parameterIndexes) {
-        return scanExecutor.execute(table, new EnumerableScanExecutorContext(root, sql, parameterIndexes));
-    }
-    
-    /**
-     * Get column type from table by column identity.
-     *
-     * @param index column identity
-     * @return column data type
-     */
-    public int getColumnType(final int index) {
-        String columnName = table.getColumnNames().get(index);
-        return table.getColumn(columnName).getDataType();
-    }
     
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
@@ -108,6 +85,18 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
     @Override
     public RelNode toRel(final ToRelContext context, final RelOptTable relOptTable) {
         return LogicalTableScan.create(context.getCluster(), relOptTable, Collections.emptyList());
+    }
+    
+    /**
+     * Execute.
+     *
+     * @param root data context
+     * @param sql sql
+     * @param paramIndexes param indexes
+     * @return enumerable result
+     */
+    public Enumerable<Object[]> execute(final DataContext root, final String sql, final int[] paramIndexes) {
+        return scanExecutor.execute(table, new EnumerableScanExecutorContext(root, sql, paramIndexes));
     }
     
     @Override
