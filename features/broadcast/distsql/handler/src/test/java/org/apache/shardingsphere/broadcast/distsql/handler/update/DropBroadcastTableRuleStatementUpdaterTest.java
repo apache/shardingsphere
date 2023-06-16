@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,12 +54,12 @@ class DropBroadcastTableRuleStatementUpdaterTest {
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() {
         DropBroadcastTableRuleStatement statement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, statement, new BroadcastRuleConfiguration()));
+        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, statement, new BroadcastRuleConfiguration(Collections.emptyList())));
     }
     
     @Test
     void assertUpdateCurrentRuleConfiguration() {
-        BroadcastRuleConfiguration configuration = new BroadcastRuleConfiguration();
+        BroadcastRuleConfiguration configuration = new BroadcastRuleConfiguration(new LinkedList<>());
         configuration.getTables().add("t_address");
         DropBroadcastTableRuleStatement statement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         assertTrue(updater.updateCurrentRuleConfiguration(statement, configuration));

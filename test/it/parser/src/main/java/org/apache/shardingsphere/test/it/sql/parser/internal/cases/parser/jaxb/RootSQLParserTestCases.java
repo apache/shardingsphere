@@ -1585,6 +1585,9 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "count-mask-rule")
     private final List<CountMaskRuleStatementTestCase> countMaskRuleStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "count-broadcast-rule")
+    private final List<CountMaskRuleStatementTestCase> countBroadcastRuleStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-collation")
     private final List<CreateCollationStatementTestCase> createCollationStatementTestCases = new LinkedList<>();
     
