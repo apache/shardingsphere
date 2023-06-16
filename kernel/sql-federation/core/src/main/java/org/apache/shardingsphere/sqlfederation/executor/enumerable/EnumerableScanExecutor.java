@@ -353,8 +353,8 @@ public final class EnumerableScanExecutor {
             return Collections.emptyList();
         }
         List<Object> result = new ArrayList<>();
-        for (Object each : paramIndexes) {
-            result.add(executorContext.getFederationContext().getQueryContext().getParameters().get(Integer.parseInt(String.valueOf(each))));
+        for (int each : paramIndexes) {
+            result.add(executorContext.getFederationContext().getQueryContext().getParameters().get(each));
         }
         return result;
     }
