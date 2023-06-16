@@ -110,7 +110,7 @@ class ColumnValueConvertUtilsTest {
     
     @Test
     void assertTimeConvert() {
-        Time time = new Time(-3600 * 1000);
+        Time time = new Time(-3612 * 1000);
         Int64Value actualMessage = (Int64Value) ColumnValueConvertUtils.convertToProtobufMessage(time);
         assertThat(LocalTime.ofNanoOfDay(actualMessage.getValue()), is(time.toLocalTime()));
     }
