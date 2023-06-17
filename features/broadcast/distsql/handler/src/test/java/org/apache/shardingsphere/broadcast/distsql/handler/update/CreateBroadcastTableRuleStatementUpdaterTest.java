@@ -26,6 +26,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 
 import java.util.Collections;
+import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,7 +51,7 @@ class CreateBroadcastTableRuleStatementUpdaterTest {
     
     @Test
     void assertBuildToBeCreatedRuleConfiguration() {
-        BroadcastRuleConfiguration currentConfig = new BroadcastRuleConfiguration();
+        BroadcastRuleConfiguration currentConfig = new BroadcastRuleConfiguration(new LinkedList<>());
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         updater.checkSQLStatement(database, statement, currentConfig);
         BroadcastRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, statement);

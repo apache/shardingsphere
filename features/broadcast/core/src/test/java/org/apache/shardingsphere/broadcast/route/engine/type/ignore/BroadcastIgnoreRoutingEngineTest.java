@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.event.loadbalance;
+package org.apache.shardingsphere.broadcast.route.engine.type.ignore;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.junit.jupiter.api.Test;
 
-/**
- * Add load-balance event.
- *
- * @param <T> algorithm configuration
- */
-@RequiredArgsConstructor
-@Getter
-public final class AddLoadBalanceEvent<T> implements GovernanceEvent {
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+
+class BroadcastIgnoreRoutingEngineTest {
     
-    private final String databaseName;
-    
-    private final String loadBalanceName;
-    
-    private final T config;
+    @Test
+    void assertRoute() {
+        BroadcastIgnoreRoutingEngine engine = new BroadcastIgnoreRoutingEngine();
+        RouteContext routeContext = engine.route(new RouteContext(), mock(BroadcastRule.class));
+        assertTrue(routeContext.getRouteUnits().isEmpty());
+    }
 }
