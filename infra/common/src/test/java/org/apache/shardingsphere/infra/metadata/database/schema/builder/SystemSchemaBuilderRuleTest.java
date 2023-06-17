@@ -43,7 +43,6 @@ class SystemSchemaBuilderRuleTest {
         SystemSchemaBuilderRule actualPgCatalog = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "pg_catalog");
         assertThat(actualPgCatalog, is(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG));
         assertThat(actualPgCatalog.getTables().size(), is(14));
-        assertThat(actualPgCatalog.getTables().size(), is(13));
         SystemSchemaBuilderRule actualSys = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "sys");
         assertThat(actualSys, is(SystemSchemaBuilderRule.MYSQL_SYS));
         assertThat(actualSys.getTables().size(), is(6));
@@ -57,7 +56,7 @@ class SystemSchemaBuilderRuleTest {
     @Test
     void assertIsisSystemTable() {
         assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "columns"));
-        assertTrue(SystemSchemaBuilderRule.isSystemTable("sys", "sys"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("sys", "sys_config"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("sys", "host_summary_by_statement_type"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("sys", "innodb_buffer_stats_by_schema"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("sys", "innodb_buffer_stats_by_table"));
