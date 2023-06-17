@@ -58,7 +58,7 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
      * @param event add mask configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddMaskConfigurationEvent<MaskTableRuleConfiguration> event) {
+    public synchronized void renew(final AddMaskConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         MaskTableRuleConfiguration needToAddedConfig = event.getConfig();
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
@@ -79,7 +79,7 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
      * @param event alter mask configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterMaskConfigurationEvent<MaskTableRuleConfiguration> event) {
+    public synchronized void renew(final AlterMaskConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         MaskTableRuleConfiguration needToAlteredConfig = event.getConfig();
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
