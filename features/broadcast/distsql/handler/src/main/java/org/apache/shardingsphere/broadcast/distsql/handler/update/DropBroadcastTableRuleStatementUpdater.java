@@ -68,8 +68,7 @@ public final class DropBroadcastTableRuleStatementUpdater implements RuleDefinit
     
     @Override
     public BroadcastRuleConfiguration buildToBeAlteredRuleConfiguration(final BroadcastRuleConfiguration currentRuleConfig, final DropBroadcastTableRuleStatement sqlStatement) {
-        BroadcastRuleConfiguration result = new BroadcastRuleConfiguration();
-        result.setTables(new HashSet<>(currentRuleConfig.getTables()));
+        BroadcastRuleConfiguration result = new BroadcastRuleConfiguration(new HashSet<>(currentRuleConfig.getTables()));
         result.getTables().removeIf(each -> containsIgnoreCase(sqlStatement.getTables(), each));
         return result;
     }
