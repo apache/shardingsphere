@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.connection.refresher.type.table;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -42,7 +43,9 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
         modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         ShardingSphereRuleMetaData ruleMetaData = database.getRuleMetaData();
         for (SimpleTableSegment each : sqlStatement.getTables()) {
-            if (isSingleTable(each.getTableName().getIdentifier().getValue(), ruleMetaData)) {
+            String tableName = each.getTableName().getIdentifier().getValue();
+            if (isSingleTable(tableName, ruleMetaData)
+                    && TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, tableName)) {
                 modeContextManager.alterRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
                 break;
             }

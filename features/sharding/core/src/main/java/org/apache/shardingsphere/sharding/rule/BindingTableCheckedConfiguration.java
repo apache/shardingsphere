@@ -39,8 +39,6 @@ public final class BindingTableCheckedConfiguration {
     
     private final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups;
     
-    private final Collection<String> broadcastTables;
-    
     private final ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig;
     
     private final ShardingStrategyConfiguration defaultTableShardingStrategyConfig;

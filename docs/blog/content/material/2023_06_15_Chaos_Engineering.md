@@ -1,6 +1,5 @@
 +++
-title = "Chaos Engineering: Efficient Way to Improve System Availability
-"
+title = "Chaos Engineering: Efficient Way to Improve System Availability"
 weight = 101
 chapter = true 
 +++

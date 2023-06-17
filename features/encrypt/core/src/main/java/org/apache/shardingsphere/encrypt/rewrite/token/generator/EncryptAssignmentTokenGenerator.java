@@ -70,7 +70,7 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
         EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
-            if (encryptRule.findStandardEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
+            if (encryptTable.isEncryptColumn(each.getColumns().get(0).getIdentifier().getValue())) {
                 generateSQLToken(schemaName, encryptTable, each).ifPresent(result::add);
             }
         }

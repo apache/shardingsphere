@@ -67,8 +67,6 @@ rules:
      keyGenerateStrategy:
        column: order_item_id
        keyGeneratorName: snowflake
- broadcastTables:
-   - t_address
  defaultDatabaseStrategy:
    standard:
      shardingColumn: user_id

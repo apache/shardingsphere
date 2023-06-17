@@ -19,14 +19,13 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -60,7 +59,6 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                 && InsertStatementHandler.getOnDuplicateKeyColumnsSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent();
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
         InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
@@ -70,8 +68,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             String encryptLogicColumnName = onDuplicateKeyUpdateValueContext.getColumn(index).getIdentifier().getValue();
-            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findStandardEncryptor(tableName, encryptLogicColumnName);
-            if (!encryptor.isPresent()) {
+            if (!encryptRule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(encryptLogicColumnName)).orElse(false)) {
                 continue;
             }
             Object plainValue = onDuplicateKeyUpdateValueContext.getValue(index);
@@ -79,7 +76,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                 return;
             }
             EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, encryptLogicColumnName);
-            Object cipherColumnValue = encryptor.get().encrypt(plainValue, encryptContext);
+            Object cipherColumnValue = encryptRule.encrypt(databaseName, schemaName, tableName, encryptLogicColumnName, plainValue);
             groupedParamBuilder.getGenericParameterBuilder().addReplacedParameters(index, cipherColumnValue);
             Collection<Object> addedParams = buildAddedParams(tableName, encryptLogicColumnName, plainValue, encryptContext);
             if (!addedParams.isEmpty()) {

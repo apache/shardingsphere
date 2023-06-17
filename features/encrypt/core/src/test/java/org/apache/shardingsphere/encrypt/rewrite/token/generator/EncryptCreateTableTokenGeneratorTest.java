@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -57,7 +56,6 @@ class EncryptCreateTableTokenGeneratorTest {
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
-        when(result.findStandardEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         EncryptTable encryptTable = mockEncryptTable();
         when(result.getEncryptTable("t_encrypt")).thenReturn(encryptTable);
         return result;
@@ -67,6 +65,7 @@ class EncryptCreateTableTokenGeneratorTest {
         EncryptTable result = mock(EncryptTable.class);
         EncryptColumn column = mockEncryptColumn();
         when(result.getLogicColumns()).thenReturn(Collections.singletonList("t_encrypt"));
+        when(result.isEncryptColumn("certificate_number")).thenReturn(true);
         when(result.getCipherColumn("certificate_number")).thenReturn(column.getCipher().getName());
         when(result.findAssistedQueryColumn("certificate_number")).thenReturn(column.getAssistedQuery().map(EncryptColumnItem::getName));
         when(result.findLikeQueryColumn("certificate_number")).thenReturn(column.getLikeQuery().map(EncryptColumnItem::getName));

@@ -223,7 +223,6 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
     private void appendShardingDistSQL(final ShardingRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
         appendShardingTableRules(ruleConfig, stringBuilder);
         appendShardingBindingTableRules(ruleConfig, stringBuilder);
-        appendShardingBroadcastTableRules(ruleConfig, stringBuilder);
         appendDefaultShardingStrategy(ruleConfig, stringBuilder);
     }
     
@@ -366,14 +365,6 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
             }
         }
         stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
-    }
-    
-    private void appendShardingBroadcastTableRules(final ShardingRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        if (ruleConfig.getBroadcastTables().isEmpty()) {
-            return;
-        }
-        stringBuilder.append(String.format(DistSQLScriptConstants.BROADCAST_TABLE_RULE, String.join(",", ruleConfig.getBroadcastTables())))
-                .append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
     }
     
     private void appendDefaultShardingStrategy(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {

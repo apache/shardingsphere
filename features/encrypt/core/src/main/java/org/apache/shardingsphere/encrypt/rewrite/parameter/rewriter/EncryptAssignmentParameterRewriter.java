@@ -72,7 +72,8 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
-            if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findStandardEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
+            String columnName = each.getColumns().get(0).getIdentifier().getValue();
+            if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(columnName)).orElse(false)) {
                 StandardParameterBuilder standardParamBuilder = paramBuilder instanceof StandardParameterBuilder
                         ? (StandardParameterBuilder) paramBuilder
                         : ((GroupedParameterBuilder) paramBuilder).getParameterBuilders().get(0);

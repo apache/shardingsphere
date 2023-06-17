@@ -51,7 +51,8 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig,
+    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(
+                                                                                 final ReadwriteSplittingRuleConfiguration currentRuleConfig,
                                                                                  final ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         Map<String, AlgorithmConfiguration> loadBalancers = new HashMap<>();
@@ -59,7 +60,7 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
         for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
             if (toBeAlteredDataSourceNames.contains(each.getName())) {
                 dataSources.add(each);
-                loadBalancers.put(each.getLoadBalancerName(), null);
+                loadBalancers.put(each.getLoadBalancerName(), currentRuleConfig.getLoadBalancers().get(each));
             }
         }
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);

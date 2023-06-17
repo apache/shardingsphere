@@ -121,18 +121,4 @@ class ShardingCreateViewStatementValidatorTest {
                 () -> new ShardingCreateViewStatementValidator(mock(ShardingSphereRuleMetaData.class)).postValidate(shardingRule,
                         createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
     }
-    
-    @Test
-    void assertPreValidateCreateViewWithBroadcastTable() {
-        when(shardingRule.isAllBroadcastTables(any())).thenReturn(true);
-        when(shardingRule.isBroadcastTable("order_view")).thenReturn(false);
-        ConfigurationProperties props = mock(ConfigurationProperties.class);
-        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        SQLFederationRule sqlFederationRule = mock(SQLFederationRule.class, RETURNS_DEEP_STUBS);
-        when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);
-        when(sqlFederationRule.getConfiguration().isSqlFederationEnabled()).thenReturn(false);
-        assertThrows(EngagedViewException.class,
-                () -> new ShardingCreateViewStatementValidator(globalRuleMetaData).preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class),
-                        props));
-    }
 }
