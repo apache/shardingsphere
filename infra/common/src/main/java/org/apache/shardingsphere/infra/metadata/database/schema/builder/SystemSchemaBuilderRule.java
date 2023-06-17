@@ -70,7 +70,7 @@ public enum SystemSchemaBuilderRule {
             "socket_summary_by_event_name", "socket_summary_by_instance", "status_by_account", "status_by_host", "status_by_thread", "status_by_user", "table_handles",
             "table_io_waits_summary_by_index_usage", "table_io_waits_summary_by_table", "table_lock_waits_summary_by_table", "threads", "user_variables_by_thread", "users", "variables_by_thread"))),
     
-    MYSQL_SYS("MySQL", "sys", new HashSet<>(Arrays.asList("sys", "host_summary_by_statement_type"))),
+    MYSQL_SYS("MySQL", "sys", new HashSet<>(Arrays.asList("sys", "host_summary_by_statement_type", "innodb_buffer_stats_by_schema"))),
     
     MYSQL_SHARDING_SPHERE("MySQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
     
