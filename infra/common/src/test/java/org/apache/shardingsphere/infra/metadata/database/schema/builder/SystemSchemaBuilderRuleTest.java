@@ -42,7 +42,7 @@ class SystemSchemaBuilderRuleTest {
         assertThat(actualPerformanceSchema.getTables().size(), is(87));
         SystemSchemaBuilderRule actualPgCatalog = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "pg_catalog");
         assertThat(actualPgCatalog, is(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG));
-        assertThat(actualPgCatalog.getTables().size(), is(14));
+        assertThat(actualPgCatalog.getTables().size(), is(134));
     }
     
     @Test
