@@ -753,4 +753,12 @@
     <test-case sql="select * FROM sys.innodb_buffer_stats_by_table" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_sys_innodb_buffer_stats_by_table.xml" />
     </test-case>
+
+    <test-case sql="select * FROM sys.innodb_lock_waits" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_sys_innodb_lock_waits.xml" />
+    </test-case>
+
+    <test-case sql="select * FROM sys.io_by_thread_by_latency" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_sys_io_by_thread_by_latency.xml" />
+    </test-case>
 </integration-test-cases>
