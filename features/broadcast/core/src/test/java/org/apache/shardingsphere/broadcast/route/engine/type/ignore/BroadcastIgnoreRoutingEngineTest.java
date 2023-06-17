@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.api.config;
+package org.apache.shardingsphere.broadcast.route.engine.type.ignore;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
-/**
- * Broadcast rule configuration.
- */
-@RequiredArgsConstructor
-@Getter
-public final class BroadcastRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
+class BroadcastIgnoreRoutingEngineTest {
     
-    private final Collection<String> tables;
+    @Test
+    void assertRoute() {
+        BroadcastIgnoreRoutingEngine engine = new BroadcastIgnoreRoutingEngine();
+        RouteContext routeContext = engine.route(new RouteContext(), mock(BroadcastRule.class));
+        assertTrue(routeContext.getRouteUnits().isEmpty());
+    }
 }

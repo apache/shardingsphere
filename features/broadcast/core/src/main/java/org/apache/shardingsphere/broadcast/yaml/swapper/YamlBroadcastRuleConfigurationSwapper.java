@@ -22,6 +22,9 @@ import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
  * YAML broadcast rule configuration swapper.
  */
@@ -36,9 +39,8 @@ public final class YamlBroadcastRuleConfigurationSwapper implements YamlRuleConf
     
     @Override
     public BroadcastRuleConfiguration swapToObject(final YamlBroadcastRuleConfiguration yamlConfig) {
-        BroadcastRuleConfiguration result = new BroadcastRuleConfiguration();
-        yamlConfig.getTables().forEach(each -> result.getTables().add(each));
-        return result;
+        Collection<String> tables = new LinkedList<>(yamlConfig.getTables());
+        return new BroadcastRuleConfiguration(tables);
     }
     
     @Override
