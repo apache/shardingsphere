@@ -47,6 +47,10 @@ TABLES
     : T A B L E S
     ;
 
+ALL
+    : A L L
+    ;
+
 STORAGE
     : S T O R A G E
     ;

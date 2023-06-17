@@ -28,6 +28,7 @@ import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLikeQueryColu
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -67,19 +68,23 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
         InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent()) {
+            return;
+        }
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
             EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, columnName);
             encryptRule.findStandardEncryptor(tableName, columnName).ifPresent(
-                    optional -> encryptInsertValues((GroupedParameterBuilder) paramBuilder, insertStatementContext, optional,
+                    optional -> encryptInsertValues(encryptTable.get(), (GroupedParameterBuilder) paramBuilder, insertStatementContext, optional,
                             encryptRule.findAssistedQueryEncryptor(tableName, columnName).orElse(null),
                             encryptRule.findLikeQueryEncryptor(tableName, columnName).orElse(null), encryptContext));
         }
     }
     
-    private void encryptInsertValues(final GroupedParameterBuilder paramBuilder, final InsertStatementContext insertStatementContext,
+    private void encryptInsertValues(final EncryptTable encryptTable, final GroupedParameterBuilder paramBuilder, final InsertStatementContext insertStatementContext,
                                      final StandardEncryptAlgorithm<?, ?> standardEncryptor, final AssistedEncryptAlgorithm<?, ?> assistQueryEncryptor,
                                      final LikeEncryptAlgorithm<?, ?> likeQueryEncryptor, final EncryptContext encryptContext) {
         int columnIndex = getColumnIndex(paramBuilder, insertStatementContext, encryptContext.getColumnName());
@@ -92,7 +97,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
                 if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                     Object literalValue = insertStatementContext.getInsertValueContexts().get(count).getLiteralValue(columnIndex)
                             .orElse(null);
-                    encryptInsertValue(standardEncryptor, assistQueryEncryptor, likeQueryEncryptor, paramIndex, literalValue, standardParamBuilder, encryptContext);
+                    encryptInsertValue(encryptTable, standardEncryptor, assistQueryEncryptor, likeQueryEncryptor, paramIndex, literalValue, standardParamBuilder, encryptContext);
                 }
             }
             count++;
@@ -111,17 +116,18 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void encryptInsertValue(final StandardEncryptAlgorithm standardEncryptor, final AssistedEncryptAlgorithm assistQueryEncryptor, final LikeEncryptAlgorithm likeQueryEncryptor,
+    private void encryptInsertValue(final EncryptTable encryptTable,
+                                    final StandardEncryptAlgorithm standardEncryptor, final AssistedEncryptAlgorithm assistQueryEncryptor, final LikeEncryptAlgorithm likeQueryEncryptor,
                                     final int paramIndex, final Object originalValue, final StandardParameterBuilder paramBuilder, final EncryptContext encryptContext) {
         paramBuilder.addReplacedParameters(paramIndex, standardEncryptor.encrypt(originalValue, encryptContext));
         Collection<Object> addedParams = new LinkedList<>();
         if (null != assistQueryEncryptor) {
-            Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName());
+            Optional<String> assistedColumnName = encryptTable.findAssistedQueryColumn(encryptContext.getColumnName());
             ShardingSpherePreconditions.checkState(assistedColumnName.isPresent(), EncryptAssistedQueryColumnNotFoundException::new);
             addedParams.add(assistQueryEncryptor.encrypt(originalValue, encryptContext));
         }
         if (null != likeQueryEncryptor) {
-            Optional<String> likeColumnName = encryptRule.findLikeQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName());
+            Optional<String> likeColumnName = encryptTable.findLikeQueryColumn(encryptContext.getColumnName());
             ShardingSpherePreconditions.checkState(likeColumnName.isPresent(), EncryptLikeQueryColumnNotFoundException::new);
             addedParams.add(likeQueryEncryptor.encrypt(originalValue, encryptContext));
         }

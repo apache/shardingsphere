@@ -162,7 +162,7 @@ public abstract class SQLRewriterIT {
     private Collection<ShardingSphereRule> createGlobalRules() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         result.add(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()));
-        result.add(new SQLFederationRule(new SQLFederationRuleConfiguration(false, mock(CacheOption.class))));
+        result.add(new SQLFederationRule(new SQLFederationRuleConfiguration(false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         result.add(new TimestampServiceRule(mock(TimestampServiceRuleConfiguration.class)));
         return result;
     }

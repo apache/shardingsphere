@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -29,17 +28,16 @@ import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.exception.algorithm.MismatchedEncryptAlgorithmTypeException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingEncryptorException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +47,7 @@ import java.util.Optional;
 /**
  * Encrypt rule.
  */
-public final class EncryptRule implements DatabaseRule, TableContainedRule, ColumnContainedRule {
+public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
     @Getter
     private final RuleConfiguration configuration;
@@ -65,12 +63,15 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
+    private final TableNamesMapper tableNamesMapper = new TableNamesMapper();
+    
     public EncryptRule(final EncryptRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps())));
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
             each.getColumns().forEach(this::checkEncryptAlgorithmType);
             tables.put(each.getName().toLowerCase(), new EncryptTable(each));
+            tableNamesMapper.put(each.getName());
         }
     }
     
@@ -86,6 +87,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
             each.getColumns().forEach(this::checkEncryptAlgorithmType);
             tables.put(each.getName().toLowerCase(), new EncryptTable(each));
+            tableNamesMapper.put(each.getName());
         }
     }
     
@@ -122,14 +124,15 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
     }
     
     /**
-     * Find encrypt column.
-     * 
+     * Get encrypt table.
+     *
      * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return encrypt column
+     * @return encrypt table
      */
-    public Optional<EncryptColumn> findEncryptColumn(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(logicColumnName));
+    public EncryptTable getEncryptTable(final String tableName) {
+        Optional<EncryptTable> encryptTable = findEncryptTable(tableName);
+        ShardingSpherePreconditions.checkState(encryptTable.isPresent(), () -> new EncryptTableNotFoundException(tableName));
+        return encryptTable.get();
     }
     
     /**
@@ -196,61 +199,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
     }
     
     /**
-     * Get cipher column.
-     *
-     * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return cipher column
-     */
-    public String getCipherColumn(final String tableName, final String logicColumnName) {
-        Optional<EncryptTable> table = findEncryptTable(tableName);
-        Preconditions.checkState(table.isPresent());
-        return table.get().getCipherColumn(logicColumnName);
-    }
-    
-    /**
-     * Get logic and cipher columns map.
-     *
-     * @param tableName table name 
-     * @return logic and cipher columns map
-     */
-    public Map<String, String> getLogicAndCipherColumnsMap(final String tableName) {
-        return findEncryptTable(tableName).map(EncryptTable::getLogicAndCipherColumns).orElse(Collections.emptyMap());
-    }
-    
-    /**
-     * Find assisted query column.
-     *
-     * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return assisted query column
-     */
-    public Optional<String> findAssistedQueryColumn(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findAssistedQueryColumn(logicColumnName));
-    }
-    
-    /**
-     * Find like query column.
-     *
-     * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return like query column
-     */
-    public Optional<String> findLikeQueryColumn(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findLikeQueryColumn(logicColumnName));
-    }
-    
-    /**
-     * Get assisted query columns.
-     * 
-     * @param tableName table name
-     * @return assisted query columns
-     */
-    public Collection<String> getAssistedQueryColumns(final String tableName) {
-        return findEncryptTable(tableName).map(EncryptTable::getAssistedQueryColumns).orElse(Collections.emptyList());
-    }
-    
-    /**
      * Get encrypt assisted query values.
      *
      * @param databaseName database name
@@ -307,8 +255,23 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
     }
     
     @Override
-    public Collection<String> getTables() {
-        return tables.keySet();
+    public TableNamesMapper getLogicTableMapper() {
+        return tableNamesMapper;
+    }
+    
+    @Override
+    public TableNamesMapper getActualTableMapper() {
+        return new TableNamesMapper();
+    }
+    
+    @Override
+    public TableNamesMapper getDistributedTableMapper() {
+        return new TableNamesMapper();
+    }
+    
+    @Override
+    public TableNamesMapper getEnhancedTableMapper() {
+        return getLogicTableMapper();
     }
     
     @Override

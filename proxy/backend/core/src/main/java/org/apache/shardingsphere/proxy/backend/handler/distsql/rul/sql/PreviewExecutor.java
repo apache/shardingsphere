@@ -24,7 +24,6 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDataba
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
-import org.apache.shardingsphere.sqlfederation.decider.SQLFederationDecideEngine;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
@@ -60,9 +59,8 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.Conn
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
+import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
+import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -103,8 +101,11 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(connectionSession.getDatabaseName()));
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
-        Collection<ExecutionUnit> executionUnits = isUseFederation(queryContext, database, metaDataContexts, connectionSession)
-                ? getFederationExecutionUnits(queryContext, databaseName, metaDataContexts, connectionSession)
+        String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(database.getProtocolType(), databaseName));
+        SQLFederationEngine sqlFederationEngine = new SQLFederationEngine(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
+                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext()));
+        Collection<ExecutionUnit> executionUnits = isUseFederation(queryContext, metaDataContexts, connectionSession, sqlFederationEngine)
+                ? getFederationExecutionUnits(queryContext, metaDataContexts, connectionSession, sqlFederationEngine)
                 : kernelProcessor.generateExecutionContext(queryContext, database, globalRuleMetaData, props, connectionSession.getConnectionContext()).getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
     }
@@ -119,10 +120,9 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(cursorStatementContext);
     }
     
-    private boolean isUseFederation(final QueryContext queryContext, final ShardingSphereDatabase database, final MetaDataContexts metaDataContexts,
-                                    final ConnectionSession connectionSession) {
-        SQLFederationDecideEngine engine = new SQLFederationDecideEngine(database.getRuleMetaData().getRules());
-        return engine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(),
+    private boolean isUseFederation(final QueryContext queryContext, final MetaDataContexts metaDataContexts, final ConnectionSession connectionSession,
+                                    final SQLFederationEngine sqlFederationEngine) {
+        return sqlFederationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(),
                 metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()), metaDataContexts.getMetaData().getGlobalRuleMetaData());
     }
     
@@ -130,18 +130,14 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         return new LocalDataQueryResultRow(unit.getDataSourceName(), unit.getSqlUnit().getSql());
     }
     
-    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final String databaseName, final MetaDataContexts metaDataContexts,
-                                                                  final ConnectionSession connectionSession) throws SQLException {
+    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final MetaDataContexts metaDataContexts,
+                                                                  final ConnectionSession connectionSession, final SQLFederationEngine sqlFederationEngine) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts, connectionSession);
         SQLFederationExecutorContext context = new SQLFederationExecutorContext(true, queryContext, metaDataContexts.getMetaData());
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(getDatabaseName(connectionSession));
-        String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(database.getProtocolType(), databaseName));
-        SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        SQLFederationExecutor sqlFederationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
-                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext()));
-        sqlFederationExecutor.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData().getStorageTypes(), sqlStatement), context);
+        sqlFederationEngine.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData().getStorageTypes(), sqlStatement), context);
         return context.getExecutionUnits();
     }
     

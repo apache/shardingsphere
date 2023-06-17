@@ -90,5 +90,5 @@ jdbc:shardingsphere:classpath:config.yaml
 
 加载绝对路径中 config.yaml 配置文件的 JDBC URL：
 ```
-jdbc:shardingsphere:absolutepath/path/to/config.yaml
+jdbc:shardingsphere:absolutepath:/path/to/config.yaml
 ```

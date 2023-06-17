@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
@@ -99,6 +100,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private final Collection<ColumnSegment> columnSegments = new LinkedList<>();
     
+    private final boolean containsEnhancedTable;
+    
     private SubqueryType subqueryType;
     
     private boolean needAggregateRewrite;
@@ -117,6 +120,28 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         projectionsContext = new ProjectionsContextEngine(databaseName, getSchemas(metaData, databaseName), getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
+        containsEnhancedTable = isContainsEnhancedTable(metaData, databaseName, getTablesContext().getTableNames());
+    }
+    
+    private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final String databaseName, final Collection<String> tableNames) {
+        for (TableContainedRule each : getTableContainedRules(metaData, databaseName)) {
+            for (String tableName : tableNames) {
+                if (each.getEnhancedTableMapper().contains(tableName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private Collection<TableContainedRule> getTableContainedRules(final ShardingSphereMetaData metaData, final String databaseName) {
+        if (null == databaseName) {
+            ShardingSpherePreconditions.checkState(tablesContext.getSimpleTableSegments().isEmpty(), NoDatabaseSelectedException::new);
+            return Collections.emptyList();
+        }
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
+        return database.getRuleMetaData().findRules(TableContainedRule.class);
     }
     
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final List<Object> params, final String defaultDatabaseName) {

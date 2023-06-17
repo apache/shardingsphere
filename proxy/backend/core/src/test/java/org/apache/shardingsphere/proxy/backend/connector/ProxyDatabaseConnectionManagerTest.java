@@ -56,6 +56,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -111,7 +112,7 @@ class ProxyDatabaseConnectionManagerTest {
     void assertGetConnectionCacheIsEmpty() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
-        List<Connection> actualConnections = databaseConnectionManager.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actualConnections = databaseConnectionManager.getConnections("ds1", 0, 2, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(2));
         assertThat(databaseConnectionManager.getConnectionSize(), is(2));
         assertTrue(connectionSession.getTransactionStatus().isInTransaction());
@@ -121,7 +122,7 @@ class ProxyDatabaseConnectionManagerTest {
     void assertGetConnectionSizeLessThanCache() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         MockConnectionUtils.setCachedConnections(databaseConnectionManager, "ds1", 10);
-        List<Connection> actualConnections = databaseConnectionManager.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actualConnections = databaseConnectionManager.getConnections("ds1", 0, 2, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(2));
         assertThat(databaseConnectionManager.getConnectionSize(), is(10));
         assertTrue(connectionSession.getTransactionStatus().isInTransaction());
@@ -132,7 +133,7 @@ class ProxyDatabaseConnectionManagerTest {
         connectionSession.getTransactionStatus().setInTransaction(true);
         MockConnectionUtils.setCachedConnections(databaseConnectionManager, "ds1", 10);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
-        List<Connection> actualConnections = databaseConnectionManager.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actualConnections = databaseConnectionManager.getConnections("ds1", 0, 12, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(12));
         assertThat(databaseConnectionManager.getConnectionSize(), is(12));
         assertTrue(connectionSession.getTransactionStatus().isInTransaction());
@@ -143,7 +144,7 @@ class ProxyDatabaseConnectionManagerTest {
         connectionSession.getTransactionStatus().setInTransaction(true);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
         setConnectionPostProcessors();
-        List<Connection> actualConnections = databaseConnectionManager.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actualConnections = databaseConnectionManager.getConnections("ds1", 0, 2, ConnectionMode.MEMORY_STRICTLY);
         verify(databaseConnectionManager.getConnectionPostProcessors().iterator().next(), times(2)).process(any());
         assertThat(actualConnections.size(), is(2));
         assertTrue(connectionSession.getTransactionStatus().isInTransaction());
@@ -220,7 +221,7 @@ class ProxyDatabaseConnectionManagerTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
         when(proxyContext.getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
-        List<Connection> actualConnections = databaseConnectionManager.getConnections("", 1, ConnectionMode.CONNECTION_STRICTLY);
+        List<Connection> actualConnections = databaseConnectionManager.getConnections("", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
         Connection actualConnection = actualConnections.get(0);
         verify(actualConnection.createStatement()).execute("SET key=value");
     }
@@ -235,7 +236,7 @@ class ProxyDatabaseConnectionManagerTest {
             when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
             when(connection.createStatement().execute("SET key=value")).thenThrow(expectedException);
             when(ProxyContext.getInstance().getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
-            databaseConnectionManager.getConnections("", 1, ConnectionMode.CONNECTION_STRICTLY);
+            databaseConnectionManager.getConnections("", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
         } catch (final SQLException ex) {
             assertThat(ex, is(expectedException));
             verify(connection).close();
@@ -247,7 +248,7 @@ class ProxyDatabaseConnectionManagerTest {
         connectionSession.getTransactionStatus().setInTransaction(false);
         List<Connection> connections = MockConnectionUtils.mockNewConnections(1);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(connections);
-        List<Connection> fetchedConnections = databaseConnectionManager.getConnections("ds1", 1, null);
+        List<Connection> fetchedConnections = databaseConnectionManager.getConnections("ds1", 0, 1, null);
         assertThat(fetchedConnections.size(), is(1));
         assertTrue(fetchedConnections.contains(connections.get(0)));
         assertConnectionsCached(connectionSession.getDatabaseName() + ".ds1", connections);
@@ -260,6 +261,19 @@ class ProxyDatabaseConnectionManagerTest {
                 .get(ProxyDatabaseConnectionManager.class.getDeclaredField("cachedConnections"), databaseConnectionManager);
         assertTrue(cachedConnections.containsKey(dataSourceName));
         assertArrayEquals(cachedConnections.get(dataSourceName).toArray(), connections.toArray());
+    }
+    
+    @Test
+    void assertGetConnectionWithConnectionOffset() throws SQLException {
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(MockConnectionUtils.mockNewConnections(1));
+        assertThat(databaseConnectionManager.getConnections("ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY),
+                is(databaseConnectionManager.getConnections("ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(MockConnectionUtils.mockNewConnections(1));
+        assertThat(databaseConnectionManager.getConnections("ds1", 1, 1, ConnectionMode.MEMORY_STRICTLY),
+                is(databaseConnectionManager.getConnections("ds1", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(MockConnectionUtils.mockNewConnections(1));
+        assertThat(databaseConnectionManager.getConnections("ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY),
+                not(databaseConnectionManager.getConnections("ds1", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
     }
     
     @Test

@@ -29,4 +29,6 @@ public final class NotExpression implements ExpressionSegment {
     private final int stopIndex;
     
     private final ExpressionSegment expression;
+    
+    private final Boolean notSign;
 }

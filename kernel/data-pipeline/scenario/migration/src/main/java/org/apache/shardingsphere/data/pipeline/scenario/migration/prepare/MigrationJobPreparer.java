@@ -166,7 +166,6 @@ public final class MigrationJobPreparer {
         ShardingSphereMetaData metaData = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId())).getContextManager().getMetaDataContexts().getMetaData();
         SQLParserEngine sqlParserEngine = PipelineJobPreparerUtils.getSQLParserEngine(metaData, jobConfig.getTargetDatabaseName());
         PipelineJobPreparerUtils.prepareTargetTables(targetDatabaseType, new PrepareTargetTablesParameter(createTableConfig, dataSourceManager, sqlParserEngine));
-        jobAPI.refreshTableMetadata(jobConfig.getJobId(), jobConfig.getTargetDatabaseName());
     }
     
     private void prepareIncremental(final MigrationJobItemContext jobItemContext) {

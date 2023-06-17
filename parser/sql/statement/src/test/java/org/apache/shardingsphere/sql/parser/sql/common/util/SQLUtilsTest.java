@@ -63,6 +63,8 @@ class SQLUtilsTest {
         assertThat(SQLUtils.getExactlyValue("[xxx]"), is("xxx"));
         assertThat(SQLUtils.getExactlyValue("\"xxx\""), is("xxx"));
         assertThat(SQLUtils.getExactlyValue("'xxx'"), is("xxx"));
+        assertThat(SQLUtils.getExactlyValue("`[xxx`"), is("xxx"));
+        assertThat(SQLUtils.getExactlyValue("```[xxx```"), is("`xxx`"));
     }
     
     @Test
@@ -152,5 +154,19 @@ class SQLUtilsTest {
         assertThat(SQLUtils.trimComment("/* This is a comment */ SHOW DATABASES"), is("SHOW DATABASES"));
         assertThat(SQLUtils.trimComment("/* This is a query with a semicolon */ SHOW DATABASES;"), is("SHOW DATABASES"));
         assertThat(SQLUtils.trimComment("/* This is a query with spaces */    SHOW DATABASES   "), is("SHOW DATABASES"));
+    }
+    
+    @Test
+    void assertTryGetRealContentInBackticks() {
+        assertThat(SQLUtils.tryGetRealContentInBackticks("`"), is("`"));
+        assertThat(SQLUtils.tryGetRealContentInBackticks("``"), is("``"));
+        assertThat(SQLUtils.tryGetRealContentInBackticks("```"), is("```"));
+        assertThat(SQLUtils.tryGetRealContentInBackticks("t_order"), is("t_order"));
+        assertThat(SQLUtils.tryGetRealContentInBackticks("````"), is("`"));
+        assertThat(SQLUtils.tryGetRealContentInBackticks("`t_order`"), is("t_order"));
+        assertThat(SQLUtils.tryGetRealContentInBackticks("```t_order`"), is("`t_order"));
+        assertThat(SQLUtils.tryGetRealContentInBackticks("```````t_order```````"), is("```t_order```"));
+        assertThat(SQLUtils.tryGetRealContentInBackticks("``t_order`"), is("``t_order`"));
+        assertThat(SQLUtils.tryGetRealContentInBackticks("`````t_o``r``d``e``r```"), is("``t_o`r`d`e`r`"));
     }
 }

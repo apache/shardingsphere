@@ -19,17 +19,30 @@ package org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 
 import static org.mockito.Mockito.mock;
 
 public final class TableContainedFixtureRule implements TableContainedRule {
     
     @Override
-    public Collection<String> getTables() {
-        return Collections.emptyList();
+    public TableNamesMapper getLogicTableMapper() {
+        return new TableNamesMapper();
+    }
+    
+    @Override
+    public TableNamesMapper getActualTableMapper() {
+        return new TableNamesMapper();
+    }
+    
+    @Override
+    public TableNamesMapper getDistributedTableMapper() {
+        return new TableNamesMapper();
+    }
+    
+    @Override
+    public TableNamesMapper getEnhancedTableMapper() {
+        return new TableNamesMapper();
     }
     
     @Override

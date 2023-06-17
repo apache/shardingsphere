@@ -415,7 +415,6 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
                 }
             }
         }
-        refreshTableMetadata(jobId, jobConfig.getTargetDatabaseName());
     }
     
     @Override
@@ -424,6 +423,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         final long startTimeMillis = System.currentTimeMillis();
         dropCheckJobs(jobId);
         stop(jobId);
+        MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
+        refreshTableMetadata(jobId, jobConfig.getTargetDatabaseName());
         dropJob(jobId);
         log.info("Commit cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
