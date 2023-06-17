@@ -749,4 +749,8 @@
     <test-case sql="select * FROM sys.innodb_buffer_stats_by_schema" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_sys_innodb_buffer_stats_by_schema.xml" />
     </test-case>
+
+    <test-case sql="select * FROM sys.innodb_buffer_stats_by_table" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_sys_innodb_buffer_stats_by_table.xml" />
+    </test-case>
 </integration-test-cases>
