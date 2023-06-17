@@ -33,13 +33,10 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.event.algorithm.auditor.AddAuditorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.auditor.AlterAuditorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.auditor.DeleteAuditorEvent;
-import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.AddKeyGeneratorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.AlterKeyGeneratorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.DeleteKeyGeneratorEvent;
-import org.apache.shardingsphere.sharding.event.algorithm.sharding.AddShardingAlgorithmEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.sharding.AlterShardingAlgorithmEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.sharding.DeleteShardingAlgorithmEvent;
 import org.apache.shardingsphere.sharding.event.cache.AddShardingCacheConfigurationEvent;
@@ -261,31 +258,22 @@ public final class ShardingRuleConfigurationEventBuilder implements RuleConfigur
     }
     
     private Optional<GovernanceEvent> createShardingAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddShardingAlgorithmEvent<>(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
-        }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterShardingAlgorithmEvent<>(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterShardingAlgorithmEvent(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
         }
         return Optional.of(new DeleteShardingAlgorithmEvent(databaseName, algorithmName));
     }
     
     private Optional<GovernanceEvent> createKeyGeneratorEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddKeyGeneratorEvent<>(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
-        }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterKeyGeneratorEvent<>(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterKeyGeneratorEvent(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
         }
         return Optional.of(new DeleteKeyGeneratorEvent(databaseName, algorithmName));
     }
     
     private Optional<GovernanceEvent> createAuditorEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddAuditorEvent<>(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
-        }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterAuditorEvent<>(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterAuditorEvent(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
         }
         return Optional.of(new DeleteAuditorEvent(databaseName, algorithmName));
     }

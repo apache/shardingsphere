@@ -42,7 +42,7 @@ public final class ReadwriteSplittingNodeConverter {
     
     private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
     
-    private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
+    private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)/versions/?";
     
     private static final String RULE_VERSION = "/([\\w\\-]+)/versions/([\\w\\-]+)$";
     

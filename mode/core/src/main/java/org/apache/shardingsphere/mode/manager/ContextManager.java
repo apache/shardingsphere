@@ -55,6 +55,7 @@ import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDa
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
+import org.apache.shardingsphere.mode.manager.switcher.NewResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -249,13 +250,47 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Register storage unit.
+     *
+     * @param databaseName database name
+     * @param storageUnitName storage unit name
+     * @param dataSourceProps data source properties
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void registerStorageUnit(final String databaseName, final String storageUnitName, final DataSourceProperties dataSourceProps) {
+        try {
+            Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
+            staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
+            SwitchingResource switchingResource = new NewResourceSwitchManager().create(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
+                    storageUnitName, dataSourceProps);
+            buildNewMetaDataContext(databaseName, switchingResource);
+        } catch (final SQLException ex) {
+            log.error("Alter database: {} register storage unit failed", databaseName, ex);
+        }
+    }
+    
+    private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
+        metaDataContexts.get().getMetaData().getDatabases().putAll(renewDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName), switchingResource));
+        MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, false, switchingResource, null);
+        reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> reloadMetaDataContexts.getPersistService().getDatabaseMetaDataService()
+                .persist(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
+        Optional.ofNullable(reloadMetaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName))
+                .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> reloadMetaDataContexts.getPersistService().getShardingSphereDataPersistService()
+                        .persist(databaseName, schemaName, schemaData, metaDataContexts.get().getMetaData().getDatabases())));
+        alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
+        metaDataContexts.set(reloadMetaDataContexts);
+        metaDataContexts.get().getMetaData().getDatabases().putAll(newShardingSphereDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
+        switchingResource.closeStaleDataSources();
+    }
+    
+    /**
      * Alter rule configuration.
      * 
      * @param databaseName database name
      * @param ruleConfigs rule configurations
      */
     @SuppressWarnings("rawtypes")
-    public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
+    public synchronized void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
@@ -289,7 +324,7 @@ public final class ContextManager implements AutoCloseable {
      * @param dataSourcePropsMap altered data source properties map
      */
     @SuppressWarnings("rawtypes")
-    public void alterDataSourceConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    public synchronized void alterDataSourceConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
