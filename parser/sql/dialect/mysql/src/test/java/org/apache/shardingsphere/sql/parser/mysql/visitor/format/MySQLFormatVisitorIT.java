@@ -65,9 +65,9 @@ class MySQLFormatVisitorIT {
                             "SELECT id , name , age , \n\tsex , ss , yy \nFROM table1\nWHERE \n\tid = 1\n\tand name = 1\n\tand a = 1\n\tand b = 2\n\tand c = 4\n\tand d = 3;",
                             "SELECT id , name , age , \n\tsex , ss , yy \nFROM table1\nWHERE \n\tid = ?\n\tand name = ?\n\tand a = ?\n\tand b = ?\n\tand c = ?\n\tand d = ?;"),
                     Arguments.of("alter_table",
-                            "ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, ADD column6 TIMESTAMP, ADD column7 TIME;",
-                            "ALTER TABLE t_order\n\tADD column4 DATE,\n\tADD column5 DATETIME,\n\tENGINE ss\n\tMAX_ROWS 10,\n\tMIN_ROWS 2,\n\tADD column6 TIMESTAMP,\n\tADD column7 TIME",
-                            "ALTER TABLE t_order\n\tADD column4 DATE,\n\tADD column5 DATETIME,\n\tENGINE ss\n\tMAX_ROWS 10,\n\tMIN_ROWS 2,\n\tADD column6 TIMESTAMP,\n\tADD column7 TIME"),
+                            "ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine INNODB max_rows 10,min_rows 2, ADD column6 TIMESTAMP, ADD column7 TIME;",
+                            "ALTER TABLE t_order\n\tADD column4 DATE,\n\tADD column5 DATETIME,\n\tENGINE INNODB\n\tMAX_ROWS 10,\n\tMIN_ROWS 2,\n\tADD column6 TIMESTAMP,\n\tADD column7 TIME",
+                            "ALTER TABLE t_order\n\tADD column4 DATE,\n\tADD column5 DATETIME,\n\tENGINE INNODB\n\tMAX_ROWS 10,\n\tMIN_ROWS 2,\n\tADD column6 TIMESTAMP,\n\tADD column7 TIME"),
                     Arguments.of("create_table",
                             "CREATE TABLE IF NOT EXISTS `runoob_tbl`(\n"
                                     + "`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
@@ -76,7 +76,7 @@ class MySQLFormatVisitorIT {
                                     + "`runoob_test` NATIONAL CHAR(40),\n"
                                     + "`submission_date` DATE,\n"
                                     + "PRIMARY KEY (`runoob_id`)\n"
-                                    + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+                                    + ")ENGINE=INNODB DEFAULT CHARSET=utf8;",
                             "CREATE TABLE IF NOT EXISTS `runoob_tbl` (\n"
                                     + "\t`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
                                     + "\t`runoob_title` VARCHAR(100) NOT NULL,\n"
@@ -84,7 +84,7 @@ class MySQLFormatVisitorIT {
                                     + "\t`runoob_test` NATIONAL CHAR(40),\n"
                                     + "\t`submission_date` DATE,\n"
                                     + "\tPRIMARY KEY (`runoob_id`)\n"
-                                    + ") ENGINE = InnoDB DEFAULT CHARSET = utf8",
+                                    + ") ENGINE = INNODB DEFAULT CHARSET = utf8",
                             "CREATE TABLE IF NOT EXISTS `runoob_tbl` (\n"
                                     + "\t`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
                                     + "\t`runoob_title` VARCHAR(100) NOT NULL,\n"
@@ -92,7 +92,7 @@ class MySQLFormatVisitorIT {
                                     + "\t`runoob_test` NATIONAL CHAR(40),\n"
                                     + "\t`submission_date` DATE,\n"
                                     + "\tPRIMARY KEY (`runoob_id`)\n"
-                                    + ") ENGINE = InnoDB DEFAULT CHARSET = utf8"),
+                                    + ") ENGINE = INNODB DEFAULT CHARSET = utf8"),
                     Arguments.of("insert_with_muti_value",
                             "INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (1, 1, 'insert', '2017-08-08'), "
                                     + "(2, 2, 'insert', '2017-08-08') ON DUPLICATE KEY UPDATE status = 'init'",
