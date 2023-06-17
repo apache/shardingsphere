@@ -21,8 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
- * Translatable table scan executor context.
+ * Table scan executor context.
  */
 @RequiredArgsConstructor
 @Getter
@@ -35,4 +38,6 @@ public final class TableScanExecutorContext {
     private final ConfigurationProperties props;
     
     private final SQLFederationExecutorContext federationContext;
+    
+    private final Map<String, Integer> connectionOffsets = new LinkedHashMap<>();
 }

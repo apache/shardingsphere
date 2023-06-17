@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
@@ -142,6 +143,12 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     @Override
     public void alterProperties(final Properties props) {
         contextManager.getMetaDataContexts().getPersistService().getPropsService().persist(props);
+    }
+    
+    @Override
+    public int getActiveVersionByKey(final String key) {
+        String activeVersion = contextManager.getMetaDataContexts().getPersistService().getRepository().getDirectly(key);
+        return Strings.isNullOrEmpty(activeVersion) ? 0 : Integer.parseInt(activeVersion);
     }
     
     @Override

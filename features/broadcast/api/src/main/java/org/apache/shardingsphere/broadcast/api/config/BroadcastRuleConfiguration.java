@@ -18,19 +18,18 @@
 package org.apache.shardingsphere.broadcast.api.config;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Broadcast rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class BroadcastRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
-    private Collection<String> tables = new LinkedList<>();
+    private final Collection<String> tables;
 }

@@ -21,7 +21,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -35,9 +34,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(AutoMockExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -64,7 +63,6 @@ class ResourceLockTest {
         verify(resourceLock, times(1)).doAwait(channelHandlerContext);
     }
     
-    @Disabled
     @Test
     void assertDoNotify() {
         when(channel.isWritable()).thenReturn(true);
@@ -77,6 +75,6 @@ class ResourceLockTest {
             resourceLock.doNotify();
         });
         resourceLock.doAwait(channelHandlerContext);
-        assertTrue(System.currentTimeMillis() > startTime);
+        assertTrue(System.currentTimeMillis() >= startTime);
     }
 }

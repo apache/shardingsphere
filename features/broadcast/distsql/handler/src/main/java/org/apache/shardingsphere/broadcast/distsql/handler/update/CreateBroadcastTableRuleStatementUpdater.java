@@ -42,15 +42,9 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
     
     @Override
     public BroadcastRuleConfiguration buildToBeCreatedRuleConfiguration(final BroadcastRuleConfiguration currentRuleConfig, final CreateBroadcastTableRuleStatement sqlStatement) {
-        BroadcastRuleConfiguration result = new BroadcastRuleConfiguration();
         Collection<String> tables = new HashSet<>(currentRuleConfig.getTables());
-        if (sqlStatement.isIfNotExists()) {
-            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
-            tables.removeIf(duplicatedRuleNames::contains);
-        }
         tables.addAll(sqlStatement.getTables());
-        result.setTables(tables);
-        return result;
+        return new BroadcastRuleConfiguration(tables);
     }
     
     @Override
