@@ -59,9 +59,7 @@ public final class BroadcastRuleConfigurationEventBuilder implements RuleConfigu
     }
     
     private BroadcastRuleConfiguration swapBroadcastTableRuleConfig(final String yamlContext) {
-        BroadcastRuleConfiguration result = new BroadcastRuleConfiguration();
         YamlBroadcastRuleConfiguration yamlBroadcastRuleConfiguration = YamlEngine.unmarshal(yamlContext, YamlBroadcastRuleConfiguration.class);
-        result.setTables(yamlBroadcastRuleConfiguration.getTables());
-        return result;
+        return new BroadcastRuleConfiguration(yamlBroadcastRuleConfiguration.getTables());
     }
 }

@@ -63,10 +63,10 @@ public final class BroadcastConfigurationSubscriber implements RuleConfiguration
         BroadcastRuleConfiguration config;
         if (rule.isPresent()) {
             config = rule.get().getConfiguration();
-            config.setTables(needToAddedConfig.getTables());
+            config.getTables().clear();
+            config.getTables().addAll(needToAddedConfig.getTables());
         } else {
-            config = new BroadcastRuleConfiguration();
-            config.setTables(needToAddedConfig.getTables());
+            config = new BroadcastRuleConfiguration(needToAddedConfig.getTables());
         }
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -81,7 +81,8 @@ public final class BroadcastConfigurationSubscriber implements RuleConfiguration
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         BroadcastRuleConfiguration needToAlteredConfig = event.getConfig();
         BroadcastRuleConfiguration config = database.getRuleMetaData().getSingleRule(BroadcastRule.class).getConfiguration();
-        config.setTables(needToAlteredConfig.getTables());
+        config.getTables().clear();
+        config.getTables().addAll(needToAlteredConfig.getTables());
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -94,7 +95,7 @@ public final class BroadcastConfigurationSubscriber implements RuleConfiguration
     public synchronized void renew(final DeleteBroadcastConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         BroadcastRuleConfiguration config = database.getRuleMetaData().getSingleRule(BroadcastRule.class).getConfiguration();
-        config.setTables(null);
+        config.getTables().clear();
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
 }
