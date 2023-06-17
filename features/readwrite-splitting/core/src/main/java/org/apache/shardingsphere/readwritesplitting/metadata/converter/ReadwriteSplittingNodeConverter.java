@@ -36,9 +36,15 @@ public final class ReadwriteSplittingNodeConverter {
     
     private static final String LOAD_BALANCER_NODE = "load_balancers";
     
+    private static final String VERSIONS = "versions";
+    
+    private static final String ACTIVE_VERSION = "active_version";
+    
     private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
     
     private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
+    
+    private static final String RULE_VERSION = "/([\\w\\-]+)/versions/([\\w\\-]+)$";
     
     /**
      * Get group name path.
@@ -109,6 +115,30 @@ public final class ReadwriteSplittingNodeConverter {
     }
     
     /**
+     * Get group name version.
+     *
+     * @param rulePath rule path
+     * @return group name version
+     */
+    public static Optional<String> getGroupNameVersion(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Get load balancer name version.
+     *
+     * @param rulePath rule path
+     * @return load balancer name version
+     */
+    public static Optional<String> getLoadBalancerNameVersion(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
      * Get load balancer name.
      *
      * @param rulePath rule path
@@ -118,5 +148,15 @@ public final class ReadwriteSplittingNodeConverter {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Append active version.
+     *
+     * @param rulePath rule path
+     * @return group name
+     */
+    public static String appendActiveVersion(final String rulePath) {
+        return rulePath.substring(0, rulePath.indexOf(VERSIONS)) + ACTIVE_VERSION;
     }
 }

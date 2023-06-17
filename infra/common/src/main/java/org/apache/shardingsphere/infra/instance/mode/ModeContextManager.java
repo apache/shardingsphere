@@ -150,4 +150,12 @@ public interface ModeContextManager {
      * @param props pros
      */
     void alterProperties(Properties props);
+    
+    /**
+     * Get active version by key.
+     *
+     * @param key key
+     * @return active version
+     */
+    int getActiveVersionByKey(String key);
 }

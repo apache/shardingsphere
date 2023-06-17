@@ -31,4 +31,8 @@ public final class DeleteReadwriteSplittingConfigurationEvent implements Governa
     private final String databaseName;
     
     private final String groupName;
+    
+    private final String activeVersionKey;
+    
+    private final int version;
 }

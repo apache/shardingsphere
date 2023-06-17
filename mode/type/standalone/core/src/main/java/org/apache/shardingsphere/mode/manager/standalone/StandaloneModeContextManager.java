@@ -283,6 +283,11 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         clearServiceCache();
     }
     
+    @Override
+    public int getActiveVersionByKey(final String key) {
+        return 0;
+    }
+    
     private void clearServiceCache() {
         OrderedServicesCache.clearCache();
     }
