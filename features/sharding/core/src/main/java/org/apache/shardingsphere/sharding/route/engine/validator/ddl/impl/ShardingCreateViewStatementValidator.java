@@ -39,7 +39,6 @@ import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -59,9 +58,6 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         boolean sqlFederationEnabled = globalRuleMetaData.getSingleRule(SQLFederationRule.class).getConfiguration().isSqlFederationEnabled();
         if (!sqlFederationEnabled && isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, tableSegments)) {
             throw new EngagedViewException("sharding");
-        }
-        if (!sqlFederationEnabled && isAllBroadcastTablesWithoutConfigView(shardingRule, sqlStatementContext, tableSegments)) {
-            throw new EngagedViewException("broadcast");
         }
     }
     
@@ -89,16 +85,6 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     private boolean isBindingTables(final ShardingRule shardingRule, final String logicViewName, final String logicTable) {
         Collection<String> bindTables = Arrays.asList(logicTable, logicViewName);
         return shardingRule.isAllBindingTables(bindTables);
-    }
-    
-    private boolean isAllBroadcastTablesWithoutConfigView(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
-                                                          final Collection<SimpleTableSegment> tableSegments) {
-        Collection<String> tables = new LinkedList<>();
-        for (SimpleTableSegment each : tableSegments) {
-            tables.add(each.getTableName().getIdentifier().getValue());
-        }
-        return shardingRule.isAllBroadcastTables(tables) && !shardingRule.isBroadcastTable(
-                ((CreateViewStatement) sqlStatementContext.getSqlStatement()).getView().getTableName().getIdentifier().getValue());
     }
     
     private boolean isContainsNotSupportedViewStatement(final SelectStatement selectStatement, final RouteContext routeContext) {

@@ -190,7 +190,6 @@ class ShardingInsertStatementValidatorTest {
     void assertPostValidateWhenInsertWithBroadcastTable() {
         SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);
-        when(shardingRule.isBroadcastTable(((InsertStatement) sqlStatementContext.getSqlStatement()).getTable().getTableName().getIdentifier().getValue())).thenReturn(true);
         assertDoesNotThrow(() -> new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext, new HintValueContext(),
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
@@ -199,7 +198,6 @@ class ShardingInsertStatementValidatorTest {
     void assertPostValidateWhenInsertWithRoutingToSingleDataNode() {
         SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);
-        when(shardingRule.isBroadcastTable(((InsertStatement) sqlStatementContext.getSqlStatement()).getTable().getTableName().getIdentifier().getValue())).thenReturn(false);
         when(routeContext.getOriginalDataNodes()).thenReturn(getSingleRouteDataNodes());
         assertDoesNotThrow(() -> new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext, new HintValueContext(),
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
@@ -209,7 +207,6 @@ class ShardingInsertStatementValidatorTest {
     void assertPostValidateWhenInsertWithRoutingToMultipleDataNodes() {
         SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);
-        when(shardingRule.isBroadcastTable(((InsertStatement) sqlStatementContext.getSqlStatement()).getTable().getTableName().getIdentifier().getValue())).thenReturn(false);
         when(routeContext.getOriginalDataNodes()).thenReturn(getMultipleRouteDataNodes());
         assertThrows(DuplicateInsertDataRecordException.class, () -> new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext, new HintValueContext(),
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));

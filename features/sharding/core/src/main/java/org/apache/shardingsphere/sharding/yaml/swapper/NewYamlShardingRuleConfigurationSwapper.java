@@ -92,9 +92,6 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
         for (ShardingTableReferenceRuleConfiguration each : data.getBindingTableGroups()) {
             result.add(new YamlDataNode(ShardingNodeConverter.getBindingTableNamePath(each.getName()), YamlShardingTableReferenceRuleConfigurationConverter.convertToYamlString(each)));
         }
-        if (null != data.getBroadcastTables() && !data.getBroadcastTables().isEmpty()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getBroadcastTablesPath(), YamlEngine.marshal(data.getBroadcastTables())));
-        }
     }
     
     private void swapStrategies(final ShardingRuleConfiguration data, final Collection<YamlDataNode> result) {
@@ -141,8 +138,6 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
             } else if (ShardingNodeConverter.isBindingTablePath(each.getKey())) {
                 ShardingNodeConverter.getBindingTableName(each.getKey())
                         .ifPresent(bindingTableName -> result.getBindingTableGroups().add(YamlShardingTableReferenceRuleConfigurationConverter.convertToObject(each.getValue())));
-            } else if (ShardingNodeConverter.isBroadcastTablePath(each.getKey())) {
-                result.getBroadcastTables().addAll(YamlEngine.unmarshal(each.getValue(), Collection.class));
             } else if (ShardingNodeConverter.isDefaultDatabaseStrategyPath(each.getKey())) {
                 result.setDefaultDatabaseShardingStrategy(shardingStrategySwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingStrategyConfiguration.class)));
             } else if (ShardingNodeConverter.isDefaultTableStrategyPath(each.getKey())) {

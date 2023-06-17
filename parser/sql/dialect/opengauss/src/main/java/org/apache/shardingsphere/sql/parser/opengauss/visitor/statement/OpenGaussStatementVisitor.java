@@ -1030,8 +1030,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     }
     
     private Collection<ExpressionSegment> getWindowSpecification(final WindowSpecificationContext ctx) {
-        Collection<ExpressionSegment> result = createInsertValuesSegments(ctx.partitionClause().exprList());
-        return result;
+        return createInsertValuesSegments(ctx.partitionClause().exprList());
     }
     
     @Override

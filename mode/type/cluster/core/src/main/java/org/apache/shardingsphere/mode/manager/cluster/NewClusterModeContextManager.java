@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerAware;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -113,6 +115,27 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     }
     
     @Override
+    public void alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
+        if (null != toBeAlteredRuleConfig) {
+            contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persist(databaseName, Collections.singleton(toBeAlteredRuleConfig));
+        }
+    }
+    
+    @Override
+    public void removeRuleConfiguration(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
+        if (null != toBeRemovedRuleConfig) {
+            contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
+        }
+    }
+    
+    @Override
+    public void removeAllRuleConfiguration(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
+        if (null != toBeRemovedRuleConfig) {
+            contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
+        }
+    }
+    
+    @Override
     public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs) {
         contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().persist(globalRuleConfigs);
     }
@@ -120,6 +143,12 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     @Override
     public void alterProperties(final Properties props) {
         contextManager.getMetaDataContexts().getPersistService().getPropsService().persist(props);
+    }
+    
+    @Override
+    public int getActiveVersionByKey(final String key) {
+        String activeVersion = contextManager.getMetaDataContexts().getPersistService().getRepository().getDirectly(key);
+        return Strings.isNullOrEmpty(activeVersion) ? 0 : Integer.parseInt(activeVersion);
     }
     
     @Override

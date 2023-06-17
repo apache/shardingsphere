@@ -47,7 +47,6 @@ import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Column value convert utility class.
@@ -55,10 +54,6 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ColumnValueConvertUtils {
-    
-    private static final long MILLISECONDS_PER_SECOND = TimeUnit.SECONDS.toMillis(1);
-    
-    private static final long NANOSECONDS_PER_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1);
     
     /**
      * Convert java object to protobuf message.
@@ -108,9 +103,7 @@ public final class ColumnValueConvertUtils {
         }
         if (object instanceof Time) {
             Time time = (Time) object;
-            long millis = (int) (time.getTime() % MILLISECONDS_PER_SECOND);
-            int nanosOfSecond = (int) (millis * NANOSECONDS_PER_MILLISECOND);
-            LocalTime localTime = LocalTime.of(time.getHours(), time.getMinutes(), time.getSeconds(), nanosOfSecond);
+            LocalTime localTime = LocalTime.of(time.getHours(), time.getMinutes(), time.getSeconds(), new Timestamp(time.getTime()).getNanos());
             return Int64Value.of(localTime.toNanoOfDay());
         }
         if (object instanceof java.sql.Date) {

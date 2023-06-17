@@ -73,6 +73,18 @@ public final class DropDefaultStrategyStatementUpdater implements RuleDefinition
     }
     
     @Override
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropDefaultShardingStrategyStatement sqlStatement) {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
+            result.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
+        } else {
+            result.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
+        }
+        // TODO find unused algorithm
+        return result;
+    }
+    
+    @Override
     public boolean updateCurrentRuleConfiguration(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
             currentRuleConfig.setDefaultTableShardingStrategy(null);
@@ -80,7 +92,7 @@ public final class DropDefaultStrategyStatementUpdater implements RuleDefinition
             currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
         }
         UnusedAlgorithmFinder.find(currentRuleConfig).forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
-        return isEmptyShardingTables(currentRuleConfig) && currentRuleConfig.getBroadcastTables().isEmpty() && isEmptyShardingStrategy(currentRuleConfig);
+        return isEmptyShardingTables(currentRuleConfig) && isEmptyShardingStrategy(currentRuleConfig);
     }
     
     private boolean isEmptyShardingTables(final ShardingRuleConfiguration currentRuleConfig) {

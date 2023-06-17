@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 @Setter
 public final class YamlPipelineWriteConfiguration implements YamlConfiguration {
     
-    private static final Integer DEFAULT_WORKER_THREAD = 40;
+    private static final Integer DEFAULT_WORKER_THREAD = 20;
     
     private static final Integer DEFAULT_BATCH_SIZE = 1000;
     
@@ -60,26 +60,6 @@ public final class YamlPipelineWriteConfiguration implements YamlConfiguration {
         }
         if (null == batchSize) {
             batchSize = DEFAULT_BATCH_SIZE;
-        }
-    }
-    
-    /**
-     * Copy non-null fields from another.
-     *
-     * @param another another configuration
-     */
-    public void copyNonNullFields(final YamlPipelineWriteConfiguration another) {
-        if (null == another) {
-            return;
-        }
-        if (null != another.workerThread) {
-            workerThread = another.workerThread;
-        }
-        if (null != another.batchSize) {
-            batchSize = another.batchSize;
-        }
-        if (null != another.rateLimiter) {
-            rateLimiter = another.rateLimiter;
         }
     }
 }
