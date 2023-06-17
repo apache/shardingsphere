@@ -157,5 +157,7 @@ public interface ModeContextManager {
      * @param key key
      * @return active version
      */
-    int getActiveVersionByKey(String key);
+    default int getActiveVersionByKey(String key) {
+        return 0;
+    }
 }

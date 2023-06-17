@@ -122,11 +122,6 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     }
     
     @Override
-    public int getActiveVersionByKey(final String key) {
-        return 0;
-    }
-    
-    @Override
     public void setContextManagerAware(final ContextManager contextManager) {
         this.contextManager = contextManager;
     }
