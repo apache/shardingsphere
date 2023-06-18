@@ -29,9 +29,9 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropDefaultSh
 import java.util.Optional;
 
 /**
- * Drop sharding table rule statement updater.
+ * Drop default sharding strategy statement updater.
  */
-public final class DropDefaultStrategyStatementUpdater implements RuleDefinitionDropUpdater<DropDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
+public final class DropDefaultShardingStrategyStatementUpdater implements RuleDefinitionDropUpdater<DropDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final DropDefaultShardingStrategyStatement sqlStatement,

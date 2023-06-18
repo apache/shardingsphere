@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.DropDefaultStrategyStatementUpdater;
+import org.apache.shardingsphere.sharding.distsql.handler.update.DropDefaultShardingStrategyStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropDefaultShardingStrategyStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(MockitoExtension.class)
 class DropDefaultShardingStrategyStatementUpdaterTest {
     
-    private final DropDefaultStrategyStatementUpdater updater = new DropDefaultStrategyStatementUpdater();
+    private final DropDefaultShardingStrategyStatementUpdater updater = new DropDefaultShardingStrategyStatementUpdater();
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
