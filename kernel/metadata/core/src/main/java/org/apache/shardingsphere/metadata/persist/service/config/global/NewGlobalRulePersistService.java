@@ -76,7 +76,6 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> load() {
         Collection<YamlDataNode> dataNodes = getDataNodes(NewGlobalNode.getGlobalRuleRootNode());
         return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
