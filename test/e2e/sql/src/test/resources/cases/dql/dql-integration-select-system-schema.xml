@@ -741,4 +741,24 @@
     <test-case sql="SELECT * FROM pg_catalog.pg_user_mapping" db-types="PostgreSQL" scenario-types="db">
         <assertion expected-data-file="select_postgresql_pg_catalog_pg_user_mapping.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_database_conflicts" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_database_conflicts.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_gssapi" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_gssapi.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_analyze" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_progress_analyze.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_basebackup" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_progress_basebackup.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_cluster" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_progress_cluster.xml" />
+    </test-case>
 </integration-test-cases>
