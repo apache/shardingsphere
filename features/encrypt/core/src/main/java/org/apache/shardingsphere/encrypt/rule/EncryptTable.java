@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -214,22 +215,13 @@ public final class EncryptTable {
     }
     
     /**
-     * Find encrypt column.
-     * 
-     * @param logicColumnName logic column name
-     * @return encrypt column
-     */
-    public Optional<EncryptColumn> findEncryptColumn(final String logicColumnName) {
-        return Optional.ofNullable(columns.get(logicColumnName));
-    }
-    
-    /**
      * Get encrypt column.
      * 
      * @param logicColumnName logic column name
      * @return encrypt column
      */
     public EncryptColumn getEncryptColumn(final String logicColumnName) {
-        return findEncryptColumn(logicColumnName).orElseThrow(() -> new EncryptColumnNotFoundException(table, logicColumnName));
+        ShardingSpherePreconditions.checkState(isEncryptColumn(logicColumnName), () -> new EncryptColumnNotFoundException(table, logicColumnName));
+        return columns.get(logicColumnName);
     }
 }

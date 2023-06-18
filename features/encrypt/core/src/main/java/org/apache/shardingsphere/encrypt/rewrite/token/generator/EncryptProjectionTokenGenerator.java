@@ -120,10 +120,11 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         List<Projection> projections = new LinkedList<>();
         for (Projection each : actualColumns) {
             String tableName = columnTableNames.get(each.getExpression());
-            if (null == tableName || !encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(each.getColumnLabel())).isPresent()) {
+            Optional<EncryptTable> encryptTable = null == tableName ? Optional.empty() : encryptRule.findEncryptTable(tableName);
+            if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(each.getColumnLabel())) {
                 projections.add(each.getAlias().map(optional -> (Projection) new ColumnProjection(null, optional, null)).orElse(each));
             } else if (each instanceof ColumnProjection) {
-                encryptRule.findEncryptTable(tableName).ifPresent(optional -> projections.addAll(generateProjections(optional, (ColumnProjection) each, subqueryType, true, segment)));
+                projections.addAll(generateProjections(encryptTable.get(), (ColumnProjection) each, subqueryType, true, segment));
             }
         }
         int startIndex = segment.getOwner().isPresent() ? segment.getOwner().get().getStartIndex() : segment.getStartIndex();
