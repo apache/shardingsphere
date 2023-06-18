@@ -35,7 +35,7 @@ public final class AlterLoadBalanceEvent implements GovernanceEvent {
     
     private final AlgorithmConfiguration config;
     
-    private final String activeVersionKey;
+    private final String versionKey;
     
     private final int version;
 }

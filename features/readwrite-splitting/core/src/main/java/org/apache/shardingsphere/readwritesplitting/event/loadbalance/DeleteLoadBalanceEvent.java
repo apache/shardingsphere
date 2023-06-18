@@ -32,7 +32,7 @@ public final class DeleteLoadBalanceEvent implements GovernanceEvent {
     
     private final String loadBalanceName;
     
-    private final String activeVersionKey;
+    private final String versionKey;
     
     private final int version;
 }

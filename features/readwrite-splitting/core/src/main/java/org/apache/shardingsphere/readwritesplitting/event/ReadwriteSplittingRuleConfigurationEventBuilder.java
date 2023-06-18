@@ -63,14 +63,13 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
     
     private Optional<GovernanceEvent> createReadwriteSplittingConfigEvent(final String databaseName, final int version, final DataChangedEvent event) {
         String groupName = ReadwriteSplittingNodeConverter.getGroupName(event.getKey()).orElse("");
-        String activeVersionPath = ReadwriteSplittingNodeConverter.appendActiveVersion(event.getKey());
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddReadwriteSplittingConfigurationEvent(databaseName, swapDataSource(groupName, event.getValue()), activeVersionPath, version));
+            return Optional.of(new AddReadwriteSplittingConfigurationEvent(databaseName, swapDataSource(groupName, event.getValue()), event.getKey(), version));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterReadwriteSplittingConfigurationEvent(databaseName, swapDataSource(groupName, event.getValue()), activeVersionPath, version));
+            return Optional.of(new AlterReadwriteSplittingConfigurationEvent(databaseName, swapDataSource(groupName, event.getValue()), event.getKey(), version));
         }
-        return Optional.of(new DeleteReadwriteSplittingConfigurationEvent(databaseName, groupName, activeVersionPath, version));
+        return Optional.of(new DeleteReadwriteSplittingConfigurationEvent(databaseName, groupName, event.getKey(), version));
     }
     
     private ReadwriteSplittingDataSourceRuleConfiguration swapDataSource(final String name, final String yamlContext) {
@@ -87,11 +86,10 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
     
     private Optional<GovernanceEvent> createLoadBalanceEvent(final String databaseName, final int version, final DataChangedEvent event) {
         String loadBalanceName = ReadwriteSplittingNodeConverter.getLoadBalancerName(event.getKey()).orElse("");
-        String activeVersionPath = ReadwriteSplittingNodeConverter.appendActiveVersion(event.getKey());
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterLoadBalanceEvent(databaseName, loadBalanceName, swapToAlgorithmConfig(event.getValue()), activeVersionPath, version));
+            return Optional.of(new AlterLoadBalanceEvent(databaseName, loadBalanceName, swapToAlgorithmConfig(event.getValue()), event.getKey(), version));
         }
-        return Optional.of(new DeleteLoadBalanceEvent(databaseName, loadBalanceName, activeVersionPath, version));
+        return Optional.of(new DeleteLoadBalanceEvent(databaseName, loadBalanceName, event.getKey(), version));
     }
     
     private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
