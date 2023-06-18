@@ -48,11 +48,6 @@ class NewDatabaseMetaDataNodeTest {
     }
     
     @Test
-    void asserGetTableNode() {
-        assertThat(NewDatabaseMetaDataNode.getTableNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table"));
-    }
-    
-    @Test
     void assertGetDatabaseName() {
         Optional<String> actual = NewDatabaseMetaDataNode.getDatabaseName("/metadata/foo_db");
         assertTrue(actual.isPresent());
