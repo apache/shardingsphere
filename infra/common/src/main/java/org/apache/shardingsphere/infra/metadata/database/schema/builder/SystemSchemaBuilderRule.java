@@ -157,9 +157,4 @@ public enum SystemSchemaBuilderRule {
         return false;
     }
 
-    public static void main(String[] args) {
-        boolean systemTable = isSystemTable("pg_catalog", "pg_stat_database_conflicts");
-        System.out.println(systemTable);
-
-    }
 }
