@@ -56,7 +56,7 @@ public final class ShadowTableSubscriber implements RuleConfigurationSubscribeCo
      * @param event add table event
      */
     @Subscribe
-    public synchronized void renew(final AddShadowTableEvent<ShadowTableConfiguration> event) {
+    public synchronized void renew(final AddShadowTableEvent event) {
         renew(event.getDatabaseName(), event.getTableName(), event.getConfig());
     }
     
@@ -66,7 +66,7 @@ public final class ShadowTableSubscriber implements RuleConfigurationSubscribeCo
      * @param event alter table event
      */
     @Subscribe
-    public synchronized void renew(final AlterShadowTableEvent<ShadowTableConfiguration> event) {
+    public synchronized void renew(final AlterShadowTableEvent event) {
         renew(event.getDatabaseName(), event.getTableName(), event.getConfig());
     }
     

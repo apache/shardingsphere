@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -64,12 +63,10 @@ class EncryptCreateTableTokenGeneratorTest {
     private EncryptTable mockEncryptTable() {
         EncryptTable result = mock(EncryptTable.class);
         EncryptColumn column = mockEncryptColumn();
-        when(result.getLogicColumns()).thenReturn(Collections.singletonList("t_encrypt"));
         when(result.isEncryptColumn("certificate_number")).thenReturn(true);
         when(result.getCipherColumn("certificate_number")).thenReturn(column.getCipher().getName());
         when(result.findAssistedQueryColumn("certificate_number")).thenReturn(column.getAssistedQuery().map(EncryptColumnItem::getName));
         when(result.findLikeQueryColumn("certificate_number")).thenReturn(column.getLikeQuery().map(EncryptColumnItem::getName));
-        when(result.findEncryptColumn("certificate_number")).thenReturn(Optional.of(column));
         return result;
     }
     

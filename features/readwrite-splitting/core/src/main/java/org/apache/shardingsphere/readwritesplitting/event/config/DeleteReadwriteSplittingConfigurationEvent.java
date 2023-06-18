@@ -32,7 +32,7 @@ public final class DeleteReadwriteSplittingConfigurationEvent implements Governa
     
     private final String groupName;
     
-    private final String activeVersionKey;
+    private final String versionKey;
     
     private final int version;
 }

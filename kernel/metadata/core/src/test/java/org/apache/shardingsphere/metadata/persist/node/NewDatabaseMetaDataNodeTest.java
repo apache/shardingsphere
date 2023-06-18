@@ -48,11 +48,6 @@ class NewDatabaseMetaDataNodeTest {
     }
     
     @Test
-    void asserGetTableNode() {
-        assertThat(NewDatabaseMetaDataNode.getTableNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table"));
-    }
-    
-    @Test
     void assertGetDatabaseName() {
         Optional<String> actual = NewDatabaseMetaDataNode.getDatabaseName("/metadata/foo_db");
         assertTrue(actual.isPresent());
@@ -82,9 +77,16 @@ class NewDatabaseMetaDataNodeTest {
     
     @Test
     void assertGetTableName() {
-        Optional<String> actual = NewDatabaseMetaDataNode.getTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_table");
+        Optional<String> actual = NewDatabaseMetaDataNode.getTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions/0");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table"));
+    }
+    
+    @Test
+    void assertGetTableVersion() {
+        Optional<String> actual = NewDatabaseMetaDataNode.getTableNameVersion("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions/0");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("0"));
     }
     
     @Test
@@ -92,6 +94,19 @@ class NewDatabaseMetaDataNodeTest {
         Optional<String> actual = NewDatabaseMetaDataNode.getViewName("/metadata/foo_db/schemas/foo_schema/views/foo_view");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_view"));
+    }
+    
+    @Test
+    void assertGetViewNameVersion() {
+        Optional<String> actual = NewDatabaseMetaDataNode.getViewNameVersion("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("0"));
+    }
+    
+    @Test
+    void assertDecorateActiveVersion() {
+        assertThat(NewDatabaseMetaDataNode.decorateActiveVersion("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"),
+                is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
     }
     
     @Test

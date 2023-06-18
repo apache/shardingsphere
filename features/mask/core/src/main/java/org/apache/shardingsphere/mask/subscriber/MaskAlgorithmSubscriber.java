@@ -19,12 +19,10 @@ package org.apache.shardingsphere.mask.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.event.algorithm.AddMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.rule.MaskRule;
@@ -51,29 +49,15 @@ public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribe
     }
     
     /**
-     * Renew with add algorithm.
-     *
-     * @param event add algorithm event
-     */
-    @Subscribe
-    public synchronized void renew(final AddMaskAlgorithmEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getAlgorithmName(), event.getConfig());
-    }
-    
-    /**
      * Renew with alter algorithm.
      *
      * @param event alter algorithm event
      */
     @Subscribe
-    public synchronized void renew(final AlterMaskAlgorithmEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getAlgorithmName(), event.getConfig());
-    }
-    
-    private void renew(final String databaseName, final String algorithmName, final AlgorithmConfiguration algorithmConfig) {
-        ShardingSphereDatabase database = databases.get(databaseName);
+    public synchronized void renew(final AlterMaskAlgorithmEvent event) {
+        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
-        config.getMaskAlgorithms().put(algorithmName, algorithmConfig);
+        config.getMaskAlgorithms().put(event.getAlgorithmName(), event.getConfig());
     }
     
     /**

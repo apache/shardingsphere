@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.event.algorithm.AddMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.config.AddMaskConfigurationEvent;
@@ -62,10 +61,10 @@ public final class MaskRuleConfigurationEventBuilder implements RuleConfiguratio
     
     private Optional<GovernanceEvent> createMaskConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddMaskConfigurationEvent<>(databaseName, swapMaskTableRuleConfig(event.getValue())));
+            return Optional.of(new AddMaskConfigurationEvent(databaseName, swapMaskTableRuleConfig(event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterMaskConfigurationEvent<>(databaseName, tableName, swapMaskTableRuleConfig(event.getValue())));
+            return Optional.of(new AlterMaskConfigurationEvent(databaseName, tableName, swapMaskTableRuleConfig(event.getValue())));
         }
         return Optional.of(new DeleteMaskConfigurationEvent(databaseName, tableName));
     }
@@ -75,11 +74,8 @@ public final class MaskRuleConfigurationEventBuilder implements RuleConfiguratio
     }
     
     private Optional<GovernanceEvent> createMaskAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddMaskAlgorithmEvent<>(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
-        }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterMaskAlgorithmEvent<>(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterMaskAlgorithmEvent(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
         }
         return Optional.of(new DeleteMaskAlgorithmEvent(databaseName, algorithmName));
     }

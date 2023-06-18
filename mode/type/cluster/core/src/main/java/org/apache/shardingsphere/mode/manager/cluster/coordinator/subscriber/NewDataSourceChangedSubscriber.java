@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
+import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.mode.event.datasource.AlterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.RegisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.UnregisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
@@ -26,7 +30,49 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 @SuppressWarnings("UnstableApiUsage")
 public final class NewDataSourceChangedSubscriber {
     
+    private final ContextManager contextManager;
+    
     public NewDataSourceChangedSubscriber(final ContextManager contextManager) {
+        this.contextManager = contextManager;
         contextManager.getInstanceContext().getEventBusContext().register(this);
+    }
+    
+    /**
+     * Renew for register storage unit.
+     *
+     * @param event register storage unit event
+     */
+    @Subscribe
+    public void renew(final RegisterStorageUnitEvent event) {
+        if (event.getVersion() < contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
+        contextManager.registerStorageUnit(event.getDatabaseName(), event.getStorageUnitName(), event.getProps());
+    }
+    
+    /**
+     * Renew for alter storage unit.
+     *
+     * @param event register storage unit event
+     */
+    @Subscribe
+    public void renew(final AlterStorageUnitEvent event) {
+        if (event.getVersion() < contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
+        contextManager.alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(), event.getProps());
+    }
+    
+    /**
+     * Renew for unregister storage unit.
+     *
+     * @param event register storage unit event
+     */
+    @Subscribe
+    public void renew(final UnregisterStorageUnitEvent event) {
+        if (event.getVersion() < contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
+        contextManager.unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
     }
 }

@@ -737,6 +737,26 @@
     <test-case sql="SELECT * FROM pg_catalog.pg_attrdef" db-types="PostgreSQL" scenario-types="db">
         <assertion expected-data-file="select_postgresql_pg_catalog_pg_attrdef.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_range" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_range.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_replication_origin" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_replication_origin.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_rewrite" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_rewrite.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_seclabel" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_seclabel.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_sequence" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_sequence.xml" />
+    </test-case>
   
     <test-case sql="SELECT * FROM pg_catalog.pg_user_mapping" db-types="PostgreSQL" scenario-types="db">
         <assertion expected-data-file="select_postgresql_pg_catalog_pg_user_mapping.xml" />

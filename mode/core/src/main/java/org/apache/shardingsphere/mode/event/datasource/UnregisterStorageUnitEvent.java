@@ -31,4 +31,8 @@ public final class UnregisterStorageUnitEvent implements GovernanceEvent {
     private final String databaseName;
     
     private final String storageUnitName;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

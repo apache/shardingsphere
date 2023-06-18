@@ -55,7 +55,7 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleConfig
      */
     @Subscribe
     public synchronized void renew(final AlterLoadBalanceEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey())) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
@@ -70,7 +70,7 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleConfig
      */
     @Subscribe
     public synchronized void renew(final DeleteLoadBalanceEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey())) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());

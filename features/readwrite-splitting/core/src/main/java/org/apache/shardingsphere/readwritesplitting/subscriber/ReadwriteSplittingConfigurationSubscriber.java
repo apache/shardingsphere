@@ -59,7 +59,7 @@ public final class ReadwriteSplittingConfigurationSubscriber implements RuleConf
      */
     @Subscribe
     public synchronized void renew(final AddReadwriteSplittingConfigurationEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey())) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
@@ -82,7 +82,7 @@ public final class ReadwriteSplittingConfigurationSubscriber implements RuleConf
      */
     @Subscribe
     public synchronized void renew(final AlterReadwriteSplittingConfigurationEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey())) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
@@ -100,7 +100,7 @@ public final class ReadwriteSplittingConfigurationSubscriber implements RuleConf
      */
     @Subscribe
     public synchronized void renew(final DeleteReadwriteSplittingConfigurationEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey())) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());

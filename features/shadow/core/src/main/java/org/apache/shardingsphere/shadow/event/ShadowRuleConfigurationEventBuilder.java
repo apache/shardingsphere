@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.event.algorithm.AddShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.event.algorithm.AlterShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.event.algorithm.DeleteShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.event.config.AddShadowConfigurationEvent;
@@ -71,10 +70,10 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
     
     private Optional<GovernanceEvent> createShadowConfigEvent(final String databaseName, final String dataSourceName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddShadowConfigurationEvent<>(databaseName, swapShadowDataSourceRuleConfig(dataSourceName, event.getValue())));
+            return Optional.of(new AddShadowConfigurationEvent(databaseName, swapShadowDataSourceRuleConfig(dataSourceName, event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterShadowConfigurationEvent<>(databaseName, dataSourceName, swapShadowDataSourceRuleConfig(dataSourceName, event.getValue())));
+            return Optional.of(new AlterShadowConfigurationEvent(databaseName, dataSourceName, swapShadowDataSourceRuleConfig(dataSourceName, event.getValue())));
         }
         return Optional.of(new DeleteShadowConfigurationEvent(databaseName, dataSourceName));
     }
@@ -86,10 +85,10 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
     
     private Optional<GovernanceEvent> createShadowTableConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddShadowTableEvent<>(databaseName, tableName, swapToTableConfig(event.getValue())));
+            return Optional.of(new AddShadowTableEvent(databaseName, tableName, swapToTableConfig(event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterShadowTableEvent<>(databaseName, tableName, swapToTableConfig(event.getValue())));
+            return Optional.of(new AlterShadowTableEvent(databaseName, tableName, swapToTableConfig(event.getValue())));
         }
         return Optional.of(new DeleteShadowTableEvent(databaseName, tableName));
     }
@@ -99,11 +98,8 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
     }
     
     private Optional<GovernanceEvent> createShadowAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddShadowAlgorithmEvent<>(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
-        }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterShadowAlgorithmEvent<>(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterShadowAlgorithmEvent(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue())));
         }
         return Optional.of(new DeleteShadowAlgorithmEvent(databaseName, algorithmName));
     }

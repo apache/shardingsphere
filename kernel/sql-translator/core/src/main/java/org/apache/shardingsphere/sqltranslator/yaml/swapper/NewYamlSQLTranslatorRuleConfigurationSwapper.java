@@ -49,7 +49,6 @@ public final class NewYamlSQLTranslatorRuleConfigurationSwapper implements NewYa
     
     @Override
     public SQLTranslatorRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        SQLTranslatorRuleConfiguration result = new SQLTranslatorRuleConfiguration();
         for (YamlDataNode each : dataNodes) {
             Optional<String> version = GlobalRuleNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
@@ -57,7 +56,7 @@ public final class NewYamlSQLTranslatorRuleConfigurationSwapper implements NewYa
             }
             return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLTranslatorRuleConfiguration.class));
         }
-        return result;
+        return new SQLTranslatorRuleConfiguration();
     }
     
     private SQLTranslatorRuleConfiguration swapToObject(final YamlSQLTranslatorRuleConfiguration yamlConfig) {
