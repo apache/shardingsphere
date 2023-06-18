@@ -156,7 +156,7 @@ public final class ProxyBackendHandlerFactory {
         String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().isPresent()
                 ? sqlStatementContext.getTablesContext().getDatabaseName().get()
                 : connectionSession.getDatabaseName();
-        if (databaseName == null) {
+        if (null == databaseName) {
             return DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
         }
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
