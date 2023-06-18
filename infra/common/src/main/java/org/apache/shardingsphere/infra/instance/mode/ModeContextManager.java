@@ -117,6 +117,7 @@ public interface ModeContextManager {
      *
      * @param databaseName database name
      * @param toBeAlteredRuleConfig to be altered rule config
+     * @return yaml data nodes
      */
     default Collection<YamlDataNode> alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
         return Collections.emptyList();

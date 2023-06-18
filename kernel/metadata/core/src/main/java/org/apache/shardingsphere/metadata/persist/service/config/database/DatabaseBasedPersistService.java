@@ -44,6 +44,7 @@ public interface DatabaseBasedPersistService<T> {
      *
      * @param databaseName database name
      * @param configs configurations
+     * @return yaml data nodes
      */
     default Collection<YamlDataNode> delete(String databaseName, T configs) {
         return Collections.emptyList();
@@ -54,8 +55,9 @@ public interface DatabaseBasedPersistService<T> {
      *
      * @param databaseName database name
      * @param configs configurations
+     * @return yaml data nodes
      */
-    default Collection<YamlDataNode> persistConfig(String databaseName, T configs ) {
+    default Collection<YamlDataNode> persistConfig(String databaseName, T configs) {
         return Collections.emptyList();
     }
     
