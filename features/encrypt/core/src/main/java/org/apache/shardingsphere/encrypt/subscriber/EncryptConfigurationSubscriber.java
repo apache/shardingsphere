@@ -58,7 +58,7 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
      * @param event add encrypt configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddEncryptConfigurationEvent<EncryptTableRuleConfiguration> event) {
+    public synchronized void renew(final AddEncryptConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptTableRuleConfiguration needToAddedConfig = event.getConfig();
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
@@ -78,7 +78,7 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
      * @param event alter encrypt configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterEncryptConfigurationEvent<EncryptTableRuleConfiguration> event) {
+    public synchronized void renew(final AlterEncryptConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptTableRuleConfiguration needToAlteredConfig = event.getConfig();
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();

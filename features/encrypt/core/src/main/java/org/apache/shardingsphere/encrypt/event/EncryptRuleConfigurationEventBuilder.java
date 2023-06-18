@@ -22,7 +22,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.event.config.AddEncryptConfigurationEvent;
 import org.apache.shardingsphere.encrypt.event.config.AlterEncryptConfigurationEvent;
 import org.apache.shardingsphere.encrypt.event.config.DeleteEncryptConfigurationEvent;
-import org.apache.shardingsphere.encrypt.event.encryptor.AddEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.encryptor.AlterEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.encryptor.DeleteEncryptorEvent;
 import org.apache.shardingsphere.encrypt.metadata.converter.EncryptNodeConverter;
@@ -62,10 +61,10 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
     
     private Optional<GovernanceEvent> createEncryptConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddEncryptConfigurationEvent<>(databaseName, swapEncryptTableRuleConfig(event.getValue())));
+            return Optional.of(new AddEncryptConfigurationEvent(databaseName, swapEncryptTableRuleConfig(event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterEncryptConfigurationEvent<>(databaseName, groupName, swapEncryptTableRuleConfig(event.getValue())));
+            return Optional.of(new AlterEncryptConfigurationEvent(databaseName, groupName, swapEncryptTableRuleConfig(event.getValue())));
         }
         return Optional.of(new DeleteEncryptConfigurationEvent(databaseName, groupName));
     }
@@ -75,11 +74,8 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
     }
     
     private Optional<GovernanceEvent> createEncryptorEvent(final String databaseName, final String encryptorName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddEncryptorEvent<>(databaseName, encryptorName, swapToAlgorithmConfig(event.getValue())));
-        }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterEncryptorEvent<>(databaseName, encryptorName, swapToAlgorithmConfig(event.getValue())));
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterEncryptorEvent(databaseName, encryptorName, swapToAlgorithmConfig(event.getValue())));
         }
         return Optional.of(new DeleteEncryptorEvent(databaseName, encryptorName));
     }

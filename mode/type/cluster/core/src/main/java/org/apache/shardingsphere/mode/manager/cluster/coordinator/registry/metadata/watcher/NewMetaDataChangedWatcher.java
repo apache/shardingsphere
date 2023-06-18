@@ -140,9 +140,10 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
         if (!version.isPresent()) {
             return Optional.empty();
         }
+        // TODO Finish event parameter.
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new RegisterStorageUnitEvent(databaseName, dataSourceName.get(), version.get(),
-                    new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(YamlEngine.unmarshal(event.getValue(), Map.class))));
+            return Optional.of(new RegisterStorageUnitEvent(databaseName, dataSourceName.get(),
+                    new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(YamlEngine.unmarshal(event.getValue(), Map.class)), version.get(), ""));
         }
         if (Type.UPDATED == event.getType()) {
             return Optional.of(new AlterStorageUnitEvent(databaseName, dataSourceName.get(), version.get(),

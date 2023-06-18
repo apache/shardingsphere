@@ -57,7 +57,7 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
      * @param event add shadow configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddShadowConfigurationEvent<ShadowDataSourceConfiguration> event) {
+    public synchronized void renew(final AddShadowConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ShadowDataSourceConfiguration needToAddedConfig = event.getConfig();
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
@@ -79,7 +79,7 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
      * @param event alter shadow configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterShadowConfigurationEvent<ShadowDataSourceConfiguration> event) {
+    public synchronized void renew(final AlterShadowConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ShadowDataSourceConfiguration needToAlteredConfig = event.getConfig();
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
