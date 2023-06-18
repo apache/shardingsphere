@@ -87,7 +87,6 @@ class DropDefaultShardingStrategyStatementUpdaterTest {
         assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement("Database"), currentRuleConfig));
         assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement("Table"), currentRuleConfig));
         assertNull(currentRuleConfig.getDefaultTableShardingStrategy());
-        assertNull(currentRuleConfig.getDefaultTableShardingStrategy());
         assertTrue(currentRuleConfig.getShardingAlgorithms().isEmpty());
     }
     
