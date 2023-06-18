@@ -19,7 +19,6 @@ package org.apache.shardingsphere.metadata.persist.service.config.database;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.AbstractPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.Collection;
 import java.util.Map;
@@ -38,7 +36,7 @@ import java.util.List;
  * TODO Rename DatabaseRulePersistService when metadata structure adjustment completed. #25485
  * Database rule persist service.
  */
-public final class NewDatabaseRulePersistService extends AbstractPersistService implements NewDatabaseRuleBasedPersistService<Collection<RuleConfiguration>> {
+public final class NewDatabaseRulePersistService extends AbstractPersistService implements DatabaseBasedPersistService<Collection<RuleConfiguration>> {
     
     private static final String DEFAULT_VERSION = "0";
     
@@ -47,12 +45,6 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     public NewDatabaseRulePersistService(final PersistRepository repository) {
         super(repository);
         this.repository = repository;
-    }
-    
-    @Override
-    public void persist(final String databaseName, final Map<String, DataSource> dataSources,
-                        final Collection<ShardingSphereRule> rules, final Collection<RuleConfiguration> configs) {
-        // TODO Load single table refer to #22887
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -106,6 +98,11 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
         return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
     }
     
+    /**
+     * Load rule configuration.
+     *
+     * @deprecated Remove this method when metadata structure adjustment completed. #25485
+     */
     @Deprecated
     @Override
     public Collection<RuleConfiguration> load(final String databaseName, final String version) {
