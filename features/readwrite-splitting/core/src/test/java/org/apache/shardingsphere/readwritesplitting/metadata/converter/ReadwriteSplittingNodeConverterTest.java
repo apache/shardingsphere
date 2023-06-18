@@ -75,10 +75,4 @@ class ReadwriteSplittingNodeConverterTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("random"));
     }
-    
-    @Test
-    void assertAppendActiveVersion() {
-        assertThat(ReadwriteSplittingNodeConverter.appendActiveVersion("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random/versions/0"),
-                is("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random/active_version"));
-    }
 }

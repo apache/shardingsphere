@@ -81,13 +81,13 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
             return createSchemaChangedEvent(databaseName.get(), schemaName.get(), event);
         }
         schemaName = NewDatabaseMetaDataNode.getSchemaNameByTableNode(key);
-        Optional<String> tableName = NewDatabaseMetaDataNode.getTableName(key);
-        if (databaseName.isPresent() && schemaName.isPresent() && tableName.isPresent()) {
-            return createTableChangedEvent(databaseName.get(), schemaName.get(), tableName.get(), event);
+        Optional<String> tableNameVersion = NewDatabaseMetaDataNode.getTableNameVersion(key);
+        if (databaseName.isPresent() && schemaName.isPresent() && tableNameVersion.isPresent()) {
+            return createTableChangedEvent(databaseName.get(), schemaName.get(), tableNameVersion.get(), event);
         }
-        Optional<String> viewName = NewDatabaseMetaDataNode.getViewName(key);
-        if (databaseName.isPresent() && schemaName.isPresent() && viewName.isPresent()) {
-            return createViewChangedEvent(databaseName.get(), schemaName.get(), viewName.get(), event);
+        Optional<String> viewNameVersion = NewDatabaseMetaDataNode.getViewNameVersion(key);
+        if (databaseName.isPresent() && schemaName.isPresent() && viewNameVersion.isPresent()) {
+            return createViewChangedEvent(databaseName.get(), schemaName.get(), viewNameVersion.get(), event);
         }
         if (!databaseName.isPresent()) {
             return Optional.empty();
@@ -118,16 +118,20 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createTableChangedEvent(final String databaseName, final String schemaName, final String tableName, final DataChangedEvent event) {
-        return Type.DELETED == event.getType()
-                ? Optional.of(new DropTableEvent(databaseName, schemaName, tableName))
-                : Optional.of(new AlterTableEvent(databaseName, schemaName, null, new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereTable.class))));
+    private Optional<GovernanceEvent> createTableChangedEvent(final String databaseName, final String schemaName, final String tableNameVersion, final DataChangedEvent event) {
+        if (Type.DELETED == event.getType()) {
+            return Optional.of(new DropTableEvent(databaseName, schemaName, NewDatabaseMetaDataNode.getTableName(event.getKey()).orElse(""), Integer.parseInt(tableNameVersion), event.getKey()));
+        }
+        return Optional.of(new AlterTableEvent(databaseName, schemaName,
+                new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereTable.class)), Integer.parseInt(tableNameVersion), event.getKey()));
     }
     
-    private Optional<GovernanceEvent> createViewChangedEvent(final String databaseName, final String schemaName, final String viewName, final DataChangedEvent event) {
-        return Type.DELETED == event.getType()
-                ? Optional.of(new DropViewEvent(databaseName, schemaName, viewName))
-                : Optional.of(new AlterViewEvent(databaseName, schemaName, null, new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereView.class))));
+    private Optional<GovernanceEvent> createViewChangedEvent(final String databaseName, final String schemaName, final String viewNameVersion, final DataChangedEvent event) {
+        if (Type.DELETED == event.getType()) {
+            return Optional.of(new DropViewEvent(databaseName, schemaName, NewDatabaseMetaDataNode.getViewName(event.getKey()).orElse(""), Integer.parseInt(viewNameVersion), event.getKey()));
+        }
+        return Optional.of(new AlterViewEvent(databaseName, schemaName,
+                new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereView.class)), Integer.parseInt(viewNameVersion), event.getKey()));
     }
     
     @SuppressWarnings("unchecked")

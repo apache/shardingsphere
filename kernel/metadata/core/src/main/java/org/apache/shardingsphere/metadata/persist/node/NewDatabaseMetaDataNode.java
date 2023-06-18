@@ -343,9 +343,21 @@ public final class NewDatabaseMetaDataNode {
      * @return table name
      */
     public static Optional<String> getTableName(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get table name version.
+     *
+     * @param path path
+     * @return table name version
+     */
+    public static Optional<String> getTableNameVersion(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)/versions/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }
     
     /**
@@ -355,9 +367,31 @@ public final class NewDatabaseMetaDataNode {
      * @return view name
      */
     public static Optional<String> getViewName(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/views" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/views" + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get view name version.
+     *
+     * @param path path
+     * @return view name version
+     */
+    public static Optional<String> getViewNameVersion(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/views" + "/([\\w\\-]+)/versions/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Decorate active version.
+     *
+     * @param rulePath rule path
+     * @return group name
+     */
+    public static String decorateActiveVersion(final String rulePath) {
+        return rulePath.substring(0, rulePath.indexOf(VERSIONS)) + ACTIVE_VERSION;
     }
     
     private static String getMetaDataNodeNode() {

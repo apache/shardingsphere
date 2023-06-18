@@ -33,7 +33,9 @@ public final class AlterTableEvent implements GovernanceEvent {
     
     private final String schemaName;
     
-    private final String version;
-    
     private final ShardingSphereTable table;
+    
+    private final int version;
+    
+    private final String versionKey;
 }
