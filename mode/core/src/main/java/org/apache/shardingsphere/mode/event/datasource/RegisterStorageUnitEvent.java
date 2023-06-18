@@ -37,5 +37,5 @@ public final class RegisterStorageUnitEvent implements GovernanceEvent {
     
     private final String activeVersionKey;
     
-    private final String version;
+    private final int version;
 }

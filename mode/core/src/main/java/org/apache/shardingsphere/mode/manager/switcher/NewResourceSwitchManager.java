@@ -30,14 +30,38 @@ import java.util.Collections;
 public final class NewResourceSwitchManager {
     
     /**
-     * Create switching resource.
+     * Register storage unit.
      *
      * @param resourceMetaData resource meta data
      * @param storageUnitName storage unit name
      * @param dataSourceProps data source properties
      * @return created switching resource
      */
-    public SwitchingResource create(final ShardingSphereResourceMetaData resourceMetaData, final String storageUnitName, final DataSourceProperties dataSourceProps) {
+    public SwitchingResource registerStorageUnit(final ShardingSphereResourceMetaData resourceMetaData, final String storageUnitName, final DataSourceProperties dataSourceProps) {
         return new SwitchingResource(resourceMetaData, DataSourcePoolCreator.create(Collections.singletonMap(storageUnitName, dataSourceProps)), Collections.emptyMap());
+    }
+    
+    /**
+     * Alter storage unit.
+     *
+     * @param resourceMetaData resource meta data
+     * @param storageUnitName storage unit name
+     * @param dataSourceProps data source properties
+     * @return created switching resource
+     */
+    public SwitchingResource alterStorageUnit(final ShardingSphereResourceMetaData resourceMetaData, final String storageUnitName, final DataSourceProperties dataSourceProps) {
+        return new SwitchingResource(resourceMetaData, DataSourcePoolCreator.create(Collections.singletonMap(storageUnitName, dataSourceProps)),
+                Collections.singletonMap(storageUnitName, resourceMetaData.getDataSources().remove(storageUnitName)));
+    }
+    
+    /**
+     * Unregister storage unit.
+     *
+     * @param resourceMetaData resource meta data
+     * @param storageUnitName storage unit name
+     * @return created switching resource
+     */
+    public SwitchingResource unregisterStorageUnit(final ShardingSphereResourceMetaData resourceMetaData, final String storageUnitName) {
+        return new SwitchingResource(resourceMetaData, Collections.emptyMap(), Collections.singletonMap(storageUnitName, resourceMetaData.getDataSources().remove(storageUnitName)));
     }
 }
