@@ -191,7 +191,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     private void registerTableScanExecutor(final Schema sqlFederationSchema, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext,
                                            final OptimizerContext optimizerContext) {
-        if (sqlFederationSchema == null) {
+        if (null == sqlFederationSchema) {
             return;
         }
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, metaData.getProps(), federationContext);
