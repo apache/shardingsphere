@@ -78,15 +78,11 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
         if (sqlStatement instanceof DDLStatement) {
             decorateRouteContextWhenDDLStatement(routeContext, queryContext, database, broadcastRule);
         }
-        if (sqlStatement instanceof DALStatement) {
-            if (isResourceGroupStatement(sqlStatement)) {
-                routeToAllDatabaseInstance(routeContext, database, broadcastRule);
-            }
+        if (sqlStatement instanceof DALStatement && isResourceGroupStatement(sqlStatement)) {
+            routeToAllDatabaseInstance(routeContext, database, broadcastRule);
         }
-        if (sqlStatement instanceof DCLStatement) {
-            if (!isDCLForSingleTable(queryContext.getSqlStatementContext())) {
-                routeToAllDatabaseInstance(routeContext, database, broadcastRule);
-            }
+        if (sqlStatement instanceof DCLStatement && !isDCLForSingleTable(queryContext.getSqlStatementContext())) {
+            routeToAllDatabaseInstance(routeContext, database, broadcastRule);
         }
     }
     
