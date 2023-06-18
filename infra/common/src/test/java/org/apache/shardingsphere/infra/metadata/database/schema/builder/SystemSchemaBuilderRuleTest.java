@@ -67,6 +67,13 @@ class SystemSchemaBuilderRuleTest {
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_sequence"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_roles"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_user_mapping"));
+
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_stat_database_conflicts"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_stat_gssapi"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_stat_progress_analyze"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_stat_progress_basebackup"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_stat_progress_cluster"));
         assertFalse(SystemSchemaBuilderRule.isSystemTable("sharding_db", "t_order"));
+
     }
 }
