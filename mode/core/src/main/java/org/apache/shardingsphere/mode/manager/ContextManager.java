@@ -261,8 +261,47 @@ public final class ContextManager implements AutoCloseable {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
-            SwitchingResource switchingResource = new NewResourceSwitchManager().create(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
+            SwitchingResource switchingResource = new NewResourceSwitchManager().registerStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
                     storageUnitName, dataSourceProps);
+            buildNewMetaDataContext(databaseName, switchingResource);
+        } catch (final SQLException ex) {
+            log.error("Alter database: {} register storage unit failed", databaseName, ex);
+        }
+    }
+    
+    /**
+     * Alter storage unit.
+     *
+     * @param databaseName database name
+     * @param storageUnitName storage unit name
+     * @param dataSourceProps data source properties
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void alterStorageUnit(final String databaseName, final String storageUnitName, final DataSourceProperties dataSourceProps) {
+        try {
+            Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
+            staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
+            SwitchingResource switchingResource = new NewResourceSwitchManager().alterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
+                    storageUnitName, dataSourceProps);
+            buildNewMetaDataContext(databaseName, switchingResource);
+        } catch (final SQLException ex) {
+            log.error("Alter database: {} register storage unit failed", databaseName, ex);
+        }
+    }
+    
+    /**
+     * UnRegister storage unit.
+     *
+     * @param databaseName database name
+     * @param storageUnitName storage unit name
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void unregisterStorageUnit(final String databaseName, final String storageUnitName) {
+        try {
+            Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
+            staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
+            SwitchingResource switchingResource = new NewResourceSwitchManager().unregisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
+                    storageUnitName);
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed", databaseName, ex);

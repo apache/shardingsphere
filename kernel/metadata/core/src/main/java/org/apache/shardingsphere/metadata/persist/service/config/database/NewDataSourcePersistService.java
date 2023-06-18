@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -46,7 +45,7 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
     @Override
     public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourceConfigs) {
         for (Entry<String, DataSourceProperties> entry : dataSourceConfigs.entrySet()) {
-            String activeVersion = getDatabaseActiveVersion(databaseName, entry.getKey());
+            String activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
             if (Strings.isNullOrEmpty(activeVersion)) {
                 repository.persist(NewDatabaseMetaDataNode.getDataSourceActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
             }
@@ -62,24 +61,20 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
     public Map<String, DataSourceProperties> load(final String databaseName) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
         for (String each : repository.getChildrenKeys(NewDatabaseMetaDataNode.getDataSourcesNode(databaseName))) {
-            result.put(each, getDataSourceProps(databaseName, each));
+            String dataSourceValue = repository.getDirectly(NewDatabaseMetaDataNode.getDataSourceNode(databaseName, each, getDataSourceActiveVersion(databaseName, each)));
+            if (Strings.isNullOrEmpty(dataSourceValue)) {
+                result.put(each, YamlEngine.unmarshal(dataSourceValue, DataSourceProperties.class));
+            }
         }
         return result;
     }
     
-    // TODO Remove this
     @Override
     public Map<String, DataSourceProperties> load(final String databaseName, final String version) {
         return Collections.emptyMap();
     }
     
-    private DataSourceProperties getDataSourceProps(final String databaseName, final String dataSourceName) {
-        String result = repository.getDirectly(NewDatabaseMetaDataNode.getDataSourceNode(databaseName, getDatabaseActiveVersion(databaseName, dataSourceName), dataSourceName));
-        Preconditions.checkState(!Strings.isNullOrEmpty(result), "Not found `%s` data source config in `%s` database", dataSourceName, databaseName);
-        return YamlEngine.unmarshal(result, DataSourceProperties.class);
-    }
-    
-    private String getDatabaseActiveVersion(final String databaseName, final String dataSourceName) {
+    private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {
         return repository.getDirectly(NewDatabaseMetaDataNode.getDataSourceActiveVersionNode(databaseName, dataSourceName));
     }
 }
