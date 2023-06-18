@@ -138,11 +138,6 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
                 .filter(Objects::nonNull).noneMatch(toBeDroppedLoadBalancerName::equals);
     }
     
-    private boolean isLoadBalancerNotInUse(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String toBeDroppedLoadBalancerName, final Collection<String> dataSourceNames) {
-        return currentRuleConfig.getDataSources().stream().filter(each -> !dataSourceNames.contains(each.getName())).map(ReadwriteSplittingDataSourceRuleConfiguration::getLoadBalancerName)
-                .filter(Objects::nonNull).noneMatch(toBeDroppedLoadBalancerName::equals);
-    }
-    
     @Override
     public boolean hasAnyOneToBeDropped(final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getDataSources().stream()
