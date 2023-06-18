@@ -136,30 +136,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * Find assisted encryptor.
-     *
-     * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return assisted encryptor
-     */
-    @SuppressWarnings("rawtypes")
-    public Optional<AssistedEncryptAlgorithm> findAssistedQueryEncryptor(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findAssistedQueryEncryptorName(logicColumnName).map(assistedEncryptors::get));
-    }
-    
-    /**
-     * Find like query encryptor.
-     *
-     * @param tableName table name
-     * @param logicColumnName logic column name
-     * @return like query encryptor
-     */
-    @SuppressWarnings("rawtypes")
-    public Optional<LikeEncryptAlgorithm> findLikeQueryEncryptor(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findLikeQueryEncryptorName(logicColumnName).map(likeEncryptors::get));
-    }
-    
-    /**
      * Encrypt.
      *
      * @param databaseName database name
@@ -285,6 +261,11 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
         return result;
     }
     
+    @SuppressWarnings("rawtypes")
+    private Optional<AssistedEncryptAlgorithm> findAssistedQueryEncryptor(final String tableName, final String logicColumnName) {
+        return findEncryptTable(tableName).flatMap(optional -> optional.findAssistedQueryEncryptorName(logicColumnName).map(assistedEncryptors::get));
+    }
+    
     /**
      * Get encrypt like query value.
      *
@@ -332,6 +313,11 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
             result.add(null == each ? null : likeQueryEncryptor.encrypt(each, context));
         }
         return result;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private Optional<LikeEncryptAlgorithm> findLikeQueryEncryptor(final String tableName, final String logicColumnName) {
+        return findEncryptTable(tableName).flatMap(optional -> optional.findLikeQueryEncryptorName(logicColumnName).map(likeEncryptors::get));
     }
     
     @Override
