@@ -57,12 +57,10 @@ public final class EncryptTable {
         EncryptColumnItem cipherColumnItem = new EncryptColumnItem(config.getCipher().getName(), config.getCipher().getEncryptorName());
         EncryptColumn result = new EncryptColumn(config.getName(), cipherColumnItem);
         if (config.getAssistedQuery().isPresent()) {
-            EncryptColumnItem assistedQueryColumn = new EncryptColumnItem(config.getAssistedQuery().get().getName(), config.getAssistedQuery().get().getEncryptorName());
-            result.setAssistedQuery(assistedQueryColumn);
+            result.setAssistedQuery(new EncryptColumnItem(config.getAssistedQuery().get().getName(), config.getAssistedQuery().get().getEncryptorName()));
         }
         if (config.getLikeQuery().isPresent()) {
-            EncryptColumnItem likeQueryColumn = new EncryptColumnItem(config.getLikeQuery().get().getName(), config.getLikeQuery().get().getEncryptorName());
-            result.setLikeQuery(likeQueryColumn);
+            result.setLikeQuery(new EncryptColumnItem(config.getLikeQuery().get().getName(), config.getLikeQuery().get().getEncryptorName()));
         }
         return result;
     }
@@ -120,16 +118,6 @@ public final class EncryptTable {
             }
         }
         throw new EncryptLogicColumnNotFoundException(cipherColumnName);
-    }
-    
-    /**
-     * Is encrypt column or not.
-     *
-     * @param logicColumnName logic column name
-     * @return encrypt column or not
-     */
-    public boolean isEncryptColumn(final String logicColumnName) {
-        return columns.containsKey(logicColumnName);
     }
     
     /**
@@ -213,6 +201,16 @@ public final class EncryptTable {
             result.put(entry.getKey(), entry.getValue().getCipher().getName());
         }
         return result;
+    }
+    
+    /**
+     * Is encrypt column or not.
+     *
+     * @param logicColumnName logic column name
+     * @return encrypt column or not
+     */
+    public boolean isEncryptColumn(final String logicColumnName) {
+        return columns.containsKey(logicColumnName);
     }
     
     /**
