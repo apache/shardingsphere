@@ -29,8 +29,9 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 import java.util.Collections;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Map.Entry;
 
 /**
  * TODO Rename DatabaseRulePersistService when metadata structure adjustment completed. #25485
@@ -60,6 +61,22 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
         }
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public Collection<YamlDataNode> persistConfig(final String databaseName, final Collection<RuleConfiguration> configs) {
+        Collection<YamlDataNode> result = new LinkedHashSet<>();
+        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+            Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
+            if (dataNodes.isEmpty()) {
+                continue;
+            }
+            persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), dataNodes);
+            result.addAll(dataNodes);
+        }
+        return result;
+    }
+    
     private void persistDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
             if (Strings.isNullOrEmpty(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()))) {
@@ -75,7 +92,8 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public void delete(final String databaseName, final Collection<RuleConfiguration> configs) {
+    public Collection<YamlDataNode> delete(final String databaseName, final Collection<RuleConfiguration> configs) {
+        Collection<YamlDataNode> result = new LinkedHashSet<>();
         Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
         for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
@@ -83,7 +101,9 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
                 continue;
             }
             deleteDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), dataNodes);
+            result.addAll(dataNodes);
         }
+        return result;
     }
     
     private void deleteDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {

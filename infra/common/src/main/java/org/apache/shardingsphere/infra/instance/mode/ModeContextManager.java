@@ -21,11 +21,13 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Collections;
 
 /**
  * Mode context manager.
@@ -116,7 +118,8 @@ public interface ModeContextManager {
      * @param databaseName database name
      * @param toBeAlteredRuleConfig to be altered rule config
      */
-    default void alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
+    default Collection<YamlDataNode> alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
+        return Collections.emptyList();
     }
     
     /**
@@ -126,15 +129,6 @@ public interface ModeContextManager {
      * @param toBeRemovedRuleConfig to be removed rule config
      */
     default void removeRuleConfiguration(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
-    }
-    
-    /**
-     * Remove rule configuration.
-     *
-     * @param databaseName database name
-     * @param toBeRemovedRuleConfig to be removed rule config
-     */
-    default void removeAllRuleConfiguration(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
     }
     
     /**

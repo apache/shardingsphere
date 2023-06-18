@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -42,7 +45,18 @@ public interface DatabaseBasedPersistService<T> {
      * @param databaseName database name
      * @param configs configurations
      */
-    default void delete(String databaseName, T configs) {
+    default Collection<YamlDataNode> delete(String databaseName, T configs) {
+        return Collections.emptyList();
+    }
+    
+    /**
+     * Persist configurations.
+     *
+     * @param databaseName database name
+     * @param configs configurations
+     */
+    default Collection<YamlDataNode> persistConfig(String databaseName, T configs ) {
+        return Collections.emptyList();
     }
     
     /**
