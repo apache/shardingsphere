@@ -83,7 +83,7 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
     private Collection<MetaDataVersion> persistDataNodes(final Collection<YamlDataNode> dataNodes) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlDataNode each : dataNodes) {
-            if (Strings.isNullOrEmpty(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()))) {
+            if (Strings.isNullOrEmpty(getActiveVersion(each.getKey()))) {
                 repository.persist(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), DEFAULT_VERSION);
             }
             List<String> versions = repository.getChildrenKeys(NewGlobalNode.getGlobalRuleVersionsNode(each.getKey()));
@@ -112,5 +112,9 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
         Optional<AuthorityRuleConfiguration> authorityRuleConfig = load().stream()
                 .filter(AuthorityRuleConfiguration.class::isInstance).map(AuthorityRuleConfiguration.class::cast).findFirst();
         return authorityRuleConfig.isPresent() ? authorityRuleConfig.get().getUsers() : Collections.emptyList();
+    }
+    
+    private String getActiveVersion(final String ruleName) {
+        return repository.getDirectly(NewGlobalNode.getGlobalRuleActiveVersionNode(ruleName));
     }
 }
