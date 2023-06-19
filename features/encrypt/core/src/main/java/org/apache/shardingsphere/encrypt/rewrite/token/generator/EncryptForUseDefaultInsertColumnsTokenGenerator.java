@@ -88,16 +88,17 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
         Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            if (encryptTable.findEncryptorName(columnName).isPresent()) {
-                int columnIndex = result.indexOf(columnName);
-                setCipherColumn(result, encryptTable, columnName, columnIndex);
-                if (encryptTable.findAssistedQueryColumn(columnName).isPresent()) {
-                    addAssistedQueryColumn(result, encryptTable, columnName, columnIndex);
-                    columnIndex++;
-                }
-                if (encryptTable.findLikeQueryEncryptorName(columnName).isPresent()) {
-                    addLikeQueryColumn(result, encryptTable, columnName, columnIndex);
-                }
+            if (!encryptTable.isEncryptColumn(columnName)) {
+                continue;
+            }
+            int columnIndex = result.indexOf(columnName);
+            setCipherColumn(result, encryptTable, columnName, columnIndex);
+            if (encryptTable.findAssistedQueryColumn(columnName).isPresent()) {
+                addAssistedQueryColumn(result, encryptTable, columnName, columnIndex);
+                columnIndex++;
+            }
+            if (encryptTable.findLikeQueryEncryptorName(columnName).isPresent()) {
+                addLikeQueryColumn(result, encryptTable, columnName, columnIndex);
             }
         }
         return result;

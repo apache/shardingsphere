@@ -81,7 +81,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         for (ColumnSegment column : columnSegments) {
             String tableName = columnTableNames.getOrDefault(column.getExpression(), "");
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.getIdentifier().getValue()).isPresent()) {
+            if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(column.getIdentifier().getValue())) {
                 continue;
             }
             int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
