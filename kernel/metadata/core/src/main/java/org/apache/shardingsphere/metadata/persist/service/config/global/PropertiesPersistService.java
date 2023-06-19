@@ -42,7 +42,7 @@ public final class PropertiesPersistService implements GlobalPersistService<Prop
     }
     
     @Override
-    public Collection<MetaDataVersion> persistConfig(Properties globalRuleConfigs) {
+    public Collection<MetaDataVersion> persistConfig(final Properties props) {
         return Collections.emptyList();
     }
     

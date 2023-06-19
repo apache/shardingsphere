@@ -47,7 +47,8 @@ public final class NewPropertiesPersistService implements GlobalPersistService<P
         }
         List<String> versions = repository.getChildrenKeys(NewGlobalNode.getPropsVersionsNode());
         repository.persist(NewGlobalNode.getPropsVersionNode(versions.isEmpty()
-                ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(props));
+                ? DEFAULT_VERSION
+                : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(props));
         
     }
     
@@ -63,13 +64,14 @@ public final class NewPropertiesPersistService implements GlobalPersistService<P
         return Collections.singletonList(new MetaDataVersion(persistKey, getActiveVersion(), nextActiveVersion));
     }
     
-    private String getActiveVersion() {
-        return repository.getDirectly(NewGlobalNode.getPropsActiveVersionNode());
-    }
-    
     @Override
     public Properties load() {
         String yamlContext = repository.getDirectly(NewGlobalNode.getPropsVersionNode(DEFAULT_VERSION));
         return Strings.isNullOrEmpty(yamlContext) ? new Properties() : YamlEngine.unmarshal(yamlContext, Properties.class);
+    }
+    
+    
+    private String getActiveVersion() {
+        return repository.getDirectly(NewGlobalNode.getPropsActiveVersionNode());
     }
 }
