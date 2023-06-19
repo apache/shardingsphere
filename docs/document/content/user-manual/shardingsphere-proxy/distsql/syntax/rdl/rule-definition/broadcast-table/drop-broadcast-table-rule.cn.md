@@ -1,6 +1,6 @@
 +++
 title = "DROP BROADCAST TABLE RULE"
-weight = 16
+weight = 2
 +++
 
 ## 描述
