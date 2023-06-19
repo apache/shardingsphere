@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
-import lombok.NoArgsConstructor;
-
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,14 +24,9 @@ import java.util.Map;
 /**
  * Table names mapper.
  */
-@NoArgsConstructor
 public final class TableNamesMapper {
     
     private final Map<String, String> lowerCaseTableNames = new LinkedHashMap<>();
-    
-    public TableNamesMapper(final Collection<String> tableNames) {
-        tableNames.forEach(each -> lowerCaseTableNames.put(each.toLowerCase(), each));
-    }
     
     /**
      * Judge whether contains table or not.
