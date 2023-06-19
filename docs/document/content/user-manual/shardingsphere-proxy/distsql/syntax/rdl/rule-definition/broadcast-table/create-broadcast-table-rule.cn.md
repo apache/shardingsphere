@@ -1,6 +1,6 @@
 +++
 title = "CREATE BROADCAST TABLE RULE"
-weight = 15
+weight = 1
 +++
 
 ## 描述

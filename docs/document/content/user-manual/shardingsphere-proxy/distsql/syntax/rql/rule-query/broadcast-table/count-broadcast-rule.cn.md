@@ -1,19 +1,19 @@
 +++
-title = "COUNT SHARDING RULE"
-weight = 15
+title = "COUNT BROADCAST RULE"
+weight = 2
 +++
 
 ### 描述
 
-`COUNT SHARDING RULE` 语法用于查询指定逻辑库中的分片规则数量。
+`COUNT BROADCAST RULE` 语法用于查询指定逻辑库中的广播表规则数量。
 
 ### 语法
 
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-CountShardingRule::=
-  'COUNT' 'SHARDING' 'RULE' ('FROM' databaseName)?
+CountBroadcastRule::=
+  'COUNT' 'BROADCAST' 'RULE' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
@@ -39,43 +39,41 @@ databaseName ::=
 
 ### 示例
 
-- 查询指定逻辑库中的分片规则数量
+- 查询指定逻辑库中的广播表规则数量
 
 ```sql
-COUNT SHARDING RULE FROM sharding_db;
+COUNT BROADCAST RULE FROM sharding_db;
 ```
 
 ```sql
-mysql> COUNT SHARDING RULE FROM sharding_db;
+mysql> COUNT BROADCAST RULE FROM sharding_db;
 +--------------------------+----------------+-------+
 | rule_name                | database       | count |
 +--------------------------+----------------+-------+
-| sharding_table           | sharding_db    | 2     |
-| sharding_table_reference | sharding_db    | 2     |
+| broadcast_table          | sharding_db    | 0     |
 +--------------------------+----------------+-------+
-2 rows in set (0.00 sec)
+1 rows in set (0.00 sec)
 ```
 
-- 查询当前逻辑库中的分片规则数量
+- 查询当前逻辑库中的广播表规则数量
 
 ```sql
-COUNT SHARDING RULE;
+COUNT BROADCAST RULE;
 ```
 
 ```sql
-mysql> COUNT SHARDING RULE;
+mysql> COUNT BROADCAST RULE;
 +--------------------------+----------------+-------+
 | rule_name                | database       | count |
 +--------------------------+----------------+-------+
-| sharding_table           | sharding_db    | 2     |
-| sharding_table_reference | sharding_db    | 2     |
+| broadcast_table          | sharding_db    | 0     |
 +--------------------------+----------------+-------+
-2 rows in set (0.00 sec)
+1 rows in set (0.00 sec)
 ```
 
 ### 保留字
 
-`COUNT`、`SHARDING`、`RULE`、`FROM`
+`COUNT`、`BROADCAST`、`RULE`、`FROM`
 
 ### 相关链接
 

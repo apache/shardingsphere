@@ -1,16 +1,16 @@
 +++
 title = "SHOW BROADCAST TABLE RULE"
-weight = 14
+weight = 1
 +++
 
-## 描述
+## Description
 
-`SHOW BROADCAST TABLE RULES` 语法用于查询指定数据库中具有广播规则的表。
+The `SHOW BROADCAST TABLE RULE` syntax is used to broadcast tables for specified database.
 
-### 语法定义
+### Syntax
 
 {{< tabs >}}
-{{% tab name="语法" %}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowBroadcastTableRule ::=
   'SHOW' 'BROADCAST' 'TABLE' 'RULES' ('FROM' databaseName)? 
@@ -19,24 +19,24 @@ databaseName ::=
   identifier
 ```
 {{% /tab %}}
-{{% tab name="铁路图" %}}
+{{% tab name="Railroad diagram" %}}
 <iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
 {{% /tab %}}
 {{< /tabs >}}
 
-### 补充说明
+### Supplement
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`； 如未使用 `DATABASE` 则会提示 `No database selected`。
+- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted.
 
-### 返回值说明
+### Return value description
 
-| 列               | 说明    |
-|-----------------|-------|
-| broadcast_table | 广播表名称 |
+| Column          | Description          |
+|-----------------|----------------------|
+| broadcast_table | Broadcast table name |
 
-### 示例
+### Example
 
-- 查询指定数据库中具有广播规则的表
+- Query broadcast tables for specified database.
 
 ```sql
 SHOW BROADCAST TABLE RULES FROM sharding_db;
@@ -54,7 +54,7 @@ mysql> SHOW BROADCAST TABLE RULES FROM sharding_db;
 3 rows in set (0.00 sec)
 ```
 
-- 查询当前逻辑库中具有广播规则的表
+- Query broadcast table for current database.
 
 ```sql
 SHOW BROADCAST TABLE RULES;
@@ -72,10 +72,10 @@ mysql> SHOW BROADCAST TABLE RULES;
 3 rows in set (0.00 sec)
 ```
 
-### 保留字
+### Reserved word
 
-`SHOW`、`BROADCAST`、`TABLE`、`RULES`
+`SHOW`, `BROADCAST`, `TABLE`, `RULES`
 
-### 相关链接
+### Related links
 
-- [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

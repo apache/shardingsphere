@@ -1,19 +1,19 @@
 +++
-title = "COUNT SHARDING RULE"
-weight = 15
+title = "COUNT BROADCAST RULE"
+weight = 2
 +++
 
 ### Description
 
-The `COUNT SHARDING RULE` syntax is used to query the number of sharding rules for specified database.
+The `COUNT BROADCAST RULE` syntax is used to query the number of broadcast table rules for specified database.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-CountShardingRule::=
-  'COUNT' 'SHARDING' 'RULE' ('FROM' databaseName)?
+CountBroadcastRule::=
+  'COUNT' 'BROADCAST' 'RULE' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
@@ -39,43 +39,41 @@ databaseName ::=
 
 ### Example
 
-- Query the number of sharding rules for specified database.
+- Query the number of broadcast table rules for specified database.
 
 ```sql
-COUNT SHARDING RULE FROM sharding_db;
+COUNT BROADCAST RULE FROM sharding_db;
 ```
 
 ```sql
-mysql> COUNT SHARDING RULE FROM sharding_db;
+mysql> COUNT BROADCAST RULE FROM sharding_db;
 +--------------------------+----------------+-------+
 | rule_name                | database       | count |
 +--------------------------+----------------+-------+
-| sharding_table           | sharding_db    | 2     |
-| sharding_table_reference | sharding_db    | 2     |
+| broadcast_table          | sharding_db    | 0     |
 +--------------------------+----------------+-------+
-2 rows in set (0.00 sec)
+1 rows in set (0.00 sec)
 ```
 
-- Query the number of sharding rules for current database.
+- Query the number of broadcast table rules for current database.
 
 ```sql
-COUNT SHARDING RULE;
+COUNT BROADCAST RULE;
 ```
 
 ```sql
-mysql> COUNT SHARDING RULE;
+mysql> COUNT BROADCAST RULE;
 +--------------------------+----------------+-------+
 | rule_name                | database       | count |
 +--------------------------+----------------+-------+
-| sharding_table           | sharding_db    | 2     |
-| sharding_table_reference | sharding_db    | 2     |
+| broadcast_table          | sharding_db    | 0     |
 +--------------------------+----------------+-------+
-2 rows in set (0.00 sec)
+1 rows in set (0.00 sec)
 ```
 
 ### Reserved word
 
-`COUNT`, `SHARDING`, `RULE`, `FROM`
+`COUNT`, `BROADCAST`, `RULE`, `FROM`
 
 ### Related links
 
