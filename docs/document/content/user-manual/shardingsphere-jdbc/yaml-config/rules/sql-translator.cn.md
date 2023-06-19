@@ -1,6 +1,6 @@
 +++
 title = "SQL 翻译"
-weight = 8
+weight = 9
 +++
 
 ## 配置项说明

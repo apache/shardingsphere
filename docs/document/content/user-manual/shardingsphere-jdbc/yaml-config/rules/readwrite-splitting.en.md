@@ -1,6 +1,6 @@
 +++
 title = "Readwrite-splitting"
-weight = 2
+weight = 3
 +++
 
 ## Background

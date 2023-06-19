@@ -52,7 +52,7 @@ The t_order table will be used by ShardingSphere as the master table for the ent
 
 ### Broadcast data frame
 
-Refers to tables that exist in all sharded data sources. The table structure and its data are identical in each database. Suitable for scenarios where the data volume is small and queries are required to be associated with tables of massive data, e.g., dictionary tables.
+Refers to tables that exist in all data sources. The table structure and its data are identical in each database. Suitable for scenarios where the data volume is small and queries are required to be associated with tables of massive data, e.g., dictionary tables.
 
 ### Single Table
 

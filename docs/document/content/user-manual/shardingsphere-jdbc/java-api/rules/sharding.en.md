@@ -20,7 +20,6 @@ Attributes:
 | tables (+)                          | Collection\<ShardingTableRuleConfiguration\>     | Sharding table rules                             | -                       |
 | autoTables (+)                      | Collection\<ShardingAutoTableRuleConfiguration\> | Sharding auto table rules                        | -                       |
 | bindingTableGroups (*)              | Collection\<String\>                             | Binding table rules                              | Empty                   |
-| broadcastTables (*)                 | Collection\<String\>                             | Broadcast table rules                            | Empty                   |
 | defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                    | Default database sharding strategy               | Not sharding            |
 | defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                    | Default table sharding strategy                  | Not sharding            |
 | defaultKeyGenerateStrategy (?)      | KeyGeneratorConfiguration                        | Default key generator                            | Snowflake               |
@@ -139,7 +138,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createBroadcastRuleConfiguration())), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
@@ -147,7 +146,6 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
         result.getTables().add(getOrderTableRuleConfiguration());
         result.getTables().add(getOrderItemTableRuleConfiguration());
         result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order, t_order_item"));
-        result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
         Properties props = new Properties();
@@ -177,6 +175,10 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
         return result;
+    }
+    
+    private BroadcastRuleConfiguration createBroadcastRuleConfiguration() {
+        return new BroadcastRuleConfiguration(Collections.singletonList("t_address"));;
     }
 }
 ```
