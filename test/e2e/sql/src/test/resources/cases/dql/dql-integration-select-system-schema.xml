@@ -718,6 +718,34 @@
         <assertion expected-data-file="select_mysql_performance_schema_variables_by_thread.xml" />
     </test-case>
 
+    <test-case sql="SELECT * FROM information_schema.columns" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_columns.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.views" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_views.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.user_mappings" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_user_mappings.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.view_column_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_view_column_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.view_routine_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_view_routine_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.view_table_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_view_table_usage.xml" />
+    </test-case>
+
     <test-case sql="SELECT * FROM pg_catalog.pg_aggregate" db-types="PostgreSQL" scenario-types="db">
         <assertion expected-data-file="select_postgresql_pg_catalog_pg_aggregate.xml" />
     </test-case>
