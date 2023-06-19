@@ -59,7 +59,7 @@ class EncryptOrderByItemTokenGeneratorTest {
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
-        when(encryptTable.findEncryptorName("certificate_number")).thenReturn(Optional.of("encryptor_name"));
+        when(encryptTable.isEncryptColumn("certificate_number")).thenReturn(true);
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         return result;
     }
