@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -26,12 +27,18 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 
 class AESEncryptAlgorithmTest {
     
@@ -41,6 +48,24 @@ class AESEncryptAlgorithmTest {
     @BeforeEach
     void setUp() {
         encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
+    }
+    
+    @Test
+    void assertDefaultDigestAlgorithm() throws NoSuchAlgorithmException {
+        MockedStatic<DigestUtils> digestUtilsMockedStatic = mockStatic(DigestUtils.class);
+        digestUtilsMockedStatic.when(() -> DigestUtils.getDigest("SHA-1")).thenReturn(MessageDigest.getInstance("SHA-1"));
+        TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
+        digestUtilsMockedStatic.verify(() -> DigestUtils.getDigest("SHA-1"), times(1));
+        digestUtilsMockedStatic.close();
+    }
+    
+    @Test
+    void assertSHA512DigestAlgorithm() throws NoSuchAlgorithmException {
+        MockedStatic<DigestUtils> digestUtilsMockedStatic = mockStatic(DigestUtils.class);
+        digestUtilsMockedStatic.when(() -> DigestUtils.getDigest("SHA-512")).thenReturn(MessageDigest.getInstance("SHA-512"));
+        TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-512")));
+        digestUtilsMockedStatic.verify(() -> DigestUtils.getDigest("SHA-512"), times(1));
+        digestUtilsMockedStatic.close();
     }
     
     @Test

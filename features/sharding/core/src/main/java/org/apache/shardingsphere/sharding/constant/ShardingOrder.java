@@ -29,5 +29,5 @@ public final class ShardingOrder {
     /**
      * Sharding order.
      */
-    public static final int ORDER = -10;
+    public static final int ORDER = 0;
 }

@@ -20,12 +20,12 @@ package org.apache.shardingsphere.data.pipeline.core.context;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineWriteConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineLazyInitializer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -45,11 +45,11 @@ public abstract class AbstractInventoryIncrementalProcessContext implements Inve
     
     private final PipelineChannelCreator pipelineChannelCreator;
     
-    private final LazyInitializer<ExecuteEngine> inventoryDumperExecuteEngineLazyInitializer;
+    private final PipelineLazyInitializer<ExecuteEngine> inventoryDumperExecuteEngineLazyInitializer;
     
-    private final LazyInitializer<ExecuteEngine> inventoryImporterExecuteEngineLazyInitializer;
+    private final PipelineLazyInitializer<ExecuteEngine> inventoryImporterExecuteEngineLazyInitializer;
     
-    private final LazyInitializer<ExecuteEngine> incrementalExecuteEngineLazyInitializer;
+    private final PipelineLazyInitializer<ExecuteEngine> incrementalExecuteEngineLazyInitializer;
     
     protected AbstractInventoryIncrementalProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
         PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
@@ -62,24 +62,24 @@ public abstract class AbstractInventoryIncrementalProcessContext implements Inve
         writeRateLimitAlgorithm = null == writeRateLimiter ? null : TypedSPILoader.getService(JobRateLimitAlgorithm.class, writeRateLimiter.getType(), writeRateLimiter.getProps());
         AlgorithmConfiguration streamChannel = processConfig.getStreamChannel();
         pipelineChannelCreator = TypedSPILoader.getService(PipelineChannelCreator.class, streamChannel.getType(), streamChannel.getProps());
-        inventoryDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
+        inventoryDumperExecuteEngineLazyInitializer = new PipelineLazyInitializer<ExecuteEngine>() {
             
             @Override
-            protected ExecuteEngine initialize() {
+            protected ExecuteEngine doInitialize() {
                 return ExecuteEngine.newFixedThreadInstance(readConfig.getWorkerThread(), "Inventory-" + jobId);
             }
         };
-        inventoryImporterExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
+        inventoryImporterExecuteEngineLazyInitializer = new PipelineLazyInitializer<ExecuteEngine>() {
             
             @Override
-            protected ExecuteEngine initialize() {
+            protected ExecuteEngine doInitialize() {
                 return ExecuteEngine.newFixedThreadInstance(writeConfig.getWorkerThread(), "Importer-" + jobId);
             }
         };
-        incrementalExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
+        incrementalExecuteEngineLazyInitializer = new PipelineLazyInitializer<ExecuteEngine>() {
             
             @Override
-            protected ExecuteEngine initialize() {
+            protected ExecuteEngine doInitialize() {
                 return ExecuteEngine.newCachedThreadInstance("Incremental-" + jobId);
             }
         };
@@ -105,5 +105,18 @@ public abstract class AbstractInventoryIncrementalProcessContext implements Inve
     @SneakyThrows(ConcurrentException.class)
     public ExecuteEngine getIncrementalExecuteEngine() {
         return incrementalExecuteEngineLazyInitializer.get();
+    }
+    
+    @Override
+    public void close() throws Exception {
+        shutdownExecuteEngine(inventoryDumperExecuteEngineLazyInitializer);
+        shutdownExecuteEngine(inventoryImporterExecuteEngineLazyInitializer);
+        shutdownExecuteEngine(incrementalExecuteEngineLazyInitializer);
+    }
+    
+    private void shutdownExecuteEngine(final PipelineLazyInitializer<ExecuteEngine> lazyInitializer) throws ConcurrentException {
+        if (lazyInitializer.isInitialized()) {
+            lazyInitializer.get().shutdown();
+        }
     }
 }

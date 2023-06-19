@@ -61,8 +61,6 @@ rules:
           shardingAlgorithmName: core_standard_fixture
   bindingTables:
     - t_order, t_order_item
-  broadcastTables:
-    - t_config
   defaultDatabaseStrategy: 
     standard:
       shardingColumn: order_id

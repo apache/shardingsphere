@@ -19,9 +19,13 @@ package org.apache.shardingsphere.infra.connection.refresher.type.table;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
 import java.util.Collection;
@@ -37,6 +41,19 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         sqlStatement.getTables().forEach(each -> alterSchemaMetaDataPOJO.getDroppedTables().add(each.getTableName().getIdentifier().getValue()));
         modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
+        ShardingSphereRuleMetaData ruleMetaData = database.getRuleMetaData();
+        for (SimpleTableSegment each : sqlStatement.getTables()) {
+            String tableName = each.getTableName().getIdentifier().getValue();
+            if (isSingleTable(tableName, ruleMetaData)
+                    && TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, tableName)) {
+                modeContextManager.alterRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
+                break;
+            }
+        }
+    }
+    
+    private boolean isSingleTable(final String tableName, final ShardingSphereRuleMetaData ruleMetaData) {
+        return ruleMetaData.findRules(TableContainedRule.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
     }
     
     @Override

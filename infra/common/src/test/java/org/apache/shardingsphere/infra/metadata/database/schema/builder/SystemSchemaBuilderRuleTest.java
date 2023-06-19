@@ -45,7 +45,7 @@ class SystemSchemaBuilderRuleTest {
         assertThat(actualPostgresqlInformationSchema.getTables().size(), is(7));
         SystemSchemaBuilderRule actualPgCatalog = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "pg_catalog");
         assertThat(actualPgCatalog, is(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG));
-        assertThat(actualPgCatalog.getTables().size(), is(9));
+        assertThat(actualPgCatalog.getTables().size(), is(19));
     }
     
     @Test
@@ -65,7 +65,17 @@ class SystemSchemaBuilderRuleTest {
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_database"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_tables"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_aggregate"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_am"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_amop"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_amproc"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_attrdef"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_range"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_replication_origin"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_rewrite"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_seclabel"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_sequence"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_roles"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_user_mapping"));
         assertFalse(SystemSchemaBuilderRule.isSystemTable("sharding_db", "t_order"));
     }
 }

@@ -23,5 +23,4 @@
     </metadata>
     <row values="sharding_table| db| 5" />
     <row values="sharding_table_reference| db| 1" />
-    <row values="broadcast_table| db| 4" />
 </dataset>

@@ -21,16 +21,20 @@ import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfigu
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.metadata.converter.EncryptNodeConverter;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlCompatibleEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlCompatibleEncryptTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -60,8 +64,18 @@ public final class NewYamlCompatibleEncryptRuleConfigurationSwapper implements N
     
     @Override
     public CompatibleEncryptRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        // TODO to be completed
-        return new CompatibleEncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
+        Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
+        Map<String, AlgorithmConfiguration> encryptors = new HashMap<>();
+        for (YamlDataNode each : dataNodes) {
+            if (EncryptNodeConverter.isTablePath(each.getKey())) {
+                EncryptNodeConverter.getTableName(each.getKey())
+                        .ifPresent(tableName -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlCompatibleEncryptTableRuleConfiguration.class))));
+            } else if (EncryptNodeConverter.isEncryptorPath(each.getKey())) {
+                EncryptNodeConverter.getEncryptorName(each.getKey())
+                        .ifPresent(encryptorName -> encryptors.put(encryptorName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
+            }
+        }
+        return new CompatibleEncryptRuleConfiguration(tables, encryptors);
     }
     
     @Override

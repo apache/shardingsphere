@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -49,7 +50,7 @@ class UnsupportedOperationStatementTest {
         when(connection.getDatabaseName()).thenReturn("db");
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(
                 Arrays.asList(new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()),
-                        new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build()),
+                        new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap(), mock(ConfigurationProperties.class)),
                         new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         shardingSphereStatement = new ShardingSphereStatement(connection);

@@ -40,7 +40,7 @@ public final class CountSingleTableExecutor implements RQLExecutor<CountSingleTa
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountSingleTableStatement sqlStatement) {
         SingleRule rule = database.getRuleMetaData().getSingleRule(SingleRule.class);
-        return Collections.singleton(new LocalDataQueryResultRow(database.getName(), rule.getAllTables().size()));
+        return Collections.singleton(new LocalDataQueryResultRow(database.getName(), rule.getLogicTableMapper().getTableNames().size()));
     }
     
     @Override

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -32,8 +33,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -101,8 +102,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private final Map<String, BindingTableRule> bindingTableRules = new LinkedHashMap<>();
     
-    private final Collection<String> broadcastTables;
-    
     private final ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig;
     
     private final ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
@@ -117,6 +116,10 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private final ShardingCache shardingCache;
     
+    private final TableNamesMapper logicalTableMapper;
+    
+    private final TableNamesMapper actualTableMapper;
+    
     public ShardingRule(final ShardingRuleConfiguration ruleConfig, final Collection<String> dataSourceNames, final InstanceContext instanceContext) {
         configuration = ruleConfig;
         this.dataSourceNames = getDataSourceNames(ruleConfig.getTables(), ruleConfig.getAutoTables(), dataSourceNames);
@@ -125,7 +128,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         ruleConfig.getAuditors().forEach((key, value) -> auditors.put(key, TypedSPILoader.getService(ShardingAuditAlgorithm.class, value.getType(), value.getProps())));
         tableRules.putAll(createTableRules(ruleConfig.getTables(), ruleConfig.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(ruleConfig.getAutoTables(), ruleConfig.getDefaultKeyGenerateStrategy()));
-        broadcastTables = createBroadcastTables(ruleConfig.getBroadcastTables());
         bindingTableRules.putAll(createBindingTableRules(ruleConfig.getBindingTableGroups()));
         defaultDatabaseShardingStrategyConfig = null == ruleConfig.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : ruleConfig.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == ruleConfig.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : ruleConfig.getDefaultTableShardingStrategy();
@@ -136,13 +138,31 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         defaultShardingColumn = ruleConfig.getDefaultShardingColumn();
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
         ShardingSpherePreconditions.checkState(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(this.dataSourceNames, shardingAlgorithms,
-                ruleConfig.getBindingTableGroups(), broadcastTables, defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
+                ruleConfig.getBindingTableGroups(), defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
                 InvalidBindingTablesException::new);
         keyGenerators.values().stream().filter(InstanceContextAware.class::isInstance).forEach(each -> ((InstanceContextAware) each).setInstanceContext(instanceContext));
         if (defaultKeyGenerateAlgorithm instanceof InstanceContextAware && -1 == instanceContext.getWorkerId()) {
             ((InstanceContextAware) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
         }
         shardingCache = null != ruleConfig.getShardingCache() ? new ShardingCache(ruleConfig.getShardingCache(), this) : null;
+        logicalTableMapper = createLogicalTableMapper();
+        actualTableMapper = createActualTableMapper();
+    }
+    
+    private TableNamesMapper createLogicalTableMapper() {
+        TableNamesMapper result = new TableNamesMapper();
+        tableRules.values().forEach(each -> result.put(each.getLogicTable()));
+        return result;
+    }
+    
+    private TableNamesMapper createActualTableMapper() {
+        TableNamesMapper result = new TableNamesMapper();
+        for (TableRule each : tableRules.values()) {
+            for (DataNode dataNode : each.getActualDataNodes()) {
+                result.put(dataNode.getTableName());
+            }
+        }
+        return result;
     }
     
     private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Map<String, TableRule> tableRules) {
@@ -199,12 +219,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         return Optional.ofNullable(defaultKeyGenerateStrategyConfig).map(KeyGenerateStrategyConfiguration::getColumn).orElse(null);
     }
     
-    private Collection<String> createBroadcastTables(final Collection<String> broadcastTables) {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(broadcastTables);
-        return result;
-    }
-    
     private Map<String, BindingTableRule> createBindingTableRules(final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups) {
         Map<String, BindingTableRule> result = new LinkedHashMap<>();
         for (ShardingTableReferenceRuleConfiguration each : bindingTableGroups) {
@@ -231,9 +245,9 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
                 continue;
             }
             Iterator<String> iterator = bindingTables.iterator();
-            TableRule sampleTableRule = getTableRule(iterator.next(), checkedConfig.getDataSourceNames(), tableRules, checkedConfig.getBroadcastTables());
+            TableRule sampleTableRule = getTableRule(iterator.next(), tableRules);
             while (iterator.hasNext()) {
-                TableRule tableRule = getTableRule(iterator.next(), checkedConfig.getDataSourceNames(), tableRules, checkedConfig.getBroadcastTables());
+                TableRule tableRule = getTableRule(iterator.next(), tableRules);
                 if (!isValidActualDataSourceName(sampleTableRule, tableRule) || !isValidActualTableName(sampleTableRule, tableRule)) {
                     return false;
                 }
@@ -288,11 +302,23 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     }
     
     @Override
-    public Collection<String> getAllTables() {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(getTables());
-        result.addAll(getAllActualTables());
-        return result;
+    public TableNamesMapper getLogicTableMapper() {
+        return logicalTableMapper;
+    }
+    
+    @Override
+    public TableNamesMapper getActualTableMapper() {
+        return actualTableMapper;
+    }
+    
+    @Override
+    public TableNamesMapper getDistributedTableMapper() {
+        return getLogicTableMapper();
+    }
+    
+    @Override
+    public TableNamesMapper getEnhancedTableMapper() {
+        return getLogicTableMapper();
     }
     
     /**
@@ -373,19 +399,13 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         if (tableRule.isPresent()) {
             return tableRule.get();
         }
-        if (isBroadcastTable(logicTableName)) {
-            return new TableRule(dataSourceNames, logicTableName);
-        }
         throw new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName));
     }
     
-    private TableRule getTableRule(final String logicTableName, final Collection<String> dataSourceNames, final Map<String, TableRule> tableRules, final Collection<String> broadcastTables) {
+    private TableRule getTableRule(final String logicTableName, final Map<String, TableRule> tableRules) {
         TableRule result = tableRules.get(logicTableName);
         if (null != result) {
             return result;
-        }
-        if (broadcastTables.contains(logicTableName)) {
-            return new TableRule(dataSourceNames, logicTableName);
         }
         throw new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName));
     }
@@ -453,16 +473,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     }
     
     /**
-     * Judge whether logic table is all broadcast tables or not.
-     *
-     * @param logicTableNames logic table names
-     * @return whether logic table is all broadcast tables or not
-     */
-    public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
-        return !logicTableNames.isEmpty() && broadcastTables.containsAll(logicTableNames);
-    }
-    
-    /**
      * Judge whether logic table is all sharding table or not.
      *
      * @param logicTableNames logic table names
@@ -491,16 +501,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     }
     
     /**
-     * Judge whether logic table is broadcast table or not.
-     *
-     * @param logicTableName logic table name
-     * @return whether logic table is broadcast table or not
-     */
-    public boolean isBroadcastTable(final String logicTableName) {
-        return broadcastTables.contains(logicTableName);
-    }
-    
-    /**
      * Judge whether all tables are in same data source or not.
      *
      * @param logicTableNames logic table names
@@ -520,7 +520,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      */
     public boolean tableRuleExists(final Collection<String> logicTableNames) {
         for (String each : logicTableNames) {
-            if (isShardingTable(each) || isBroadcastTable(each)) {
+            if (isShardingTable(each)) {
                 return true;
             }
         }
@@ -650,7 +650,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      * @return sharding rule table names
      */
     public Collection<String> getShardingRuleTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(each -> isShardingTable(each) || isBroadcastTable(each)).collect(Collectors.toList());
+        return logicTableNames.stream().filter(this::isShardingTable).collect(Collectors.toList());
     }
     
     /**
@@ -675,14 +675,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     @Override
     public Collection<DataNode> getDataNodesByTableName(final String tableName) {
-        if (isBroadcastTable(tableName)) {
-            return new TableRule(dataSourceNames, tableName).getActualDataNodes();
-        }
         return shardingTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
-    }
-    
-    private Collection<String> getAllActualTables() {
-        return tableRules.values().stream().flatMap(each -> each.getActualDataNodes().stream().map(DataNode::getTableName)).collect(Collectors.toSet());
     }
     
     @Override
@@ -692,19 +685,12 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     @Override
     public boolean isNeedAccumulate(final Collection<String> tables) {
-        return !isAllBroadcastTables(tables);
+        return !tables.isEmpty() && tables.stream().anyMatch(this::isShardingTable);
     }
     
     @Override
     public Optional<String> findLogicTableByActualTable(final String actualTable) {
         return findTableRuleByActualTable(actualTable).map(TableRule::getLogicTable);
-    }
-    
-    @Override
-    public Collection<String> getTables() {
-        Collection<String> result = tableRules.values().stream().map(TableRule::getLogicTable).collect(Collectors.toSet());
-        result.addAll(broadcastTables);
-        return result;
     }
     
     @Override

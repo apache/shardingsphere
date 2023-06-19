@@ -73,6 +73,15 @@ public final class DropShardingAuditorStatementUpdater implements RuleDefinition
     }
     
     @Override
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropShardingAuditorStatement sqlStatement) {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        for (String each : sqlStatement.getNames()) {
+            result.getAuditors().put(each, currentRuleConfig.getAuditors().get(each));
+        }
+        return result;
+    }
+    
+    @Override
     public boolean updateCurrentRuleConfiguration(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getAuditors().keySet().removeIf(sqlStatement.getNames()::contains);
         return false;

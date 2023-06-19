@@ -77,7 +77,7 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
     private void route0(final RouteContext routeContext, final SingleRule rule) {
         if (sqlStatement instanceof CreateTableStatement) {
             QualifiedTable table = singleTableNames.iterator().next();
-            Optional<DataNode> dataNodeOptional = rule.findSingleTableDataNode(table.getSchemaName(), table.getTableName());
+            Optional<DataNode> dataNodeOptional = rule.findTableDataNode(table.getSchemaName(), table.getTableName());
             boolean containsIfNotExists = CreateTableStatementHandler.ifNotExists((CreateTableStatement) sqlStatement);
             if (dataNodeOptional.isPresent() && containsIfNotExists) {
                 String dataSourceName = dataNodeOptional.map(DataNode::getDataSourceName).orElse(null);
@@ -96,7 +96,7 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
     private void fillRouteContext(final SingleRule singleRule, final RouteContext routeContext, final Collection<QualifiedTable> logicTables) {
         for (QualifiedTable each : logicTables) {
             String tableName = each.getTableName();
-            Optional<DataNode> dataNode = singleRule.findSingleTableDataNode(each.getSchemaName(), tableName);
+            Optional<DataNode> dataNode = singleRule.findTableDataNode(each.getSchemaName(), tableName);
             if (!dataNode.isPresent()) {
                 throw new SingleTableNotFoundException(tableName);
             }

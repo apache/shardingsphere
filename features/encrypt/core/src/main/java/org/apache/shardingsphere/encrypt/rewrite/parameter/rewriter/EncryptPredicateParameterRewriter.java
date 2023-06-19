@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
+import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -35,6 +37,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Predicate parameter rewriter for encrypt.
@@ -64,12 +67,13 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String tableName = encryptCondition.getTableName();
         String columnName = encryptCondition.getColumnName();
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        Preconditions.checkState(encryptTable.isPresent());
         if (encryptCondition instanceof EncryptBinaryCondition && "LIKE".equals(((EncryptBinaryCondition) encryptCondition).getOperator())
-                && encryptRule.findLikeQueryColumn(tableName, columnName).isPresent()) {
+                && encryptTable.get().findLikeQueryColumn(columnName).isPresent()) {
             return encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, tableName, columnName, originalValues);
         }
-        
-        return encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()
+        return encryptTable.get().findAssistedQueryColumn(columnName).isPresent()
                 ? encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, tableName, columnName, originalValues)
                 : encryptRule.encrypt(databaseName, schemaName, tableName, columnName, originalValues);
     }

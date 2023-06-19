@@ -49,15 +49,29 @@ class ReadwriteSplittingNodeConverterTest {
     }
     
     @Test
-    void assertGetGroupNameByRulePath() {
-        Optional<String> actual = ReadwriteSplittingNodeConverter.getGroupName("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0/active_version");
+    void assertGetGroupNameVersion() {
+        Optional<String> actual = ReadwriteSplittingNodeConverter.getGroupNameVersion("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0/versions/0");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("0"));
+    }
+    
+    @Test
+    void assertGetGroupName() {
+        Optional<String> actual = ReadwriteSplittingNodeConverter.getGroupName("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0/versions/0");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("group_0"));
     }
     
     @Test
-    void assertGetLoadBalancerNameByRulePath() {
-        Optional<String> actual = ReadwriteSplittingNodeConverter.getLoadBalancerName("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random");
+    void assertGetLoadBalancerNameVersion() {
+        Optional<String> actual = ReadwriteSplittingNodeConverter.getLoadBalancerNameVersion("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random/versions/1");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("1"));
+    }
+    
+    @Test
+    void assertGetLoadBalancerName() {
+        Optional<String> actual = ReadwriteSplittingNodeConverter.getLoadBalancerName("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random/versions/1");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("random"));
     }

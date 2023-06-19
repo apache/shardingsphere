@@ -20,13 +20,12 @@ package org.apache.shardingsphere.mask.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -35,7 +34,7 @@ import java.util.Optional;
  * Mask rule.
  */
 @SuppressWarnings("rawtypes")
-public final class MaskRule implements DatabaseRule, TableContainedRule, ColumnContainedRule {
+public final class MaskRule implements DatabaseRule, TableContainedRule {
     
     @Getter
     private final RuleConfiguration configuration;
@@ -44,10 +43,13 @@ public final class MaskRule implements DatabaseRule, TableContainedRule, ColumnC
     
     private final Map<String, MaskTable> tables = new LinkedHashMap<>();
     
+    private final TableNamesMapper tableNamesMapper = new TableNamesMapper();
+    
     public MaskRule(final MaskRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         ruleConfig.getMaskAlgorithms().forEach((key, value) -> maskAlgorithms.put(key, TypedSPILoader.getService(MaskAlgorithm.class, value.getType(), value.getProps())));
         ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new MaskTable(each)));
+        ruleConfig.getTables().forEach(each -> tableNamesMapper.put(each.getName()));
     }
     
     /**
@@ -63,8 +65,23 @@ public final class MaskRule implements DatabaseRule, TableContainedRule, ColumnC
     }
     
     @Override
-    public Collection<String> getTables() {
-        return tables.keySet();
+    public TableNamesMapper getLogicTableMapper() {
+        return tableNamesMapper;
+    }
+    
+    @Override
+    public TableNamesMapper getActualTableMapper() {
+        return new TableNamesMapper();
+    }
+    
+    @Override
+    public TableNamesMapper getDistributedTableMapper() {
+        return new TableNamesMapper();
+    }
+    
+    @Override
+    public TableNamesMapper getEnhancedTableMapper() {
+        return getLogicTableMapper();
     }
     
     @Override

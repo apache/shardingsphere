@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sqlfederation.decider.fixture.decider.SQLFederationDeciderMatchFixture
-org.apache.shardingsphere.sqlfederation.decider.fixture.decider.SQLFederationDeciderNotMatchFixture
+org.apache.shardingsphere.sqlfederation.engine.fixture.decider.SQLFederationDeciderMatchFixture
+org.apache.shardingsphere.sqlfederation.engine.fixture.decider.SQLFederationDeciderNotMatchFixture

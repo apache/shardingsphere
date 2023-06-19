@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
+import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,9 +36,13 @@ import java.util.TreeMap;
  */
 public final class EncryptTable {
     
+    @Getter
+    private final String table;
+    
     private final Map<String, EncryptColumn> columns;
     
     public EncryptTable(final EncryptTableRuleConfiguration config) {
+        table = config.getName();
         columns = createEncryptColumns(config);
     }
     
@@ -51,12 +58,10 @@ public final class EncryptTable {
         EncryptColumnItem cipherColumnItem = new EncryptColumnItem(config.getCipher().getName(), config.getCipher().getEncryptorName());
         EncryptColumn result = new EncryptColumn(config.getName(), cipherColumnItem);
         if (config.getAssistedQuery().isPresent()) {
-            EncryptColumnItem assistedQueryColumn = new EncryptColumnItem(config.getAssistedQuery().get().getName(), config.getAssistedQuery().get().getEncryptorName());
-            result.setAssistedQuery(assistedQueryColumn);
+            result.setAssistedQuery(new EncryptColumnItem(config.getAssistedQuery().get().getName(), config.getAssistedQuery().get().getEncryptorName()));
         }
         if (config.getLikeQuery().isPresent()) {
-            EncryptColumnItem likeQueryColumn = new EncryptColumnItem(config.getLikeQuery().get().getName(), config.getLikeQuery().get().getEncryptorName());
-            result.setLikeQuery(likeQueryColumn);
+            result.setLikeQuery(new EncryptColumnItem(config.getLikeQuery().get().getName(), config.getLikeQuery().get().getEncryptorName()));
         }
         return result;
     }
@@ -200,13 +205,23 @@ public final class EncryptTable {
     }
     
     /**
-     * Find encrypt column.
+     * Is encrypt column or not.
+     *
+     * @param logicColumnName logic column name
+     * @return encrypt column or not
+     */
+    public boolean isEncryptColumn(final String logicColumnName) {
+        return columns.containsKey(logicColumnName);
+    }
+    
+    /**
+     * Get encrypt column.
      * 
      * @param logicColumnName logic column name
      * @return encrypt column
      */
-    public Optional<EncryptColumn> findEncryptColumn(final String logicColumnName) {
-        return Optional.ofNullable(columns.get(logicColumnName));
+    public EncryptColumn getEncryptColumn(final String logicColumnName) {
+        ShardingSpherePreconditions.checkState(isEncryptColumn(logicColumnName), () -> new EncryptColumnNotFoundException(table, logicColumnName));
+        return columns.get(logicColumnName);
     }
-    
 }

@@ -90,5 +90,5 @@ jdbc:shardingsphere:classpath:config.yaml
 
 Load JDBC URL of config.yaml profile in absolute path
 ```
-jdbc:shardingsphere:absolutepath/path/to/config.yaml
+jdbc:shardingsphere:absolutepath:/path/to/config.yaml
 ```

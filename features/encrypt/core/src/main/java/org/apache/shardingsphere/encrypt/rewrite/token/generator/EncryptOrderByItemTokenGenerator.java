@@ -69,8 +69,8 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
-                Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
-                result.addAll(generateSQLTokensWithColumnSegments(Collections.singletonList(columnSegment), columnTableNames));
+                Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Collections.singleton(columnSegment), schema);
+                result.addAll(generateSQLTokensWithColumnSegments(Collections.singleton(columnSegment), columnTableNames));
             }
         }
         return result;
@@ -126,6 +126,6 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
     }
     
     private Collection<Projection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter) {
-        return Collections.singletonList(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null));
+        return Collections.singleton(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null));
     }
 }

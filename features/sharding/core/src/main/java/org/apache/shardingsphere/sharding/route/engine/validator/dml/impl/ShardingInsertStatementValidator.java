@@ -107,7 +107,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         if (onDuplicateKeyRouteContext.isPresent() && !isSameRouteContext(routeContext, onDuplicateKeyRouteContext.get())) {
             throw new UnsupportedUpdatingShardingValueException(tableName);
         }
-        if (!routeContext.isSingleRouting() && !shardingRule.isBroadcastTable(tableName)) {
+        if (!routeContext.isSingleRouting()) {
             boolean isSingleDataNode = routeContext.getOriginalDataNodes().stream().allMatch(dataNodes -> 1 == dataNodes.size());
             ShardingSpherePreconditions.checkState(isSingleDataNode, () -> new DuplicateInsertDataRecordException(shardingConditions, tableName));
         }

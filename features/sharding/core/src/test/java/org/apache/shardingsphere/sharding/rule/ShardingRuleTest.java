@@ -64,10 +64,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.TreeSet;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -94,7 +94,6 @@ class ShardingRuleTest {
         assertTrue(actual.getBindingTableRules().containsKey("logic_table"));
         assertTrue(actual.getBindingTableRules().containsKey("sub_logic_table"));
         assertThat(actual.getBindingTableRules().values().iterator().next().getTableRules().size(), is(2));
-        assertThat(actual.getBroadcastTables(), is(new TreeSet<>(Collections.singletonList("BROADCAST_TABLE"))));
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(UUIDKeyGenerateAlgorithm.class));
         assertThat(actual.getAuditors().get("audit_algorithm"), instanceOf(DMLShardingConditionsShardingAuditAlgorithm.class));
         assertThat(actual.getDefaultShardingColumn(), is("table_id"));
@@ -105,7 +104,6 @@ class ShardingRuleTest {
         ShardingRule actual = createMinimumShardingRule();
         assertThat(actual.getTableRules().size(), is(1));
         assertTrue(actual.getBindingTableRules().isEmpty());
-        assertTrue(actual.getBroadcastTables().isEmpty());
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(SnowflakeKeyGenerateAlgorithm.class));
         assertNull(actual.getDefaultShardingColumn());
     }
@@ -152,12 +150,6 @@ class ShardingRuleTest {
     }
     
     @Test
-    void assertGetTableRuleWithBroadcastTable() {
-        TableRule actual = createMaximumShardingRule().getTableRule("Broadcast_Table");
-        assertThat(actual.getLogicTable(), is("Broadcast_Table"));
-    }
-    
-    @Test
     void assertGetTableRuleFailure() {
         assertThrows(ShardingTableRuleNotFoundException.class, () -> createMinimumShardingRule().getTableRule("New_Table"));
     }
@@ -201,31 +193,6 @@ class ShardingRuleTest {
         ShardingRule actual = createMaximumShardingRule();
         assertTrue(actual.findBindingTableRule("logic_Table").isPresent());
         assertThat(actual.findBindingTableRule("logic_Table").get().getTableRules().size(), is(2));
-    }
-    
-    @Test
-    void assertIsAllBroadcastTableWhenLogicTablesIsEmpty() {
-        assertFalse(createMaximumShardingRule().isAllBroadcastTables(Collections.emptyList()));
-    }
-    
-    @Test
-    void assertIsAllBroadcastTable() {
-        assertTrue(createMaximumShardingRule().isAllBroadcastTables(Collections.singleton("Broadcast_Table")));
-    }
-    
-    @Test
-    void assertIsNotAllBroadcastTable() {
-        assertFalse(createMaximumShardingRule().isAllBroadcastTables(Arrays.asList("broadcast_table", "other_table")));
-    }
-    
-    @Test
-    void assertIsBroadcastTable() {
-        assertTrue(createMaximumShardingRule().isBroadcastTable("Broadcast_Table"));
-    }
-    
-    @Test
-    void assertIsNotBroadcastTable() {
-        assertFalse(createMaximumShardingRule().isBroadcastTable("other_table"));
     }
     
     @Test
@@ -414,7 +381,7 @@ class ShardingRuleTest {
     
     @Test
     void assertGetTables() {
-        assertThat(createMaximumShardingRule().getTables(), is(new LinkedHashSet<>(Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE", "BROADCAST_TABLE"))));
+        assertThat(new LinkedList<>(createMaximumShardingRule().getLogicTableMapper().getTableNames()), is(Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE")));
     }
     
     @Test
@@ -466,7 +433,6 @@ class ShardingRuleTest {
         shardingRuleConfig.getTables().add(shardingTableRuleConfig);
         shardingRuleConfig.getTables().add(subTableRuleConfig);
         shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable()));
-        shardingRuleConfig.getBroadcastTables().add("BROADCAST_TABLE");
         shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("ds_id", "standard"));
         shardingRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "standard"));
         shardingRuleConfig.setDefaultShardingColumn("table_id");
@@ -761,13 +727,6 @@ class ShardingRuleTest {
     }
     
     @Test
-    void assertIsNeedAccumulate() {
-        ShardingRule actual = createMaximumShardingRule();
-        assertTrue(actual.isNeedAccumulate(Collections.singletonList("table_0")));
-        assertFalse(actual.isNeedAccumulate(Collections.singletonList("BROADCAST_TABLE")));
-    }
-    
-    @Test
     void assertFindActualTableByCatalog() {
         ShardingRule actual = createMaximumShardingRule();
         Optional<String> actualTableByCatalog = actual.findActualTableByCatalog("ds_0", "logic_table");
@@ -778,15 +737,5 @@ class ShardingRuleTest {
     void assertIsSupportAutoIncrement() {
         assertFalse(createMaximumShardingRule().isSupportAutoIncrement("logic_table"));
         assertTrue(createMaximumShardingRule().isSupportAutoIncrement("sub_logic_table"));
-    }
-    
-    @Test
-    void assertGetDataNodesByTableNameForBroadcastTable() {
-        ShardingRule actual = createMaximumShardingRule();
-        Collection<DataNode> actualDataNodes = actual.getDataNodesByTableName("broadcast_table");
-        assertThat(actualDataNodes.size(), is(2));
-        Iterator<DataNode> actualDataNode = actualDataNodes.iterator();
-        assertThat(actualDataNode.next().getDataSourceName(), is("ds_0"));
-        assertThat(actualDataNode.next().getDataSourceName(), is("ds_1"));
     }
 }

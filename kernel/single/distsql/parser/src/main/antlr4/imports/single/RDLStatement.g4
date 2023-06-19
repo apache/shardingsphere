@@ -28,16 +28,25 @@ loadSingleTable
     ;
 
 unloadSingleTable
-    : UNLOAD SINGLE TABLE tableDefinition
+    : UNLOAD SINGLE TABLE tableNames
+    | UNLOAD SINGLE TABLE ASTERISK_
+    | UNLOAD ALL SINGLE TABLES
     ;
 
 tableDefinition
     : tableIdentifier (COMMA_ tableIdentifier)*
     ;
 
+tableNames
+    : tableName (COMMA_ tableName)*
+    ;
+
 tableIdentifier
     : ASTERISK_ DOTASTERISK_ # allTables
+    | ASTERISK_ DOTASTERISK_ DOTASTERISK_ # allTablesWithSchema
     | storageUnitName DOTASTERISK_ # allTablesFromStorageUnit
+    | storageUnitName DOTASTERISK_ DOTASTERISK_ # allSchamesAndTablesFromStorageUnit
+    | storageUnitName DOT_ schemaName DOTASTERISK_ # allTablesFromSchema
     | storageUnitName DOT_ tableName # tableFromStorageUnit
     | storageUnitName DOT_ schemaName DOT_ tableName # tableFromSchema
     ;

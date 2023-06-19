@@ -59,7 +59,7 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
         if (setAssignmentRouteContext.isPresent() && !isSameRouteContext(routeContext, setAssignmentRouteContext.get())) {
             throw new UnsupportedUpdatingShardingValueException(tableName);
         }
-        ShardingSpherePreconditions.checkState(shardingRule.isBroadcastTable(tableName) || !UpdateStatementHandler.getLimitSegment(updateStatement).isPresent()
+        ShardingSpherePreconditions.checkState(!UpdateStatementHandler.getLimitSegment(updateStatement).isPresent()
                 || routeContext.getRouteUnits().size() <= 1, () -> new DMLMultipleDataNodesWithLimitException("UPDATE"));
     }
 }

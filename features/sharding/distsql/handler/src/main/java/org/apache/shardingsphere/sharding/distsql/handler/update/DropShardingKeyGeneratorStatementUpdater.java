@@ -75,6 +75,15 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
     }
     
     @Override
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropShardingKeyGeneratorStatement sqlStatement) {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        for (String each : sqlStatement.getNames()) {
+            result.getKeyGenerators().put(each, currentRuleConfig.getKeyGenerators().get(each));
+        }
+        return result;
+    }
+    
+    @Override
     public boolean updateCurrentRuleConfiguration(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getKeyGenerators().keySet().removeIf(sqlStatement.getNames()::contains);
         return false;

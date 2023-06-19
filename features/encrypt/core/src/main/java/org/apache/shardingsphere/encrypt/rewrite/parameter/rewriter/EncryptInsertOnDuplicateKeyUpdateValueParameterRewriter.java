@@ -19,14 +19,12 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -38,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Function
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +57,6 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                 && InsertStatementHandler.getOnDuplicateKeyColumnsSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent();
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
         InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
@@ -68,8 +66,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             String encryptLogicColumnName = onDuplicateKeyUpdateValueContext.getColumn(index).getIdentifier().getValue();
-            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findStandardEncryptor(tableName, encryptLogicColumnName);
-            if (!encryptor.isPresent()) {
+            if (!encryptRule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(encryptLogicColumnName)).orElse(false)) {
                 continue;
             }
             Object plainValue = onDuplicateKeyUpdateValueContext.getValue(index);
@@ -77,7 +74,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                 return;
             }
             EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, encryptLogicColumnName);
-            Object cipherColumnValue = encryptor.get().encrypt(plainValue, encryptContext);
+            Object cipherColumnValue = encryptRule.encrypt(databaseName, schemaName, tableName, encryptLogicColumnName, plainValue);
             groupedParamBuilder.getGenericParameterBuilder().addReplacedParameters(index, cipherColumnValue);
             Collection<Object> addedParams = buildAddedParams(tableName, encryptLogicColumnName, plainValue, encryptContext);
             if (!addedParams.isEmpty()) {
@@ -89,20 +86,23 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
         }
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private Collection<Object> buildAddedParams(final String tableName, final String logicColumnName, final Object plainValue, final EncryptContext encryptContext) {
-        Collection<Object> result = new LinkedList<>();
-        Optional<AssistedEncryptAlgorithm> assistedQueryEncryptor = encryptRule.findAssistedQueryEncryptor(tableName, logicColumnName);
-        if (assistedQueryEncryptor.isPresent()) {
-            Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, logicColumnName);
-            Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            result.add(assistedQueryEncryptor.get().encrypt(plainValue, encryptContext));
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent()) {
+            return Collections.emptyList();
         }
-        Optional<LikeEncryptAlgorithm> likeQueryEncryptor = encryptRule.findLikeQueryEncryptor(tableName, logicColumnName);
-        if (likeQueryEncryptor.isPresent()) {
-            Optional<String> likeColumnName = encryptRule.findLikeQueryColumn(tableName, logicColumnName);
-            Preconditions.checkArgument(likeColumnName.isPresent(), "Can not find assisted query Column Name");
-            result.add(likeQueryEncryptor.get().encrypt(plainValue, encryptContext));
+        Collection<Object> result = new LinkedList<>();
+        if (encryptTable.get().findAssistedQueryColumn(logicColumnName).isPresent()) {
+            Optional<String> assistedColumnName = encryptTable.get().findAssistedQueryColumn(logicColumnName);
+            Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query column name.");
+            result.add(encryptRule.getEncryptAssistedQueryValue(
+                    encryptContext.getDatabaseName(), encryptContext.getSchemaName(), encryptContext.getTableName(), encryptContext.getColumnName(), plainValue));
+        }
+        if (encryptTable.get().findLikeQueryColumn(logicColumnName).isPresent()) {
+            Optional<String> likeColumnName = encryptTable.get().findLikeQueryColumn(logicColumnName);
+            Preconditions.checkArgument(likeColumnName.isPresent(), "Can not find assisted query column name.");
+            result.add(encryptRule.getEncryptLikeQueryValue(
+                    encryptContext.getDatabaseName(), encryptContext.getSchemaName(), encryptContext.getTableName(), encryptContext.getColumnName(), plainValue));
         }
         return result;
     }

@@ -60,24 +60,29 @@ public final class PgClassTableCollector implements ShardingSphereDataCollector 
     }
     
     private Collection<ShardingSphereRowData> decorateTableName(final Collection<ShardingSphereRowData> rows, final ShardingSphereTable table, final Collection<ShardingSphereRule> rules) {
-        Optional<DataNodeContainedRule> dataNodeContainedRule = rules.stream().filter(DataNodeContainedRule.class::isInstance).map(DataNodeContainedRule.class::cast).findFirst();
-        if (!dataNodeContainedRule.isPresent()) {
+        Collection<DataNodeContainedRule> dataNodeContainedRules = rules.stream().filter(DataNodeContainedRule.class::isInstance).map(DataNodeContainedRule.class::cast).collect(Collectors.toList());
+        if (dataNodeContainedRules.isEmpty()) {
             return rows;
         }
         int tableNameIndex = table.getColumnNames().indexOf("relname");
         Collection<ShardingSphereRowData> result = new LinkedList<>();
         for (ShardingSphereRowData each : rows) {
             String tableName = (String) each.getRows().get(tableNameIndex);
-            Optional<String> logicTableName = dataNodeContainedRule.get().findLogicTableByActualTable(tableName);
-            if (logicTableName.isPresent()) {
-                List<Object> decoratedRow = new ArrayList<>(each.getRows());
-                decoratedRow.set(tableNameIndex, logicTableName.get());
-                result.add(new ShardingSphereRowData(decoratedRow));
-            } else {
-                result.add(each);
-            }
+            String logicTableName = decorateTableName(dataNodeContainedRules, tableName);
+            List<Object> decoratedRow = new ArrayList<>(each.getRows());
+            decoratedRow.set(tableNameIndex, logicTableName);
+            result.add(new ShardingSphereRowData(decoratedRow));
         }
         return result;
+    }
+    
+    private String decorateTableName(final Collection<DataNodeContainedRule> dataNodeContainedRules, final String actualTableName) {
+        for (DataNodeContainedRule each : dataNodeContainedRules) {
+            if (each.findLogicTableByActualTable(actualTableName).isPresent()) {
+                return each.findLogicTableByActualTable(actualTableName).get();
+            }
+        }
+        return actualTableName;
     }
     
     @Override

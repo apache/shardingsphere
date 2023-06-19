@@ -20,17 +20,20 @@ package org.apache.shardingsphere.readwritesplitting.event.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 
 /**
  * Add readwrite-splitting configuration event.
- *
- * @param <T> readwrite-splitting configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddReadwriteSplittingConfigurationEvent<T> implements GovernanceEvent {
+public final class AddReadwriteSplittingConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final T config;
+    private final ReadwriteSplittingDataSourceRuleConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

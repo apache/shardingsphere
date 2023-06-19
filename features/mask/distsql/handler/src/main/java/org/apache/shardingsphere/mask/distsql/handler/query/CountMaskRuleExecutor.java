@@ -47,7 +47,7 @@ public final class CountMaskRuleExecutor implements RQLExecutor<CountMaskRuleSta
     }
     
     private void fillRows(final Collection<LocalDataQueryResultRow> result, final MaskRule rule, final String databaseName) {
-        result.add(new LocalDataQueryResultRow("mask", databaseName, rule.getTables().size()));
+        result.add(new LocalDataQueryResultRow("mask", databaseName, rule.getLogicTableMapper().getTableNames().size()));
     }
     
     @Override

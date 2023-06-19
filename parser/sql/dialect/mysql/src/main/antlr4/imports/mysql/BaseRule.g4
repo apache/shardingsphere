@@ -113,6 +113,7 @@ identifier
     | customKeyword
     | DOUBLE_QUOTED_TEXT
     | UNDERSCORE_CHARSET
+    | BQUOTA_STRING
     ;
     
 identifierKeywordsUnambiguous

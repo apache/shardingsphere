@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProces
 /**
  * Pipeline process context.
  */
-public interface PipelineProcessContext {
+public interface PipelineProcessContext extends AutoCloseable {
     
     /**
      * Get pipeline process config.

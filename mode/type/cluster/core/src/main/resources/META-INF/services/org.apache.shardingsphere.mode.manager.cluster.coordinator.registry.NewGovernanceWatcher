@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher.NewMetaDataChangedWatcher
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watcher.NewGlobalRuleChangedWatcher

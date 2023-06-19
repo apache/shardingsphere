@@ -111,6 +111,33 @@ public interface ModeContextManager {
     void alterRuleConfiguration(String databaseName, Collection<RuleConfiguration> ruleConfigs);
     
     /**
+     * Alter rule configuration.
+     *
+     * @param databaseName database name
+     * @param toBeAlteredRuleConfig to be altered rule config
+     */
+    default void alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
+    }
+    
+    /**
+     * Remove rule configuration.
+     *
+     * @param databaseName database name
+     * @param toBeRemovedRuleConfig to be removed rule config
+     */
+    default void removeRuleConfiguration(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
+    }
+    
+    /**
+     * Remove rule configuration.
+     *
+     * @param databaseName database name
+     * @param toBeRemovedRuleConfig to be removed rule config
+     */
+    default void removeAllRuleConfiguration(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
+    }
+    
+    /**
      * Alter global rule configuration.
      *
      * @param globalRuleConfigs global rule configs
@@ -123,4 +150,14 @@ public interface ModeContextManager {
      * @param props pros
      */
     void alterProperties(Properties props);
+    
+    /**
+     * Get active version by key.
+     *
+     * @param key key
+     * @return active version
+     */
+    default int getActiveVersionByKey(String key) {
+        return 0;
+    }
 }

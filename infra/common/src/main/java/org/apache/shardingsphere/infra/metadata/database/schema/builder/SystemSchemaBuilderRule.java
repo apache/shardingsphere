@@ -70,15 +70,15 @@ public enum SystemSchemaBuilderRule {
             "socket_summary_by_event_name", "socket_summary_by_instance", "status_by_account", "status_by_host", "status_by_thread", "status_by_user", "table_handles",
             "table_io_waits_summary_by_index_usage", "table_io_waits_summary_by_table", "table_lock_waits_summary_by_table", "threads", "user_variables_by_thread", "users", "variables_by_thread"))),
     
-    MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys"))),
+    MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys_config"))),
     
     MYSQL_SHARDING_SPHERE("MySQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
     
     POSTGRESQL_INFORMATION_SCHEMA("PostgreSQL", "information_schema", new HashSet<>(Arrays.asList("columns", "tables", "views", "user_mappings",
             "view_column_usage", "view_routine_usage", "view_table_usage"))),
     
-    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", new HashSet<>(Arrays.asList("pg_aggregate", "pg_class", "pg_database", "pg_tables", "pg_inherits",
-            "pg_tablespace", "pg_trigger", "pg_namespace", "pg_roles"))),
+    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", new HashSet<>(Arrays.asList("pg_aggregate", "pg_am", "pg_amop", "pg_amproc", "pg_attrdef", "pg_class", "pg_database", "pg_tables", "pg_inherits",
+            "pg_tablespace", "pg_trigger", "pg_namespace", "pg_range", "pg_replication_origin", "pg_rewrite", "pg_seclabel", "pg_sequence", "pg_roles", "pg_user_mapping"))),
     
     POSTGRESQL_SHARDING_SPHERE("PostgreSQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
     

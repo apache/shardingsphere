@@ -47,7 +47,7 @@ public final class CountEncryptRuleExecutor implements RQLExecutor<CountEncryptR
     }
     
     private void fillRows(final Collection<LocalDataQueryResultRow> result, final EncryptRule rule, final String databaseName) {
-        result.add(new LocalDataQueryResultRow("encrypt", databaseName, rule.getTables().size()));
+        result.add(new LocalDataQueryResultRow("encrypt", databaseName, rule.getLogicTableMapper().getTableNames().size()));
     }
     
     @Override

@@ -23,7 +23,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.List;
 
@@ -64,6 +67,31 @@ public final class DataNode {
         tableName = segments.get(isIncludeInstance ? 2 : 1);
     }
     
+    /**
+     * Constructs a data node with well-formatted string.
+     *
+     * @param databaseName database name
+     * @param databaseType database type
+     * @param dataNode string of data node. use {@code .} to split data source name and table name
+     */
+    public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
+        ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER),
+                () -> new InvalidDataNodesFormatException(dataNode, String.format("Invalid format for data node `%s`", dataNode)));
+        boolean containsSchema = isValidDataNode(dataNode, 3);
+        if (containsSchema) {
+            ShardingSpherePreconditions.checkState(databaseType instanceof SchemaSupportedDatabaseType,
+                    () -> new InvalidDataNodesFormatException(dataNode,
+                            String.format("Current database type `%s` does not support schema, please use format `db.table`", databaseType.getType())));
+        } else {
+            ShardingSpherePreconditions.checkState(!(databaseType instanceof SchemaSupportedDatabaseType),
+                    () -> new InvalidDataNodesFormatException(dataNode, String.format("Current database type `%s` is schema required, please use format `db.schema.table`", databaseType.getType())));
+        }
+        List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
+        dataSourceName = segments.get(0);
+        schemaName = containsSchema ? segments.get(1) : databaseName;
+        tableName = containsSchema ? segments.get(2).toLowerCase() : segments.get(1).toLowerCase();
+    }
+    
     private boolean isValidDataNode(final String dataNodeStr, final Integer tier) {
         return dataNodeStr.contains(DELIMITER) && tier == Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
     }
@@ -79,6 +107,16 @@ public final class DataNode {
      */
     public String format() {
         return dataSourceName + DELIMITER + tableName;
+    }
+    
+    /**
+     * Format data node as string.
+     *
+     * @param databaseType database type
+     * @return formatted data node
+     */
+    public String format(final DatabaseType databaseType) {
+        return databaseType instanceof SchemaSupportedDatabaseType ? dataSourceName + DELIMITER + schemaName + DELIMITER + tableName : dataSourceName + DELIMITER + tableName;
     }
     
     @Override
