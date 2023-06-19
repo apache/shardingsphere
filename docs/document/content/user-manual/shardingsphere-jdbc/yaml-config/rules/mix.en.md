@@ -1,6 +1,6 @@
 +++
 title = "Mixed Rules"
-weight = 9
+weight = 10
 +++
 
 ## Background
