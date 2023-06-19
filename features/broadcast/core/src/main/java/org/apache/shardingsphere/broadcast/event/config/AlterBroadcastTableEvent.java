@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterBroadcastConfigurationEvent implements GovernanceEvent {
+public final class AlterBroadcastTableEvent implements GovernanceEvent {
     
     private final String databaseName;
     

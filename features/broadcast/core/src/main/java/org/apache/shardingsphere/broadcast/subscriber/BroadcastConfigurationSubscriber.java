@@ -20,9 +20,9 @@ package org.apache.shardingsphere.broadcast.subscriber;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.broadcast.event.config.AddBroadcastConfigurationEvent;
-import org.apache.shardingsphere.broadcast.event.config.AlterBroadcastConfigurationEvent;
-import org.apache.shardingsphere.broadcast.event.config.DeleteBroadcastConfigurationEvent;
+import org.apache.shardingsphere.broadcast.event.config.AddBroadcastTableEvent;
+import org.apache.shardingsphere.broadcast.event.config.AlterBroadcastTableEvent;
+import org.apache.shardingsphere.broadcast.event.config.DeleteBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -56,7 +56,7 @@ public final class BroadcastConfigurationSubscriber implements RuleConfiguration
      * @param event add broadcast configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddBroadcastConfigurationEvent event) {
+    public synchronized void renew(final AddBroadcastTableEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         BroadcastRuleConfiguration needToAddedConfig = event.getConfig();
         Optional<BroadcastRule> rule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
@@ -77,7 +77,7 @@ public final class BroadcastConfigurationSubscriber implements RuleConfiguration
      * @param event alter broadcast configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterBroadcastConfigurationEvent event) {
+    public synchronized void renew(final AlterBroadcastTableEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         BroadcastRuleConfiguration needToAlteredConfig = event.getConfig();
         BroadcastRuleConfiguration config = database.getRuleMetaData().getSingleRule(BroadcastRule.class).getConfiguration();
@@ -92,7 +92,7 @@ public final class BroadcastConfigurationSubscriber implements RuleConfiguration
      * @param event delete broadcast configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteBroadcastConfigurationEvent event) {
+    public synchronized void renew(final DeleteBroadcastTableEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         BroadcastRuleConfiguration config = database.getRuleMetaData().getSingleRule(BroadcastRule.class).getConfiguration();
         config.getTables().clear();

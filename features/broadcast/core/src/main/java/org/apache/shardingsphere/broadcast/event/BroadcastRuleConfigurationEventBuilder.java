@@ -19,9 +19,9 @@ package org.apache.shardingsphere.broadcast.event;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.broadcast.event.config.AddBroadcastConfigurationEvent;
-import org.apache.shardingsphere.broadcast.event.config.AlterBroadcastConfigurationEvent;
-import org.apache.shardingsphere.broadcast.event.config.DeleteBroadcastConfigurationEvent;
+import org.apache.shardingsphere.broadcast.event.config.AddBroadcastTableEvent;
+import org.apache.shardingsphere.broadcast.event.config.AlterBroadcastTableEvent;
+import org.apache.shardingsphere.broadcast.event.config.DeleteBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.metadata.converter.BroadcastNodeConverter;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
@@ -50,12 +50,12 @@ public final class BroadcastRuleConfigurationEventBuilder implements RuleConfigu
     
     private Optional<GovernanceEvent> createBroadcastConfigEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddBroadcastConfigurationEvent(databaseName, swapBroadcastTableRuleConfig(event.getValue())));
+            return Optional.of(new AddBroadcastTableEvent(databaseName, swapBroadcastTableRuleConfig(event.getValue())));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterBroadcastConfigurationEvent(databaseName, swapBroadcastTableRuleConfig(event.getValue())));
+            return Optional.of(new AlterBroadcastTableEvent(databaseName, swapBroadcastTableRuleConfig(event.getValue())));
         }
-        return Optional.of(new DeleteBroadcastConfigurationEvent(databaseName));
+        return Optional.of(new DeleteBroadcastTableEvent(databaseName));
     }
     
     private BroadcastRuleConfiguration swapBroadcastTableRuleConfig(final String yamlContext) {
