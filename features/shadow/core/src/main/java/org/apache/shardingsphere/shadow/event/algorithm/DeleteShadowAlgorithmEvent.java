@@ -31,4 +31,8 @@ public final class DeleteShadowAlgorithmEvent implements GovernanceEvent {
     private final String databaseName;
     
     private final String algorithmName;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

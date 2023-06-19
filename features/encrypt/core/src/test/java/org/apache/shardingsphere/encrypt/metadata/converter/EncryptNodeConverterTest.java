@@ -61,4 +61,18 @@ class EncryptNodeConverterTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("AES"));
     }
+    
+    @Test
+    void assertGetEncryptTableVersion() {
+        Optional<String> actual = EncryptNodeConverter.getEncryptTableVersion("/metadata/foo_db/rules/encrypt/tables/foo_table/versions/1");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("1"));
+    }
+    
+    @Test
+    void assertGetEncryptAlgorithmVersion() {
+        Optional<String> actual = EncryptNodeConverter.getEncryptorVersion("/metadata/foo_db/rules/encrypt/encryptors/aes_algorithm/versions/1");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("1"));
+    }
 }

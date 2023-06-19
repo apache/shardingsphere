@@ -44,6 +44,8 @@ public final class ShadowNodeConverter {
     
     private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
     
+    private static final String RULE_VERSION = "/([\\w\\-]+)/versions/([\\w\\-]+)$";
+    
     /**
      * Get data source path.
      *
@@ -177,5 +179,41 @@ public final class ShadowNodeConverter {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get data source version.
+     *
+     * @param rulePath rule path
+     * @return data source version
+     */
+    public static Optional<String> getDataSourceVersion(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Get table version.
+     *
+     * @param rulePath rule path
+     * @return table version
+     */
+    public static Optional<String> getTableVersion(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Get algorithm version.
+     *
+     * @param rulePath rule path
+     * @return algorithm version
+     */
+    public static Optional<String> getAlgorithmVersion(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }
 }

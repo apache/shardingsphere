@@ -50,34 +50,40 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
         }
         Optional<String> tableName = EncryptNodeConverter.getTableName(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createEncryptConfigEvent(databaseName, tableName.get(), event);
+            Optional<String> encryptTableVersion = EncryptNodeConverter.getEncryptTableVersion(event.getKey());
+            if (encryptTableVersion.isPresent()) {
+                return createEncryptConfigEvent(databaseName, tableName.get(), Integer.parseInt(encryptTableVersion.get()), event);
+            }
         }
         Optional<String> encryptorName = EncryptNodeConverter.getEncryptorName(event.getKey());
         if (encryptorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createEncryptorEvent(databaseName, encryptorName.get(), event);
+            Optional<String> encryptorVersion = EncryptNodeConverter.getEncryptorVersion(event.getKey());
+            if (encryptorVersion.isPresent()) {
+                return createEncryptorEvent(databaseName, encryptorName.get(), Integer.parseInt(encryptorVersion.get()), event);   
+            }
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createEncryptConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createEncryptConfigEvent(final String databaseName, final String groupName, final int version, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddEncryptConfigurationEvent(databaseName, swapEncryptTableRuleConfig(event.getValue())));
+            return Optional.of(new AddEncryptConfigurationEvent(databaseName, swapEncryptTableRuleConfig(event.getValue()), event.getKey(), version));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterEncryptConfigurationEvent(databaseName, groupName, swapEncryptTableRuleConfig(event.getValue())));
+            return Optional.of(new AlterEncryptConfigurationEvent(databaseName, groupName, swapEncryptTableRuleConfig(event.getValue()), event.getKey(), version));
         }
-        return Optional.of(new DeleteEncryptConfigurationEvent(databaseName, groupName));
+        return Optional.of(new DeleteEncryptConfigurationEvent(databaseName, groupName, event.getKey(), version));
     }
     
     private EncryptTableRuleConfiguration swapEncryptTableRuleConfig(final String yamlContext) {
         return new YamlEncryptTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlEncryptTableRuleConfiguration.class));
     }
     
-    private Optional<GovernanceEvent> createEncryptorEvent(final String databaseName, final String encryptorName, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createEncryptorEvent(final String databaseName, final String encryptorName, final int version, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterEncryptorEvent(databaseName, encryptorName, swapToAlgorithmConfig(event.getValue())));
+            return Optional.of(new AlterEncryptorEvent(databaseName, encryptorName, swapToAlgorithmConfig(event.getValue()), event.getKey(), version));
         }
-        return Optional.of(new DeleteEncryptorEvent(databaseName, encryptorName));
+        return Optional.of(new DeleteEncryptorEvent(databaseName, encryptorName, event.getKey(), version));
     }
     
     private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {

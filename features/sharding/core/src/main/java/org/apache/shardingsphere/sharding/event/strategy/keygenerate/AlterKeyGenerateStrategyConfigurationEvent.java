@@ -32,4 +32,8 @@ public final class AlterKeyGenerateStrategyConfigurationEvent implements Governa
     private final String databaseName;
     
     private final KeyGenerateStrategyConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

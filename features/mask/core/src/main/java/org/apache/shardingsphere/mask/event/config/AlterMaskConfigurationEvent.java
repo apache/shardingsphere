@@ -34,4 +34,8 @@ public final class AlterMaskConfigurationEvent implements GovernanceEvent {
     private final String tableName;
     
     private final MaskTableRuleConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

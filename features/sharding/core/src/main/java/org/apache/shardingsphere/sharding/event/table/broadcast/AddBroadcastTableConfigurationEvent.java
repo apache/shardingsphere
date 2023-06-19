@@ -33,4 +33,8 @@ public final class AddBroadcastTableConfigurationEvent implements GovernanceEven
     private final String databaseName;
     
     private final Collection<String> config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

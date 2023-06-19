@@ -35,4 +35,8 @@ public final class AlterShardingTableConfigurationEvent<T> implements Governance
     private final String tableName;
     
     private final T config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

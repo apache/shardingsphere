@@ -32,4 +32,8 @@ public final class AddShardingAuditorStrategyConfigurationEvent implements Gover
     private final String databaseName;
     
     private final ShardingAuditStrategyConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }
