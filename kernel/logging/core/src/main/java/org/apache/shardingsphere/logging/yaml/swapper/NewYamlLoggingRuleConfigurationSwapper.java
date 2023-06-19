@@ -40,7 +40,7 @@ public final class NewYamlLoggingRuleConfigurationSwapper implements NewYamlRule
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final LoggingRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlLoggingRuleConfiguration swapToYamlConfiguration(final LoggingRuleConfiguration data) {

@@ -35,16 +35,6 @@ public final class GlobalRuleNodeConverter {
     private static final String VERSIONS = "versions";
     
     /**
-     * Get root node.
-     *
-     * @param ruleName rule name
-     * @return root node
-     */
-    public static String getRootNode(final String ruleName) {
-        return String.join("/", "", ROOT_NODE, ruleName);
-    }
-    
-    /**
      * Get version.
      *
      * @param ruleName rule name
@@ -58,7 +48,7 @@ public final class GlobalRuleNodeConverter {
     }
     
     private static String getVersionsNode(final String ruleName) {
-        return String.join(getRootNode(ruleName), VERSIONS);
+        return String.join("/", "", ROOT_NODE, ruleName, VERSIONS);
     }
     
     /**
@@ -72,5 +62,9 @@ public final class GlobalRuleNodeConverter {
         Pattern pattern = Pattern.compile(getRootNode(ruleName) + "\\.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
+    }
+    
+    private static String getRootNode(final String ruleName) {
+        return String.join("/", ruleName);
     }
 }

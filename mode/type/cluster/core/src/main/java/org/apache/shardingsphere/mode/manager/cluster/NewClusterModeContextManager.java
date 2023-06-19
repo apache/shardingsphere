@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -117,7 +117,7 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     }
     
     @Override
-    public Collection<YamlDataNode> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
+    public Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
         if (null != toBeAlteredRuleConfig) {
             return contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persistConfig(databaseName, Collections.singleton(toBeAlteredRuleConfig));
         }
@@ -137,8 +137,18 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     }
     
     @Override
+    public Collection<MetaDataVersion> alterGlobalRuleConfiguration(final RuleConfiguration toBeAlteredRuleConfig) {
+        return contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().persistConfig(Collections.singleton(toBeAlteredRuleConfig));
+    }
+    
+    @Override
     public void alterProperties(final Properties props) {
         contextManager.getMetaDataContexts().getPersistService().getPropsService().persist(props);
+    }
+    
+    @Override
+    public Collection<MetaDataVersion> newAlterProperties(final Properties props) {
+        return contextManager.getMetaDataContexts().getPersistService().getPropsService().persistConfig(props);
     }
     
     @Override
