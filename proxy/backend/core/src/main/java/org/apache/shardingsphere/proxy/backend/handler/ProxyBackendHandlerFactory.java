@@ -156,6 +156,9 @@ public final class ProxyBackendHandlerFactory {
         String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().isPresent()
                 ? sqlStatementContext.getTablesContext().getDatabaseName().get()
                 : connectionSession.getDatabaseName();
+        if (null == databaseName) {
+            return DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
+        }
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
         new AuthorityChecker(authorityRule, connectionSession.getGrantee()).checkPrivileges(databaseName, sqlStatementContext.getSqlStatement());
