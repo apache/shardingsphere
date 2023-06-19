@@ -56,10 +56,10 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     private final Map<String, StandardEncryptAlgorithm> standardEncryptors = new LinkedHashMap<>();
     
     @SuppressWarnings("rawtypes")
-    private final Map<String, LikeEncryptAlgorithm> likeEncryptors = new LinkedHashMap<>();
+    private final Map<String, AssistedEncryptAlgorithm> assistedEncryptors = new LinkedHashMap<>();
     
     @SuppressWarnings("rawtypes")
-    private final Map<String, AssistedEncryptAlgorithm> assistedEncryptors = new LinkedHashMap<>();
+    private final Map<String, LikeEncryptAlgorithm> likeEncryptors = new LinkedHashMap<>();
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
@@ -70,7 +70,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
         ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps())));
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
             each.getColumns().forEach(this::checkEncryptAlgorithmType);
-            tables.put(each.getName().toLowerCase(), new EncryptTable(each));
+            tables.put(each.getName().toLowerCase(), new EncryptTable(each, standardEncryptors, assistedEncryptors, likeEncryptors));
             tableNamesMapper.put(each.getName());
         }
     }
@@ -86,7 +86,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
         ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps())));
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
             each.getColumns().forEach(this::checkEncryptAlgorithmType);
-            tables.put(each.getName().toLowerCase(), new EncryptTable(each));
+            tables.put(each.getName().toLowerCase(), new EncryptTable(each, standardEncryptors, assistedEncryptors, likeEncryptors));
             tableNamesMapper.put(each.getName());
         }
     }
@@ -96,11 +96,11 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
         if (algorithm instanceof StandardEncryptAlgorithm) {
             standardEncryptors.put(encryptorName, (StandardEncryptAlgorithm) algorithm);
         }
-        if (algorithm instanceof LikeEncryptAlgorithm) {
-            likeEncryptors.put(encryptorName, (LikeEncryptAlgorithm) algorithm);
-        }
         if (algorithm instanceof AssistedEncryptAlgorithm) {
             assistedEncryptors.put(encryptorName, (AssistedEncryptAlgorithm) algorithm);
+        }
+        if (algorithm instanceof LikeEncryptAlgorithm) {
+            likeEncryptors.put(encryptorName, (LikeEncryptAlgorithm) algorithm);
         }
     }
     
@@ -199,8 +199,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
     @SuppressWarnings("rawtypes")
     private StandardEncryptAlgorithm getStandardEncryptor(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findEncryptorName(logicColumnName).map(standardEncryptors::get))
-                .orElseThrow(() -> new MissingEncryptorException(tableName, logicColumnName, "STANDARD"));
+        return findEncryptTable(tableName).flatMap(optional -> optional.findEncryptor(logicColumnName)).orElseThrow(() -> new MissingEncryptorException(tableName, logicColumnName, "STANDARD"));
     }
     
     /**
@@ -249,7 +248,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
     @SuppressWarnings("rawtypes")
     private AssistedEncryptAlgorithm getAssistedQueryEncryptor(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findAssistedQueryEncryptorName(logicColumnName).map(assistedEncryptors::get))
+        return findEncryptTable(tableName).flatMap(optional -> optional.findAssistedQueryEncryptor(logicColumnName))
                 .orElseThrow(() -> new MissingEncryptorException(tableName, logicColumnName, "ASSIST_QUERY"));
     }
     
@@ -298,7 +297,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
     @SuppressWarnings("rawtypes")
     private LikeEncryptAlgorithm getLikeQueryEncryptor(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findLikeQueryEncryptorName(logicColumnName).map(likeEncryptors::get))
+        return findEncryptTable(tableName).flatMap(optional -> optional.findLikeQueryEncryptor(logicColumnName))
                 .orElseThrow(() -> new MissingEncryptorException(tableName, logicColumnName, "LIKE_QUERY"));
     }
     

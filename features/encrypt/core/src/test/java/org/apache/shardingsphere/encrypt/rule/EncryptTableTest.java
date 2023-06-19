@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rule;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class EncryptTableTest {
     
@@ -43,17 +45,18 @@ class EncryptTableTest {
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("logicColumn", new EncryptColumnItemRuleConfiguration("cipherColumn", "myEncryptor"));
         columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assistedQueryColumn"));
         columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("likeQueryColumn"));
-        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig)));
+        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
+                Collections.singleton(columnRuleConfig)), Collections.singletonMap("myEncryptor", mock(StandardEncryptAlgorithm.class)), Collections.emptyMap(), Collections.emptyMap());
     }
     
     @Test
     void assertFindEncryptorName() {
-        assertTrue(encryptTable.findEncryptorName("logicColumn").isPresent());
+        assertTrue(encryptTable.findEncryptor("logicColumn").isPresent());
     }
     
     @Test
     void assertNotFindEncryptorName() {
-        assertFalse(encryptTable.findEncryptorName("notExistLogicColumn").isPresent());
+        assertFalse(encryptTable.findEncryptor("notExistLogicColumn").isPresent());
     }
     
     @Test

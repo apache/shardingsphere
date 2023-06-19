@@ -91,9 +91,9 @@ class MergedEncryptShowCreateTableMergedResultTest {
                         + " PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"));
     }
     
-    private EncryptRule mockEncryptRule(final Collection<EncryptColumnRuleConfiguration> columnRuleConfigurations) {
+    private EncryptRule mockEncryptRule(final Collection<EncryptColumnRuleConfiguration> columnRuleConfigs) {
         EncryptRule result = mock(EncryptRule.class);
-        EncryptTable encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt", columnRuleConfigurations));
+        EncryptTable encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt", columnRuleConfigs), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         return result;
     }

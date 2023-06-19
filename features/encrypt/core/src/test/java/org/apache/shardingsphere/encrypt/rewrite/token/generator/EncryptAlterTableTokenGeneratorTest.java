@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
@@ -79,16 +82,17 @@ class EncryptAlterTableTokenGeneratorTest {
     }
     
     private EncryptColumn mockEncryptColumn() {
-        EncryptColumn result = new EncryptColumn("certificate_number", new EncryptColumnItem("cipher_certificate_number", "test"));
-        result.setAssistedQuery(new EncryptColumnItem("assisted_certificate_number", "assisted_encryptor"));
-        result.setLikeQuery(new EncryptColumnItem("like_certificate_number", "like_encryptor"));
+        EncryptColumn result = new EncryptColumn("certificate_number", new EncryptColumnItem<StandardEncryptAlgorithm<?, ?>>("cipher_certificate_number", mock(StandardEncryptAlgorithm.class)));
+        result.setAssistedQuery(new EncryptColumnItem<AssistedEncryptAlgorithm<?, ?>>("assisted_certificate_number", mock(AssistedEncryptAlgorithm.class)));
+        result.setLikeQuery(new EncryptColumnItem<LikeEncryptAlgorithm<?, ?>>("like_certificate_number", mock(LikeEncryptAlgorithm.class)));
         return result;
     }
     
     private EncryptColumn mockNewEncryptColumn() {
-        EncryptColumn result = new EncryptColumn("certificate_number_new", new EncryptColumnItem("cipher_certificate_number_new", "test"));
-        result.setAssistedQuery(new EncryptColumnItem("assisted_certificate_number_new", "assisted_encryptor"));
-        result.setLikeQuery(new EncryptColumnItem("like_certificate_number_new", "like_encryptor"));
+        EncryptColumn result = new EncryptColumn(
+                "certificate_number_new", new EncryptColumnItem<StandardEncryptAlgorithm<?, ?>>("cipher_certificate_number_new", mock(StandardEncryptAlgorithm.class)));
+        result.setAssistedQuery(new EncryptColumnItem<AssistedEncryptAlgorithm<?, ?>>("assisted_certificate_number_new", mock(AssistedEncryptAlgorithm.class)));
+        result.setLikeQuery(new EncryptColumnItem<LikeEncryptAlgorithm<?, ?>>("like_certificate_number_new", mock(LikeEncryptAlgorithm.class)));
         return result;
     }
     
