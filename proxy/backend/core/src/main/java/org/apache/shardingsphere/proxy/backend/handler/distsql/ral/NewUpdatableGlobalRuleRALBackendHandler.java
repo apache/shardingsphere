@@ -33,7 +33,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import java.util.Collection;
 
 /**
- * Updatable RAL backend handler for global rule.
+ * New updatable RAL backend handler for global rule.
  */
 public final class NewUpdatableGlobalRuleRALBackendHandler implements DistSQLBackendHandler {
     
