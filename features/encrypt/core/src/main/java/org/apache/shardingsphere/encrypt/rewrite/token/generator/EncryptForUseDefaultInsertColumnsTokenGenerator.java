@@ -97,7 +97,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
                 addAssistedQueryColumn(result, encryptTable, columnName, columnIndex);
                 columnIndex++;
             }
-            if (encryptTable.findLikeQueryEncryptorName(columnName).isPresent()) {
+            if (encryptTable.findLikeQueryColumn(columnName).isPresent()) {
                 addLikeQueryColumn(result, encryptTable, columnName, columnIndex);
             }
         }
