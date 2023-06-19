@@ -68,7 +68,9 @@ class CountEncryptRuleExecutorTest {
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
-        when(result.getLogicTableMapper()).thenReturn(new TableNamesMapper(Collections.singleton("encrypt_table")));
+        TableNamesMapper tableNamesMapper = new TableNamesMapper();
+        tableNamesMapper.put("encrypt_table");
+        when(result.getLogicTableMapper()).thenReturn(tableNamesMapper);
         return result;
     }
 }
