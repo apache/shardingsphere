@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Delete broadcast configuration event.
+ * Delete broadcast table event.
  */
 @RequiredArgsConstructor
 @Getter

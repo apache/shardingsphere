@@ -23,7 +23,7 @@ import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Alter broadcast configuration event.
+ * Alter broadcast table event.
  */
 @RequiredArgsConstructor
 @Getter
