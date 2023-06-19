@@ -116,6 +116,14 @@ public final class SingleTableInventoryDataConsistencyChecker {
         long sourceRecordsCount = 0;
         long targetRecordsCount = 0;
         boolean contentMatched = true;
+        if (sourceCalculatedResults.hasNext() ^ targetCalculatedResults.hasNext()) {
+            if (sourceCalculatedResults.hasNext()) {
+                sourceRecordsCount = waitFuture(executor.submit(sourceCalculatedResults::next)).getRecordsCount();
+            } else {
+                targetRecordsCount = waitFuture(executor.submit(targetCalculatedResults::next)).getRecordsCount();
+            }
+            return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(sourceRecordsCount, targetRecordsCount), new DataConsistencyContentCheckResult(false));
+        }
         while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
             if (null != readRateLimitAlgorithm) {
                 readRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
