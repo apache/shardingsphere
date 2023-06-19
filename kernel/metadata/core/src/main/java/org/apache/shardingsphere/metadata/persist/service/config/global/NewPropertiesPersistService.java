@@ -70,7 +70,6 @@ public final class NewPropertiesPersistService implements GlobalPersistService<P
         return Strings.isNullOrEmpty(yamlContext) ? new Properties() : YamlEngine.unmarshal(yamlContext, Properties.class);
     }
     
-    
     private String getActiveVersion() {
         return repository.getDirectly(NewGlobalNode.getPropsActiveVersionNode());
     }
