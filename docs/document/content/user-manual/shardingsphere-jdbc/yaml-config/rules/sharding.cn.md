@@ -71,7 +71,8 @@ rules:
 
 - !BROADCAST
   tables: # 广播表规则列表
-    - t_address
+    - <table_name>
+    - <table_name>
 ```
 
 ## 操作步骤
