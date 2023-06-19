@@ -29,11 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class GlobalRuleNodeConverterTest {
     
     @Test
-    void assertGetRootNode() {
-        assertThat(GlobalRuleNodeConverter.getRootNode("transaction"), is("/rules/transaction"));
-    }
-    
-    @Test
     void assertGetVersion() {
         Optional<String> actual = GlobalRuleNodeConverter.getVersion("transaction", "/rules/transaction/versions/0");
         assertTrue(actual.isPresent());

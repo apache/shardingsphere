@@ -38,7 +38,7 @@ public final class NewYamlGlobalClockRuleConfigurationSwapper implements NewYaml
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final GlobalClockRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlGlobalClockRuleConfiguration swapToYamlConfiguration(final GlobalClockRuleConfiguration data) {
