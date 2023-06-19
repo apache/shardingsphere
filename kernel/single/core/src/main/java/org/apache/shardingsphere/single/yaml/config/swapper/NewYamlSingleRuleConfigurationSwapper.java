@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
+import org.apache.shardingsphere.single.metadata.converter.SingleNodeConverter;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 
 import java.util.Collection;
@@ -34,12 +35,10 @@ import java.util.Collections;
  */
 public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<SingleRuleConfiguration> {
     
-    private static final String ROOT_NODE = "tables";
-    
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final SingleRuleConfiguration data) {
         // TODO Consider whether to split tables and defaultDataSource
-        return Collections.singletonList(new YamlDataNode(ROOT_NODE, YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(SingleNodeConverter.getTablesPath(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlSingleRuleConfiguration swapToYamlConfiguration(final SingleRuleConfiguration data) {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.metadata.converter;
+package org.apache.shardingsphere.single.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,12 +24,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Broadcast node converter.
+ * Single node converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BroadcastNodeConverter {
+public final class SingleNodeConverter {
     
-    private static final String ROOT_NODE = "broadcast";
+    private static final String ROOT_NODE = "single";
     
     private static final String TABLES_NODE = "tables";
     
@@ -47,19 +47,19 @@ public final class BroadcastNodeConverter {
     }
     
     /**
-     * Is broadcast path.
+     * Is single path.
      *
      * @param rulePath rule path
      * @return true or false
      */
-    public static boolean isBroadcastPath(final String rulePath) {
+    public static boolean isSinglePath(final String rulePath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
     
     /**
-     * Is broadcast tables path.
+     * Is tables path.
      *
      * @param rulePath rule path
      * @return true or false
