@@ -35,6 +35,6 @@ class NewYamlTransactionRuleConfigurationSwapperTest {
     @Test
     void assertSwapToDataNodes() {
         Collection<YamlDataNode> actual = swapper.swapToDataNodes(new TransactionRuleConfiguration("", "", new Properties()));
-        assertThat(actual.iterator().next().getKey(), is("/rules/transaction"));
+        assertThat(actual.iterator().next().getKey(), is("transaction"));
     }
 }

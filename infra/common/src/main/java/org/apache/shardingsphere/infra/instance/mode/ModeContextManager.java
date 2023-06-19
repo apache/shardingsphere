@@ -21,11 +21,13 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Collections;
 
 /**
  * Mode context manager.
@@ -115,8 +117,10 @@ public interface ModeContextManager {
      *
      * @param databaseName database name
      * @param toBeAlteredRuleConfig to be altered rule config
+     * @return meta data versions
      */
-    default void alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
+    default Collection<MetaDataVersion> alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
+        return Collections.emptyList();
     }
     
     /**
@@ -129,15 +133,6 @@ public interface ModeContextManager {
     }
     
     /**
-     * Remove rule configuration.
-     *
-     * @param databaseName database name
-     * @param toBeRemovedRuleConfig to be removed rule config
-     */
-    default void removeAllRuleConfiguration(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
-    }
-    
-    /**
      * Alter global rule configuration.
      *
      * @param globalRuleConfigs global rule configs
@@ -145,11 +140,31 @@ public interface ModeContextManager {
     void alterGlobalRuleConfiguration(Collection<RuleConfiguration> globalRuleConfigs);
     
     /**
+     * TODO Need to DistSQL handle call it
+     * Alter global rule configuration.
+     *
+     * @param globalRuleConfig global rule config
+     * @return meta data versions
+     */
+    default Collection<MetaDataVersion> alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) {
+        return Collections.emptyList();
+    }
+    
+    /**
      * Alter properties.
      *
      * @param props pros
      */
     void alterProperties(Properties props);
+    
+    /**
+     * TODO Need to DistSQL handle call it
+     * New alter properties.
+     *
+     * @param props pros
+     * @return meta data versions
+     */
+    Collection<MetaDataVersion> newAlterProperties(Properties props);
     
     /**
      * Get active version by key.

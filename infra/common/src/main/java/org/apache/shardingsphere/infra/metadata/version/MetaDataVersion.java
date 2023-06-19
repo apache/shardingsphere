@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.yaml.swapper;
+package org.apache.shardingsphere.infra.metadata.version;
 
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
-import org.junit.jupiter.api.Test;
+import lombok.RequiredArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-// TODO Rename YamlTrafficRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
-class NewYamlTrafficRuleConfigurationSwapperTest {
+/**
+ * Meta data version.
+ */
+@RequiredArgsConstructor
+public final class MetaDataVersion {
     
-    private final NewYamlTrafficRuleConfigurationSwapper swapper = new NewYamlTrafficRuleConfigurationSwapper();
+    private final String persistKey;
     
-    @Test
-    void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new TrafficRuleConfiguration()).iterator().next().getKey(), is("traffic"));
-    }
+    private final String currentActiveVersion;
+    
+    private final String nextActiveVersion;
 }
