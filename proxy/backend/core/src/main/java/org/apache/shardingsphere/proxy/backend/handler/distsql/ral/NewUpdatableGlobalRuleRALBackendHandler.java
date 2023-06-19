@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.handler.ral.update.GlobalRuleRALUpdater
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -52,7 +51,7 @@ public final class NewUpdatableGlobalRuleRALBackendHandler implements DistSQLBac
         Collection<RuleConfiguration> ruleConfigurations = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigurations, ruleConfigClass);
         globalRuleUpdater.checkSQLStatement(currentRuleConfig, sqlStatement);
-        Collection<MetaDataVersion> metaDataVersions = contextManager.getInstanceContext().getModeContextManager()
+        contextManager.getInstanceContext().getModeContextManager()
                 .alterGlobalRuleConfiguration(processUpdate(ruleConfigurations, sqlStatement, globalRuleUpdater, currentRuleConfig));
         // TODO switch active version
         return new UpdateResponseHeader(sqlStatement);
