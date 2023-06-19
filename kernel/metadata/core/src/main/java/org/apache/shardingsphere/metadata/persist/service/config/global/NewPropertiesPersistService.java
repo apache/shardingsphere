@@ -42,7 +42,7 @@ public final class NewPropertiesPersistService implements GlobalPersistService<P
     
     @Override
     public void persist(final Properties props) {
-        if (Strings.isNullOrEmpty(repository.getDirectly(getActiveVersion()))) {
+        if (Strings.isNullOrEmpty(getActiveVersion())) {
             repository.persist(NewGlobalNode.getPropsActiveVersionNode(), DEFAULT_VERSION);
         }
         List<String> versions = repository.getChildrenKeys(NewGlobalNode.getPropsVersionsNode());
@@ -54,7 +54,7 @@ public final class NewPropertiesPersistService implements GlobalPersistService<P
     
     @Override
     public Collection<MetaDataVersion> persistConfig(final Properties props) {
-        if (Strings.isNullOrEmpty(repository.getDirectly(getActiveVersion()))) {
+        if (Strings.isNullOrEmpty(getActiveVersion())) {
             repository.persist(NewGlobalNode.getPropsActiveVersionNode(), DEFAULT_VERSION);
         }
         List<String> versions = repository.getChildrenKeys(NewGlobalNode.getPropsVersionsNode());
