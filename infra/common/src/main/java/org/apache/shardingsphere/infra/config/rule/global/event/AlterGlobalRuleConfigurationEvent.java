@@ -32,4 +32,8 @@ public final class AlterGlobalRuleConfigurationEvent implements GovernanceEvent 
     private final RuleConfiguration config;
     
     private final String ruleSimpleName;
+    
+    private final String versionKey;
+    
+    private final int version;
 }
