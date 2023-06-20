@@ -32,7 +32,7 @@ public final class DeleteShardingAlgorithmEvent implements GovernanceEvent {
     
     private final String algorithmName;
     
-    private final String versionKey;
+    private final String activeVersionKey;
     
-    private final int version;
+    private final String activeVersion;
 }

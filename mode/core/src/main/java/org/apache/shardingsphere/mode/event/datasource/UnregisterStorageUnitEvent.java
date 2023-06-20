@@ -32,7 +32,7 @@ public final class UnregisterStorageUnitEvent implements GovernanceEvent {
     
     private final String storageUnitName;
     
-    private final String versionKey;
+    private final String activeVersionKey;
     
-    private final int version;
+    private final String activeVersion;
 }

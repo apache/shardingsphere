@@ -60,7 +60,7 @@ value ::=
 ### Supplement
 
 - `transactionalReadQueryStrategyType` specifies the routing strategy for read query within a transaction, please refer to [YAML configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/);
-- `loadBalancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm]((/en/user-manual/common-config/builtin-algorithm/load-balance/)).
+- `loadBalancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm](/en/user-manual/common-config/builtin-algorithm/load-balance/).
 
 ### Example
 

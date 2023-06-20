@@ -62,10 +62,21 @@ public final class NewDatabaseMetaDataNode {
      *
      * @param databaseName database name
      * @param dataSourceName data source name
-     * @param version version
      * @return data source node
      */
-    public static String getDataSourceNode(final String databaseName, final String dataSourceName, final String version) {
+    public static String getDataSourceNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourcesNode(databaseName), dataSourceName);
+    }
+    
+    /**
+     * Get data Source node with version.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @param version version
+     * @return data source node with version
+     */
+    public static String getDataSourceNodeWithVersion(final String databaseName, final String dataSourceName, final String version) {
         return String.join("/", getDataSourceVersionsNode(databaseName, dataSourceName), version);
     }
     
@@ -385,13 +396,14 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
-     * Decorate active version.
+     * Get version node by active version path.
      *
      * @param rulePath rule path
-     * @return group name
+     * @param activeVersion active version
+     * @return active version node
      */
-    public static String decorateActiveVersion(final String rulePath) {
-        return rulePath.substring(0, rulePath.indexOf(VERSIONS)) + ACTIVE_VERSION;
+    public static String getVersionNodeByActiveVersionPath(final String rulePath, final String activeVersion) {
+        return rulePath.substring(0, rulePath.indexOf(ACTIVE_VERSION)) + VERSIONS + "/" + activeVersion;
     }
     
     private static String getMetaDataNodeNode() {

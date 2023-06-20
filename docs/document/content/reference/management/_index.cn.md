@@ -80,7 +80,7 @@ sqlParser:
 
 ### /props
 
-属性配置，详情请参见[配置手册](/cn/user-manual/shardingsphere-jdbc/props/)。
+属性配置，详情请参见[配置手册](/cn/user-manual/common-config/props/)。
 
 ```yaml
 kernel-executor-size: 20

@@ -102,9 +102,4 @@
         <Class name="org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient" />
         <Bug code="IS" />
     </Match>
-    <!-- TODO chuxin fix the ignored bug -->
-    <Match>
-        <Class name="org.apache.shardingsphere.data.pipeline.core.execute.ShardingSphereDataJobWorker" />
-        <Bug code="JLM" />
-    </Match>
 </FindBugsFilter>

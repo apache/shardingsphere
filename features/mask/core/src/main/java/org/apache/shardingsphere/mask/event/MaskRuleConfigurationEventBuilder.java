@@ -52,20 +52,20 @@ public final class MaskRuleConfigurationEventBuilder implements RuleConfiguratio
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> version = MaskNodeConverter.getMaskTableVersion(event.getKey());
             if (version.isPresent()) {
-                return createMaskConfigEvent(databaseName, tableName.get(), Integer.parseInt(version.get()), event);
+                return createMaskConfigEvent(databaseName, tableName.get(), version.get(), event);
             }
         }
         Optional<String> algorithmName = MaskNodeConverter.getAlgorithmName(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> algorithmVersion = MaskNodeConverter.getMaskAlgorithmVersion(event.getKey());
             if (algorithmVersion.isPresent()) {
-                return createMaskAlgorithmEvent(databaseName, algorithmName.get(), Integer.parseInt(algorithmVersion.get()), event);
+                return createMaskAlgorithmEvent(databaseName, algorithmName.get(), algorithmVersion.get(), event);
             }
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createMaskConfigEvent(final String databaseName, final String tableName, final int version, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createMaskConfigEvent(final String databaseName, final String tableName, final String version, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return Optional.of(new AddMaskConfigurationEvent(databaseName, swapMaskTableRuleConfig(event.getValue()), event.getKey(), version));
         }
@@ -79,7 +79,7 @@ public final class MaskRuleConfigurationEventBuilder implements RuleConfiguratio
         return new YamlMaskTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlMaskTableRuleConfiguration.class));
     }
     
-    private Optional<GovernanceEvent> createMaskAlgorithmEvent(final String databaseName, final String algorithmName, final int version, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createMaskAlgorithmEvent(final String databaseName, final String algorithmName, final String version, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return Optional.of(new AlterMaskAlgorithmEvent(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue()), event.getKey(), version));
         }

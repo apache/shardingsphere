@@ -55,6 +55,9 @@ public final class EncryptorSubscriber implements RuleConfigurationSubscribeCoor
      */
     @Subscribe
     public synchronized void renew(final AlterEncryptorEvent event) {
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getEncryptors().put(event.getEncryptorName(), event.getConfig());
@@ -67,6 +70,9 @@ public final class EncryptorSubscriber implements RuleConfigurationSubscribeCoor
      */
     @Subscribe
     public synchronized void renew(final DeleteEncryptorEvent event) {
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getEncryptors().remove(event.getEncryptorName());

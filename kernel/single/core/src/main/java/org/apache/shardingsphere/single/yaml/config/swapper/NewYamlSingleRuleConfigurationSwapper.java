@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.single.yaml.config.swapper;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
@@ -51,10 +50,9 @@ public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleC
     @Override
     public SingleRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            if (Strings.isNullOrEmpty(each.getValue())) {
-                continue;
+            if (SingleNodeConverter.isSinglePath(each.getKey())) {
+                return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class));
             }
-            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class));
         }
         return new SingleRuleConfiguration();
     }

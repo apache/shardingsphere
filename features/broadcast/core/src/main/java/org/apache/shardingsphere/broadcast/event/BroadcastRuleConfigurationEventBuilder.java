@@ -43,19 +43,22 @@ public final class BroadcastRuleConfigurationEventBuilder implements RuleConfigu
             return Optional.empty();
         }
         if (BroadcastNodeConverter.isTablesPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
-            return createBroadcastConfigEvent(databaseName, event);
+            Optional<String> tablesVersion = BroadcastNodeConverter.getTablesVersion(event.getKey());
+            if (tablesVersion.isPresent()) {
+                return createBroadcastConfigEvent(databaseName, tablesVersion.get(), event);
+            }
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createBroadcastConfigEvent(final String databaseName, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createBroadcastConfigEvent(final String databaseName, final String version, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddBroadcastTableEvent(databaseName, swapBroadcastTableRuleConfig(event.getValue())));
+            return Optional.of(new AddBroadcastTableEvent(databaseName, swapBroadcastTableRuleConfig(event.getValue()), event.getKey(), version));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterBroadcastTableEvent(databaseName, swapBroadcastTableRuleConfig(event.getValue())));
+            return Optional.of(new AlterBroadcastTableEvent(databaseName, swapBroadcastTableRuleConfig(event.getValue()), event.getKey(), version));
         }
-        return Optional.of(new DeleteBroadcastTableEvent(databaseName));
+        return Optional.of(new DeleteBroadcastTableEvent(databaseName, event.getKey(), version));
     }
     
     private BroadcastRuleConfiguration swapBroadcastTableRuleConfig(final String yamlContext) {

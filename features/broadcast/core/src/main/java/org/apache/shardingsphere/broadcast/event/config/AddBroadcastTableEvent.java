@@ -32,4 +32,8 @@ public final class AddBroadcastTableEvent implements GovernanceEvent {
     private final String databaseName;
     
     private final BroadcastRuleConfiguration config;
+    
+    private final String activeVersionKey;
+    
+    private final String version;
 }

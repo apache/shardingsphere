@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.event.config;
+package org.apache.shardingsphere.encrypt.event.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Alter encrypt configuration event.
+ * Delete encrypt table event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterEncryptConfigurationEvent implements GovernanceEvent {
+public final class DeleteEncryptTableEvent implements GovernanceEvent {
     
     private final String databaseName;
     
     private final String tableName;
     
-    private final EncryptTableRuleConfiguration config;
+    private final String activeVersionKey;
     
-    private final String versionKey;
-    
-    private final int version;
+    private final String activeVersion;
 }

@@ -59,7 +59,7 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
      */
     @Subscribe
     public synchronized void renew(final AddMaskConfigurationEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
@@ -83,7 +83,7 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
      */
     @Subscribe
     public synchronized void renew(final AlterMaskConfigurationEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
@@ -101,7 +101,7 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
      */
     @Subscribe
     public synchronized void renew(final DeleteMaskConfigurationEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());

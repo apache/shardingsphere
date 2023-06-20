@@ -51,17 +51,17 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
         if (ReadwriteSplittingNodeConverter.isDataSourcePath(event.getKey())) {
             Optional<String> groupNameVersion = ReadwriteSplittingNodeConverter.getGroupNameVersion(event.getKey());
             if (groupNameVersion.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-                return createReadwriteSplittingConfigEvent(databaseName, Integer.parseInt(groupNameVersion.get()), event);
+                return createReadwriteSplittingConfigEvent(databaseName, groupNameVersion.get(), event);
             }
         }
         Optional<String> loadBalancerNameVersion = ReadwriteSplittingNodeConverter.getLoadBalancerNameVersion(event.getKey());
         if (loadBalancerNameVersion.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createLoadBalanceEvent(databaseName, Integer.parseInt(loadBalancerNameVersion.get()), event);
+            return createLoadBalanceEvent(databaseName, loadBalancerNameVersion.get(), event);
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createReadwriteSplittingConfigEvent(final String databaseName, final int version, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createReadwriteSplittingConfigEvent(final String databaseName, final String version, final DataChangedEvent event) {
         String groupName = ReadwriteSplittingNodeConverter.getGroupName(event.getKey()).orElse("");
         if (Type.ADDED == event.getType()) {
             return Optional.of(new AddReadwriteSplittingConfigurationEvent(databaseName, swapDataSource(groupName, event.getValue()), event.getKey(), version));
@@ -84,7 +84,7 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
                 : TransactionalReadQueryStrategy.valueOf(yamlDataSourceRuleConfig.getTransactionalReadQueryStrategy());
     }
     
-    private Optional<GovernanceEvent> createLoadBalanceEvent(final String databaseName, final int version, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createLoadBalanceEvent(final String databaseName, final String version, final DataChangedEvent event) {
         String loadBalanceName = ReadwriteSplittingNodeConverter.getLoadBalancerName(event.getKey()).orElse("");
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return Optional.of(new AlterLoadBalanceEvent(databaseName, loadBalanceName, swapToAlgorithmConfig(event.getValue()), event.getKey(), version));

@@ -33,7 +33,7 @@ public final class AlterShardingAuditorStrategyConfigurationEvent implements Gov
     
     private final ShardingAuditStrategyConfiguration config;
     
-    private final String versionKey;
+    private final String activeVersionKey;
     
-    private final int version;
+    private final String activeVersion;
 }
