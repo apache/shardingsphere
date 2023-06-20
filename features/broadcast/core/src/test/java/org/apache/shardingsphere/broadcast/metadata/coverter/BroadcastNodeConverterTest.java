@@ -30,7 +30,7 @@ class BroadcastNodeConverterTest {
     
     @Test
     void assertGetTablesVersion() {
-        Optional<String> actual = BroadcastNodeConverter.getTablesVersion("/metadata/foo_db/rules/broadcast/tables/versions/1");
+        Optional<String> actual = BroadcastNodeConverter.getTablesVersion("/metadata/foo_db/rules/broadcast/tables/foo/versions/1");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("1"));
     }

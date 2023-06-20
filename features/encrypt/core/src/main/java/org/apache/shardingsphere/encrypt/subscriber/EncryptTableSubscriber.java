@@ -21,9 +21,9 @@ import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.event.config.AddEncryptConfigurationEvent;
-import org.apache.shardingsphere.encrypt.event.config.AlterEncryptConfigurationEvent;
-import org.apache.shardingsphere.encrypt.event.config.DeleteEncryptConfigurationEvent;
+import org.apache.shardingsphere.encrypt.event.table.AddEncryptTableEvent;
+import org.apache.shardingsphere.encrypt.event.table.AlterEncryptTableEvent;
+import org.apache.shardingsphere.encrypt.event.table.DeleteEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -35,11 +35,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Encrypt configuration subscriber.
+ * Encrypt table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 @RequiredArgsConstructor
-public final class EncryptConfigurationSubscriber implements RuleConfigurationSubscribeCoordinator {
+public final class EncryptTableSubscriber implements RuleConfigurationSubscribeCoordinator {
     
     private Map<String, ShardingSphereDatabase> databases;
     
@@ -58,7 +58,7 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
      * @param event add encrypt configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddEncryptConfigurationEvent event) {
+    public synchronized void renew(final AddEncryptTableEvent event) {
         if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -81,7 +81,7 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
      * @param event alter encrypt configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterEncryptConfigurationEvent event) {
+    public synchronized void renew(final AlterEncryptTableEvent event) {
         if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -99,7 +99,7 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
      * @param event delete encrypt configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteEncryptConfigurationEvent event) {
+    public synchronized void renew(final DeleteEncryptTableEvent event) {
         if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
