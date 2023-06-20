@@ -116,7 +116,7 @@ class NewDatabaseMetaDataNodeTest {
     
     @Test
     void assertGetMetaDataDataSourceNode() {
-        assertThat(NewDatabaseMetaDataNode.getDataSourceNode("foo_db", "foo_ds", "0"), is("/metadata/foo_db/data_sources/foo_ds/versions/0"));
+        assertThat(NewDatabaseMetaDataNode.getDataSourceNodeWithVersion("foo_db", "foo_ds", "0"), is("/metadata/foo_db/data_sources/foo_ds/versions/0"));
     }
     
     @Test

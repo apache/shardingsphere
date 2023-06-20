@@ -26,12 +26,12 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSour
 import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -53,9 +53,16 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
                 repository.persist(NewDatabaseMetaDataNode.getDataSourceActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
             }
             List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getDataSourceVersionsNode(databaseName, entry.getKey()));
-            repository.persist(NewDatabaseMetaDataNode.getDataSourceNode(databaseName, entry.getKey(), versions.isEmpty()
+            repository.persist(NewDatabaseMetaDataNode.getDataSourceNodeWithVersion(databaseName, entry.getKey(), versions.isEmpty()
                     ? DEFAULT_VERSION
                     : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
+        }
+    }
+    
+    @Override
+    public void delete(final String databaseName, final Map<String, DataSourceProperties> dataSourceConfigs) {
+        for (Entry<String, DataSourceProperties> entry : dataSourceConfigs.entrySet()) {
+            repository.delete(NewDatabaseMetaDataNode.getDataSourceNode(databaseName, entry.getKey()));
         }
     }
     
@@ -69,20 +76,21 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
             }
             List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getDataSourceVersionsNode(databaseName, entry.getKey()));
             String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            String persistKey = NewDatabaseMetaDataNode.getDataSourceNode(databaseName, entry.getKey(), nextActiveVersion);
+            String persistKey = NewDatabaseMetaDataNode.getDataSourceNodeWithVersion(databaseName, entry.getKey(), nextActiveVersion);
             repository.persist(persistKey, YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
             result.add(new MetaDataVersion(persistKey, NewDatabaseMetaDataNode.getDataSourceActiveVersionNode(databaseName, entry.getKey()), nextActiveVersion));
         }
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public Map<String, DataSourceProperties> load(final String databaseName) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
         for (String each : repository.getChildrenKeys(NewDatabaseMetaDataNode.getDataSourcesNode(databaseName))) {
-            String dataSourceValue = repository.getDirectly(NewDatabaseMetaDataNode.getDataSourceNode(databaseName, each, getDataSourceActiveVersion(databaseName, each)));
-            if (Strings.isNullOrEmpty(dataSourceValue)) {
-                result.put(each, YamlEngine.unmarshal(dataSourceValue, DataSourceProperties.class));
+            String dataSourceValue = repository.getDirectly(NewDatabaseMetaDataNode.getDataSourceNodeWithVersion(databaseName, each, getDataSourceActiveVersion(databaseName, each)));
+            if (!Strings.isNullOrEmpty(dataSourceValue)) {
+                result.put(each, new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
             }
         }
         return result;
@@ -91,6 +99,11 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
     @Override
     public Map<String, DataSourceProperties> load(final String databaseName, final String version) {
         return Collections.emptyMap();
+    }
+    
+    @Override
+    public void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
+        persist(databaseName, toBeAppendedDataSourcePropsMap);
     }
     
     private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {
