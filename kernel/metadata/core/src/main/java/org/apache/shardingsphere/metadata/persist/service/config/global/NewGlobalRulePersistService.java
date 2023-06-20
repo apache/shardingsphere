@@ -101,6 +101,12 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
         return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
     }
     
+    @Override
+    public Collection<RuleConfiguration> load(final String ruleName) {
+        Collection<YamlDataNode> dataNodes = getDataNodes(NewGlobalNode.getGlobalRuleVersionsNode(ruleName));
+        return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
+    }
+    
     /**
      * TODO Avoid load all keys.
      * Load all users.

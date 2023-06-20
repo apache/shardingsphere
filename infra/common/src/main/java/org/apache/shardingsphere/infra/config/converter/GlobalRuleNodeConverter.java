@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rule.global.converter;
+package org.apache.shardingsphere.infra.config.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -52,19 +52,30 @@ public final class GlobalRuleNodeConverter {
     }
     
     /**
-     * Is expected rule name.
+     * Is active version path.
      *
-     * @param ruleName rule name
      * @param rulePath rule path
-     * @return true or false
+     * @return version
      */
-    public static boolean isExpectedRuleName(final String ruleName, final String rulePath) {
-        Pattern pattern = Pattern.compile(getRootNode(ruleName) + "\\.*", Pattern.CASE_INSENSITIVE);
+    public static boolean isActiveVersionPath(final String rulePath) {
+        Pattern pattern = Pattern.compile(getRuleNameNode() + "/([\\w\\-]+)/active_version$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
     
-    private static String getRootNode(final String ruleName) {
-        return String.join("/", ruleName);
+    /**
+     * Get rule name.
+     *
+     * @param rulePath rule path
+     * @return rule name
+     */
+    public static Optional<String> getRuleName(final String rulePath) {
+        Pattern pattern = Pattern.compile(getRuleNameNode() + "/([\\w\\-]+)/active_version$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    private static String getRuleNameNode() {
+        return String.join("/", "", ROOT_NODE);
     }
 }

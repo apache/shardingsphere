@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.converter;
+package org.apache.shardingsphere.infra.config.converter;
 
-import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalRuleNodeConverterTest {
@@ -36,7 +35,14 @@ class GlobalRuleNodeConverterTest {
     }
     
     @Test
-    void assertIsExpectedRuleName() {
-        assertTrue(GlobalRuleNodeConverter.isExpectedRuleName("transaction", "/rules/transaction/versions/0"));
+    void assertIsActiveVersionPath() {
+        assertTrue(GlobalRuleNodeConverter.isActiveVersionPath("/rules/transaction/active_version"));
+    }
+    
+    @Test
+    void assertGetRuleName() {
+        Optional<String> actual = GlobalRuleNodeConverter.getRuleName("/rules/transaction/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("transaction"));
     }
 }
