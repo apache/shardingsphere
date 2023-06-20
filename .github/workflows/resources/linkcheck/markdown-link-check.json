@@ -11,15 +11,25 @@
     },
     {
       "pattern": "^https://twitter.com*"
+    },
+    {
+      "pattern": "^https://central.sonatype.com/"
     }
   ], "replacementPatterns": [
   {
-    "pattern": "^/cn/",
-    "replacement": "https://shardingsphere.apache.org/document/current/cn/"
+    "pattern": "^/cn/(dev-manual|downloads|faq|features|overview|quick-start|reference|test-manual|user-manual)",
+    "replacement": "https://shardingsphere.apache.org/document/current/cn/$1"
   },
   {
-    "pattern": "^/en/",
-    "replacement": "https://shardingsphere.apache.org/document/current/en/"
+    "pattern": "^/en/(dev-manual|downloads|faq|features|overview|quick-start|reference|test-manual|user-manual)",
+    "replacement": "https://shardingsphere.apache.org/document/current/en/$1"
+  },{
+    "pattern": "^/cn/videos",
+    "replacement": "https://shardingsphere.apache.org/blog/cn/videos"
+  },
+  {
+    "pattern": "^/en/videos",
+    "replacement": "https://shardingsphere.apache.org/blog/en/videos"
   }],
   "timeout": "10s",
   "retryOn429": true,
