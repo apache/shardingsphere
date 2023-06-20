@@ -11,6 +11,9 @@
     },
     {
       "pattern": "^https://twitter.com*"
+    },
+    {
+      "pattern": "^https://central.sonatype.com/"
     }
   ], "replacementPatterns": [
   {
