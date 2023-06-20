@@ -59,7 +59,7 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
         if (encryptorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> encryptorVersion = EncryptNodeConverter.getEncryptorVersion(event.getKey());
             if (encryptorVersion.isPresent()) {
-                return createEncryptorEvent(databaseName, encryptorName.get(), Integer.parseInt(encryptorVersion.get()), event);   
+                return createEncryptorEvent(databaseName, encryptorName.get(), Integer.parseInt(encryptorVersion.get()), event);
             }
         }
         return Optional.empty();
