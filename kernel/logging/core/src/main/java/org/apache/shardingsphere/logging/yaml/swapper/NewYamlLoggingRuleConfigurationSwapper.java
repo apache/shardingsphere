@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.logging.yaml.swapper;
 
+import org.apache.shardingsphere.infra.config.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigur
 import org.apache.shardingsphere.logging.yaml.config.YamlAppendersConfigurationConverter;
 import org.apache.shardingsphere.logging.yaml.config.YamlLoggersConfigurationConverter;
 import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration;
-import org.apache.shardingsphere.metadata.persist.converter.GlobalRuleNodeConverter;
 
 import java.util.Collection;
 import java.util.Collections;
