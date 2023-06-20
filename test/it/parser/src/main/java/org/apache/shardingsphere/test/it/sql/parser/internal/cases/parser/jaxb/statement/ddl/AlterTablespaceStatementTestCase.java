@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.config;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.tablespace.ExpectedTablespace;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * CDC rule configuration.
+ * Alter tablespace statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CDCRuleConfiguration implements GlobalRuleConfiguration {
+@Setter
+public final class AlterTablespaceStatementTestCase extends SQLParserTestCase {
     
-    private final boolean enabled;
+    @XmlElement(name = "tablespace")
+    private ExpectedTablespace tablespace;
     
-    private final int port;
+    @XmlElement(name = "rename")
+    private ExpectedTablespace renameTablespace;
 }

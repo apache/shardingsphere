@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.version;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
  * Meta data version.
  */
+@Getter
 @RequiredArgsConstructor
 public final class MetaDataVersion {
     

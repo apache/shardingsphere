@@ -20,6 +20,7 @@ package org.apache.shardingsphere.broadcast.metadata.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,10 +38,12 @@ public final class BroadcastNodeConverter {
     
     private static final String VERSION_PATTERN = "/versions/[0-9]+";
     
+    private static final String VERSION_PATH = "/versions/([0-9]+)";
+    
     /**
-     * Get table name path.
+     * Get tables path.
      *
-     * @return table name path
+     * @return tables path
      */
     public static String getTablesPath() {
         return TABLES_NODE;
@@ -68,5 +71,17 @@ public final class BroadcastNodeConverter {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
+    }
+    
+    /**
+     * Get tables version.
+     *
+     * @param rulePath rule path
+     * @return tables version
+     */
+    public static Optional<String> getTablesVersion(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + VERSION_PATH, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
 }

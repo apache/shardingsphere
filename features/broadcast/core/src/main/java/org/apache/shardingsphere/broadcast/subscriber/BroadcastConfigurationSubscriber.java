@@ -57,6 +57,9 @@ public final class BroadcastConfigurationSubscriber implements RuleConfiguration
      */
     @Subscribe
     public synchronized void renew(final AddBroadcastTableEvent event) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         BroadcastRuleConfiguration needToAddedConfig = event.getConfig();
         Optional<BroadcastRule> rule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
@@ -78,6 +81,9 @@ public final class BroadcastConfigurationSubscriber implements RuleConfiguration
      */
     @Subscribe
     public synchronized void renew(final AlterBroadcastTableEvent event) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         BroadcastRuleConfiguration needToAlteredConfig = event.getConfig();
         BroadcastRuleConfiguration config = database.getRuleMetaData().getSingleRule(BroadcastRule.class).getConfiguration();
@@ -93,6 +99,9 @@ public final class BroadcastConfigurationSubscriber implements RuleConfiguration
      */
     @Subscribe
     public synchronized void renew(final DeleteBroadcastTableEvent event) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         BroadcastRuleConfiguration config = database.getRuleMetaData().getSingleRule(BroadcastRule.class).getConfiguration();
         config.getTables().clear();
