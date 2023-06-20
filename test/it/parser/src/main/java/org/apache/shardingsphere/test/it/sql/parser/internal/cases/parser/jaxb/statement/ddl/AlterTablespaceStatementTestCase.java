@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.tablespace.ExpectedTablespace;
 
-import java.util.Optional;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Alter tablespace statement.
+ * Alter tablespace statement test case.
  */
 @Getter
 @Setter
-public abstract class AlterTablespaceStatement extends AbstractSQLStatement implements DDLStatement {
+public final class AlterTablespaceStatementTestCase extends SQLParserTestCase {
     
-    private TablespaceSegment tablespaceSegment;
+    @XmlElement(name = "tablespace")
+    private ExpectedTablespace tablespace;
     
-    private TablespaceSegment renameTablespaceSegment;
-    
-    /**
-     * Get rename tablespace.
-     *
-     * @return rename tablespace
-     */
-    public Optional<TablespaceSegment> getRenameTablespace() {
-        return Optional.ofNullable(renameTablespaceSegment);
-    }
+    @XmlElement(name = "rename")
+    private ExpectedTablespace renameTablespace;
 }
