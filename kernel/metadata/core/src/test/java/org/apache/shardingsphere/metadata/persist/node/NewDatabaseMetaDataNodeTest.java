@@ -104,9 +104,9 @@ class NewDatabaseMetaDataNodeTest {
     }
     
     @Test
-    void assertDecorateActiveVersion() {
-        assertThat(NewDatabaseMetaDataNode.decorateActiveVersion("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"),
-                is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
+    void assertGetVersionNodeByActiveVersionPath() {
+        assertThat(NewDatabaseMetaDataNode.getVersionNodeByActiveVersionPath("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0"),
+                is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
     }
     
     @Test
