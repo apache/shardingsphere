@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.event.config;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.tablespace.ExpectedTablespace;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Delete broadcast table event.
+ * Alter tablespace statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DeleteBroadcastTableEvent implements GovernanceEvent {
+@Setter
+public final class AlterTablespaceStatementTestCase extends SQLParserTestCase {
     
-    private final String databaseName;
+    @XmlElement(name = "tablespace")
+    private ExpectedTablespace tablespace;
     
-    private final String versionKey;
-    
-    private final int version;
+    @XmlElement(name = "rename")
+    private ExpectedTablespace renameTablespace;
 }

@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.event.config;
+package org.apache.shardingsphere.broadcast.metadata.coverter;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.broadcast.metadata.converter.BroadcastNodeConverter;
+import org.junit.jupiter.api.Test;
 
-/**
- * Delete broadcast table event.
- */
-@RequiredArgsConstructor
-@Getter
-public final class DeleteBroadcastTableEvent implements GovernanceEvent {
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class BroadcastNodeConverterTest {
     
-    private final String databaseName;
-    
-    private final String versionKey;
-    
-    private final int version;
+    @Test
+    void assertGetTablesVersion() {
+        Optional<String> actual = BroadcastNodeConverter.getTablesVersion("/metadata/foo_db/rules/broadcast/tables/versions/1");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("1"));
+    }
 }

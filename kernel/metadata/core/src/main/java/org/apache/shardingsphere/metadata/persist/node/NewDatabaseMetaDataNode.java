@@ -62,10 +62,21 @@ public final class NewDatabaseMetaDataNode {
      *
      * @param databaseName database name
      * @param dataSourceName data source name
-     * @param version version
      * @return data source node
      */
-    public static String getDataSourceNode(final String databaseName, final String dataSourceName, final String version) {
+    public static String getDataSourceNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourcesNode(databaseName), dataSourceName);
+    }
+    
+    /**
+     * Get data Source node with version.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @param version version
+     * @return data source node with version
+     */
+    public static String getDataSourceNodeWithVersion(final String databaseName, final String dataSourceName, final String version) {
         return String.join("/", getDataSourceVersionsNode(databaseName, dataSourceName), version);
     }
     

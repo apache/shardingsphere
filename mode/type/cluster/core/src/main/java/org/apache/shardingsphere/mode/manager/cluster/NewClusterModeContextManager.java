@@ -101,12 +101,12 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) {
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().persist(databaseName,
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().delete(databaseName,
                 getToBeReversedDataSourcePropsMap(contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(databaseName), toBeDroppedStorageUnitNames));
     }
     
     private Map<String, DataSourceProperties> getToBeReversedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
-        return dataSourcePropsMap.entrySet().stream().filter(entry -> !toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return dataSourcePropsMap.entrySet().stream().filter(entry -> toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
     
     @Override

@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.event.config;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.tablespace;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
 
 /**
- * Delete broadcast table event.
+ * Expected tablespace.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DeleteBroadcastTableEvent implements GovernanceEvent {
-    
-    private final String databaseName;
-    
-    private final String versionKey;
-    
-    private final int version;
+public final class ExpectedTablespace extends AbstractExpectedIdentifierSQLSegment {
 }

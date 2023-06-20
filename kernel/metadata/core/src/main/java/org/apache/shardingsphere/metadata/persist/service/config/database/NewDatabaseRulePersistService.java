@@ -27,12 +27,11 @@ import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.AbstractPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
-import java.util.Collections;
 import java.util.Collection;
-import java.util.Map;
-import java.util.List;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -95,8 +94,7 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Collection<YamlDataNode> delete(final String databaseName, final Collection<RuleConfiguration> configs) {
-        Collection<YamlDataNode> result = new LinkedHashSet<>();
+    public void delete(final String databaseName, final Collection<RuleConfiguration> configs) {
         Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
         for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
@@ -104,9 +102,7 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
                 continue;
             }
             deleteDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), dataNodes);
-            result.addAll(dataNodes);
         }
-        return result;
     }
     
     private void deleteDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
