@@ -403,7 +403,7 @@ public final class NewDatabaseMetaDataNode {
      * @return active version node
      */
     public static String getVersionNodeByActiveVersionPath(final String rulePath, final String activeVersion) {
-        return String.join(rulePath.substring(0, rulePath.indexOf(ACTIVE_VERSION)), VERSIONS, activeVersion);
+        return rulePath.substring(0, rulePath.indexOf(ACTIVE_VERSION)) + VERSIONS + "/" + activeVersion;
     }
     
     private static String getMetaDataNodeNode() {
