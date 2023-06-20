@@ -19,9 +19,9 @@ package org.apache.shardingsphere.encrypt.event;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.event.config.AddEncryptConfigurationEvent;
-import org.apache.shardingsphere.encrypt.event.config.AlterEncryptConfigurationEvent;
-import org.apache.shardingsphere.encrypt.event.config.DeleteEncryptConfigurationEvent;
+import org.apache.shardingsphere.encrypt.event.table.AddEncryptTableEvent;
+import org.apache.shardingsphere.encrypt.event.table.AlterEncryptTableEvent;
+import org.apache.shardingsphere.encrypt.event.table.DeleteEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.encryptor.AlterEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.encryptor.DeleteEncryptorEvent;
 import org.apache.shardingsphere.encrypt.metadata.converter.EncryptNodeConverter;
@@ -67,12 +67,12 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
     
     private Optional<GovernanceEvent> createEncryptConfigEvent(final String databaseName, final String groupName, final int version, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddEncryptConfigurationEvent(databaseName, swapEncryptTableRuleConfig(event.getValue()), event.getKey(), version));
+            return Optional.of(new AddEncryptTableEvent(databaseName, swapEncryptTableRuleConfig(event.getValue()), event.getKey(), version));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterEncryptConfigurationEvent(databaseName, groupName, swapEncryptTableRuleConfig(event.getValue()), event.getKey(), version));
+            return Optional.of(new AlterEncryptTableEvent(databaseName, groupName, swapEncryptTableRuleConfig(event.getValue()), event.getKey(), version));
         }
-        return Optional.of(new DeleteEncryptConfigurationEvent(databaseName, groupName, event.getKey(), version));
+        return Optional.of(new DeleteEncryptTableEvent(databaseName, groupName, event.getKey(), version));
     }
     
     private EncryptTableRuleConfiguration swapEncryptTableRuleConfig(final String yamlContext) {
