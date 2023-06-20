@@ -172,7 +172,7 @@ public interface ModeContextManager {
      * @param key key
      * @return active version
      */
-    default int getActiveVersionByKey(String key) {
-        return 0;
+    default String getActiveVersionByKey(String key) {
+        return "";
     }
 }

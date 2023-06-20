@@ -396,13 +396,14 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
-     * Decorate active version.
+     * Get version node by active version path.
      *
      * @param rulePath rule path
-     * @return group name
+     * @param activeVersion active version
+     * @return active version node
      */
-    public static String decorateActiveVersion(final String rulePath) {
-        return rulePath.substring(0, rulePath.indexOf(VERSIONS)) + ACTIVE_VERSION;
+    public static String getVersionNodeByActiveVersionPath(final String rulePath, final String activeVersion) {
+        return rulePath.substring(0, rulePath.indexOf(ACTIVE_VERSION)) + VERSIONS + "/" + activeVersion;
     }
     
     private static String getMetaDataNodeNode() {

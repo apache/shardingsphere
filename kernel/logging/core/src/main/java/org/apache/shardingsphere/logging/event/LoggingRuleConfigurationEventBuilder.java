@@ -49,12 +49,12 @@ public final class LoggingRuleConfigurationEventBuilder implements GlobalRuleCon
         }
         Optional<String> version = GlobalRuleNodeConverter.getVersion(LOGGING, event.getKey());
         if (version.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return buildEvent(event, Integer.parseInt(version.get()));
+            return buildEvent(event, version.get());
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event, final int version) {
+    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event, final String version) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE, event.getKey(), version));
         }

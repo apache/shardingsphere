@@ -33,7 +33,7 @@ public final class AddReadwriteSplittingConfigurationEvent implements Governance
     
     private final ReadwriteSplittingDataSourceRuleConfiguration config;
     
-    private final String versionKey;
+    private final String activeVersionKey;
     
-    private final int version;
+    private final String activeVersion;
 }

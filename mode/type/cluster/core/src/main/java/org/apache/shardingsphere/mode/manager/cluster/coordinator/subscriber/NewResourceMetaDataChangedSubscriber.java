@@ -89,7 +89,7 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterTableEvent event) {
-        if (event.getVersion() < contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getTable(), null);
@@ -102,7 +102,7 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DropTableEvent event) {
-        if (event.getVersion() < contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), null);
@@ -116,7 +116,7 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterViewEvent event) {
-        if (event.getVersion() < contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getView());
@@ -129,7 +129,7 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DropViewEvent event) {
-        if (event.getVersion() < contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getViewName());

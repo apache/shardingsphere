@@ -33,7 +33,7 @@ public final class AddEncryptConfigurationEvent implements GovernanceEvent {
     
     private final EncryptTableRuleConfiguration config;
     
-    private final String versionKey;
+    private final String activeVersionKey;
     
-    private final int version;
+    private final String activeVersion;
 }

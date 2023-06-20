@@ -57,7 +57,7 @@ public final class BroadcastConfigurationSubscriber implements RuleConfiguration
      */
     @Subscribe
     public synchronized void renew(final AddBroadcastTableEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
@@ -81,7 +81,7 @@ public final class BroadcastConfigurationSubscriber implements RuleConfiguration
      */
     @Subscribe
     public synchronized void renew(final AlterBroadcastTableEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
@@ -99,7 +99,7 @@ public final class BroadcastConfigurationSubscriber implements RuleConfiguration
      */
     @Subscribe
     public synchronized void renew(final DeleteBroadcastTableEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
