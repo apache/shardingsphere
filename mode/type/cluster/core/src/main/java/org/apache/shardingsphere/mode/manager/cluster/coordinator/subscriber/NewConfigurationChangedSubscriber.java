@@ -54,7 +54,11 @@ public final class NewConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterGlobalRuleConfigurationEvent event) {
-        contextManager.alterGlobalRuleConfiguration(event.getRuleSimpleName(), event.getConfig());
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        contextManager.alterGlobalRuleConfiguration(event.getRuleSimpleName(),
+                contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().load(event.getRuleSimpleName()).iterator().next());
     }
     
     /**

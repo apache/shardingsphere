@@ -17,15 +17,11 @@
 
 package org.apache.shardingsphere.authority.event;
 
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
-import org.apache.shardingsphere.authority.yaml.swapper.YamlAuthorityRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.config.rule.global.event.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.config.rule.global.event.DeleteGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.GlobalRuleConfigurationEventBuilder;
@@ -51,12 +47,8 @@ public final class AuthorityRuleConfigurationEventBuilder implements GlobalRuleC
     
     private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE, event.getKey(), event.getValue()));
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(RULE_TYPE, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE, event.getKey(), event.getValue()));
-    }
-    
-    private AuthorityRuleConfiguration swapToConfig(final String yamlContext) {
-        return new YamlAuthorityRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAuthorityRuleConfiguration.class));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE));
     }
 }

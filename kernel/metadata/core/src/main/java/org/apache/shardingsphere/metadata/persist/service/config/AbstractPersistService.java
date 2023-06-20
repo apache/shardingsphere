@@ -67,6 +67,6 @@ public abstract class AbstractPersistService {
     }
     
     private String getPath(final String path, final String childKey) {
-        return String.join("/", "", path, childKey);
+        return String.join("/", path, childKey);
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.metadata.persist.service.config.global;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
@@ -51,6 +52,16 @@ public interface GlobalPersistService<T> {
      * @return configurations
      */
     T load();
+    
+    /**
+     * Load single rule configuration.
+     *
+     * @param ruleName rule name
+     * @return single rule configuration
+     */
+    default Collection<RuleConfiguration> load(String ruleName) {
+        return Collections.emptyList();
+    }
     
     /**
      * TODO remove this after meta data refactor completed 
