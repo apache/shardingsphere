@@ -160,7 +160,7 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 [Service Provider Interface (SPI)](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html) 是一种为了被第三方实现或扩展的 API，除了实现接口外，还需要在 META-INF/services 中创建对应文件来指定 SPI 的实现类，JVM 才会加载这些服务。
 具体的 SPI 使用方式，请大家自行搜索。
-与分布式主键 `KeyGenerateAlgorithm` 接口相同，其他 ShardingSphere 的[扩展功能](/cn/concepts/pluggable/)也需要用相同的方式注入才能生效。
+与分布式主键 `KeyGenerateAlgorithm` 接口相同，其他 ShardingSphere 的扩展功能也需要用相同的方式注入才能生效。
 
 ### [分片] ShardingSphere 除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
 
