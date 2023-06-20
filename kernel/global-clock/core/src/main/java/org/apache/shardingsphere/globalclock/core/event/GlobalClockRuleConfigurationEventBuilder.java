@@ -51,7 +51,7 @@ public final class GlobalClockRuleConfigurationEventBuilder implements GlobalRul
     
     private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterGlobalRuleConfigurationEvent( RULE_TYPE, event.getKey(), event.getValue()));
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(RULE_TYPE, event.getKey(), event.getValue()));
         }
         return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE));
     }
