@@ -68,7 +68,7 @@ public final class NewUpdatableGlobalRuleRALBackendHandler implements DistSQLBac
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private RuleConfiguration processUpdate(final Collection<RuleConfiguration> ruleConfigurations, final RALStatement sqlStatement, final GlobalRuleRALUpdater globalRuleUpdater,
-                                                        final RuleConfiguration currentRuleConfig) {
+                                            final RuleConfiguration currentRuleConfig) {
         RuleConfiguration result = globalRuleUpdater.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
         ruleConfigurations.remove(currentRuleConfig);
         ruleConfigurations.add(result);

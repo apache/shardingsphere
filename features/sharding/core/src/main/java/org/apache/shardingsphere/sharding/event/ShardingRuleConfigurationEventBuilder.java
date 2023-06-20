@@ -98,14 +98,14 @@ public final class ShardingRuleConfigurationEventBuilder implements RuleConfigur
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> tableNameVersion = ShardingNodeConverter.getTableNameVersion(event.getKey());
             if (tableNameVersion.isPresent()) {
-                return createShardingTableConfigEvent(databaseName, tableName.get(), Integer.parseInt(tableNameVersion.get()), event);   
+                return createShardingTableConfigEvent(databaseName, tableName.get(), Integer.parseInt(tableNameVersion.get()), event);
             }
         }
         Optional<String> autoTableName = ShardingNodeConverter.getAutoTableName(event.getKey());
         if (autoTableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> autoTableNameVersion = ShardingNodeConverter.getAutoTableNameVersion(event.getKey());
             if (autoTableNameVersion.isPresent()) {
-                return createShardingAutoTableConfigEvent(databaseName, autoTableName.get(), Integer.parseInt(autoTableNameVersion.get()), event);   
+                return createShardingAutoTableConfigEvent(databaseName, autoTableName.get(), Integer.parseInt(autoTableNameVersion.get()), event);
             }
         }
         Optional<String> bindingTableName = ShardingNodeConverter.getBindingTableName(event.getKey());
@@ -118,58 +118,58 @@ public final class ShardingRuleConfigurationEventBuilder implements RuleConfigur
         if (ShardingNodeConverter.isDefaultDatabaseStrategyPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> defaultDatabaseStrategyVersion = ShardingNodeConverter.getDefaultDatabaseStrategyVersion(event.getKey());
             if (defaultDatabaseStrategyVersion.isPresent()) {
-                return createDefaultDatabaseStrategyConfigEvent(databaseName, Integer.parseInt(defaultDatabaseStrategyVersion.get()), event);   
+                return createDefaultDatabaseStrategyConfigEvent(databaseName, Integer.parseInt(defaultDatabaseStrategyVersion.get()), event);
             }
         }
         if (ShardingNodeConverter.isDefaultTableStrategyPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> defaultTableStrategyVersion = ShardingNodeConverter.getDefaultTableStrategyVersion(event.getKey());
             if (defaultTableStrategyVersion.isPresent()) {
-                return createDefaultTableStrategyConfigEvent(databaseName, Integer.parseInt(defaultTableStrategyVersion.get()), event);   
+                return createDefaultTableStrategyConfigEvent(databaseName, Integer.parseInt(defaultTableStrategyVersion.get()), event);
             }
         }
         if (ShardingNodeConverter.isDefaultKeyGenerateStrategyPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> defaultKeyGenerateStrategyVersion = ShardingNodeConverter.getDefaultKeyGenerateStrategyVersion(event.getKey());
             if (defaultKeyGenerateStrategyVersion.isPresent()) {
-                return createDefaultKeyGenerateStrategyConfigEvent(databaseName, Integer.parseInt(defaultKeyGenerateStrategyVersion.get()), event);   
+                return createDefaultKeyGenerateStrategyConfigEvent(databaseName, Integer.parseInt(defaultKeyGenerateStrategyVersion.get()), event);
             }
         }
         if (ShardingNodeConverter.isDefaultAuditStrategyPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> defaultAuditStrategyVersion = ShardingNodeConverter.getDefaultAuditStrategyVersion(event.getKey());
             if (defaultAuditStrategyVersion.isPresent()) {
-                return createDefaultShardingAuditorStrategyConfigEvent(databaseName, Integer.parseInt(defaultAuditStrategyVersion.get()), event);   
+                return createDefaultShardingAuditorStrategyConfigEvent(databaseName, Integer.parseInt(defaultAuditStrategyVersion.get()), event);
             }
         }
         if (ShardingNodeConverter.isDefaultShardingColumnPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> defaultShardingColumnVersion = ShardingNodeConverter.getDefaultShardingColumnVersion(event.getKey());
             if (defaultShardingColumnVersion.isPresent()) {
-                return createDefaultShardingColumnEvent(databaseName, Integer.parseInt(defaultShardingColumnVersion.get()), event);   
+                return createDefaultShardingColumnEvent(databaseName, Integer.parseInt(defaultShardingColumnVersion.get()), event);
             }
         }
         Optional<String> algorithmName = ShardingNodeConverter.getShardingAlgorithmName(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> algorithmVersion = ShardingNodeConverter.getShardingAlgorithmVersion(event.getKey());
             if (algorithmVersion.isPresent()) {
-                return createShardingAlgorithmEvent(databaseName, algorithmName.get(), Integer.parseInt(algorithmVersion.get()), event);   
+                return createShardingAlgorithmEvent(databaseName, algorithmName.get(), Integer.parseInt(algorithmVersion.get()), event);
             }
         }
         Optional<String> keyGeneratorName = ShardingNodeConverter.getKeyGeneratorName(event.getKey());
         if (keyGeneratorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> keyGeneratorVersion = ShardingNodeConverter.getKeyGeneratorVersion(event.getKey());
             if (keyGeneratorVersion.isPresent()) {
-                return createKeyGeneratorEvent(databaseName, keyGeneratorName.get(), Integer.parseInt(keyGeneratorVersion.get()), event);   
+                return createKeyGeneratorEvent(databaseName, keyGeneratorName.get(), Integer.parseInt(keyGeneratorVersion.get()), event);
             }
         }
         Optional<String> auditorName = ShardingNodeConverter.getAuditorName(event.getKey());
         if (auditorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> auditorVersion = ShardingNodeConverter.getAuditorVersion(event.getKey());
             if (auditorVersion.isPresent()) {
-                return createAuditorEvent(databaseName, auditorName.get(), Integer.parseInt(auditorVersion.get()), event);   
+                return createAuditorEvent(databaseName, auditorName.get(), Integer.parseInt(auditorVersion.get()), event);
             }
         }
         if (ShardingNodeConverter.isShardingCachePath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> shardingCacheVersion = ShardingNodeConverter.getShardingCacheVersion(event.getKey());
             if (shardingCacheVersion.isPresent()) {
-                return createShardingCacheEvent(databaseName, Integer.parseInt(shardingCacheVersion.get()), event);   
+                return createShardingCacheEvent(databaseName, Integer.parseInt(shardingCacheVersion.get()), event);
             }
         }
         return Optional.empty();
