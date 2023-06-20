@@ -19,15 +19,18 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 /**
  * Encrypt column item.
+ * 
+ * @param <T> type of encryptor
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptColumnItem {
+public final class EncryptColumnItem<T extends EncryptAlgorithm<?, ?>> {
     
     private final String name;
     
-    private final String encryptorName;
+    private final T encryptor;
 }
