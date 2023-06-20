@@ -80,16 +80,20 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlDataNode each : dataNodes) {
-            if (Strings.isNullOrEmpty(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()))) {
+            if (Strings.isNullOrEmpty(getActiveVersion(databaseName, ruleName, each.getKey()))) {
                 repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()), DEFAULT_VERSION);
             }
             List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getDatabaseRuleVersionsNode(databaseName, ruleName, each.getKey()));
             String nextVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             String persistKey = NewDatabaseMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), nextVersion);
             repository.persist(persistKey, each.getValue());
-            result.add(new MetaDataVersion(persistKey, NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()), nextVersion));
+            result.add(new MetaDataVersion(persistKey, getActiveVersion(databaseName, ruleName, each.getKey()), nextVersion));
         }
         return result;
+    }
+    
+    private String getActiveVersion(final String databaseName, final String ruleName, final String key) {
+        return repository.getDirectly(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, key));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
