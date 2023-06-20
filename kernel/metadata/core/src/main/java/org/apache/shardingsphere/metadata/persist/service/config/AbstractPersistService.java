@@ -26,9 +26,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.LinkedHashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 public abstract class AbstractPersistService {
+    
+    private static final String VERSION_PATTERN = "/versions/([0-9]+)";
     
     private final PersistRepository repository;
     
@@ -41,7 +45,11 @@ public abstract class AbstractPersistService {
     public Collection<YamlDataNode> getDataNodes(final String rootPath) {
         Collection<YamlDataNode> result = new LinkedList<>();
         for (String each : getNodes(rootPath)) {
-            result.add(new YamlDataNode(each, repository.getDirectly(each)));
+            Pattern pattern = Pattern.compile(VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(each);
+            if (matcher.find()) {
+                result.add(new YamlDataNode(each, repository.getDirectly(each)));
+            }
         }
         return result;
     }
@@ -67,6 +75,6 @@ public abstract class AbstractPersistService {
     }
     
     private String getPath(final String path, final String childKey) {
-        return String.join("/", "", path, childKey);
+        return String.join("/", path, childKey);
     }
 }
