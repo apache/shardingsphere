@@ -77,7 +77,8 @@ public enum SystemSchemaBuilderRule {
     POSTGRESQL_INFORMATION_SCHEMA("PostgreSQL", "information_schema", new HashSet<>(Arrays.asList("columns", "tables", "views"))),
     
     POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", new HashSet<>(Arrays.asList("pg_aggregate", "pg_am", "pg_amop", "pg_amproc", "pg_attrdef", "pg_class", "pg_database", "pg_tables", "pg_inherits",
-            "pg_tablespace", "pg_trigger", "pg_namespace", "pg_range", "pg_replication_origin", "pg_rewrite", "pg_seclabel", "pg_sequence", "pg_roles", "pg_user_mapping"))),
+            "pg_tablespace", "pg_trigger", "pg_namespace", "pg_range", "pg_replication_origin", "pg_rewrite", "pg_seclabel", "pg_sequence", "pg_roles",
+            "pg_user_mapping", "pg_stat_database_conflicts", "pg_stat_gssapi", "pg_stat_progress_analyze", "pg_stat_progress_basebackup", "pg_stat_progress_cluster"))),
     
     POSTGRESQL_SHARDING_SPHERE("PostgreSQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
     
@@ -156,4 +157,5 @@ public enum SystemSchemaBuilderRule {
         }
         return false;
     }
+    
 }
