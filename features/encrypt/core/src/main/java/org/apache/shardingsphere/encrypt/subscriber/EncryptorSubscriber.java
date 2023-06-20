@@ -20,11 +20,9 @@ package org.apache.shardingsphere.encrypt.subscriber;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.event.encryptor.AddEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.encryptor.AlterEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.encryptor.DeleteEncryptorEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
@@ -51,29 +49,18 @@ public final class EncryptorSubscriber implements RuleConfigurationSubscribeCoor
     }
     
     /**
-     * Renew with add encryptor.
-     *
-     * @param event add encryptor event
-     */
-    @Subscribe
-    public synchronized void renew(final AddEncryptorEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getEncryptorName(), event.getConfig());
-    }
-    
-    /**
      * Renew with alter encryptor.
      *
      * @param event alter encryptor event
      */
     @Subscribe
-    public synchronized void renew(final AlterEncryptorEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getEncryptorName(), event.getConfig());
-    }
-    
-    private void renew(final String databaseName, final String encryptorName, final AlgorithmConfiguration encryptorConfig) {
-        ShardingSphereDatabase database = databases.get(databaseName);
+    public synchronized void renew(final AlterEncryptorEvent event) {
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
-        config.getEncryptors().put(encryptorName, encryptorConfig);
+        config.getEncryptors().put(event.getEncryptorName(), event.getConfig());
     }
     
     /**
@@ -83,6 +70,9 @@ public final class EncryptorSubscriber implements RuleConfigurationSubscribeCoor
      */
     @Subscribe
     public synchronized void renew(final DeleteEncryptorEvent event) {
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getEncryptors().remove(event.getEncryptorName());

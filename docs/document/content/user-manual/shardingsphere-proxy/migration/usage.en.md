@@ -477,7 +477,7 @@ wal_sender_timeout = 0
 max_connections = 600
 ```
 
-Please refer to [Write Ahead Log](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) and [Replication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html) for details.
+Please refer to [Write Ahead Log](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) and [Replication](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html) for details.
 
 2. Grant replication permission for source openGauss account.
 
@@ -486,7 +486,7 @@ Please refer to [Write Ahead Log](https://opengauss.org/en/docs/2.0.1/docs/Devel
 host replication repl_acct 0.0.0.0/0 md5
 ```
 
-Please refer to [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) and [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html) for details.
+Please refer to [Configuring Client Access Authentication](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) and [Example: Logic Replication Code](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html) for details.
 
 3. Grant DDL DML permissions for openGauss account.
 

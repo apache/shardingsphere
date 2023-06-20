@@ -20,17 +20,20 @@ package org.apache.shardingsphere.mask.event.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 
 /**
  * Add mask configuration event.
- *
- * @param <T> mask configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddMaskConfigurationEvent<T> implements GovernanceEvent {
+public final class AddMaskConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final T config;
+    private final MaskTableRuleConfiguration config;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

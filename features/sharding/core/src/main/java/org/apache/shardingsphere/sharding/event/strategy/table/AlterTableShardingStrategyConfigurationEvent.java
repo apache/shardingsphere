@@ -32,4 +32,8 @@ public final class AlterTableShardingStrategyConfigurationEvent implements Gover
     private final String databaseName;
     
     private final ShardingStrategyConfiguration config;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

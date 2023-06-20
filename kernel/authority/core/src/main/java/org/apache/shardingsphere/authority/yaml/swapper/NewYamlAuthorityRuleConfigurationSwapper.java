@@ -23,7 +23,7 @@ import org.apache.shardingsphere.authority.converter.YamlUsersConfigurationConve
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
@@ -44,7 +44,7 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlRu
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final AuthorityRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlAuthorityRuleConfiguration swapToYamlConfiguration(final AuthorityRuleConfiguration data) {

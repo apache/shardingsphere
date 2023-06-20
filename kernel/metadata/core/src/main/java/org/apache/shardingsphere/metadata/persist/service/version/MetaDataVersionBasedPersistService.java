@@ -20,7 +20,7 @@ package org.apache.shardingsphere.metadata.persist.service.version;
 import java.util.Optional;
 
 /**
- * TODO replace the old implementation after meta data refactor completed
+ * TODO Remove this when metadata structure adjustment completed. #25485
  * Meta data version based registry service.
  */
 public interface MetaDataVersionBasedPersistService {

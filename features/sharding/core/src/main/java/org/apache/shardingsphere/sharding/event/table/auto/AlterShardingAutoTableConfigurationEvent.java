@@ -35,4 +35,8 @@ public final class AlterShardingAutoTableConfigurationEvent<T> implements Govern
     private final String tableName;
     
     private final T config;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

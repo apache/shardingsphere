@@ -31,4 +31,8 @@ public final class AlterDefaultShardingColumnEvent implements GovernanceEvent {
     private final String databaseName;
     
     private final String config;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

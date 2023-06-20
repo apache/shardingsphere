@@ -31,4 +31,8 @@ public final class DeleteKeyGeneratorEvent implements GovernanceEvent {
     private final String databaseName;
     
     private final String keyGeneratorName;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

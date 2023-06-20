@@ -20,6 +20,9 @@ package org.apache.shardingsphere.encrypt.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 
 import java.util.Optional;
 
@@ -33,18 +36,18 @@ public final class EncryptColumn {
     
     private final String name;
     
-    private final EncryptColumnItem cipher;
+    private final EncryptColumnItem<StandardEncryptAlgorithm<?, ?>> cipher;
     
-    private EncryptColumnItem assistedQuery;
+    private EncryptColumnItem<AssistedEncryptAlgorithm<?, ?>> assistedQuery;
     
-    private EncryptColumnItem likeQuery;
+    private EncryptColumnItem<LikeEncryptAlgorithm<?, ?>> likeQuery;
     
     /**
      * Get assisted query column item.
      *
      * @return assisted query column item
      */
-    public Optional<EncryptColumnItem> getAssistedQuery() {
+    public Optional<EncryptColumnItem<AssistedEncryptAlgorithm<?, ?>>> getAssistedQuery() {
         return Optional.ofNullable(assistedQuery);
     }
     
@@ -53,7 +56,7 @@ public final class EncryptColumn {
      *
      * @return like query column item
      */
-    public Optional<EncryptColumnItem> getLikeQuery() {
+    public Optional<EncryptColumnItem<LikeEncryptAlgorithm<?, ?>>> getLikeQuery() {
         return Optional.ofNullable(likeQuery);
     }
 }

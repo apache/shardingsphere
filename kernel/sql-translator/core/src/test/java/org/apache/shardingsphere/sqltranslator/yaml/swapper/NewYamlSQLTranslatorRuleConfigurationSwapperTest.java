@@ -30,6 +30,6 @@ class NewYamlSQLTranslatorRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new SQLTranslatorRuleConfiguration()).iterator().next().getKey(), is("/rules/sql_translator"));
+        assertThat(swapper.swapToDataNodes(new SQLTranslatorRuleConfiguration()).iterator().next().getKey(), is("sql_translator"));
     }
 }

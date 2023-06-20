@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
@@ -556,6 +557,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
         for (Map<String, Object> each : rootConfig.getDataSources().values()) {
             each.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
         }
+        YamlSingleRuleConfiguration singleRuleConfig = new YamlSingleRuleConfiguration();
+        singleRuleConfig.setTables(Collections.singletonList("*.*"));
+        rootConfig.getRules().add(singleRuleConfig);
         return PipelineDataSourceFactory.newInstance(new ShardingSpherePipelineDataSourceConfiguration(rootConfig));
     }
     

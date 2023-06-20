@@ -29,7 +29,6 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -61,29 +60,13 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
         this.databaseName = databaseName;
         dataSourceNames = getDataSourceNames(dataSources);
         tables = createBroadcastTables(configuration.getTables());
-        logicalTableMapper = createLogicalTableMapper();
-        actualTableMapper = createActualTableMapper();
-        tableDataNodes = createShardingTableDataNodes(dataSourceNames);
+        logicalTableMapper = createTableMapper();
+        actualTableMapper = createTableMapper();
+        tableDataNodes = createShardingTableDataNodes(dataSourceNames, tables);
     }
     
     private Collection<String> getDataSourceNames(final Map<String, DataSource> dataSources) {
-        Collection<String> result = new LinkedHashSet<>();
-        if (null != dataSources) {
-            result.addAll(dataSources.keySet());
-        }
-        return result;
-    }
-    
-    private TableNamesMapper createLogicalTableMapper() {
-        TableNamesMapper result = new TableNamesMapper();
-        tables.forEach(result::put);
-        return result;
-    }
-    
-    private TableNamesMapper createActualTableMapper() {
-        TableNamesMapper result = new TableNamesMapper();
-        tables.forEach(result::put);
-        return result;
+        return new LinkedList<>(dataSources.keySet());
     }
     
     private Collection<String> createBroadcastTables(final Collection<String> broadcastTables) {
@@ -92,7 +75,13 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
         return result;
     }
     
-    private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Collection<String> dataSourceNames) {
+    private TableNamesMapper createTableMapper() {
+        TableNamesMapper result = new TableNamesMapper();
+        tables.forEach(result::put);
+        return result;
+    }
+    
+    private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Collection<String> dataSourceNames, final Collection<String> tables) {
         Map<String, Collection<DataNode>> result = new HashMap<>(tables.size(), 1F);
         for (String each : tables) {
             result.put(each.toLowerCase(), generateDataNodes(each, dataSourceNames));

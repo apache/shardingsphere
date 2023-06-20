@@ -43,6 +43,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -55,6 +57,7 @@ import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDa
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
+import org.apache.shardingsphere.mode.manager.switcher.NewResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -249,17 +252,114 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Register storage unit.
+     *
+     * @param databaseName database name
+     * @param storageUnitName storage unit name
+     * @param dataSourceProps data source properties
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void registerStorageUnit(final String databaseName, final String storageUnitName, final DataSourceProperties dataSourceProps) {
+        try {
+            Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
+            staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
+            SwitchingResource switchingResource = new NewResourceSwitchManager().registerStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
+                    storageUnitName, dataSourceProps);
+            buildNewMetaDataContext(databaseName, switchingResource);
+        } catch (final SQLException ex) {
+            log.error("Alter database: {} register storage unit failed", databaseName, ex);
+        }
+    }
+    
+    /**
+     * Alter storage unit.
+     *
+     * @param databaseName database name
+     * @param storageUnitName storage unit name
+     * @param dataSourceProps data source properties
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void alterStorageUnit(final String databaseName, final String storageUnitName, final DataSourceProperties dataSourceProps) {
+        try {
+            Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
+            staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
+            SwitchingResource switchingResource = new NewResourceSwitchManager().alterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
+                    storageUnitName, dataSourceProps);
+            buildNewMetaDataContext(databaseName, switchingResource);
+        } catch (final SQLException ex) {
+            log.error("Alter database: {} register storage unit failed", databaseName, ex);
+        }
+    }
+    
+    /**
+     * UnRegister storage unit.
+     *
+     * @param databaseName database name
+     * @param storageUnitName storage unit name
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void unregisterStorageUnit(final String databaseName, final String storageUnitName) {
+        try {
+            Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
+            staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
+            SwitchingResource switchingResource = new NewResourceSwitchManager().unregisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
+                    storageUnitName);
+            buildNewMetaDataContext(databaseName, switchingResource);
+        } catch (final SQLException ex) {
+            log.error("Alter database: {} register storage unit failed", databaseName, ex);
+        }
+    }
+    
+    private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
+        metaDataContexts.get().getMetaData().getDatabases().putAll(renewDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName), switchingResource));
+        MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, false, switchingResource, null);
+        reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> reloadMetaDataContexts.getPersistService().getDatabaseMetaDataService()
+                .persist(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
+        Optional.ofNullable(reloadMetaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName))
+                .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> reloadMetaDataContexts.getPersistService().getShardingSphereDataPersistService()
+                        .persist(databaseName, schemaName, schemaData, metaDataContexts.get().getMetaData().getDatabases())));
+        alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
+        metaDataContexts.set(reloadMetaDataContexts);
+        metaDataContexts.get().getMetaData().getDatabases().putAll(newShardingSphereDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
+        switchingResource.closeStaleDataSources();
+    }
+    
+    /**
      * Alter rule configuration.
      * 
      * @param databaseName database name
      * @param ruleConfigs rule configurations
      */
     @SuppressWarnings("rawtypes")
-    public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
+    public synchronized void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
             MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, false, null, ruleConfigs);
+            alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
+            metaDataContexts.set(reloadMetaDataContexts);
+            metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
+        } catch (final SQLException ex) {
+            log.error("Alter database: {} rule configurations failed", databaseName, ex);
+        }
+    }
+    
+    /**
+     * Alter rule configuration.
+     *
+     * @param databaseName database name
+     * @param ruleConfig rule configurations
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void alterRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) {
+        try {
+            ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+            Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
+            rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(),
+                    ruleConfig, instanceContext));
+            database.getRuleMetaData().getRules().clear();
+            database.getRuleMetaData().getRules().addAll(rules);
+            MetaDataContexts reloadMetaDataContexts = createMetaDataContextsByAlterRule(databaseName, false, null, database.getRuleMetaData().getConfigurations());
             alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
             metaDataContexts.set(reloadMetaDataContexts);
             metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
@@ -289,7 +389,7 @@ public final class ContextManager implements AutoCloseable {
      * @param dataSourcePropsMap altered data source properties map
      */
     @SuppressWarnings("rawtypes")
-    public void alterDataSourceConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    public synchronized void alterDataSourceConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
@@ -334,6 +434,23 @@ public final class ContextManager implements AutoCloseable {
         result.addAll(metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().findRules(ResourceHeldRule.class));
         result.addAll(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class));
         return result;
+    }
+    
+    /**
+     * Create meta data contexts by alter rule.
+     *
+     * @param databaseName database name
+     * @param internalLoadMetaData internal load meta data
+     * @param switchingResource switching resource
+     * @param ruleConfigs rule configs
+     * @return MetaDataContexts meta data contexts
+     * @throws SQLException SQL exception
+     */
+    public MetaDataContexts createMetaDataContextsByAlterRule(final String databaseName, final boolean internalLoadMetaData, final SwitchingResource switchingResource,
+                                                              final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+        Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, internalLoadMetaData, switchingResource, ruleConfigs);
+        return newMetaDataContexts(new ShardingSphereMetaData(changedDatabases,
+                metaDataContexts.get().getMetaData().getGlobalRuleMetaData(), metaDataContexts.get().getMetaData().getProps()));
     }
     
     /**
@@ -440,6 +557,52 @@ public final class ContextManager implements AutoCloseable {
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(
                 metaDataContexts.get().getMetaData().getDatabases(), toBeChangedGlobalRuleMetaData, metaDataContexts.get().getMetaData().getProps());
         metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
+    }
+    
+    /**
+     * Alter global rule configuration.
+     *
+     * @param ruleName rule name
+     * @param ruleConfig global rule configuration
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void alterGlobalRuleConfiguration(final String ruleName, final RuleConfiguration ruleConfig) {
+        Collection<ShardingSphereRule> rules = removeSingleGlobalRule(ruleName);
+        rules.addAll(GlobalRulesBuilder.buildRules(Collections.singletonList(ruleConfig), metaDataContexts.get().getMetaData().getDatabases(),
+                metaDataContexts.get().getMetaData().getProps()));
+        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().clear();
+        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
+        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(
+                metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getGlobalRuleMetaData(), metaDataContexts.get().getMetaData().getProps());
+        metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
+    }
+    
+    /**
+     * Drop global rule configuration.
+     *
+     * @param ruleName rule name
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void dropGlobalRuleConfiguration(final String ruleName) {
+        Collection<ResourceHeldRule> staleResourceHeldRules = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class);
+        staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
+        Collection<ShardingSphereRule> rules = removeSingleGlobalRule(ruleName);
+        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().clear();
+        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
+        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getDatabases(),
+                new ShardingSphereRuleMetaData(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules()), metaDataContexts.get().getMetaData().getProps());
+        metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
+    }
+    
+    private Collection<ShardingSphereRule> removeSingleGlobalRule(final String ruleSimpleName) {
+        Collection<ShardingSphereRule> result = new LinkedList<>(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules());
+        for (ShardingSphereRule each : result) {
+            if (!each.getType().equals(ruleSimpleName)) {
+                continue;
+            }
+            result.remove(each);
+        }
+        return result;
     }
     
     /**

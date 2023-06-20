@@ -33,4 +33,8 @@ public final class AddShardingTableConfigurationEvent<T> implements GovernanceEv
     private final String databaseName;
     
     private final T config;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

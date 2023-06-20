@@ -40,6 +40,8 @@ public final class MaskNodeConverter {
     
     private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
     
+    private static final String RULE_VERSION = "/([\\w\\-]+)/versions/([\\w\\-]+)$";
+    
     /**
      * Get table name path.
      * 
@@ -118,5 +120,29 @@ public final class MaskNodeConverter {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get mask table version.
+     *
+     * @param rulePath rule path
+     * @return mask table version
+     */
+    public static Optional<String> getMaskTableVersion(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Get mask algorithm version.
+     *
+     * @param rulePath rule path
+     * @return mask algorithm version
+     */
+    public static Optional<String> getMaskAlgorithmVersion(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }
 }

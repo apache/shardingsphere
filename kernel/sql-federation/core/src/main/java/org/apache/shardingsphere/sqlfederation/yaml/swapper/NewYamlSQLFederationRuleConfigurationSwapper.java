@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.yaml.swapper;
 
-import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
@@ -40,7 +40,7 @@ public final class NewYamlSQLFederationRuleConfigurationSwapper implements NewYa
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final SQLFederationRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlSQLFederationRuleConfiguration swapToYamlConfiguration(final SQLFederationRuleConfiguration data) {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
-import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
@@ -44,7 +44,7 @@ public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlRule
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final TrafficRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlTrafficRuleConfiguration swapToYamlConfiguration(final TrafficRuleConfiguration data) {

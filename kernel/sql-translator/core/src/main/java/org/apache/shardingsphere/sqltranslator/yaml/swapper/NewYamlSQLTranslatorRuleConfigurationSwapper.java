@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.yaml.swapper;
 
-import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
@@ -37,7 +37,7 @@ public final class NewYamlSQLTranslatorRuleConfigurationSwapper implements NewYa
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final SQLTranslatorRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlSQLTranslatorRuleConfiguration swapToYamlConfiguration(final SQLTranslatorRuleConfiguration data) {
@@ -49,7 +49,6 @@ public final class NewYamlSQLTranslatorRuleConfigurationSwapper implements NewYa
     
     @Override
     public SQLTranslatorRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        SQLTranslatorRuleConfiguration result = new SQLTranslatorRuleConfiguration();
         for (YamlDataNode each : dataNodes) {
             Optional<String> version = GlobalRuleNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
@@ -57,7 +56,7 @@ public final class NewYamlSQLTranslatorRuleConfigurationSwapper implements NewYa
             }
             return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLTranslatorRuleConfiguration.class));
         }
-        return result;
+        return new SQLTranslatorRuleConfiguration();
     }
     
     private SQLTranslatorRuleConfiguration swapToObject(final YamlSQLTranslatorRuleConfiguration yamlConfig) {

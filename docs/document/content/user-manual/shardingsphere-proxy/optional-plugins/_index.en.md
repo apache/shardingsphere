@@ -4,7 +4,7 @@ weight = 6
 +++
 
 ShardingSphere only includes the implementation of the core SPI by default, and there is a part of the SPI that contains third-party dependencies in Git Source
-Implemented plugins are not included. Retrievable at https://central.sonatype.dev/.
+Implemented plugins are not included. Retrievable at https://central.sonatype.com/.
 
 SPI and existing implementation classes of SPI corresponding to all plugins can be retrieved at https://shardingsphere.apache.org/document/current/cn/dev-manual/.
 

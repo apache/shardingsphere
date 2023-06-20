@@ -48,11 +48,6 @@ class NewDatabaseMetaDataNodeTest {
     }
     
     @Test
-    void asserGetTableNode() {
-        assertThat(NewDatabaseMetaDataNode.getTableNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table"));
-    }
-    
-    @Test
     void assertGetDatabaseName() {
         Optional<String> actual = NewDatabaseMetaDataNode.getDatabaseName("/metadata/foo_db");
         assertTrue(actual.isPresent());
@@ -82,9 +77,16 @@ class NewDatabaseMetaDataNodeTest {
     
     @Test
     void assertGetTableName() {
-        Optional<String> actual = NewDatabaseMetaDataNode.getTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_table");
+        Optional<String> actual = NewDatabaseMetaDataNode.getTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions/0");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table"));
+    }
+    
+    @Test
+    void assertGetTableVersion() {
+        Optional<String> actual = NewDatabaseMetaDataNode.getTableNameVersion("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions/0");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("0"));
     }
     
     @Test
@@ -95,13 +97,26 @@ class NewDatabaseMetaDataNodeTest {
     }
     
     @Test
+    void assertGetViewNameVersion() {
+        Optional<String> actual = NewDatabaseMetaDataNode.getViewNameVersion("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("0"));
+    }
+    
+    @Test
+    void assertGetVersionNodeByActiveVersionPath() {
+        assertThat(NewDatabaseMetaDataNode.getVersionNodeByActiveVersionPath("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0"),
+                is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
+    }
+    
+    @Test
     void assertGetMetaDataDataSourcesNode() {
         assertThat(NewDatabaseMetaDataNode.getDataSourcesNode("foo_db"), is("/metadata/foo_db/data_sources"));
     }
     
     @Test
     void assertGetMetaDataDataSourceNode() {
-        assertThat(NewDatabaseMetaDataNode.getDataSourceNode("foo_db", "foo_ds", "0"), is("/metadata/foo_db/data_sources/foo_ds/versions/0"));
+        assertThat(NewDatabaseMetaDataNode.getDataSourceNodeWithVersion("foo_db", "foo_ds", "0"), is("/metadata/foo_db/data_sources/foo_ds/versions/0"));
     }
     
     @Test

@@ -33,4 +33,8 @@ public final class DropTableEvent implements GovernanceEvent {
     private final String schemaName;
     
     private final String tableName;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

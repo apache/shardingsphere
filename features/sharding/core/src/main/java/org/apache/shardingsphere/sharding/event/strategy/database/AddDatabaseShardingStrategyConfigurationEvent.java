@@ -32,4 +32,8 @@ public final class AddDatabaseShardingStrategyConfigurationEvent implements Gove
     private final String databaseName;
     
     private final ShardingStrategyConfiguration config;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

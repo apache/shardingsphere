@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnAlterException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
@@ -181,8 +182,8 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     }
     
     private void isSameEncryptColumn(final EncryptTable encryptTable, final ChangeColumnDefinitionSegment segment) {
-        Optional<String> previousEncryptorName = encryptTable.findEncryptorName(segment.getPreviousColumn().getIdentifier().getValue());
-        Optional<String> currentEncryptorName = encryptTable.findEncryptorName(segment.getColumnDefinition().getColumnName().getIdentifier().getValue());
+        Optional<StandardEncryptAlgorithm<?, ?>> previousEncryptorName = encryptTable.findEncryptor(segment.getPreviousColumn().getIdentifier().getValue());
+        Optional<StandardEncryptAlgorithm<?, ?>> currentEncryptorName = encryptTable.findEncryptor(segment.getColumnDefinition().getColumnName().getIdentifier().getValue());
         if (!previousEncryptorName.isPresent() && !currentEncryptorName.isPresent()) {
             return;
         }
