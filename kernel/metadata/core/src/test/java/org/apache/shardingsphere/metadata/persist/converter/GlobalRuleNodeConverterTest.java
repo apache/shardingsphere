@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.converter;
+package org.apache.shardingsphere.metadata.persist.converter;
 
-import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -37,6 +36,13 @@ class GlobalRuleNodeConverterTest {
     
     @Test
     void assertIsActiveVersionPath() {
-        assertTrue(GlobalRuleNodeConverter.isActiveVersionPath("transaction", "/rules/transaction/active_version"));
+        assertTrue(GlobalRuleNodeConverter.isActiveVersionPath("/rules/transaction/active_version"));
+    }
+    
+    @Test
+    void assertGetRuleName() {
+        Optional<String> actual = GlobalRuleNodeConverter.getRuleName("/rules/transaction/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("transaction"));
     }
 }

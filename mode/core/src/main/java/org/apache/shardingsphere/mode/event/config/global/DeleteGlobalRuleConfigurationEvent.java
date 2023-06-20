@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rule.global.event;
+package org.apache.shardingsphere.mode.event.config.global;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
