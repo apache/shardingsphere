@@ -34,4 +34,8 @@ public final class AlterEncryptConfigurationEvent implements GovernanceEvent {
     private final String tableName;
     
     private final EncryptTableRuleConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

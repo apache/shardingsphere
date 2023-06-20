@@ -40,6 +40,8 @@ public final class EncryptNodeConverter {
     
     private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
     
+    private static final String RULE_VERSION = "/([\\w\\-]+)/versions/([\\w\\-]+)$";
+    
     /**
      * Get table name path.
      *
@@ -118,5 +120,29 @@ public final class EncryptNodeConverter {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ENCRYPTORS_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get encrypt table version.
+     * 
+     * @param rulePath rule path
+     * @return encrypt table version
+     */
+    public static Optional<String> getEncryptTableVersion(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Get encryptor version.
+     *
+     * @param rulePath rule path
+     * @return encryptor version
+     */
+    public static Optional<String> getEncryptorVersion(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ENCRYPTORS_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }
 }

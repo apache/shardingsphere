@@ -34,4 +34,8 @@ public final class AlterShadowTableEvent implements GovernanceEvent {
     private final String tableName;
     
     private final ShadowTableConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

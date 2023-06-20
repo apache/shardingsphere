@@ -59,6 +59,9 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
      */
     @Subscribe
     public synchronized void renew(final AddMaskConfigurationEvent event) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         MaskTableRuleConfiguration needToAddedConfig = event.getConfig();
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
@@ -80,6 +83,9 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
      */
     @Subscribe
     public synchronized void renew(final AlterMaskConfigurationEvent event) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         MaskTableRuleConfiguration needToAlteredConfig = event.getConfig();
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
@@ -95,6 +101,9 @@ public final class MaskConfigurationSubscriber implements RuleConfigurationSubsc
      */
     @Subscribe
     public synchronized void renew(final DeleteMaskConfigurationEvent event) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));

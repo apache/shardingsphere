@@ -32,4 +32,8 @@ public final class AddTableShardingStrategyConfigurationEvent implements Governa
     private final String databaseName;
     
     private final ShardingStrategyConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

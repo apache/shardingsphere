@@ -34,4 +34,8 @@ public final class AlterKeyGeneratorEvent implements GovernanceEvent {
     private final String keyGeneratorName;
     
     private final AlgorithmConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

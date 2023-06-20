@@ -58,6 +58,9 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
      */
     @Subscribe
     public synchronized void renew(final AddShadowConfigurationEvent event) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ShadowDataSourceConfiguration needToAddedConfig = event.getConfig();
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
@@ -80,6 +83,9 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
      */
     @Subscribe
     public synchronized void renew(final AlterShadowConfigurationEvent event) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ShadowDataSourceConfiguration needToAlteredConfig = event.getConfig();
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
@@ -95,6 +101,9 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
      */
     @Subscribe
     public synchronized void renew(final DeleteShadowConfigurationEvent event) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(event.getDataSourceName()));

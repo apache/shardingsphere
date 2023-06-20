@@ -32,4 +32,8 @@ public final class AlterShardingCacheConfigurationEvent implements GovernanceEve
     private final String databaseName;
     
     private final ShardingCacheConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

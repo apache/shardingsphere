@@ -34,4 +34,8 @@ public final class AlterShardingAlgorithmEvent implements GovernanceEvent {
     private final String algorithmName;
     
     private final AlgorithmConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

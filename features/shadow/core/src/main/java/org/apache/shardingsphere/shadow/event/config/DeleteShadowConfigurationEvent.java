@@ -31,4 +31,8 @@ public final class DeleteShadowConfigurationEvent implements GovernanceEvent {
     private final String databaseName;
     
     private final String dataSourceName;
+    
+    private final String versionKey;
+    
+    private final int version;
 }
