@@ -73,11 +73,11 @@ SHOW MIGRATION RULE;
 默认配置如下：
 
 ```
-+--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+
-| read                                                         | write                                | stream_channel                                       |
-+--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+
-| {"workerThread":40,"batchSize":1000,"shardingSize":10000000} | {"workerThread":40,"batchSize":1000} | {"type":"MEMORY","props":{"block-queue-size":10000}} |
-+--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+
++--------------------------------------------------------------+--------------------------------------+-------------------------------------------------------+
+| read                                                         | write                                | stream_channel                                        |
++--------------------------------------------------------------+--------------------------------------+-------------------------------------------------------+
+| {"workerThread":20,"batchSize":1000,"shardingSize":10000000} | {"workerThread":20,"batchSize":1000} | {"type":"MEMORY","props":{"block-queue-size":"2000"}} |
++--------------------------------------------------------------+--------------------------------------+-------------------------------------------------------+
 ```
 
 6.2. 修改配置（可选）。
@@ -89,17 +89,17 @@ SHOW MIGRATION RULE;
 ```sql
 ALTER MIGRATION RULE (
 READ(
-  WORKER_THREAD=40,
+  WORKER_THREAD=20,
   BATCH_SIZE=1000,
   SHARDING_SIZE=10000000,
   RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
 ),
 WRITE(
-  WORKER_THREAD=40,
+  WORKER_THREAD=20,
   BATCH_SIZE=1000,
   RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
 ),
-STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='10000')))
+STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000')))
 );
 ```
 
@@ -108,7 +108,7 @@ STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='10000')))
 ```sql
 ALTER MIGRATION RULE (
 READ( -- 数据读取配置。如果不配置则部分参数默认生效。
-  WORKER_THREAD=40, -- 从源端摄取全量数据的线程池大小。如果不配置则使用默认值。
+  WORKER_THREAD=20, -- 从源端摄取全量数据的线程池大小。如果不配置则使用默认值。
   BATCH_SIZE=1000, -- 一次查询操作返回的最大记录数。如果不配置则使用默认值。
   SHARDING_SIZE=10000000, -- 全量数据分片大小。如果不配置则使用默认值。
   RATE_LIMITER ( -- 限流算法。如果不配置则不限流。
@@ -119,7 +119,7 @@ READ( -- 数据读取配置。如果不配置则部分参数默认生效。
   )))
 ),
 WRITE( -- 数据写入配置。如果不配置则部分参数默认生效。
-  WORKER_THREAD=40, -- 数据写入到目标端的线程池大小。如果不配置则使用默认值。
+  WORKER_THREAD=20, -- 数据写入到目标端的线程池大小。如果不配置则使用默认值。
   BATCH_SIZE=1000, -- 一次批量写入操作的最大记录数。如果不配置则使用默认值。
   RATE_LIMITER ( -- 限流算法。如果不配置则不限流。
   TYPE( -- 算法类型。可选项：TPS
@@ -132,7 +132,7 @@ STREAM_CHANNEL ( -- 数据通道，连接生产者和消费者，用于 read 和
 TYPE( -- 算法类型。可选项：MEMORY
 NAME='MEMORY',
 PROPERTIES( -- 算法属性
-'block-queue-size'='10000' -- 属性：阻塞队列大小
+'block-queue-size'='2000' -- 属性：阻塞队列大小
 )))
 );
 ```
@@ -156,16 +156,16 @@ READ(
 ```sql
 ALTER MIGRATION RULE (
 READ(
-  WORKER_THREAD=40,
+  WORKER_THREAD=20,
   BATCH_SIZE=1000,
   SHARDING_SIZE=10000000,
   RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
 ),
 WRITE(
-  WORKER_THREAD=40,
+  WORKER_THREAD=20,
   BATCH_SIZE=1000,
   RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
 ),
-STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='10000')))
+STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000')))
 );
 ```

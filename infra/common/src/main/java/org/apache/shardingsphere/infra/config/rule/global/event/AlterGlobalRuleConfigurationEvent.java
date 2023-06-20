@@ -29,8 +29,6 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 @Getter
 public final class AlterGlobalRuleConfigurationEvent implements GovernanceEvent {
     
-    private final String databaseName;
-    
     private final RuleConfiguration config;
     
     private final String ruleSimpleName;

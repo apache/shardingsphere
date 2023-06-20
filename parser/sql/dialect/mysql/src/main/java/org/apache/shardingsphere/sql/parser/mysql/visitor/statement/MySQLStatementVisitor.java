@@ -607,15 +607,11 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (null != ctx.notOperator()) {
             ASTNode expression = visit(ctx.simpleExpr(0));
-            Boolean notSign = false;
             if (expression instanceof ExistsSubqueryExpression) {
                 ((ExistsSubqueryExpression) expression).setNot(true);
                 return expression;
             }
-            if ("!".equalsIgnoreCase(ctx.notOperator().getText())) {
-                notSign = true;
-            }
-            return new NotExpression(startIndex, stopIndex, (ExpressionSegment) expression, notSign);
+            return new NotExpression(startIndex, stopIndex, (ExpressionSegment) expression, "!".equalsIgnoreCase(ctx.notOperator().getText()));
         }
         if (null != ctx.LP_() && 1 == ctx.expr().size()) {
             return visit(ctx.expr(0));
@@ -719,11 +715,25 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setCombine(createCombineSegment(ctx.combineClause(), left));
             return result;
         }
+        if (null != ctx.queryExpressionParens()) {
+            MySQLSelectStatement result = new MySQLSelectStatement();
+            MySQLSelectStatement left = (MySQLSelectStatement) visit(ctx.queryExpressionParens());
+            result.setProjections(left.getProjections());
+            result.setFrom(left.getFrom());
+            left.getTable().ifPresent(result::setTable);
+            result.setCombine(createCombineSegment(ctx.combineClause(), left));
+            return result;
+        }
         return visit(ctx.queryExpressionParens());
     }
     
     private CombineSegment createCombineSegment(final CombineClauseContext ctx, final MySQLSelectStatement left) {
-        CombineType combineType = null != ctx.combineOption() && null != ctx.combineOption().ALL() ? CombineType.UNION_ALL : CombineType.UNION;
+        CombineType combineType;
+        if (null != ctx.EXCEPT()) {
+            combineType = CombineType.EXCEPT;
+        } else {
+            combineType = null != ctx.combineOption() && null != ctx.combineOption().ALL() ? CombineType.UNION_ALL : CombineType.UNION;
+        }
         MySQLSelectStatement right = null != ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryPrimary()) : (MySQLSelectStatement) visit(ctx.queryExpressionParens());
         return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, right);
     }

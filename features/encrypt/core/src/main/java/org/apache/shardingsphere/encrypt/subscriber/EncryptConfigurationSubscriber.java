@@ -25,15 +25,12 @@ import org.apache.shardingsphere.encrypt.event.config.AddEncryptConfigurationEve
 import org.apache.shardingsphere.encrypt.event.config.AlterEncryptConfigurationEvent;
 import org.apache.shardingsphere.encrypt.event.config.DeleteEncryptConfigurationEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -64,7 +61,6 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
     public synchronized void renew(final AddEncryptConfigurationEvent<EncryptTableRuleConfiguration> event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptTableRuleConfiguration needToAddedConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
         EncryptRuleConfiguration config;
         if (rule.isPresent()) {
@@ -73,8 +69,6 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
         } else {
             config = new EncryptRuleConfiguration(Collections.singletonList(needToAddedConfig), Collections.emptyMap());
         }
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -87,12 +81,9 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
     public synchronized void renew(final AlterEncryptConfigurationEvent<EncryptTableRuleConfiguration> event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptTableRuleConfiguration needToAlteredConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
         config.getTables().add(needToAlteredConfig);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -104,11 +95,8 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
     @Subscribe
     public synchronized void renew(final DeleteEncryptConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
 }

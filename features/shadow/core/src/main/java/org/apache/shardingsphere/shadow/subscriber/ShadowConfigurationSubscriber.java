@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
@@ -31,8 +30,6 @@ import org.apache.shardingsphere.shadow.event.config.AlterShadowConfigurationEve
 import org.apache.shardingsphere.shadow.event.config.DeleteShadowConfigurationEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -63,18 +60,16 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
     public synchronized void renew(final AddShadowConfigurationEvent<ShadowDataSourceConfiguration> event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ShadowDataSourceConfiguration needToAddedConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
         ShadowRuleConfiguration config;
         if (rule.isPresent()) {
             config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+            config.getDataSources().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
             config.getDataSources().add(needToAddedConfig);
         } else {
             config = new ShadowRuleConfiguration();
             config.getDataSources().add(needToAddedConfig);
         }
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -87,12 +82,9 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
     public synchronized void renew(final AlterShadowConfigurationEvent<ShadowDataSourceConfiguration> event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ShadowDataSourceConfiguration needToAlteredConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(event.getDataSourceName()));
         config.getDataSources().add(needToAlteredConfig);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -104,11 +96,8 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
     @Subscribe
     public synchronized void renew(final DeleteShadowConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(event.getDataSourceName()));
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
 }

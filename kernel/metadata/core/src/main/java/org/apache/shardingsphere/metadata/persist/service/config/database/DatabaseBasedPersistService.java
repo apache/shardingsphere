@@ -37,6 +37,15 @@ public interface DatabaseBasedPersistService<T> {
     void persist(String databaseName, T configs);
     
     /**
+     * Delete configurations.
+     *
+     * @param databaseName database name
+     * @param configs configurations
+     */
+    default void delete(String databaseName, T configs) {
+    }
+    
+    /**
      * Load configurations.
      *
      * @param databaseName database name

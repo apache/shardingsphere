@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.merge.dql;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
@@ -38,8 +38,8 @@ import java.util.Optional;
 /**
  * Encrypt algorithm meta data.
  */
-@SuppressWarnings("rawtypes")
 @RequiredArgsConstructor
+@Getter
 public final class EncryptAlgorithmMetaData {
     
     private final ShardingSphereDatabase database;
@@ -47,17 +47,6 @@ public final class EncryptAlgorithmMetaData {
     private final EncryptRule encryptRule;
     
     private final SelectStatementContext selectStatementContext;
-    
-    /**
-     * Find standard encryptor.
-     * 
-     * @param tableName table name
-     * @param columnName column name
-     * @return standard encryptor
-     */
-    public Optional<StandardEncryptAlgorithm> findStandardEncryptor(final String tableName, final String columnName) {
-        return encryptRule.findStandardEncryptor(tableName, columnName);
-    }
     
     /**
      * Find encrypt context.
@@ -99,7 +88,7 @@ public final class EncryptAlgorithmMetaData {
             return Optional.of(tableName);
         }
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            if (encryptRule.findStandardEncryptor(each, columnProjection.getName()).isPresent()) {
+            if (encryptRule.findEncryptTable(each).map(optional -> optional.isEncryptColumn(columnProjection.getName())).orElse(false)) {
                 return Optional.of(each);
             }
         }

@@ -60,13 +60,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
         RouteContext result = new RouteContext();
         String dataSourceName = getDataSourceName(shardingRule.getDataSourceNames());
         RouteMapper dataSourceMapper = new RouteMapper(dataSourceName, dataSourceName);
-        if (shardingRule.isAllBroadcastTables(logicTables)) {
-            List<RouteMapper> tableMappers = new ArrayList<>(logicTables.size());
-            for (String each : logicTables) {
-                tableMappers.add(new RouteMapper(each, each));
-            }
-            result.getRouteUnits().add(new RouteUnit(dataSourceMapper, tableMappers));
-        } else if (logicTables.isEmpty()) {
+        if (logicTables.isEmpty()) {
             result.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.emptyList()));
         } else if (1 == logicTables.size()) {
             String logicTableName = logicTables.iterator().next();

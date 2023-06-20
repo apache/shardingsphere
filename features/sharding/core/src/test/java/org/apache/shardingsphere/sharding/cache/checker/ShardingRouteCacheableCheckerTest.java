@@ -84,7 +84,6 @@ class ShardingRouteCacheableCheckerTest {
     
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getBroadcastTables().add("t_broadcast_table");
         ruleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
         ruleConfig.getShardingAlgorithms().put("mod", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
         ruleConfig.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${id % 2}"))));
@@ -110,10 +109,6 @@ class ShardingRouteCacheableCheckerTest {
     
     private ShardingSphereDatabase createDatabase(final ShardingRule shardingRule, final TimestampServiceRule timestampServiceRule) {
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        schema.getTables().put("t_broadcast_table", new ShardingSphereTable("t_broadcast_table", Arrays.asList(
-                new ShardingSphereColumn("broadcast_table_id", Types.INTEGER, true, false, false, true, false),
-                new ShardingSphereColumn("broadcast_table_col1", Types.VARCHAR, false, false, false, true, false)),
-                Collections.emptyList(), Collections.emptyList()));
         schema.getTables().put("t_warehouse", new ShardingSphereTable("t_warehouse",
                 Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false)),
                 Collections.emptyList(), Collections.emptyList()));
@@ -148,27 +143,21 @@ class ShardingRouteCacheableCheckerTest {
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             Collection<? extends Arguments> probablyCacheableCases = Arrays.asList(
-                    Arguments.of("insert into t_broadcast_table (broadcast_table_id, broadcast_table_col1) values (?, ?)", Arrays.asList(1, "foo"), true, Collections.emptyList()),
                     Arguments.of("insert into t_warehouse (id) values (?)", Collections.singletonList(1), true, Collections.singletonList(0)),
                     Arguments.of("select * from t_warehouse where id = ?", Collections.singletonList(1), true, Collections.singletonList(0)),
                     Arguments.of("select * from t_warehouse where id in (?, ?, ?)", Arrays.asList(1, 2, 3), true, Arrays.asList(0, 1, 2)),
                     Arguments.of("select * from t_warehouse where id between ? and ?", Arrays.asList(1, 10), true, Arrays.asList(0, 1)),
                     Arguments.of("select * from t_warehouse where id between ? and ? limit ? offset ?", Arrays.asList(1, 10, 100, 50), true, Arrays.asList(0, 1)),
-                    Arguments.of("update t_broadcast_table set broadcast_table_col1 = ?", Collections.singletonList(0), true, Collections.emptyList()),
-                    Arguments.of("update t_broadcast_table set broadcast_table_col1 = ? where broadcast_table_id = ?", Arrays.asList(0, 1), true, Collections.emptyList()),
                     Arguments.of("update t_warehouse set warehouse_name = ? where id = ?", Arrays.asList("foo", 1), true, Collections.singletonList(1)),
-                    Arguments.of("delete from t_broadcast_table", Collections.emptyList(), true, Collections.emptyList()),
                     Arguments.of("delete from t_warehouse where id = ?", Collections.singletonList(1), true, Collections.singletonList(0)));
             Collection<? extends Arguments> nonCacheableCases = Arrays.asList(
                     Arguments.of("create table t_warehouse (id int4 not null primary key)", Collections.emptyList(), false, Collections.emptyList()),
                     Arguments.of("insert into t_warehouse (id) select warehouse_id from t_order", Collections.emptyList(), false, Collections.emptyList()),
-                    Arguments.of("insert into t_broadcast_table (broadcast_table_id, broadcast_table_col1) values (?, ?), (?, ?)", Arrays.asList(1, "foo", 2, "bar"), false, Collections.emptyList()),
                     Arguments.of("insert into t_warehouse (id) values (?), (?)", Arrays.asList(1, 2), false, Collections.emptyList()),
                     Arguments.of("insert into t_non_sharding_table (id) values (?)", Collections.singletonList(1), false, Collections.emptyList()),
                     Arguments.of("insert into t_non_cacheable_database_sharding (id) values (?)", Collections.singletonList(1), false, Collections.emptyList()),
                     Arguments.of("insert into t_non_cacheable_table_sharding (id) values (?)", Collections.singletonList(1), false, Collections.emptyList()),
                     Arguments.of("insert into t_warehouse (id) values (now())", Collections.emptyList(), false, Collections.emptyList()),
-                    Arguments.of("select * from t_broadcast_table where broadcast_table_id = ?", Collections.singletonList(1), false, Collections.emptyList()),
                     Arguments.of("select * from t_warehouse w join t_order o on w.id = o.warehouse_id where w.id = ?", Collections.singletonList(1), false, Collections.emptyList()),
                     Arguments.of("update t_warehouse set warehouse_name = ? where id = (select max(warehouse_id) from t_order)", Collections.singletonList("foo"), false, Collections.emptyList()),
                     Arguments.of("delete from t_order where warehouse_id in (1, 2, now())", Collections.emptyList(), false, Collections.emptyList()),

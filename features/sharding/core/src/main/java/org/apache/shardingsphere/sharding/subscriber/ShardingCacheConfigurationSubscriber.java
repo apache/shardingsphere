@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
@@ -31,8 +30,6 @@ import org.apache.shardingsphere.sharding.event.cache.AlterShardingCacheConfigur
 import org.apache.shardingsphere.sharding.event.cache.DeleteShardingCacheConfigurationEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -81,21 +78,15 @@ public final class ShardingCacheConfigurationSubscriber implements RuleConfigura
     @Subscribe
     public synchronized void renew(final DeleteShardingCacheConfigurationEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setShardingCache(null);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     private void renewShardingCacheConfig(final String databaseName, final ShardingCacheConfiguration shardingCacheConfiguration) {
         ShardingSphereDatabase database = databases.get(databaseName);
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setShardingCache(shardingCacheConfiguration);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
     }
 }

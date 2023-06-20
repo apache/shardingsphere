@@ -40,7 +40,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
                       final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             ShardingRule rule = database.getRuleMetaData().getSingleRule(ShardingRule.class);
-            if (!rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames()) && sqlStatementContext.getTablesContext().getTableNames().stream().anyMatch(rule::isShardingTable)) {
+            if (sqlStatementContext.getTablesContext().getTableNames().stream().anyMatch(rule::isShardingTable)) {
                 ShardingSpherePreconditions.checkState(!new ShardingConditionEngine(globalRuleMetaData, database, rule).createShardingConditions(sqlStatementContext, params).isEmpty(),
                         () -> new SQLAuditException("Not allow DML operation without sharding conditions"));
             }

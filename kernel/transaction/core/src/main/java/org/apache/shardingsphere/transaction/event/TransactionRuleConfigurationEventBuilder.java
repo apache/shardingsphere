@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.spi.GlobalRuleConfigurationEventBuilder;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
@@ -36,25 +36,25 @@ import java.util.Optional;
 /**
  * Transaction rule configuration event builder.
  */
-public final class TransactionRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
+public final class TransactionRuleConfigurationEventBuilder implements GlobalRuleConfigurationEventBuilder {
     
     private static final String TRANSACTION = "transaction";
     
     private static final String RULE_TYPE = TransactionRule.class.getSimpleName();
     
     @Override
-    public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
+    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
         if (!GlobalRuleNodeConverter.isExpectedRuleName(TRANSACTION, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        return buildEvent(databaseName, event);
+        return buildEvent(event);
     }
     
-    private Optional<GovernanceEvent> buildEvent(final String databaseName, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterGlobalRuleConfigurationEvent(databaseName, swapToConfig(event.getValue()), RULE_TYPE));
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE));
         }
-        return Optional.of(new DeleteGlobalRuleConfigurationEvent(databaseName, RULE_TYPE));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE));
     }
     
     private TransactionRuleConfiguration swapToConfig(final String yamlContext) {

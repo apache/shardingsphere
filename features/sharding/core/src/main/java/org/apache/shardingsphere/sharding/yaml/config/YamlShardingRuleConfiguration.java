@@ -47,8 +47,6 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     
     private Collection<String> bindingTables = new LinkedList<>();
     
-    private Collection<String> broadcastTables = new LinkedList<>();
-    
     private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
     
     private YamlShardingStrategyConfiguration defaultTableStrategy;

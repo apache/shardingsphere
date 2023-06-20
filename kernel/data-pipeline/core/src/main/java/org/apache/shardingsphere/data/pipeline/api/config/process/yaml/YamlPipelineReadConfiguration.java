@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 @Setter
 public final class YamlPipelineReadConfiguration implements YamlConfiguration {
     
-    private static final Integer DEFAULT_WORKER_THREAD = 40;
+    private static final Integer DEFAULT_WORKER_THREAD = 20;
     
     private static final Integer DEFAULT_BATCH_SIZE = 1000;
     

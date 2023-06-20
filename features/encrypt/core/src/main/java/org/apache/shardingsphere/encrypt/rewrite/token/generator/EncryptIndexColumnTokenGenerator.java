@@ -58,13 +58,12 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
             return Collections.emptyList();
         }
         String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return Collections.emptyList();
-        }
+        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : ((IndexAvailable) sqlStatementContext).getIndexColumns()) {
-            encryptRule.findStandardEncryptor(tableName, each.getIdentifier().getValue()).flatMap(optional -> getColumnToken(encryptTable.get(), each)).ifPresent(result::add);
+            if (encryptTable.isEncryptColumn(each.getIdentifier().getValue())) {
+                getColumnToken(encryptTable, each).ifPresent(result::add);
+            }
         }
         return result;
     }

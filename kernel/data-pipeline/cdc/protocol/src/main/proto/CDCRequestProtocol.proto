@@ -31,8 +31,7 @@ message CDCRequest {
     ACK_STREAMING = 3;
     STOP_STREAMING = 4;
     START_STREAMING = 5;
-    ROLLBACK_STREAMING = 6;
-    COMMIT_STREAMING = 7;
+    DROP_STREAMING = 6;
   }
   Type type = 3;
   oneof request_body {
@@ -41,8 +40,7 @@ message CDCRequest {
     AckStreamingRequestBody ack_streaming_request_body = 6;
     StopStreamingRequestBody stop_streaming_request_body = 7;
     StartStreamingRequestBody start_streaming_request_body = 8;
-    RollbackStreamingRequestBody rollback_streaming_request_body = 9;
-    CommitStreamingRequestBody commit_streaming_request_body = 10;
+    DropStreamingRequestBody drop_streaming_request_body = 9;
   }
 }
 
@@ -84,10 +82,6 @@ message StartStreamingRequestBody {
   string streaming_id = 1;
 }
 
-message RollbackStreamingRequestBody {
-  string streaming_id = 1;
-}
-
-message CommitStreamingRequestBody {
+message DropStreamingRequestBody {
   string streaming_id = 1;
 }

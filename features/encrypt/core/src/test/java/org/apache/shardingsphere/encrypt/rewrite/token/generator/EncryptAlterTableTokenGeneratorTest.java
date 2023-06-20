@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
@@ -60,21 +59,20 @@ class EncryptAlterTableTokenGeneratorTest {
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mockEncryptTable();
-        when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
-        StandardEncryptAlgorithm<?, ?> encryptAlgorithm = mock(StandardEncryptAlgorithm.class);
-        when(result.findStandardEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(encryptAlgorithm));
-        when(result.findStandardEncryptor("t_encrypt", "certificate_number_new")).thenReturn(Optional.of(encryptAlgorithm));
+        when(result.getEncryptTable("t_encrypt")).thenReturn(encryptTable);
         return result;
     }
     
     private EncryptTable mockEncryptTable() {
         EncryptTable result = mock(EncryptTable.class);
         when(result.getTable()).thenReturn("t_encrypt");
+        when(result.isEncryptColumn("certificate_number")).thenReturn(true);
         when(result.getCipherColumn("certificate_number")).thenReturn("cipher_certificate_number");
         when(result.findAssistedQueryColumn("certificate_number")).thenReturn(Optional.of("assisted_certificate_number"));
         when(result.findLikeQueryColumn("certificate_number")).thenReturn(Optional.of("like_certificate_number"));
         when(result.getLogicColumns()).thenReturn(Collections.singleton("t_encrypt"));
         when(result.getEncryptColumn("certificate_number")).thenReturn(mockEncryptColumn());
+        when(result.isEncryptColumn("certificate_number_new")).thenReturn(true);
         when(result.getCipherColumn("certificate_number_new")).thenReturn("cipher_certificate_number_new");
         when(result.getEncryptColumn("certificate_number_new")).thenReturn(mockNewEncryptColumn());
         return result;

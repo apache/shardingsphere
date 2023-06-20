@@ -61,7 +61,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropProcedu
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
@@ -147,9 +146,6 @@ public final class ShardingRouteEngineFactory {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        if (shardingRule.isAllBroadcastTables(tableNames)) {
-            return new ShardingUnicastRoutingEngine(sqlStatementContext, tableNames, connectionContext);
-        }
         Collection<String> logicTableNames = shardingRule.getShardingLogicTableNames(tableNames);
         boolean allBindingTables = logicTableNames.size() > 1 && shardingRule.isAllBindingTables(database, sqlStatementContext, logicTableNames);
         if (isShardingStandardQuery(shardingRule, logicTableNames, allBindingTables)) {
@@ -214,11 +210,6 @@ public final class ShardingRouteEngineFactory {
                                                            final HintValueContext hintValueContext, final ShardingConditions shardingConditions, final ConfigurationProperties props,
                                                            final ConnectionContext connectionContext) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        if (shardingRule.isAllBroadcastTables(tableNames)) {
-            return sqlStatementContext.getSqlStatement() instanceof SelectStatement
-                    ? new ShardingUnicastRoutingEngine(sqlStatementContext, tableNames, connectionContext)
-                    : new ShardingDatabaseBroadcastRoutingEngine();
-        }
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new ShardingUnicastRoutingEngine(sqlStatementContext, tableNames, connectionContext);
         }

@@ -33,7 +33,7 @@ import java.util.LinkedList;
 
 /**
  * TODO Rename ConfigurationChangedSubscriber when metadata structure adjustment completed. #25485
- * New Configuration changed subscriber.
+ * New configuration changed subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 public final class NewConfigurationChangedSubscriber {
@@ -57,6 +57,7 @@ public final class NewConfigurationChangedSubscriber {
         Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
         rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(),
                 event.getRuleConfig(), contextManager.getInstanceContext()));
+        database.getRuleMetaData().getRules().clear();
         database.getRuleMetaData().getRules().addAll(rules);
     }
     
@@ -67,12 +68,11 @@ public final class NewConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterGlobalRuleConfigurationEvent event) {
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(event.getDatabaseName());
-        Collection<ShardingSphereRule> rules = removeSingleGlobalRule(database, event.getRuleSimpleName());
+        Collection<ShardingSphereRule> rules = removeSingleGlobalRule(event.getRuleSimpleName());
         rules.addAll(GlobalRulesBuilder.buildRules(Collections.singletonList(event.getConfig()), contextManager.getMetaDataContexts().getMetaData().getDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getProps()));
-        database.getRuleMetaData().getRules().clear();
-        database.getRuleMetaData().getRules().addAll(rules);
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().clear();
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
     }
     
     /**
@@ -82,14 +82,13 @@ public final class NewConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DeleteGlobalRuleConfigurationEvent event) {
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(event.getDatabaseName());
-        Collection<ShardingSphereRule> rules = removeSingleGlobalRule(database, event.getRuleSimpleName());
-        database.getRuleMetaData().getRules().clear();
-        database.getRuleMetaData().getRules().addAll(rules);
+        Collection<ShardingSphereRule> rules = removeSingleGlobalRule(event.getRuleSimpleName());
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().clear();
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
     }
     
-    private Collection<ShardingSphereRule> removeSingleGlobalRule(final ShardingSphereDatabase database, final String ruleSimpleName) {
-        Collection<ShardingSphereRule> result = new LinkedList<>(database.getRuleMetaData().getRules());
+    private Collection<ShardingSphereRule> removeSingleGlobalRule(final String ruleSimpleName) {
+        Collection<ShardingSphereRule> result = new LinkedList<>(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         for (ShardingSphereRule each : result) {
             if (!each.getType().equals(ruleSimpleName)) {
                 continue;

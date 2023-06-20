@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.executor;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -27,6 +24,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Abstract lifecycle executor.
@@ -36,17 +34,20 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
-    @Getter(AccessLevel.PROTECTED)
-    @Setter(AccessLevel.PROTECTED)
-    private volatile boolean running;
-    
-    private volatile boolean stopped;
+    private final AtomicReference<Boolean> running = new AtomicReference<>(null);
     
     private volatile long startTimeMillis;
     
+    protected boolean isRunning() {
+        Boolean running = this.running.get();
+        return null != running && running;
+    }
+    
     @Override
     public final void start() {
-        running = true;
+        if (null != running.get() || !running.compareAndSet(null, true)) {
+            return;
+        }
         startTimeMillis = System.currentTimeMillis();
         runBlocking();
     }
@@ -58,7 +59,12 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
     @Override
     public final void stop() {
-        if (stopped) {
+        Boolean running = this.running.get();
+        if (null == running) {
+            this.running.set(false);
+            return;
+        }
+        if (!running) {
             return;
         }
         LocalDateTime startTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(startTimeMillis), ZoneId.systemDefault());
@@ -70,8 +76,7 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
             // CHECKSTYLE:ON
             log.warn("doStop failed", ex);
         }
-        running = false;
-        stopped = true;
+        this.running.set(false);
     }
     
     protected abstract void doStop() throws SQLException;

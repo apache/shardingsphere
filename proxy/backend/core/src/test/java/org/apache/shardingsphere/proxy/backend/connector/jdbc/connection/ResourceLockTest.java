@@ -34,9 +34,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(AutoMockExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -75,6 +75,6 @@ class ResourceLockTest {
             resourceLock.doNotify();
         });
         resourceLock.doAwait(channelHandlerContext);
-        assertTrue(System.currentTimeMillis() > startTime);
+        assertTrue(System.currentTimeMillis() >= startTime);
     }
 }

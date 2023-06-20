@@ -42,6 +42,9 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
 rules:
+  - !SINGLE
+    tables:
+      - "*.*"
   - !SHARDING
     tables:
       t_order:
@@ -95,8 +98,6 @@ rules:
           keyGeneratorName: snowflake
     bindingTables:
       - t_order,t_order_item,t_order_view
-    broadcastTables:
-      - t_address,t_country,t_province,t_city
     defaultDatabaseStrategy:
       none:
     defaultTableStrategy:
@@ -131,3 +132,10 @@ rules:
     keyGenerators:
       snowflake:
         type: SNOWFLAKE
+        
+  - !BROADCAST
+    tables:
+      - t_address
+      - t_country
+      - t_province
+      - t_city

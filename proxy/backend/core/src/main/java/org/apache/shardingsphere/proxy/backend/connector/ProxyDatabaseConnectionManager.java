@@ -70,26 +70,29 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     private final Collection<TransactionHook> transactionHooks = ShardingSphereServiceLoader.getServiceInstances(TransactionHook.class);
     
     @Override
-    public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+    public List<Connection> getConnections(final String dataSourceName, final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current database name is null.");
         Collection<Connection> connections;
         synchronized (cachedConnections) {
             connections = cachedConnections.get(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName);
         }
         List<Connection> result;
-        if (connections.size() >= connectionSize) {
-            result = new ArrayList<>(connections).subList(0, connectionSize);
+        int maxConnectionSize = connectionOffset + connectionSize;
+        if (connections.size() >= maxConnectionSize) {
+            result = new ArrayList<>(connections).subList(connectionOffset, maxConnectionSize);
         } else if (connections.isEmpty()) {
-            result = createNewConnections(dataSourceName, connectionSize, connectionMode);
+            Collection<Connection> newConnections = createNewConnections(dataSourceName, maxConnectionSize, connectionMode);
+            result = new ArrayList<>(newConnections).subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName, result);
+                cachedConnections.putAll(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName, newConnections);
             }
             executeTransactionHooksAfterCreateConnections(result);
         } else {
-            result = new ArrayList<>(connectionSize);
-            result.addAll(connections);
-            List<Connection> newConnections = createNewConnections(dataSourceName, connectionSize - connections.size(), connectionMode);
-            result.addAll(newConnections);
+            List<Connection> allConnections = new ArrayList<>(maxConnectionSize);
+            allConnections.addAll(connections);
+            List<Connection> newConnections = createNewConnections(dataSourceName, maxConnectionSize - connections.size(), connectionMode);
+            allConnections.addAll(newConnections);
+            result = allConnections.subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName, newConnections);
             }
