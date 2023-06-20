@@ -30,10 +30,8 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContex
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -64,13 +62,10 @@ public final class BroadcastRouteEngineFactory {
      * @param broadcastRule broadcast rule
      * @param database database
      * @param queryContext query context
-     * @param props props
      * @param connectionContext connection context
-     * @param globalRuleMetaData global rule metadata
      * @return broadcast route engine
      */
-    public static BroadcastRouteEngine newInstance(final BroadcastRule broadcastRule, final ShardingSphereDatabase database, final QueryContext queryContext,
-                                                   final ConfigurationProperties props, final ConnectionContext connectionContext, final ShardingSphereRuleMetaData globalRuleMetaData) {
+    public static BroadcastRouteEngine newInstance(final BroadcastRule broadcastRule, final ShardingSphereDatabase database, final QueryContext queryContext, final ConnectionContext connectionContext) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof TCLStatement) {
@@ -80,13 +75,13 @@ public final class BroadcastRouteEngineFactory {
             if (sqlStatementContext instanceof CursorAvailable) {
                 return getCursorRouteEngine(broadcastRule, sqlStatementContext, connectionContext);
             }
-            return getDDLRoutingEngine(broadcastRule, database, queryContext, connectionContext);
+            return getDDLRoutingEngine(broadcastRule, database, queryContext);
         }
         if (sqlStatement instanceof DALStatement) {
-            return getDALRoutingEngine(broadcastRule, database, queryContext);
+            return getDALRoutingEngine(broadcastRule, queryContext);
         }
         if (sqlStatement instanceof DCLStatement) {
-            return getDCLRoutingEngine(broadcastRule, database, queryContext);
+            return getDCLRoutingEngine(broadcastRule, queryContext);
         }
         return getDQLRoutingEngine(broadcastRule, queryContext, connectionContext);
     }
@@ -104,8 +99,7 @@ public final class BroadcastRouteEngineFactory {
         return new BroadcastIgnoreRoutingEngine();
     }
     
-    private static BroadcastRouteEngine getDDLRoutingEngine(final BroadcastRule broadcastRule, final ShardingSphereDatabase database,
-                                                            final QueryContext queryContext, final ConnectionContext connectionContext) {
+    private static BroadcastRouteEngine getDDLRoutingEngine(final BroadcastRule broadcastRule, final ShardingSphereDatabase database, final QueryContext queryContext) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         Collection<String> tableNames = getTableNames(database, sqlStatementContext);
         if (broadcastRule.isAllBroadcastTables(tableNames)) {
@@ -134,7 +128,7 @@ public final class BroadcastRouteEngineFactory {
         return result;
     }
     
-    private static BroadcastRouteEngine getDALRoutingEngine(final BroadcastRule broadcastRule, final ShardingSphereDatabase database, final QueryContext queryContext) {
+    private static BroadcastRouteEngine getDALRoutingEngine(final BroadcastRule broadcastRule, final QueryContext queryContext) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof MySQLUseStatement) {
@@ -148,7 +142,7 @@ public final class BroadcastRouteEngineFactory {
         return new BroadcastIgnoreRoutingEngine();
     }
     
-    private static BroadcastRouteEngine getDCLRoutingEngine(final BroadcastRule broadcastRule, final ShardingSphereDatabase database, final QueryContext queryContext) {
+    private static BroadcastRouteEngine getDCLRoutingEngine(final BroadcastRule broadcastRule, final QueryContext queryContext) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         Collection<String> broadcastRuleTableNames = broadcastRule.getBroadcastRuleTableNames(sqlStatementContext.getTablesContext().getTableNames());
         if (isDCLForSingleTable(sqlStatementContext) && !broadcastRuleTableNames.isEmpty() || broadcastRule.isAllBroadcastTables(broadcastRuleTableNames)) {
