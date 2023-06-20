@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.converter;
+package org.apache.shardingsphere.infra.config.converter;
 
 import org.junit.jupiter.api.Test;
 
