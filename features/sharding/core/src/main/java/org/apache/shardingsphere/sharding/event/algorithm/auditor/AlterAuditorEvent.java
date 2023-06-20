@@ -34,4 +34,8 @@ public final class AlterAuditorEvent implements GovernanceEvent {
     private final String auditorName;
     
     private final AlgorithmConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

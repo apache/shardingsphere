@@ -32,4 +32,8 @@ public final class AddEncryptConfigurationEvent implements GovernanceEvent {
     private final String databaseName;
     
     private final EncryptTableRuleConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

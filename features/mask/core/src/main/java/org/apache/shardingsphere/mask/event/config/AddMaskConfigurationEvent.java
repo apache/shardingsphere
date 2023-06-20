@@ -32,4 +32,8 @@ public final class AddMaskConfigurationEvent implements GovernanceEvent {
     private final String databaseName;
     
     private final MaskTableRuleConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

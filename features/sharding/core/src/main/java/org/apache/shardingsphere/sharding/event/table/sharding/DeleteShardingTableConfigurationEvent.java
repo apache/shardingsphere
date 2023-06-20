@@ -31,4 +31,8 @@ public final class DeleteShardingTableConfigurationEvent implements GovernanceEv
     private final String databaseName;
     
     private final String tableName;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

@@ -29,4 +29,8 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 public final class DeleteTableShardingStrategyConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

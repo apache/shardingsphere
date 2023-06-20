@@ -47,14 +47,18 @@ public final class SQLTranslatorConfigurationEventBuilder implements GlobalRuleC
         if (!GlobalRuleNodeConverter.isExpectedRuleName(SQL_TRANSLATOR, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        return buildEvent(event);
+        Optional<String> version = GlobalRuleNodeConverter.getVersion(SQL_TRANSLATOR, event.getKey());
+        if (version.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
+            return buildEvent(event, Integer.parseInt(version.get()));
+        }
+        return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event) {
+    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event, final int version) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE));
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE, event.getKey(), version));
         }
-        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE, event.getKey(), version));
     }
     
     private SQLTranslatorRuleConfiguration swapToConfig(final String yamlContext) {

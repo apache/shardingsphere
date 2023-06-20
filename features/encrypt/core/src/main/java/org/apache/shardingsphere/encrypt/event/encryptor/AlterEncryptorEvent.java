@@ -34,4 +34,8 @@ public final class AlterEncryptorEvent implements GovernanceEvent {
     private final String encryptorName;
     
     private final AlgorithmConfiguration config;
+    
+    private final String versionKey;
+    
+    private final int version;
 }

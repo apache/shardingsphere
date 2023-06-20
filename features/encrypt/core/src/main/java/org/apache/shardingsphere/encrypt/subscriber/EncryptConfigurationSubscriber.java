@@ -59,6 +59,9 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
      */
     @Subscribe
     public synchronized void renew(final AddEncryptConfigurationEvent event) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptTableRuleConfiguration needToAddedConfig = event.getConfig();
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
@@ -79,6 +82,9 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
      */
     @Subscribe
     public synchronized void renew(final AlterEncryptConfigurationEvent event) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptTableRuleConfiguration needToAlteredConfig = event.getConfig();
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
@@ -94,6 +100,9 @@ public final class EncryptConfigurationSubscriber implements RuleConfigurationSu
      */
     @Subscribe
     public synchronized void renew(final DeleteEncryptConfigurationEvent event) {
+        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
