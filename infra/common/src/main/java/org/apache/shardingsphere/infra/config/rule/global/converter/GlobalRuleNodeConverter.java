@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.config.rule.global.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,39 +31,20 @@ public final class GlobalRuleNodeConverter {
     
     private static final String ROOT_NODE = "rules";
     
-    private static final String VERSIONS = "versions";
-    
     /**
-     * Get version.
+     * Is active version path.
      *
      * @param ruleName rule name
      * @param rulePath rule path
      * @return version
      */
-    public static Optional<String> getVersion(final String ruleName, final String rulePath) {
-        Pattern pattern = Pattern.compile(getVersionsNode(ruleName) + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
-    }
-    
-    private static String getVersionsNode(final String ruleName) {
-        return String.join("/", "", ROOT_NODE, ruleName, VERSIONS);
-    }
-    
-    /**
-     * Is expected rule name.
-     *
-     * @param ruleName rule name
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isExpectedRuleName(final String ruleName, final String rulePath) {
-        Pattern pattern = Pattern.compile(getRootNode(ruleName) + "\\.*", Pattern.CASE_INSENSITIVE);
+    public static boolean isActiveVersionPath(final String ruleName, final String rulePath) {
+        Pattern pattern = Pattern.compile(getRuleNameNode(ruleName) + "/active_version$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
     
-    private static String getRootNode(final String ruleName) {
-        return String.join("/", ruleName);
+    private static String getRuleNameNode(final String ruleName) {
+        return String.join("/", "", ROOT_NODE, ruleName);
     }
 }

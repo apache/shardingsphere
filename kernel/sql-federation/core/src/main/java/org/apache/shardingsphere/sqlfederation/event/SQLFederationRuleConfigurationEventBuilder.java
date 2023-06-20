@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.event;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.config.rule.global.event.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.config.rule.global.event.DeleteGlobalRuleConfigurationEvent;
@@ -44,21 +43,17 @@ public final class SQLFederationRuleConfigurationEventBuilder implements GlobalR
     
     @Override
     public Optional<GovernanceEvent> build(final DataChangedEvent event) {
-        if (!GlobalRuleNodeConverter.isExpectedRuleName(SQL_FEDERATION, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
-        }
-        Optional<String> version = GlobalRuleNodeConverter.getVersion(SQL_FEDERATION, event.getKey());
-        if (version.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return buildEvent(event, version.get());
+        if (GlobalRuleNodeConverter.isActiveVersionPath(SQL_FEDERATION, event.getKey())) {
+            return buildEvent(event);
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event, final String version) {
+    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE, event.getKey(), version));
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE, event.getKey(), version));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE, event.getKey(), event.getValue()));
     }
     
     private SQLFederationRuleConfiguration swapToConfig(final String yamlContext) {

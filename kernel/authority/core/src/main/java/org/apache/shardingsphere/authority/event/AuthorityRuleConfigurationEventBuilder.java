@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.authority.event;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
@@ -44,21 +43,17 @@ public final class AuthorityRuleConfigurationEventBuilder implements GlobalRuleC
     
     @Override
     public Optional<GovernanceEvent> build(final DataChangedEvent event) {
-        if (!GlobalRuleNodeConverter.isExpectedRuleName(AUTHORITY, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
-        }
-        Optional<String> version = GlobalRuleNodeConverter.getVersion(AUTHORITY, event.getKey());
-        if (version.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return buildEvent(event, version.get());
+        if (GlobalRuleNodeConverter.isActiveVersionPath(AUTHORITY, event.getKey())) {
+            return buildEvent(event);
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event, final String version) {
+    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE, event.getKey(), version));
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE, event.getKey(), version));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE, event.getKey(), event.getValue()));
     }
     
     private AuthorityRuleConfiguration swapToConfig(final String yamlContext) {
