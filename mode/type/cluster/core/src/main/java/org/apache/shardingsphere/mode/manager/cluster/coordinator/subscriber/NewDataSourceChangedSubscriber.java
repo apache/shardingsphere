@@ -44,7 +44,7 @@ public final class NewDataSourceChangedSubscriber {
      */
     @Subscribe
     public void renew(final RegisterStorageUnitEvent event) {
-        if (event.getVersion() < contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.registerStorageUnit(event.getDatabaseName(), event.getStorageUnitName(), event.getProps());
@@ -57,7 +57,7 @@ public final class NewDataSourceChangedSubscriber {
      */
     @Subscribe
     public void renew(final AlterStorageUnitEvent event) {
-        if (event.getVersion() < contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(), event.getProps());
@@ -70,7 +70,7 @@ public final class NewDataSourceChangedSubscriber {
      */
     @Subscribe
     public void renew(final UnregisterStorageUnitEvent event) {
-        if (event.getVersion() < contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());

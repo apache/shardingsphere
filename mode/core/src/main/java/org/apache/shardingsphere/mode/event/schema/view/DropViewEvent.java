@@ -34,7 +34,7 @@ public final class DropViewEvent implements GovernanceEvent {
     
     private final String viewName;
     
-    private final int version;
-    
     private final String activeVersionKey;
+    
+    private final String activeVersion;
 }
