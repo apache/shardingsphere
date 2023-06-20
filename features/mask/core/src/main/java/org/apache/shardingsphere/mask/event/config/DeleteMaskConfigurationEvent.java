@@ -32,7 +32,7 @@ public final class DeleteMaskConfigurationEvent implements GovernanceEvent {
     
     private final String tableName;
     
-    private final String versionKey;
+    private final String activeVersionKey;
     
-    private final int version;
+    private final String activeVersion;
 }

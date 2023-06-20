@@ -33,7 +33,7 @@ public final class AlterDatabaseShardingStrategyConfigurationEvent implements Go
     
     private final ShardingStrategyConfiguration config;
     
-    private final String versionKey;
+    private final String activeVersionKey;
     
-    private final int version;
+    private final String activeVersion;
 }

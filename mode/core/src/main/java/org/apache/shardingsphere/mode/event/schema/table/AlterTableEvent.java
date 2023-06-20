@@ -37,5 +37,5 @@ public final class AlterTableEvent implements GovernanceEvent {
     
     private final int version;
     
-    private final String versionKey;
+    private final String activeVersionKey;
 }

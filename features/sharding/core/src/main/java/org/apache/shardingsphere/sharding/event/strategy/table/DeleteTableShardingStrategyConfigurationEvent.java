@@ -30,7 +30,7 @@ public final class DeleteTableShardingStrategyConfigurationEvent implements Gove
     
     private final String databaseName;
     
-    private final String versionKey;
+    private final String activeVersionKey;
     
-    private final int version;
+    private final String activeVersion;
 }
