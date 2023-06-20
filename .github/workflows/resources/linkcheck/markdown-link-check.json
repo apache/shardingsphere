@@ -14,11 +14,11 @@
     }
   ], "replacementPatterns": [
   {
-    "pattern": "^/cn/",
+    "pattern": "^/cn/*",
     "replacement": "https://shardingsphere.apache.org/document/current/cn/"
   },
   {
-    "pattern": "^/en/",
+    "pattern": "^/en/*",
     "replacement": "https://shardingsphere.apache.org/document/current/en/"
   }],
   "timeout": "10s",
