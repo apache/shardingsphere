@@ -33,7 +33,7 @@ public final class AlterBroadcastTableEvent implements GovernanceEvent {
     
     private final BroadcastRuleConfiguration config;
     
-    private final String versionKey;
+    private final String activeVersionKey;
     
-    private final int version;
+    private final String version;
 }
