@@ -18,18 +18,17 @@
 package org.apache.shardingsphere.single.event;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
-import org.apache.shardingsphere.infra.config.rule.global.event.AlterGlobalRuleConfigurationEvent;
-import org.apache.shardingsphere.infra.config.rule.global.event.DeleteGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.single.event.config.AddSingleTableEvent;
+import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
+import org.apache.shardingsphere.single.event.config.DeleteSingleTableEvent;
+import org.apache.shardingsphere.single.metadata.converter.SingleNodeConverter;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
-import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
 
 import java.util.Optional;
 
@@ -38,30 +37,34 @@ import java.util.Optional;
  */
 public final class SingleRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
-    private static final String SINGLE = "single";
-    
-    private static final String RULE_TYPE = SingleRule.class.getSimpleName();
-    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!GlobalRuleNodeConverter.isExpectedRuleName(SINGLE, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!SingleNodeConverter.isSinglePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> version = GlobalRuleNodeConverter.getVersion(SINGLE, event.getKey());
-        if (version.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return buildEvent(event, Integer.parseInt(version.get()));
+        if (SingleNodeConverter.isTablesPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+            return createSingleConfigEvent(databaseName, event);
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event, final int version) {
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE, event.getKey(), version));
+    private Optional<GovernanceEvent> createSingleConfigEvent(final String databaseName, final DataChangedEvent event) {
+        if (Type.ADDED == event.getType()) {
+            return Optional.of(new AddSingleTableEvent(databaseName, swapSingleTableRuleConfig(event.getValue())));
         }
-        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE, event.getKey(), version));
+        if (Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterSingleTableEvent(databaseName, swapSingleTableRuleConfig(event.getValue())));
+        }
+        return Optional.of(new DeleteSingleTableEvent(databaseName));
     }
     
-    private SingleRuleConfiguration swapToConfig(final String yamlContext) {
-        return new YamlSingleRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlSingleRuleConfiguration.class));
+    private SingleRuleConfiguration swapSingleTableRuleConfig(final String yamlContext) {
+        SingleRuleConfiguration result = new SingleRuleConfiguration();
+        YamlSingleRuleConfiguration yamlSingleRuleConfiguration = YamlEngine.unmarshal(yamlContext, YamlSingleRuleConfiguration.class);
+        if (null != yamlSingleRuleConfiguration.getTables()) {
+            result.getTables().addAll(yamlSingleRuleConfiguration.getTables());
+        }
+        result.setDefaultDataSource(yamlSingleRuleConfiguration.getDefaultDataSource());
+        return result;
     }
 }
