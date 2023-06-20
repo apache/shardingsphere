@@ -42,7 +42,7 @@ class SystemSchemaBuilderRuleTest {
         assertThat(actualPerformanceSchema.getTables().size(), is(87));
         SystemSchemaBuilderRule actualPgCatalog = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "pg_catalog");
         assertThat(actualPgCatalog, is(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG));
-        assertThat(actualPgCatalog.getTables().size(), is(27));
+        assertThat(actualPgCatalog.getTables().size(), is(31));
     }
     
     @Test
@@ -63,6 +63,10 @@ class SystemSchemaBuilderRuleTest {
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_attribute"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_auth_members"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_authid"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_available_extension_versions"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_available_extensions"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_backend_memory_contexts"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_cast"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_range"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_replication_origin"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_rewrite"));
