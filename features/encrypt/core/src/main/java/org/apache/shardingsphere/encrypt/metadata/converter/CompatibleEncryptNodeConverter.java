@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 /**
  * Compatible encrypt node converter.
+ * @deprecated compatible support will remove in next version.
  */
 @Deprecated
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
