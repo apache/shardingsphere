@@ -64,7 +64,7 @@ public final class GlobalRuleNodeConverter {
     }
     
     /**
-     * Get rule name
+     * Get rule name.
      *
      * @param rulePath rule path
      * @return rule name
