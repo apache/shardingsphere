@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.config.rule.global.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +31,25 @@ import java.util.regex.Pattern;
 public final class GlobalRuleNodeConverter {
     
     private static final String ROOT_NODE = "rules";
+    
+    private static final String VERSIONS = "versions";
+    
+    /**
+     * Get version.
+     *
+     * @param ruleName rule name
+     * @param rulePath rule path
+     * @return version
+     */
+    public static Optional<String> getVersion(final String ruleName, final String rulePath) {
+        Pattern pattern = Pattern.compile(getVersionsNode(ruleName) + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    private static String getVersionsNode(final String ruleName) {
+        return String.join("/", "", ROOT_NODE, ruleName, VERSIONS);
+    }
     
     /**
      * Is active version path.

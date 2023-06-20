@@ -20,12 +20,23 @@ package org.apache.shardingsphere.infra.converter;
 import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalRuleNodeConverterTest {
     
     @Test
     void assertGetVersion() {
+        Optional<String> actual = GlobalRuleNodeConverter.getVersion("transaction", "/rules/transaction/versions/0");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("0"));
+    }
+    
+    @Test
+    void assertIsActiveVersionPath() {
         assertTrue(GlobalRuleNodeConverter.isActiveVersionPath("transaction", "/rules/transaction/active_version"));
     }
 }
