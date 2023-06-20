@@ -63,7 +63,7 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
     public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
                                            final BroadcastRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         RouteContext result = new RouteContext();
-        BroadcastRouteEngineFactory.newInstance(rule, database, queryContext, props, connectionContext, globalRuleMetaData).route(result, rule);
+        BroadcastRouteEngineFactory.newInstance(rule, database, queryContext, connectionContext).route(result, rule);
         return result;
     }
     

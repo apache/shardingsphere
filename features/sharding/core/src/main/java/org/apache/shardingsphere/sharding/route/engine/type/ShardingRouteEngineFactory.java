@@ -100,7 +100,7 @@ public final class ShardingRouteEngineFactory {
         }
         if (sqlStatement instanceof DDLStatement) {
             if (sqlStatementContext instanceof CursorAvailable) {
-                return getCursorRouteEngine(shardingRule, database, sqlStatementContext, queryContext.getHintValueContext(), shardingConditions, props, connectionContext);
+                return getCursorRouteEngine(shardingRule, database, sqlStatementContext, queryContext.getHintValueContext(), shardingConditions, props);
             }
             return getDDLRoutingEngine(shardingRule, database, sqlStatementContext, connectionContext, globalRuleMetaData);
         }
@@ -140,8 +140,7 @@ public final class ShardingRouteEngineFactory {
     }
     
     private static ShardingRouteEngine getCursorRouteEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
-                                                            final HintValueContext hintValueContext, final ShardingConditions shardingConditions, final ConfigurationProperties props,
-                                                            final ConnectionContext connectionContext) {
+                                                            final HintValueContext hintValueContext, final ShardingConditions shardingConditions, final ConfigurationProperties props) {
         if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
