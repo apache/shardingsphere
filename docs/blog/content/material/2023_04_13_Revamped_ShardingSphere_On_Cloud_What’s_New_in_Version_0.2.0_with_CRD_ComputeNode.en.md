@@ -6,7 +6,7 @@ chapter = true
 
 Apache ShardingSphere-On-Cloud recently released version 0.2.0, which includes a new CRD ComputeNode for ShardingSphere Operator. This new feature enables users to define computing nodes fully within the ShardingSphere architecture.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md1.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md1.jpg)
 
 # Introduction to ComputeNode
 
@@ -18,11 +18,11 @@ The computing node refers to the ShardingSphere Proxy, which acts as the entry p
 
 The storage node is the environment that stores various ShardingSphere metadata, such as sharding rules, encryption rules, and read-write splitting rules. Governance node components include Zookeeper, Etcd, etc.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md2.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md2.jpg)
 
 In version 0.1.x of ShardingSphere Operator, two CRD components, Proxy and ProxyServerConfig, were introduced to describe the deployment and configuration of ShardingSphere Proxy, as shown in the figure below.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md3.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md3.jpg)
 
 These components enable basic maintenance and deployment capabilities for ShardingSphere Proxy, which are sufficient for Proof of Concept (PoC) environments.
 
@@ -32,12 +32,12 @@ However, for the Operator to be useful in production environments, it must be ab
 
 To address these management capabilities, ShardingSphere-On-Cloud has introduced ComputeNode, which can handle these functions within a specific group of objects. The first object is ComputeNode, as shown in the figure below:
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md4.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md4.jpg)
 
 
 Compared with Proxy and ProxyServerConfig, ComputeNode brings changes such as cross-version upgrades, horizontal elastic scaling, and configuration security. ComputeNode is still in the v1alpha1 stage and needs to be enabled through a feature gate.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md5.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md5.jpg)
 
 
 # ComputeNode Practice
@@ -50,13 +50,13 @@ helm repo add shardingsphere-on-cloud https://charts.shardingsphere.io
 helm install shardingsphere-on-cloud/shardingsphere-operator - version 0.2.0 - generate-name
 ```
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md6.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md6.jpg)
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md7.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md7.jpg)
 
 - The deployment status of the ShardingSphere Proxy cluster can be checked using `kubectl get pod`:
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md8.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md8.jpg)
 
 Now, a complete cluster managed by ShardingSphere Operator has been deployed.
 
@@ -71,7 +71,7 @@ READYINSTANCES represent the number of ShardingSphere Pods in the Ready state, P
 ```
 kubectl get computenode
 ```
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md9.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md9.jpg)
 
 **Quickly Scale the ShardingSphere Proxy Cluster Using** `kubectl scale`
 
@@ -79,9 +79,9 @@ ComputeNode supports the Scale subresource, which enables you to manually scale 
 
 If the ComputeNode installed by the operator’s default charts cannot meet your usage scenario, you can write a ComputeNode yaml file and submit it to Kubernetes for deployment.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md10.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md10.jpg)
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md11.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md11.jpg)
 
 **Customizing ComputeNode configuration**
 If the ComputeNode installed by the operator’s default charts cannot meet the usage scenario, you need to write a ComputeNode yaml file by yourself and submit it to Kubernetes for deployment:
@@ -138,9 +138,9 @@ Save the above configuration as foo.yml and execute the following command to cre
 kubectl apply -f foo.yml
 ```
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md12.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md12.jpg)
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md13.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md13.jpg)
 
 The above example can be directly found in our [Github repository](https://github.com/apache/shardingsphere-on-cloud/tree/main/examples/operator).
 
