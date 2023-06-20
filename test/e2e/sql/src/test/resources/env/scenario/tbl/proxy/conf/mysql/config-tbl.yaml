@@ -108,3 +108,6 @@ rules:
   tables:
     - t_broadcast_table
     - t_broadcast_table_for_ddl
+
+sqlParser:
+  sqlCommentParseEnabled: true
