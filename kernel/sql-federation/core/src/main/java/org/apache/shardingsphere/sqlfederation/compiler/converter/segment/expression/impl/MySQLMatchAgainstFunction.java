@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
+package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl;
 
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;

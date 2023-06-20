@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expres
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl.AggregationProjectionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl.DataTypeConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.NotExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.MatchExpressionConverter;
 
 import java.util.Optional;
 

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
@@ -64,6 +65,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedSubquery;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.function.ExpectedFunction;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedMatchExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 import java.util.Iterator;
@@ -372,6 +374,15 @@ public final class ExpressionAssert {
         assertThat(assertContext.getText("Actual variable is different with expected variable."), actual.getVariable(), is(expected.getVariable()));
     }
     
+    private static void assertMatchSegment(final SQLCaseAssertContext assertContext, final MatchExpression actual, final ExpectedMatchExpression expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Actual match expression should not exist."));
+        } else {
+            assertNotNull(actual, assertContext.getText("Actual match expression should exist"));
+            assertExpression(assertContext, actual.getExpr(), expected.getExpr());
+        }
+    }
+    
     /**
      * Assert expression by actual expression segment class type.
      *
@@ -425,6 +436,8 @@ public final class ExpressionAssert {
             assertTypeCastExpression(assertContext, (TypeCastExpression) actual, expected.getTypeCastExpression());
         } else if (actual instanceof VariableSegment) {
             assertVariableSegment(assertContext, (VariableSegment) actual, expected.getVariableSegment());
+        } else if (actual instanceof MatchExpression) {
+            assertMatchSegment(assertContext, (MatchExpression) actual, expected.getMatchExpression());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
         }

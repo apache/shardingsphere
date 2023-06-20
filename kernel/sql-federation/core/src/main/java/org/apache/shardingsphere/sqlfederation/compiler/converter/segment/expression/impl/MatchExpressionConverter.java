@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
+package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlIdentifier;
@@ -24,8 +24,8 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchExpression;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
 
 import java.util.LinkedList;
 import java.util.List;
