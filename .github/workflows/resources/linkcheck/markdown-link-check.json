@@ -10,15 +10,17 @@
       "pattern": "^https://github.com/apache/incubator-shardingsphere/*"
     },
     {
-      "pattern": "^/en/*"
-    },
-    {
-      "pattern": "^/cn/*"
-    },
-    {
       "pattern": "^https://twitter.com*"
     }
-  ],
+  ], "replacementPatterns": [
+  {
+    "pattern": "^/cn/*",
+    "replacement": "https://shardingsphere.apache.org/document/current/cn/"
+  },
+  {
+    "pattern": "^/en/*",
+    "replacement": "https://shardingsphere.apache.org/document/current/en/"
+  }],
   "timeout": "10s",
   "retryOn429": true,
   "retryCount": 10,

@@ -59,7 +59,7 @@ public final class EncryptTableSubscriber implements RuleConfigurationSubscribeC
      */
     @Subscribe
     public synchronized void renew(final AddEncryptTableEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
@@ -82,7 +82,7 @@ public final class EncryptTableSubscriber implements RuleConfigurationSubscribeC
      */
     @Subscribe
     public synchronized void renew(final AlterEncryptTableEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
@@ -100,7 +100,7 @@ public final class EncryptTableSubscriber implements RuleConfigurationSubscribeC
      */
     @Subscribe
     public synchronized void renew(final DeleteEncryptTableEvent event) {
-        if (event.getVersion() < instanceContext.getModeContextManager().getActiveVersionByKey(event.getVersionKey())) {
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());

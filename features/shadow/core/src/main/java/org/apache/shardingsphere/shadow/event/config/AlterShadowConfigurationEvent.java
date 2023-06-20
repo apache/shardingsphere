@@ -35,7 +35,7 @@ public final class AlterShadowConfigurationEvent implements GovernanceEvent {
     
     private final ShadowDataSourceConfiguration config;
     
-    private final String versionKey;
+    private final String activeVersionKey;
     
-    private final int version;
+    private final String activeVersion;
 }

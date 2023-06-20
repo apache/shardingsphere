@@ -30,7 +30,7 @@ public final class DeleteBroadcastTableEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final String versionKey;
+    private final String activeVersionKey;
     
-    private final int version;
+    private final String version;
 }

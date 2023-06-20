@@ -57,27 +57,27 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
         if (dataSourceName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> dataSourceVersion = ShadowNodeConverter.getDataSourceVersion(event.getKey());
             if (dataSourceVersion.isPresent()) {
-                return createShadowConfigEvent(databaseName, dataSourceName.get(), Integer.parseInt(dataSourceVersion.get()), event);
+                return createShadowConfigEvent(databaseName, dataSourceName.get(), dataSourceVersion.get(), event);
             }
         }
         Optional<String> tableName = ShadowNodeConverter.getTableName(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> tableVersion = ShadowNodeConverter.getTableVersion(event.getKey());
             if (tableVersion.isPresent()) {
-                return createShadowTableConfigEvent(databaseName, tableName.get(), Integer.parseInt(tableVersion.get()), event);
+                return createShadowTableConfigEvent(databaseName, tableName.get(), tableVersion.get(), event);
             }
         }
         Optional<String> algorithmName = ShadowNodeConverter.getAlgorithmName(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             Optional<String> algorithmVersion = ShadowNodeConverter.getAlgorithmVersion(event.getKey());
             if (algorithmVersion.isPresent()) {
-                return createShadowAlgorithmEvent(databaseName, algorithmName.get(), Integer.parseInt(algorithmVersion.get()), event);
+                return createShadowAlgorithmEvent(databaseName, algorithmName.get(), algorithmVersion.get(), event);
             }
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createShadowConfigEvent(final String databaseName, final String dataSourceName, final int version, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createShadowConfigEvent(final String databaseName, final String dataSourceName, final String version, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return Optional.of(new AddShadowConfigurationEvent(databaseName, swapShadowDataSourceRuleConfig(dataSourceName, event.getValue()), event.getKey(), version));
         }
@@ -92,7 +92,7 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
         return new ShadowDataSourceConfiguration(dataSourceName, yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
     }
     
-    private Optional<GovernanceEvent> createShadowTableConfigEvent(final String databaseName, final String tableName, final int version, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createShadowTableConfigEvent(final String databaseName, final String tableName, final String version, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return Optional.of(new AddShadowTableEvent(databaseName, tableName, swapToTableConfig(event.getValue()), event.getKey(), version));
         }
@@ -106,7 +106,7 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
         return new YamlShadowTableConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlShadowTableConfiguration.class));
     }
     
-    private Optional<GovernanceEvent> createShadowAlgorithmEvent(final String databaseName, final String algorithmName, final int version, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createShadowAlgorithmEvent(final String databaseName, final String algorithmName, final String version, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return Optional.of(new AlterShadowAlgorithmEvent(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue()), event.getKey(), version));
         }

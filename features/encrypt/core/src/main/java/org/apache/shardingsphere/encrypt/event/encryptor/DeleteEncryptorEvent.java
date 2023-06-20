@@ -32,7 +32,7 @@ public final class DeleteEncryptorEvent implements GovernanceEvent {
     
     private final String encryptorName;
     
-    private final String versionKey;
+    private final String activeVersionKey;
     
-    private final int version;
+    private final String activeVersion;
 }

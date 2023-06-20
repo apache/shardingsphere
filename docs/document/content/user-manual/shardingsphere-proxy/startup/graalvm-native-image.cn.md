@@ -166,7 +166,7 @@ services:
 
 - 以下部分采用 `Apache SkyWalking Java Agent` 作为示例，可用于跟踪 GraalVM 社区的对应 issue。
 
-1. 下载 https://dlcdn.apache.org/skywalking/java-agent/8.12.0/apache-skywalking-java-agent-8.12.0.tgz ，
+1. 下载 https://archive.apache.org/dist/skywalking/java-agent/8.12.0/apache-skywalking-java-agent-8.12.0.tgz ，
    并解压到 ShardingSphere Git Source 的 `distribution/proxy-native`。
 
 2. 修改 `distribution/proxy-native/pom.xml` 的 `native profile`，
