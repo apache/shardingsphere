@@ -298,7 +298,7 @@ https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-
 
 回答：
 
-ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](/cn/concepts/pluggable/) 注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中 type 类型来寻找对应的 SPI 实现，因此必须在配置文件中指定类型。
+ShardingSphere 中很多功能实现类的加载方式是通过 SPI 注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中 type 类型来寻找对应的 SPI 实现，因此必须在配置文件中指定类型。
 
 ### [其他] 服务启动时如何加快 `metadata` 加载速度？
 

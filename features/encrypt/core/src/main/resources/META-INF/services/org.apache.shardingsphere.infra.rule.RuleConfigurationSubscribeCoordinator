@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.subscriber.EncryptConfigurationSubscriber
+org.apache.shardingsphere.encrypt.subscriber.EncryptTableSubscriber
 org.apache.shardingsphere.encrypt.subscriber.EncryptorSubscriber

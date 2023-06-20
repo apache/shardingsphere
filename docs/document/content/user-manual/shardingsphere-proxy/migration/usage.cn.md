@@ -479,7 +479,7 @@ wal_sender_timeout = 0
 max_connections = 600
 ```
 
-详情请参见 [Write Ahead Log](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) 和 [Replication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html)。
+详情请参见 [Write Ahead Log](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) 和 [Replication](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html)。
 
 2. 赋予源端 openGauss 账号 replication 权限。
 
@@ -488,7 +488,7 @@ max_connections = 600
 host replication repl_acct 0.0.0.0/0 md5
 ```
 
-详情请参见 [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) 和 [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html)。
+详情请参见 [Configuring Client Access Authentication](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) 和 [Example: Logic Replication Code](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html)。
 
 3. 赋予 openGauss 账号 DDL DML 权限。
 

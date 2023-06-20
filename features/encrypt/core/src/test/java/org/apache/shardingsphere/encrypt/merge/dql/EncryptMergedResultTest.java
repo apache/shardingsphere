@@ -28,7 +28,6 @@ import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,13 +47,6 @@ class EncryptMergedResultTest {
     @Test
     void assertNext() throws SQLException {
         assertFalse(new EncryptMergedResult(metaData, mergedResult).next());
-    }
-    
-    @Test
-    void assertGetValueWithoutEncryptContext() throws SQLException {
-        when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
-        when(metaData.findEncryptContext(1)).thenReturn(Optional.empty());
-        assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("VALUE"));
     }
     
     @Test
