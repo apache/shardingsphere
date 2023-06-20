@@ -80,6 +80,6 @@ public final class BroadcastNodeConverter {
     public static Optional<String> getTablesVersion(final String rulePath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + VERSION_PATH, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }
 }

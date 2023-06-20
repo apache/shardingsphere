@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -34,7 +35,7 @@ class NewYamlBroadcastRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapEmptyConfigToDataNodes() {
-        BroadcastRuleConfiguration config = new BroadcastRuleConfiguration();
+        BroadcastRuleConfiguration config = new BroadcastRuleConfiguration(Collections.emptyList());
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(0));
     }
@@ -52,8 +53,7 @@ class NewYamlBroadcastRuleConfigurationSwapperTest {
         Collection<String> tables = new LinkedList<>();
         tables.add(("foo_table"));
         tables.add(("foo_table2"));
-        BroadcastRuleConfiguration result = new BroadcastRuleConfiguration();
-        result.setTables(tables);
+        BroadcastRuleConfiguration result = new BroadcastRuleConfiguration(tables);
         return result;
     }
     
