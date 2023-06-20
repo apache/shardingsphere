@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.config.rule.global.event.AlterGlobalRuleConfigurationEvent;
-import org.apache.shardingsphere.infra.config.rule.global.event.DeleteGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.event.config.global.DeleteGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
