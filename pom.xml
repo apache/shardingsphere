@@ -85,7 +85,7 @@
         <truffle-api.version>21.2.0</truffle-api.version>
         
         <calcite.version>1.32.0</calcite.version>
-        <netty.version>4.1.90.Final</netty.version>
+        <netty.version>4.1.94.Final</netty.version>
         <bouncycastle.version>1.70</bouncycastle.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
