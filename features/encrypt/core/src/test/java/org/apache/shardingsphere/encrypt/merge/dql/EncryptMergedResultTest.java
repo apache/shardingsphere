@@ -71,7 +71,7 @@ class EncryptMergedResultTest {
         when(mergedResult.getInputStream(1, "asc")).thenReturn(inputStream);
         assertThat(new EncryptMergedResult(database, encryptRule, selectStatementContext, mergedResult).getInputStream(1, "asc"), is(inputStream));
     }
-     
+    
     @Test
     void assertGetCharacterStream() throws SQLException {
         Reader reader = mock(Reader.class);
