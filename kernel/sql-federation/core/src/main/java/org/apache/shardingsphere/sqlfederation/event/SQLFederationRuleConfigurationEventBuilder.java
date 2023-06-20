@@ -47,14 +47,18 @@ public final class SQLFederationRuleConfigurationEventBuilder implements GlobalR
         if (!GlobalRuleNodeConverter.isExpectedRuleName(SQL_FEDERATION, event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        return buildEvent(event);
+        Optional<String> version = GlobalRuleNodeConverter.getVersion(SQL_FEDERATION, event.getKey());
+        if (version.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
+            return buildEvent(event, Integer.parseInt(version.get()));
+        }
+        return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event) {
+    private Optional<GovernanceEvent> buildEvent(final DataChangedEvent event, final int version) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE));
+            return Optional.of(new AlterGlobalRuleConfigurationEvent(swapToConfig(event.getValue()), RULE_TYPE, event.getKey(), version));
         }
-        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE));
+        return Optional.of(new DeleteGlobalRuleConfigurationEvent(RULE_TYPE, event.getKey(), version));
     }
     
     private SQLFederationRuleConfiguration swapToConfig(final String yamlContext) {
