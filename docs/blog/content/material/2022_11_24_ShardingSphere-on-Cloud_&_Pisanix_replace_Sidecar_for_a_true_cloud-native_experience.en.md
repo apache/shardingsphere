@@ -58,7 +58,7 @@ ShardingSphere-Sidecar is only a deployment mode of ShardingSphere in cloud nati
 
 **Therefore, we needed to redesign an open source product with higher adaptability, availability and agility in a cloud native system - in order to make up for ShardingSphere's limitations on cloud data governance.**
 
-That is why some of our community members at [SphereEx](https://www.sphere-ex.com/en/) developed [Pisanix, a cloud-native data governance tool](https://www.sphere-ex.com/news/43/), based on the Database Mesh concept. It can provide capabilities such as SQL-aware traffic governance, runtime resource-oriented management and DBRE.
+That is why some of our community members at [SphereEx](https://www.sphere-ex.com/) developed [Pisanix, a cloud-native data governance tool](https://www.sphere-ex.com/news/43/), based on the Database Mesh concept. It can provide capabilities such as SQL-aware traffic governance, runtime resource-oriented management and DBRE.
 
 ## Is Pisanix the same with ShardingSphere-Sidecar?
 
