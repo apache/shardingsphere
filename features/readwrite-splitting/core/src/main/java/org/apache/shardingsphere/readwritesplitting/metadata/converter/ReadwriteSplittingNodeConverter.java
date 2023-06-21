@@ -111,6 +111,18 @@ public final class ReadwriteSplittingNodeConverter {
     }
     
     /**
+     * Get load balancer name.
+     *
+     * @param rulePath rule path
+     * @return load balancer name
+     */
+    public static Optional<String> getLoadBalancerName(final String rulePath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
      * Get group name by active version path.
      *
      * @param activeVersionPath active version path
@@ -131,18 +143,6 @@ public final class ReadwriteSplittingNodeConverter {
     public static Optional<String> getLoadBalancerNameByActiveVersionPath(final String activeVersionPath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(activeVersionPath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get load balancer name.
-     *
-     * @param rulePath rule path
-     * @return load balancer name
-     */
-    public static Optional<String> getLoadBalancerName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
 }

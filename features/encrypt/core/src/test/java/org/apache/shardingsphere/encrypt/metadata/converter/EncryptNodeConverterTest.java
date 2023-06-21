@@ -64,15 +64,15 @@ class EncryptNodeConverterTest {
     
     @Test
     void assertGetEncryptTableVersion() {
-        Optional<String> actual = EncryptNodeConverter.getEncryptTableVersion("/metadata/foo_db/rules/encrypt/tables/foo_table/versions/1");
+        Optional<String> actual = EncryptNodeConverter.getTableNameByActiveVersionPath("/metadata/foo_db/rules/encrypt/tables/foo_table/active_version");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("1"));
+        assertThat(actual.get(), is("foo_table"));
     }
     
     @Test
     void assertGetEncryptAlgorithmVersion() {
-        Optional<String> actual = EncryptNodeConverter.getEncryptorVersion("/metadata/foo_db/rules/encrypt/encryptors/aes_algorithm/versions/1");
+        Optional<String> actual = EncryptNodeConverter.getEncryptorNameByActiveVersionPath("/metadata/foo_db/rules/encrypt/encryptors/aes_algorithm/active_version");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("1"));
+        assertThat(actual.get(), is("aes_algorithm"));
     }
 }

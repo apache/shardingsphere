@@ -40,7 +40,7 @@ public final class EncryptNodeConverter {
     
     private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
     
-    private static final String RULE_VERSION = "/([\\w\\-]+)/versions/([\\w\\-]+)$";
+    private static final String RULE_ACTIVE_VERSION = "/([\\w\\-]+)/active_version$";
     
     /**
      * Get table name path.
@@ -123,26 +123,26 @@ public final class EncryptNodeConverter {
     }
     
     /**
-     * Get encrypt table version.
+     * Get encrypt table name by active version path.
      * 
-     * @param rulePath rule path
-     * @return encrypt table version
+     * @param activeVersionPath active version path
+     * @return table name
      */
-    public static Optional<String> getEncryptTableVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    public static Optional<String> getTableNameByActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     * Get encryptor version.
+     * Get encryptor name by active version path.
      *
-     * @param rulePath rule path
-     * @return encryptor version
+     * @param activeVersionPath active version path
+     * @return encryptor name
      */
-    public static Optional<String> getEncryptorVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ENCRYPTORS_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    public static Optional<String> getEncryptorNameByActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ENCRYPTORS_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
 }
