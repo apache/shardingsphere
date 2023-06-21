@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.infra.route.engine.impl;
 
-import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintDataSourceNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -32,6 +29,8 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
 import javax.sql.DataSource;
@@ -60,7 +59,7 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public RouteContext route(final ConnectionContext connectionContext, final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         RouteContext result = new RouteContext();
-        Optional<String> dataSourceName = findDataSourceByHint(queryContext.getSqlStatementContext(), database.getResourceMetaData().getDataSources());
+        Optional<String> dataSourceName = findDataSourceByHint(queryContext.getHintValueContext(), database.getResourceMetaData().getDataSources());
         if (dataSourceName.isPresent()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), Collections.emptyList()));
             return result;
@@ -79,12 +78,12 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
         return result;
     }
     
-    private Optional<String> findDataSourceByHint(final SQLStatementContext sqlStatementContext, final Map<String, DataSource> dataSources) {
+    private Optional<String> findDataSourceByHint(final HintValueContext hintValueContext, final Map<String, DataSource> dataSources) {
         Optional<String> result;
         if (HintManager.isInstantiated() && HintManager.getDataSourceName().isPresent()) {
             result = HintManager.getDataSourceName();
         } else {
-            result = ((CommonSQLStatementContext) sqlStatementContext).findHintDataSourceName();
+            result = hintValueContext.findHintDataSourceName();
         }
         if (result.isPresent() && !dataSources.containsKey(result.get())) {
             throw new SQLHintDataSourceNotExistsException(result.get());

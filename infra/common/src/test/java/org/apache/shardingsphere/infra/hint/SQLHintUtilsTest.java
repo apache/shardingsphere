@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -76,5 +77,12 @@ class SQLHintUtilsTest {
         Properties actual = SQLHintUtils.getSQLHintProps("/* ShardingSphere hint: dataSourceName=ds_0 */");
         assertThat(actual.size(), is(1));
         assertThat(actual.get("dataSourceName"), is("ds_0"));
+    }
+    
+    @Test
+    void assertSQLHintWriteRouteOnlyWithCommentString() {
+        Optional<HintValueContext> actual = SQLHintUtils.extractHint("/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */");
+        assertTrue(actual.isPresent());
+        assertTrue(actual.get().isWriteRouteOnly());
     }
 }

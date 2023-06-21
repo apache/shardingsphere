@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -40,22 +41,25 @@ class QualifiedReadwriteSplittingPrimaryDataSourceRouterTest {
     @Mock
     private CommonSQLStatementContext sqlStatementContext;
     
+    @Mock
+    private HintValueContext hintValueContext;
+    
     @Test
     void assertWriteRouteStatement() {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(selectStatement.getLock()).thenReturn(Optional.of(new LockSegment(0, 1)));
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
-        assertTrue(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null));
+        assertTrue(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null, hintValueContext));
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLUpdateStatement.class));
-        assertTrue(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null));
+        assertTrue(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null, hintValueContext));
     }
     
     @Test
     void assertHintRouteWriteOnly() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
-        when(sqlStatementContext.isHintWriteRouteOnly()).thenReturn(false);
-        assertFalse(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null));
-        when(sqlStatementContext.isHintWriteRouteOnly()).thenReturn(true);
-        assertTrue(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null));
+        when(hintValueContext.isWriteRouteOnly()).thenReturn(false);
+        assertFalse(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null, hintValueContext));
+        when(hintValueContext.isWriteRouteOnly()).thenReturn(true);
+        assertTrue(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null, hintValueContext));
     }
 }

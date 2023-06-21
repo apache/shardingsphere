@@ -44,11 +44,6 @@ class SQLHintExtractorTest {
     }
     
     @Test
-    void assertSQLHintWriteRouteOnlyWithCommentString() {
-        assertTrue(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */").isHintWriteRouteOnly());
-    }
-    
-    @Test
     void assertSQLHintSkipSQLRewrite() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */", 0, 0)));
@@ -144,7 +139,7 @@ class SQLHintExtractorTest {
     void assertFindHintDataSourceNameExist() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=ds_1 */", 0, 0)));
-        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
+        Optional<String> dataSourceName = new SQLHintExtractor(statement).getHintValueContext().findHintDataSourceName();
         assertTrue(dataSourceName.isPresent());
         assertThat(dataSourceName.get(), is("ds_1"));
     }
@@ -153,7 +148,7 @@ class SQLHintExtractorTest {
     void assertFindHintDataSourceNameAliasExist() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* ShardingSphere hint: dataSourceName=ds_1 */", 0, 0)));
-        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
+        Optional<String> dataSourceName = new SQLHintExtractor(statement).getHintValueContext().findHintDataSourceName();
         assertTrue(dataSourceName.isPresent());
         assertThat(dataSourceName.get(), is("ds_1"));
     }
@@ -162,14 +157,14 @@ class SQLHintExtractorTest {
     void assertFindHintDataSourceNameNotExist() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* no hint */", 0, 0)));
-        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
+        Optional<String> dataSourceName = new SQLHintExtractor(statement).getHintValueContext().findHintDataSourceName();
         assertFalse(dataSourceName.isPresent());
     }
     
     @Test
     void assertFindHintDataSourceNameNotExistWithoutComment() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
+        Optional<String> dataSourceName = new SQLHintExtractor(statement).getHintValueContext().findHintDataSourceName();
         assertFalse(dataSourceName.isPresent());
     }
 }

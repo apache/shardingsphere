@@ -88,14 +88,12 @@ class TrafficRuleTest {
     }
     
     private QueryContext createQueryContext(final boolean includeComments) {
-        QueryContext result = mock(QueryContext.class);
         MySQLSelectStatement sqlStatement = mock(MySQLSelectStatement.class);
         when(sqlStatement.getCommentSegments()).thenReturn(includeComments ? Collections.singleton(new CommentSegment("/* SHARDINGSPHERE_HINT: USE_TRAFFIC=true */", 0, 0)) : Collections.emptyList());
         when(sqlStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         SQLStatementContext statementContext =
                 new SelectStatementContext(createShardingSphereMetaData(mockDatabase()), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
-        when(result.getSqlStatementContext()).thenReturn(statementContext);
-        return result;
+        return new QueryContext(statementContext, "", Collections.emptyList());
     }
     
     private ShardingSphereDatabase mockDatabase() {
