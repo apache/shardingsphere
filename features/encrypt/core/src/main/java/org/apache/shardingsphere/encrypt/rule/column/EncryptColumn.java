@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule;
+package org.apache.shardingsphere.encrypt.rule.column;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
+import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
+import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 
 import java.util.Optional;
 
@@ -36,18 +36,18 @@ public final class EncryptColumn {
     
     private final String name;
     
-    private final EncryptColumnItem<StandardEncryptAlgorithm<?, ?>> cipher;
+    private final CipherColumnItem cipher;
     
-    private EncryptColumnItem<AssistedEncryptAlgorithm<?, ?>> assistedQuery;
+    private AssistedQueryColumnItem assistedQuery;
     
-    private EncryptColumnItem<LikeEncryptAlgorithm<?, ?>> likeQuery;
+    private LikeQueryColumnItem likeQuery;
     
     /**
      * Get assisted query column item.
      *
      * @return assisted query column item
      */
-    public Optional<EncryptColumnItem<AssistedEncryptAlgorithm<?, ?>>> getAssistedQuery() {
+    public Optional<AssistedQueryColumnItem> getAssistedQuery() {
         return Optional.ofNullable(assistedQuery);
     }
     
@@ -56,7 +56,7 @@ public final class EncryptColumn {
      *
      * @return like query column item
      */
-    public Optional<EncryptColumnItem<LikeEncryptAlgorithm<?, ?>>> getLikeQuery() {
+    public Optional<LikeQueryColumnItem> getLikeQuery() {
         return Optional.ofNullable(likeQuery);
     }
 }
