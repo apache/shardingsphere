@@ -32,10 +32,10 @@ import java.util.Map;
 public final class NewYamlGlobalRuleConfigurationSwapperEngine {
     
     /**
-     * Swap to YAML rule configurations.
+     * Swap to YAML global rule configurations.
      *
      * @param ruleConfigs rule configurations
-     * @return YAML rule configurations
+     * @return YAML global rule configurations
      */
     @SuppressWarnings("rawtypes")
     public Map<RuleConfiguration, NewYamGlobalRuleConfigurationSwapper> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
@@ -43,10 +43,10 @@ public final class NewYamlGlobalRuleConfigurationSwapperEngine {
     }
     
     /**
-     * Swap from YAML rule configurations to rule configurations.
+     * Swap from YAML global rule configurations to rule configurations.
      *
      * @param dataNodes YAML data nodes
-     * @return rule configurations
+     * @return global rule configurations
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlDataNode> dataNodes) {
