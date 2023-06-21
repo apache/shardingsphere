@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction.yaml.swapper;
 import org.apache.shardingsphere.infra.config.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.constant.TransactionOrder;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
@@ -34,7 +34,7 @@ import java.util.Properties;
  * TODO Rename YamlTransactionRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * New YAML Transaction rule configuration swapper.
  */
-public final class NewYamlTransactionRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<TransactionRuleConfiguration> {
+public final class NewYamlTransactionRuleConfigurationSwapper implements NewYamGlobalRuleConfigurationSwapper<TransactionRuleConfiguration> {
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final TransactionRuleConfiguration data) {
