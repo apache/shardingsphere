@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shadow.subscriber.ShadowConfigurationSubscriber
+org.apache.shardingsphere.shadow.subscriber.ShadowDataSourceSubscriber
 org.apache.shardingsphere.shadow.subscriber.ShadowTableSubscriber
 org.apache.shardingsphere.shadow.subscriber.ShadowAlgorithmSubscriber

@@ -19,9 +19,13 @@ package org.apache.shardingsphere.shadow.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.event.algorithm.AlterShadowAlgorithmEvent;
@@ -57,7 +61,8 @@ public final class ShadowAlgorithmSubscriber implements RuleConfigurationSubscri
     public synchronized void renew(final AlterShadowAlgorithmEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getShadowAlgorithms().put(event.getAlgorithmName(), event.getConfig());
+        config.getShadowAlgorithms().put(event.getAlgorithmName(), swapToAlgorithmConfig(
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
     }
     
     /**
@@ -71,5 +76,9 @@ public final class ShadowAlgorithmSubscriber implements RuleConfigurationSubscri
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getShadowAlgorithms().remove(event.getAlgorithmName());
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
+        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAlgorithmConfiguration.class));
     }
 }
