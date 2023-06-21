@@ -116,26 +116,33 @@ public final class SingleTableInventoryDataConsistencyChecker {
         long sourceRecordsCount = 0;
         long targetRecordsCount = 0;
         boolean contentMatched = true;
-        while (sourceCalculatedResults.hasNext() || targetCalculatedResults.hasNext()) {
+        while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
             if (null != readRateLimitAlgorithm) {
                 readRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
             }
-            DataConsistencyCalculatedResult sourceCalculatedResult = sourceCalculatedResults.hasNext() ? waitFuture(executor.submit(sourceCalculatedResults::next)) : null;
-            DataConsistencyCalculatedResult targetCalculatedResult = targetCalculatedResults.hasNext() ? waitFuture(executor.submit(targetCalculatedResults::next)) : null;
-            sourceRecordsCount += null == sourceCalculatedResult ? 0 : sourceCalculatedResult.getRecordsCount();
-            targetRecordsCount += null == targetCalculatedResult ? 0 : targetCalculatedResult.getRecordsCount();
+            DataConsistencyCalculatedResult sourceCalculatedResult = waitFuture(executor.submit(sourceCalculatedResults::next));
+            DataConsistencyCalculatedResult targetCalculatedResult = waitFuture(executor.submit(targetCalculatedResults::next));
+            sourceRecordsCount += sourceCalculatedResult.getRecordsCount();
+            targetRecordsCount += targetCalculatedResult.getRecordsCount();
             contentMatched = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
             if (!contentMatched) {
                 log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKey={}", jobId, sourceTable, targetTable, uniqueKey);
                 break;
             }
-            if (null != sourceCalculatedResult && sourceCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
+            if (sourceCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
                 progressContext.getTableCheckPositions().put(sourceTable.getTableName().getOriginal(), sourceCalculatedResult.getMaxUniqueKeyValue().get());
             }
-            if (null != targetCalculatedResult && targetCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
+            if (targetCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
                 progressContext.getTableCheckPositions().put(targetTable.getTableName().getOriginal(), targetCalculatedResult.getMaxUniqueKeyValue().get());
             }
-            progressContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(null == sourceCalculatedResult ? 0 : sourceCalculatedResult.getRecordsCount()));
+            progressContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
+        }
+        if (sourceCalculatedResults.hasNext()) {
+            // TODO Refactor DataConsistencyCalculatedResult to represent inaccurate number
+            return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(sourceRecordsCount + 1, targetRecordsCount), new DataConsistencyContentCheckResult(false));
+        }
+        if (targetCalculatedResults.hasNext()) {
+            return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(sourceRecordsCount, targetRecordsCount + 1), new DataConsistencyContentCheckResult(false));
         }
         return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(sourceRecordsCount, targetRecordsCount), new DataConsistencyContentCheckResult(contentMatched));
     }
