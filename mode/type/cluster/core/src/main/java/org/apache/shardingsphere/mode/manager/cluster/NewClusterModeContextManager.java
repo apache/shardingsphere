@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
+import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerAware;
@@ -152,6 +153,11 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     @Override
     public String getActiveVersionByKey(final String key) {
         return contextManager.getMetaDataContexts().getPersistService().getRepository().getDirectly(key);
+    }
+    
+    @Override
+    public String getVersionPathByActiveVersionKey(final String key, final String activeVersion) {
+        return contextManager.getMetaDataContexts().getPersistService().getRepository().getDirectly(NewDatabaseMetaDataNode.getVersionNodeByActiveVersionPath(key, activeVersion));
     }
     
     @Override

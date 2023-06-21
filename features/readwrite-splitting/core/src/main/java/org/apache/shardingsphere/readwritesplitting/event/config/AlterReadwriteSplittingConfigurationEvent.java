@@ -20,7 +20,6 @@ package org.apache.shardingsphere.readwritesplitting.event.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 
 /**
  * Alter readwrite-splitting configuration event.
@@ -31,7 +30,7 @@ public final class AlterReadwriteSplittingConfigurationEvent implements Governan
     
     private final String databaseName;
     
-    private final ReadwriteSplittingDataSourceRuleConfiguration config;
+    private final String groupName;
     
     private final String activeVersionKey;
     
