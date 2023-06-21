@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamGlobalRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.NewGlobalNode;
@@ -55,8 +57,8 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
-        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
-        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        Map<RuleConfiguration, NewYamGlobalRuleConfigurationSwapper> yamlConfigs = new NewYamlGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
+        for (Entry<RuleConfiguration, NewYamGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
@@ -98,7 +100,7 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
     @Override
     public Collection<RuleConfiguration> load() {
         Collection<YamlDataNode> dataNodes = getDataNodes(NewGlobalNode.getGlobalRuleRootNode());
-        return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
+        return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlGlobalRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
     }
     
     @Override

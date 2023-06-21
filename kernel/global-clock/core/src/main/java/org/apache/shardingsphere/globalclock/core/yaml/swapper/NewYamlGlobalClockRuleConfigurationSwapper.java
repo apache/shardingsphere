@@ -23,7 +23,7 @@ import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRul
 import org.apache.shardingsphere.infra.config.converter.GlobalRuleNodeConverter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamGlobalRuleConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,7 +34,7 @@ import java.util.Properties;
  * TODO Rename YamlGlobalClockRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * YAML global clock rule configuration swapper.
  */
-public final class NewYamlGlobalClockRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<GlobalClockRuleConfiguration> {
+public final class NewYamlGlobalClockRuleConfigurationSwapper implements NewYamGlobalRuleConfigurationSwapper<GlobalClockRuleConfiguration> {
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final GlobalClockRuleConfiguration data) {

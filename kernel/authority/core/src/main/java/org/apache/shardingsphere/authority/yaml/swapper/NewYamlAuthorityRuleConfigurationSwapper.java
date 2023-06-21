@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamGlobalRuleConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +38,7 @@ import java.util.Optional;
  * TODO Rename YamlAuthorityRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * New YAML Authority rule configuration swapper.
  */
-public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<AuthorityRuleConfiguration> {
+public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamGlobalRuleConfigurationSwapper<AuthorityRuleConfiguration> {
     
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
