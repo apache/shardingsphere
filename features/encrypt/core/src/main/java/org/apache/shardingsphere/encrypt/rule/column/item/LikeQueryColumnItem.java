@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule;
+package org.apache.shardingsphere.encrypt.rule.column.item;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 
 /**
- * Encrypt column item.
- * 
- * @param <T> type of encryptor
+ * Like query column item.
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptColumnItem<T extends EncryptAlgorithm<?, ?>> {
+public final class LikeQueryColumnItem {
     
     private final String name;
     
-    private final T encryptor;
+    private final LikeEncryptAlgorithm<?, ?> encryptor;
 }
