@@ -48,7 +48,7 @@ public final class NewDatabaseMetaDataNode {
     private static final String VERSIONS = "versions";
     
     /**
-     * Get data Sources node.
+     * Get data sources node.
      *
      * @param databaseName database name
      * @return data sources node
@@ -58,7 +58,7 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
-     * Get data Source node.
+     * Get data source node.
      *
      * @param databaseName database name
      * @param dataSourceName data source name
@@ -69,7 +69,7 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
-     * Get data Source node with version.
+     * Get data source node with version.
      *
      * @param databaseName database name
      * @param dataSourceName data source name
@@ -81,7 +81,7 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
-     * Get data Source active version node.
+     * Get data source active version node.
      *
      * @param databaseName database name
      * @param dataSourceName data source name
@@ -403,7 +403,7 @@ public final class NewDatabaseMetaDataNode {
      * @return active version node
      */
     public static String getVersionNodeByActiveVersionPath(final String rulePath, final String activeVersion) {
-        return rulePath.substring(0, rulePath.indexOf(ACTIVE_VERSION)) + VERSIONS + "/" + activeVersion;
+        return rulePath.replace(ACTIVE_VERSION, VERSIONS) + "/" + activeVersion;
     }
     
     private static String getMetaDataNodeNode() {

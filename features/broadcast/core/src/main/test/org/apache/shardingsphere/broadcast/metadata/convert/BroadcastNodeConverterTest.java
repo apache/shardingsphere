@@ -36,7 +36,7 @@ class BroadcastNodeConverterTest {
     void assertCheckIsTargetRuleByRulePath() {
         assertTrue(BroadcastNodeConverter.isBroadcastPath("/metadata/foo_db/rules/broadcast/tables"));
         assertFalse(BroadcastNodeConverter.isBroadcastPath("/metadata/foo_db/rules/foo/tables/foo_table"));
-        assertTrue(BroadcastNodeConverter.isTablesPath("/metadata/foo_db/rules/broadcast/tables/versions/0"));
-        assertFalse(BroadcastNodeConverter.isTablesPath("/metadata/foo_db/rules/broadcast/tables/MD5"));
+        assertTrue(BroadcastNodeConverter.isTablesActiveVersionPath("/metadata/foo_db/rules/broadcast/tables/active_version"));
+        assertFalse(BroadcastNodeConverter.isTablesActiveVersionPath("/metadata/foo_db/rules/broadcast/tables/versions/0"));
     }
 }
