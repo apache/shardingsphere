@@ -27,7 +27,7 @@ import java.util.Map;
 
 /**
  * TODO Rename YamlGlobalRuleConfigurationSwapperEngine when metadata structure adjustment completed. #25485
- * YAML rule global configuration swapper engine.
+ * YAML global rule configuration swapper engine.
  */
 public final class NewYamlGlobalRuleConfigurationSwapperEngine {
     
