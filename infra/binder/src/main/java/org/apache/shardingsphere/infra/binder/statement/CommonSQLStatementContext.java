@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.statement;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -48,11 +49,11 @@ public abstract class CommonSQLStatementContext implements SQLStatementContext {
     
     private final SQLHintExtractor sqlHintExtractor;
     
-    protected CommonSQLStatementContext(final SQLStatement sqlStatement) {
+    protected CommonSQLStatementContext(final SQLStatement sqlStatement, final HintValueContext hintValueContext) {
         this.sqlStatement = sqlStatement;
         databaseType = getDatabaseType(sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList(), databaseType);
-        sqlHintExtractor = new SQLHintExtractor(sqlStatement);
+        sqlHintExtractor = new SQLHintExtractor(hintValueContext);
     }
     
     private DatabaseType getDatabaseType(final SQLStatement sqlStatement) {

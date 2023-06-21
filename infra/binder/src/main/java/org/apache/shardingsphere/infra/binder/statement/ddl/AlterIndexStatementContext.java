@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -41,8 +42,8 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext 
     
     private final TablesContext tablesContext;
     
-    public AlterIndexStatementContext(final AlterIndexStatement sqlStatement) {
-        super(sqlStatement);
+    public AlterIndexStatementContext(final AlterIndexStatement sqlStatement, final HintValueContext hintValueContext) {
+        super(sqlStatement, hintValueContext);
         SimpleTableSegment simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(sqlStatement).orElse(null);
         tablesContext = new TablesContext(simpleTableSegment, getDatabaseType());
     }

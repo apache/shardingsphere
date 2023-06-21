@@ -63,6 +63,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.LoadDataStatementCon
 import org.apache.shardingsphere.infra.binder.statement.dml.LoadXMLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -127,11 +128,12 @@ public final class SQLStatementContextFactory {
      *
      * @param metaData metadata
      * @param sqlStatement SQL statement
+     * @param hintValueContext hint value context
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final String defaultDatabaseName) {
-        return newInstance(metaData, Collections.emptyList(), sqlStatement, defaultDatabaseName);
+    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final HintValueContext hintValueContext, final String defaultDatabaseName) {
+        return newInstance(metaData, Collections.emptyList(), sqlStatement, hintValueContext, defaultDatabaseName);
     }
     
     /**
@@ -140,16 +142,17 @@ public final class SQLStatementContextFactory {
      * @param metaData metadata
      * @param params SQL parameters
      * @param sqlStatement SQL statement
+     * @param hintValueContext hint value context
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
     public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData,
-                                                  final List<Object> params, final SQLStatement sqlStatement, final String defaultDatabaseName) {
+                                                  final List<Object> params, final SQLStatement sqlStatement, final HintValueContext hintValueContext, final String defaultDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
             return getDMLStatementContext(metaData, params, (DMLStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext(metaData, params, (DDLStatement) sqlStatement, defaultDatabaseName);
+            return getDDLStatementContext(metaData, params, (DDLStatement) sqlStatement, hintValueContext, defaultDatabaseName);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLStatementContext((DCLStatement) sqlStatement);
@@ -193,7 +196,7 @@ public final class SQLStatementContextFactory {
     }
     
     private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final List<Object> params,
-                                                              final DDLStatement sqlStatement, final String defaultDatabaseName) {
+                                                              final DDLStatement sqlStatement, final HintValueContext hintValueContext, final String defaultDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
             return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
         }
@@ -213,7 +216,7 @@ public final class SQLStatementContextFactory {
             return new CreateIndexStatementContext((CreateIndexStatement) sqlStatement);
         }
         if (sqlStatement instanceof AlterIndexStatement) {
-            return new AlterIndexStatementContext((AlterIndexStatement) sqlStatement);
+            return new AlterIndexStatementContext((AlterIndexStatement) sqlStatement, hintValueContext);
         }
         if (sqlStatement instanceof DropIndexStatement) {
             return new DropIndexStatementContext((DropIndexStatement) sqlStatement);

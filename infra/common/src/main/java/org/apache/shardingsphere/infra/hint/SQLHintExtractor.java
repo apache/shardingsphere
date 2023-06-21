@@ -34,6 +34,10 @@ public final class SQLHintExtractor {
     
     private final HintValueContext hintValueContext;
     
+    public SQLHintExtractor(HintValueContext hintValueContext) {
+        this.hintValueContext = hintValueContext;
+    }
+    
     public SQLHintExtractor(final String sqlComment) {
         hintValueContext = Strings.isNullOrEmpty(sqlComment) ? new HintValueContext() : SQLHintUtils.extractHint(sqlComment);
     }
