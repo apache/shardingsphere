@@ -31,8 +31,4 @@ public final class DeleteAuditorEvent implements GovernanceEvent {
     private final String databaseName;
     
     private final String auditorName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
 }
