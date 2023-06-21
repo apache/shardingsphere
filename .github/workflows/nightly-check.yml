@@ -153,6 +153,7 @@ jobs:
           done
 
   check-codeql:
+    if: (github.repository == 'apache/shardingsphere')
     name: Check - CodeQL
     runs-on: ubuntu-latest
     timeout-minutes: 45
