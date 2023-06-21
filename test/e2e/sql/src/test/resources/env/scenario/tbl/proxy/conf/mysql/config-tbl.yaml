@@ -111,4 +111,3 @@ rules:
   
 - !SQL_PARSER
   sqlCommentParseEnabled: true
-  
