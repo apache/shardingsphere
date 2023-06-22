@@ -35,7 +35,7 @@ public final class SingleNodeConverter {
     
     private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
     
-    private static final String VERSION_PATTERN = "/versions/[0-9]+";
+    private static final String VERSION_PATTERN = "/versions/\\d+";
     
     /**
      * Get tables path.
