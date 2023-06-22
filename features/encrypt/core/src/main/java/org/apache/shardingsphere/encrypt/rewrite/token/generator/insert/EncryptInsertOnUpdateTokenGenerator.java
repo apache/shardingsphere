@@ -111,7 +111,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     private EncryptAssignmentToken generateParameterSQLToken(final EncryptTable encryptTable, final AssignmentSegment assignmentSegment) {
         EncryptParameterAssignmentToken result = new EncryptParameterAssignmentToken(assignmentSegment.getColumns().get(0).getStartIndex(), assignmentSegment.getStopIndex());
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
-        result.addColumnName(encryptTable.getCipherColumn(columnName));
+        result.addColumnName(encryptTable.getEncryptColumn(columnName).getCipher().getName());
         encryptTable.findAssistedQueryColumn(columnName).ifPresent(result::addColumnName);
         encryptTable.findLikeQueryColumn(columnName).ifPresent(result::addColumnName);
         return result;
@@ -135,8 +135,8 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         boolean isEncryptColumn = encryptTable.isEncryptColumn(column);
         boolean isEncryptValueColumn = encryptTable.isEncryptColumn(valueColumn);
         if (isEncryptColumn && isEncryptValueColumn) {
-            String cipherColumn = encryptTable.getCipherColumn(column);
-            String cipherValueColumn = encryptTable.getCipherColumn(valueColumn);
+            String cipherColumn = encryptTable.getEncryptColumn(column).getCipher().getName();
+            String cipherValueColumn = encryptTable.getEncryptColumn(valueColumn).getCipher().getName();
             result.addAssignment(cipherColumn, "VALUES(" + cipherValueColumn + ")");
         } else if (isEncryptColumn != isEncryptValueColumn) {
             throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));

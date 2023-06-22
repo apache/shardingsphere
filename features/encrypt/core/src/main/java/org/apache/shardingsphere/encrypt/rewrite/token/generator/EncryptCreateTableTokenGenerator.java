@@ -81,8 +81,8 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     }
     
     private SQLToken getCipherColumnToken(final EncryptTable encryptTable, final String columnName, final ColumnDefinitionSegment column, final int stopIndex) {
-        return new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(new IdentifierValue(encryptTable.getCipherColumn(columnName),
-                column.getColumnName().getIdentifier().getQuoteCharacter())));
+        return new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(),
+                getColumnProjections(new IdentifierValue(encryptTable.getEncryptColumn(columnName).getCipher().getName(), column.getColumnName().getIdentifier().getQuoteCharacter())));
     }
     
     private Optional<? extends SQLToken> getAssistedQueryColumnToken(final EncryptTable encryptTable, final String columnName, final ColumnDefinitionSegment column,

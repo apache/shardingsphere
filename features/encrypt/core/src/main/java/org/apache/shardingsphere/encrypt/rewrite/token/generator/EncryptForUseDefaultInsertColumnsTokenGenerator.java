@@ -113,6 +113,6 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
     }
     
     private void setCipherColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
-        columnNames.set(columnIndex, encryptTable.getCipherColumn(columnName));
+        columnNames.set(columnIndex, encryptTable.getEncryptColumn(columnName).getCipher().getName());
     }
 }

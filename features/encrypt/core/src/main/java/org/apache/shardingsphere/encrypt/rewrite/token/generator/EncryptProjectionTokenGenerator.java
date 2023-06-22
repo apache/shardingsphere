@@ -179,13 +179,13 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         if (assistedQueryColumn.isPresent()) {
             return new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(assistedQueryColumn.get(), column.getNameIdentifier().getQuoteCharacter()), null);
         }
-        String cipherColumn = encryptTable.getCipherColumn(column.getName());
+        String cipherColumn = encryptTable.getEncryptColumn(column.getName()).getCipher().getName();
         return new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(cipherColumn, column.getNameIdentifier().getQuoteCharacter()), null);
     }
     
     private Collection<ColumnProjection> generateTableSubqueryProjections(final EncryptTable encryptTable, final ColumnProjection column, final boolean shorthand) {
         Collection<ColumnProjection> result = new LinkedList<>();
-        result.add(distinctOwner(new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(encryptTable.getCipherColumn(column.getName()),
+        result.add(distinctOwner(new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(encryptTable.getEncryptColumn(column.getName()).getCipher().getName(),
                 column.getNameIdentifier().getQuoteCharacter()), null), shorthand));
         Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(column.getName());
         assistedQueryColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(optional, column.getNameIdentifier().getQuoteCharacter()), null)));
@@ -194,13 +194,13 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     
     private Collection<ColumnProjection> generateExistsSubqueryProjections(final EncryptTable encryptTable, final ColumnProjection column, final boolean shorthand) {
         Collection<ColumnProjection> result = new LinkedList<>();
-        result.add(distinctOwner(new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(encryptTable.getCipherColumn(column.getName()),
+        result.add(distinctOwner(new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(encryptTable.getEncryptColumn(column.getName()).getCipher().getName(),
                 column.getNameIdentifier().getQuoteCharacter()), null), shorthand));
         return result;
     }
     
     private ColumnProjection generateCommonProjection(final EncryptTable encryptTable, final ColumnProjection column, final ShorthandProjectionSegment segment) {
-        String encryptColumnName = encryptTable.getCipherColumn(column.getName());
+        String encryptColumnName = encryptTable.getEncryptColumn(column.getName()).getCipher().getName();
         IdentifierValue owner = (null == segment || !segment.getOwner().isPresent()) ? column.getOwnerIdentifier() : segment.getOwner().get().getIdentifier();
         return new ColumnProjection(owner, new IdentifierValue(encryptColumnName, column.getNameIdentifier().getQuoteCharacter()), column.getAlias().isPresent()
                 ? column.getAliasIdentifier()

@@ -89,7 +89,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
             Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.getIdentifier().getValue());
             SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex,
                     createColumnProjections(optional, column.getIdentifier().getQuoteCharacter()))).orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex,
-                            createColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()), column.getIdentifier().getQuoteCharacter())));
+                            createColumnProjections(encryptTable.get().getEncryptColumn(column.getIdentifier().getValue()).getCipher().getName(), column.getIdentifier().getQuoteCharacter())));
             result.add(encryptColumnNameToken);
         }
         return result;

@@ -81,7 +81,7 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     }
     
     private Optional<String> findLogicColumnDefinition(final String columnDefinition, final EncryptTable encryptTable) {
-        Collection<String> cipherColumns = encryptTable.getLogicColumns().stream().map(encryptTable::getCipherColumn).collect(Collectors.toList());
+        Collection<String> cipherColumns = encryptTable.getLogicColumns().stream().map(each -> encryptTable.getEncryptColumn(each).getCipher().getName()).collect(Collectors.toList());
         for (String each : cipherColumns) {
             if (columnDefinition.contains(each)) {
                 return Optional.of(columnDefinition.replace(each, encryptTable.getLogicColumnByCipherColumn(each)));
