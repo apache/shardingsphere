@@ -111,10 +111,10 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         paramBuilder.addReplacedParameters(paramIndex, encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, columnName, originalValue));
         Collection<Object> addedParams = new LinkedList<>();
         if (encryptColumn.getAssistedQuery().isPresent()) {
-            addedParams.add(encryptColumn.getAssistedQuery().get().getEncryptAssistedQueryValue(databaseName, schemaName, tableName, columnName, originalValue));
+            addedParams.add(encryptColumn.getAssistedQuery().get().encrypt(databaseName, schemaName, tableName, columnName, originalValue));
         }
         if (encryptColumn.getLikeQuery().isPresent()) {
-            addedParams.add(encryptColumn.getLikeQuery().get().getEncryptLikeQueryValue(databaseName, schemaName, tableName, columnName, originalValue));
+            addedParams.add(encryptColumn.getLikeQuery().get().encrypt(databaseName, schemaName, tableName, columnName, originalValue));
         }
         if (!addedParams.isEmpty()) {
             if (!paramBuilder.getAddedIndexAndParameters().containsKey(paramIndex)) {

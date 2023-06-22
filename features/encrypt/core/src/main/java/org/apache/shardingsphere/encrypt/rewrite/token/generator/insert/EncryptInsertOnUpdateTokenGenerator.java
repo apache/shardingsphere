@@ -173,7 +173,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
                                             final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
         encryptColumn.getAssistedQuery().ifPresent(optional -> {
             Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-            Object assistedQueryValue = optional.getEncryptAssistedQueryValues(
+            Object assistedQueryValue = optional.encrypt(
                     databaseName, schemaName, tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue(), Collections.singletonList(originalValue)).iterator().next();
             token.addAssignment(optional.getName(), assistedQueryValue);
         });
@@ -183,7 +183,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
                                    final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
         encryptColumn.getLikeQuery().ifPresent(optional -> {
             Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-            Object likeValue = optional.getEncryptLikeQueryValues(
+            Object likeValue = optional.encrypt(
                     databaseName, schemaName, tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue(), Collections.singletonList(originalValue)).iterator().next();
             token.addAssignment(optional.getName(), likeValue);
         });

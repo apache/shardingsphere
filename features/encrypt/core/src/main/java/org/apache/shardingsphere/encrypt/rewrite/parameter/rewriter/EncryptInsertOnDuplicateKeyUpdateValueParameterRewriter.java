@@ -84,10 +84,10 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
     private Collection<Object> buildAddedParams(final String schemaName, final String tableName, final EncryptColumn encryptColumn, final String logicColumnName, final Object plainValue) {
         Collection<Object> result = new LinkedList<>();
         if (encryptColumn.getAssistedQuery().isPresent()) {
-            result.add(encryptColumn.getAssistedQuery().get().getEncryptAssistedQueryValue(databaseName, schemaName, tableName, logicColumnName, plainValue));
+            result.add(encryptColumn.getAssistedQuery().get().encrypt(databaseName, schemaName, tableName, logicColumnName, plainValue));
         }
         if (encryptColumn.getLikeQuery().isPresent()) {
-            result.add(encryptColumn.getLikeQuery().get().getEncryptLikeQueryValue(databaseName, schemaName, tableName, logicColumnName, plainValue));
+            result.add(encryptColumn.getLikeQuery().get().encrypt(databaseName, schemaName, tableName, logicColumnName, plainValue));
         }
         return result;
     }
