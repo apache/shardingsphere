@@ -183,12 +183,12 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     }
     
     private void isSameEncryptColumn(final EncryptTable encryptTable, final ChangeColumnDefinitionSegment segment) {
-        Optional<StandardEncryptAlgorithm<?, ?>> previousEncryptorName = encryptTable.findEncryptor(segment.getPreviousColumn().getIdentifier().getValue());
-        Optional<StandardEncryptAlgorithm<?, ?>> currentEncryptorName = encryptTable.findEncryptor(segment.getColumnDefinition().getColumnName().getIdentifier().getValue());
-        if (!previousEncryptorName.isPresent() && !currentEncryptorName.isPresent()) {
+        Optional<StandardEncryptAlgorithm<?, ?>> previousEncryptor = encryptTable.findEncryptor(segment.getPreviousColumn().getIdentifier().getValue());
+        Optional<StandardEncryptAlgorithm<?, ?>> currentEncryptor = encryptTable.findEncryptor(segment.getColumnDefinition().getColumnName().getIdentifier().getValue());
+        if (!previousEncryptor.isPresent() && !currentEncryptor.isPresent()) {
             return;
         }
-        ShardingSpherePreconditions.checkState(previousEncryptorName.equals(currentEncryptorName) && checkPreviousAndAfterHasSameColumnNumber(encryptTable, segment),
+        ShardingSpherePreconditions.checkState(previousEncryptor.equals(currentEncryptor) && checkPreviousAndAfterHasSameColumnNumber(encryptTable, segment),
                 () -> new EncryptColumnAlterException(
                         encryptTable.getTable(), segment.getColumnDefinition().getColumnName().getIdentifier().getValue(), segment.getPreviousColumn().getIdentifier().getValue()));
     }
