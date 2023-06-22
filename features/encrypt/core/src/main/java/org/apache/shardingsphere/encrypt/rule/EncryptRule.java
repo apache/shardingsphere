@@ -30,6 +30,7 @@ import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.exception.algorithm.MismatchedEncryptAlgorithmTypeException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingEncryptorException;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
@@ -145,13 +146,9 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @param originalValue original value
      * @return encrypted value
      */
-    @SuppressWarnings("unchecked")
     public Object encrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final Object originalValue) {
-        if (null == originalValue) {
-            return null;
-        }
-        EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
-        return getStandardEncryptor(tableName, logicColumnName).encrypt(originalValue, context);
+        EncryptColumn encryptColumn = getEncryptTable(tableName).getEncryptColumn(logicColumnName);
+        return encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, logicColumnName, originalValue);
     }
     
     /**
@@ -165,17 +162,8 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @return encrypted values
      */
     public List<Object> encrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final List<Object> originalValues) {
-        EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
-        return encrypt(getStandardEncryptor(tableName, logicColumnName), originalValues, context);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private List<Object> encrypt(@SuppressWarnings("rawtypes") final StandardEncryptAlgorithm encryptor, final List<Object> originalValues, final EncryptContext context) {
-        List<Object> result = new LinkedList<>();
-        for (Object each : originalValues) {
-            result.add(null == each ? null : encryptor.encrypt(each, context));
-        }
-        return result;
+        EncryptColumn encryptColumn = getEncryptTable(tableName).getEncryptColumn(logicColumnName);
+        return encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, logicColumnName, originalValues);
     }
     
     /**
@@ -188,18 +176,9 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @param cipherValue cipher value
      * @return decrypted value
      */
-    @SuppressWarnings("unchecked")
     public Object decrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final Object cipherValue) {
-        if (null == cipherValue) {
-            return null;
-        }
-        EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
-        return getStandardEncryptor(tableName, logicColumnName).decrypt(cipherValue, context);
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private StandardEncryptAlgorithm getStandardEncryptor(final String tableName, final String logicColumnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findEncryptor(logicColumnName)).orElseThrow(() -> new MissingEncryptorException(tableName, logicColumnName, "STANDARD"));
+        EncryptColumn encryptColumn = getEncryptTable(tableName).getEncryptColumn(logicColumnName);
+        return encryptColumn.getCipher().decrypt(databaseName, schemaName, tableName, logicColumnName, cipherValue);
     }
     
     /**

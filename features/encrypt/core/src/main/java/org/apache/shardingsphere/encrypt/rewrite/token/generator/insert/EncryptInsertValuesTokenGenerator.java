@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
+import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
+import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.expression.DerivedParameterMarkerExpressionSegment;
@@ -133,38 +137,43 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
             if (!encryptTable.isEncryptColumn(columnName)) {
                 continue;
             }
+            EncryptColumn encryptColumn = encryptRule.getEncryptTable(tableName).getEncryptColumn(columnName);
             int columnIndex = useDefaultInsertColumnsToken
                     .map(optional -> ((UseDefaultInsertColumnsToken) optional).getColumns().indexOf(columnName)).orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
             Object originalValue = insertValueContext.getLiteralValue(columnIndex).orElse(null);
-            setCipherColumn(schemaName, tableName, columnName, insertValueToken, insertValueContext.getValueExpressions().get(columnIndex), columnIndex, originalValue);
+            setCipherColumn(schemaName, tableName, encryptColumn, insertValueToken, insertValueContext.getValueExpressions().get(columnIndex), columnIndex, originalValue);
             int indexDelta = 1;
             if (encryptTable.findAssistedQueryColumn(columnName).isPresent()) {
-                addAssistedQueryColumn(schemaName, tableName, columnName, insertValueContext, insertValueToken, columnIndex, indexDelta, originalValue);
+                addAssistedQueryColumn(schemaName, tableName, encryptColumn, insertValueContext, insertValueToken, columnIndex, indexDelta, originalValue);
                 indexDelta++;
             }
             if (encryptTable.findLikeQueryColumn(columnName).isPresent()) {
-                addLikeQueryColumn(schemaName, tableName, columnName, insertValueContext, insertValueToken, columnIndex, indexDelta, originalValue);
+                addLikeQueryColumn(schemaName, tableName, encryptColumn, insertValueContext, insertValueToken, columnIndex, indexDelta, originalValue);
             }
         }
     }
     
-    private void setCipherColumn(final String schemaName, final String tableName, final String columnName,
+    private void setCipherColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
                                  final InsertValue insertValueToken, final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue) {
         if (valueExpression instanceof LiteralExpressionSegment) {
             insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(
-                    valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptRule.encrypt(databaseName, schemaName, tableName, columnName, originalValue)));
+                    valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, encryptColumn.getName(), originalValue)));
         }
     }
     
-    private void addAssistedQueryColumn(final String schemaName, final String tableName, final String columnName,
+    private void addAssistedQueryColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
                                         final InsertValueContext insertValueContext, final InsertValue insertValueToken, final int columnIndex, final int indexDelta, final Object originalValue) {
-        Object derivedValue = encryptRule.getEncryptAssistedQueryValue(databaseName, schemaName, tableName, columnName, originalValue);
+        Optional<AssistedQueryColumnItem> assistedQueryColumnItem = encryptColumn.getAssistedQuery();
+        Preconditions.checkState(assistedQueryColumnItem.isPresent());
+        Object derivedValue = assistedQueryColumnItem.get().getEncryptAssistedQueryValue(databaseName, schemaName, tableName, encryptColumn.getName(), originalValue);
         addDerivedColumn(insertValueContext, insertValueToken, columnIndex, indexDelta, derivedValue);
     }
     
-    private void addLikeQueryColumn(final String schemaName, final String tableName, final String columnName,
+    private void addLikeQueryColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
                                     final InsertValueContext insertValueContext, final InsertValue insertValueToken, final int columnIndex, final int indexDelta, final Object originalValue) {
-        Object derivedValue = encryptRule.getEncryptLikeQueryValue(databaseName, schemaName, tableName, columnName, originalValue);
+        Optional<LikeQueryColumnItem> likeQueryColumnItem = encryptColumn.getLikeQuery();
+        Preconditions.checkState(likeQueryColumnItem.isPresent());
+        Object derivedValue = likeQueryColumnItem.get().getEncryptLikeQueryValue(databaseName, schemaName, tableName, encryptColumn.getName(), originalValue);
         addDerivedColumn(insertValueContext, insertValueToken, columnIndex, indexDelta, derivedValue);
     }
     
