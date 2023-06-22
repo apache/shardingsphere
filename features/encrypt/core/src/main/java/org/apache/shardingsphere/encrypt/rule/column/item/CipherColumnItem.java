@@ -38,7 +38,6 @@ public final class CipherColumnItem {
     @SuppressWarnings("rawtypes")
     private final StandardEncryptAlgorithm encryptor;
     
-    
     /**
      * Encrypt.
      *
