@@ -128,7 +128,7 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
                                             final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
         Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
         if (encryptColumn.getAssistedQuery().isPresent()) {
-            Object assistedQueryValue = encryptColumn.getAssistedQuery().get().getEncryptAssistedQueryValues(databaseName, schemaName,
+            Object assistedQueryValue = encryptColumn.getAssistedQuery().get().encrypt(databaseName, schemaName,
                     encryptTable.getTable(), assignmentSegment.getColumns().get(0).getIdentifier().getValue(), Collections.singletonList(originalValue)).iterator().next();
             token.addAssignment(encryptColumn.getAssistedQuery().get().getName(), assistedQueryValue);
         }
@@ -138,7 +138,7 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
                                    final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
         Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
         if (encryptColumn.getLikeQuery().isPresent()) {
-            Object assistedQueryValue = encryptColumn.getLikeQuery().get().getEncryptLikeQueryValues(databaseName, schemaName,
+            Object assistedQueryValue = encryptColumn.getLikeQuery().get().encrypt(databaseName, schemaName,
                     encryptTable.getTable(), assignmentSegment.getColumns().get(0).getIdentifier().getValue(), Collections.singletonList(originalValue)).iterator().next();
             token.addAssignment(encryptColumn.getLikeQuery().get().getName(), assistedQueryValue);
         }

@@ -165,7 +165,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                                         final InsertValueContext insertValueContext, final InsertValue insertValueToken, final int columnIndex, final int indexDelta, final Object originalValue) {
         Optional<AssistedQueryColumnItem> assistedQueryColumnItem = encryptColumn.getAssistedQuery();
         Preconditions.checkState(assistedQueryColumnItem.isPresent());
-        Object derivedValue = assistedQueryColumnItem.get().getEncryptAssistedQueryValue(databaseName, schemaName, tableName, encryptColumn.getName(), originalValue);
+        Object derivedValue = assistedQueryColumnItem.get().encrypt(databaseName, schemaName, tableName, encryptColumn.getName(), originalValue);
         addDerivedColumn(insertValueContext, insertValueToken, columnIndex, indexDelta, derivedValue);
     }
     
@@ -173,7 +173,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                                     final InsertValueContext insertValueContext, final InsertValue insertValueToken, final int columnIndex, final int indexDelta, final Object originalValue) {
         Optional<LikeQueryColumnItem> likeQueryColumnItem = encryptColumn.getLikeQuery();
         Preconditions.checkState(likeQueryColumnItem.isPresent());
-        Object derivedValue = likeQueryColumnItem.get().getEncryptLikeQueryValue(databaseName, schemaName, tableName, encryptColumn.getName(), originalValue);
+        Object derivedValue = likeQueryColumnItem.get().encrypt(databaseName, schemaName, tableName, encryptColumn.getName(), originalValue);
         addDerivedColumn(insertValueContext, insertValueToken, columnIndex, indexDelta, derivedValue);
     }
     

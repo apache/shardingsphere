@@ -100,11 +100,11 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         paramBuilder.addReplacedParameters(parameterMarkerIndex, cipherValue);
         Collection<Object> addedParams = new LinkedList<>();
         if (encryptColumn.getAssistedQuery().isPresent()) {
-            addedParams.add(encryptColumn.getAssistedQuery().get().getEncryptAssistedQueryValues(
+            addedParams.add(encryptColumn.getAssistedQuery().get().encrypt(
                     databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next());
         }
         if (encryptColumn.getLikeQuery().isPresent()) {
-            addedParams.add(encryptColumn.getLikeQuery().get().getEncryptLikeQueryValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next());
+            addedParams.add(encryptColumn.getLikeQuery().get().encrypt(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next());
         }
         if (!addedParams.isEmpty()) {
             paramBuilder.addAddedParameters(parameterMarkerIndex, addedParams);
