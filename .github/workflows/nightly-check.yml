@@ -159,5 +159,6 @@ jobs:
             ignore_current_file=false
             continue
           fi
+          echo "Checking $file"
           markdown-link-check -c .github/workflows/resources/linkcheck/markdown-link-check.json -q "$file"
           done
