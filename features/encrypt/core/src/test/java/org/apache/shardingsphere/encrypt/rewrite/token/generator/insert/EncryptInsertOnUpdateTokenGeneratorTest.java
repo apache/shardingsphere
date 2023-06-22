@@ -72,6 +72,7 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
     
     private EncryptColumn mockEncryptColumn() {
         EncryptColumn result = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
+        when(result.getCipher().getName()).thenReturn("cipher_mobile");
         when(result.getCipher().encrypt(null, "db_test", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));
         return result;
     }
