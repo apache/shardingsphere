@@ -26,7 +26,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -87,30 +86,6 @@ class EncryptTableTest {
     @Test
     void assertGetAssistedQueryColumns() {
         assertThat(encryptTable.getAssistedQueryColumns(), is(Collections.singletonList("assistedQueryColumn")));
-    }
-    
-    @Test
-    void assertFindAssistedQueryColumn() {
-        Optional<String> actual = encryptTable.findAssistedQueryColumn("logicColumn");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("assistedQueryColumn"));
-    }
-    
-    @Test
-    void assertFindLikeQueryColumn() {
-        Optional<String> actual = encryptTable.findLikeQueryColumn("logicColumn");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("likeQueryColumn"));
-    }
-    
-    @Test
-    void assertNotFindAssistedQueryColumn() {
-        assertFalse(encryptTable.findAssistedQueryColumn("notExistLogicColumn").isPresent());
-    }
-    
-    @Test
-    void assertNotFindLikeQueryColumn() {
-        assertFalse(encryptTable.findAssistedQueryColumn("notExistLikeQueryColumn").isPresent());
     }
     
     @Test

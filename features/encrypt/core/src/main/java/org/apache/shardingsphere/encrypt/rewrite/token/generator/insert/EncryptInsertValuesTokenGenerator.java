@@ -143,11 +143,11 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
             Object originalValue = insertValueContext.getLiteralValue(columnIndex).orElse(null);
             setCipherColumn(schemaName, tableName, encryptColumn, insertValueToken, insertValueContext.getValueExpressions().get(columnIndex), columnIndex, originalValue);
             int indexDelta = 1;
-            if (encryptTable.findAssistedQueryColumn(columnName).isPresent()) {
+            if (encryptColumn.getAssistedQuery().isPresent()) {
                 addAssistedQueryColumn(schemaName, tableName, encryptColumn, insertValueContext, insertValueToken, columnIndex, indexDelta, originalValue);
                 indexDelta++;
             }
-            if (encryptTable.findLikeQueryColumn(columnName).isPresent()) {
+            if (encryptColumn.getLikeQuery().isPresent()) {
                 addLikeQueryColumn(schemaName, tableName, encryptColumn, insertValueContext, insertValueToken, columnIndex, indexDelta, originalValue);
             }
         }

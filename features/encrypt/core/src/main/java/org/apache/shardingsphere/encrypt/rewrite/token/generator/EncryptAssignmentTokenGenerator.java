@@ -102,9 +102,10 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
     private EncryptAssignmentToken generateParameterSQLToken(final EncryptTable encryptTable, final AssignmentSegment assignmentSegment) {
         EncryptParameterAssignmentToken result = new EncryptParameterAssignmentToken(assignmentSegment.getColumns().get(0).getStartIndex(), assignmentSegment.getStopIndex());
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
-        result.addColumnName(encryptTable.getEncryptColumn(columnName).getCipher().getName());
-        encryptTable.findAssistedQueryColumn(columnName).ifPresent(result::addColumnName);
-        encryptTable.findLikeQueryColumn(columnName).ifPresent(result::addColumnName);
+        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
+        result.addColumnName(encryptColumn.getCipher().getName());
+        encryptColumn.getAssistedQuery().ifPresent(optional -> result.addColumnName(optional.getName()));
+        encryptColumn.getLikeQuery().ifPresent(optional -> result.addColumnName(optional.getName()));
         return result;
     }
     

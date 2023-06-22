@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -60,6 +61,9 @@ class EncryptOrderByItemTokenGeneratorTest {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptTable.isEncryptColumn("certificate_number")).thenReturn(true);
+        EncryptColumn encryptColumn = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
+        when(encryptColumn.getAssistedQuery()).thenReturn(Optional.empty());
+        when(encryptTable.getEncryptColumn("certificate_number")).thenReturn(encryptColumn);
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         return result;
     }

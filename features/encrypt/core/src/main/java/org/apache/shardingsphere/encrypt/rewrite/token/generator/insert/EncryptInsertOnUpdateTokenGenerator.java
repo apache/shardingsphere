@@ -29,6 +29,8 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptParameterAssi
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
+import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -111,9 +113,10 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     private EncryptAssignmentToken generateParameterSQLToken(final EncryptTable encryptTable, final AssignmentSegment assignmentSegment) {
         EncryptParameterAssignmentToken result = new EncryptParameterAssignmentToken(assignmentSegment.getColumns().get(0).getStartIndex(), assignmentSegment.getStopIndex());
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
-        result.addColumnName(encryptTable.getEncryptColumn(columnName).getCipher().getName());
-        encryptTable.findAssistedQueryColumn(columnName).ifPresent(result::addColumnName);
-        encryptTable.findLikeQueryColumn(columnName).ifPresent(result::addColumnName);
+        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
+        result.addColumnName(encryptColumn.getCipher().getName());
+        encryptColumn.getAssistedQuery().ifPresent(optional -> result.addColumnName(optional.getName()));
+        encryptColumn.getLikeQuery().ifPresent(optional -> result.addColumnName(optional.getName()));
         return result;
     }
     
@@ -134,24 +137,26 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         EncryptFunctionAssignmentToken result = new EncryptFunctionAssignmentToken(columnSegment.getStartIndex(), assignmentSegment.getStopIndex());
         boolean isEncryptColumn = encryptTable.isEncryptColumn(column);
         boolean isEncryptValueColumn = encryptTable.isEncryptColumn(valueColumn);
+        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(column);
+        EncryptColumn encryptValueColumn = encryptTable.getEncryptColumn(column);
         if (isEncryptColumn && isEncryptValueColumn) {
-            String cipherColumn = encryptTable.getEncryptColumn(column).getCipher().getName();
-            String cipherValueColumn = encryptTable.getEncryptColumn(valueColumn).getCipher().getName();
+            String cipherColumn = encryptColumn.getCipher().getName();
+            String cipherValueColumn = encryptValueColumn.getCipher().getName();
             result.addAssignment(cipherColumn, "VALUES(" + cipherValueColumn + ")");
         } else if (isEncryptColumn != isEncryptValueColumn) {
             throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
         }
-        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(column);
-        Optional<String> valueAssistedQueryColumn = encryptTable.findAssistedQueryColumn(valueColumn);
+        Optional<AssistedQueryColumnItem> assistedQueryColumn = encryptColumn.getAssistedQuery();
+        Optional<AssistedQueryColumnItem> valueAssistedQueryColumn = encryptValueColumn.getAssistedQuery();
         if (assistedQueryColumn.isPresent() && valueAssistedQueryColumn.isPresent()) {
-            result.addAssignment(assistedQueryColumn.get(), "VALUES(" + valueAssistedQueryColumn.get() + ")");
+            result.addAssignment(assistedQueryColumn.get().getName(), "VALUES(" + valueAssistedQueryColumn.get().getName() + ")");
         } else if (assistedQueryColumn.isPresent() != valueAssistedQueryColumn.isPresent()) {
             throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
         }
-        Optional<String> likeQueryColumn = encryptTable.findLikeQueryColumn(column);
-        Optional<String> valueLikeQueryColumn = encryptTable.findLikeQueryColumn(valueColumn);
+        Optional<LikeQueryColumnItem> likeQueryColumn = encryptColumn.getLikeQuery();
+        Optional<LikeQueryColumnItem> valueLikeQueryColumn = encryptValueColumn.getLikeQuery();
         if (likeQueryColumn.isPresent() && valueLikeQueryColumn.isPresent()) {
-            result.addAssignment(likeQueryColumn.get(), "VALUES(" + valueLikeQueryColumn.get() + ")");
+            result.addAssignment(likeQueryColumn.get().getName(), "VALUES(" + valueLikeQueryColumn.get().getName() + ")");
         } else if (likeQueryColumn.isPresent() != valueLikeQueryColumn.isPresent()) {
             throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
         }
