@@ -110,7 +110,7 @@ public final class EncryptTable {
                 return entry.getKey();
             }
         }
-        throw new EncryptLogicColumnNotFoundException(cipherColumnName); 
+        throw new EncryptLogicColumnNotFoundException(cipherColumnName);
     }
     
     /**
