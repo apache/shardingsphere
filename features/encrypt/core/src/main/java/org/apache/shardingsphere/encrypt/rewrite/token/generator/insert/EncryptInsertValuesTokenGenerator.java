@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.expression.DerivedParameterMarkerExpressionSegment;
@@ -133,10 +134,11 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
             if (!encryptTable.isEncryptColumn(columnName)) {
                 continue;
             }
+            EncryptColumn encryptColumn = encryptRule.getEncryptTable(tableName).getEncryptColumn(columnName);
             int columnIndex = useDefaultInsertColumnsToken
                     .map(optional -> ((UseDefaultInsertColumnsToken) optional).getColumns().indexOf(columnName)).orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
             Object originalValue = insertValueContext.getLiteralValue(columnIndex).orElse(null);
-            setCipherColumn(schemaName, tableName, columnName, insertValueToken, insertValueContext.getValueExpressions().get(columnIndex), columnIndex, originalValue);
+            setCipherColumn(schemaName, tableName, encryptColumn, insertValueToken, insertValueContext.getValueExpressions().get(columnIndex), columnIndex, originalValue);
             int indexDelta = 1;
             if (encryptTable.findAssistedQueryColumn(columnName).isPresent()) {
                 addAssistedQueryColumn(schemaName, tableName, columnName, insertValueContext, insertValueToken, columnIndex, indexDelta, originalValue);
@@ -148,11 +150,11 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         }
     }
     
-    private void setCipherColumn(final String schemaName, final String tableName, final String columnName,
+    private void setCipherColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
                                  final InsertValue insertValueToken, final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue) {
         if (valueExpression instanceof LiteralExpressionSegment) {
             insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(
-                    valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptRule.encrypt(databaseName, schemaName, tableName, columnName, originalValue)));
+                    valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, encryptColumn.getName(), originalValue)));
         }
     }
     

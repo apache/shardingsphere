@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -71,7 +72,8 @@ public final class EncryptMergedResult implements MergedResult {
             return mergedResult.getValue(columnIndex, type);
         }
         Object cipherValue = mergedResult.getValue(columnIndex, Object.class);
-        return encryptRule.decrypt(database.getName(), schemaName, tableName.get(), columnProjection.get().getName(), cipherValue);
+        EncryptColumn encryptColumn = encryptRule.getEncryptTable(tableName.get()).getEncryptColumn(columnProjection.get().getName());
+        return encryptColumn.getCipher().decrypt(database.getName(), schemaName, tableName.get(), columnProjection.get().getName(), cipherValue);
     }
     
     private Optional<String> findTableName(final ColumnProjection columnProjection, final Map<String, String> columnTableNames) {

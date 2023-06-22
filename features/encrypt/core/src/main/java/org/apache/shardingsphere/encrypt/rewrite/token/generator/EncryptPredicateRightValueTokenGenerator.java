@@ -30,6 +30,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateFunc
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateInRightValueToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -102,6 +103,7 @@ public final class EncryptPredicateRightValueTokenGenerator
     }
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition, final List<Object> originalValues) {
+        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(encryptCondition.getColumnName());
         if (encryptCondition instanceof EncryptBinaryCondition && "LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator())) {
             Optional<String> likeQueryColumn = encryptTable.findLikeQueryColumn(encryptCondition.getColumnName());
             ShardingSpherePreconditions.checkState(likeQueryColumn.isPresent(), () -> new UnsupportedEncryptSQLException("LIKE"));
@@ -110,7 +112,7 @@ public final class EncryptPredicateRightValueTokenGenerator
         Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(encryptCondition.getColumnName());
         return assistedQueryColumn.isPresent()
                 ? encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues)
-                : encryptRule.encrypt(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
+                : encryptColumn.getCipher().encrypt(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
     }
     
     private Map<Integer, Object> getPositionValues(final Collection<Integer> valuePositions, final List<Object> encryptValues) {

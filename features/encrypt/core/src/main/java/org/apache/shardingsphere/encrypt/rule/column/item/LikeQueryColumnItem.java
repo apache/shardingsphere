@@ -30,5 +30,6 @@ public final class LikeQueryColumnItem {
     
     private final String name;
     
-    private final LikeEncryptAlgorithm<?, ?> encryptor;
+    @SuppressWarnings("rawtypes")
+    private final LikeEncryptAlgorithm encryptor;
 }

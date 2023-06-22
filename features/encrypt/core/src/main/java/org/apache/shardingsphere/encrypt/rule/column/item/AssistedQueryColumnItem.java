@@ -30,5 +30,6 @@ public final class AssistedQueryColumnItem {
     
     private final String name;
     
-    private final AssistedEncryptAlgorithm<?, ?> encryptor;
+    @SuppressWarnings("rawtypes")
+    private final AssistedEncryptAlgorithm encryptor;
 }

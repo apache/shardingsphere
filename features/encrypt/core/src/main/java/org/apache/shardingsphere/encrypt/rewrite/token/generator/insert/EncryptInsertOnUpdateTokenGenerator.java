@@ -28,6 +28,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptLiteralAssign
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptParameterAssignmentToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -88,12 +89,13 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
             if (!leftColumnIsEncrypt) {
                 continue;
             }
-            generateSQLToken(schemaName, encryptTable, each).ifPresent(result::add);
+            EncryptColumn encryptColumn = encryptTable.getEncryptColumn(each.getColumns().get(0).getIdentifier().getValue());
+            generateSQLToken(schemaName, encryptTable, encryptColumn, each).ifPresent(result::add);
         }
         return result;
     }
     
-    private Optional<EncryptAssignmentToken> generateSQLToken(final String schemaName, final EncryptTable encryptTable, final AssignmentSegment assignmentSegment) {
+    private Optional<EncryptAssignmentToken> generateSQLToken(final String schemaName, final EncryptTable encryptTable, final EncryptColumn encryptColumn, final AssignmentSegment assignmentSegment) {
         if (assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(generateParameterSQLToken(encryptTable, assignmentSegment));
         }
@@ -101,7 +103,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
             return Optional.of(generateValuesSQLToken(encryptTable, assignmentSegment, (FunctionSegment) assignmentSegment.getValue()));
         }
         if (assignmentSegment.getValue() instanceof LiteralExpressionSegment) {
-            return Optional.of(generateLiteralSQLToken(schemaName, encryptTable, assignmentSegment));
+            return Optional.of(generateLiteralSQLToken(schemaName, encryptTable, encryptColumn, assignmentSegment));
         }
         return Optional.empty();
     }
@@ -115,9 +117,9 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         return result;
     }
     
-    private EncryptAssignmentToken generateLiteralSQLToken(final String schemaName, final EncryptTable encryptTable, final AssignmentSegment assignmentSegment) {
+    private EncryptAssignmentToken generateLiteralSQLToken(final String schemaName, final EncryptTable encryptTable, final EncryptColumn encryptColumn, final AssignmentSegment assignmentSegment) {
         EncryptLiteralAssignmentToken result = new EncryptLiteralAssignmentToken(assignmentSegment.getColumns().get(0).getStartIndex(), assignmentSegment.getStopIndex());
-        addCipherAssignment(schemaName, encryptTable, assignmentSegment, result);
+        addCipherAssignment(schemaName, encryptTable, encryptColumn, assignmentSegment, result);
         addAssistedQueryAssignment(schemaName, encryptTable, assignmentSegment, result);
         addLikeAssignment(schemaName, encryptTable, assignmentSegment, result);
         return result;
@@ -159,9 +161,10 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         return result;
     }
     
-    private void addCipherAssignment(final String schemaName, final EncryptTable encryptTable, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
+    private void addCipherAssignment(final String schemaName, final EncryptTable encryptTable,
+                                     final EncryptColumn encryptColumn, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
         Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-        Object cipherValue = encryptRule.encrypt(databaseName, schemaName, encryptTable.getTable(), assignmentSegment.getColumns().get(0).getIdentifier().getValue(),
+        Object cipherValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, encryptTable.getTable(), assignmentSegment.getColumns().get(0).getIdentifier().getValue(),
                 Collections.singletonList(originalValue)).iterator().next();
         token.addAssignment(encryptTable.getCipherColumn(assignmentSegment.getColumns().get(0).getIdentifier().getValue()), cipherValue);
     }
