@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -100,12 +99,12 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         Object cipherValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
         paramBuilder.addReplacedParameters(parameterMarkerIndex, cipherValue);
         Collection<Object> addedParams = new LinkedList<>();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (encryptTable.isPresent() && encryptTable.get().findAssistedQueryColumn(columnName).isPresent()) {
-            addedParams.add(encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next());
+        if (encryptColumn.getAssistedQuery().isPresent()) {
+            addedParams.add(encryptColumn.getAssistedQuery().get().getEncryptAssistedQueryValues(
+                    databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next());
         }
-        if (encryptTable.isPresent() && encryptTable.get().findLikeQueryColumn(columnName).isPresent()) {
-            addedParams.add(encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next());
+        if (encryptColumn.getLikeQuery().isPresent()) {
+            addedParams.add(encryptColumn.getLikeQuery().get().getEncryptLikeQueryValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next());
         }
         if (!addedParams.isEmpty()) {
             paramBuilder.addAddedParameters(parameterMarkerIndex, addedParams);

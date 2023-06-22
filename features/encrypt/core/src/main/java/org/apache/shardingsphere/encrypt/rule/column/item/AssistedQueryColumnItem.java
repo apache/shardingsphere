@@ -19,7 +19,12 @@ package org.apache.shardingsphere.encrypt.rule.column.item;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Assisted query column item.
@@ -32,4 +37,43 @@ public final class AssistedQueryColumnItem {
     
     @SuppressWarnings("rawtypes")
     private final AssistedEncryptAlgorithm encryptor;
+    
+    /**
+     * Get encrypt assisted query value.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param logicColumnName logic column name
+     * @param originalValue original value
+     * @return assisted query values
+     */
+    @SuppressWarnings("unchecked")
+    public Object getEncryptAssistedQueryValue(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final Object originalValue) {
+        if (null == originalValue) {
+            return null;
+        }
+        EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
+        return encryptor.encrypt(originalValue, context);
+    }
+    
+    /**
+     * Get encrypt assisted query values.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param logicColumnName logic column name
+     * @param originalValues original values
+     * @return assisted query values
+     */
+    @SuppressWarnings("unchecked")
+    public List<Object> getEncryptAssistedQueryValues(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final List<Object> originalValues) {
+        EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
+        List<Object> result = new LinkedList<>();
+        for (Object each : originalValues) {
+            result.add(null == each ? null : encryptor.encrypt(each, context));
+        }
+        return result;
+    }
 }

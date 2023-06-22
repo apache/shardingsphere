@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
-import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -35,10 +33,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Function
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Insert on duplicate key update parameter rewriter for encrypt.
@@ -75,7 +71,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
             EncryptColumn encryptColumn = encryptRule.getEncryptTable(tableName).getEncryptColumn(logicColumnName);
             Object cipherColumnValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, logicColumnName, plainValue);
             groupedParamBuilder.getGenericParameterBuilder().addReplacedParameters(index, cipherColumnValue);
-            Collection<Object> addedParams = buildAddedParams(schemaName, tableName, logicColumnName, plainValue);
+            Collection<Object> addedParams = buildAddedParams(schemaName, tableName, encryptColumn, logicColumnName, plainValue);
             if (!addedParams.isEmpty()) {
                 if (!groupedParamBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().containsKey(index)) {
                     groupedParamBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().put(index, new LinkedList<>());
@@ -85,21 +81,13 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
         }
     }
     
-    private Collection<Object> buildAddedParams(final String schemaName, final String tableName, final String logicColumnName, final Object plainValue) {
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return Collections.emptyList();
-        }
+    private Collection<Object> buildAddedParams(final String schemaName, final String tableName, final EncryptColumn encryptColumn, final String logicColumnName, final Object plainValue) {
         Collection<Object> result = new LinkedList<>();
-        if (encryptTable.get().findAssistedQueryColumn(logicColumnName).isPresent()) {
-            Optional<String> assistedColumnName = encryptTable.get().findAssistedQueryColumn(logicColumnName);
-            Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query column name.");
-            result.add(encryptRule.getEncryptAssistedQueryValue(databaseName, schemaName, tableName, logicColumnName, plainValue));
+        if (encryptColumn.getAssistedQuery().isPresent()) {
+            result.add(encryptColumn.getAssistedQuery().get().getEncryptAssistedQueryValue(databaseName, schemaName, tableName, logicColumnName, plainValue));
         }
-        if (encryptTable.get().findLikeQueryColumn(logicColumnName).isPresent()) {
-            Optional<String> likeColumnName = encryptTable.get().findLikeQueryColumn(logicColumnName);
-            Preconditions.checkArgument(likeColumnName.isPresent(), "Can not find assisted query column name.");
-            result.add(encryptRule.getEncryptLikeQueryValue(databaseName, schemaName, tableName, logicColumnName, plainValue));
+        if (encryptColumn.getLikeQuery().isPresent()) {
+            result.add(encryptColumn.getLikeQuery().get().getEncryptLikeQueryValue(databaseName, schemaName, tableName, logicColumnName, plainValue));
         }
         return result;
     }

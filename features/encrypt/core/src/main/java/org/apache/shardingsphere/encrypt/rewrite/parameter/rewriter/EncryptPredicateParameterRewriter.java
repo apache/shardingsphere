@@ -68,12 +68,11 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
         String columnName = encryptCondition.getColumnName();
         EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
-        if (encryptCondition instanceof EncryptBinaryCondition && "LIKE".equals(((EncryptBinaryCondition) encryptCondition).getOperator())
-                && encryptTable.findLikeQueryColumn(columnName).isPresent()) {
-            return encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, tableName, columnName, originalValues);
+        if (encryptCondition instanceof EncryptBinaryCondition && "LIKE".equals(((EncryptBinaryCondition) encryptCondition).getOperator()) && encryptColumn.getLikeQuery().isPresent()) {
+            return encryptColumn.getLikeQuery().get().getEncryptLikeQueryValues(databaseName, schemaName, tableName, columnName, originalValues);
         }
-        return encryptTable.findAssistedQueryColumn(columnName).isPresent()
-                ? encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, tableName, columnName, originalValues)
+        return encryptColumn.getAssistedQuery().isPresent()
+                ? encryptColumn.getAssistedQuery().get().getEncryptAssistedQueryValues(databaseName, schemaName, tableName, columnName, originalValues)
                 : encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, columnName, originalValues);
     }
     

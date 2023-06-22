@@ -103,7 +103,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
             return Optional.of(generateValuesSQLToken(encryptTable, assignmentSegment, (FunctionSegment) assignmentSegment.getValue()));
         }
         if (assignmentSegment.getValue() instanceof LiteralExpressionSegment) {
-            return Optional.of(generateLiteralSQLToken(schemaName, encryptTable, encryptColumn, assignmentSegment));
+            return Optional.of(generateLiteralSQLToken(schemaName, encryptTable.getTable(), encryptColumn, assignmentSegment));
         }
         return Optional.empty();
     }
@@ -117,11 +117,11 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         return result;
     }
     
-    private EncryptAssignmentToken generateLiteralSQLToken(final String schemaName, final EncryptTable encryptTable, final EncryptColumn encryptColumn, final AssignmentSegment assignmentSegment) {
+    private EncryptAssignmentToken generateLiteralSQLToken(final String schemaName, final String tableName, final EncryptColumn encryptColumn, final AssignmentSegment assignmentSegment) {
         EncryptLiteralAssignmentToken result = new EncryptLiteralAssignmentToken(assignmentSegment.getColumns().get(0).getStartIndex(), assignmentSegment.getStopIndex());
-        addCipherAssignment(schemaName, encryptTable, encryptColumn, assignmentSegment, result);
-        addAssistedQueryAssignment(schemaName, encryptTable, assignmentSegment, result);
-        addLikeAssignment(schemaName, encryptTable, assignmentSegment, result);
+        addCipherAssignment(schemaName, tableName, encryptColumn, assignmentSegment, result);
+        addAssistedQueryAssignment(schemaName, tableName, encryptColumn, assignmentSegment, result);
+        addLikeAssignment(schemaName, tableName, encryptColumn, assignmentSegment, result);
         return result;
     }
     
@@ -161,29 +161,31 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         return result;
     }
     
-    private void addCipherAssignment(final String schemaName, final EncryptTable encryptTable,
-                                     final EncryptColumn encryptColumn, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
+    private void addCipherAssignment(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
+                                     final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
         Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-        Object cipherValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, encryptTable.getTable(), assignmentSegment.getColumns().get(0).getIdentifier().getValue(),
+        Object cipherValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue(),
                 Collections.singletonList(originalValue)).iterator().next();
-        token.addAssignment(encryptTable.getCipherColumn(assignmentSegment.getColumns().get(0).getIdentifier().getValue()), cipherValue);
+        token.addAssignment(encryptColumn.getCipher().getName(), cipherValue);
     }
     
-    private void addAssistedQueryAssignment(final String schemaName, final EncryptTable encryptTable, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
-        encryptTable.findAssistedQueryColumn(assignmentSegment.getColumns().get(0).getIdentifier().getValue()).ifPresent(optional -> {
+    private void addAssistedQueryAssignment(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
+                                            final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
+        encryptColumn.getAssistedQuery().ifPresent(optional -> {
             Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-            Object assistedQueryValue = encryptRule.getEncryptAssistedQueryValues(
-                    databaseName, schemaName, encryptTable.getTable(), assignmentSegment.getColumns().get(0).getIdentifier().getValue(), Collections.singletonList(originalValue)).iterator().next();
-            token.addAssignment(optional, assistedQueryValue);
+            Object assistedQueryValue = optional.getEncryptAssistedQueryValues(
+                    databaseName, schemaName, tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue(), Collections.singletonList(originalValue)).iterator().next();
+            token.addAssignment(optional.getName(), assistedQueryValue);
         });
     }
     
-    private void addLikeAssignment(final String schemaName, final EncryptTable encryptTable, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
-        encryptTable.findLikeQueryColumn(assignmentSegment.getColumns().get(0).getIdentifier().getValue()).ifPresent(optional -> {
+    private void addLikeAssignment(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
+                                   final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
+        encryptColumn.getLikeQuery().ifPresent(optional -> {
             Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-            Object likeValue = encryptRule.getEncryptLikeQueryValues(
-                    databaseName, schemaName, encryptTable.getTable(), assignmentSegment.getColumns().get(0).getIdentifier().getValue(), Collections.singletonList(originalValue)).iterator().next();
-            token.addAssignment(optional, likeValue);
+            Object likeValue = optional.getEncryptLikeQueryValues(
+                    databaseName, schemaName, tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue(), Collections.singletonList(originalValue)).iterator().next();
+            token.addAssignment(optional.getName(), likeValue);
         });
     }
 }

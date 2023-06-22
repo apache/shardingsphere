@@ -19,7 +19,12 @@ package org.apache.shardingsphere.encrypt.rule.column.item;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Like query column item.
@@ -32,4 +37,43 @@ public final class LikeQueryColumnItem {
     
     @SuppressWarnings("rawtypes")
     private final LikeEncryptAlgorithm encryptor;
+    
+    /**
+     * Get encrypt like query value.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param logicColumnName logic column name
+     * @param originalValue original value
+     * @return like query values
+     */
+    @SuppressWarnings("unchecked")
+    public Object getEncryptLikeQueryValue(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final Object originalValue) {
+        if (null == originalValue) {
+            return null;
+        }
+        EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
+        return encryptor.encrypt(originalValue, context);
+    }
+    
+    /**
+     * Get encrypt like query values.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param logicColumnName logic column name
+     * @param originalValues original values
+     * @return like query values
+     */
+    @SuppressWarnings("unchecked")
+    public List<Object> getEncryptLikeQueryValues(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final List<Object> originalValues) {
+        EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
+        List<Object> result = new LinkedList<>();
+        for (Object each : originalValues) {
+            result.add(null == each ? null : encryptor.encrypt(each, context));
+        }
+        return result;
+    }
 }
