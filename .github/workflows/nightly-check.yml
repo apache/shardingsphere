@@ -152,6 +152,7 @@ jobs:
             for ignored_path in ${IGNORED_PATH_LIST[@]}
               do
                 if [[ $file =~ $ignored_path ]]; then
+                  ignore_current_file=true
                   break
                 fi
               done
@@ -188,10 +189,6 @@ jobs:
           key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.CACHE_PREFIX }}-maven-third-party-
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@master
-        with:
-          swap-size-gb: 10
       - name: Install Project
         run: ./mvnw clean install -DskipTests -Dmaven.javadoc.skip=true -Drat.skip=true
       - name: Perform CodeQL Analysis
