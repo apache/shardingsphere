@@ -104,8 +104,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         }
         Collection<Projection> columnProjections =
                 encryptTable.findAssistedQueryColumn(logicColumn).map(optional -> createColumnProjections(optional, columnSegment.getIdentifier().getQuoteCharacter()))
-                        .orElseGet(() -> createColumnProjections(encryptTable.getCipherColumn(logicColumn),
-                                columnSegment.getIdentifier().getQuoteCharacter()));
+                        .orElseGet(() -> createColumnProjections(encryptTable.getEncryptColumn(logicColumn).getCipher().getName(), columnSegment.getIdentifier().getQuoteCharacter()));
         return new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections);
     }
     

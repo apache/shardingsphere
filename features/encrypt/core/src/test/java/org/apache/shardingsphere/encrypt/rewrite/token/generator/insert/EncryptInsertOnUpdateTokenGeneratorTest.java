@@ -78,10 +78,10 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
     }
     
     private static EncryptTable mockEncryptTable() {
-        EncryptTable result = mock(EncryptTable.class);
+        EncryptTable result = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
         when(result.getTable()).thenReturn("t_user");
         when(result.isEncryptColumn("mobile")).thenReturn(true);
-        when(result.getCipherColumn("mobile")).thenReturn("cipher_mobile");
+        when(result.getEncryptColumn("mobile").getCipher().getName()).thenReturn("cipher_mobile");
         return result;
     }
     

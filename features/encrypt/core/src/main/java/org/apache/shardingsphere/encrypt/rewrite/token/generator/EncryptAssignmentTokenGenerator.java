@@ -102,7 +102,7 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
     private EncryptAssignmentToken generateParameterSQLToken(final EncryptTable encryptTable, final AssignmentSegment assignmentSegment) {
         EncryptParameterAssignmentToken result = new EncryptParameterAssignmentToken(assignmentSegment.getColumns().get(0).getStartIndex(), assignmentSegment.getStopIndex());
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
-        result.addColumnName(encryptTable.getCipherColumn(columnName));
+        result.addColumnName(encryptTable.getEncryptColumn(columnName).getCipher().getName());
         encryptTable.findAssistedQueryColumn(columnName).ifPresent(result::addColumnName);
         encryptTable.findLikeQueryColumn(columnName).ifPresent(result::addColumnName);
         return result;
@@ -121,7 +121,7 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
         Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
         Object cipherValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, encryptTable.getTable(), assignmentSegment.getColumns().get(0).getIdentifier().getValue(),
                 Collections.singletonList(originalValue)).iterator().next();
-        token.addAssignment(encryptTable.getCipherColumn(assignmentSegment.getColumns().get(0).getIdentifier().getValue()), cipherValue);
+        token.addAssignment(encryptTable.getEncryptColumn(assignmentSegment.getColumns().get(0).getIdentifier().getValue()).getCipher().getName(), cipherValue);
     }
     
     private void addAssistedQueryAssignment(final String schemaName, final EncryptTable encryptTable, final EncryptColumn encryptColumn,

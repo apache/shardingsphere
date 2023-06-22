@@ -85,11 +85,6 @@ class EncryptTableTest {
     }
     
     @Test
-    void assertGetCipherColumn() {
-        assertThat(encryptTable.getCipherColumn("LogicColumn"), is("cipherColumn"));
-    }
-    
-    @Test
     void assertGetAssistedQueryColumns() {
         assertThat(encryptTable.getAssistedQueryColumns(), is(Collections.singletonList("assistedQueryColumn")));
     }

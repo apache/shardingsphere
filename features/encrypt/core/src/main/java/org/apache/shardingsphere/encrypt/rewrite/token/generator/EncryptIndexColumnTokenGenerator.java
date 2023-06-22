@@ -83,7 +83,7 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
     }
     
     private Optional<SQLToken> getCipherColumnToken(final EncryptTable encryptTable, final int startIndex, final int stopIndex, final String columnName, final QuoteCharacter quoteCharacter) {
-        String cipherColumn = encryptTable.getCipherColumn(columnName);
+        String cipherColumn = encryptTable.getEncryptColumn(columnName).getCipher().getName();
         Collection<Projection> columnProjections = getColumnProjections(cipherColumn, quoteCharacter);
         return Optional.of(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, quoteCharacter));
     }

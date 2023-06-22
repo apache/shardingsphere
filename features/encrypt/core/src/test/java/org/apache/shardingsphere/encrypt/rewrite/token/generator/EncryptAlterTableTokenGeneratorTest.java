@@ -69,16 +69,16 @@ class EncryptAlterTableTokenGeneratorTest {
     }
     
     private EncryptTable mockEncryptTable() {
-        EncryptTable result = mock(EncryptTable.class);
+        EncryptTable result = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
         when(result.getTable()).thenReturn("t_encrypt");
         when(result.isEncryptColumn("certificate_number")).thenReturn(true);
-        when(result.getCipherColumn("certificate_number")).thenReturn("cipher_certificate_number");
+        when(result.getEncryptColumn("certificate_number").getCipher().getName()).thenReturn("cipher_certificate_number");
         when(result.findAssistedQueryColumn("certificate_number")).thenReturn(Optional.of("assisted_certificate_number"));
         when(result.findLikeQueryColumn("certificate_number")).thenReturn(Optional.of("like_certificate_number"));
         when(result.getLogicColumns()).thenReturn(Collections.singleton("t_encrypt"));
         when(result.getEncryptColumn("certificate_number")).thenReturn(mockEncryptColumn());
         when(result.isEncryptColumn("certificate_number_new")).thenReturn(true);
-        when(result.getCipherColumn("certificate_number_new")).thenReturn("cipher_certificate_number_new");
+        when(result.getEncryptColumn("certificate_number_new").getCipher().getName()).thenReturn("cipher_certificate_number_new");
         when(result.getEncryptColumn("certificate_number_new")).thenReturn(mockNewEncryptColumn());
         return result;
     }
