@@ -89,26 +89,6 @@ public final class EncryptTable {
     }
     
     /**
-     * Find assisted query encryptor.
-     *
-     * @param logicColumnName logic column name
-     * @return found assisted query encryptor
-     */
-    public Optional<AssistedEncryptAlgorithm<?, ?>> findAssistedQueryEncryptor(final String logicColumnName) {
-        return columns.containsKey(logicColumnName) ? columns.get(logicColumnName).getAssistedQuery().map(optional -> (AssistedEncryptAlgorithm<?, ?>) optional.getEncryptor()) : Optional.empty();
-    }
-    
-    /**
-     * Find like query encryptor.
-     *
-     * @param logicColumnName logic column name
-     * @return found like query encryptor
-     */
-    public Optional<LikeEncryptAlgorithm<?, ?>> findLikeQueryEncryptor(final String logicColumnName) {
-        return columns.containsKey(logicColumnName) ? columns.get(logicColumnName).getLikeQuery().map(optional -> (LikeEncryptAlgorithm<?, ?>) optional.getEncryptor()) : Optional.empty();
-    }
-    
-    /**
      * Get logic columns.
      *
      * @return logic column names
