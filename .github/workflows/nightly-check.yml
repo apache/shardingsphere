@@ -188,10 +188,6 @@ jobs:
           key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.CACHE_PREFIX }}-maven-third-party-
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@master
-        with:
-          swap-size-gb: 10
       - name: Install Project
         run: ./mvnw clean install -DskipTests -Dmaven.javadoc.skip=true -Drat.skip=true
       - name: Perform CodeQL Analysis
