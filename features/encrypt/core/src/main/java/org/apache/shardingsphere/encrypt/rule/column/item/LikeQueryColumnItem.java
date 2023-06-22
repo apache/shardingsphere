@@ -30,9 +30,9 @@ import java.util.List;
  * Like query column item.
  */
 @RequiredArgsConstructor
-@Getter
 public final class LikeQueryColumnItem {
     
+    @Getter
     private final String name;
     
     @SuppressWarnings("rawtypes")
