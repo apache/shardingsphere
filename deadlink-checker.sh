@@ -5,6 +5,7 @@ for file in $(find . -name "*.md"); do
   for ignored_path in ${IGNORED_PATH_LIST[@]}
     do
       if [[ $file =~ $ignored_path ]]; then
+        ignore_current_file=true
         break
       fi
     done
