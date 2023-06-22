@@ -145,11 +145,22 @@ jobs:
       - run: sudo npm install -g markdown-link-check@3.10.0
       - name: Check dead link
         run: |
-          for file in $(find . -path "./docs/document/themes" -prune -o -name "*.md"); do
-              if [ -d "$file" ]; then
-                continue
-              fi
-            markdown-link-check -c .github/workflows/resources/linkcheck/markdown-link-check.json -q "$file"
+          IGNORED_PATH_LIST=("./docs/document/themes" "./docs/community/content/powered-by")
+          ignore_current_file=false
+          
+          for file in $(find . -name "*.md"); do
+            for ignored_path in ${IGNORED_PATH_LIST[@]}
+              do
+                if [[ $file =~ $ignored_path ]]; then
+                  break
+                fi
+              done
+          if [[ $ignore_current_file == true ]]; then
+            ignore_current_file=false
+            continue
+          fi
+          echo "Checking $file"
+          markdown-link-check -c .github/workflows/resources/linkcheck/markdown-link-check.json -q "$file"
           done
 
   check-codeql:
