@@ -64,16 +64,6 @@ class EncryptTableTest {
     }
     
     @Test
-    void assertGetLogicColumnByCipherColumn() {
-        assertNotNull(encryptTable.getLogicColumnByCipherColumn("cipherColumn"));
-    }
-    
-    @Test
-    void assertGetLogicColumnByCipherColumnWhenNotFind() {
-        assertThrows(EncryptLogicColumnNotFoundException.class, () -> encryptTable.getLogicColumnByCipherColumn("invalidColumn"));
-    }
-    
-    @Test
     void assertIsCipherColumn() {
         assertTrue(encryptTable.isCipherColumn("CipherColumn"));
     }
@@ -81,6 +71,16 @@ class EncryptTableTest {
     @Test
     void assertIsNotCipherColumn() {
         assertFalse(encryptTable.isCipherColumn("logicColumn"));
+    }
+    
+    @Test
+    void assertGetLogicColumnByCipherColumn() {
+        assertNotNull(encryptTable.getLogicColumnByCipherColumn("cipherColumn"));
+    }
+    
+    @Test
+    void assertGetLogicColumnByCipherColumnWhenNotFind() {
+        assertThrows(EncryptLogicColumnNotFoundException.class, () -> encryptTable.getLogicColumnByCipherColumn("invalidColumn"));
     }
     
     @Test
