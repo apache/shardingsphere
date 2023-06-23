@@ -173,7 +173,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     private Collection<? extends SQLToken> getChangeColumnTokens(final EncryptTable encryptTable, final ChangeColumnDefinitionSegment segment) {
         isSameEncryptColumn(encryptTable, segment);
         String columnName = segment.getColumnDefinition().getColumnName().getIdentifier().getValue();
-        String previousColumnName = segment.getColumnDefinition().getColumnName().getIdentifier().getValue();
+        String previousColumnName = segment.getPreviousColumn().getIdentifier().getValue();
         if (!encryptTable.isEncryptColumn(columnName) || !encryptTable.isEncryptColumn(previousColumnName)) {
             return Collections.emptyList();
         }
