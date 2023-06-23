@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Insert
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -58,12 +58,12 @@ public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQ
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        Map<String, String> logicAndCipherColumns = encryptRule.getEncryptTable(
-                insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).getLogicAndCipherColumns();
+        EncryptTable encryptTable = encryptRule.getEncryptTable(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : insertColumnsSegment.get().getColumns()) {
-            if (logicAndCipherColumns.containsKey(each.getIdentifier().getValue())) {
-                Collection<Projection> projections = Collections.singleton(new ColumnProjection(null, logicAndCipherColumns.get(each.getIdentifier().getValue()), null));
+            String columnName = each.getIdentifier().getValue();
+            if (encryptTable.isEncryptColumn(columnName)) {
+                Collection<Projection> projections = Collections.singleton(new ColumnProjection(null, encryptTable.getEncryptColumn(columnName).getCipher().getName(), null));
                 result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), projections));
             }
         }

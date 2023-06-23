@@ -154,19 +154,6 @@ public final class EncryptTable {
     }
     
     /**
-     * Get logic and cipher columns.
-     *
-     * @return logic and cipher columns
-     */
-    public Map<String, String> getLogicAndCipherColumns() {
-        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getCipher().getName());
-        }
-        return result;
-    }
-    
-    /**
      * Is encrypt column or not.
      *
      * @param logicColumnName logic column name
