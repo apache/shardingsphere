@@ -42,8 +42,8 @@ class EncryptTableTest {
     @BeforeEach
     void setUp() {
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("logicColumn", new EncryptColumnItemRuleConfiguration("cipherColumn", "myEncryptor"));
-        columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assistedQueryColumn"));
-        columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("likeQueryColumn"));
+        columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assistedQueryColumn", "foo_assist_query_encryptor"));
+        columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("likeQueryColumn", "foo_like_encryptor"));
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
                 Collections.singleton(columnRuleConfig)), Collections.singletonMap("myEncryptor", mock(StandardEncryptAlgorithm.class)), Collections.emptyMap(), Collections.emptyMap());
     }
