@@ -78,18 +78,19 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokensWithColumnSegments(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        for (ColumnSegment column : columnSegments) {
-            String tableName = columnTableNames.getOrDefault(column.getExpression(), "");
+        for (ColumnSegment each : columnSegments) {
+            String tableName = columnTableNames.getOrDefault(each.getExpression(), "");
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(column.getIdentifier().getValue())) {
+            if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(each.getIdentifier().getValue())) {
                 continue;
             }
-            int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
-            int stopIndex = column.getStopIndex();
-            Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.getIdentifier().getValue());
-            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex,
-                    createColumnProjections(optional, column.getIdentifier().getQuoteCharacter()))).orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex,
-                            createColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()), column.getIdentifier().getQuoteCharacter())));
+            int startIndex = each.getOwner().isPresent() ? each.getOwner().get().getStopIndex() + 2 : each.getStartIndex();
+            int stopIndex = each.getStopIndex();
+            SubstitutableColumnNameToken encryptColumnNameToken = encryptTable.get().getEncryptColumn(each.getIdentifier().getValue()).getAssistedQuery()
+                    .map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex,
+                            createColumnProjections(optional.getName(), each.getIdentifier().getQuoteCharacter())))
+                    .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex,
+                            createColumnProjections(encryptTable.get().getEncryptColumn(each.getIdentifier().getValue()).getCipher().getName(), each.getIdentifier().getQuoteCharacter())));
             result.add(encryptColumnNameToken);
         }
         return result;

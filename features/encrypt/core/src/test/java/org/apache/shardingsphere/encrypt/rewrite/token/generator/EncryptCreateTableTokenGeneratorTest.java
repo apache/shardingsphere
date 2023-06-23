@@ -66,12 +66,10 @@ class EncryptCreateTableTokenGeneratorTest {
     }
     
     private EncryptTable mockEncryptTable() {
-        EncryptTable result = mock(EncryptTable.class);
-        EncryptColumn column = mockEncryptColumn();
+        EncryptTable result = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
+        EncryptColumn encryptColumn = mockEncryptColumn();
         when(result.isEncryptColumn("certificate_number")).thenReturn(true);
-        when(result.getCipherColumn("certificate_number")).thenReturn(column.getCipher().getName());
-        when(result.findAssistedQueryColumn("certificate_number")).thenReturn(column.getAssistedQuery().map(AssistedQueryColumnItem::getName));
-        when(result.findLikeQueryColumn("certificate_number")).thenReturn(column.getLikeQuery().map(LikeQueryColumnItem::getName));
+        when(result.getEncryptColumn("certificate_number")).thenReturn(encryptColumn);
         return result;
     }
     

@@ -30,6 +30,8 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateFunc
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateInRightValueToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -102,15 +104,15 @@ public final class EncryptPredicateRightValueTokenGenerator
     }
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition, final List<Object> originalValues) {
+        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(encryptCondition.getColumnName());
         if (encryptCondition instanceof EncryptBinaryCondition && "LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator())) {
-            Optional<String> likeQueryColumn = encryptTable.findLikeQueryColumn(encryptCondition.getColumnName());
-            ShardingSpherePreconditions.checkState(likeQueryColumn.isPresent(), () -> new UnsupportedEncryptSQLException("LIKE"));
-            return encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
+            Optional<LikeQueryColumnItem> likeQueryColumnItem = encryptColumn.getLikeQuery();
+            ShardingSpherePreconditions.checkState(likeQueryColumnItem.isPresent(), () -> new UnsupportedEncryptSQLException("LIKE"));
+            return likeQueryColumnItem.get().encrypt(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
         }
-        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(encryptCondition.getColumnName());
-        return assistedQueryColumn.isPresent()
-                ? encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues)
-                : encryptRule.encrypt(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
+        return encryptColumn.getAssistedQuery()
+                .map(optional -> optional.encrypt(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues))
+                .orElseGet(() -> encryptColumn.getCipher().encrypt(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues));
     }
     
     private Map<Integer, Object> getPositionValues(final Collection<Integer> valuePositions, final List<Object> encryptValues) {
