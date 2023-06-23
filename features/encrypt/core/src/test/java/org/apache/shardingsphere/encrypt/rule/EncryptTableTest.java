@@ -64,16 +64,6 @@ class EncryptTableTest {
     }
     
     @Test
-    void assertGetLogicColumnByCipherColumn() {
-        assertNotNull(encryptTable.getLogicColumnByCipherColumn("cipherColumn"));
-    }
-    
-    @Test
-    void assertGetLogicColumnByCipherColumnWhenNotFind() {
-        assertThrows(EncryptLogicColumnNotFoundException.class, () -> encryptTable.getLogicColumnByCipherColumn("invalidColumn"));
-    }
-    
-    @Test
     void assertIsCipherColumn() {
         assertTrue(encryptTable.isCipherColumn("CipherColumn"));
     }
@@ -84,13 +74,17 @@ class EncryptTableTest {
     }
     
     @Test
-    void assertGetAssistedQueryColumns() {
-        assertThat(encryptTable.getAssistedQueryColumns(), is(Collections.singletonList("assistedQueryColumn")));
+    void assertGetLogicColumnByCipherColumn() {
+        assertNotNull(encryptTable.getLogicColumnByCipherColumn("cipherColumn"));
     }
     
     @Test
-    void assertGetLogicAndCipherColumns() {
-        assertThat(encryptTable.getLogicAndCipherColumns(), is(Collections.singletonMap("logicColumn", "cipherColumn")));
-        assertTrue(encryptTable.getLogicAndCipherColumns().containsKey("LOGICCOLUMN"));
+    void assertGetLogicColumnByCipherColumnWhenNotFind() {
+        assertThrows(EncryptLogicColumnNotFoundException.class, () -> encryptTable.getLogicColumnByCipherColumn("invalidColumn"));
+    }
+    
+    @Test
+    void assertGetAssistedQueryColumns() {
+        assertThat(encryptTable.getAssistedQueryColumns(), is(Collections.singletonList("assistedQueryColumn")));
     }
 }
