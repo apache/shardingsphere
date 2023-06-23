@@ -121,8 +121,4 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
                 .filter(AuthorityRuleConfiguration.class::isInstance).map(AuthorityRuleConfiguration.class::cast).findFirst();
         return authorityRuleConfig.isPresent() ? authorityRuleConfig.get().getUsers() : Collections.emptyList();
     }
-    
-    private String getActiveVersion(final String ruleName) {
-        return repository.getDirectly(NewGlobalNode.getGlobalRuleActiveVersionNode(ruleName));
-    }
 }

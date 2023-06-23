@@ -83,8 +83,7 @@ public abstract class AbstractPersistService {
         return String.join("/", path, childKey);
     }
     
-    private String getActiveVersion(final String key) {
+    protected String getActiveVersion(final String key) {
         return repository.getDirectly(key);
     }
-    
 }
