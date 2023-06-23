@@ -124,16 +124,6 @@ public final class EncryptTable {
     }
     
     /**
-     * Get cipher column.
-     *
-     * @param logicColumnName logic column name
-     * @return cipher column
-     */
-    public String getCipherColumn(final String logicColumnName) {
-        return columns.get(logicColumnName).getCipher().getName();
-    }
-    
-    /**
      * Get assisted query columns.
      *
      * @return assisted query columns
@@ -161,26 +151,6 @@ public final class EncryptTable {
             }
         }
         return result;
-    }
-    
-    /**
-     * Find assisted query column.
-     *
-     * @param logicColumnName logic column name
-     * @return assisted query column
-     */
-    public Optional<String> findAssistedQueryColumn(final String logicColumnName) {
-        return columns.containsKey(logicColumnName) ? columns.get(logicColumnName).getAssistedQuery().map(AssistedQueryColumnItem::getName) : Optional.empty();
-    }
-    
-    /**
-     * Find like query column.
-     *
-     * @param logicColumnName logic column name
-     * @return like query column
-     */
-    public Optional<String> findLikeQueryColumn(final String logicColumnName) {
-        return columns.containsKey(logicColumnName) ? columns.get(logicColumnName).getLikeQuery().map(LikeQueryColumnItem::getName) : Optional.empty();
     }
     
     /**

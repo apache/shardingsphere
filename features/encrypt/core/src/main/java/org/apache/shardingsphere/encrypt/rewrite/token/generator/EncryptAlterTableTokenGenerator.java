@@ -94,23 +94,23 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         for (ColumnDefinitionSegment each : addColumnDefinitionSegment.getColumnDefinitions()) {
             String columnName = each.getColumnName().getIdentifier().getValue();
             if (encryptTable.isEncryptColumn(columnName)) {
-                result.addAll(getAddColumnTokens(encryptTable, columnName, addColumnDefinitionSegment, each));
+                result.addAll(getAddColumnTokens(encryptTable.getEncryptColumn(columnName), addColumnDefinitionSegment, each));
             }
         }
         getAddColumnPositionToken(encryptTable, addColumnDefinitionSegment).ifPresent(result::add);
         return result;
     }
     
-    private Collection<SQLToken> getAddColumnTokens(final EncryptTable encryptTable, final String columnName,
+    private Collection<SQLToken> getAddColumnTokens(final EncryptColumn encryptColumn,
                                                     final AddColumnDefinitionSegment addColumnDefinitionSegment, final ColumnDefinitionSegment columnDefinitionSegment) {
         Collection<SQLToken> result = new LinkedList<>();
         result.add(new RemoveToken(columnDefinitionSegment.getStartIndex(), columnDefinitionSegment.getColumnName().getStopIndex()));
         result.add(new EncryptAlterTableToken(columnDefinitionSegment.getColumnName().getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(),
-                encryptTable.getEncryptColumn(columnName).getCipher().getName(), null));
-        encryptTable.findAssistedQueryColumn(columnName).map(optional -> new EncryptAlterTableToken(
-                addColumnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(), optional, ", ADD COLUMN")).ifPresent(result::add);
-        encryptTable.findLikeQueryColumn(columnName).map(optional -> new EncryptAlterTableToken(
-                addColumnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(), optional, ", ADD COLUMN")).ifPresent(result::add);
+                encryptColumn.getCipher().getName(), null));
+        encryptColumn.getAssistedQuery().map(optional -> new EncryptAlterTableToken(
+                addColumnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(), optional.getName(), ", ADD COLUMN")).ifPresent(result::add);
+        encryptColumn.getLikeQuery().map(optional -> new EncryptAlterTableToken(
+                addColumnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(), optional.getName(), ", ADD COLUMN")).ifPresent(result::add);
         return result;
     }
     
@@ -130,23 +130,23 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         for (ModifyColumnDefinitionSegment each : columnDefinitionSegments) {
             String columnName = each.getColumnDefinition().getColumnName().getIdentifier().getValue();
             if (encryptTable.isEncryptColumn(columnName)) {
-                result.addAll(getModifyColumnTokens(encryptTable, columnName, each));
+                result.addAll(getModifyColumnTokens(encryptTable.getEncryptColumn(columnName), each));
             }
             each.getColumnPosition().flatMap(optional -> getColumnPositionToken(encryptTable, optional)).ifPresent(result::add);
         }
         return result;
     }
     
-    private Collection<SQLToken> getModifyColumnTokens(final EncryptTable encryptTable, final String columnName, final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment) {
+    private Collection<SQLToken> getModifyColumnTokens(final EncryptColumn encryptColumn, final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment) {
         Collection<SQLToken> result = new LinkedList<>();
         ColumnDefinitionSegment columnDefinitionSegment = modifyColumnDefinitionSegment.getColumnDefinition();
         result.add(new RemoveToken(columnDefinitionSegment.getColumnName().getStartIndex(), columnDefinitionSegment.getColumnName().getStopIndex()));
         result.add(new EncryptAlterTableToken(columnDefinitionSegment.getColumnName().getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(),
-                encryptTable.getEncryptColumn(columnName).getCipher().getName(), null));
-        encryptTable.findAssistedQueryColumn(columnName).map(optional -> new EncryptAlterTableToken(modifyColumnDefinitionSegment.getStopIndex() + 1,
-                columnDefinitionSegment.getColumnName().getStopIndex(), optional, ", MODIFY COLUMN")).ifPresent(result::add);
-        encryptTable.findLikeQueryColumn(columnName).map(optional -> new EncryptAlterTableToken(modifyColumnDefinitionSegment.getStopIndex() + 1,
-                columnDefinitionSegment.getColumnName().getStopIndex(), optional, ", MODIFY COLUMN")).ifPresent(result::add);
+                encryptColumn.getCipher().getName(), null));
+        encryptColumn.getAssistedQuery().map(optional -> new EncryptAlterTableToken(modifyColumnDefinitionSegment.getStopIndex() + 1,
+                columnDefinitionSegment.getColumnName().getStopIndex(), optional.getName(), ", MODIFY COLUMN")).ifPresent(result::add);
+        encryptColumn.getLikeQuery().map(optional -> new EncryptAlterTableToken(modifyColumnDefinitionSegment.getStopIndex() + 1,
+                columnDefinitionSegment.getColumnName().getStopIndex(), optional.getName(), ", MODIFY COLUMN")).ifPresent(result::add);
         return result;
     }
     
@@ -210,15 +210,15 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         result.add(new RemoveToken(segment.getColumnDefinition().getColumnName().getStartIndex(), segment.getColumnDefinition().getColumnName().getStopIndex()));
         result.add(new EncryptAlterTableToken(segment.getColumnDefinition().getColumnName().getStopIndex() + 1, segment.getColumnDefinition().getColumnName().getStopIndex(),
                 encryptTable.getEncryptColumn(segment.getColumnDefinition().getColumnName().getIdentifier().getValue()).getCipher().getName(), null));
-        String previousColumnName = segment.getPreviousColumn().getIdentifier().getValue();
+        EncryptColumn previousEncryptColumn = encryptTable.getEncryptColumn(segment.getPreviousColumn().getIdentifier().getValue());
         EncryptColumn encryptColumn = encryptTable.getEncryptColumn(segment.getColumnDefinition().getColumnName().getIdentifier().getValue());
-        encryptTable.findAssistedQueryColumn(previousColumnName)
+        previousEncryptColumn.getAssistedQuery()
                 .map(optional -> new EncryptAlterTableToken(segment.getStopIndex() + 1, segment.getColumnDefinition().getColumnName().getStopIndex(),
-                        encryptColumn.getAssistedQuery().map(AssistedQueryColumnItem::getName).orElse(""), ", CHANGE COLUMN " + optional))
+                        encryptColumn.getAssistedQuery().map(AssistedQueryColumnItem::getName).orElse(""), ", CHANGE COLUMN " + optional.getName()))
                 .ifPresent(result::add);
-        encryptTable.findLikeQueryColumn(previousColumnName)
+        previousEncryptColumn.getLikeQuery()
                 .map(optional -> new EncryptAlterTableToken(segment.getStopIndex() + 1, segment.getColumnDefinition().getColumnName().getStopIndex(),
-                        encryptColumn.getLikeQuery().map(LikeQueryColumnItem::getName).orElse(""), ", CHANGE COLUMN " + optional))
+                        encryptColumn.getLikeQuery().map(LikeQueryColumnItem::getName).orElse(""), ", CHANGE COLUMN " + optional.getName()))
                 .ifPresent(result::add);
         return result;
     }
@@ -244,21 +244,21 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         for (ColumnSegment each : dropColumnDefinitionSegment.getColumns()) {
             String columnName = each.getQualifiedName();
             if (encryptTable.isEncryptColumn(columnName)) {
-                result.addAll(getDropColumnTokens(encryptTable, columnName, each, dropColumnDefinitionSegment));
+                result.addAll(getDropColumnTokens(encryptTable.getEncryptColumn(columnName), each, dropColumnDefinitionSegment));
             }
         }
         return result;
     }
     
-    private Collection<SQLToken> getDropColumnTokens(final EncryptTable encryptTable, final String columnName,
+    private Collection<SQLToken> getDropColumnTokens(final EncryptColumn encryptColumn,
                                                      final ColumnSegment columnSegment, final DropColumnDefinitionSegment dropColumnDefinitionSegment) {
         Collection<SQLToken> result = new LinkedList<>();
         result.add(new RemoveToken(columnSegment.getStartIndex(), columnSegment.getStopIndex()));
-        result.add(new EncryptAlterTableToken(columnSegment.getStopIndex() + 1, columnSegment.getStopIndex(), encryptTable.getEncryptColumn(columnName).getCipher().getName(), null));
-        encryptTable.findAssistedQueryColumn(columnName).map(optional -> new EncryptAlterTableToken(dropColumnDefinitionSegment.getStopIndex() + 1,
-                dropColumnDefinitionSegment.getStopIndex(), optional, ", DROP COLUMN")).ifPresent(result::add);
-        encryptTable.findLikeQueryColumn(columnName).map(optional -> new EncryptAlterTableToken(dropColumnDefinitionSegment.getStopIndex() + 1,
-                dropColumnDefinitionSegment.getStopIndex(), optional, ", DROP COLUMN")).ifPresent(result::add);
+        result.add(new EncryptAlterTableToken(columnSegment.getStopIndex() + 1, columnSegment.getStopIndex(), encryptColumn.getCipher().getName(), null));
+        encryptColumn.getAssistedQuery().map(optional -> new EncryptAlterTableToken(dropColumnDefinitionSegment.getStopIndex() + 1,
+                dropColumnDefinitionSegment.getStopIndex(), optional.getName(), ", DROP COLUMN")).ifPresent(result::add);
+        encryptColumn.getLikeQuery().map(optional -> new EncryptAlterTableToken(dropColumnDefinitionSegment.getStopIndex() + 1,
+                dropColumnDefinitionSegment.getStopIndex(), optional.getName(), ", DROP COLUMN")).ifPresent(result::add);
         return result;
     }
     

@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertColu
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -59,9 +61,14 @@ public final class EncryptInsertDerivedColumnsTokenGenerator implements Collecti
     }
     
     private List<String> getDerivedColumnNames(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
+        String columnName = columnSegment.getIdentifier().getValue();
+        if (!encryptTable.isEncryptColumn(columnName)) {
+            return Collections.emptyList();
+        }
         List<String> result = new LinkedList<>();
-        encryptTable.findAssistedQueryColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
-        encryptTable.findLikeQueryColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
+        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
+        encryptColumn.getAssistedQuery().ifPresent(optional -> result.add(optional.getName()));
+        encryptColumn.getLikeQuery().ifPresent(optional -> result.add(optional.getName()));
         return result;
     }
 }

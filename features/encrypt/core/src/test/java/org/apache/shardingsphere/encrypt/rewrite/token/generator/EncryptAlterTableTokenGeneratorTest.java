@@ -73,8 +73,10 @@ class EncryptAlterTableTokenGeneratorTest {
         when(result.getTable()).thenReturn("t_encrypt");
         when(result.isEncryptColumn("certificate_number")).thenReturn(true);
         when(result.getEncryptColumn("certificate_number").getCipher().getName()).thenReturn("cipher_certificate_number");
-        when(result.findAssistedQueryColumn("certificate_number")).thenReturn(Optional.of("assisted_certificate_number"));
-        when(result.findLikeQueryColumn("certificate_number")).thenReturn(Optional.of("like_certificate_number"));
+        when(result.getEncryptColumn("certificate_number").getAssistedQuery())
+                .thenReturn(Optional.of(new AssistedQueryColumnItem("assisted_certificate_number", mock(AssistedEncryptAlgorithm.class))));
+        when(result.getEncryptColumn("certificate_number").getLikeQuery())
+                .thenReturn(Optional.of(new LikeQueryColumnItem("like_certificate_number", mock(LikeEncryptAlgorithm.class))));
         when(result.getLogicColumns()).thenReturn(Collections.singleton("t_encrypt"));
         when(result.getEncryptColumn("certificate_number")).thenReturn(mockEncryptColumn());
         when(result.isEncryptColumn("certificate_number_new")).thenReturn(true);

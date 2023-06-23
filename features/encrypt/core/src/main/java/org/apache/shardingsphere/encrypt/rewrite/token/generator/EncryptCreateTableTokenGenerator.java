@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -62,41 +63,36 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
             ColumnDefinitionSegment each = columns.get(index);
             String columnName = each.getColumnName().getIdentifier().getValue();
             if (encryptTable.isEncryptColumn(columnName)) {
-                result.addAll(getColumnTokens(encryptTable, columnName, each, columns, index));
+                result.addAll(getColumnTokens(encryptTable.getEncryptColumn(columnName), each, columns, index));
             }
         }
         return result;
     }
     
-    private Collection<SQLToken> getColumnTokens(final EncryptTable encryptTable, final String columnName, final ColumnDefinitionSegment column,
-                                                 final List<ColumnDefinitionSegment> columns, final int index) {
+    private Collection<SQLToken> getColumnTokens(final EncryptColumn encryptColumn, final ColumnDefinitionSegment column, final List<ColumnDefinitionSegment> columns, final int index) {
         boolean lastColumn = columns.size() - 1 == index;
         int columnStopIndex = lastColumn ? column.getStopIndex() : columns.get(index + 1).getStartIndex() - 1;
         Collection<SQLToken> result = new LinkedList<>();
         result.add(new RemoveToken(column.getStartIndex(), columnStopIndex));
-        result.add(getCipherColumnToken(encryptTable, columnName, column, columnStopIndex));
-        getAssistedQueryColumnToken(encryptTable, columnName, column, columnStopIndex, lastColumn).ifPresent(result::add);
-        getLikeQueryColumnToken(encryptTable, columnName, column, columnStopIndex, lastColumn).ifPresent(result::add);
+        result.add(getCipherColumnToken(encryptColumn, column, columnStopIndex));
+        getAssistedQueryColumnToken(encryptColumn, column, columnStopIndex, lastColumn).ifPresent(result::add);
+        getLikeQueryColumnToken(encryptColumn, column, columnStopIndex, lastColumn).ifPresent(result::add);
         return result;
     }
     
-    private SQLToken getCipherColumnToken(final EncryptTable encryptTable, final String columnName, final ColumnDefinitionSegment column, final int stopIndex) {
+    private SQLToken getCipherColumnToken(final EncryptColumn encryptColumn, final ColumnDefinitionSegment column, final int stopIndex) {
         return new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(),
-                getColumnProjections(new IdentifierValue(encryptTable.getEncryptColumn(columnName).getCipher().getName(), column.getColumnName().getIdentifier().getQuoteCharacter())));
+                getColumnProjections(new IdentifierValue(encryptColumn.getCipher().getName(), column.getColumnName().getIdentifier().getQuoteCharacter())));
     }
     
-    private Optional<? extends SQLToken> getAssistedQueryColumnToken(final EncryptTable encryptTable, final String columnName, final ColumnDefinitionSegment column,
-                                                                     final int stopIndex, final boolean lastColumn) {
-        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(columnName);
-        return assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(),
-                getColumnProjections(new IdentifierValue(optional, column.getColumnName().getIdentifier().getQuoteCharacter())), lastColumn));
+    private Optional<? extends SQLToken> getAssistedQueryColumnToken(final EncryptColumn encryptColumn, final ColumnDefinitionSegment column, final int stopIndex, final boolean lastColumn) {
+        return encryptColumn.getAssistedQuery().map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(),
+                getColumnProjections(new IdentifierValue(optional.getName(), column.getColumnName().getIdentifier().getQuoteCharacter())), lastColumn));
     }
     
-    private Optional<? extends SQLToken> getLikeQueryColumnToken(final EncryptTable encryptTable, final String columnName, final ColumnDefinitionSegment column,
-                                                                 final int stopIndex, final boolean lastColumn) {
-        Optional<String> likeQueryColumn = encryptTable.findLikeQueryColumn(columnName);
-        return likeQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(),
-                getColumnProjections(new IdentifierValue(optional, column.getColumnName().getIdentifier().getQuoteCharacter())), lastColumn));
+    private Optional<? extends SQLToken> getLikeQueryColumnToken(final EncryptColumn encryptColumn, final ColumnDefinitionSegment column, final int stopIndex, final boolean lastColumn) {
+        return encryptColumn.getLikeQuery().map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(),
+                getColumnProjections(new IdentifierValue(optional.getName(), column.getColumnName().getIdentifier().getQuoteCharacter())), lastColumn));
     }
     
     private Collection<Projection> getColumnProjections(final IdentifierValue columnIdentifier) {
