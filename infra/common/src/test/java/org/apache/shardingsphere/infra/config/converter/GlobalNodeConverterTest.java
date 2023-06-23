@@ -25,23 +25,28 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class GlobalRuleNodeConverterTest {
+class GlobalNodeConverterTest {
     
     @Test
     void assertGetVersion() {
-        Optional<String> actual = GlobalRuleNodeConverter.getVersion("transaction", "/rules/transaction/versions/0");
+        Optional<String> actual = GlobalNodeConverter.getVersion("transaction", "/rules/transaction/versions/0");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("0"));
     }
     
     @Test
-    void assertIsActiveVersionPath() {
-        assertTrue(GlobalRuleNodeConverter.isActiveVersionPath("/rules/transaction/active_version"));
+    void assertIsRuleActiveVersionPath() {
+        assertTrue(GlobalNodeConverter.isRuleActiveVersionPath("/rules/transaction/active_version"));
+    }
+    
+    @Test
+    void assertIsPropsActiveVersionPath() {
+        assertTrue(GlobalNodeConverter.isPropsActiveVersionPath("/props/active_version"));
     }
     
     @Test
     void assertGetRuleName() {
-        Optional<String> actual = GlobalRuleNodeConverter.getRuleName("/rules/transaction/active_version");
+        Optional<String> actual = GlobalNodeConverter.getRuleName("/rules/transaction/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("transaction"));
     }
