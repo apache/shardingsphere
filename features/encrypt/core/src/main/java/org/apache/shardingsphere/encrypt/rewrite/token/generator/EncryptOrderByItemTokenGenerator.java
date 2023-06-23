@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -81,16 +82,16 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         for (ColumnSegment each : columnSegments) {
             String tableName = columnTableNames.getOrDefault(each.getExpression(), "");
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(each.getIdentifier().getValue())) {
+            String columnName = each.getIdentifier().getValue();
+            if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName)) {
                 continue;
             }
             int startIndex = each.getOwner().isPresent() ? each.getOwner().get().getStopIndex() + 2 : each.getStartIndex();
             int stopIndex = each.getStopIndex();
-            SubstitutableColumnNameToken encryptColumnNameToken = encryptTable.get().getEncryptColumn(each.getIdentifier().getValue()).getAssistedQuery()
-                    .map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex,
-                            createColumnProjections(optional.getName(), each.getIdentifier().getQuoteCharacter())))
-                    .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex,
-                            createColumnProjections(encryptTable.get().getEncryptColumn(each.getIdentifier().getValue()).getCipher().getName(), each.getIdentifier().getQuoteCharacter())));
+            EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnName);
+            SubstitutableColumnNameToken encryptColumnNameToken = encryptColumn.getAssistedQuery()
+                    .map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(optional.getName(), each.getIdentifier().getQuoteCharacter())))
+                    .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptColumn.getCipher().getName(), each.getIdentifier().getQuoteCharacter())));
             result.add(encryptColumnNameToken);
         }
         return result;
