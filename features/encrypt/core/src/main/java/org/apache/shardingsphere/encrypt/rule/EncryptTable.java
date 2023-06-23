@@ -98,6 +98,27 @@ public final class EncryptTable {
     }
     
     /**
+     * Is encrypt column or not.
+     *
+     * @param logicColumnName logic column name
+     * @return encrypt column or not
+     */
+    public boolean isEncryptColumn(final String logicColumnName) {
+        return columns.containsKey(logicColumnName);
+    }
+    
+    /**
+     * Get encrypt column.
+     *
+     * @param logicColumnName logic column name
+     * @return encrypt column
+     */
+    public EncryptColumn getEncryptColumn(final String logicColumnName) {
+        ShardingSpherePreconditions.checkState(isEncryptColumn(logicColumnName), () -> new EncryptColumnNotFoundException(table, logicColumnName));
+        return columns.get(logicColumnName);
+    }
+    
+    /**
      * Is cipher column or not.
      *
      * @param columnName column name
@@ -151,26 +172,5 @@ public final class EncryptTable {
             }
         }
         return result;
-    }
-    
-    /**
-     * Is encrypt column or not.
-     *
-     * @param logicColumnName logic column name
-     * @return encrypt column or not
-     */
-    public boolean isEncryptColumn(final String logicColumnName) {
-        return columns.containsKey(logicColumnName);
-    }
-    
-    /**
-     * Get encrypt column.
-     * 
-     * @param logicColumnName logic column name
-     * @return encrypt column
-     */
-    public EncryptColumn getEncryptColumn(final String logicColumnName) {
-        ShardingSpherePreconditions.checkState(isEncryptColumn(logicColumnName), () -> new EncryptColumnNotFoundException(table, logicColumnName));
-        return columns.get(logicColumnName);
     }
 }
