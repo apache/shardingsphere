@@ -82,9 +82,4 @@ class EncryptTableTest {
     void assertGetLogicColumnByCipherColumnWhenNotFind() {
         assertThrows(EncryptLogicColumnNotFoundException.class, () -> encryptTable.getLogicColumnByCipherColumn("invalidColumn"));
     }
-    
-    @Test
-    void assertGetAssistedQueryColumns() {
-        assertThat(encryptTable.getAssistedQueryColumns(), is(Collections.singletonList("assistedQueryColumn")));
-    }
 }

@@ -32,7 +32,6 @@ import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -145,32 +144,22 @@ public final class EncryptTable {
     }
     
     /**
-     * Get assisted query columns.
+     * Is assisted query column or not.
      *
-     * @return assisted query columns
+     * @param columnName column name
+     * @return assisted query column or not
      */
-    public Collection<String> getAssistedQueryColumns() {
-        Collection<String> result = new LinkedList<>();
-        for (EncryptColumn each : columns.values()) {
-            if (each.getAssistedQuery().isPresent()) {
-                result.add(each.getAssistedQuery().get().getName());
-            }
-        }
-        return result;
+    public boolean isAssistedQueryColumn(final String columnName) {
+        return columns.values().stream().anyMatch(each -> columnName.equalsIgnoreCase(each.getAssistedQuery().map(AssistedQueryColumnItem::getName).orElse(null)));
     }
     
     /**
-     * Get like query columns.
+     * Is like query column or not.
      *
-     * @return like query columns
+     * @param columnName column name
+     * @return like query column or not
      */
-    public Collection<String> getLikeQueryColumns() {
-        Collection<String> result = new LinkedList<>();
-        for (EncryptColumn each : columns.values()) {
-            if (each.getLikeQuery().isPresent()) {
-                result.add(each.getLikeQuery().get().getName());
-            }
-        }
-        return result;
+    public boolean isLikeQueryColumn(final String columnName) {
+        return columns.values().stream().anyMatch(each -> columnName.equalsIgnoreCase(each.getLikeQuery().map(LikeQueryColumnItem::getName).orElse(null)));
     }
 }
