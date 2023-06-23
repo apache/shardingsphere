@@ -43,7 +43,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -69,18 +68,11 @@ class EncryptAlterTableTokenGeneratorTest {
     }
     
     private EncryptTable mockEncryptTable() {
-        EncryptTable result = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
+        EncryptTable result = mock(EncryptTable.class);
         when(result.getTable()).thenReturn("t_encrypt");
         when(result.isEncryptColumn("certificate_number")).thenReturn(true);
-        when(result.getEncryptColumn("certificate_number").getCipher().getName()).thenReturn("cipher_certificate_number");
-        when(result.getEncryptColumn("certificate_number").getAssistedQuery())
-                .thenReturn(Optional.of(new AssistedQueryColumnItem("assisted_certificate_number", mock(AssistedEncryptAlgorithm.class))));
-        when(result.getEncryptColumn("certificate_number").getLikeQuery())
-                .thenReturn(Optional.of(new LikeQueryColumnItem("like_certificate_number", mock(LikeEncryptAlgorithm.class))));
-        when(result.getLogicColumns()).thenReturn(Collections.singleton("t_encrypt"));
         when(result.getEncryptColumn("certificate_number")).thenReturn(mockEncryptColumn());
         when(result.isEncryptColumn("certificate_number_new")).thenReturn(true);
-        when(result.getEncryptColumn("certificate_number_new").getCipher().getName()).thenReturn("cipher_certificate_number_new");
         when(result.getEncryptColumn("certificate_number_new")).thenReturn(mockNewEncryptColumn());
         return result;
     }
