@@ -98,6 +98,16 @@ public final class EncryptTable {
     }
     
     /**
+     * Is cipher column or not.
+     *
+     * @param columnName column name
+     * @return cipher column or not
+     */
+    public boolean isCipherColumn(final String columnName) {
+        return columns.values().stream().anyMatch(each -> each.getCipher().getName().equalsIgnoreCase(columnName));
+    }
+    
+    /**
      * Get logic column by cipher column.
      * 
      * @param cipherColumnName cipher column name
@@ -111,16 +121,6 @@ public final class EncryptTable {
             }
         }
         throw new EncryptLogicColumnNotFoundException(cipherColumnName);
-    }
-    
-    /**
-     * Is cipher column or not.
-     *
-     * @param logicColumnName logic column name
-     * @return cipher column or not
-     */
-    public boolean isCipherColumn(final String logicColumnName) {
-        return columns.values().stream().anyMatch(each -> each.getCipher().getName().equalsIgnoreCase(logicColumnName));
     }
     
     /**
