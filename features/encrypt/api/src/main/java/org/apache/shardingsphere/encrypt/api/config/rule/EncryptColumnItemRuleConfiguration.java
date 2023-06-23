@@ -30,8 +30,4 @@ public final class EncryptColumnItemRuleConfiguration {
     private final String name;
     
     private final String encryptorName;
-    
-    public EncryptColumnItemRuleConfiguration(final String name) {
-        this(name, null);
-    }
 }
