@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class MetaDataVersion {
     
-    private final String persistKey;
+    private final String key;
     
     private final String currentActiveVersion;
     

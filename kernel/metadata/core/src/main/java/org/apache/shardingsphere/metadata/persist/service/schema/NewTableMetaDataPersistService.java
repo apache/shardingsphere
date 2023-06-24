@@ -71,9 +71,10 @@ public final class NewTableMetaDataPersistService implements SchemaMetaDataPersi
             }
             List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getTableVersionsNode(databaseName, schemaName, tableName));
             String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            String persistKey = NewDatabaseMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName, nextActiveVersion);
-            repository.persist(persistKey, YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(entry.getValue())));
-            result.add(new MetaDataVersion(persistKey, getActiveVersion(databaseName, schemaName, tableName), nextActiveVersion));
+            repository.persist(NewDatabaseMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName, nextActiveVersion),
+                    YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(entry.getValue())));
+            result.add(new MetaDataVersion(NewDatabaseMetaDataNode.getTableNode(databaseName, schemaName, tableName),
+                    getActiveVersion(databaseName, schemaName, tableName), nextActiveVersion));
         }
         return result;
     }
