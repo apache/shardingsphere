@@ -25,9 +25,12 @@ import org.apache.shardingsphere.encrypt.event.table.AddEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.table.AlterEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.table.DeleteEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
 import java.util.Collections;
@@ -63,7 +66,8 @@ public final class EncryptTableSubscriber implements RuleConfigurationSubscribeC
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        EncryptTableRuleConfiguration needToAddedConfig = event.getConfig();
+        EncryptTableRuleConfiguration needToAddedConfig = swapEncryptTableRuleConfig(
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
         EncryptRuleConfiguration config;
         if (rule.isPresent()) {
@@ -86,7 +90,8 @@ public final class EncryptTableSubscriber implements RuleConfigurationSubscribeC
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        EncryptTableRuleConfiguration needToAlteredConfig = event.getConfig();
+        EncryptTableRuleConfiguration needToAlteredConfig = swapEncryptTableRuleConfig(
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
         config.getTables().add(needToAlteredConfig);
@@ -107,5 +112,9 @@ public final class EncryptTableSubscriber implements RuleConfigurationSubscribeC
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private EncryptTableRuleConfiguration swapEncryptTableRuleConfig(final String yamlContext) {
+        return new YamlEncryptTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlEncryptTableRuleConfiguration.class));
     }
 }
