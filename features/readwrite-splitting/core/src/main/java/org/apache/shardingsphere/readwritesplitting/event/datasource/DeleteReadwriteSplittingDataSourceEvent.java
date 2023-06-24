@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.event.config;
+package org.apache.shardingsphere.readwritesplitting.event.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Add readwrite-splitting configuration event.
+ * Delete readwrite-splitting configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddReadwriteSplittingConfigurationEvent implements GovernanceEvent {
+public final class DeleteReadwriteSplittingDataSourceEvent implements GovernanceEvent {
     
     private final String databaseName;
     
     private final String groupName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
 }
