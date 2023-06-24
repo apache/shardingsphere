@@ -66,6 +66,6 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return Optional.of(new AlterLoadBalanceEvent(databaseName, loadBalancerName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteLoadBalanceEvent(databaseName, loadBalancerName, event.getKey(), event.getValue()));
+        return Optional.of(new DeleteLoadBalanceEvent(databaseName, loadBalancerName));
     }
 }

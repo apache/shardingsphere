@@ -75,9 +75,6 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleConfig
      */
     @Subscribe
     public synchronized void renew(final DeleteLoadBalanceEvent event) {
-        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
         config.getLoadBalancers().remove(event.getLoadBalanceName());

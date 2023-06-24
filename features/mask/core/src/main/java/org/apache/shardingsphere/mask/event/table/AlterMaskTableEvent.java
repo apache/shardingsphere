@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.event.config;
+package org.apache.shardingsphere.mask.event.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 
 /**
- * Add mask configuration event.
+ * Alter mask configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddMaskConfigurationEvent implements GovernanceEvent {
+public final class AlterMaskTableEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final MaskTableRuleConfiguration config;
+    private final String tableName;
     
     private final String activeVersionKey;
     
