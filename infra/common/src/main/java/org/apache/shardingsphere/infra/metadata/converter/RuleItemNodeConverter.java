@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.metadata.converter;
+package org.apache.shardingsphere.infra.metadata.converter;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Encrypt item node converter.
+ * Rule item node converter.
  */
-public final class EncryptItemNodeConverter {
+public final class RuleItemNodeConverter {
+    
+    private static final String RULE_NAME = "/([\\w\\-]+)?";
+    
+    private static final String RULE_ACTIVE_VERSION = "/([\\w\\-]+)/active_version$";
     
     private final String itemsNode;
     
@@ -34,11 +38,11 @@ public final class EncryptItemNodeConverter {
     
     private final Pattern itemVersionPathPattern;
     
-    public EncryptItemNodeConverter(final String itemsNode) {
+    public RuleItemNodeConverter(final RuleRootNodeConverter ruleRootNodeConverter, final String itemsNode) {
         this.itemsNode = itemsNode;
-        itemsPathPattern = Pattern.compile(EncryptNodeConverter.ROOT_NODE_PREFIX + "/" + itemsNode + "\\.*", Pattern.CASE_INSENSITIVE);
-        itemNamePathPattern = Pattern.compile(EncryptNodeConverter.ROOT_NODE_PREFIX + "/" + itemsNode + EncryptNodeConverter.RULE_NAME, Pattern.CASE_INSENSITIVE);
-        itemVersionPathPattern = Pattern.compile(EncryptNodeConverter.ROOT_NODE_PREFIX + "/" + itemsNode + EncryptNodeConverter.RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        itemsPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + "\\.*", Pattern.CASE_INSENSITIVE);
+        itemNamePathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + RULE_NAME, Pattern.CASE_INSENSITIVE);
+        itemVersionPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     
     /**
@@ -76,7 +80,7 @@ public final class EncryptItemNodeConverter {
      * Get item name by active version path.
      *
      * @param rulePath rule path
-     * @return encrypt item version
+     * @return item version
      */
     public Optional<String> getNameByActiveVersionPath(final String rulePath) {
         Matcher matcher = itemVersionPathPattern.matcher(rulePath);

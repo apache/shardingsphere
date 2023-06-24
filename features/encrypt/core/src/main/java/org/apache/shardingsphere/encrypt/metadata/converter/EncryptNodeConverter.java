@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.regex.Pattern;
+import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 
 /**
  * Encrypt node converter.
@@ -28,26 +28,19 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptNodeConverter {
     
-    public static final String ROOT_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/encrypt";
+    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("encrypt");
     
-    public static final String RULE_NAME = "/([\\w\\-]+)?";
+    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
     
-    public static final String RULE_ACTIVE_VERSION = "/([\\w\\-]+)/active_version$";
-    
-    private static final Pattern ROOT_PATH_PATTERN = Pattern.compile(ROOT_NODE_PREFIX + "\\.*", Pattern.CASE_INSENSITIVE);
-    
-    private static final EncryptItemNodeConverter TABLE_NODE_CONVERTER = new EncryptItemNodeConverter("tables");
-    
-    private static final EncryptItemNodeConverter ENCRYPTOR_NODE_CONVERTER = new EncryptItemNodeConverter("encryptors");
+    private static final RuleItemNodeConverter ENCRYPTOR_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "encryptors");
     
     /**
-     * Is encrypt path.
+     * Get rule root node converter.
      *
-     * @param rulePath rule path
-     * @return true or false
+     * @return rule root node converter
      */
-    public static boolean isEncryptPath(final String rulePath) {
-        return ROOT_PATH_PATTERN.matcher(rulePath).find();
+    public static RuleRootNodeConverter getRuleRootNodeConverter() {
+        return ROOT_NODE_CONVERTER;
     }
     
     /**
@@ -55,7 +48,7 @@ public final class EncryptNodeConverter {
      *
      * @return table node convertor
      */
-    public static EncryptItemNodeConverter getTableNodeConvertor() {
+    public static RuleItemNodeConverter getTableNodeConvertor() {
         return TABLE_NODE_CONVERTER;
     }
     
@@ -64,7 +57,7 @@ public final class EncryptNodeConverter {
      *
      * @return encryptor node convertor
      */
-    public static EncryptItemNodeConverter getEncryptorNodeConvertor() {
+    public static RuleItemNodeConverter getEncryptorNodeConvertor() {
         return ENCRYPTOR_NODE_CONVERTER;
     }
 }

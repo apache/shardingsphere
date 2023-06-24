@@ -38,7 +38,7 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!EncryptNodeConverter.isEncryptPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!EncryptNodeConverter.getRuleRootNodeConverter().isRulePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
         Optional<String> tableName = EncryptNodeConverter.getTableNodeConvertor().getNameByActiveVersionPath(event.getKey());
