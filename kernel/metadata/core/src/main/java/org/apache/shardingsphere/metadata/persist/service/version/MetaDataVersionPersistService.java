@@ -29,7 +29,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class MetaDataVersionPersistService implements MetaDataVersionBasedPersistService {
     
-    private final static String ACTIVE_VERSION = "active_version";
+    private static final String ACTIVE_VERSION = "active_version";
     
     private final PersistRepository repository;
     
