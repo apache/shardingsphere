@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.event.config;
+package org.apache.shardingsphere.shadow.event.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +26,9 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DeleteShadowConfigurationEvent implements GovernanceEvent {
+public final class DeleteShadowDataSourceEvent implements GovernanceEvent {
     
     private final String databaseName;
     
     private final String dataSourceName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
 }

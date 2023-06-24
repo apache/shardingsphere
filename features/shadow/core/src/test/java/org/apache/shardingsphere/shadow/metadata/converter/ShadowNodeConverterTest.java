@@ -85,22 +85,22 @@ class ShadowNodeConverterTest {
     
     @Test
     void assertGetDataSourceVersion() {
-        Optional<String> actual = ShadowNodeConverter.getDataSourceVersion("/metadata/foo_db/rules/shadow/data_sources/shadow_database/versions/1");
+        Optional<String> actual = ShadowNodeConverter.getDataSourceNameByActiveVersionPath("/metadata/foo_db/rules/shadow/data_sources/shadow_database/active_version");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("1"));
+        assertThat(actual.get(), is("shadow_database"));
     }
     
     @Test
     void assertGetTableVersion() {
-        Optional<String> actual = ShadowNodeConverter.getTableVersion("/metadata/foo_db/rules/shadow/tables/shadow_table/versions/1");
+        Optional<String> actual = ShadowNodeConverter.getTableNameByActiveVersionPath("/metadata/foo_db/rules/shadow/tables/shadow_table/active_version");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("1"));
+        assertThat(actual.get(), is("shadow_table"));
     }
     
     @Test
     void assertGetAlgorithmVersion() {
-        Optional<String> actual = ShadowNodeConverter.getAlgorithmVersion("/metadata/foo_db/rules/shadow/algorithms/user_id_insert_match_algorithm/versions/1");
+        Optional<String> actual = ShadowNodeConverter.getAlgorithmNameByActiveVersionPath("/metadata/foo_db/rules/shadow/algorithms/user_id_insert_match_algorithm/active_version");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("1"));
+        assertThat(actual.get(), is("user_id_insert_match_algorithm"));
     }
 }

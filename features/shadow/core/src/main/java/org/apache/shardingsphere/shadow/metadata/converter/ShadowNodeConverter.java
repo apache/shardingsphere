@@ -44,7 +44,7 @@ public final class ShadowNodeConverter {
     
     private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
     
-    private static final String RULE_VERSION = "/([\\w\\-]+)/versions/([\\w\\-]+)$";
+    private static final String RULE_ACTIVE_VERSION = "/([\\w\\-]+)/active_version$";
     
     /**
      * Get data source path.
@@ -182,38 +182,38 @@ public final class ShadowNodeConverter {
     }
     
     /**
-     * Get data source version.
+     * Get data source name by active version path.
      *
-     * @param rulePath rule path
-     * @return data source version
+     * @param activeVersionPath rule path
+     * @return data source name
      */
-    public static Optional<String> getDataSourceVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    public static Optional<String> getDataSourceNameByActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     * Get table version.
+     * Get table name by active version path.
      *
-     * @param rulePath rule path
-     * @return table version
+     * @param activeVersionPath rule path
+     * @return table name
      */
-    public static Optional<String> getTableVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    public static Optional<String> getTableNameByActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     * Get algorithm version.
+     * Get algorithm name by active version path.
      *
-     * @param rulePath rule path
-     * @return algorithm version
+     * @param activeVersionPath rule path
+     * @return algorithm name
      */
-    public static Optional<String> getAlgorithmVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    public static Optional<String> getAlgorithmNameByActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
 }
