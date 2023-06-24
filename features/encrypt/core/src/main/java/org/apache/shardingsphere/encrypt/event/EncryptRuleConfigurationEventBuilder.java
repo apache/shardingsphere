@@ -41,11 +41,11 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
         if (!EncryptNodeConverter.isEncryptPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> tableName = EncryptNodeConverter.getTableNodeConvertor().getItemNameByActiveVersionPath(event.getKey());
+        Optional<String> tableName = EncryptNodeConverter.getTableNodeConvertor().getNameByActiveVersionPath(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createEncryptConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> encryptorName = EncryptNodeConverter.getEncryptorNodeConvertor().getItemNameByActiveVersionPath(event.getKey());
+        Optional<String> encryptorName = EncryptNodeConverter.getEncryptorNodeConvertor().getNameByActiveVersionPath(event.getKey());
         if (encryptorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createEncryptorEvent(databaseName, encryptorName.get(), event);
         }
