@@ -87,13 +87,14 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
         if (encryptTable.isCipherColumn(columnName)) {
             return Optional.of(columnDefinition.replace(columnName, encryptTable.getLogicColumnByCipherColumn(columnName)));
         }
-        if (encryptTable.isAssistedQueryColumn(columnName)) {
-            return Optional.empty();
-        }
-        if (encryptTable.isLikeQueryColumn(columnName)) {
+        if (isDerivedColumn(encryptTable, columnName)) {
             return Optional.empty();
         }
         return Optional.of(columnDefinition);
+    }
+    
+    private boolean isDerivedColumn(final EncryptTable encryptTable, final String columnName) {
+        return encryptTable.isAssistedQueryColumn(columnName) || encryptTable.isLikeQueryColumn(columnName);
     }
     
     @Override
