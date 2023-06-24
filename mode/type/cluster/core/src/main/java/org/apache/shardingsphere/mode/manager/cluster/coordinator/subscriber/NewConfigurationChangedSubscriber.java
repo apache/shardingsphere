@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.event.config.global.AlterPropertiesEvent;
 import org.apache.shardingsphere.mode.event.config.global.DeleteGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -69,5 +70,18 @@ public final class NewConfigurationChangedSubscriber {
     @Subscribe
     public synchronized void renew(final DeleteGlobalRuleConfigurationEvent event) {
         contextManager.dropGlobalRuleConfiguration(event.getRuleSimpleName());
+    }
+    
+    /**
+     * Renew for global properties.
+     *
+     * @param event global properties alter event
+     */
+    @Subscribe
+    public synchronized void renew(final AlterPropertiesEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        contextManager.alterProperties(contextManager.getMetaDataContexts().getPersistService().getPropsService().load());
     }
 }
