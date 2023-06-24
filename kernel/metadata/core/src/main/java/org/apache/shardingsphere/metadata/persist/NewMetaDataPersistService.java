@@ -30,7 +30,7 @@ import org.apache.shardingsphere.metadata.persist.service.config.database.NewDat
 import org.apache.shardingsphere.metadata.persist.service.config.database.NewDatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.NewGlobalRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.NewPropertiesPersistService;
-import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.database.NewDatabaseMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
@@ -50,10 +50,11 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
     
     private final PersistRepository repository;
     
-    // TODO replace all service to new persist service
+    private final MetaDataVersionPersistService metaDataVersionPersistService;
+    
     private final NewDataSourcePersistService dataSourceService;
     
-    private final DatabaseMetaDataPersistService databaseMetaDataService;
+    private final NewDatabaseMetaDataPersistService databaseMetaDataService;
     
     private final NewDatabaseRulePersistService databaseRulePersistService;
     
@@ -61,18 +62,16 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
     
     private final NewPropertiesPersistService propsService;
     
-    private final MetaDataVersionPersistService metaDataVersionPersistService;
-    
     private final ShardingSphereDataPersistService shardingSphereDataPersistService;
     
     public NewMetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
+        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         dataSourceService = new NewDataSourcePersistService(repository);
-        databaseMetaDataService = new DatabaseMetaDataPersistService(repository);
+        databaseMetaDataService = new NewDatabaseMetaDataPersistService(repository, metaDataVersionPersistService);
         databaseRulePersistService = new NewDatabaseRulePersistService(repository);
         globalRuleService = new NewGlobalRulePersistService(repository);
         propsService = new NewPropertiesPersistService(repository);
-        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         shardingSphereDataPersistService = new ShardingSphereDataPersistService(repository);
     }
     
