@@ -47,7 +47,7 @@ public final class EncryptItemNodeConverter {
      * @param itemName item name
      * @return item name path
      */
-    public String getItemNamePath(final String itemName) {
+    public String getNamePath(final String itemName) {
         return String.join("/", itemsNode, itemName);
     }
     
@@ -57,7 +57,7 @@ public final class EncryptItemNodeConverter {
      * @param rulePath rule path
      * @return true or false
      */
-    public boolean isItemPath(final String rulePath) {
+    public boolean isPath(final String rulePath) {
         return itemsPathPattern.matcher(rulePath).find();
     }
     
@@ -67,7 +67,7 @@ public final class EncryptItemNodeConverter {
      * @param rulePath rule path
      * @return item name
      */
-    public Optional<String> getItemName(final String rulePath) {
+    public Optional<String> getName(final String rulePath) {
         Matcher matcher = itemNamePathPattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
@@ -78,7 +78,7 @@ public final class EncryptItemNodeConverter {
      * @param rulePath rule path
      * @return encrypt item version
      */
-    public Optional<String> getItemNameByActiveVersionPath(final String rulePath) {
+    public Optional<String> getNameByActiveVersionPath(final String rulePath) {
         Matcher matcher = itemVersionPathPattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }

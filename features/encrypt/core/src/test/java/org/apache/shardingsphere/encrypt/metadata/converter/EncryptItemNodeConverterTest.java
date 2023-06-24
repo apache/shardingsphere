@@ -30,25 +30,25 @@ class EncryptItemNodeConverterTest {
     private final EncryptItemNodeConverter itemNodeConverter = new EncryptItemNodeConverter("tables");
     
     @Test
-    void assertGetItemNamePath() {
-        assertThat(itemNodeConverter.getItemNamePath("foo_table"), is("tables/foo_table"));
+    void assertGetNamePath() {
+        assertThat(itemNodeConverter.getNamePath("foo_table"), is("tables/foo_table"));
     }
     
     @Test
-    void assertIsItemPath() {
-        assertTrue(itemNodeConverter.isItemPath("/metadata/foo_db/rules/encrypt/tables/foo_table"));
+    void assertIsPath() {
+        assertTrue(itemNodeConverter.isPath("/metadata/foo_db/rules/encrypt/tables/foo_table"));
     }
     
     @Test
-    void assertGetItemName() {
-        Optional<String> actual = itemNodeConverter.getItemName("/metadata/foo_db/rules/encrypt/tables/foo_table");
+    void assertGetName() {
+        Optional<String> actual = itemNodeConverter.getName("/metadata/foo_db/rules/encrypt/tables/foo_table");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table"));
     }
     
     @Test
-    void assertGetItemNameByActiveVersionPath() {
-        Optional<String> actual = itemNodeConverter.getItemNameByActiveVersionPath("/metadata/foo_db/rules/encrypt/tables/foo_table/active_version");
+    void assertGetNameByActiveVersionPath() {
+        Optional<String> actual = itemNodeConverter.getNameByActiveVersionPath("/metadata/foo_db/rules/encrypt/tables/foo_table/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table"));
     }
