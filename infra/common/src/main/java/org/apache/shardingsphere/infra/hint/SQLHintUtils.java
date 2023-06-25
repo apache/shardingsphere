@@ -48,16 +48,6 @@ public final class SQLHintUtils {
     private static final int SQL_HINT_VALUE_SIZE = 2;
     
     /**
-     * Whether the SQL statement starts with the hint prefix.
-     *
-     * @param sql SQL statement
-     * @return whether starts with hint prefix
-     */
-    public static boolean startWithHint(final String sql) {
-        return sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getKey()) || sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getAlias());
-    }
-    
-    /**
      * Get SQL hint props.
      *
      * @param comment SQL comment
@@ -143,6 +133,10 @@ public final class SQLHintUtils {
             }
         }
         return Optional.of(result);
+    }
+    
+    private static boolean startWithHint(final String sql) {
+        return sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getKey()) || sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getAlias());
     }
     
     private static boolean containsPropertyKey(final Properties hintProperties, final SQLHintPropertiesKey sqlHintPropertiesKey) {
