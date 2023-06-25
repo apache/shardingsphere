@@ -66,7 +66,7 @@ class RALE2EIT {
         try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
             if (!INITIALIZE.containsKey(testParam.getKey())) {
                 INITIALIZE.put(testParam.getKey(), true);
-                Awaitility.await().pollInterval(9L, TimeUnit.SECONDS).until(() -> true);
+                Awaitility.await().pollInterval(15L, TimeUnit.SECONDS).until(() -> true);
             }
             init(containerComposer);
             assertExecute(containerComposer);
