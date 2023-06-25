@@ -47,7 +47,6 @@ public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribe
     public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
         this.databases = databases;
         this.instanceContext = instanceContext;
-        instanceContext.getEventBusContext().register(this);
     }
     
     /**
