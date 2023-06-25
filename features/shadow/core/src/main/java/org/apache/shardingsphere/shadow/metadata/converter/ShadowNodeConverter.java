@@ -22,6 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
 import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Shadow node converter.
  */
@@ -37,8 +40,6 @@ public final class ShadowNodeConverter {
     private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
     
     private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
-    
-    private static final RuleItemNodeConverter DEFAULT_ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_ALGORITHM_NAME);
     
     /**
      * Get rule root node converter.
@@ -77,20 +78,23 @@ public final class ShadowNodeConverter {
     }
     
     /**
-     * Get default algorithm node converter.
-     *
-     * @return default algorithm node converter
-     */
-    public static RuleItemNodeConverter getDefaultAlgorithmNodeConverter() {
-        return DEFAULT_ALGORITHM_NODE_CONVERTER;
-    }
-    
-    /**
      * Get default shadow algorithm path.
      *
      * @return default shadow algorithm path
      */
     public static String getDefaultShadowAlgorithmPath() {
         return String.join("/", DEFAULT_ALGORITHM_NAME);
+    }
+    
+    /**
+     * Is default algorithm name path.
+     *
+     * @param rulePath rule path
+     * @return true or false
+     */
+    public static boolean isDefaultAlgorithmNamePath(final String rulePath) {
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_ALGORITHM_NAME + "$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find();
     }
 }
