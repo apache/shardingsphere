@@ -27,7 +27,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Collections;
 
 /**
  * Mode context manager.
@@ -119,8 +118,7 @@ public interface ModeContextManager {
      * @param toBeAlteredRuleConfig to be altered rule config
      * @return meta data versions
      */
-    default Collection<MetaDataVersion> alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
-        return Collections.emptyList();
+    default void alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
     }
     
     /**
@@ -146,8 +144,7 @@ public interface ModeContextManager {
      * @param globalRuleConfig global rule config
      * @return meta data versions
      */
-    default Collection<MetaDataVersion> alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) {
-        return Collections.emptyList();
+    default void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) {
     }
     
     /**

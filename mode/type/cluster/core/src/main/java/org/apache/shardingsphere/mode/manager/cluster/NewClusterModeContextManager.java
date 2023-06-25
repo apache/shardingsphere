@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionBasedPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -118,11 +120,12 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     }
     
     @Override
-    public Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
+    public void alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
         if (null != toBeAlteredRuleConfig) {
-            return contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persistConfig(databaseName, Collections.singleton(toBeAlteredRuleConfig));
+            DatabaseBasedPersistService<Collection<RuleConfiguration>> databaseRulePersistService = contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService();
+            contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(
+                    databaseRulePersistService.persistConfig(databaseName, Collections.singleton(toBeAlteredRuleConfig)));
         }
-        return Collections.emptyList();
     }
     
     @Override
@@ -138,8 +141,9 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     }
     
     @Override
-    public Collection<MetaDataVersion> alterGlobalRuleConfiguration(final RuleConfiguration toBeAlteredRuleConfig) {
-        return contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().persistConfig(Collections.singleton(toBeAlteredRuleConfig));
+    public void alterGlobalRuleConfiguration(final RuleConfiguration toBeAlteredRuleConfig) {
+        GlobalPersistService<Collection<RuleConfiguration>> globalRuleService = contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService();
+        contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(globalRuleService.persistConfig(Collections.singleton(toBeAlteredRuleConfig)));
     }
     
     @Override
