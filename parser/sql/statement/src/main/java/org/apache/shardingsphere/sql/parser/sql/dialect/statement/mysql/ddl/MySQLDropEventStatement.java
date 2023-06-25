@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateEventTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropEventTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL drop event statement.
  */
-public final class MySQLDropEventStatement extends CreateEventTriggerStatement implements MySQLStatement {
+public final class MySQLDropEventStatement extends DropEventTriggerStatement implements MySQLStatement {
 }
