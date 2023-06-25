@@ -114,7 +114,9 @@ public final class OpenGaussPacketCodecEngine implements DatabasePacketCodecEngi
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(out, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
         try {
             message.write(payload);
+            // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
             payload.getByteBuf().resetWriterIndex();
             // TODO consider what severity to use
             OpenGaussErrorResponsePacket errorResponsePacket = new OpenGaussErrorResponsePacket(
