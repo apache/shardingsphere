@@ -44,18 +44,18 @@ public final class MaskNodeConverter {
     }
     
     /**
-     * Get table node convertor.
+     * Get table node converter.
      *
-     * @return table node convertor
+     * @return table node converter
      */
     public static RuleItemNodeConverter getTableNodeConvertor() {
         return TABLE_NODE_CONVERTER;
     }
     
     /**
-     * Get algorithm node convertor.
+     * Get algorithm node converter.
      *
-     * @return algorithm node convertor
+     * @return algorithm node converter
      */
     public static RuleItemNodeConverter getAlgorithmNodeConvertor() {
         return ALGORITHM_NODE_CONVERTER;

@@ -44,18 +44,18 @@ public final class ReadwriteSplittingNodeConverter {
     }
     
     /**
-     * Get data source node convertor.
+     * Get data source node converter.
      *
-     * @return data source node convertor
+     * @return data source node converter
      */
     public static RuleItemNodeConverter getDataSourceNodeConvertor() {
         return DATA_SOURCE_NODE_CONVERTER;
     }
     
     /**
-     * Get load balancer node convertor.
+     * Get load balancer node converter.
      *
-     * @return load balancer node convertor
+     * @return load balancer node converter
      */
     public static RuleItemNodeConverter getLoadBalancerNodeConverter() {
         return LOAD_BALANCER_NODE_CONVERTER;

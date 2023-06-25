@@ -44,18 +44,18 @@ public final class EncryptNodeConverter {
     }
     
     /**
-     * Get table node convertor.
+     * Get table node converter.
      *
-     * @return table node convertor
+     * @return table node converter
      */
     public static RuleItemNodeConverter getTableNodeConvertor() {
         return TABLE_NODE_CONVERTER;
     }
     
     /**
-     * Get encryptor node convertor.
+     * Get encryptor node converter.
      *
-     * @return encryptor node convertor
+     * @return encryptor node converter
      */
     public static RuleItemNodeConverter getEncryptorNodeConvertor() {
         return ENCRYPTOR_NODE_CONVERTER;

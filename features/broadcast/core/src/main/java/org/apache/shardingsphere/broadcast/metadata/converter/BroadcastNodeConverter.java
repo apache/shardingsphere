@@ -44,9 +44,9 @@ public final class BroadcastNodeConverter {
     }
     
     /**
-     * Get table node convertor.
+     * Get table node converter.
      *
-     * @return table node convertor
+     * @return table node converter
      */
     public static RuleItemNodeConverter getTableNodeConvertor() {
         return TABLE_NODE_CONVERTER;

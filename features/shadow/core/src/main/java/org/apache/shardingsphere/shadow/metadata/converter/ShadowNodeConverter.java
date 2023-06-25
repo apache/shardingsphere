@@ -50,18 +50,18 @@ public final class ShadowNodeConverter {
     }
     
     /**
-     * Get data source node convertor.
+     * Get data source node converter.
      *
-     * @return data source node convertor
+     * @return data source node converter
      */
     public static RuleItemNodeConverter getDataSourceNodeConvertor() {
         return DATA_SOURCE_NODE_CONVERTER;
     }
     
     /**
-     * Get table node convertor.
+     * Get table node converter.
      *
-     * @return table node convertor
+     * @return table node converter
      */
     public static RuleItemNodeConverter getTableNodeConverter() {
         return TABLE_NODE_CONVERTER;
