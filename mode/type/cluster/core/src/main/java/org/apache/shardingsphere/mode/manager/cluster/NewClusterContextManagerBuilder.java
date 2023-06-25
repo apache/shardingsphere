@@ -94,8 +94,10 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
     }
     
     private void registerRuleConfigurationSubscribers(final MetaDataContexts metaDataContexts, final InstanceContext instanceContext) {
-        ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationSubscribeCoordinator.class)
-                .forEach(each -> each.registerRuleConfigurationSubscriber(metaDataContexts.getMetaData().getDatabases(), instanceContext));
+        for (RuleConfigurationSubscribeCoordinator each : ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationSubscribeCoordinator.class)) {
+            each.registerRuleConfigurationSubscriber(metaDataContexts.getMetaData().getDatabases(), instanceContext);
+            instanceContext.getEventBusContext().register(each);
+        }
     }
     
     @Override
