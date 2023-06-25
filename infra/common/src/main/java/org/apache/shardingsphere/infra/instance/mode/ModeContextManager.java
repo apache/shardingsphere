@@ -116,7 +116,6 @@ public interface ModeContextManager {
      *
      * @param databaseName database name
      * @param toBeAlteredRuleConfig to be altered rule config
-     * @return meta data versions
      */
     default void alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
     }
@@ -142,7 +141,6 @@ public interface ModeContextManager {
      * Alter global rule configuration.
      *
      * @param globalRuleConfig global rule config
-     * @return meta data versions
      */
     default void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) {
     }
