@@ -50,8 +50,8 @@ class NewYamlMaskRuleConfigurationSwapperTest {
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(2));
         Iterator<YamlDataNode> iterator = result.iterator();
-        assertThat(iterator.next().getKey(), is("tables/foo"));
         assertThat(iterator.next().getKey(), is("algorithms/FIXTURE"));
+        assertThat(iterator.next().getKey(), is("tables/foo"));
     }
     
     private MaskRuleConfiguration createMaximumMaskRule() {

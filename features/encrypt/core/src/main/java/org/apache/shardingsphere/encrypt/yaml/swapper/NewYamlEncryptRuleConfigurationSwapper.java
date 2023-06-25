@@ -50,12 +50,12 @@ public final class NewYamlEncryptRuleConfigurationSwapper implements NewYamlRule
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final EncryptRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
-        for (EncryptTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(EncryptNodeConverter.getTableNodeConvertor().getNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
-        }
         for (Entry<String, AlgorithmConfiguration> entry : data.getEncryptors().entrySet()) {
             result.add(new YamlDataNode(EncryptNodeConverter.getEncryptorNodeConvertor().getNamePath(entry.getKey()),
                     YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
+        }
+        for (EncryptTableRuleConfiguration each : data.getTables()) {
+            result.add(new YamlDataNode(EncryptNodeConverter.getTableNodeConvertor().getNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
         }
         return result;
     }
