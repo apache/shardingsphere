@@ -58,20 +58,20 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(15));
         Iterator<YamlDataNode> iterator = result.iterator();
-        assertThat(iterator.next().getKey(), is("tables/LOGIC_TABLE"));
-        assertThat(iterator.next().getKey(), is("tables/SUB_LOGIC_TABLE"));
-        assertThat(iterator.next().getKey(), is("auto_tables/auto_table"));
-        assertThat(iterator.next().getKey(), is("binding_tables/foo"));
-        assertThat(iterator.next().getKey(), is("default_strategies/default_database_strategy"));
-        assertThat(iterator.next().getKey(), is("default_strategies/default_table_strategy"));
-        assertThat(iterator.next().getKey(), is("default_strategies/default_key_generate_strategy"));
-        assertThat(iterator.next().getKey(), is("default_strategies/default_audit_strategy"));
         assertThat(iterator.next().getKey(), is("algorithms/core_standard_fixture"));
         assertThat(iterator.next().getKey(), is("algorithms/hash_mod"));
         assertThat(iterator.next().getKey(), is("key_generators/uuid"));
         assertThat(iterator.next().getKey(), is("key_generators/default"));
         assertThat(iterator.next().getKey(), is("key_generators/auto_increment"));
         assertThat(iterator.next().getKey(), is("auditors/audit_algorithm"));
+        assertThat(iterator.next().getKey(), is("default_strategies/default_database_strategy"));
+        assertThat(iterator.next().getKey(), is("default_strategies/default_table_strategy"));
+        assertThat(iterator.next().getKey(), is("default_strategies/default_key_generate_strategy"));
+        assertThat(iterator.next().getKey(), is("default_strategies/default_audit_strategy"));
+        assertThat(iterator.next().getKey(), is("tables/LOGIC_TABLE"));
+        assertThat(iterator.next().getKey(), is("tables/SUB_LOGIC_TABLE"));
+        assertThat(iterator.next().getKey(), is("auto_tables/auto_table"));
+        assertThat(iterator.next().getKey(), is("binding_tables/foo"));
         assertThat(iterator.next().getKey(), is("default_strategies/default_sharding_column"));
     }
     
