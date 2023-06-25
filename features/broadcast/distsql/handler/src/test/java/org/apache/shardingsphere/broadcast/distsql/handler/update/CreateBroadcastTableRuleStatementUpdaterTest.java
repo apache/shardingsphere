@@ -22,8 +22,6 @@ import org.apache.shardingsphere.broadcast.distsql.parser.statement.CreateBroadc
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
-import org.mockito.Mock;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -36,9 +34,6 @@ import static org.mockito.Mockito.when;
 
 class CreateBroadcastTableRuleStatementUpdaterTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
-    
     private final CreateBroadcastTableRuleStatementUpdater updater = new CreateBroadcastTableRuleStatementUpdater();
     
     @Test
@@ -46,14 +41,14 @@ class CreateBroadcastTableRuleStatementUpdaterTest {
         BroadcastRuleConfiguration currentConfiguration = mock(BroadcastRuleConfiguration.class);
         when(currentConfiguration.getTables()).thenReturn(Collections.singleton("t_address"));
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, statement, currentConfiguration));
+        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(mock(ShardingSphereDatabase.class), statement, currentConfiguration));
     }
     
     @Test
     void assertBuildToBeCreatedRuleConfiguration() {
         BroadcastRuleConfiguration currentConfig = new BroadcastRuleConfiguration(new LinkedList<>());
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        updater.checkSQLStatement(database, statement, currentConfig);
+        updater.checkSQLStatement(mock(ShardingSphereDatabase.class), statement, currentConfig);
         BroadcastRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, statement);
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertThat(currentConfig.getTables().size(), is(1));

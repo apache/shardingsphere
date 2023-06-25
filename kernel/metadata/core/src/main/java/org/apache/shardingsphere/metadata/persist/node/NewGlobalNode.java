@@ -91,7 +91,16 @@ public final class NewGlobalNode {
      * @return properties version node
      */
     public static String getPropsVersionNode(final String version) {
-        return String.join("/", getPropsRootNode(), VERSIONS, version);
+        return String.join("/", getPropsVersionsNode(), version);
+    }
+    
+    /**
+     * Get properties versions node.
+     *
+     * @return properties versions node
+     */
+    public static String getPropsVersionsNode() {
+        return String.join("/", getPropsRootNode(), VERSIONS);
     }
     
     private static String getPropsRootNode() {

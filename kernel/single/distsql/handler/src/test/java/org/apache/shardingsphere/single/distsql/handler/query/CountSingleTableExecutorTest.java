@@ -25,7 +25,6 @@ import org.apache.shardingsphere.single.distsql.statement.rql.CountSingleTableSt
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -67,7 +66,10 @@ class CountSingleTableExecutorTest {
     
     private SingleRule mockSingleRule() {
         SingleRule result = mock(SingleRule.class);
-        when(result.getLogicTableMapper()).thenReturn(new TableNamesMapper(Arrays.asList("single_table_1", "single_table_2")));
+        TableNamesMapper tableNamesMapper = new TableNamesMapper();
+        tableNamesMapper.put("single_table_1");
+        tableNamesMapper.put("single_table_2");
+        when(result.getLogicTableMapper()).thenReturn(tableNamesMapper);
         return result;
     }
 }

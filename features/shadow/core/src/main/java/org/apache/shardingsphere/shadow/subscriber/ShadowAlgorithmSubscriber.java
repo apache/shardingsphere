@@ -23,9 +23,11 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.event.algorithm.AddShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.event.algorithm.AlterShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.event.algorithm.DeleteShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -51,29 +53,16 @@ public final class ShadowAlgorithmSubscriber implements RuleConfigurationSubscri
     }
     
     /**
-     * Renew with add algorithm.
-     *
-     * @param event add algorithm event
-     */
-    @Subscribe
-    public synchronized void renew(final AddShadowAlgorithmEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getAlgorithmName(), event.getConfig());
-    }
-    
-    /**
      * Renew with alter algorithm.
      *
      * @param event alter algorithm event
      */
     @Subscribe
-    public synchronized void renew(final AlterShadowAlgorithmEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getAlgorithmName(), event.getConfig());
-    }
-    
-    private void renew(final String databaseName, final String algorithmName, final AlgorithmConfiguration algorithmConfig) {
-        ShardingSphereDatabase database = databases.get(databaseName);
+    public synchronized void renew(final AlterShadowAlgorithmEvent event) {
+        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getShadowAlgorithms().put(algorithmName, algorithmConfig);
+        config.getShadowAlgorithms().put(event.getAlgorithmName(), swapToAlgorithmConfig(
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
     }
     
     /**
@@ -87,5 +76,9 @@ public final class ShadowAlgorithmSubscriber implements RuleConfigurationSubscri
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getShadowAlgorithms().remove(event.getAlgorithmName());
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
+        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAlgorithmConfiguration.class));
     }
 }

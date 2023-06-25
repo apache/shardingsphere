@@ -4,7 +4,7 @@ weight = 6
 +++
 
 ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存在一部分包含第三方依赖的 SPI
-实现的插件未包含在内。可在 https://central.sonatype.dev/ 进行检索。
+实现的插件未包含在内。可在 https://central.sonatype.com/ 进行检索。
 
 所有插件对应的 SPI 和 SPI 的已有实现类均可在 https://shardingsphere.apache.org/document/current/cn/dev-manual/ 检索。
 

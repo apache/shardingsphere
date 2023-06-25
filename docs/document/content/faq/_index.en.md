@@ -164,7 +164,7 @@ Answer:
 
 [Service Provider Interface (SPI)](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html) is a kind of API for the third party to implement or expand. Except implementing interface, you also need to create a corresponding file in `META-INF/services` to make the JVM load these SPI implementations.
 More detail for SPI usage, please search by yourself.
-Other ShardingSphere [functionality implementation](/en/concepts/pluggable/) will take effect in the same way.
+Other ShardingSphere functionality implementation will take effect in the same way.
 
 ### [Sharding] In addition to internal distributed primary key, does ShardingSphere support other native auto-increment keys?
 
@@ -305,7 +305,7 @@ https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-
 
 Answer:
 
-In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](/en/concepts/pluggable/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`, so the `type` must be specified in the configuration file.
+In Apache ShardingSphere, many functionality implementation are uploaded through SPI, such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`, so the `type` must be specified in the configuration file.
 
 ### [Other] How to speed up the metadata loading when service starts up?
 

@@ -130,6 +130,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.Routi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
@@ -944,7 +945,26 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
-        return new MySQLAlterTablespaceStatement();
+        MySQLAlterTablespaceStatement result = new MySQLAlterTablespaceStatement();
+        if (null != ctx.alterTablespaceInnodb().tablespace) {
+            result.setTablespaceSegment(new TablespaceSegment(ctx.alterTablespaceInnodb().tablespace.getStart().getStartIndex(),
+                    ctx.alterTablespaceInnodb().tablespace.getStop().getStopIndex(),
+                    (IdentifierValue) visit(ctx.alterTablespaceInnodb().tablespace)));
+        } else if (null != ctx.alterTablespaceNdb().tablespace) {
+            result.setTablespaceSegment(new TablespaceSegment(ctx.alterTablespaceInnodb().tablespace.getStart().getStartIndex(),
+                    ctx.alterTablespaceInnodb().tablespace.getStop().getStopIndex(),
+                    (IdentifierValue) visit(ctx.alterTablespaceInnodb().tablespace)));
+        }
+        if (null != ctx.alterTablespaceInnodb().renameTablespace) {
+            result.setRenameTablespaceSegment(new TablespaceSegment(ctx.alterTablespaceInnodb().renameTablespace.getStart().getStartIndex(),
+                    ctx.alterTablespaceInnodb().renameTablespace.getStop().getStopIndex(),
+                    (IdentifierValue) visit(ctx.alterTablespaceInnodb().renameTablespace)));
+        } else if (null != ctx.alterTablespaceNdb().renameTableSpace) {
+            result.setRenameTablespaceSegment(new TablespaceSegment(ctx.alterTablespaceNdb().renameTableSpace.getStart().getStartIndex(),
+                    ctx.alterTablespaceNdb().renameTableSpace.getStop().getStopIndex(),
+                    (IdentifierValue) visit(ctx.alterTablespaceInnodb().renameTablespace)));
+        }
+        return result;
     }
     
     @Override

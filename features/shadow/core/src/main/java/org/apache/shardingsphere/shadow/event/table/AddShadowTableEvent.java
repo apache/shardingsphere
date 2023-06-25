@@ -23,16 +23,16 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
  * Add shadow table event.
- *
- * @param <T> shadow table configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddShadowTableEvent<T> implements GovernanceEvent {
+public final class AddShadowTableEvent implements GovernanceEvent {
     
     private final String databaseName;
     
     private final String tableName;
     
-    private final T config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

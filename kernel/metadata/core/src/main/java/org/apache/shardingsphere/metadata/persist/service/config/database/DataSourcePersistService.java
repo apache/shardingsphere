@@ -20,11 +20,14 @@ package org.apache.shardingsphere.metadata.persist.service.config.database;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,6 +50,11 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
         }
         repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)),
                 YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourceConfigs)));
+    }
+    
+    @Override
+    public Collection<MetaDataVersion> persistConfig(final String databaseName, final Map<String, DataSourceProperties> configs) {
+        return Collections.emptyList();
     }
     
     private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourceProperties> dataSourcePropsMap) {

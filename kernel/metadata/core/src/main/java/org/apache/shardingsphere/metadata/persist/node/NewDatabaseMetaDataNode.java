@@ -48,7 +48,7 @@ public final class NewDatabaseMetaDataNode {
     private static final String VERSIONS = "versions";
     
     /**
-     * Get data Sources node.
+     * Get data sources node.
      *
      * @param databaseName database name
      * @return data sources node
@@ -58,19 +58,30 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
-     * Get data Source node.
+     * Get data source node.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return data source node
+     */
+    public static String getDataSourceNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourcesNode(databaseName), dataSourceName);
+    }
+    
+    /**
+     * Get data source node with version.
      *
      * @param databaseName database name
      * @param dataSourceName data source name
      * @param version version
-     * @return data source node
+     * @return data source node with version
      */
-    public static String getDataSourceNode(final String databaseName, final String dataSourceName, final String version) {
+    public static String getDataSourceNodeWithVersion(final String databaseName, final String dataSourceName, final String version) {
         return String.join("/", getDataSourceVersionsNode(databaseName, dataSourceName), version);
     }
     
     /**
-     * Get data Source active version node.
+     * Get data source active version node.
      *
      * @param databaseName database name
      * @param dataSourceName data source name
@@ -343,9 +354,21 @@ public final class NewDatabaseMetaDataNode {
      * @return table name
      */
     public static Optional<String> getTableName(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get table name version.
+     *
+     * @param path path
+     * @return table name version
+     */
+    public static Optional<String> getTableNameVersion(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)/versions/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }
     
     /**
@@ -355,9 +378,32 @@ public final class NewDatabaseMetaDataNode {
      * @return view name
      */
     public static Optional<String> getViewName(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/views" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/views" + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get view name version.
+     *
+     * @param path path
+     * @return view name version
+     */
+    public static Optional<String> getViewNameVersion(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/views" + "/([\\w\\-]+)/versions/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Get version node by active version path.
+     *
+     * @param rulePath rule path
+     * @param activeVersion active version
+     * @return active version node
+     */
+    public static String getVersionNodeByActiveVersionPath(final String rulePath, final String activeVersion) {
+        return rulePath.replace(ACTIVE_VERSION, VERSIONS) + "/" + activeVersion;
     }
     
     private static String getMetaDataNodeNode() {

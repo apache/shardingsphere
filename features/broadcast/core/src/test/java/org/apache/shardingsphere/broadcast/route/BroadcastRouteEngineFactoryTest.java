@@ -22,9 +22,7 @@ import org.apache.shardingsphere.broadcast.route.engine.type.BroadcastRouteEngin
 import org.apache.shardingsphere.broadcast.route.engine.type.broadcast.BroadcastDatabaseBroadcastRoutingEngine;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
@@ -44,20 +42,14 @@ class BroadcastRouteEngineFactoryTest {
     
     private QueryContext queryContext;
     
-    private ConfigurationProperties props;
-    
     private ConnectionContext connectionContext;
-    
-    private ShardingSphereRuleMetaData globalRuleMetaData;
     
     @BeforeEach
     void setUp() {
         broadcastRule = mock(BroadcastRule.class);
         database = mock(ShardingSphereDatabase.class);
         queryContext = mock(QueryContext.class);
-        props = mock(ConfigurationProperties.class);
         connectionContext = mock(ConnectionContext.class);
-        globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
     }
     
     @Test
@@ -65,7 +57,7 @@ class BroadcastRouteEngineFactoryTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(TCLStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        BroadcastRouteEngine engine = BroadcastRouteEngineFactory.newInstance(broadcastRule, database, queryContext, props, connectionContext, globalRuleMetaData);
+        BroadcastRouteEngine engine = BroadcastRouteEngineFactory.newInstance(broadcastRule, database, queryContext, connectionContext);
         assertThat(engine, instanceOf(BroadcastDatabaseBroadcastRoutingEngine.class));
     }
 }

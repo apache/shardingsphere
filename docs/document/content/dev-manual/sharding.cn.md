@@ -73,7 +73,7 @@ chapter = true
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.infra.datetime.DatetimeService`](https://github.com/apache/shardingsphere/blob/master/infra/datetime/spi/src/main/java/org/apache/shardingsphere/infra/datetime/DatetimeService.java)
+[`org.apache.shardingsphere.timeservice.spi.TimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/api/src/main/java/org/apache/shardingsphere/timeservice/spi/TimestampService.java)
 
 ### 定义
 
@@ -81,7 +81,7 @@ chapter = true
 
 ### 已知实现
 
-| *配置标识*                  | *详细说明*             | *全限定类名*                                                                                                                                                                                                                                           |
-|-------------------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DatabaseDatetimeService | 从数据库中获取当前时间进行路由    | [`org.apache.shardingsphere.datetime.database.DatabaseDatetimeService`](https://github.com/apache/shardingsphere/blob/master/infra/datetime/type/database/src/main/java/org/apache/shardingsphere/datetime/database/DatabaseDatetimeService.java) |
-| SystemDatetime          | 从应用系统时间中获取当前时间进行路由 | [`org.apache.shardingsphere.datetime.system.SystemDatetimeService`](https://github.com/apache/shardingsphere/blob/master/infra/datetime/type/system/src/main/java/org/apache/shardingsphere/datetime/system/SystemDatetimeService.java)           |
+| *配置标识*                | *详细说明*                      | *全限定类名*                                                                                                                                                                                                                                                               |
+|--------------------------|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DatabaseTimestampService | 从数据库中获取当前时间进行路由      | [`org.apache.shardingsphere.timeservice.type.database.DatabaseTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/database/src/main/java/org/apache/shardingsphere/timeservice/type/database/DatabaseTimestampService.java) |
+| SystemTimestampService   | 从应用系统时间中获取当前时间进行路由 | [`org.apache.shardingsphere.timeservice.type.system.SystemTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/system/src/main/java/org/apache/shardingsphere/timeservice/type/system/SystemTimestampService.java)           |

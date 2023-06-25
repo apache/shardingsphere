@@ -32,6 +32,6 @@ class NewYamlSQLParserRuleConfigurationSwapperTest {
     @Test
     void assertSwapToDataNodes() {
         assertThat(swapper.swapToDataNodes(new SQLParserRuleConfiguration(false, DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION,
-                DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION)).iterator().next().getKey(), is("/rules/sql_parser"));
+                DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION)).iterator().next().getKey(), is("sql_parser"));
     }
 }

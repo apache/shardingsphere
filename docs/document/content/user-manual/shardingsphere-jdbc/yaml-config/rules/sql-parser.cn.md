@@ -1,6 +1,6 @@
 +++
 title = "SQL 解析"
-weight = 7
+weight = 8
 +++
 
 ## 背景信息

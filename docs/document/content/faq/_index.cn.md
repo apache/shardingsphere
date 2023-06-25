@@ -160,7 +160,7 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 [Service Provider Interface (SPI)](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html) 是一种为了被第三方实现或扩展的 API，除了实现接口外，还需要在 META-INF/services 中创建对应文件来指定 SPI 的实现类，JVM 才会加载这些服务。
 具体的 SPI 使用方式，请大家自行搜索。
-与分布式主键 `KeyGenerateAlgorithm` 接口相同，其他 ShardingSphere 的[扩展功能](/cn/concepts/pluggable/)也需要用相同的方式注入才能生效。
+与分布式主键 `KeyGenerateAlgorithm` 接口相同，其他 ShardingSphere 的扩展功能也需要用相同的方式注入才能生效。
 
 ### [分片] ShardingSphere 除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
 
@@ -298,7 +298,7 @@ https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-
 
 回答：
 
-ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](/cn/concepts/pluggable/) 注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中 type 类型来寻找对应的 SPI 实现，因此必须在配置文件中指定类型。
+ShardingSphere 中很多功能实现类的加载方式是通过 SPI 注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中 type 类型来寻找对应的 SPI 实现，因此必须在配置文件中指定类型。
 
 ### [其他] 服务启动时如何加快 `metadata` 加载速度？
 

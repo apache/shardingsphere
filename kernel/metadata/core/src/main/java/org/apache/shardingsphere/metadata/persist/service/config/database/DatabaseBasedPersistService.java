@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -44,6 +46,15 @@ public interface DatabaseBasedPersistService<T> {
      */
     default void delete(String databaseName, T configs) {
     }
+    
+    /**
+     * Persist configurations.
+     *
+     * @param databaseName database name
+     * @param configs configurations
+     * @return meta data version
+     */
+    Collection<MetaDataVersion> persistConfig(String databaseName, T configs);
     
     /**
      * Load configurations.

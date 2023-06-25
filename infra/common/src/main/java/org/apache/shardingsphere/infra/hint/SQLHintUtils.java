@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -107,11 +108,11 @@ public final class SQLHintUtils {
      * @param sql SQL
      * @return Hint value context
      */
-    public static HintValueContext extractHint(final String sql) {
-        HintValueContext result = new HintValueContext();
+    public static Optional<HintValueContext> extractHint(final String sql) {
         if (null == sql || !startWithHint(sql)) {
-            return result;
+            return Optional.empty();
         }
+        HintValueContext result = new HintValueContext();
         String hintText = sql.substring(0, sql.indexOf(SQL_COMMENT_SUFFIX) + 2);
         Properties hintProperties = SQLHintUtils.getSQLHintProps(hintText);
         if (containsPropertyKey(hintProperties, SQLHintPropertiesKey.DATASOURCE_NAME_KEY)) {
@@ -141,7 +142,7 @@ public final class SQLHintUtils {
                 result.getShardingTableValues().put(Objects.toString(entry.getKey()).toUpperCase(), value);
             }
         }
-        return result;
+        return Optional.of(result);
     }
     
     private static boolean containsPropertyKey(final Properties hintProperties, final SQLHintPropertiesKey sqlHintPropertiesKey) {

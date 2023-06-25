@@ -44,6 +44,8 @@ public final class ShadowNodeConverter {
     
     private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
     
+    private static final String RULE_ACTIVE_VERSION = "/([\\w\\-]+)/active_version$";
+    
     /**
      * Get data source path.
      *
@@ -176,6 +178,42 @@ public final class ShadowNodeConverter {
     public static Optional<String> getAlgorithmName(final String rulePath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get data source name by active version path.
+     *
+     * @param activeVersionPath rule path
+     * @return data source name
+     */
+    public static Optional<String> getDataSourceNameByActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get table name by active version path.
+     *
+     * @param activeVersionPath rule path
+     * @return table name
+     */
+    public static Optional<String> getTableNameByActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get algorithm name by active version path.
+     *
+     * @param activeVersionPath rule path
+     * @return algorithm name
+     */
+    public static Optional<String> getAlgorithmNameByActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
 }

@@ -88,8 +88,10 @@ public enum SystemSchemaBuilderRule {
                     "table_constraints", "table_privileges", "tables", "transforms", "triggered_update_columns", "triggers", "udt_privileges", "usage_privileges", "user_defined_types",
                     "user_mapping_options", "user_mappings", "view_column_usage", "view_routine_usage", "view_table_usage", "views"))),
     
-    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", new HashSet<>(Arrays.asList("pg_aggregate", "pg_am", "pg_amop", "pg_amproc", "pg_attrdef", "pg_class", "pg_database", "pg_tables", "pg_inherits",
-            "pg_tablespace", "pg_trigger", "pg_namespace", "pg_roles", "pg_user_mapping"))),
+    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", new HashSet<>(Arrays.asList("pg_aggregate", "pg_am", "pg_amop", "pg_amproc", "pg_attrdef", "pg_attribute", "pg_auth_members", "pg_authid",
+            "pg_available_extension_versions", "pg_available_extensions", "pg_backend_memory_contexts", "pg_cast", "pg_class",
+            "pg_database", "pg_tables", "pg_inherits", "pg_tablespace", "pg_trigger", "pg_namespace", "pg_range", "pg_replication_origin", "pg_rewrite", "pg_seclabel", "pg_sequence",
+            "pg_roles", "pg_user_mapping", "pg_stat_database_conflicts", "pg_stat_gssapi", "pg_stat_progress_analyze", "pg_stat_progress_basebackup", "pg_stat_progress_cluster"))),
     
     POSTGRESQL_SHARDING_SPHERE("PostgreSQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
     

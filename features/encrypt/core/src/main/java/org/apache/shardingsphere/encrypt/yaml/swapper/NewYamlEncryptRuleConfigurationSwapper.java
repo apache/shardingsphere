@@ -51,10 +51,11 @@ public final class NewYamlEncryptRuleConfigurationSwapper implements NewYamlRule
     public Collection<YamlDataNode> swapToDataNodes(final EncryptRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (EncryptTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(EncryptNodeConverter.getTableNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
+            result.add(new YamlDataNode(EncryptNodeConverter.getTableNodeConvertor().getNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
         }
         for (Entry<String, AlgorithmConfiguration> entry : data.getEncryptors().entrySet()) {
-            result.add(new YamlDataNode(EncryptNodeConverter.getEncryptorPath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
+            result.add(new YamlDataNode(EncryptNodeConverter.getEncryptorNodeConvertor().getNamePath(entry.getKey()),
+                    YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         return result;
     }
@@ -64,11 +65,11 @@ public final class NewYamlEncryptRuleConfigurationSwapper implements NewYamlRule
         Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> encryptors = new HashMap<>();
         for (YamlDataNode each : dataNodes) {
-            if (EncryptNodeConverter.isTablePath(each.getKey())) {
-                EncryptNodeConverter.getTableName(each.getKey())
+            if (EncryptNodeConverter.getTableNodeConvertor().isPath(each.getKey())) {
+                EncryptNodeConverter.getTableNodeConvertor().getName(each.getKey())
                         .ifPresent(tableName -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlEncryptTableRuleConfiguration.class))));
-            } else if (EncryptNodeConverter.isEncryptorPath(each.getKey())) {
-                EncryptNodeConverter.getEncryptorName(each.getKey())
+            } else if (EncryptNodeConverter.getEncryptorNodeConvertor().isPath(each.getKey())) {
+                EncryptNodeConverter.getEncryptorNodeConvertor().getName(each.getKey())
                         .ifPresent(encryptorName -> encryptors.put(encryptorName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
             }
         }

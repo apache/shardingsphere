@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingConfigurationSubscriber
+org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingDataSourceSubscriber
 org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingLoadBalanceSubscriber

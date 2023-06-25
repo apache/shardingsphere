@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.event.loadbalance;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
@@ -33,9 +32,7 @@ public final class AlterLoadBalanceEvent implements GovernanceEvent {
     
     private final String loadBalanceName;
     
-    private final AlgorithmConfiguration config;
-    
     private final String activeVersionKey;
     
-    private final int version;
+    private final String activeVersion;
 }

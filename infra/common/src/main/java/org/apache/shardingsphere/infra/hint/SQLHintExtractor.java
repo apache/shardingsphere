@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * SQL hint extractor.
@@ -35,7 +34,7 @@ public final class SQLHintExtractor {
     private final HintValueContext hintValueContext;
     
     public SQLHintExtractor(final String sqlComment) {
-        hintValueContext = Strings.isNullOrEmpty(sqlComment) ? new HintValueContext() : SQLHintUtils.extractHint(sqlComment);
+        hintValueContext = Strings.isNullOrEmpty(sqlComment) ? new HintValueContext() : SQLHintUtils.extractHint(sqlComment).orElseGet(HintValueContext::new);
     }
     
     public SQLHintExtractor(final SQLStatement sqlStatement) {
@@ -44,18 +43,8 @@ public final class SQLHintExtractor {
     
     public SQLHintExtractor(final SQLStatement sqlStatement, final HintValueContext hintValueContext) {
         this.hintValueContext = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()
-                ? SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatement).getCommentSegments().iterator().next().getText())
+                ? SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatement).getCommentSegments().iterator().next().getText()).orElse(hintValueContext)
                 : hintValueContext;
-    }
-    
-    /**
-     * Find hint data source name.
-     *
-     * @return data source name
-     */
-    public Optional<String> findHintDataSourceName() {
-        String result = hintValueContext.getDataSourceName();
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
     /**

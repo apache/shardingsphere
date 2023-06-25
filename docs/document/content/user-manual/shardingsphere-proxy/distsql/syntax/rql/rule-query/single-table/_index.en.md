@@ -1,6 +1,6 @@
 +++
 title = "Single Table"
-weight = 2
+weight = 3
 chapter = true
 +++
 
