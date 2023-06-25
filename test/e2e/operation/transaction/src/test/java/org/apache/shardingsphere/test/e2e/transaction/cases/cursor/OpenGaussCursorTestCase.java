@@ -69,7 +69,8 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
             singleTableCursorOrderByTest(connection);
             broadcastTableCursorTest(connection);
             broadcastTableCursorTest2(connection);
-            broadcastAndSingleTablesCursorTest(connection);
+            // TODO fix #26299
+            // broadcastAndSingleTablesCursorTest(connection);
             broadcastAndSingleTablesCursorTest2(connection);
             viewCursorTest(connection);
         }

@@ -46,8 +46,7 @@ public final class ShardingDeleteStatementValidator extends ShardingDMLStatement
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        if (!shardingRule.isBroadcastTable(sqlStatementContext.getTablesContext().getTableNames().iterator().next())
-                && DeleteStatementHandler.getLimitSegment((DeleteStatement) sqlStatementContext.getSqlStatement()).isPresent() && routeContext.getRouteUnits().size() > 1) {
+        if (DeleteStatementHandler.getLimitSegment((DeleteStatement) sqlStatementContext.getSqlStatement()).isPresent() && routeContext.getRouteUnits().size() > 1) {
             throw new DMLMultipleDataNodesWithLimitException("DELETE");
         }
     }

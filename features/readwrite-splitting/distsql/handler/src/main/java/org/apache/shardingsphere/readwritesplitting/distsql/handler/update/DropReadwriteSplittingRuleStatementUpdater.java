@@ -40,6 +40,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -98,20 +99,20 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final DropReadwriteSplittingRuleStatement sqlStatement) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> toBeDroppedDataSources = new LinkedList<>();
         Map<String, AlgorithmConfiguration> toBeDroppedLoadBalancers = new HashMap<>();
-        for (String each : sqlStatement.getNames()) {
-            compareAndGetToBeDroppedRule(currentRuleConfig, toBeDroppedDataSources, toBeDroppedLoadBalancers, each, sqlStatement.getNames());
-        }
+        sqlStatement.getNames().forEach(each -> toBeDroppedDataSources.add(new ReadwriteSplittingDataSourceRuleConfiguration(each, null, null, null)));
+        compareAndGetToBeDroppedLoadBalancers(currentRuleConfig, sqlStatement.getNames(), toBeDroppedLoadBalancers);
         return new ReadwriteSplittingRuleConfiguration(toBeDroppedDataSources, toBeDroppedLoadBalancers);
     }
     
-    private void compareAndGetToBeDroppedRule(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> toBeDroppedDataSources,
-                                              final Map<String, AlgorithmConfiguration> toBeDroppedLoadBalancers, final String toBeDroppedDataSourceName, final Collection<String> dataSourceNames) {
-        toBeDroppedDataSources.add(new ReadwriteSplittingDataSourceRuleConfiguration(toBeDroppedDataSourceName, null, null, null));
-        currentRuleConfig.getDataSources().stream().filter(dataSource -> toBeDroppedDataSourceName.equals(dataSource.getName())).findAny().ifPresent(toBeDroppedDataSourceRuleConfig -> {
-            if (null != toBeDroppedDataSourceRuleConfig.getLoadBalancerName() && isLoadBalancerNotInUse(currentRuleConfig, toBeDroppedDataSourceRuleConfig.getLoadBalancerName(), dataSourceNames)) {
-                toBeDroppedLoadBalancers.put(toBeDroppedDataSourceRuleConfig.getLoadBalancerName(), currentRuleConfig.getLoadBalancers().get(toBeDroppedDataSourceRuleConfig.getLoadBalancerName()));
+    private void compareAndGetToBeDroppedLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final Collection<String> toBeDroppedDataSourceNames,
+                                                       final Map<String, AlgorithmConfiguration> toBeDroppedLoadBalancers) {
+        Set<String> inUsedLoadBalancers = currentRuleConfig.getDataSources().stream().filter(dataSource -> !toBeDroppedDataSourceNames.contains(dataSource.getName()))
+                .map(ReadwriteSplittingDataSourceRuleConfiguration::getLoadBalancerName).collect(Collectors.toSet());
+        for (String each : currentRuleConfig.getLoadBalancers().keySet()) {
+            if (!inUsedLoadBalancers.contains(each)) {
+                toBeDroppedLoadBalancers.put(each, null);
             }
-        });
+        }
     }
     
     @Override
@@ -134,11 +135,6 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     
     private boolean isLoadBalancerNotInUse(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String toBeDroppedLoadBalancerName) {
         return currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getLoadBalancerName)
-                .filter(Objects::nonNull).noneMatch(toBeDroppedLoadBalancerName::equals);
-    }
-    
-    private boolean isLoadBalancerNotInUse(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String toBeDroppedLoadBalancerName, final Collection<String> dataSourceNames) {
-        return currentRuleConfig.getDataSources().stream().filter(each -> !dataSourceNames.contains(each.getName())).map(ReadwriteSplittingDataSourceRuleConfiguration::getLoadBalancerName)
                 .filter(Objects::nonNull).noneMatch(toBeDroppedLoadBalancerName::equals);
     }
     

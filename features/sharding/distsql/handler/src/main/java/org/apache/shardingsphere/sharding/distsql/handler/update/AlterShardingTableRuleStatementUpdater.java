@@ -48,6 +48,25 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     }
     
     @Override
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        Collection<String> toBeAlteredShardingTableNames = toBeAlteredRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet());
+        for (ShardingAutoTableRuleConfiguration each : currentRuleConfig.getAutoTables()) {
+            if (toBeAlteredShardingTableNames.contains(each.getLogicTable())) {
+                result.getAutoTables().add(each);
+            }
+        }
+        Collection<String> toBeAlteredAutoTableNames = toBeAlteredRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet());
+        for (ShardingTableRuleConfiguration each : currentRuleConfig.getTables()) {
+            if (toBeAlteredAutoTableNames.contains(each.getLogicTable())) {
+                result.getTables().add(each);
+            }
+        }
+        // TODO find unused algorithm
+        return result;
+    }
+    
+    @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         removeRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);

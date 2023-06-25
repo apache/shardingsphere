@@ -73,7 +73,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -129,7 +128,6 @@ public final class ShardingTableRuleStatementChecker {
         result.setTables(new LinkedList<>(currentRuleConfig.getTables()));
         result.setAutoTables(new LinkedList<>(currentRuleConfig.getAutoTables()));
         result.setBindingTableGroups(new LinkedList<>(currentRuleConfig.getBindingTableGroups()));
-        result.setBroadcastTables(new LinkedList<>(currentRuleConfig.getBroadcastTables()));
         result.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
         result.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
         result.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
@@ -161,14 +159,13 @@ public final class ShardingTableRuleStatementChecker {
         checkedConfig.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, TypedSPILoader.getService(ShardingAlgorithm.class, value.getType(), value.getProps())));
         tableRules.putAll(createTableRules(checkedConfig.getTables(), checkedConfig.getDefaultKeyGenerateStrategy(), allDataSourceNames));
         tableRules.putAll(createAutoTableRules(checkedConfig.getAutoTables(), shardingAlgorithms, checkedConfig.getDefaultKeyGenerateStrategy(), allDataSourceNames));
-        Collection<String> broadcastTables = createBroadcastTables(checkedConfig.getBroadcastTables());
         ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig = null == checkedConfig.getDefaultDatabaseShardingStrategy()
                 ? new NoneShardingStrategyConfiguration()
                 : checkedConfig.getDefaultDatabaseShardingStrategy();
         ShardingStrategyConfiguration defaultTableShardingStrategyConfig = null == checkedConfig.getDefaultTableShardingStrategy()
                 ? new NoneShardingStrategyConfiguration()
                 : checkedConfig.getDefaultTableShardingStrategy();
-        return isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(allDataSourceNames, shardingAlgorithms, checkedConfig.getBindingTableGroups(), broadcastTables,
+        return isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(allDataSourceNames, shardingAlgorithms, checkedConfig.getBindingTableGroups(),
                 defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, checkedConfig.getDefaultShardingColumn()));
     }
     
@@ -227,12 +224,6 @@ public final class ShardingTableRuleStatementChecker {
         return new TableRule(autoTableRuleConfig, dataSourceNames, (ShardingAutoTableAlgorithm) shardingAlgorithm, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig));
     }
     
-    private static Collection<String> createBroadcastTables(final Collection<String> broadcastTables) {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(broadcastTables);
-        return result;
-    }
-    
     private static boolean isValidBindingTableConfiguration(final Map<String, TableRule> tableRules, final BindingTableCheckedConfiguration checkedConfig) {
         for (ShardingTableReferenceRuleConfiguration each : checkedConfig.getBindingTableGroups()) {
             Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.getReference().toLowerCase());
@@ -240,9 +231,9 @@ public final class ShardingTableRuleStatementChecker {
                 return false;
             }
             Iterator<String> iterator = bindingTables.iterator();
-            TableRule sampleTableRule = getTableRule(iterator.next(), checkedConfig.getDataSourceNames(), tableRules, checkedConfig.getBroadcastTables());
+            TableRule sampleTableRule = getTableRule(iterator.next(), tableRules);
             while (iterator.hasNext()) {
-                TableRule tableRule = getTableRule(iterator.next(), checkedConfig.getDataSourceNames(), tableRules, checkedConfig.getBroadcastTables());
+                TableRule tableRule = getTableRule(iterator.next(), tableRules);
                 if (!isValidActualDataSourceName(sampleTableRule, tableRule) || !isValidActualTableName(sampleTableRule, tableRule)) {
                     return false;
                 }
@@ -254,13 +245,10 @@ public final class ShardingTableRuleStatementChecker {
         return true;
     }
     
-    private static TableRule getTableRule(final String logicTableName, final Collection<String> dataSourceNames, final Map<String, TableRule> tableRules, final Collection<String> broadcastTables) {
+    private static TableRule getTableRule(final String logicTableName, final Map<String, TableRule> tableRules) {
         TableRule result = tableRules.get(logicTableName);
         if (null != result) {
             return result;
-        }
-        if (broadcastTables.contains(logicTableName)) {
-            return new TableRule(dataSourceNames, logicTableName);
         }
         throw new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName));
     }

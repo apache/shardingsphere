@@ -25,6 +25,7 @@ import org.apache.shardingsphere.agent.core.plugin.config.yaml.swapper.YamlPlugi
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 
@@ -34,8 +35,6 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PluginConfigurationLoader {
     
-    private static final String CONFIG_PATH = "/conf/agent.yaml";
-    
     /**
      * Load plugin configurations.
      *
@@ -44,6 +43,6 @@ public final class PluginConfigurationLoader {
      * @throws IOException IO exception
      */
     public static Map<String, PluginConfiguration> load(final File agentRootPath) throws IOException {
-        return YamlPluginConfigurationLoader.load(new File(agentRootPath, CONFIG_PATH)).map(YamlPluginsConfigurationSwapper::swap).orElse(Collections.emptyMap());
+        return YamlPluginConfigurationLoader.load(new File(agentRootPath, Paths.get("conf", "agent.yaml").toString())).map(YamlPluginsConfigurationSwapper::swap).orElse(Collections.emptyMap());
     }
 }

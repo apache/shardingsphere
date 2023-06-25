@@ -19,8 +19,16 @@ package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Drop encrypt rule statement updater.
@@ -40,6 +48,17 @@ public final class DropCompatibleEncryptRuleStatementUpdater implements RuleDefi
     @Override
     public boolean hasAnyOneToBeDropped(final DropEncryptRuleStatement sqlStatement, final CompatibleEncryptRuleConfiguration currentRuleConfig) {
         return delegate.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig.convertToEncryptRuleConfiguration());
+    }
+    
+    @Override
+    public CompatibleEncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final CompatibleEncryptRuleConfiguration currentRuleConfig, final DropEncryptRuleStatement sqlStatement) {
+        Collection<EncryptTableRuleConfiguration> toBeDroppedTables = new LinkedList<>();
+        Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>();
+        for (String each : sqlStatement.getTables()) {
+            toBeDroppedTables.add(new EncryptTableRuleConfiguration(each, Collections.emptyList()));
+        }
+        // TODO find unused encryptor
+        return new CompatibleEncryptRuleConfiguration(toBeDroppedTables, toBeDroppedEncryptors);
     }
     
     @Override

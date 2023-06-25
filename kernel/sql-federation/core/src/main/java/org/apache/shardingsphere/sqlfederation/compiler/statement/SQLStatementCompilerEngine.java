@@ -38,11 +38,11 @@ public final class SQLStatementCompilerEngine {
     }
     
     /**
-     * Compile sql statement to execution plan.
+     * Compile SQL statement to execution plan.
      *
      * @param cacheKey execution plan cache key
      * @param useCache use cache
-     * @return sql federation execution plan
+     * @return SQL federation execution plan
      */
     public SQLFederationExecutionPlan compile(final ExecutionPlanCacheKey cacheKey, final boolean useCache) {
         return useCache ? executionPlanCache.get(cacheKey) : sqlFederationCompiler.compile(cacheKey.getSqlStatement(), cacheKey.getDatabaseType());

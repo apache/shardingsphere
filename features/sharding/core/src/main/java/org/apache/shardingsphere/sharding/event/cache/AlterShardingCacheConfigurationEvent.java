@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.event.cache;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
 
 /**
  * Alter sharding cache configuration event.
@@ -31,5 +30,7 @@ public final class AlterShardingCacheConfigurationEvent implements GovernanceEve
     
     private final String databaseName;
     
-    private final ShardingCacheConfiguration config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

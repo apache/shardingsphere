@@ -44,11 +44,6 @@ class ShardingNodeConverterTest {
     }
     
     @Test
-    void assertGetBroadcastTableNamePath() {
-        assertThat(ShardingNodeConverter.getBroadcastTablesPath(), is("broadcast_tables"));
-    }
-    
-    @Test
     void assertGetDefaultDatabaseStrategyPath() {
         assertThat(ShardingNodeConverter.getDefaultDatabaseStrategyPath(), is("default_strategies/default_database_strategy"));
     }
@@ -103,8 +98,6 @@ class ShardingNodeConverterTest {
         assertFalse(ShardingNodeConverter.isAutoTablePath("/metadata/foo_db/rules/sharding/algorithms/MD5"));
         assertTrue(ShardingNodeConverter.isBindingTablePath("/metadata/foo_db/rules/sharding/binding_tables/foo_table"));
         assertFalse(ShardingNodeConverter.isBindingTablePath("/metadata/foo_db/rules/sharding/algorithms/MD5"));
-        assertTrue(ShardingNodeConverter.isBroadcastTablePath("/metadata/foo_db/rules/sharding/broadcast_tables"));
-        assertFalse(ShardingNodeConverter.isBroadcastTablePath("/metadata/foo_db/rules/sharding/broadcast_tables/foo"));
         assertTrue(ShardingNodeConverter.isDefaultDatabaseStrategyPath("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy"));
         assertFalse(ShardingNodeConverter.isDefaultDatabaseStrategyPath("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy/foo"));
         assertTrue(ShardingNodeConverter.isDefaultTableStrategyPath("/metadata/foo_db/rules/sharding/default_strategies/default_table_strategy"));
@@ -165,5 +158,77 @@ class ShardingNodeConverterTest {
         Optional<String> actual = ShardingNodeConverter.getAuditorName("/metadata/foo_db/rules/sharding/auditors/foo");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo"));
+    }
+    
+    @Test
+    void assertGetTableNameByActiveVersionPath() {
+        Optional<String> actual = ShardingNodeConverter.getTableNameByActiveVersionPath("/metadata/foo_db/rules/sharding/tables/foo_table/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_table"));
+    }
+    
+    @Test
+    void assertGetAutoTableNameByActiveVersionPath() {
+        Optional<String> actual = ShardingNodeConverter.getAutoTableNameByActiveVersionPath("/metadata/foo_db/rules/sharding/auto_tables/foo_table/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_table"));
+    }
+    
+    @Test
+    void assertGetBindingTableNameByActiveVersionPath() {
+        Optional<String> actual = ShardingNodeConverter.getBindingTableNameByActiveVersionPath("/metadata/foo_db/rules/sharding/binding_tables/c018fb3cd8e530dd/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("c018fb3cd8e530dd"));
+    }
+    
+    @Test
+    void assertIsDefaultDatabaseStrategyByActiveVersionPath() {
+        assertTrue(ShardingNodeConverter.isDefaultDatabaseStrategyWithActiveVersionPath("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy/active_version"));
+    }
+    
+    @Test
+    void assertIsDefaultTableStrategyByActiveVersionPath() {
+        assertTrue(ShardingNodeConverter.isDefaultTableStrategyWithActiveVersionPath("/metadata/foo_db/rules/sharding/default_strategies/default_table_strategy/active_version"));
+    }
+    
+    @Test
+    void assertIsDefaultKeyGenerateStrategyByActiveVersionPath() {
+        assertTrue(ShardingNodeConverter.isDefaultKeyGenerateStrategyWithActiveVersionPath("/metadata/foo_db/rules/sharding/default_strategies/default_key_generate_strategy/active_version"));
+    }
+    
+    @Test
+    void assertIsDefaultAuditStrategyByActiveVersionPath() {
+        assertTrue(ShardingNodeConverter.isDefaultAuditStrategyWithActiveVersionPath("/metadata/foo_db/rules/sharding/default_strategies/default_audit_strategy/active_version"));
+    }
+    
+    @Test
+    void assertIsDefaultShardingColumnByActiveVersionPath() {
+        assertTrue(ShardingNodeConverter.isDefaultShardingColumnWithActiveVersionPath("/metadata/foo_db/rules/sharding/default_strategies/default_sharding_column/active_version"));
+    }
+    
+    @Test
+    void assertGetShardingAlgorithmByActiveVersionPath() {
+        Optional<String> actual = ShardingNodeConverter.getShardingAlgorithmByActiveVersionPath("/metadata/foo_db/rules/sharding/algorithms/foo_table_algorithm/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_table_algorithm"));
+    }
+    
+    @Test
+    void assertGetKeyGeneratorByActiveVersionPath() {
+        Optional<String> actual = ShardingNodeConverter.getKeyGeneratorByActiveVersionPath("/metadata/foo_db/rules/sharding/key_generators/foo_table_key_generator/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_table_key_generator"));
+    }
+    
+    @Test
+    void assertGetAuditorByActiveVersionPath() {
+        Optional<String> actual = ShardingNodeConverter.getAuditorByActiveVersionPath("/metadata/foo_db/rules/sharding/auditors/foo_table_auditor/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_table_auditor"));
+    }
+    
+    @Test
+    void assertGetShardingCacheByActiveVersionPath() {
+        assertTrue(ShardingNodeConverter.isShardingCacheWithActiveVersionPath("/metadata/foo_db/rules/sharding/sharding_cache/active_version"));
     }
 }

@@ -20,10 +20,12 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
  * DQL result decorator for encrypt.
@@ -31,15 +33,19 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 @RequiredArgsConstructor
 public final class EncryptDQLResultDecorator implements ResultDecorator<EncryptRule> {
     
-    private final EncryptAlgorithmMetaData metaData;
+    private final ShardingSphereDatabase database;
+    
+    private final EncryptRule encryptRule;
+    
+    private final SelectStatementContext selectStatementContext;
     
     @Override
     public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
-        return new EncryptMergedResult(metaData, new TransparentMergedResult(queryResult));
+        return new EncryptMergedResult(database, encryptRule, selectStatementContext, new TransparentMergedResult(queryResult));
     }
     
     @Override
     public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
-        return new EncryptMergedResult(metaData, mergedResult);
+        return new EncryptMergedResult(database, encryptRule, selectStatementContext, mergedResult);
     }
 }

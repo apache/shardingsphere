@@ -73,13 +73,13 @@ class NewYamlCompatibleEncryptRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObject() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/encrypt/tables/foo", "columns:\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/compatible_encrypt/tables/foo", "columns:\n"
                 + "  foo_column:\n"
                 + "    cipherColumn: FIXTURE\n"
                 + "    encryptorName: FOO\n"
                 + "    logicColumn: foo_column\n"
                 + "name: foo\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/encrypt/encryptors/FOO", "type: FOO\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/compatible_encrypt/encryptors/FOO", "type: FOO\n"));
         CompatibleEncryptRuleConfiguration result = swapper.swapToObject(config);
         assertThat(result.getTables().size(), is(1));
         assertThat(result.getTables().iterator().next().getName(), is("foo"));

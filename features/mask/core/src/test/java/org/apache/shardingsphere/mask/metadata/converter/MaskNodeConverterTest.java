@@ -61,4 +61,18 @@ class MaskNodeConverterTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("MD5"));
     }
+    
+    @Test
+    void assertGetMaskTableVersion() {
+        Optional<String> actual = MaskNodeConverter.getTableNameByActiveVersionPath("/metadata/foo_db/rules/mask/tables/foo_table/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_table"));
+    }
+    
+    @Test
+    void assertGetMaskAlgorithmVersion() {
+        Optional<String> actual = MaskNodeConverter.getAlgorithmNameByActiveVersionPath("/metadata/foo_db/rules/mask/algorithms/md5_mask/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("md5_mask"));
+    }
 }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatem
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -44,6 +45,9 @@ public final class RALBackendHandlerFactory {
             return new QueryableRALBackendHandler<>((QueryableRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
+            if ("New_Cluster".equals(ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType())) {
+                return new NewUpdatableGlobalRuleRALBackendHandler((UpdatableGlobalRuleRALStatement) sqlStatement);
+            }
             return new UpdatableGlobalRuleRALBackendHandler((UpdatableGlobalRuleRALStatement) sqlStatement);
         }
         return new UpdatableRALBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);

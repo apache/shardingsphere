@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfiguration
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * ShardingSphere pipeline data source creator.
@@ -39,7 +40,11 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     public DataSource createPipelineDataSource(final Object dataSourceConfig) throws SQLException {
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(YamlEngine.marshal(dataSourceConfig), YamlRootConfiguration.class);
         enableStreamingQuery(rootConfig);
-        ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(rootConfig.getRules()).ifPresent(this::enableRangeQueryForInline);
+        Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(rootConfig.getRules());
+        if (yamlShardingRuleConfig.isPresent()) {
+            enableRangeQueryForInline(yamlShardingRuleConfig.get());
+            removeAuditStrategy(yamlShardingRuleConfig.get());
+        }
         rootConfig.setDatabaseName(rootConfig.getDatabaseName());
         rootConfig.setSchemaName(rootConfig.getSchemaName());
         return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
@@ -51,11 +56,22 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         rootConfig.getProps().put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
     }
     
-    private void enableRangeQueryForInline(final YamlShardingRuleConfiguration shardingRuleConfig) {
-        for (YamlAlgorithmConfiguration each : shardingRuleConfig.getShardingAlgorithms().values()) {
+    private void enableRangeQueryForInline(final YamlShardingRuleConfiguration yamlShardingRuleConfig) {
+        for (YamlAlgorithmConfiguration each : yamlShardingRuleConfig.getShardingAlgorithms().values()) {
             if ("INLINE".equalsIgnoreCase(each.getType())) {
                 each.getProps().put("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
             }
+        }
+    }
+    
+    private void removeAuditStrategy(final YamlShardingRuleConfiguration yamlShardingRuleConfig) {
+        yamlShardingRuleConfig.setDefaultAuditStrategy(null);
+        yamlShardingRuleConfig.setAuditors(null);
+        if (null != yamlShardingRuleConfig.getTables()) {
+            yamlShardingRuleConfig.getTables().forEach((key, value) -> value.setAuditStrategy(null));
+        }
+        if (null != yamlShardingRuleConfig.getAutoTables()) {
+            yamlShardingRuleConfig.getAutoTables().forEach((key, value) -> value.setAuditStrategy(null));
         }
     }
     

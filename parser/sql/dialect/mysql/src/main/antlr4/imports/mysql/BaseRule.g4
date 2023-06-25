@@ -456,6 +456,7 @@ identifierKeywordsUnambiguous
     | SUSPEND
     | SWAPS
     | SWITCHES
+    | SYSTEM
     | TABLES
     | TABLESPACE
     | TABLE_CHECKSUM
@@ -928,9 +929,13 @@ columnRefList
     ;
     
 functionCall
-    : aggregationFunction | specialFunction | regularFunction | jsonFunction
+    : aggregationFunction | specialFunction | regularFunction | jsonFunction | udfFunction
     ;
-    
+
+udfFunction
+    : functionName LP_ (expr? | expr (COMMA_ expr)*) RP_
+    ;
+
 aggregationFunction
     : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
     ;

@@ -10,15 +10,23 @@
       "pattern": "^https://github.com/apache/incubator-shardingsphere/*"
     },
     {
-      "pattern": "^/en/*"
-    },
-    {
-      "pattern": "^/cn/*"
-    },
-    {
       "pattern": "^https://twitter.com*"
+    },
+    {
+      "pattern": "^https://central.sonatype.com/"
     }
-  ],
+  ], "replacementPatterns": [
+  {
+    "pattern": "^/(cn|en)/(dev-manual|downloads|faq|features|overview|quick-start|reference|test-manual|user-manual)",
+    "replacement": "https://shardingsphere.apache.org/document/current/$1/$2"
+  },{
+    "pattern": "^/(cn|en)/(videos|material)",
+    "replacement": "https://shardingsphere.apache.org/blog/$1/$2"
+  },
+  {
+    "pattern": "^/(cn|en)/(involved|powered-by|security|team)",
+    "replacement": "https://shardingsphere.apache.org/community/$1/$2"
+  }],
   "timeout": "10s",
   "retryOn429": true,
   "retryCount": 10,

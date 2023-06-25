@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
-import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
+import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
+import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
@@ -37,7 +41,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -57,27 +60,23 @@ class EncryptCreateTableTokenGeneratorTest {
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
-        when(result.findStandardEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         EncryptTable encryptTable = mockEncryptTable();
         when(result.getEncryptTable("t_encrypt")).thenReturn(encryptTable);
         return result;
     }
     
     private EncryptTable mockEncryptTable() {
-        EncryptTable result = mock(EncryptTable.class);
-        EncryptColumn column = mockEncryptColumn();
-        when(result.getLogicColumns()).thenReturn(Collections.singletonList("t_encrypt"));
-        when(result.getCipherColumn("certificate_number")).thenReturn(column.getCipher().getName());
-        when(result.findAssistedQueryColumn("certificate_number")).thenReturn(column.getAssistedQuery().map(EncryptColumnItem::getName));
-        when(result.findLikeQueryColumn("certificate_number")).thenReturn(column.getLikeQuery().map(EncryptColumnItem::getName));
-        when(result.findEncryptColumn("certificate_number")).thenReturn(Optional.of(column));
+        EncryptTable result = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
+        EncryptColumn encryptColumn = mockEncryptColumn();
+        when(result.isEncryptColumn("certificate_number")).thenReturn(true);
+        when(result.getEncryptColumn("certificate_number")).thenReturn(encryptColumn);
         return result;
     }
     
     private EncryptColumn mockEncryptColumn() {
-        EncryptColumn result = new EncryptColumn("certificate_number", new EncryptColumnItem("cipher_certificate_number", "test"));
-        result.setAssistedQuery(new EncryptColumnItem("assisted_certificate_number", "assisted_encryptor"));
-        result.setLikeQuery(new EncryptColumnItem("like_certificate_number", "like_encryptor"));
+        EncryptColumn result = new EncryptColumn("certificate_number", new CipherColumnItem("cipher_certificate_number", mock(StandardEncryptAlgorithm.class)));
+        result.setAssistedQuery(new AssistedQueryColumnItem("assisted_certificate_number", mock(AssistedEncryptAlgorithm.class)));
+        result.setLikeQuery(new LikeQueryColumnItem("like_certificate_number", mock(LikeEncryptAlgorithm.class)));
         return result;
     }
     

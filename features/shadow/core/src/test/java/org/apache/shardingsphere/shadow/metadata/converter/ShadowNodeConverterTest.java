@@ -82,4 +82,25 @@ class ShadowNodeConverterTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("SQL_HINT"));
     }
+    
+    @Test
+    void assertGetDataSourceVersion() {
+        Optional<String> actual = ShadowNodeConverter.getDataSourceNameByActiveVersionPath("/metadata/foo_db/rules/shadow/data_sources/shadow_database/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("shadow_database"));
+    }
+    
+    @Test
+    void assertGetTableVersion() {
+        Optional<String> actual = ShadowNodeConverter.getTableNameByActiveVersionPath("/metadata/foo_db/rules/shadow/tables/shadow_table/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("shadow_table"));
+    }
+    
+    @Test
+    void assertGetAlgorithmVersion() {
+        Optional<String> actual = ShadowNodeConverter.getAlgorithmNameByActiveVersionPath("/metadata/foo_db/rules/shadow/algorithms/user_id_insert_match_algorithm/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("user_id_insert_match_algorithm"));
+    }
 }

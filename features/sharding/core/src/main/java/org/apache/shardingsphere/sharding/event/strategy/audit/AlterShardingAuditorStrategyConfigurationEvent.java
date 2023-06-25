@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.event.strategy.audit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 
 /**
  * Alter default sharding auditor strategy configuration event.
@@ -31,5 +30,7 @@ public final class AlterShardingAuditorStrategyConfigurationEvent implements Gov
     
     private final String databaseName;
     
-    private final ShardingAuditStrategyConfiguration config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.NewRegistryCenter;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.NewProcessListChangedSubscriber;
 
 /**
  * TODO replace the old implementation after meta data refactor completed
@@ -27,13 +27,13 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proce
  */
 public final class NewContextManagerSubscriberFacade {
     
-    public NewContextManagerSubscriberFacade(final RegistryCenter registryCenter, final ContextManager contextManager) {
+    public NewContextManagerSubscriberFacade(final NewRegistryCenter registryCenter, final ContextManager contextManager) {
         new NewConfigurationChangedSubscriber(contextManager);
-        // TODO replace all to new subscriber
-        new ResourceMetaDataChangedSubscriber(contextManager);
+        new NewDataSourceChangedSubscriber(contextManager);
+        new NewResourceMetaDataChangedSubscriber(contextManager);
         new DatabaseChangedSubscriber(contextManager);
-        new StateChangedSubscriber(registryCenter, contextManager);
-        new ProcessListChangedSubscriber(registryCenter, contextManager);
+        new NewStateChangedSubscriber(registryCenter, contextManager);
+        new NewProcessListChangedSubscriber(registryCenter, contextManager);
         new CacheEvictedSubscriber(contextManager.getInstanceContext().getEventBusContext());
     }
 }

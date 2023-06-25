@@ -30,7 +30,9 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.util.Date;
@@ -104,5 +106,13 @@ class ColumnValueConvertUtilsTest {
         assertTrue(actualMessage instanceof com.google.protobuf.Timestamp);
         assertThat(((com.google.protobuf.Timestamp) actualMessage).getSeconds(), is(offsetDateTime.toEpochSecond()));
         assertThat(((com.google.protobuf.Timestamp) actualMessage).getNanos(), is(offsetDateTime.getNano()));
+    }
+    
+    @Test
+    void assertTimeConvert() {
+        Time time = new Time(-3600 * 1000 - 1234);
+        int nanos = new Timestamp(time.getTime()).getNanos();
+        Int64Value actualMessage = (Int64Value) ColumnValueConvertUtils.convertToProtobufMessage(time);
+        assertThat(LocalTime.ofNanoOfDay(actualMessage.getValue()), is(time.toLocalTime().withNano(nanos)));
     }
 }

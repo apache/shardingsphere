@@ -23,5 +23,4 @@
     </metadata>
     <row values="sharding_table| readwrite_splitting| 3" />
     <row values="sharding_table_reference| readwrite_splitting| 0" />
-    <row values="broadcast_table| readwrite_splitting| 0" />
 </dataset>

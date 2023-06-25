@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
-import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -68,9 +67,10 @@ class EncryptProjectionTokenGeneratorTest {
         when(encryptTable2.getLogicColumns()).thenReturn(Collections.singleton("mobile"));
         when(result.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable1));
         when(result.findEncryptTable("doctor1")).thenReturn(Optional.of(encryptTable2));
-        EncryptColumn column = new EncryptColumn("mobile", new EncryptColumnItem("mobile", "standard_encryptor"));
-        column.setLikeQuery(new EncryptColumnItem("mobile", "like_encryptor"));
-        when(encryptTable1.findEncryptColumn("mobile")).thenReturn(Optional.of(column));
+        when(encryptTable1.isEncryptColumn("mobile")).thenReturn(true);
+        EncryptColumn encryptColumn = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
+        when(encryptColumn.getAssistedQuery()).thenReturn(Optional.empty());
+        when(encryptTable1.getEncryptColumn("mobile")).thenReturn(encryptColumn);
         return result;
     }
     

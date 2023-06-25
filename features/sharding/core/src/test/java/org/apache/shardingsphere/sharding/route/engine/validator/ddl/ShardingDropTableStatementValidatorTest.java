@@ -153,7 +153,6 @@ class ShardingDropTableStatementValidatorTest {
     void assertPostValidateDropTableWithSameRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
-        when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
         when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
@@ -162,19 +161,5 @@ class ShardingDropTableStatementValidatorTest {
         assertDoesNotThrow(() -> new ShardingDropTableStatementValidator().postValidate(
                 shardingRule, new DropTableStatementContext(sqlStatement), new HintValueContext(),
                 Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext));
-    }
-    
-    @Test
-    void assertPostValidateDropTableWithDifferentRouteResultBroadcastTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
-        sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
-        when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
-        when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertThrows(ShardingDDLRouteException.class,
-                () -> new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement), new HintValueContext(),
-                        Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext));
     }
 }

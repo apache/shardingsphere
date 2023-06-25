@@ -69,13 +69,13 @@ class NewYamlReadwriteSplittingRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObject() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0", "loadBalancerName: random\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0/version/0", "loadBalancerName: random\n"
                 + "readDataSourceNames:\n"
                 + "- read_ds_0\n"
                 + "- read_ds_1\n"
                 + "transactionalReadQueryStrategy: DYNAMIC\n"
                 + "writeDataSourceName: write_ds\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random", "type: random\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random/versions/0", "type: random\n"));
         ReadwriteSplittingRuleConfiguration result = swapper.swapToObject(config);
         assertThat(result.getDataSources().size(), is(1));
         assertThat(result.getDataSources().iterator().next().getName(), is("group_0"));

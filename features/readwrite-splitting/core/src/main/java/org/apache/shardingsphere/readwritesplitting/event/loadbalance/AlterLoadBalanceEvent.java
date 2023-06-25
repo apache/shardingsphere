@@ -23,16 +23,16 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
  * Alter load-balance event.
- *
- * @param <T> algorithm configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterLoadBalanceEvent<T> implements GovernanceEvent {
+public final class AlterLoadBalanceEvent implements GovernanceEvent {
     
     private final String databaseName;
     
     private final String loadBalanceName;
     
-    private final T config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }
