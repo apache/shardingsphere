@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionBasedPersistService;
@@ -120,12 +119,11 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     }
     
     @Override
-    public void alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
+    public Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
         if (null != toBeAlteredRuleConfig) {
-            DatabaseBasedPersistService<Collection<RuleConfiguration>> databaseRulePersistService = contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService();
-            contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(
-                    databaseRulePersistService.persistConfig(databaseName, Collections.singleton(toBeAlteredRuleConfig)));
+            return contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persistConfig(databaseName, Collections.singleton(toBeAlteredRuleConfig));
         }
+        return Collections.emptyList();
     }
     
     @Override
