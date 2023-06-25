@@ -38,14 +38,14 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!ReadwriteSplittingNodeConverter.isReadwriteSplittingPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!ReadwriteSplittingNodeConverter.getRuleRootNodeConverter().isRulePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> groupName = ReadwriteSplittingNodeConverter.getGroupNameByActiveVersionPath(event.getKey());
+        Optional<String> groupName = ReadwriteSplittingNodeConverter.getDataSourceNodeConvertor().getNameByActiveVersionPath(event.getKey());
         if (groupName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createReadwriteSplittingConfigEvent(databaseName, groupName.get(), event);
         }
-        Optional<String> loadBalancerName = ReadwriteSplittingNodeConverter.getLoadBalancerNameByActiveVersionPath(event.getKey());
+        Optional<String> loadBalancerName = ReadwriteSplittingNodeConverter.getLoadBalancerNodeConverter().getNameByActiveVersionPath(event.getKey());
         if (loadBalancerName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createLoadBalanceEvent(databaseName, loadBalancerName.get(), event);
         }
