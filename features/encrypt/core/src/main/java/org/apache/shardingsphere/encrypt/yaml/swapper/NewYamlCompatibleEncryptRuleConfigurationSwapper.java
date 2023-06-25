@@ -54,10 +54,11 @@ public final class NewYamlCompatibleEncryptRuleConfigurationSwapper implements N
     public Collection<YamlDataNode> swapToDataNodes(final CompatibleEncryptRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (Entry<String, AlgorithmConfiguration> entry : data.getEncryptors().entrySet()) {
-            result.add(new YamlDataNode(CompatibleEncryptNodeConverter.getEncryptorPath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
+            result.add(new YamlDataNode(CompatibleEncryptNodeConverter.getEncryptorNodeConvertor().getNamePath(entry.getKey()),
+                    YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         for (EncryptTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(CompatibleEncryptNodeConverter.getTableNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
+            result.add(new YamlDataNode(CompatibleEncryptNodeConverter.getTableNodeConvertor().getNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
         }
         return result;
     }
@@ -67,11 +68,11 @@ public final class NewYamlCompatibleEncryptRuleConfigurationSwapper implements N
         Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> encryptors = new HashMap<>();
         for (YamlDataNode each : dataNodes) {
-            if (CompatibleEncryptNodeConverter.isTablePath(each.getKey())) {
-                CompatibleEncryptNodeConverter.getTableName(each.getKey())
+            if (CompatibleEncryptNodeConverter.getTableNodeConvertor().isPath(each.getKey())) {
+                CompatibleEncryptNodeConverter.getTableNodeConvertor().getName(each.getKey())
                         .ifPresent(tableName -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlCompatibleEncryptTableRuleConfiguration.class))));
-            } else if (CompatibleEncryptNodeConverter.isEncryptorPath(each.getKey())) {
-                CompatibleEncryptNodeConverter.getEncryptorName(each.getKey())
+            } else if (CompatibleEncryptNodeConverter.getEncryptorNodeConvertor().isPath(each.getKey())) {
+                CompatibleEncryptNodeConverter.getEncryptorNodeConvertor().getName(each.getKey())
                         .ifPresent(encryptorName -> encryptors.put(encryptorName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
             }
         }
