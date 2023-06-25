@@ -19,10 +19,8 @@ package org.apache.shardingsphere.mask.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 
 /**
  * Mask node converter.
@@ -30,119 +28,36 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MaskNodeConverter {
     
-    private static final String ROOT_NODE = "mask";
+    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("mask");
     
-    private static final String TABLES_NODE = "tables";
+    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
     
-    private static final String ALGORITHMS_NODE = "algorithms";
-    
-    private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
-    
-    private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
-    
-    private static final String RULE_ACTIVE_VERSION = "/([\\w\\-]+)/active_version$";
+    private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
     
     /**
-     * Get table name path.
-     * 
-     * @param tableName table name
-     * @return table name path
-     */
-    public static String getTableNamePath(final String tableName) {
-        return String.join("/", TABLES_NODE, tableName);
-    }
-    
-    /**
-     * Get mask algorithm path.
-     * 
-     * @param maskAlgorithmName mask algorithm name
-     * @return mask algorithm path
-     */
-    public static String getMaskAlgorithmPath(final String maskAlgorithmName) {
-        return String.join("/", ALGORITHMS_NODE, maskAlgorithmName);
-    }
-    
-    /**
-     * Is mask path.
+     * Get rule root node converter.
      *
-     * @param rulePath rule path
-     * @return true or false
+     * @return rule root node converter
      */
-    public static boolean isMaskPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
+    public static RuleRootNodeConverter getRuleRootNodeConverter() {
+        return ROOT_NODE_CONVERTER;
     }
     
     /**
-     * Is mask table path.
+     * Get table node convertor.
      *
-     * @param rulePath rule path
-     * @return true or false
+     * @return table node convertor
      */
-    public static boolean isTablePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
+    public static RuleItemNodeConverter getTableNodeConvertor() {
+        return TABLE_NODE_CONVERTER;
     }
     
     /**
-     * Is mask algorithm path.
+     * Get algorithm node convertor.
      *
-     * @param rulePath rule path
-     * @return true or false
+     * @return algorithm node convertor
      */
-    public static boolean isAlgorithmPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Get table name.
-     *
-     * @param rulePath rule path
-     * @return table name
-     */
-    public static Optional<String> getTableName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     *  Get algorithm name.
-     *
-     * @param rulePath rule path
-     * @return algorithm name
-     */
-    public static Optional<String> getAlgorithmName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get table name by active version.
-     *
-     * @param activeVersionPath active version path
-     * @return table name
-     */
-    public static Optional<String> getTableNameByActiveVersionPath(final String activeVersionPath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(activeVersionPath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get algorithm name by active version.
-     *
-     * @param activeVersionPath active version path
-     * @return algorithm name
-     */
-    public static Optional<String> getAlgorithmNameByActiveVersionPath(final String activeVersionPath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(activeVersionPath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    public static RuleItemNodeConverter getAlgorithmNodeConvertor() {
+        return ALGORITHM_NODE_CONVERTER;
     }
 }
