@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.event.config;
+package org.apache.shardingsphere.readwritesplitting.event.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Delete mask configuration event.
+ * Delete readwrite-splitting configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DeleteMaskConfigurationEvent implements GovernanceEvent {
+public final class DeleteReadwriteSplittingDataSourceEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final String tableName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    private final String groupName;
 }

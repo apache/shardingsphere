@@ -25,12 +25,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Global rule node converter.
+ * Global node converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GlobalRuleNodeConverter {
+public final class GlobalNodeConverter {
     
-    private static final String ROOT_NODE = "rules";
+    private static final String RULES_NODE = "rules";
+    
+    private static final String PROPS_NODE = "props";
     
     private static final String VERSIONS = "versions";
     
@@ -48,19 +50,35 @@ public final class GlobalRuleNodeConverter {
     }
     
     private static String getVersionsNode(final String ruleName) {
-        return String.join("/", "", ROOT_NODE, ruleName, VERSIONS);
+        return String.join("/", "", RULES_NODE, ruleName, VERSIONS);
     }
     
     /**
-     * Is active version path.
+     * Is rule active version path.
      *
      * @param rulePath rule path
-     * @return version
+     * @return true or false
      */
-    public static boolean isActiveVersionPath(final String rulePath) {
+    public static boolean isRuleActiveVersionPath(final String rulePath) {
         Pattern pattern = Pattern.compile(getRuleNameNode() + "/([\\w\\-]+)/active_version$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
+    }
+    
+    /**
+     * Is props active version path.
+     *
+     * @param propsPath props path
+     * @return true or false
+     */
+    public static boolean isPropsActiveVersionPath(final String propsPath) {
+        Pattern pattern = Pattern.compile(getPropsNode() + "/active_version$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(propsPath);
+        return matcher.find();
+    }
+    
+    private static String getPropsNode() {
+        return String.join("/", "", PROPS_NODE);
     }
     
     /**
@@ -76,6 +94,6 @@ public final class GlobalRuleNodeConverter {
     }
     
     private static String getRuleNameNode() {
-        return String.join("/", "", ROOT_NODE);
+        return String.join("/", "", RULES_NODE);
     }
 }

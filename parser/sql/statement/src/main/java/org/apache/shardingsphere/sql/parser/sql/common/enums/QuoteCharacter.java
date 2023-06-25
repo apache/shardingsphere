@@ -70,6 +70,16 @@ public enum QuoteCharacter {
     }
     
     /**
+     * Unwrap value with quote character.
+     *
+     * @param value value to be unwrapped
+     * @return unwrapped value
+     */
+    public String unwrap(final String value) {
+        return isWrapped(value) ? value.substring(startDelimiter.length(), value.length() - endDelimiter.length()) : value;
+    }
+    
+    /**
      * Is wrapped by quote character.
      * 
      * @param value value to be judged

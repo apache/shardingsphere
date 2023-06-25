@@ -23,16 +23,12 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
  * Add sharding auto table configuration event.
- *
- * @param <T> sharding auto table configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddShardingAutoTableConfigurationEvent<T> implements GovernanceEvent {
+public final class AddShardingAutoTableConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
-    
-    private final T config;
     
     private final String activeVersionKey;
     

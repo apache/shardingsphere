@@ -15,26 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.event.table.broadcast;
+package org.apache.shardingsphere.infra.metadata.converter;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
-import java.util.Collection;
+import java.util.regex.Pattern;
 
 /**
- * Add broadcast table configuration event.
+ * Rule root node converter.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AddBroadcastTableConfigurationEvent implements GovernanceEvent {
+public final class RuleRootNodeConverter {
     
-    private final String databaseName;
+    private static final String RULE_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
     
-    private final Collection<String> config;
+    @Getter
+    private final String ruleNodePrefix;
     
-    private final String activeVersionKey;
+    private final Pattern rulePathPattern;
     
-    private final String activeVersion;
+    public RuleRootNodeConverter(final String ruleType) {
+        ruleNodePrefix = RULE_NODE_PREFIX + ruleType;
+        rulePathPattern = Pattern.compile(ruleNodePrefix + "\\.*", Pattern.CASE_INSENSITIVE);
+    }
+    
+    /**
+     * Is rule path.
+     *
+     * @param rulePath rule path to be judged
+     * @return true or false
+     */
+    public boolean isRulePath(final String rulePath) {
+        return rulePathPattern.matcher(rulePath).find();
+    }
 }

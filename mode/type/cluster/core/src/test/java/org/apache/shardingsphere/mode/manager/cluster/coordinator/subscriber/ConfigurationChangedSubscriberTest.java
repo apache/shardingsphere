@@ -127,7 +127,6 @@ class ConfigurationChangedSubscriberTest {
     
     @Test
     void assertRenewForRuleConfigurationsChanged() {
-        when(persistService.getMetaDataVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("db"), is(database));
         subscriber.renew(new RuleConfigurationsChangedEvent("db", "0", Collections.emptyList()));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("db"), not(database));
@@ -135,7 +134,6 @@ class ConfigurationChangedSubscriberTest {
     
     @Test
     void assertRenewForDataSourceChanged() {
-        when(persistService.getMetaDataVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         subscriber.renew(new DataSourceChangedEvent("db", "0", createChangedDataSourcePropertiesMap()));
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getDataSources().containsKey("ds_2"));
     }

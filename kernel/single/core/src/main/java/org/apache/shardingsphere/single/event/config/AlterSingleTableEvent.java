@@ -20,7 +20,6 @@ package org.apache.shardingsphere.single.event.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 /**
  * Alter single table event.
@@ -31,5 +30,7 @@ public final class AlterSingleTableEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final SingleRuleConfiguration config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

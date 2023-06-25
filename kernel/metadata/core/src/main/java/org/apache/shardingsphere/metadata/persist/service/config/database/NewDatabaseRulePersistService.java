@@ -85,9 +85,8 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
             }
             List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getDatabaseRuleVersionsNode(databaseName, ruleName, each.getKey()));
             String nextVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            String persistKey = NewDatabaseMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), nextVersion);
-            repository.persist(persistKey, each.getValue());
-            result.add(new MetaDataVersion(persistKey, getActiveVersion(databaseName, ruleName, each.getKey()), nextVersion));
+            repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), nextVersion), each.getValue());
+            result.add(new MetaDataVersion(NewDatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey()), getActiveVersion(databaseName, ruleName, each.getKey()), nextVersion));
         }
         return result;
     }

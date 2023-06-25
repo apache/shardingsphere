@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.event.table.broadcast;
+package org.apache.shardingsphere.shadow.event.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
-import java.util.Collection;
-
 /**
- * Alter broadcast table configuration event.
+ * Delete shadow configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterBroadcastTableConfigurationEvent implements GovernanceEvent {
+public final class DeleteShadowDataSourceEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final Collection<String> config;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    private final String dataSourceName;
 }

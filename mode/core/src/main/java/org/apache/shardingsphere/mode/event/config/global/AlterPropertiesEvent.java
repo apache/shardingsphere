@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.event.config;
+package org.apache.shardingsphere.mode.event.config.global;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 
 /**
- * Alter shadow configuration event.
+ * Alter properties event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterShadowConfigurationEvent implements GovernanceEvent {
-    
-    private final String databaseName;
-    
-    private final String dataSourceName;
-    
-    private final ShadowDataSourceConfiguration config;
+public final class AlterPropertiesEvent implements GovernanceEvent {
     
     private final String activeVersionKey;
     

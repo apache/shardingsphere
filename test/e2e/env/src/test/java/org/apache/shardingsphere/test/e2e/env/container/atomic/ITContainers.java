@@ -110,5 +110,6 @@ public final class ITContainers implements Startable {
     public void stop() {
         embeddedContainers.forEach(Startable::close);
         dockerContainers.forEach(Startable::close);
+        network.close();
     }
 }

@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.shadow.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.event.config.AddShadowConfigurationEvent;
-import org.apache.shardingsphere.shadow.event.config.AlterShadowConfigurationEvent;
-import org.apache.shardingsphere.shadow.event.config.DeleteShadowConfigurationEvent;
+import org.apache.shardingsphere.shadow.event.datasource.AddShadowDataSourceEvent;
+import org.apache.shardingsphere.shadow.event.datasource.AlterShadowDataSourceEvent;
+import org.apache.shardingsphere.shadow.event.datasource.DeleteShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 
 import java.util.Map;
 import java.util.Optional;
@@ -37,8 +38,7 @@ import java.util.Optional;
  * Shadow configuration subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
-public final class ShadowConfigurationSubscriber implements RuleConfigurationSubscribeCoordinator {
+public final class ShadowDataSourceSubscriber implements RuleConfigurationSubscribeCoordinator {
     
     private Map<String, ShardingSphereDatabase> databases;
     
@@ -48,7 +48,6 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
     public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
         this.databases = databases;
         this.instanceContext = instanceContext;
-        instanceContext.getEventBusContext().register(this);
     }
     
     /**
@@ -57,12 +56,13 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
      * @param event add shadow configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddShadowConfigurationEvent event) {
+    public synchronized void renew(final AddShadowDataSourceEvent event) {
         if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ShadowDataSourceConfiguration needToAddedConfig = event.getConfig();
+        ShadowDataSourceConfiguration needToAddedConfig = swapShadowDataSourceRuleConfig(event.getDataSourceName(),
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
         ShadowRuleConfiguration config;
         if (rule.isPresent()) {
@@ -82,12 +82,13 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
      * @param event alter shadow configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterShadowConfigurationEvent event) {
+    public synchronized void renew(final AlterShadowDataSourceEvent event) {
         if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ShadowDataSourceConfiguration needToAlteredConfig = event.getConfig();
+        ShadowDataSourceConfiguration needToAlteredConfig = swapShadowDataSourceRuleConfig(event.getDataSourceName(),
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(event.getDataSourceName()));
         config.getDataSources().add(needToAlteredConfig);
@@ -100,13 +101,15 @@ public final class ShadowConfigurationSubscriber implements RuleConfigurationSub
      * @param event delete shadow configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShadowConfigurationEvent event) {
-        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
+    public synchronized void renew(final DeleteShadowDataSourceEvent event) {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(event.getDataSourceName()));
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private ShadowDataSourceConfiguration swapShadowDataSourceRuleConfig(final String dataSourceName, final String yamlContext) {
+        YamlShadowDataSourceConfiguration yamlConfig = YamlEngine.unmarshal(yamlContext, YamlShadowDataSourceConfiguration.class);
+        return new ShadowDataSourceConfiguration(dataSourceName, yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
     }
 }

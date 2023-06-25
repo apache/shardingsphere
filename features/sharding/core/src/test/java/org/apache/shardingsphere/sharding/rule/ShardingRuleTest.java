@@ -365,18 +365,18 @@ class ShardingRuleTest {
     }
     
     @Test
-    void assertTableRuleExists() {
-        assertTrue(createMaximumShardingRule().tableRuleExists(Collections.singleton("logic_table")));
+    void assertContainsShardingTable() {
+        assertTrue(createMaximumShardingRule().containsShardingTable(Collections.singleton("logic_table")));
     }
     
     @Test
-    void assertTableRuleExistsForMultipleTables() {
-        assertTrue(createMaximumShardingRule().tableRuleExists(Arrays.asList("logic_table", "table_0")));
+    void assertContainsShardingTableForMultipleTables() {
+        assertTrue(createMaximumShardingRule().containsShardingTable(Arrays.asList("logic_table", "table_0")));
     }
     
     @Test
-    void assertTableRuleNotExists() {
-        assertFalse(createMinimumShardingRule().tableRuleExists(Collections.singleton("table_0")));
+    void assertNotContainsShardingTable() {
+        assertFalse(createMinimumShardingRule().containsShardingTable(Collections.singleton("table_0")));
     }
     
     @Test

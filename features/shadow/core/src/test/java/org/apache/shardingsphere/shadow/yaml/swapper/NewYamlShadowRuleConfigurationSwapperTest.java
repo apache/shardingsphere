@@ -52,10 +52,10 @@ class NewYamlShadowRuleConfigurationSwapperTest {
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(4));
         Iterator<YamlDataNode> iterator = result.iterator();
-        assertThat(iterator.next().getKey(), is("data_sources/foo"));
-        assertThat(iterator.next().getKey(), is("tables/foo_table"));
         assertThat(iterator.next().getKey(), is("algorithms/FIXTURE"));
         assertThat(iterator.next().getKey(), is("default_algorithm_name"));
+        assertThat(iterator.next().getKey(), is("data_sources/foo"));
+        assertThat(iterator.next().getKey(), is("tables/foo_table"));
     }
     
     private ShadowRuleConfiguration createMaximumShadowRule() {

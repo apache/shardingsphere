@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.event.config;
+package org.apache.shardingsphere.shadow.event.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Alter readwrite-splitting configuration event.
+ * Add shadow configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterReadwriteSplittingConfigurationEvent implements GovernanceEvent {
+public final class AddShadowDataSourceEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final String groupName;
+    private final String dataSourceName;
     
     private final String activeVersionKey;
     

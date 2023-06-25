@@ -85,7 +85,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Database connector.
@@ -94,9 +94,9 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private final ProxySQLExecutor proxySQLExecutor;
     
-    private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
+    private final Collection<Statement> cachedStatements = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
-    private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
+    private final Collection<ResultSet> cachedResultSets = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
     private final String driverType;
     

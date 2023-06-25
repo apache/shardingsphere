@@ -73,9 +73,10 @@ public final class NewViewMetaDataPersistService implements SchemaMetaDataPersis
             String nextActiveVersion = NewDatabaseMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName, versions.isEmpty()
                     ? DEFAULT_VERSION
                     : String.valueOf(Integer.parseInt(versions.get(0)) + 1));
-            String persistKey = NewDatabaseMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName, nextActiveVersion);
-            repository.persist(persistKey, YamlEngine.marshal(new YamlViewSwapper().swapToYamlConfiguration(entry.getValue())));
-            result.add(new MetaDataVersion(persistKey, getActiveVersion(databaseName, schemaName, viewName), nextActiveVersion));
+            repository.persist(NewDatabaseMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName, nextActiveVersion),
+                    YamlEngine.marshal(new YamlViewSwapper().swapToYamlConfiguration(entry.getValue())));
+            result.add(new MetaDataVersion(NewDatabaseMetaDataNode.getViewNode(databaseName, schemaName, viewName),
+                    getActiveVersion(databaseName, schemaName, viewName), nextActiveVersion));
         }
         return result;
     }

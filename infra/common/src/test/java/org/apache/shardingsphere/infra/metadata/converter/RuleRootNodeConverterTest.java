@@ -15,20 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.event.config;
+package org.apache.shardingsphere.infra.metadata.converter;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.junit.jupiter.api.Test;
 
-/**
- * Delete readwrite-splitting configuration event.
- */
-@RequiredArgsConstructor
-@Getter
-public final class DeleteReadwriteSplittingConfigurationEvent implements GovernanceEvent {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class RuleRootNodeConverterTest {
     
-    private final String databaseName;
+    private final RuleRootNodeConverter converter = new RuleRootNodeConverter("foo");
     
-    private final String groupName;
+    @Test
+    void assertGetRuleNodePrefix() {
+        assertThat(converter.getRuleNodePrefix(), is("/([\\w\\-]+)/([\\w\\-]+)/rules/foo"));
+    }
+    
+    @Test
+    void assertIsRulePath() {
+        assertTrue(converter.isRulePath("/metadata/foo_db/rules/foo/tables/foo_table"));
+        assertFalse(converter.isRulePath("/metadata/foo_db/rules/bar/tables/foo_table"));
+    }
 }

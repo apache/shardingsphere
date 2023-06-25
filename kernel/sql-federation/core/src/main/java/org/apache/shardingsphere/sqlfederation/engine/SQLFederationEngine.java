@@ -43,18 +43,18 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchem
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
+import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
+import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
+import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
+import org.apache.shardingsphere.sqlfederation.compiler.statement.SQLStatementCompiler;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationDataContext;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
-import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
-import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
-import org.apache.shardingsphere.sqlfederation.compiler.statement.SQLStatementCompiler;
-import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
-import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
@@ -121,7 +121,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             return true;
         }
         // TODO END
-        boolean sqlFederationEnabled = globalRuleMetaData.getSingleRule(SQLFederationRule.class).getConfiguration().isSqlFederationEnabled();
+        boolean sqlFederationEnabled = sqlFederationRule.getConfiguration().isSqlFederationEnabled();
         if (!sqlFederationEnabled || !(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
@@ -197,7 +197,8 @@ public final class SQLFederationEngine implements AutoCloseable {
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, metaData.getProps(), federationContext);
         EnumerablePushDownTableScanExecutor pushDownTableScanExecutor =
                 new EnumerablePushDownTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, metaData.getGlobalRuleMetaData(), executorContext, statistics);
-        for (String each : federationContext.getQueryContext().getSqlStatementContext().getTablesContext().getTableNames()) {
+        // TODO register only the required tables
+        for (String each : metaData.getDatabase(databaseName).getSchema(schemaName).getAllTableNames()) {
             Table table = sqlFederationSchema.getTable(each);
             if (table instanceof SQLFederationTable) {
                 ((SQLFederationTable) table).setPushDownTableScanExecutor(pushDownTableScanExecutor);

@@ -32,7 +32,6 @@ import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -98,10 +97,41 @@ public final class EncryptTable {
     }
     
     /**
+     * Is encrypt column or not.
+     *
+     * @param logicColumnName logic column name
+     * @return encrypt column or not
+     */
+    public boolean isEncryptColumn(final String logicColumnName) {
+        return columns.containsKey(logicColumnName);
+    }
+    
+    /**
+     * Get encrypt column.
+     *
+     * @param logicColumnName logic column name
+     * @return encrypt column
+     */
+    public EncryptColumn getEncryptColumn(final String logicColumnName) {
+        ShardingSpherePreconditions.checkState(isEncryptColumn(logicColumnName), () -> new EncryptColumnNotFoundException(table, logicColumnName));
+        return columns.get(logicColumnName);
+    }
+    
+    /**
+     * Is cipher column or not.
+     *
+     * @param columnName column name
+     * @return cipher column or not
+     */
+    public boolean isCipherColumn(final String columnName) {
+        return columns.values().stream().anyMatch(each -> each.getCipher().getName().equalsIgnoreCase(columnName));
+    }
+    
+    /**
      * Get logic column by cipher column.
      * 
      * @param cipherColumnName cipher column name
-     * @return logic column
+     * @return logic column name
      * @throws EncryptLogicColumnNotFoundException encrypt logic column not found exception
      */
     public String getLogicColumnByCipherColumn(final String cipherColumnName) {
@@ -114,76 +144,22 @@ public final class EncryptTable {
     }
     
     /**
-     * Is cipher column or not.
+     * Is assisted query column or not.
      *
-     * @param logicColumnName logic column name
-     * @return cipher column or not
+     * @param columnName column name
+     * @return assisted query column or not
      */
-    public boolean isCipherColumn(final String logicColumnName) {
-        return columns.values().stream().anyMatch(each -> each.getCipher().getName().equalsIgnoreCase(logicColumnName));
+    public boolean isAssistedQueryColumn(final String columnName) {
+        return columns.values().stream().anyMatch(each -> columnName.equalsIgnoreCase(each.getAssistedQuery().map(AssistedQueryColumnItem::getName).orElse(null)));
     }
     
     /**
-     * Get assisted query columns.
+     * Is like query column or not.
      *
-     * @return assisted query columns
+     * @param columnName column name
+     * @return like query column or not
      */
-    public Collection<String> getAssistedQueryColumns() {
-        Collection<String> result = new LinkedList<>();
-        for (EncryptColumn each : columns.values()) {
-            if (each.getAssistedQuery().isPresent()) {
-                result.add(each.getAssistedQuery().get().getName());
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get like query columns.
-     *
-     * @return like query columns
-     */
-    public Collection<String> getLikeQueryColumns() {
-        Collection<String> result = new LinkedList<>();
-        for (EncryptColumn each : columns.values()) {
-            if (each.getLikeQuery().isPresent()) {
-                result.add(each.getLikeQuery().get().getName());
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get logic and cipher columns.
-     *
-     * @return logic and cipher columns
-     */
-    public Map<String, String> getLogicAndCipherColumns() {
-        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getCipher().getName());
-        }
-        return result;
-    }
-    
-    /**
-     * Is encrypt column or not.
-     *
-     * @param logicColumnName logic column name
-     * @return encrypt column or not
-     */
-    public boolean isEncryptColumn(final String logicColumnName) {
-        return columns.containsKey(logicColumnName);
-    }
-    
-    /**
-     * Get encrypt column.
-     * 
-     * @param logicColumnName logic column name
-     * @return encrypt column
-     */
-    public EncryptColumn getEncryptColumn(final String logicColumnName) {
-        ShardingSpherePreconditions.checkState(isEncryptColumn(logicColumnName), () -> new EncryptColumnNotFoundException(table, logicColumnName));
-        return columns.get(logicColumnName);
+    public boolean isLikeQueryColumn(final String columnName) {
+        return columns.values().stream().anyMatch(each -> columnName.equalsIgnoreCase(each.getLikeQuery().map(LikeQueryColumnItem::getName).orElse(null)));
     }
 }

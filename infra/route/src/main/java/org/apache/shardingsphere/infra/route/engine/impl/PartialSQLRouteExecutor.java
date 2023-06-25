@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.infra.route.engine.impl;
 
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintDataSourceNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -60,7 +59,7 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public RouteContext route(final ConnectionContext connectionContext, final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         RouteContext result = new RouteContext();
-        Optional<String> dataSourceName = findDataSourceByHint(queryContext.getSqlStatementContext(), database.getResourceMetaData().getStorageUnits());
+        Optional<String> dataSourceName = findDataSourceByHint(queryContext.getHintValueContext(), database.getResourceMetaData().getStorageUnits());
         if (dataSourceName.isPresent()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), Collections.emptyList()));
             return result;
@@ -79,12 +78,12 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
         return result;
     }
     
-    private Optional<String> findDataSourceByHint(final SQLStatementContext sqlStatementContext, final Map<String, StorageUnit> storageUnits) {
+    private Optional<String> findDataSourceByHint(final HintValueContext hintValueContext, final Map<String, StorageUnit> storageUnits) {
         Optional<String> result;
         if (HintManager.isInstantiated() && HintManager.getDataSourceName().isPresent()) {
             result = HintManager.getDataSourceName();
         } else {
-            result = ((CommonSQLStatementContext) sqlStatementContext).findHintDataSourceName();
+            result = hintValueContext.findHintDataSourceName();
         }
         if (result.isPresent() && !storageUnits.containsKey(result.get())) {
             throw new SQLHintDataSourceNotExistsException(result.get());

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.audit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -45,16 +46,17 @@ public final class SQLAuditEngine {
      * @param globalRuleMetaData global rule meta data
      * @param database database
      * @param grantee grantee
+     * @param hintValueContext hint value context
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void audit(final SQLStatementContext sqlStatementContext, final List<Object> params,
-                             final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final Grantee grantee) {
+                             final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final Grantee grantee, final HintValueContext hintValueContext) {
         Collection<ShardingSphereRule> rules = new LinkedList<>(globalRuleMetaData.getRules());
         if (null != database) {
             rules.addAll(database.getRuleMetaData().getRules());
         }
         for (Entry<ShardingSphereRule, SQLAuditor> entry : OrderedSPILoader.getServices(SQLAuditor.class, rules).entrySet()) {
-            entry.getValue().audit(sqlStatementContext, params, grantee, globalRuleMetaData, database, entry.getKey());
+            entry.getValue().audit(sqlStatementContext, params, grantee, globalRuleMetaData, database, entry.getKey(), hintValueContext);
         }
     }
 }

@@ -41,7 +41,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -68,13 +67,9 @@ class EncryptCreateTableTokenGeneratorTest {
     
     private EncryptTable mockEncryptTable() {
         EncryptTable result = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
-        EncryptColumn column = mockEncryptColumn();
+        EncryptColumn encryptColumn = mockEncryptColumn();
         when(result.isEncryptColumn("certificate_number")).thenReturn(true);
-        when(result.getEncryptColumn("certificate_number").getCipher().getName()).thenReturn(column.getCipher().getName());
-        when(result.getEncryptColumn("certificate_number").getAssistedQuery())
-                .thenReturn(Optional.of(new AssistedQueryColumnItem(column.getAssistedQuery().map(AssistedQueryColumnItem::getName).orElse(null), mock(AssistedEncryptAlgorithm.class))));
-        when(result.getEncryptColumn("certificate_number").getLikeQuery())
-                .thenReturn(Optional.of(new LikeQueryColumnItem(column.getLikeQuery().map(LikeQueryColumnItem::getName).orElse(null), mock(LikeEncryptAlgorithm.class))));
+        when(result.getEncryptColumn("certificate_number")).thenReturn(encryptColumn);
         return result;
     }
     
