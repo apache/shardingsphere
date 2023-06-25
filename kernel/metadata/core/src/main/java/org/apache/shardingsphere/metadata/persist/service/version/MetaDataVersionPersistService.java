@@ -31,6 +31,8 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
     
     private static final String ACTIVE_VERSION = "active_version";
     
+    private static final String VERSIONS = "versions";
+    
     private final PersistRepository repository;
     
     // TODO Need to use transaction operation
@@ -38,6 +40,7 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
     public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
         for (MetaDataVersion each : metaDataVersions) {
             repository.persist(each.getKey() + "/" + ACTIVE_VERSION, each.getNextActiveVersion());
+            repository.delete(String.join("/", each.getKey(), VERSIONS, each.getCurrentActiveVersion()));
         }
     }
 }

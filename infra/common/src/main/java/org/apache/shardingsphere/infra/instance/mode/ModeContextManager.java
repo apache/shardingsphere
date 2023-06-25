@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Collections;
 
 /**
  * Mode context manager.
@@ -144,10 +144,8 @@ public interface ModeContextManager {
      * Alter global rule configuration.
      *
      * @param globalRuleConfig global rule config
-     * @return meta data versions
      */
-    default Collection<MetaDataVersion> alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) {
-        return Collections.emptyList();
+    default void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) {
     }
     
     /**
