@@ -91,9 +91,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine {
         MySQLPacketPayload payload = new MySQLPacketPayload(prepareMessageHeader(out).markWriterIndex(), context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
         try {
             message.write(payload);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final RuntimeException ex) {
             out.resetWriterIndex();
             SQLException unknownSQLException = new UnknownSQLException(ex).toSQLException();
             new MySQLErrPacket(unknownSQLException.getErrorCode(), unknownSQLException.getSQLState(), unknownSQLException.getMessage()).write(payload);
