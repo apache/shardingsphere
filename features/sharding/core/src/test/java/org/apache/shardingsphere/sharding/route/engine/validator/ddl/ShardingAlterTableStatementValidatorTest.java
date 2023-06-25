@@ -68,7 +68,7 @@ class ShardingAlterTableStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
         SQLStatementContext sqlStatementContext = new AlterTableStatementContext(sqlStatement);
-        when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
+        when(shardingRule.containsShardingTable(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
                 () -> new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
