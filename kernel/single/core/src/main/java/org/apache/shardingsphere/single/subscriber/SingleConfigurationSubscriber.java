@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.single.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
@@ -38,7 +37,6 @@ import java.util.Optional;
  * Single configuration subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
 public final class SingleConfigurationSubscriber implements RuleConfigurationSubscribeCoordinator {
     
     private Map<String, ShardingSphereDatabase> databases;

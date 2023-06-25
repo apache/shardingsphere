@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.event.table.AddEncryptTableEvent;
@@ -41,7 +40,6 @@ import java.util.Optional;
  * Encrypt table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
 public final class EncryptTableSubscriber implements RuleConfigurationSubscribeCoordinator {
     
     private Map<String, ShardingSphereDatabase> databases;

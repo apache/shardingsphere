@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -38,7 +37,6 @@ import java.util.Map;
  * Readwrite-splitting load-balance subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
 public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleConfigurationSubscribeCoordinator {
     
     private Map<String, ShardingSphereDatabase> databases;
