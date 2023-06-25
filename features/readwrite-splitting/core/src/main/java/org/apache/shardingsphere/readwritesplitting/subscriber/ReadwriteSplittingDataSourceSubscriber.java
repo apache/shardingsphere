@@ -19,9 +19,10 @@ package org.apache.shardingsphere.readwritesplitting.subscriber;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.infra.rule.RuleChangedSubscriber;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -41,17 +42,12 @@ import java.util.Optional;
  * Readwrite-splitting configuration subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ReadwriteSplittingDataSourceSubscriber implements RuleConfigurationSubscribeCoordinator {
+@Setter
+public final class ReadwriteSplittingDataSourceSubscriber implements RuleChangedSubscriber {
     
     private Map<String, ShardingSphereDatabase> databases;
     
     private InstanceContext instanceContext;
-    
-    @Override
-    public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        this.databases = databases;
-        this.instanceContext = instanceContext;
-    }
     
     /**
      * Renew with add readwrite-splitting configuration.
