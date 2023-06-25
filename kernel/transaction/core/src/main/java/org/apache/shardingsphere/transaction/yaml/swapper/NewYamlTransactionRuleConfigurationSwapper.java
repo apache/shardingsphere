@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.converter.GlobalNodeConverter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamGlobalRuleConfigurationSwapper;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.constant.TransactionOrder;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
@@ -58,7 +59,7 @@ public final class NewYamlTransactionRuleConfigurationSwapper implements NewYamG
             }
             return YamlEngine.unmarshal(each.getValue(), TransactionRuleConfiguration.class);
         }
-        return new TransactionRuleConfiguration("", "", new Properties());
+        return new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties());
     }
     
     @Override
