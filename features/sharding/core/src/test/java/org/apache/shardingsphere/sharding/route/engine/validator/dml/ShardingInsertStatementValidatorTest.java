@@ -104,7 +104,7 @@ class ShardingInsertStatementValidatorTest {
         SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
-        when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
+        when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
         when(schema.containsTable("user")).thenReturn(true);
         when(database.getSchema(any())).thenReturn(schema);
         when(database.getName()).thenReturn("sharding_db");
@@ -152,7 +152,7 @@ class ShardingInsertStatementValidatorTest {
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(true);
         TablesContext multiTablesContext = createMultiTablesContext();
         when(shardingRule.isAllBindingTables(multiTablesContext.getTableNames())).thenReturn(false);
-        when(shardingRule.tableRuleExists(multiTablesContext.getTableNames())).thenReturn(true);
+        when(shardingRule.containsShardingTable(multiTablesContext.getTableNames())).thenReturn(true);
         SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTableNames().addAll(multiTablesContext.getTableNames());
         when(schema.containsTable("user")).thenReturn(true);
