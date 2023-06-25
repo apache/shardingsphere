@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.broadcast.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.event.config.AddBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.config.AlterBroadcastTableEvent;
@@ -38,7 +37,6 @@ import java.util.Optional;
  * Broadcast configuration subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
 public final class BroadcastConfigurationSubscriber implements RuleConfigurationSubscribeCoordinator {
     
     private Map<String, ShardingSphereDatabase> databases;
