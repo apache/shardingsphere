@@ -41,8 +41,8 @@ class MetaDataVersionPersistServiceTest {
     }
     
     @Test
-    void assertGetActiveVersion() {
+    void assertSwitchActiveVersion() {
         metaDataVersionPersistService.switchActiveVersion(Collections.singletonList(new MetaDataVersion("foo_key", "0", "1")));
-        verify(repository).persist("foo_key", "1");
+        verify(repository).persist("foo_key/active_version", "1");
     }
 }

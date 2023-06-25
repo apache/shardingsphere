@@ -29,13 +29,15 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class MetaDataVersionPersistService implements MetaDataVersionBasedPersistService {
     
+    private static final String ACTIVE_VERSION = "active_version";
+    
     private final PersistRepository repository;
     
     // TODO Need to use transaction operation
     @Override
     public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
         for (MetaDataVersion each : metaDataVersions) {
-            repository.persist(each.getPersistKey(), each.getNextActiveVersion());
+            repository.persist(each.getKey() + "/" + ACTIVE_VERSION, each.getNextActiveVersion());
         }
     }
 }
