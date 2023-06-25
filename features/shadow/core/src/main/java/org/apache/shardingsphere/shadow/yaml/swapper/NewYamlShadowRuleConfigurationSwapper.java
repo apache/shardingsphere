@@ -51,16 +51,16 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
     public Collection<YamlDataNode> swapToDataNodes(final ShadowRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (Entry<String, AlgorithmConfiguration> entry : data.getShadowAlgorithms().entrySet()) {
-            result.add(new YamlDataNode(ShadowNodeConverter.getShadowAlgorithmPath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
+            result.add(new YamlDataNode(ShadowNodeConverter.getAlgorithmNodeConverter().getNamePath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         if (!Strings.isNullOrEmpty(data.getDefaultShadowAlgorithmName())) {
             result.add(new YamlDataNode(ShadowNodeConverter.getDefaultShadowAlgorithmPath(), data.getDefaultShadowAlgorithmName()));
         }
         for (ShadowDataSourceConfiguration each : data.getDataSources()) {
-            result.add(new YamlDataNode(ShadowNodeConverter.getDataSourcePath(each.getName()), YamlEngine.marshal(swapToDataSourceYamlConfiguration(each))));
+            result.add(new YamlDataNode(ShadowNodeConverter.getDataSourceNodeConvertor().getNamePath(each.getName()), YamlEngine.marshal(swapToDataSourceYamlConfiguration(each))));
         }
         for (Entry<String, ShadowTableConfiguration> entry : data.getTables().entrySet()) {
-            result.add(new YamlDataNode(ShadowNodeConverter.getTableNamePath(entry.getKey()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(entry.getValue()))));
+            result.add(new YamlDataNode(ShadowNodeConverter.getTableNodeConverter().getNamePath(entry.getKey()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         return result;
     }
@@ -76,17 +76,17 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
     public ShadowRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         for (YamlDataNode each : dataNodes) {
-            if (ShadowNodeConverter.isDataSourcePath(each.getKey())) {
-                ShadowNodeConverter.getDataSourceName(each.getKey())
+            if (ShadowNodeConverter.getDataSourceNodeConvertor().isPath(each.getKey())) {
+                ShadowNodeConverter.getDataSourceNodeConvertor().getName(each.getKey())
                         .ifPresent(dataSourceName -> result.getDataSources().add(swapDataSource(dataSourceName, YamlEngine.unmarshal(each.getValue(), YamlShadowDataSourceConfiguration.class))));
-            } else if (ShadowNodeConverter.isTablePath(each.getKey())) {
-                ShadowNodeConverter.getTableName(each.getKey())
+            } else if (ShadowNodeConverter.getTableNodeConverter().isPath(each.getKey())) {
+                ShadowNodeConverter.getTableNodeConverter().getName(each.getKey())
                         .ifPresent(tableName -> result.getTables().put(tableName, tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShadowTableConfiguration.class))));
-            } else if (ShadowNodeConverter.isAlgorithmPath(each.getKey())) {
-                ShadowNodeConverter.getAlgorithmName(each.getKey())
+            } else if (ShadowNodeConverter.getAlgorithmNodeConverter().isPath(each.getKey())) {
+                ShadowNodeConverter.getAlgorithmNodeConverter().getName(each.getKey())
                         .ifPresent(algorithmName -> result.getShadowAlgorithms().put(algorithmName,
                                 algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
-            } else if (ShadowNodeConverter.isDefaultAlgorithmNamePath(each.getKey())) {
+            } else if (ShadowNodeConverter.getDefaultAlgorithmNodeConverter().isPath(each.getKey())) {
                 result.setDefaultShadowAlgorithmName(each.getValue());
             }
         }

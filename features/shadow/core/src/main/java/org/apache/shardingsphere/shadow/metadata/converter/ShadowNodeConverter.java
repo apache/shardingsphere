@@ -19,10 +19,8 @@ package org.apache.shardingsphere.shadow.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 
 /**
  * Shadow node converter.
@@ -30,50 +28,61 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowNodeConverter {
     
-    private static final String ROOT_NODE = "shadow";
-    
-    private static final String DATA_SOURCES_NODE = "data_sources";
-    
-    private static final String TABLES_NODE = "tables";
-    
-    private static final String ALGORITHMS_NODE = "algorithms";
-    
     private static final String DEFAULT_ALGORITHM_NAME = "default_algorithm_name";
     
-    private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
+    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("shadow");
     
-    private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
+    private static final RuleItemNodeConverter DATA_SOURCE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "data_sources");
     
-    private static final String RULE_ACTIVE_VERSION = "/([\\w\\-]+)/active_version$";
+    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    
+    private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
+    
+    private static final RuleItemNodeConverter DEFAULT_ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_ALGORITHM_NAME);
     
     /**
-     * Get data source path.
+     * Get rule root node converter.
      *
-     * @param dataSourceName data source name
-     * @return data source path
+     * @return rule root node converter
      */
-    public static String getDataSourcePath(final String dataSourceName) {
-        return String.join("/", DATA_SOURCES_NODE, dataSourceName);
+    public static RuleRootNodeConverter getRuleRootNodeConverter() {
+        return ROOT_NODE_CONVERTER;
     }
     
     /**
-     * Get table name path.
+     * Get data source node convertor.
      *
-     * @param tableName table name
-     * @return table name path
+     * @return data source node convertor
      */
-    public static String getTableNamePath(final String tableName) {
-        return String.join("/", TABLES_NODE, tableName);
+    public static RuleItemNodeConverter getDataSourceNodeConvertor() {
+        return DATA_SOURCE_NODE_CONVERTER;
     }
     
     /**
-     * Get shadow algorithm path.
+     * Get table node convertor.
      *
-     * @param shadowAlgorithmName shadow algorithm name
-     * @return shadow algorithm path
+     * @return table node convertor
      */
-    public static String getShadowAlgorithmPath(final String shadowAlgorithmName) {
-        return String.join("/", ALGORITHMS_NODE, shadowAlgorithmName);
+    public static RuleItemNodeConverter getTableNodeConverter() {
+        return TABLE_NODE_CONVERTER;
+    }
+    
+    /**
+     * Get algorithm node converter.
+     *
+     * @return algorithm node converter
+     */
+    public static RuleItemNodeConverter getAlgorithmNodeConverter() {
+        return ALGORITHM_NODE_CONVERTER;
+    }
+    
+    /**
+     * Get default algorithm node converter.
+     *
+     * @return default algorithm node converter
+     */
+    public static RuleItemNodeConverter getDefaultAlgorithmNodeConverter() {
+        return DEFAULT_ALGORITHM_NODE_CONVERTER;
     }
     
     /**
@@ -83,137 +92,5 @@ public final class ShadowNodeConverter {
      */
     public static String getDefaultShadowAlgorithmPath() {
         return String.join("/", DEFAULT_ALGORITHM_NAME);
-    }
-    
-    /**
-     * Is shadow path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isShadowPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is shadow data sources path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isDataSourcePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is shadow table path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isTablePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is shadow algorithm path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isAlgorithmPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is default algorithm name path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isDefaultAlgorithmNamePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DEFAULT_ALGORITHM_NAME + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Get data source name.
-     *
-     * @param rulePath rule path
-     * @return data source name
-     */
-    public static Optional<String> getDataSourceName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get table name.
-     *
-     * @param rulePath rule path
-     * @return table name
-     */
-    public static Optional<String> getTableName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get algorithm name.
-     *
-     * @param rulePath rule path
-     * @return algorithm name
-     */
-    public static Optional<String> getAlgorithmName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get data source name by active version path.
-     *
-     * @param activeVersionPath rule path
-     * @return data source name
-     */
-    public static Optional<String> getDataSourceNameByActiveVersionPath(final String activeVersionPath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(activeVersionPath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get table name by active version path.
-     *
-     * @param activeVersionPath rule path
-     * @return table name
-     */
-    public static Optional<String> getTableNameByActiveVersionPath(final String activeVersionPath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(activeVersionPath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get algorithm name by active version path.
-     *
-     * @param activeVersionPath rule path
-     * @return algorithm name
-     */
-    public static Optional<String> getAlgorithmNameByActiveVersionPath(final String activeVersionPath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ALGORITHMS_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(activeVersionPath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
 }
