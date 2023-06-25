@@ -112,9 +112,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(out, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
         try {
             message.write(payload);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final RuntimeException ex) {
             payload.getByteBuf().resetWriterIndex();
             // TODO consider what severity to use
             PostgreSQLErrorResponsePacket errorResponsePacket = PostgreSQLErrorResponsePacket.newBuilder(
