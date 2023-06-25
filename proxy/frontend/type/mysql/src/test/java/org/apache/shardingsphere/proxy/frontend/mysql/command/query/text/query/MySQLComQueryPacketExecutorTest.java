@@ -133,7 +133,7 @@ class MySQLComQueryPacketExecutorTest {
     
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", new MySQLDatabaseType()));
+        when(result.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnitTypes()).thenReturn(Collections.singletonMap("foo_ds", new MySQLDatabaseType()));
         when(result.getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(new MySQLDatabaseType());
         ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(
                 Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),

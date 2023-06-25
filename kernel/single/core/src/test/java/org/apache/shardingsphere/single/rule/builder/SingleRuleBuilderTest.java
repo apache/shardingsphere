@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.rule.builder;
 
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
@@ -38,7 +39,7 @@ class SingleRuleBuilderTest {
     @Test
     void assertBuild() {
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class).iterator().next();
-        DatabaseRule actual = builder.build(mock(SingleRuleConfiguration.class), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
+        DatabaseRule actual = builder.build(mock(SingleRuleConfiguration.class), "", mock(StorageResource.class), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
         assertThat(actual, instanceOf(SingleRule.class));
     }
     
@@ -47,7 +48,7 @@ class SingleRuleBuilderTest {
     void assertBuildWithDefaultDataSource() {
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class).iterator().next();
         DatabaseRule actual = builder.build(
-                new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
+                new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"), "", mock(StorageResource.class), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
         assertThat(actual, instanceOf(SingleRule.class));
     }
 }

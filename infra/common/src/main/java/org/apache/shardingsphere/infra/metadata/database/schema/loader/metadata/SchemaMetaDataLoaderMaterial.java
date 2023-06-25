@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -36,6 +37,8 @@ public final class SchemaMetaDataLoaderMaterial {
     private final DataSource dataSource;
     
     private final DatabaseType storageType;
+    
+    private final StorageUnit storageUnit;
     
     private final String defaultSchemaName;
 }

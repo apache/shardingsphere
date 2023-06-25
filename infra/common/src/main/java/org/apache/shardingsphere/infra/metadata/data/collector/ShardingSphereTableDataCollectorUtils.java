@@ -69,7 +69,7 @@ public final class ShardingSphereTableDataCollectorUtils {
     }
     
     private static boolean isProtocolTypeAndStorageTypeDifferent(final ShardingSphereDatabase shardingSphereDatabase) {
-        return !shardingSphereDatabase.getResourceMetaData().getStorageTypes().values().stream().allMatch(each -> each.getType().equals(shardingSphereDatabase.getProtocolType().getType()));
+        return !shardingSphereDatabase.getResourceMetaData().getStorageUnitTypes().values().stream().allMatch(each -> each.getType().equals(shardingSphereDatabase.getProtocolType().getType()));
     }
     
     private static Collection<ShardingSphereRowData> getRows(final ResultSet resultSet, final ShardingSphereTable table, final Collection<String> selectedColumnNames) throws SQLException {

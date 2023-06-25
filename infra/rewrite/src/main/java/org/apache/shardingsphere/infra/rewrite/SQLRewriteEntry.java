@@ -74,7 +74,7 @@ public final class SQLRewriteEntry {
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, params, sqlStatementContext, routeContext, connectionContext);
         SQLTranslatorRule rule = globalRuleMetaData.getSingleRule(SQLTranslatorRule.class);
         DatabaseType protocolType = database.getProtocolType();
-        Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
+        Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageUnitTypes();
         return routeContext.getRouteUnits().isEmpty()
                 ? new GenericSQLRewriteEngine(rule, protocolType, storageTypes).rewrite(sqlRewriteContext)
                 : new RouteSQLRewriteEngine(rule, protocolType, storageTypes).rewrite(sqlRewriteContext, routeContext);

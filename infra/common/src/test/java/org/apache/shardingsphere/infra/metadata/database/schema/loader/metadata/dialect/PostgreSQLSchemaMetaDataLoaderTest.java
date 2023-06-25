@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
@@ -81,7 +82,7 @@ class PostgreSQLSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(BASIC_CONSTRAINT_META_DATA_SQL).executeQuery()).thenReturn(constraintResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db"));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, mock(StorageUnit.class), Collections.emptyList(), "sharding_db"));
     }
     
     private ResultSet mockSchemaMetaDataResultSet() throws SQLException {
@@ -106,7 +107,7 @@ class PostgreSQLSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(BASIC_CONSTRAINT_META_DATA_SQL).executeQuery()).thenReturn(constraintResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db"));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, mock(StorageUnit.class), Collections.singletonList("tbl"), "sharding_db"));
     }
     
     private ResultSet mockRoleTableGrantsResultSet() throws SQLException {

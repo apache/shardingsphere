@@ -21,11 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * ShardingSphere schema builder material.
@@ -36,9 +35,7 @@ public final class GenericSchemaBuilderMaterial {
     
     private final DatabaseType protocolType;
     
-    private final Map<String, DatabaseType> storageTypes;
-    
-    private final Map<String, DataSource> dataSourceMap;
+    private final StorageResource storageResource;
     
     private final Collection<ShardingSphereRule> rules;
     

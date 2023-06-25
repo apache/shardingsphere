@@ -19,8 +19,10 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.proxy.backend.connector.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -68,7 +70,10 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     public List<Connection> getConnections(final String databaseName, final String dataSourceName,
                                            final int connectionSize, final ConnectionMode connectionMode, final TransactionType transactionType) throws SQLException {
-        DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources().get(dataSourceName);
+        ShardingSphereResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
+        StorageUnit storageUnit = resourceMetaData.getStorageUnits().get(dataSourceName);
+        Preconditions.checkNotNull(storageUnit, "Can not find data source %s.", dataSourceName);
+        DataSource dataSource = resourceMetaData.getDataSources().get(storageUnit.getNodeName());
         if (dataSourceName.contains(".")) {
             String dataSourceStr = dataSourceName.split("\\.")[0];
             if (GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().containsKey(dataSourceStr)) {
@@ -77,22 +82,22 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         }
         Preconditions.checkNotNull(dataSource, "Can not get connection from datasource %s.", dataSourceName);
         if (1 == connectionSize) {
-            return Collections.singletonList(createConnection(databaseName, dataSourceName, dataSource, transactionType));
+            return Collections.singletonList(createConnection(databaseName, storageUnit, dataSource, transactionType));
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
-            return createConnections(databaseName, dataSourceName, dataSource, connectionSize, transactionType);
+            return createConnections(databaseName, storageUnit, dataSource, connectionSize, transactionType);
         }
         synchronized (dataSource) {
-            return createConnections(databaseName, dataSourceName, dataSource, connectionSize, transactionType);
+            return createConnections(databaseName, storageUnit, dataSource, connectionSize, transactionType);
         }
     }
     
-    private List<Connection> createConnections(final String databaseName, final String dataSourceName,
+    private List<Connection> createConnections(final String databaseName, final StorageUnit storageUnit,
                                                final DataSource dataSource, final int connectionSize, final TransactionType transactionType) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
             try {
-                result.add(createConnection(databaseName, dataSourceName, dataSource, transactionType));
+                result.add(createConnection(databaseName, storageUnit, dataSource, transactionType));
             } catch (final SQLException ignored) {
                 for (Connection each : result) {
                     each.close();
@@ -103,13 +108,16 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         return result;
     }
     
-    private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
+    private Connection createConnection(final String databaseName, final StorageUnit storageUnit, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         ShardingSphereTransactionManager transactionManager = transactionRule.getResource().getTransactionManager(transactionType);
-        Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(databaseName, dataSourceName) : dataSource.getConnection();
-        if (dataSourceName.contains(".")) {
-            String catalog = dataSourceName.split("\\.")[1];
+        Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(databaseName, storageUnit) : dataSource.getConnection();
+        if (storageUnit.getName().contains(".")) {
+            String catalog = storageUnit.getName().split("\\.")[1];
             result.setCatalog(catalog);
+        }
+        if (storageUnit.getCatalog().isPresent()) {
+            result.setCatalog(storageUnit.getCatalog().get());
         }
         return result;
     }

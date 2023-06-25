@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.infra.rule.builder.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Database rule builder.
@@ -41,10 +40,10 @@ public interface DatabaseRuleBuilder<T extends RuleConfiguration> extends RuleBu
      *
      * @param config rule configuration
      * @param databaseName database name
-     * @param dataSources data sources
+     * @param storageResource storage resource
      * @param builtRules built rules
      * @param instanceContext instance context
      * @return built database rule
      */
-    DatabaseRule build(T config, String databaseName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, InstanceContext instanceContext);
+    DatabaseRule build(T config, String databaseName, StorageResource storageResource, Collection<ShardingSphereRule> builtRules, InstanceContext instanceContext);
 }

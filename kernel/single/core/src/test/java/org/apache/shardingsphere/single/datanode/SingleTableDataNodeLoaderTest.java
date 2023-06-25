@@ -20,6 +20,8 @@ package org.apache.shardingsphere.single.datanode;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -60,6 +62,8 @@ class SingleTableDataNodeLoaderTest {
     
     private Map<String, DataSource> dataSourceMap;
     
+    private Map<String, StorageUnit> storageUnits;
+    
     private Collection<String> configuredSingleTables;
     
     @BeforeEach
@@ -68,6 +72,7 @@ class SingleTableDataNodeLoaderTest {
         dataSourceMap.put("ds0", mockDataSource("ds0", Arrays.asList("employee", "dept", "salary")));
         dataSourceMap.put("ds1", mockDataSource("ds1", Arrays.asList("student", "teacher", "class", "salary")));
         configuredSingleTables = Collections.singletonList("*.*");
+        storageUnits = StorageUtils.getStorageUnits(dataSourceMap);
     }
     
     private DataSource mockDataSource(final String dataSourceName, final List<String> tableNames) throws SQLException {
@@ -92,7 +97,7 @@ class SingleTableDataNodeLoaderTest {
     @Test
     void assertLoad() {
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
-                dataSourceMap, getBuiltRulesWithExcludedTables(), configuredSingleTables);
+                dataSourceMap, storageUnits, getBuiltRulesWithExcludedTables(), configuredSingleTables);
         assertFalse(actual.containsKey("employee"));
         assertFalse(actual.containsKey("salary"));
         assertFalse(actual.containsKey("student"));
@@ -114,7 +119,7 @@ class SingleTableDataNodeLoaderTest {
     @Test
     void assertLoadWithConflictTables() {
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
-                dataSourceMap, Collections.emptyList(), configuredSingleTables);
+                dataSourceMap, storageUnits, Collections.emptyList(), configuredSingleTables);
         assertTrue(actual.containsKey("employee"));
         assertTrue(actual.containsKey("salary"));
         assertTrue(actual.containsKey("student"));

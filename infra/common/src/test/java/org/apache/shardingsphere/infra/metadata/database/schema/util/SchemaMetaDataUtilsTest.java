@@ -20,11 +20,14 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.SchemaMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -43,11 +46,21 @@ import static org.mockito.Mockito.when;
 
 class SchemaMetaDataUtilsTest {
     
+    private Map<String, DataSource> dataSources;
+    
+    private Map<String, StorageUnit> storageUnits;
+    
+    @BeforeEach
+    void setUp() {
+        dataSources = mockDataSourceMap();
+        storageUnits = mockStorageUnits(dataSources);
+    }
+    
     @Test
     void assertGetSchemaMetaDataLoaderMaterialsWhenConfigCheckMetaDataEnable() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), new StorageResource(dataSources, Collections.emptyMap(), storageUnits),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
         Collection<SchemaMetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_order"), material, true);
         assertThat(actual.size(), is(2));
@@ -64,7 +77,7 @@ class SchemaMetaDataUtilsTest {
     void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnable() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), new StorageResource(dataSources, Collections.emptyMap(), storageUnits),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
         Collection<SchemaMetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_order"), material, false);
         assertThat(actual.size(), is(1));
@@ -78,7 +91,7 @@ class SchemaMetaDataUtilsTest {
     void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnableForSingleTableDataNode() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), new StorageResource(dataSources, Collections.emptyMap(), storageUnits),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "public");
         Collection<SchemaMetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_single"), material, false);
         assertThat(actual.size(), is(1));
@@ -104,6 +117,14 @@ class SchemaMetaDataUtilsTest {
         Map<String, DataSource> result = new HashMap<>(2, 1F);
         result.put("ds_0", new MockedDataSource());
         result.put("ds_1", new MockedDataSource());
+        return result;
+    }
+    
+    private Map<String, StorageUnit> mockStorageUnits(final Map<String, DataSource> dataSources) {
+        Map<String, StorageUnit> result = new HashMap<>(dataSources.size(), 1F);
+        for (String each : dataSources.keySet()) {
+            result.put(each, new StorageUnit(each, each));
+        }
         return result;
     }
 }

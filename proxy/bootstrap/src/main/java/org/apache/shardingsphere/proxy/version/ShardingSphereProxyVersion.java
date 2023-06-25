@@ -73,7 +73,7 @@ public final class ShardingSphereProxyVersion {
     }
     
     private static Optional<DataSource> findDataSourceByProtocolType(final String databaseName, final ShardingSphereResourceMetaData resourceMetaData, final DatabaseType protocolType) {
-        Optional<String> dataSourceName = resourceMetaData.getStorageTypes().entrySet().stream().filter(entry -> entry.getValue().equals(protocolType)).map(Entry::getKey).findFirst();
+        Optional<String> dataSourceName = resourceMetaData.getStorageUnitTypes().entrySet().stream().filter(entry -> entry.getValue().equals(protocolType)).map(Entry::getKey).findFirst();
         return dataSourceName.flatMap(optional -> Optional.ofNullable(DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, resourceMetaData.getDataSources()).get(optional)));
     }
 }

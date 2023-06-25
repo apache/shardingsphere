@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.TableContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.SchemaMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -58,7 +60,7 @@ class GenericSchemaBuilderTest {
     @BeforeEach
     void setUp() {
         DatabaseType databaseType = mock(DatabaseType.class);
-        material = new GenericSchemaBuilderMaterial(databaseType, Collections.emptyMap(), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(DataSource.class)),
+        material = new GenericSchemaBuilderMaterial(databaseType, mockStorageResource(),
                 Collections.singleton(new TableContainedFixtureRule()), new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
     }
     
@@ -98,5 +100,13 @@ class GenericSchemaBuilderTest {
         assertThat(actual.size(), is(2));
         assertTrue(actual.get("data_node_routed_table1").getColumns().isEmpty());
         assertTrue(actual.get("data_node_routed_table2").getColumns().isEmpty());
+    }
+    
+    private StorageResource mockStorageResource() {
+        String name = DefaultDatabase.LOGIC_NAME;
+        Map<String, DataSource> storageNodes = Collections.singletonMap(name, mock(DataSource.class));
+        Map<String, DatabaseType> storageNodesTypes = Collections.emptyMap();
+        Map<String, StorageUnit> storageUnits = Collections.singletonMap(name, new StorageUnit(name, name));
+        return new StorageResource(storageNodes, storageNodesTypes, storageUnits);
     }
 }

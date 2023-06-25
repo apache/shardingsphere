@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
@@ -50,14 +51,15 @@ public final class SingleTableDataNodeLoader {
      * @param databaseName database name
      * @param databaseType database type
      * @param dataSourceMap data source map
+     * @param storageUnits storage units
      * @param builtRules built rules
      * @param configuredTables configured tables
      * @return single table data node map
      */
     public static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                         final Collection<ShardingSphereRule> builtRules, final Collection<String> configuredTables) {
+                                                         final Map<String, StorageUnit> storageUnits, final Collection<ShardingSphereRule> builtRules, final Collection<String> configuredTables) {
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);
-        Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, databaseType, dataSourceMap, excludedTables);
+        Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, databaseType, dataSourceMap, storageUnits, excludedTables);
         Collection<String> splitTables = SingleTableLoadUtils.splitTableLines(configuredTables);
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return actualDataNodes;
@@ -73,14 +75,15 @@ public final class SingleTableDataNodeLoader {
      * @param databaseName database name
      * @param databaseType database type
      * @param dataSourceMap data source map
+     * @param storageUnits storage units
      * @param excludedTables excluded tables
      * @return single table data node map
      */
-    public static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType,
-                                                         final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTables) {
+    public static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                         final Map<String, StorageUnit> storageUnits, final Collection<String> excludedTables) {
         Map<String, Collection<DataNode>> result = new ConcurrentHashMap<>();
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Map<String, Collection<DataNode>> dataNodeMap = load(databaseName, databaseType, entry.getKey(), entry.getValue(), excludedTables);
+        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
+            Map<String, Collection<DataNode>> dataNodeMap = load(databaseName, databaseType, entry.getKey(), dataSourceMap.get(entry.getValue().getNodeName()), entry.getValue(), excludedTables);
             for (Entry<String, Collection<DataNode>> each : dataNodeMap.entrySet()) {
                 Collection<DataNode> addedDataNodes = each.getValue();
                 Collection<DataNode> existDataNodes = result.getOrDefault(each.getKey().toLowerCase(), new LinkedHashSet<>(addedDataNodes.size(), 1F));
@@ -92,8 +95,8 @@ public final class SingleTableDataNodeLoader {
     }
     
     private static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType, final String dataSourceName,
-                                                          final DataSource dataSource, final Collection<String> excludedTables) {
-        Map<String, Collection<String>> schemaTableNames = loadSchemaTableNames(databaseName, databaseType, dataSource, dataSourceName);
+                                                          final DataSource dataSource, final StorageUnit storageUnit, final Collection<String> excludedTables) {
+        Map<String, Collection<String>> schemaTableNames = loadSchemaTableNames(databaseName, databaseType, dataSource, storageUnit, dataSourceName);
         Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
         for (Entry<String, Collection<String>> entry : schemaTableNames.entrySet()) {
             for (String each : entry.getValue()) {
@@ -160,13 +163,15 @@ public final class SingleTableDataNodeLoader {
      * @param databaseName database name
      * @param databaseType database type
      * @param dataSource data source
+     * @param storageUnit storage unit
      * @param dataSourceName data source name
      * @return schema table names
      * @throws SingleTablesLoadingException Single tables loading exception
      */
-    public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource, final String dataSourceName) {
+    public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource,
+                                                                       final StorageUnit storageUnit, final String dataSourceName) {
         try {
-            return SchemaMetaDataLoader.loadSchemaTableNames(databaseName, databaseType, dataSource);
+            return SchemaMetaDataLoader.loadSchemaTableNames(databaseName, databaseType, dataSource, storageUnit);
         } catch (final SQLException ex) {
             throw new SingleTablesLoadingException(databaseName, dataSourceName, ex);
         }

@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
 import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -95,8 +96,10 @@ class JDBCBackendDataSourceTest {
         Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(2, 1F);
         storageTypes.put("ds_0", new H2DatabaseType());
         storageTypes.put("ds_1", new H2DatabaseType());
-        when(database.getResourceMetaData().getStorageTypes()).thenReturn(storageTypes);
-        when(database.getResourceMetaData().getDataSources()).thenReturn(mockDataSources(2));
+        when(database.getResourceMetaData().getStorageUnitTypes()).thenReturn(storageTypes);
+        Map<String, DataSource> dataSources = mockDataSources(2);
+        when(database.getResourceMetaData().getDataSources()).thenReturn(dataSources);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(StorageUtils.getStorageUnits(dataSources));
         return Collections.singletonMap("schema", database);
     }
     

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -54,7 +55,7 @@ class MySQLSchemaMetaDataLoaderTest {
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement("SELECT TABLE_NAME, INDEX_NAME "
                 + "FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db"));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, mock(StorageUnit.class), Collections.emptyList(), "sharding_db"));
     }
     
     @Test
@@ -68,7 +69,7 @@ class MySQLSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(
                 "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db"));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, mock(StorageUnit.class), Collections.singletonList("tbl"), "sharding_db"));
     }
     
     private DataSource mockDataSource() throws SQLException {

@@ -78,7 +78,7 @@ class ShardingSphereProxyVersionTest {
     
     private ShardingSphereResourceMetaData mockResourceMetaData(final String databaseType, final String databaseProductVersion) throws SQLException {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        when(result.getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, databaseType)));
+        when(result.getStorageUnitTypes()).thenReturn(Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, databaseType)));
         DataSource dataSource = createDataSource(databaseType, databaseProductVersion);
         when(result.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         return result;

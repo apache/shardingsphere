@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
@@ -63,7 +64,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
     private static final int HIDDEN_COLUMN_START_MAJOR_VERSION = 15;
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final StorageUnit storageUnit, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables);
         if (!columnMetaDataMap.isEmpty()) {

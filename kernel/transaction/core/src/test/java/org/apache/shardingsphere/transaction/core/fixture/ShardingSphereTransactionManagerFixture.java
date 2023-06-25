@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction.core.fixture;
 
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
@@ -49,7 +50,7 @@ public final class ShardingSphereTransactionManagerFixture implements ShardingSp
     }
     
     @Override
-    public Connection getConnection(final String databaseName, final String dataSourceName) {
+    public Connection getConnection(final String databaseName, final StorageUnit storageUnit) {
         return null;
     }
     

@@ -15,38 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.database;
+package org.apache.shardingsphere.infra.datasource.storage;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.Map;
 
 /**
- * Database configuration.
+ * Storage resource.
  */
-public interface DatabaseConfiguration {
+@RequiredArgsConstructor
+@Getter
+public final class StorageResource {
     
-    /**
-     * Get data sources.
-     * 
-     * @return data sources
-     */
-    Map<String, DataSource> getDataSources();
+    private final Map<String, DataSource> storageNodes;
     
-    /**
-     * Get rule configurations.
-     * 
-     * @return rule configurations
-     */
-    Collection<RuleConfiguration> getRuleConfigurations();
+    private final Map<String, DatabaseType> storageNodesTypes;
     
-    /**
-     * Get storage resource.
-     *
-     * @return storage resource
-     */
-    StorageResource getStorageResource();
+    private final Map<String, StorageUnit> storageUnits;
 }

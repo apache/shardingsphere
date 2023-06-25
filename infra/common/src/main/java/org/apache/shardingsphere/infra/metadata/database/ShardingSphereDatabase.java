@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -36,7 +37,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -86,8 +86,9 @@ public final class ShardingSphereDatabase {
                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, databaseConfig, instanceContext);
         Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder
-                .build(new GenericSchemaBuilderMaterial(protocolType, storageTypes, DataSourceStateManager.getInstance().getEnabledDataSourceMap(name, databaseConfig.getDataSources()), databaseRules,
-                        props, DatabaseTypeEngine.getDefaultSchemaName(protocolType, name))));
+                .build(new GenericSchemaBuilderMaterial(protocolType, new StorageResource(DataSourceStateManager.getInstance().getEnabledDataSourceMap(name, databaseConfig.getDataSources()),
+                        storageTypes, DataSourceStateManager.getInstance().getEnabledStorageUnits(name, databaseConfig.getDataSources(), databaseConfig.getStorageResource().getStorageUnits())),
+                        databaseRules, props, DatabaseTypeEngine.getDefaultSchemaName(protocolType, name))));
         SystemSchemaBuilder.build(name, protocolType).forEach(schemas::putIfAbsent);
         return create(name, protocolType, databaseConfig, databaseRules, schemas);
     }
@@ -116,13 +117,13 @@ public final class ShardingSphereDatabase {
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                 final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
-        ShardingSphereResourceMetaData resourceMetaData = createResourceMetaData(name, databaseConfig.getDataSources());
+        ShardingSphereResourceMetaData resourceMetaData = createResourceMetaData(name, databaseConfig.getStorageResource());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(rules);
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, ruleMetaData, schemas);
     }
     
-    private static ShardingSphereResourceMetaData createResourceMetaData(final String databaseName, final Map<String, DataSource> dataSourceMap) {
-        return new ShardingSphereResourceMetaData(databaseName, dataSourceMap);
+    private static ShardingSphereResourceMetaData createResourceMetaData(final String databaseName, final StorageResource storageResource) {
+        return new ShardingSphereResourceMetaData(databaseName, storageResource);
     }
     
     /**
@@ -193,7 +194,7 @@ public final class ShardingSphereDatabase {
         Collection<ShardingSphereRule> databaseRules = new LinkedList<>(ruleMetaData.getRules());
         toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
             databaseRules.removeAll(toBeReloadedRules);
-            databaseRules.add(((MutableDataNodeRule) optional).reloadRule(ruleConfig, name, resourceMetaData.getDataSources(), databaseRules));
+            databaseRules.add(((MutableDataNodeRule) optional).reloadRule(ruleConfig, name, resourceMetaData.getStorageResource(), databaseRules));
         });
         ruleMetaData.getRules().clear();
         ruleMetaData.getRules().addAll(databaseRules);

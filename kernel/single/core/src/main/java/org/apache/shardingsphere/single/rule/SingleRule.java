@@ -23,6 +23,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -69,14 +72,15 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     
     private final DatabaseType databaseType;
     
-    public SingleRule(final SingleRuleConfiguration ruleConfig, final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+    public SingleRule(final SingleRuleConfiguration ruleConfig, final String databaseName, final StorageResource storageResource, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
         defaultDataSource = ruleConfig.getDefaultDataSource().orElse(null);
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSourceMap);
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, storageResource.getStorageNodes());
         Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(enabledDataSources, builtRules);
-        dataSourceNames = aggregateDataSourceMap.keySet();
         databaseType = DatabaseTypeEngine.getStorageType(enabledDataSources.values());
-        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, databaseType, aggregateDataSourceMap, builtRules, configuration.getTables());
+        Map<String, StorageUnit> storageUnits = StorageUtils.getAggregatedStorageUnits(storageResource.getStorageUnits(), builtRules);
+        dataSourceNames = storageUnits.keySet();
+        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, databaseType, aggregateDataSourceMap, storageUnits, builtRules, configuration.getTables());
         singleTableDataNodes.forEach((key, value) -> tableNamesMapper.put(value.iterator().next().getTableName()));
     }
     
@@ -223,9 +227,9 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     }
     
     @Override
-    public ShardingSphereRule reloadRule(final RuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSourceMap,
+    public ShardingSphereRule reloadRule(final RuleConfiguration config, final String databaseName, final StorageResource storageResource,
                                          final Collection<ShardingSphereRule> builtRules) {
-        return new SingleRule((SingleRuleConfiguration) config, databaseName, dataSourceMap, builtRules);
+        return new SingleRule((SingleRuleConfiguration) config, databaseName, storageResource, builtRules);
     }
     
     @Override

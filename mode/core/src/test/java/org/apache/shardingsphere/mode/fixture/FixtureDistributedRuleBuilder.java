@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.mode.fixture;
 
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Fixture distributed rule builder.
@@ -31,7 +30,7 @@ import java.util.Map;
 public final class FixtureDistributedRuleBuilder implements DatabaseRuleBuilder<FixtureDistributedRuleConfiguration> {
     
     @Override
-    public FixtureDatabaseRule build(final FixtureDistributedRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources,
+    public FixtureDatabaseRule build(final FixtureDistributedRuleConfiguration config, final String databaseName, final StorageResource storageResource,
                                      final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
         return new FixtureDatabaseRule();
     }

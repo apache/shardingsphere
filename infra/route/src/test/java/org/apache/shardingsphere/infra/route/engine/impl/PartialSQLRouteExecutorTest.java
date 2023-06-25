@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.route.engine.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.SQLHintDataSourceNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -65,6 +66,7 @@ class PartialSQLRouteExecutorTest {
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
         when(database.getResourceMetaData().getDataSources()).thenReturn(dataSourceMap);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(StorageUtils.getStorageUnits(dataSourceMap));
     }
     
     @Test

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
@@ -61,7 +62,7 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname, schemaname FROM pg_indexes WHERE schemaname IN (%s)";
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final StorageUnit storageUnit, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Collection<String> schemaNames = SchemaMetaDataLoader.loadSchemaNames(connection, TypedSPILoader.getService(DatabaseType.class, "openGauss"));
             Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(connection, schemaNames);

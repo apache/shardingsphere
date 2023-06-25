@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.spi;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
@@ -58,11 +59,11 @@ public interface ShardingSphereTransactionManager extends TypedSPI, AutoCloseabl
      * Get transactional connection.
      *
      * @param databaseName database name
-     * @param dataSourceName data source name
+     * @param storageUnit storage unit
      * @return connection
      * @throws SQLException SQL exception
      */
-    Connection getConnection(String databaseName, String dataSourceName) throws SQLException;
+    Connection getConnection(String databaseName, StorageUnit storageUnit) throws SQLException;
     
     /**
      * Begin transaction.

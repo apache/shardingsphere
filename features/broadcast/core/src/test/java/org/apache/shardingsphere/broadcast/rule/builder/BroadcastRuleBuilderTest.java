@@ -19,6 +19,7 @@ package org.apache.shardingsphere.broadcast.rule.builder;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
@@ -37,6 +38,6 @@ class BroadcastRuleBuilderTest {
     void assertBuild() {
         BroadcastRuleConfiguration ruleConfig = mock(BroadcastRuleConfiguration.class);
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(BroadcastRule.class));
+        assertThat(builder.build(ruleConfig, "", mock(StorageResource.class), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(BroadcastRule.class));
     }
 }

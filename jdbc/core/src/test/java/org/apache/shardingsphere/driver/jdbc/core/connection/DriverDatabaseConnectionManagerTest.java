@@ -21,6 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
@@ -76,6 +77,7 @@ class DriverDatabaseConnectionManagerTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = mockDataSourceMap();
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
+        when(result.getStorageUnitMap(DefaultDatabase.LOGIC_NAME)).thenReturn(StorageUtils.getStorageUnits(dataSourceMap));
         MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getMetaDataContexts().getPersistService()).thenReturn(persistService);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(

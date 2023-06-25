@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -95,13 +96,13 @@ public final class ConnectionTransaction {
     /**
      * Get connection in transaction.
      * 
-     * @param dataSourceName data source name
+     * @param storageUnit storage unit
      * @param transactionConnectionContext transaction connection context
      * @return connection in transaction
      * @throws SQLException SQL exception
      */
-    public Optional<Connection> getConnection(final String dataSourceName, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
-        return isInTransaction(transactionConnectionContext) ? Optional.of(transactionManager.getConnection(this.databaseName, dataSourceName)) : Optional.empty();
+    public Optional<Connection> getConnection(final StorageUnit storageUnit, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
+        return isInTransaction(transactionConnectionContext) ? Optional.of(transactionManager.getConnection(this.databaseName, storageUnit)) : Optional.empty();
     }
     
     /**

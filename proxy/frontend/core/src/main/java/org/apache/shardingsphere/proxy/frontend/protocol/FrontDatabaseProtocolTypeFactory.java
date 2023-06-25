@@ -51,7 +51,7 @@ public final class FrontDatabaseProtocolTypeFactory {
             return DatabaseTypeEngine.getTrunkDatabaseType(DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
         }
         Optional<ShardingSphereDatabase> database = metaDataContexts.getMetaData().getDatabases().values().stream().filter(ShardingSphereDatabase::containsDataSource).findFirst();
-        return database.isPresent() ? database.get().getResourceMetaData().getStorageTypes().values().iterator().next()
+        return database.isPresent() ? database.get().getResourceMetaData().getStorageUnitTypes().values().iterator().next()
                 : DatabaseTypeEngine.getTrunkDatabaseType(DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
     }
     

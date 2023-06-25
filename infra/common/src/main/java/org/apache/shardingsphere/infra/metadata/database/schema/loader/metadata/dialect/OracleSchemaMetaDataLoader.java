@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.adapter.MetaDataLoaderConnectionAdapter;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
@@ -73,7 +74,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     private static final int MAX_EXPRESSION_SIZE = 1000;
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final StorageUnit storageUnit, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1F);
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = new HashMap<>(tables.size(), 1F);
         try (Connection connection = new MetaDataLoaderConnectionAdapter(TypedSPILoader.getService(DatabaseType.class, "Oracle"), dataSource.getConnection())) {

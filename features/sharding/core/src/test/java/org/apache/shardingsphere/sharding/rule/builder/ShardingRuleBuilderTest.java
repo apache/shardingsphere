@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.rule.builder;
 
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
@@ -34,6 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ShardingRuleBuilderTest {
     
@@ -51,21 +54,23 @@ class ShardingRuleBuilderTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertBuild() {
-        assertThat(builder.build(ruleConfig, "sharding_db",
-                Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(ShardingRule.class));
+        StorageResource storageResource = mock(StorageResource.class);
+        when(storageResource.getStorageNodes()).thenReturn(Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)));
+        when(storageResource.getStorageUnits()).thenReturn(Collections.singletonMap("name", mock(StorageUnit.class)));
+        assertThat(builder.build(ruleConfig, "sharding_db", storageResource, Collections.emptyList(), mock(InstanceContext.class)), instanceOf(ShardingRule.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     void assertBuildWithNullDataSourceMap() {
         assertThrows(MissingRequiredShardingConfigurationException.class,
-                () -> builder.build(ruleConfig, "sharding_db", null, Collections.emptyList(), mock(InstanceContext.class)));
+                () -> builder.build(ruleConfig, "sharding_db", mock(StorageResource.class), Collections.emptyList(), mock(InstanceContext.class)));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     void assertBuildWithEmptyDataSourceMap() {
         assertThrows(MissingRequiredShardingConfigurationException.class,
-                () -> builder.build(ruleConfig, "sharding_db", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)));
+                () -> builder.build(ruleConfig, "sharding_db", mock(StorageResource.class), Collections.emptyList(), mock(InstanceContext.class)));
     }
 }

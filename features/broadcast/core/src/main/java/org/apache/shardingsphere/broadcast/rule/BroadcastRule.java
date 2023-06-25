@@ -20,12 +20,12 @@ package org.apache.shardingsphere.broadcast.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,18 +55,18 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
     
     private final TableNamesMapper actualTableMapper;
     
-    public BroadcastRule(final BroadcastRuleConfiguration configuration, final String databaseName, final Map<String, DataSource> dataSources) {
+    public BroadcastRule(final BroadcastRuleConfiguration configuration, final String databaseName, final Map<String, StorageUnit> storageUnits) {
         this.configuration = configuration;
         this.databaseName = databaseName;
-        dataSourceNames = getDataSourceNames(dataSources);
+        dataSourceNames = getDataSourceNames(storageUnits);
         tables = createBroadcastTables(configuration.getTables());
         logicalTableMapper = createTableMapper();
         actualTableMapper = createTableMapper();
         tableDataNodes = createShardingTableDataNodes(dataSourceNames, tables);
     }
     
-    private Collection<String> getDataSourceNames(final Map<String, DataSource> dataSources) {
-        return new LinkedList<>(dataSources.keySet());
+    private Collection<String> getDataSourceNames(final Map<String, StorageUnit> storageUnits) {
+        return new LinkedList<>(storageUnits.keySet());
     }
     
     private Collection<String> createBroadcastTables(final Collection<String> broadcastTables) {

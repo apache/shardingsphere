@@ -19,6 +19,8 @@ package org.apache.shardingsphere.single.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
@@ -62,8 +64,9 @@ public final class ShowUnloadedSingleTableExecutor implements RQLExecutor<ShowUn
     private Map<String, Collection<DataNode>> getActualDataNodes(final ShardingSphereDatabase database) {
         ShardingSphereResourceMetaData resourceMetaData = database.getResourceMetaData();
         Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(resourceMetaData.getDataSources(), database.getRuleMetaData().getRules());
+        Map<String, StorageUnit> storageUnits = StorageUtils.getAggregatedStorageUnits(resourceMetaData.getStorageUnits(), database.getRuleMetaData().getRules());
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(database.getRuleMetaData().getRules());
-        return SingleTableDataNodeLoader.load(database.getName(), database.getProtocolType(), aggregateDataSourceMap, excludedTables);
+        return SingleTableDataNodeLoader.load(database.getName(), database.getProtocolType(), aggregateDataSourceMap, storageUnits, excludedTables);
     }
     
     @Override

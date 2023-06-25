@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -32,13 +34,17 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class DataSourceGeneratedDatabaseConfigurationTest {
     
     @Test
     void assertGetDataSources() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        HikariDataSource hikariDataSource = (HikariDataSource) databaseConfig.getDataSources().get("normal_db");
+        StorageResource storageResource = databaseConfig.getStorageResource();
+        StorageUnit storageUnit = storageResource.getStorageUnits().get("normal_db");
+        assertNotNull(storageUnit);
+        HikariDataSource hikariDataSource = (HikariDataSource) databaseConfig.getDataSources().get(storageUnit.getNodeName());
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mock://127.0.0.1/normal_db"));
         assertThat(hikariDataSource.getUsername(), is("root"));
         assertThat(hikariDataSource.getPassword(), is(""));

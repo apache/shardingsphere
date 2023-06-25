@@ -15,38 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.database;
-
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
-
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Map;
+package org.apache.shardingsphere.infra.database.type;
 
 /**
- * Database configuration.
+ * Data source aggregatable.
  */
-public interface DatabaseConfiguration {
-    
-    /**
-     * Get data sources.
-     * 
-     * @return data sources
-     */
-    Map<String, DataSource> getDataSources();
-    
-    /**
-     * Get rule configurations.
-     * 
-     * @return rule configurations
-     */
-    Collection<RuleConfiguration> getRuleConfigurations();
-    
-    /**
-     * Get storage resource.
-     *
-     * @return storage resource
-     */
-    StorageResource getStorageResource();
+public interface DataSourceAggregatable {
 }

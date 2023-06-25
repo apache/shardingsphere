@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.datasource.state.exception.UnavailableDataSourceException;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
@@ -31,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -113,6 +115,25 @@ public final class DataSourceStateManager {
         }
         Map<String, DataSource> result = filterDisabledDataSources(databaseName, dataSources);
         checkForceConnection(result);
+        return result;
+    }
+    
+    /**
+     * Get enabled storage units.
+     *
+     * @param databaseName database name
+     * @param dataSources data sources
+     * @param storageUnits storage units
+     * @return enabled storage units
+     */
+    public Map<String, StorageUnit> getEnabledStorageUnits(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, StorageUnit> storageUnits) {
+        Collection<String> enabledDataSourceNames = getEnabledDataSourceMap(databaseName, dataSources).keySet();
+        Map<String, StorageUnit> result = new LinkedHashMap<>();
+        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
+            if (enabledDataSourceNames.contains(entry.getValue().getNodeName())) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
         return result;
     }
     

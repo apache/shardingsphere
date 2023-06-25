@@ -137,7 +137,7 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts, connectionSession);
         SQLFederationExecutorContext context = new SQLFederationExecutorContext(true, queryContext, metaDataContexts.getMetaData());
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(getDatabaseName(connectionSession));
-        sqlFederationEngine.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData().getStorageTypes(), sqlStatement), context);
+        sqlFederationEngine.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData().getStorageUnitTypes(), sqlStatement), context);
         return context.getExecutionUnits();
     }
     
@@ -162,7 +162,7 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionSession.getDatabaseConnectionManager(),
                 (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(isReturnGeneratedKeys),
                 metaDataContexts.getMetaData().getDatabase(getDatabaseName(connectionSession)).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(getDatabaseName(connectionSession)).getResourceMetaData().getStorageTypes());
+                metaDataContexts.getMetaData().getDatabase(getDatabaseName(connectionSession)).getResourceMetaData().getStorageUnitTypes());
     }
     
     private String getDatabaseName(final ConnectionSession connectionSession) {

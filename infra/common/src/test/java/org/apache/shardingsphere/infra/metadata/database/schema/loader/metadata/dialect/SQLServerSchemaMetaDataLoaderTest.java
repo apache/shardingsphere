@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -85,7 +86,7 @@ class SQLServerSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
                 .executeQuery()).thenReturn(indexResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(15);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db");
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, mock(StorageUnit.class), Collections.emptyList(), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -103,7 +104,7 @@ class SQLServerSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
                 .executeQuery()).thenReturn(indexResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(14);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db");
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, mock(StorageUnit.class), Collections.emptyList(), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -120,7 +121,7 @@ class SQLServerSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
                 .executeQuery()).thenReturn(indexResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(15);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db");
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, mock(StorageUnit.class), Collections.singletonList("tbl"), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -137,7 +138,7 @@ class SQLServerSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
                 .executeQuery()).thenReturn(indexResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(14);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db");
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, mock(StorageUnit.class), Collections.singletonList("tbl"), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();

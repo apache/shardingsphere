@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -38,20 +39,25 @@ import java.util.stream.Collectors;
 @Getter
 public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseConfiguration {
     
-    private final Map<String, DataSource> dataSources;
+    private final StorageResource storageResource;
     
     private final Collection<RuleConfiguration> ruleConfigurations;
     
     private final Map<String, DataSourceProperties> dataSourceProperties;
     
     public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSources, final Collection<RuleConfiguration> ruleConfigs) {
-        this.dataSources = DataSourcePoolCreator.create(createDataSourcePropertiesMap(dataSources));
         ruleConfigurations = ruleConfigs;
         dataSourceProperties = createDataSourcePropertiesMap(dataSources);
+        this.storageResource = DataSourcePoolCreator.createStorageResource(dataSourceProperties);
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSourceConfiguration> dataSources) {
         return dataSources.entrySet().stream().collect(Collectors
                 .toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create("com.zaxxer.hikari.HikariDataSource", entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    @Override
+    public Map<String, DataSource> getDataSources() {
+        return storageResource.getStorageNodes();
     }
 }

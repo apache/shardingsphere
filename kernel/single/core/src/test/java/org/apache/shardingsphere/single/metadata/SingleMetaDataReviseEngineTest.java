@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.metadata;
 
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
@@ -36,6 +37,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class SingleMetaDataReviseEngineTest {
     
@@ -44,8 +46,10 @@ class SingleMetaDataReviseEngineTest {
     @Test
     void assertRevise() {
         Map<String, SchemaMetaData> schemaMetaDataMap = Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData())));
+        GenericSchemaBuilderMaterial schemaBuilderMaterial = mock(GenericSchemaBuilderMaterial.class);
+        when(schemaBuilderMaterial.getStorageResource()).thenReturn(mock(StorageResource.class));
         TableMetaData tableMetaData = new MetaDataReviseEngine(Collections.singleton(mock(SingleRule.class))).revise(
-                schemaMetaDataMap, mock(GenericSchemaBuilderMaterial.class)).get("sharding_db").getTables().iterator().next();
+                schemaMetaDataMap, schemaBuilderMaterial).get("sharding_db").getTables().iterator().next();
         Iterator<ColumnMetaData> columns = tableMetaData.getColumns().iterator();
         assertThat(columns.next(), is(new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false)));
         assertThat(columns.next(), is(new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false)));

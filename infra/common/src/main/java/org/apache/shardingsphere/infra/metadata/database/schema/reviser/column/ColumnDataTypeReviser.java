@@ -33,7 +33,8 @@ public interface ColumnDataTypeReviser {
      * @param originalName original column name
      * @param databaseType database type
      * @param dataSource data source
+     * @param catalog catalog
      * @return revised data type
      */
-    Optional<Integer> revise(String originalName, DatabaseType databaseType, DataSource dataSource);
+    Optional<Integer> revise(String originalName, DatabaseType databaseType, DataSource dataSource, String catalog);
 }

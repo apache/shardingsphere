@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.rule.builder;
 
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
@@ -24,9 +25,7 @@ import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Single rule builder.
@@ -35,8 +34,8 @@ public final class SingleRuleBuilder implements DatabaseRuleBuilder<SingleRuleCo
     
     @Override
     public SingleRule build(final SingleRuleConfiguration config, final String databaseName,
-                            final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new SingleRule(config, databaseName, dataSources, builtRules);
+                            final StorageResource storageResource, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
+        return new SingleRule(config, databaseName, storageResource, builtRules);
     }
     
     @Override

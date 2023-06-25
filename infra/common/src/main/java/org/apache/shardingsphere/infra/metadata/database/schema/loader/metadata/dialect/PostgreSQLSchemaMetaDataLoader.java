@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
@@ -71,7 +72,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     private static final String LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL = LOAD_ALL_ROLE_TABLE_GRANTS_SQL + " WHERE table_name IN (%s)";
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final StorageUnit storageUnit, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Collection<String> schemaNames = SchemaMetaDataLoader.loadSchemaNames(connection, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
             Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(connection, schemaNames);

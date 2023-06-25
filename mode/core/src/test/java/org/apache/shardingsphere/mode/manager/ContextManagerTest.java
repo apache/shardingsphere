@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -94,7 +96,7 @@ class ContextManagerTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        when(result.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
+        when(result.getResourceMetaData().getStorageUnitTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
         MutableDataNodeRule mutableDataNodeRule = mock(MutableDataNodeRule.class, RETURNS_DEEP_STUBS);
         when(mutableDataNodeRule.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(mock(DataNode.class)));
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mutableDataNodeRule)));
@@ -212,11 +214,14 @@ class ContextManagerTest {
     @Test
     void assertAlterRuleConfiguration() {
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
+        Map<String, DataSource> dataSources = Collections.singletonMap("ds_0", new MockedDataSource());
+        when(resourceMetaData.getDataSources()).thenReturn(dataSources);
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", new MySQLDatabaseType(), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         when(metaDataContexts.getPersistService()).thenReturn(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageResource()).thenReturn(
+                new StorageResource(dataSources, Collections.emptyMap(), StorageUtils.getStorageUnits(dataSources)));
         contextManager.alterRuleConfiguration("foo_db", Collections.singleton(new FixtureDistributedRuleConfiguration()));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getConfigurations().size(), is(1));
     }
@@ -238,6 +243,10 @@ class ContextManagerTest {
         originalDataSources.put("ds_1", new MockedDataSource());
         originalDataSources.put("ds_2", new MockedDataSource());
         when(result.getDataSources()).thenReturn(originalDataSources);
+        StorageResource storageResource = mock(StorageResource.class);
+        when(storageResource.getStorageNodes()).thenReturn(originalDataSources);
+        when(storageResource.getStorageUnits()).thenReturn(StorageUtils.getStorageUnits(originalDataSources));
+        when(result.getStorageResource()).thenReturn(storageResource);
         return result;
     }
     
@@ -275,7 +284,7 @@ class ContextManagerTest {
     @Test
     void assertReloadTable() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", mock(DatabaseType.class)));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnitTypes()).thenReturn(Collections.singletonMap("foo_ds", mock(DatabaseType.class)));
         DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);
         when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.adapter.MetaDataLoaderConnectionAdapter;
 
 import javax.sql.DataSource;
@@ -57,11 +58,16 @@ public final class SchemaMetaDataLoader {
      * @param databaseName database name
      * @param databaseType database type
      * @param dataSource data source
+     * @param storageUnit storage unit
      * @return loaded schema table names
      * @throws SQLException SQL exception
      */
-    public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource) throws SQLException {
+    public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType,
+                                                                       final DataSource dataSource, final StorageUnit storageUnit) throws SQLException {
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
+            if (storageUnit.getCatalog().isPresent()) {
+                connectionAdapter.setCatalog(storageUnit.getCatalog().get());
+            }
             Collection<String> schemaNames = loadSchemaNames(connectionAdapter, databaseType);
             Map<String, Collection<String>> result = new HashMap<>(schemaNames.size(), 1F);
             for (String each : schemaNames) {

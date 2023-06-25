@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rule.builder;
 
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
@@ -26,9 +27,7 @@ import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Sharding rule builder.
@@ -37,9 +36,10 @@ public final class ShardingRuleBuilder implements DatabaseRuleBuilder<ShardingRu
     
     @Override
     public ShardingRule build(final ShardingRuleConfiguration config, final String databaseName,
-                              final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        ShardingSpherePreconditions.checkState(null != dataSources && !dataSources.isEmpty(), () -> new MissingRequiredShardingConfigurationException("Data source", databaseName));
-        return new ShardingRule(config, dataSources.keySet(), instanceContext);
+                              final StorageResource storageResource, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
+        ShardingSpherePreconditions.checkState(null != storageResource.getStorageUnits() && !storageResource.getStorageUnits().isEmpty(),
+                () -> new MissingRequiredShardingConfigurationException("Data source", databaseName));
+        return new ShardingRule(config, storageResource.getStorageUnits().keySet(), instanceContext);
     }
     
     @Override

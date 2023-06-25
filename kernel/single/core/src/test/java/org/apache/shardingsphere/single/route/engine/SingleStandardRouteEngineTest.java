@@ -20,6 +20,8 @@ package org.apache.shardingsphere.single.route.engine;
 import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -32,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -57,10 +60,19 @@ import static org.mockito.Mockito.when;
 
 class SingleStandardRouteEngineTest {
     
+    private final StorageResource storageResource = mock(StorageResource.class);
+    
+    @BeforeEach
+    void setUp() throws SQLException {
+        Map<String, DataSource> dataSources = createDataSourceMap();
+        when(storageResource.getStorageNodes()).thenReturn(dataSources);
+        when(storageResource.getStorageUnits()).thenReturn(StorageUtils.getStorageUnits(dataSources));
+    }
+    
     @Test
-    void assertRouteInSameDataSource() throws SQLException {
+    void assertRouteInSameDataSource() {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), null);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, storageResource, Collections.emptyList());
         singleRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("t_order")));
         singleRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(mockDataNode("t_order_item")));
         RouteContext routeContext = new RouteContext();
@@ -89,9 +101,9 @@ class SingleStandardRouteEngineTest {
     }
     
     @Test
-    void assertRouteWithoutSingleRule() throws SQLException {
+    void assertRouteWithoutSingleRule() {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false));
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, storageResource, Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -104,9 +116,9 @@ class SingleStandardRouteEngineTest {
     }
     
     @Test
-    void assertRouteWithDefaultSingleRule() throws SQLException {
+    void assertRouteWithDefaultSingleRule() {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false));
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), DefaultDatabase.LOGIC_NAME, storageResource, Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());

@@ -86,7 +86,7 @@ class SQLRewriteEntryTest {
         Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
         databaseTypes.put("ds_0", new H2DatabaseType());
         databaseTypes.put("ds_1", new MySQLDatabaseType());
-        when(result.getStorageTypes()).thenReturn(databaseTypes);
+        when(result.getStorageUnitTypes()).thenReturn(databaseTypes);
         return result;
     }
 }

@@ -79,7 +79,7 @@ public final class ShardingRouteAssert {
                 new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, singleRule, timestampServiceRule));
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(resourceMetaData.getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
+        when(resourceMetaData.getStorageUnitTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, ruleMetaData, schemas);
         SQLStatementContext sqlStatementContext =

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
@@ -63,11 +64,12 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
             + "WHERE TABLE_NAME IN (%s) AND REFERENCED_TABLE_SCHEMA IS NOT NULL";
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final StorageUnit storageUnit, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
-        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables);
-        Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
-        Map<String, Collection<ConstraintMetaData>> constraintMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadConstraintMetaDataMap(dataSource, columnMetaDataMap.keySet());
+        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, storageUnit, tables);
+        Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, storageUnit, columnMetaDataMap.keySet());
+        Map<String, Collection<ConstraintMetaData>> constraintMetaDataMap =
+                columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadConstraintMetaDataMap(dataSource, storageUnit, columnMetaDataMap.keySet());
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
             Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
             Collection<ConstraintMetaData> constraintMetaDataList = constraintMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
@@ -76,11 +78,14 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList));
     }
     
-    private Map<String, Collection<ConstraintMetaData>> loadConstraintMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+    private Map<String, Collection<ConstraintMetaData>> loadConstraintMetaDataMap(final DataSource dataSource, final StorageUnit storageUnit, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ConstraintMetaData>> result = new LinkedHashMap<>();
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getConstraintMetaDataSQL(tables))) {
+            if (storageUnit.getCatalog().isPresent()) {
+                connection.setCatalog(storageUnit.getCatalog().get());
+            }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String constraintName = resultSet.getString("CONSTRAINT_NAME");
@@ -100,11 +105,14 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         return String.format(CONSTRAINT_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
-    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final StorageUnit storageUnit, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
+            if (storageUnit.getCatalog().isPresent()) {
+                connection.setCatalog(storageUnit.getCatalog().get());
+            }
             Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPILoader.getService(DatabaseType.class, getType()));
             String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tables.iterator().next()) : connection.getCatalog();
             preparedStatement.setString(1, databaseName);
@@ -139,11 +147,14 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         return tables.isEmpty() ? TABLE_META_DATA_SQL : String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
-    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
+    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final StorageUnit storageUnit, final Collection<String> tableNames) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>();
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
+            if (storageUnit.getCatalog().isPresent()) {
+                connection.setCatalog(storageUnit.getCatalog().get());
+            }
             String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tableNames.iterator().next()) : connection.getCatalog();
             preparedStatement.setString(1, databaseName);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

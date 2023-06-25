@@ -125,7 +125,7 @@ class DatabaseConnectorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.containsDataSource()).thenReturn(true);
         when(database.isComplete()).thenReturn(true);
-        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new H2DatabaseType()));
+        when(database.getResourceMetaData().getStorageUnitTypes()).thenReturn(Collections.singletonMap("ds_0", new H2DatabaseType()));
         when(database.getProtocolType()).thenReturn(new H2DatabaseType());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("foo_db", database);

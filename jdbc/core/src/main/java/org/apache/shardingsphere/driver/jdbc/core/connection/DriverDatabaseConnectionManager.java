@@ -27,6 +27,8 @@ import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocation
 import org.apache.shardingsphere.driver.jdbc.core.ShardingSphereSavepoint;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
 import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
@@ -64,6 +66,8 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
+    private final Map<String, StorageUnit> storageUnits = new LinkedHashMap<>();
+    
     private final Map<String, DataSource> physicalDataSourceMap = new LinkedHashMap<>();
     
     @Getter
@@ -82,8 +86,11 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
         dataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
-        dataSourceMap.putAll(getTrafficDataSourceMap(databaseName, contextManager));
+        Map<String, DataSource> trafficDataSources = getTrafficDataSourceMap(databaseName, contextManager);
+        dataSourceMap.putAll(trafficDataSources);
         physicalDataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
+        storageUnits.putAll(contextManager.getStorageUnitMap(databaseName));
+        storageUnits.putAll(StorageUtils.getStorageUnits(trafficDataSources));
         connectionTransaction = createConnectionTransaction(databaseName, contextManager);
         connectionContext = new ConnectionContext(cachedConnections::keySet);
     }
@@ -299,8 +306,10 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        DataSource dataSource = dataSourceMap.get(dataSourceName);
-        Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
+        StorageUnit storageUnit = storageUnits.get(dataSourceName);
+        Preconditions.checkNotNull(storageUnit, "Missing the storage unit name: '%s'", dataSourceName);
+        DataSource dataSource = dataSourceMap.get(storageUnit.getNodeName());
+        Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", storageUnit.getNodeName());
         Collection<Connection> connections;
         synchronized (cachedConnections) {
             connections = cachedConnections.get(dataSourceName);
@@ -310,7 +319,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         if (connections.size() >= maxConnectionSize) {
             result = new ArrayList<>(connections).subList(connectionOffset, maxConnectionSize);
         } else if (connections.isEmpty()) {
-            Collection<Connection> newConnections = createConnections(dataSourceName, dataSource, maxConnectionSize, connectionMode);
+            Collection<Connection> newConnections = createConnections(storageUnit, dataSource, maxConnectionSize, connectionMode);
             result = new ArrayList<>(newConnections).subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, newConnections);
@@ -318,7 +327,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         } else {
             List<Connection> allConnections = new ArrayList<>(maxConnectionSize);
             allConnections.addAll(connections);
-            Collection<Connection> newConnections = createConnections(dataSourceName, dataSource, maxConnectionSize - connections.size(), connectionMode);
+            Collection<Connection> newConnections = createConnections(storageUnit, dataSource, maxConnectionSize - connections.size(), connectionMode);
             allConnections.addAll(newConnections);
             result = allConnections.subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
@@ -329,26 +338,26 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     }
     
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+    private List<Connection> createConnections(final StorageUnit storageUnit, final DataSource dataSource, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         if (1 == connectionSize) {
-            Connection connection = createConnection(dataSourceName, dataSource, connectionContext.getTransactionContext());
+            Connection connection = createConnection(storageUnit, dataSource, connectionContext.getTransactionContext());
             methodInvocationRecorder.replay(connection);
             return Collections.singletonList(connection);
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
-            return createConnections(dataSourceName, dataSource, connectionSize, connectionContext.getTransactionContext());
+            return createConnections(storageUnit, dataSource, connectionSize, connectionContext.getTransactionContext());
         }
         synchronized (dataSource) {
-            return createConnections(dataSourceName, dataSource, connectionSize, connectionContext.getTransactionContext());
+            return createConnections(storageUnit, dataSource, connectionSize, connectionContext.getTransactionContext());
         }
     }
     
-    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize,
+    private List<Connection> createConnections(final StorageUnit storageUnit, final DataSource dataSource, final int connectionSize,
                                                final TransactionConnectionContext transactionConnectionContext) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
             try {
-                Connection connection = createConnection(dataSourceName, dataSource, transactionConnectionContext);
+                Connection connection = createConnection(storageUnit, dataSource, transactionConnectionContext);
                 methodInvocationRecorder.replay(connection);
                 result.add(connection);
             } catch (final SQLException ignored) {
@@ -361,8 +370,8 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         return result;
     }
     
-    private Connection createConnection(final String dataSourceName, final DataSource dataSource, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
-        Optional<Connection> connectionInTransaction = isRawJdbcDataSource(dataSourceName) ? connectionTransaction.getConnection(dataSourceName, transactionConnectionContext) : Optional.empty();
+    private Connection createConnection(final StorageUnit storageUnit, final DataSource dataSource, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
+        Optional<Connection> connectionInTransaction = isRawJdbcDataSource(storageUnit.getName()) ? connectionTransaction.getConnection(storageUnit, transactionConnectionContext) : Optional.empty();
         return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
     }
     

@@ -42,6 +42,8 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
     
     private final DataSource dataSource;
     
+    private final String catalog;
+    
     private final MetaDataReviseEntry<T> reviseEntry;
     
     /**
@@ -62,7 +64,7 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
                 continue;
             }
             String name = nameReviser.isPresent() ? nameReviser.get().revise(each.getName()) : each.getName();
-            int dataType = dataTypeReviser.map(optional -> optional.revise(each.getName(), databaseType, dataSource).orElseGet(each::getDataType)).orElseGet(each::getDataType);
+            int dataType = dataTypeReviser.map(optional -> optional.revise(each.getName(), databaseType, dataSource, catalog).orElseGet(each::getDataType)).orElseGet(each::getDataType);
             boolean generated = generatedReviser.map(optional -> optional.revise(each)).orElseGet(each::isGenerated);
             result.add(new ColumnMetaData(name, dataType, each.isPrimaryKey(), generated, each.isCaseSensitive(), each.isVisible(), each.isUnsigned()));
         }

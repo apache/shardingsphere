@@ -36,6 +36,7 @@ import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -118,7 +119,7 @@ class SeataATShardingSphereTransactionManagerTest {
     
     @Test
     void assertGetConnection() throws SQLException {
-        Connection actual = seataTransactionManager.getConnection("sharding_db", "ds_0");
+        Connection actual = seataTransactionManager.getConnection("sharding_db", new StorageUnit("ds_0", "foo"));
         assertThat(actual, instanceOf(ConnectionProxy.class));
     }
     

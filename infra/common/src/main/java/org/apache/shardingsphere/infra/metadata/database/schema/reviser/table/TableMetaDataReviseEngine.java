@@ -43,6 +43,8 @@ public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
     
     private final DataSource dataSource;
     
+    private final String catalog;
+    
     private final MetaDataReviseEntry<T> reviseEntry;
     
     /**
@@ -54,7 +56,7 @@ public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
     public TableMetaData revise(final TableMetaData originalMetaData) {
         Optional<? extends TableNameReviser<T>> tableNameReviser = reviseEntry.getTableNameReviser();
         String revisedTableName = tableNameReviser.map(optional -> optional.revise(originalMetaData.getName(), rule)).orElse(originalMetaData.getName());
-        return new TableMetaData(revisedTableName, new ColumnReviseEngine<>(rule, databaseType, dataSource, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getColumns()),
+        return new TableMetaData(revisedTableName, new ColumnReviseEngine<>(rule, databaseType, dataSource, catalog, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getColumns()),
                 new IndexReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getIndexes()),
                 new ConstraintReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getConstraints()));
     }

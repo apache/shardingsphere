@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -45,6 +46,7 @@ class ShardingMetaDataReviseEngineTest {
     @Test
     void assertReviseWithKeyGenerateStrategy() {
         GenericSchemaBuilderMaterial material = mock(GenericSchemaBuilderMaterial.class);
+        when(material.getStorageResource()).thenReturn(mock(StorageResource.class));
         when(material.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         Map<String, SchemaMetaData> actual = new MetaDataReviseEngine(Collections.singleton(mockShardingRule())).revise(Collections.singletonMap("sharding_db",
                 new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData()))), material);

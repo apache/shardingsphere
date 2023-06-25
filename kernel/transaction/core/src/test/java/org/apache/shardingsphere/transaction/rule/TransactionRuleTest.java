@@ -65,13 +65,13 @@ class TransactionRuleTest {
         assertThat(resourceMetaData1.getDataSources().size(), is(2));
         assertTrue(resourceMetaData1.getDataSources().containsKey("ds_0"));
         assertTrue(resourceMetaData1.getDataSources().containsKey("ds_1"));
-        assertThat(resourceMetaData1.getStorageTypes().size(), is(2));
+        assertThat(resourceMetaData1.getStorageUnitTypes().size(), is(2));
         assertTrue(actual.getDatabases().containsKey(SHARDING_DB_2));
         ShardingSphereResourceMetaData resourceMetaData2 = actual.getDatabases().get(SHARDING_DB_2).getResourceMetaData();
         assertThat(resourceMetaData2.getDataSources().size(), is(2));
         assertTrue(resourceMetaData2.getDataSources().containsKey("ds_0"));
         assertTrue(resourceMetaData2.getDataSources().containsKey("ds_1"));
-        assertThat(resourceMetaData2.getStorageTypes().size(), is(2));
+        assertThat(resourceMetaData2.getStorageUnitTypes().size(), is(2));
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
@@ -108,7 +108,7 @@ class TransactionRuleTest {
         Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
         databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
         databaseTypes.put("ds_1", new OpenGaussDatabaseType());
-        when(result.getStorageTypes()).thenReturn(databaseTypes);
+        when(result.getStorageUnitTypes()).thenReturn(databaseTypes);
         return result;
     }
     
@@ -129,7 +129,7 @@ class TransactionRuleTest {
         Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
         databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
         databaseTypes.put("ds_1", new OpenGaussDatabaseType());
-        when(result.getStorageTypes()).thenReturn(databaseTypes);
+        when(result.getStorageUnitTypes()).thenReturn(databaseTypes);
         return result;
     }
     

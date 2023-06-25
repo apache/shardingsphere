@@ -135,7 +135,7 @@ class OpenGaussComBatchBindExecutorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("foo_ds"));
-        when(result.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", new OpenGaussDatabaseType()));
+        when(result.getResourceMetaData().getStorageUnitTypes()).thenReturn(Collections.singletonMap("foo_ds", new OpenGaussDatabaseType()));
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         return result;
     }

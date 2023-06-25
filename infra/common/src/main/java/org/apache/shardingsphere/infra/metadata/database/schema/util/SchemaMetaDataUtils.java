@@ -23,16 +23,17 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.exception.UnsupportedActualDataNodeStructureException;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.SchemaMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,7 @@ public final class SchemaMetaDataUtils {
     public static Collection<SchemaMetaDataLoaderMaterial> getSchemaMetaDataLoaderMaterials(final Collection<String> tableNames,
                                                                                             final GenericSchemaBuilderMaterial material, final boolean checkMetaDataEnable) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
-        Collection<DatabaseType> notSupportThreeTierStructureStorageTypes = getNotSupportThreeTierStructureStorageTypes(material.getStorageTypes().values());
+        Collection<DatabaseType> notSupportThreeTierStructureStorageTypes = getNotSupportThreeTierStructureStorageTypes(material.getStorageResource().getStorageNodesTypes().values());
         DataNodes dataNodes = new DataNodes(material.getRules());
         for (String each : tableNames) {
             checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(notSupportThreeTierStructureStorageTypes, dataNodes, each);
@@ -63,12 +64,13 @@ public final class SchemaMetaDataUtils {
                 addOneActualTableDataNode(material, dataSourceTableGroups, dataNodes, each);
             }
         }
-        return dataSourceTableGroups.entrySet().stream().map(entry -> new SchemaMetaDataLoaderMaterial(entry.getValue(),
-                getDataSource(material, entry.getKey()), material.getStorageTypes().get(entry.getKey()), material.getDefaultSchemaName())).collect(Collectors.toList());
+        return dataSourceTableGroups.entrySet().stream().map(entry -> getSchemaMetaDataLoaderMaterial(material, entry)).collect(Collectors.toList());
     }
     
-    private static DataSource getDataSource(final GenericSchemaBuilderMaterial material, final String dataSourceName) {
-        return material.getDataSourceMap().get(dataSourceName.contains(".") ? dataSourceName.split("\\.")[0] : dataSourceName);
+    private static SchemaMetaDataLoaderMaterial getSchemaMetaDataLoaderMaterial(final GenericSchemaBuilderMaterial material, final Entry<String, Collection<String>> entry) {
+        StorageUnit storageUnit = material.getStorageResource().getStorageUnits().get(entry.getKey().contains(".") ? entry.getKey().split("\\.")[0] : entry.getKey());
+        return new SchemaMetaDataLoaderMaterial(entry.getValue(), material.getStorageResource().getStorageNodes().get(storageUnit.getNodeName()),
+                material.getStorageResource().getStorageNodesTypes().get(storageUnit.getNodeName()), storageUnit, material.getDefaultSchemaName());
     }
     
     private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final Collection<DatabaseType> notSupportThreeTierStructureStorageTypes, final DataNodes dataNodes,
@@ -96,17 +98,17 @@ public final class SchemaMetaDataUtils {
     private static void addOneActualTableDataNode(final GenericSchemaBuilderMaterial material,
                                                   final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
         Optional<DataNode> dataNode = dataNodes.getDataNodes(table).stream().filter(each -> isSameDataSourceNameSchemaName(material, each)).findFirst();
-        if (!dataNode.isPresent() && !material.getDataSourceMap().keySet().iterator().hasNext()) {
+        if (!dataNode.isPresent() && !material.getStorageResource().getStorageUnits().keySet().iterator().hasNext()) {
             return;
         }
-        String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElseGet(() -> material.getDataSourceMap().keySet().iterator().next());
+        String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElseGet(() -> material.getStorageResource().getStorageUnits().keySet().iterator().next());
         String tableName = dataNode.map(DataNode::getTableName).orElse(table);
         addDataSourceTableGroups(dataSourceName, tableName, dataSourceTableGroups);
     }
     
     private static boolean isSameDataSourceNameSchemaName(final GenericSchemaBuilderMaterial material, final DataNode dataNode) {
         String dataSourceName = dataNode.getDataSourceName().contains(".") ? dataNode.getDataSourceName().split("\\.")[0] : dataNode.getDataSourceName();
-        if (!material.getDataSourceMap().containsKey(dataSourceName)) {
+        if (!material.getStorageResource().getStorageUnits().containsKey(dataSourceName)) {
             return false;
         }
         return null == dataNode.getSchemaName() || dataNode.getSchemaName().equalsIgnoreCase(material.getDefaultSchemaName());
@@ -116,7 +118,7 @@ public final class SchemaMetaDataUtils {
                                                   final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
         Collection<DataNode> tableDataNodes = dataNodes.getDataNodes(table);
         if (tableDataNodes.isEmpty()) {
-            addDataSourceTableGroups(material.getDataSourceMap().keySet().iterator().next(), table, dataSourceTableGroups);
+            addDataSourceTableGroups(material.getStorageResource().getStorageUnits().keySet().iterator().next(), table, dataSourceTableGroups);
         } else {
             tableDataNodes.forEach(each -> addDataSourceTableGroups(each.getDataSourceName(), each.getTableName(), dataSourceTableGroups));
         }

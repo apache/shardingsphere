@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.single.route.engine;
 
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
@@ -45,7 +47,11 @@ class SingleDatabaseBroadcastRouteEngineTest {
     
     @Test
     void assertRoute() throws SQLException {
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
+        Map<String, DataSource> dataSources = createDataSourceMap();
+        StorageResource storageResource = mock(StorageResource.class);
+        when(storageResource.getStorageNodes()).thenReturn(dataSources);
+        when(storageResource.getStorageUnits()).thenReturn(StorageUtils.getStorageUnits(dataSources));
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, storageResource, Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         SingleDatabaseBroadcastRouteEngine engine = new SingleDatabaseBroadcastRouteEngine();
         engine.route(routeContext, singleRule);

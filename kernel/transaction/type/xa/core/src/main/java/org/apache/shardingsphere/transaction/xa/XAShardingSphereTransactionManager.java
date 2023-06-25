@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction.xa;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -88,9 +89,13 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     }
     
     @Override
-    public Connection getConnection(final String databaseName, final String dataSourceName) throws SQLException {
+    public Connection getConnection(final String databaseName, final StorageUnit storageUnit) throws SQLException {
         try {
-            return cachedDataSources.get(databaseName + "." + dataSourceName).getConnection();
+            Connection result = cachedDataSources.get(databaseName + "." + storageUnit.getName()).getConnection();
+            if (storageUnit.getCatalog().isPresent()) {
+                result.setCatalog(storageUnit.getCatalog().get());
+            }
+            return result;
         } catch (final SystemException | RollbackException ex) {
             throw new SQLException(ex);
         }

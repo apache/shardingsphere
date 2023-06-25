@@ -20,13 +20,12 @@ package org.apache.shardingsphere.encrypt.rule.builder;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Encrypt rule builder.
@@ -38,7 +37,7 @@ public final class CompatibleEncryptRuleBuilder implements DatabaseRuleBuilder<C
     
     @Override
     public EncryptRule build(final CompatibleEncryptRuleConfiguration config, final String databaseName,
-                             final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
+                             final StorageResource storageResource, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
         return new EncryptRule(config);
     }
     

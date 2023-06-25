@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata;
 
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
@@ -35,10 +36,11 @@ public interface DialectSchemaMetaDataLoader extends TypedSPI {
      * Load schema meta data.
      *
      * @param dataSource data source
+     * @param storageUnit storage unit
      * @param tables tables
      * @param defaultSchemaName default schema name
      * @return schema meta data collection
      * @throws SQLException SQL exception
      */
-    Collection<SchemaMetaData> load(DataSource dataSource, Collection<String> tables, String defaultSchemaName) throws SQLException;
+    Collection<SchemaMetaData> load(DataSource dataSource, StorageUnit storageUnit, Collection<String> tables, String defaultSchemaName) throws SQLException;
 }

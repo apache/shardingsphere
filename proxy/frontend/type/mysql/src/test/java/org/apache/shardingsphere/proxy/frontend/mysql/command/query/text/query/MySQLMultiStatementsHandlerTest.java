@@ -102,7 +102,7 @@ class MySQLMultiStatementsHandlerTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getAllInstanceDataSourceNames())
                 .thenReturn(Collections.singletonList("foo_ds"));
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageTypes())
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnitTypes())
                 .thenReturn(Collections.singletonMap("foo_ds", new MySQLDatabaseType()));
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData())

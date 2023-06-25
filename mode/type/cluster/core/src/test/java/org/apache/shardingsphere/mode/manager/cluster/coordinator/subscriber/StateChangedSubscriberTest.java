@@ -105,7 +105,7 @@ class StateChangedSubscriberTest {
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
         when(database.getResourceMetaData().getDataSources()).thenReturn(new LinkedHashMap<>());
-        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
+        when(database.getResourceMetaData().getStorageUnitTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
         when(database.getSchemas()).thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema()));
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.metadata;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
@@ -48,8 +49,10 @@ class EncryptMetaDataReviseEngineTest {
     void assertRevise() {
         Map<String, SchemaMetaData> schemaMetaData = Collections.singletonMap(
                 DefaultDatabase.LOGIC_NAME, new SchemaMetaData(DefaultDatabase.LOGIC_NAME, Collections.singleton(createTableMetaData())));
+        GenericSchemaBuilderMaterial material = mock(GenericSchemaBuilderMaterial.class);
+        when(material.getStorageResource()).thenReturn(mock(StorageResource.class));
         TableMetaData actual = new MetaDataReviseEngine(Collections.singleton(mockEncryptRule())).revise(
-                schemaMetaData, mock(GenericSchemaBuilderMaterial.class)).get(DefaultDatabase.LOGIC_NAME).getTables().iterator().next();
+                schemaMetaData, material).get(DefaultDatabase.LOGIC_NAME).getTables().iterator().next();
         assertThat(actual.getColumns().size(), is(2));
         Iterator<ColumnMetaData> columns = actual.getColumns().iterator();
         assertThat(columns.next().getName(), is("id"));

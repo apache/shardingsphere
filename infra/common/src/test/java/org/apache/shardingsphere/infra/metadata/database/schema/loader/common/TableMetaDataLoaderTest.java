@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.SchemaMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.SchemaMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
@@ -109,7 +110,7 @@ class TableMetaDataLoaderTest {
         DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
         when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
         Map<String, SchemaMetaData> actual = SchemaMetaDataLoaderEngine.load(Collections.singletonList(
-                new SchemaMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, databaseType, "sharding_db")));
+                new SchemaMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, databaseType, mock(StorageUnit.class), "sharding_db")));
         TableMetaData tableMetaData = actual.get("sharding_db").getTables().iterator().next();
         Collection<ColumnMetaData> columns = tableMetaData.getColumns();
         assertThat(columns.size(), is(2));
@@ -132,7 +133,7 @@ class TableMetaDataLoaderTest {
     @Test
     void assertLoadWithNotExistedTable() throws SQLException {
         Map<String, SchemaMetaData> actual = SchemaMetaDataLoaderEngine.load(Collections.singletonList(
-                new SchemaMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, mock(DatabaseType.class), "sharding_db")));
+                new SchemaMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, mock(DatabaseType.class), mock(StorageUnit.class), "sharding_db")));
         assertFalse(actual.isEmpty());
         assertTrue(actual.containsKey("sharding_db"));
         assertTrue(actual.get("sharding_db").getTables().isEmpty());

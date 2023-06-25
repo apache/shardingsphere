@@ -84,7 +84,7 @@ public final class GenericSchemaBuilder {
     }
     
     private static boolean isProtocolTypeSameWithStorageType(final GenericSchemaBuilderMaterial material) {
-        for (DatabaseType each : material.getStorageTypes().values()) {
+        for (DatabaseType each : material.getStorageResource().getStorageNodesTypes().values()) {
             if (!material.getProtocolType().equals(each)) {
                 return false;
             }
@@ -107,7 +107,7 @@ public final class GenericSchemaBuilder {
     
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
-        for (DatabaseType each : material.getStorageTypes().values()) {
+        for (DatabaseType each : material.getStorageResource().getStorageNodesTypes().values()) {
             String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(each, material.getDefaultSchemaName());
             tableMetaDataList.addAll(Optional.ofNullable(schemaMetaDataMap.get(defaultSchemaName)).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList));
         }
