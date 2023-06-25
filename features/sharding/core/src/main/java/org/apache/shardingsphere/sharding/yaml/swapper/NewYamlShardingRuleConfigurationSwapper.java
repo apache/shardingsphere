@@ -70,9 +70,9 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final ShardingRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
-        swapTableRules(data, result);
-        swapStrategies(data, result);
         swapAlgorithms(data, result);
+        swapStrategies(data, result);
+        swapTableRules(data, result);
         if (null != data.getDefaultShardingColumn()) {
             result.add(new YamlDataNode(ShardingNodeConverter.getDefaultShardingColumnPath(), data.getDefaultShardingColumn()));
         }
@@ -82,15 +82,15 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
         return result;
     }
     
-    private void swapTableRules(final ShardingRuleConfiguration data, final Collection<YamlDataNode> result) {
-        for (ShardingTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getTableNamePath(each.getLogicTable()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
+    private void swapAlgorithms(final ShardingRuleConfiguration data, final Collection<YamlDataNode> result) {
+        for (Entry<String, AlgorithmConfiguration> each : data.getShardingAlgorithms().entrySet()) {
+            result.add(new YamlDataNode(ShardingNodeConverter.getShardingAlgorithmPath(each.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(each.getValue()))));
         }
-        for (ShardingAutoTableRuleConfiguration each : data.getAutoTables()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getAutoTableNamePath(each.getLogicTable()), YamlEngine.marshal(autoTableYamlSwapper.swapToYamlConfiguration(each))));
+        for (Entry<String, AlgorithmConfiguration> each : data.getKeyGenerators().entrySet()) {
+            result.add(new YamlDataNode(ShardingNodeConverter.getKeyGeneratorPath(each.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(each.getValue()))));
         }
-        for (ShardingTableReferenceRuleConfiguration each : data.getBindingTableGroups()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getBindingTableNamePath(each.getName()), YamlShardingTableReferenceRuleConfigurationConverter.convertToYamlString(each)));
+        for (Entry<String, AlgorithmConfiguration> each : data.getAuditors().entrySet()) {
+            result.add(new YamlDataNode(ShardingNodeConverter.getAuditorPath(each.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(each.getValue()))));
         }
     }
     
@@ -113,15 +113,15 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
         }
     }
     
-    private void swapAlgorithms(final ShardingRuleConfiguration data, final Collection<YamlDataNode> result) {
-        for (Entry<String, AlgorithmConfiguration> each : data.getShardingAlgorithms().entrySet()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getShardingAlgorithmPath(each.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(each.getValue()))));
+    private void swapTableRules(final ShardingRuleConfiguration data, final Collection<YamlDataNode> result) {
+        for (ShardingTableRuleConfiguration each : data.getTables()) {
+            result.add(new YamlDataNode(ShardingNodeConverter.getTableNamePath(each.getLogicTable()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
         }
-        for (Entry<String, AlgorithmConfiguration> each : data.getKeyGenerators().entrySet()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getKeyGeneratorPath(each.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(each.getValue()))));
+        for (ShardingAutoTableRuleConfiguration each : data.getAutoTables()) {
+            result.add(new YamlDataNode(ShardingNodeConverter.getAutoTableNamePath(each.getLogicTable()), YamlEngine.marshal(autoTableYamlSwapper.swapToYamlConfiguration(each))));
         }
-        for (Entry<String, AlgorithmConfiguration> each : data.getAuditors().entrySet()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getAuditorPath(each.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(each.getValue()))));
+        for (ShardingTableReferenceRuleConfiguration each : data.getBindingTableGroups()) {
+            result.add(new YamlDataNode(ShardingNodeConverter.getBindingTableNamePath(each.getName()), YamlShardingTableReferenceRuleConfigurationConverter.convertToYamlString(each)));
         }
     }
     
