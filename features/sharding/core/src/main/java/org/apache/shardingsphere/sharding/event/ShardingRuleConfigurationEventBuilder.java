@@ -63,18 +63,18 @@ public final class ShardingRuleConfigurationEventBuilder implements RuleConfigur
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!ShardingNodeConverter.isShardingPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!ShardingNodeConverter.getRuleRootNodeConverter().isRulePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> tableName = ShardingNodeConverter.getTableNameByActiveVersionPath(event.getKey());
+        Optional<String> tableName = ShardingNodeConverter.getTableNodeConverter().getNameByActiveVersionPath(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShardingTableConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> autoTableName = ShardingNodeConverter.getAutoTableNameByActiveVersionPath(event.getKey());
+        Optional<String> autoTableName = ShardingNodeConverter.getAutoTableNodeConverter().getNameByActiveVersionPath(event.getKey());
         if (autoTableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShardingAutoTableConfigEvent(databaseName, autoTableName.get(), event);
         }
-        Optional<String> bindingTableName = ShardingNodeConverter.getBindingTableNameByActiveVersionPath(event.getKey());
+        Optional<String> bindingTableName = ShardingNodeConverter.getBindingTableNodeConverter().getNameByActiveVersionPath(event.getKey());
         if (bindingTableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShardingTableReferenceConfigEvent(databaseName, bindingTableName.get(), event);
         }
@@ -93,15 +93,15 @@ public final class ShardingRuleConfigurationEventBuilder implements RuleConfigur
         if (ShardingNodeConverter.isDefaultShardingColumnWithActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createDefaultShardingColumnEvent(databaseName, event);
         }
-        Optional<String> algorithmName = ShardingNodeConverter.getShardingAlgorithmNameByActiveVersionPath(event.getKey());
+        Optional<String> algorithmName = ShardingNodeConverter.getShardingCacheNodeConverter().getNameByActiveVersionPath(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShardingAlgorithmEvent(databaseName, algorithmName.get(), event);
         }
-        Optional<String> keyGeneratorName = ShardingNodeConverter.getKeyGeneratorNameByActiveVersionPath(event.getKey());
+        Optional<String> keyGeneratorName = ShardingNodeConverter.getKeyGeneratorNodeConverter().getNameByActiveVersionPath(event.getKey());
         if (keyGeneratorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createKeyGeneratorEvent(databaseName, keyGeneratorName.get(), event);
         }
-        Optional<String> auditorName = ShardingNodeConverter.getAuditorNameByActiveVersionPath(event.getKey());
+        Optional<String> auditorName = ShardingNodeConverter.getAuditorNodeConverter().getNameByActiveVersionPath(event.getKey());
         if (auditorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createAuditorEvent(databaseName, auditorName.get(), event);
         }

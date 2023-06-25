@@ -50,10 +50,10 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
     public Collection<YamlDataNode> swapToDataNodes(final MaskRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (Map.Entry<String, AlgorithmConfiguration> entry : data.getMaskAlgorithms().entrySet()) {
-            result.add(new YamlDataNode(MaskNodeConverter.getMaskAlgorithmPath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
+            result.add(new YamlDataNode(MaskNodeConverter.getAlgorithmNodeConvertor().getNamePath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         for (MaskTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(MaskNodeConverter.getTableNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
+            result.add(new YamlDataNode(MaskNodeConverter.getTableNodeConvertor().getNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
         }
         return result;
     }
@@ -63,11 +63,11 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
         Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> algorithms = new LinkedHashMap<>();
         for (YamlDataNode each : dataNodes) {
-            if (MaskNodeConverter.isTablePath(each.getKey())) {
-                MaskNodeConverter.getTableName(each.getKey())
+            if (MaskNodeConverter.getTableNodeConvertor().isPath(each.getKey())) {
+                MaskNodeConverter.getTableNodeConvertor().getName(each.getKey())
                         .ifPresent(tableName -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlMaskTableRuleConfiguration.class))));
-            } else if (MaskNodeConverter.isAlgorithmPath(each.getKey())) {
-                MaskNodeConverter.getAlgorithmName(each.getKey())
+            } else if (MaskNodeConverter.getAlgorithmNodeConvertor().isPath(each.getKey())) {
+                MaskNodeConverter.getAlgorithmNodeConvertor().getName(each.getKey())
                         .ifPresent(loadBalancerName -> algorithms.put(loadBalancerName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
             }
         }

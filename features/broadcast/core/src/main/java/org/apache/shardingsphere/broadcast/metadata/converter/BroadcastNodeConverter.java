@@ -19,9 +19,8 @@ package org.apache.shardingsphere.broadcast.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 
 /**
  * Broadcast node converter.
@@ -29,13 +28,29 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BroadcastNodeConverter {
     
-    private static final String ROOT_NODE = "broadcast";
-    
     private static final String TABLES_NODE = "tables";
     
-    private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
+    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("broadcast");
     
-    private static final String RULE_ACTIVE_VERSION = "/active_version$";
+    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, TABLES_NODE);
+    
+    /**
+     * Get rule root node converter.
+     *
+     * @return rule root node converter
+     */
+    public static RuleRootNodeConverter getRuleRootNodeConverter() {
+        return ROOT_NODE_CONVERTER;
+    }
+    
+    /**
+     * Get table node converter.
+     *
+     * @return table node converter
+     */
+    public static RuleItemNodeConverter getTableNodeConvertor() {
+        return TABLE_NODE_CONVERTER;
+    }
     
     /**
      * Get tables path.
@@ -44,29 +59,5 @@ public final class BroadcastNodeConverter {
      */
     public static String getTablesPath() {
         return TABLES_NODE;
-    }
-    
-    /**
-     * Is broadcast path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isBroadcastPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is broadcast tables active version path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isTablesActiveVersionPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
     }
 }

@@ -19,10 +19,8 @@ package org.apache.shardingsphere.readwritesplitting.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 
 /**
  * Readwrite-splitting node converter.
@@ -30,119 +28,36 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingNodeConverter {
     
-    private static final String ROOT_NODE = "readwrite_splitting";
+    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("readwrite_splitting");
     
-    private static final String DATA_SOURCES_NODE = "data_sources";
+    private static final RuleItemNodeConverter DATA_SOURCE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "data_sources");
     
-    private static final String LOAD_BALANCER_NODE = "load_balancers";
-    
-    private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
-    
-    private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
-    
-    private static final String RULE_ACTIVE_VERSION = "/([\\w\\-]+)/active_version$";
+    private static final RuleItemNodeConverter LOAD_BALANCER_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "load_balancers");
     
     /**
-     * Get group name path.
+     * Get rule root node converter.
      *
-     * @param groupName group name
-     * @return group name path
+     * @return rule root node converter
      */
-    public static String getGroupNamePath(final String groupName) {
-        return String.join("/", DATA_SOURCES_NODE, groupName);
+    public static RuleRootNodeConverter getRuleRootNodeConverter() {
+        return ROOT_NODE_CONVERTER;
     }
     
     /**
-     * Get load balancer name.
+     * Get data source node converter.
      *
-     * @param loadBalancerName load balancer name
-     * @return load balancer path
+     * @return data source node converter
      */
-    public static String getLoadBalancerPath(final String loadBalancerName) {
-        return String.join("/", LOAD_BALANCER_NODE, loadBalancerName);
+    public static RuleItemNodeConverter getDataSourceNodeConvertor() {
+        return DATA_SOURCE_NODE_CONVERTER;
     }
     
     /**
-     * Is readwrite-splitting path.
+     * Get load balancer node converter.
      *
-     * @param rulePath rule path
-     * @return true or false
+     * @return load balancer node converter
      */
-    public static boolean isReadwriteSplittingPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is readwrite-splitting data sources path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isDataSourcePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is readwrite-splitting load balancer path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isLoadBalancerPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Get group name.
-     *
-     * @param rulePath rule path
-     * @return group name
-     */
-    public static Optional<String> getGroupName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get load balancer name.
-     *
-     * @param rulePath rule path
-     * @return load balancer name
-     */
-    public static Optional<String> getLoadBalancerName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get group name by active version path.
-     *
-     * @param activeVersionPath active version path
-     * @return group name
-     */
-    public static Optional<String> getGroupNameByActiveVersionPath(final String activeVersionPath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(activeVersionPath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get load balancer name by active version path.
-     *
-     * @param activeVersionPath active version path
-     * @return load balancer name
-     */
-    public static Optional<String> getLoadBalancerNameByActiveVersionPath(final String activeVersionPath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(activeVersionPath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    public static RuleItemNodeConverter getLoadBalancerNodeConverter() {
+        return LOAD_BALANCER_NODE_CONVERTER;
     }
 }
