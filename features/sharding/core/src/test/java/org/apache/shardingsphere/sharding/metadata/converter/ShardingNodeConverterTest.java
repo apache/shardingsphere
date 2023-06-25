@@ -208,21 +208,21 @@ class ShardingNodeConverterTest {
     
     @Test
     void assertGetShardingAlgorithmByActiveVersionPath() {
-        Optional<String> actual = ShardingNodeConverter.getShardingAlgorithmByActiveVersionPath("/metadata/foo_db/rules/sharding/algorithms/foo_table_algorithm/active_version");
+        Optional<String> actual = ShardingNodeConverter.getShardingAlgorithmNameByActiveVersionPath("/metadata/foo_db/rules/sharding/algorithms/foo_table_algorithm/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table_algorithm"));
     }
     
     @Test
     void assertGetKeyGeneratorByActiveVersionPath() {
-        Optional<String> actual = ShardingNodeConverter.getKeyGeneratorByActiveVersionPath("/metadata/foo_db/rules/sharding/key_generators/foo_table_key_generator/active_version");
+        Optional<String> actual = ShardingNodeConverter.getKeyGeneratorNameByActiveVersionPath("/metadata/foo_db/rules/sharding/key_generators/foo_table_key_generator/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table_key_generator"));
     }
     
     @Test
     void assertGetAuditorByActiveVersionPath() {
-        Optional<String> actual = ShardingNodeConverter.getAuditorByActiveVersionPath("/metadata/foo_db/rules/sharding/auditors/foo_table_auditor/active_version");
+        Optional<String> actual = ShardingNodeConverter.getAuditorNameByActiveVersionPath("/metadata/foo_db/rules/sharding/auditors/foo_table_auditor/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table_auditor"));
     }
