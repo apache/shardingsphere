@@ -505,36 +505,36 @@ public final class ShardingNodeConverter {
     }
     
     /**
-     * Get sharding algorithm by active version path.
+     * Get sharding algorithm name by active version path.
      *
      * @param activeVersionPath active version path
      * @return sharding algorithm version
      */
-    public static Optional<String> getShardingAlgorithmByActiveVersionPath(final String activeVersionPath) {
+    public static Optional<String> getShardingAlgorithmNameByActiveVersionPath(final String activeVersionPath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + SHARDING_ALGORITHMS_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(activeVersionPath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     * Get key generator by active version path.
+     * Get key generator name by active version path.
      *
      * @param activeVersionPath active version path
      * @return key generator version
      */
-    public static Optional<String> getKeyGeneratorByActiveVersionPath(final String activeVersionPath) {
+    public static Optional<String> getKeyGeneratorNameByActiveVersionPath(final String activeVersionPath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + KEY_GENERATORS_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(activeVersionPath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     * Get auditor by active version path.
+     * Get auditor name by active version path.
      *
      * @param activeVersionPath active version path
      * @return auditor version
      */
-    public static Optional<String> getAuditorByActiveVersionPath(final String activeVersionPath) {
+    public static Optional<String> getAuditorNameByActiveVersionPath(final String activeVersionPath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUDITORS_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(activeVersionPath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();

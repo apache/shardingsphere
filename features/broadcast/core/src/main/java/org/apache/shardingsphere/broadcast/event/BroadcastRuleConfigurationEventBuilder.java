@@ -40,21 +40,18 @@ public final class BroadcastRuleConfigurationEventBuilder implements RuleConfigu
             return Optional.empty();
         }
         if (BroadcastNodeConverter.isTablesActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
-            Optional<String> tablesVersion = BroadcastNodeConverter.getTablesVersion(event.getKey());
-            if (tablesVersion.isPresent()) {
-                return createBroadcastConfigEvent(databaseName, tablesVersion.get(), event);
-            }
+            return createBroadcastConfigEvent(databaseName, event);
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createBroadcastConfigEvent(final String databaseName, final String version, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createBroadcastConfigEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddBroadcastTableEvent(databaseName, event.getKey(), version));
+            return Optional.of(new AddBroadcastTableEvent(databaseName, event.getKey(), event.getValue()));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterBroadcastTableEvent(databaseName, event.getKey(), version));
+            return Optional.of(new AlterBroadcastTableEvent(databaseName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteBroadcastTableEvent(databaseName, event.getKey(), version));
+        return Optional.of(new DeleteBroadcastTableEvent(databaseName));
     }
 }

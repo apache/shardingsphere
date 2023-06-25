@@ -48,11 +48,11 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
         if (dataSourceName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowConfigEvent(databaseName, dataSourceName.get(), event);
         }
-        Optional<String> tableName = ShadowNodeConverter.getTableName(event.getKey());
+        Optional<String> tableName = ShadowNodeConverter.getTableNameByActiveVersionPath(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowTableConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> algorithmName = ShadowNodeConverter.getAlgorithmName(event.getKey());
+        Optional<String> algorithmName = ShadowNodeConverter.getAlgorithmNameByActiveVersionPath(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowAlgorithmEvent(databaseName, algorithmName.get(), event);
         }
