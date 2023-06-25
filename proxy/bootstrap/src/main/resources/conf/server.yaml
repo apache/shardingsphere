@@ -21,26 +21,26 @@
 # 
 ######################################################################################################
 
-#mode:
-#  type: Cluster
-#  repository:
-#    type: ZooKeeper
-#    props:
-#      namespace: governance_ds
-#      server-lists: localhost:2181
-#      retryIntervalMilliseconds: 500
-#      timeToLiveSeconds: 60
-#      maxRetries: 3
-#      operationTimeoutMilliseconds: 500
-#
-#authority:
-#  users:
-#    - user: root@%
-#      password: root
-#    - user: sharding
-#      password: sharding
-#  privilege:
-#    type: ALL_PERMITTED
+mode:
+  type: New_Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: governance_ds_new11
+      server-lists: localhost:2181
+      retryIntervalMilliseconds: 500
+      timeToLiveSeconds: 60
+      maxRetries: 3
+      operationTimeoutMilliseconds: 500
+
+authority:
+  users:
+    - user: root@%
+      password: root
+    - user: sharding
+      password: sharding
+  privilege:
+    type: ALL_PERMITTED
 #
 #transaction:
 #  defaultType: XA

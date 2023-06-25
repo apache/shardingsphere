@@ -20,7 +20,6 @@ package org.apache.shardingsphere.broadcast.metadata.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,8 +34,6 @@ public final class BroadcastNodeConverter {
     private static final String TABLES_NODE = "tables";
     
     private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
-    
-    private static final String VERSION_PATH = "/([\\w\\-]+)/versions/(\\d+)";
     
     private static final String RULE_ACTIVE_VERSION = "/active_version$";
     
@@ -56,7 +53,7 @@ public final class BroadcastNodeConverter {
      * @return true or false
      */
     public static boolean isBroadcastPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -71,17 +68,5 @@ public final class BroadcastNodeConverter {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
-    }
-    
-    /**
-     * Get tables version.
-     *
-     * @param rulePath rule path
-     * @return tables version
-     */
-    public static Optional<String> getTablesVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + VERSION_PATH, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }
 }

@@ -110,84 +110,188 @@
 #
 ######################################################################################################
 
-#databaseName: sharding_db
-#
-#dataSources:
-#  ds_0:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#    minPoolSize: 1
-#  ds_1:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#    minPoolSize: 1
-#
-#rules:
-#- !SHARDING
+databaseName: sharding_db
+
+dataSources:
+  ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 123456
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_1:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 123456
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_2:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_2?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 123456
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+
+rules:
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_inline
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: snowflake
+      auditStrategy:
+        auditorNames:
+          - sharding_key_required_auditor
+        allowHintDisable: true
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_item_inline
+      keyGenerateStrategy:
+        column: order_item_id
+        keyGeneratorName: snowflake
+  defaultDatabaseStrategy:
+    standard:
+      shardingColumn: user_id
+      shardingAlgorithmName: database_inline
+  defaultTableStrategy:
+    none:
+  defaultAuditStrategy:
+    auditorNames:
+      - sharding_key_required_auditor
+    allowHintDisable: true
+
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_${user_id % 2}
+    t_order_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_${order_id % 2}
+    t_order_item_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_item_${order_id % 2}
+
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+
+  auditors:
+    sharding_key_required_auditor:
+      type: DML_SHARDING_CONDITIONS
+- !READWRITE_SPLITTING
+  dataSources:
+    readwrite_ds:
+      writeDataSourceName: ds_0
+      readDataSourceNames:
+        - ds_1
+        - ds_2
+      loadBalancerName: random2
+  loadBalancers:
+    random2:
+      type: RANDOM
+    readwrite_ds_random2:
+      type: RANDOM
+- !MASK
+  tables:
+    t_order:
+      columns:
+        password:
+          maskAlgorithm: md5_mask
+        email:
+          maskAlgorithm: mask_before_special_chars_mask
+        telephone:
+          maskAlgorithm: keep_first_n_last_m_mask
+
+  maskAlgorithms:
+    md5_mask:
+      type: MD5
+    mask_before_special_chars_mask:
+      type: MASK_BEFORE_SPECIAL_CHARS
+      props:
+        special-chars: '@'
+        replace-char: '*'
+    keep_first_n_last_m_mask:
+      type: KEEP_FIRST_N_LAST_M
+      props:
+        first-n: 3
+        last-m: 4
+        replace-char: '*'
+- !ENCRYPT
+  tables:
+    t_order:
+      columns:
+        username:
+          cipher:
+            name: username
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_username
+            encryptorName: assisted_encryptor
+          likeQuery:
+            name: like_query_username
+            encryptorName: like_encryptor
+        pwd:
+          cipher:
+            name: pwd
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_pwd
+            encryptorName: assisted_encryptor
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    assisted_encryptor:
+      type: MD5
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
+#- !COMPATIBLE_ENCRYPT
 #  tables:
-#    t_order:
-#      actualDataNodes: ds_${0..1}.t_order_${0..1}
-#      tableStrategy:
-#        standard:
-#          shardingColumn: order_id
-#          shardingAlgorithmName: t_order_inline
-#      keyGenerateStrategy:
-#        column: order_id
-#        keyGeneratorName: snowflake
-#      auditStrategy:
-#        auditorNames:
-#          - sharding_key_required_auditor
-#        allowHintDisable: true
-#    t_order_item:
-#      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-#      tableStrategy:
-#        standard:
-#          shardingColumn: order_id
-#          shardingAlgorithmName: t_order_item_inline
-#      keyGenerateStrategy:
-#        column: order_item_id
-#        keyGeneratorName: snowflake
-#  bindingTables:
-#    - t_order,t_order_item
-#  defaultDatabaseStrategy:
-#    standard:
-#      shardingColumn: user_id
-#      shardingAlgorithmName: database_inline
-#  defaultTableStrategy:
-#    none:
-#  defaultAuditStrategy:
-#    auditorNames:
-#      - sharding_key_required_auditor
-#    allowHintDisable: true
-#
-#  shardingAlgorithms:
-#    database_inline:
-#      type: INLINE
+#    t_order_compatible:
+#      columns:
+#        username:
+#          cipherColumn: username
+#          encryptorName: aes_encryptor
+#          assistedQueryColumn: assisted_query_username
+#          assistedQueryEncryptorName: assisted_encryptor
+#          likeQueryColumn: like_query_username
+#          likeQueryEncryptorName: like_encryptor
+#        pwd:
+#          cipherColumn: pwd
+#          encryptorName: aes_encryptor
+#          assistedQueryColumn: assisted_query_pwd
+#          assistedQueryEncryptorName: assisted_encryptor
+#  encryptors:
+#    aes_encryptor:
+#      type: AES
 #      props:
-#        algorithm-expression: ds_${user_id % 2}
-#    t_order_inline:
-#      type: INLINE
-#      props:
-#        algorithm-expression: t_order_${order_id % 2}
-#    t_order_item_inline:
-#      type: INLINE
-#      props:
-#        algorithm-expression: t_order_item_${order_id % 2}
-#
-#  keyGenerators:
-#    snowflake:
-#      type: SNOWFLAKE
-#
-#  auditors:
-#    sharding_key_required_auditor:
-#      type: DML_SHARDING_CONDITIONS
+#        aes-key-value: 123456abc
+#    assisted_encryptor:
+#      type: MD5
+#    like_encryptor:
+#      type: CHAR_DIGEST_LIKE
+- !BROADCAST
+  tables:
+    - t_order
+    - t_order_item

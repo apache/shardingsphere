@@ -20,18 +20,12 @@ package org.apache.shardingsphere.broadcast.metadata.coverter;
 import org.apache.shardingsphere.broadcast.metadata.converter.BroadcastNodeConverter;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BroadcastNodeConverterTest {
     
     @Test
-    void assertGetTablesVersion() {
-        Optional<String> actual = BroadcastNodeConverter.getTablesVersion("/metadata/foo_db/rules/broadcast/tables/foo/versions/1");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("1"));
+    void assertIsTablesActiveVersionPath() {
+        assertTrue(BroadcastNodeConverter.isTablesActiveVersionPath("/metadata/foo_db/rules/broadcast/tables/active_version"));
     }
 }

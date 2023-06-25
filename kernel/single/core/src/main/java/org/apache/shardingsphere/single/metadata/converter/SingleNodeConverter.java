@@ -35,8 +35,6 @@ public final class SingleNodeConverter {
     
     private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
     
-    private static final String VERSION_PATTERN = "/versions/\\d+";
-    
     private static final String RULE_ACTIVE_VERSION = "/active_version$";
     
     /**
@@ -55,7 +53,7 @@ public final class SingleNodeConverter {
      * @return true or false
      */
     public static boolean isSinglePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }

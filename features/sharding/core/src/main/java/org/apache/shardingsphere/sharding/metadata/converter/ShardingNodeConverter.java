@@ -187,7 +187,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isShardingPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -199,7 +199,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isTablePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + "/.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -211,7 +211,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isAutoTablePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUTO_TABLES_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUTO_TABLES_NODE + "/.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -223,7 +223,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isBindingTablePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + BINDING_TABLES_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + BINDING_TABLES_NODE + "/.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -295,7 +295,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isShardingAlgorithmPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + SHARDING_ALGORITHMS_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + SHARDING_ALGORITHMS_NODE + "/.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -307,7 +307,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isKeyGeneratorPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + KEY_GENERATORS_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + KEY_GENERATORS_NODE + "/.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -319,7 +319,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isAuditorPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUDITORS_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUDITORS_NODE + "/.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -412,7 +412,7 @@ public final class ShardingNodeConverter {
      * Get table name by active version path.
      *
      * @param activeVersionPath active version path
-     * @return table name version
+     * @return table name
      */
     public static Optional<String> getTableNameByActiveVersionPath(final String activeVersionPath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
@@ -424,7 +424,7 @@ public final class ShardingNodeConverter {
      * Get auto table name by active version path.
      *
      * @param activeVersionPath active version path
-     * @return auto table name version
+     * @return auto table name
      */
     public static Optional<String> getAutoTableNameByActiveVersionPath(final String activeVersionPath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUTO_TABLES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
@@ -436,7 +436,7 @@ public final class ShardingNodeConverter {
      * Get binding table name by active version path.
      *
      * @param activeVersionPath active version path
-     * @return binding table name version
+     * @return binding table name
      */
     public static Optional<String> getBindingTableNameByActiveVersionPath(final String activeVersionPath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + BINDING_TABLES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
@@ -508,7 +508,7 @@ public final class ShardingNodeConverter {
      * Get sharding algorithm name by active version path.
      *
      * @param activeVersionPath active version path
-     * @return sharding algorithm version
+     * @return sharding algorithm name
      */
     public static Optional<String> getShardingAlgorithmNameByActiveVersionPath(final String activeVersionPath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + SHARDING_ALGORITHMS_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
@@ -520,7 +520,7 @@ public final class ShardingNodeConverter {
      * Get key generator name by active version path.
      *
      * @param activeVersionPath active version path
-     * @return key generator version
+     * @return key generator name
      */
     public static Optional<String> getKeyGeneratorNameByActiveVersionPath(final String activeVersionPath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + KEY_GENERATORS_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
@@ -532,7 +532,7 @@ public final class ShardingNodeConverter {
      * Get auditor name by active version path.
      *
      * @param activeVersionPath active version path
-     * @return auditor version
+     * @return auditor name
      */
     public static Optional<String> getAuditorNameByActiveVersionPath(final String activeVersionPath) {
         Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUDITORS_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
