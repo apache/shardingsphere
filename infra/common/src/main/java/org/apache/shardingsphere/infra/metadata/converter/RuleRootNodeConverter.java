@@ -35,7 +35,7 @@ public final class RuleRootNodeConverter {
     
     public RuleRootNodeConverter(final String ruleType) {
         ruleNodePrefix = RULE_NODE_PREFIX + ruleType;
-        rulePathPattern = Pattern.compile(ruleNodePrefix + "\\.*", Pattern.CASE_INSENSITIVE);
+        rulePathPattern = Pattern.compile(ruleNodePrefix + "/.*", Pattern.CASE_INSENSITIVE);
     }
     
     /**

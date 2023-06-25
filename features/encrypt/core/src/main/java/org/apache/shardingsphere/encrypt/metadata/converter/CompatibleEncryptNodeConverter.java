@@ -19,10 +19,8 @@ package org.apache.shardingsphere.encrypt.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 
 /**
  * Compatible encrypt node converter.
@@ -32,119 +30,36 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CompatibleEncryptNodeConverter {
     
-    private static final String ROOT_NODE = "compatible_encrypt";
+    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("compatible_encrypt");
     
-    private static final String TABLES_NODE = "tables";
+    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
     
-    private static final String ENCRYPTORS_NODE = "encryptors";
-    
-    private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
-    
-    private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
-    
-    private static final String RULE_VERSION = "/([\\w\\-]+)/versions/([\\w\\-]+)$";
+    private static final RuleItemNodeConverter ENCRYPTOR_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "encryptors");
     
     /**
-     * Get table name path.
+     * Get rule root node converter.
      *
-     * @param tableName table name
-     * @return table name path
+     * @return rule root node converter
      */
-    public static String getTableNamePath(final String tableName) {
-        return String.join("/", TABLES_NODE, tableName);
+    public static RuleRootNodeConverter getRuleRootNodeConverter() {
+        return ROOT_NODE_CONVERTER;
     }
     
     /**
-     * Get encryptor path.
+     * Get table node convertor.
      *
-     * @param encryptorName encryptor name
-     * @return encryptor path
+     * @return table node convertor
      */
-    public static String getEncryptorPath(final String encryptorName) {
-        return String.join("/", ENCRYPTORS_NODE, encryptorName);
+    public static RuleItemNodeConverter getTableNodeConvertor() {
+        return TABLE_NODE_CONVERTER;
     }
     
     /**
-     * Is encrypt path.
+     * Get encryptor node convertor.
      *
-     * @param rulePath rule path
-     * @return true or false
+     * @return encryptor node convertor
      */
-    public static boolean isEncryptPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is encrypt table path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isTablePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is encryptor path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isEncryptorPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ENCRYPTORS_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Get table name.
-     *
-     * @param rulePath rule path
-     * @return table name
-     */
-    public static Optional<String> getTableName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     *  Get encryptor name.
-     *
-     * @param rulePath rule path
-     * @return encryptor name
-     */
-    public static Optional<String> getEncryptorName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ENCRYPTORS_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get encrypt table version.
-     * 
-     * @param rulePath rule path
-     * @return encrypt table version
-     */
-    public static Optional<String> getEncryptTableVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
-    }
-    
-    /**
-     * Get encryptor version.
-     *
-     * @param rulePath rule path
-     * @return encryptor version
-     */
-    public static Optional<String> getEncryptorVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + ENCRYPTORS_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    public static RuleItemNodeConverter getEncryptorNodeConvertor() {
+        return ENCRYPTOR_NODE_CONVERTER;
     }
 }

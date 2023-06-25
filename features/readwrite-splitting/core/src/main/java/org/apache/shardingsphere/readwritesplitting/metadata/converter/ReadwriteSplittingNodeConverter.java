@@ -38,7 +38,7 @@ public final class ReadwriteSplittingNodeConverter {
     
     private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
     
-    private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)/versions?";
+    private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
     
     private static final String RULE_ACTIVE_VERSION = "/([\\w\\-]+)/active_version$";
     
@@ -69,7 +69,7 @@ public final class ReadwriteSplittingNodeConverter {
      * @return true or false
      */
     public static boolean isReadwriteSplittingPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -81,7 +81,7 @@ public final class ReadwriteSplittingNodeConverter {
      * @return true or false
      */
     public static boolean isDataSourcePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DATA_SOURCES_NODE + "/.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -93,7 +93,7 @@ public final class ReadwriteSplittingNodeConverter {
      * @return true or false
      */
     public static boolean isLoadBalancerPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + LOAD_BALANCER_NODE + "/.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }

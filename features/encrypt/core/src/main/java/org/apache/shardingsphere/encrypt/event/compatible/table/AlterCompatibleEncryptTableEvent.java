@@ -15,17 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.metadata.coverter;
+package org.apache.shardingsphere.encrypt.event.compatible.table;
 
-import org.apache.shardingsphere.broadcast.metadata.converter.BroadcastNodeConverter;
-import org.junit.jupiter.api.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class BroadcastNodeConverterTest {
+/**
+ * Alter compatible encrypt table event.
+ * @deprecated compatible support will remove in next version.
+ */
+@Deprecated
+@RequiredArgsConstructor
+@Getter
+public final class AlterCompatibleEncryptTableEvent implements GovernanceEvent {
     
-    @Test
-    void assertIsTablesActiveVersionPath() {
-        assertTrue(BroadcastNodeConverter.isTablesActiveVersionPath("/metadata/foo_db/rules/broadcast/tables/active_version"));
-    }
+    private final String databaseName;
+    
+    private final String tableName;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }
