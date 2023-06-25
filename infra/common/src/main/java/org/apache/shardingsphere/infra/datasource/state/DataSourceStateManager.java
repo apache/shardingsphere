@@ -46,7 +46,7 @@ public final class DataSourceStateManager {
     private final Map<String, DataSourceState> dataSourceStates = new ConcurrentHashMap<>();
     
     private volatile boolean forceStart;
-
+    
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     
     /**
