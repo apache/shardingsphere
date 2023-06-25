@@ -23,6 +23,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Collection;
+import java.util.Optional;
+
 /**
  * Hint value context.
  */
@@ -48,4 +51,22 @@ public final class HintValueContext {
     private String disableAuditNames = "";
     
     private boolean shadow;
+    
+    /**
+     * Find hint disable audit names.
+     *
+     * @return disable audit names
+     */
+    public Collection<String> findDisableAuditNames() {
+        return SQLHintUtils.getSplitterSQLHintValue(disableAuditNames);
+    }
+    
+    /**
+     * Find hint data source name.
+     *
+     * @return data source name
+     */
+    public Optional<String> findHintDataSourceName() {
+        return dataSourceName.isEmpty() ? Optional.empty() : Optional.of(dataSourceName);
+    }
 }

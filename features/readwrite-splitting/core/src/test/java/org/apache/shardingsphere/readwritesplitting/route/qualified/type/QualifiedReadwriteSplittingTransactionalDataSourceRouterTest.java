@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReadQueryLoadBalanceAlgorithm;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 import java.util.Arrays;
 
@@ -36,15 +38,18 @@ import static org.mockito.Mockito.when;
 
 class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest {
     
+    @Mock
+    private HintValueContext hintValueContext;
+    
     @Test
     void assertWriteRouteTransaction() {
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         TransactionConnectionContext transactionConnectionContext = mock(TransactionConnectionContext.class);
         when(connectionContext.getTransactionContext()).thenReturn(transactionConnectionContext);
         when(connectionContext.getTransactionContext().isInTransaction()).thenReturn(Boolean.TRUE);
-        assertTrue(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null));
+        assertTrue(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null, hintValueContext));
         when(connectionContext.getTransactionContext().isInTransaction()).thenReturn(Boolean.FALSE);
-        assertFalse(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null));
+        assertFalse(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null, hintValueContext));
     }
     
     @Test

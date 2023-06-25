@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.statement;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Sta
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Common SQL statement context.
@@ -46,13 +44,10 @@ public abstract class CommonSQLStatementContext implements SQLStatementContext {
     
     private final DatabaseType databaseType;
     
-    private final SQLHintExtractor sqlHintExtractor;
-    
     protected CommonSQLStatementContext(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         databaseType = getDatabaseType(sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList(), databaseType);
-        sqlHintExtractor = new SQLHintExtractor(sqlStatement);
     }
     
     private DatabaseType getDatabaseType(final SQLStatement sqlStatement) {
@@ -75,32 +70,5 @@ public abstract class CommonSQLStatementContext implements SQLStatementContext {
             return TypedSPILoader.getService(DatabaseType.class, "SQL92");
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
-    }
-    
-    /**
-     * Find hint data source name.
-     *
-     * @return dataSource name
-     */
-    public Optional<String> findHintDataSourceName() {
-        return sqlHintExtractor.findHintDataSourceName();
-    }
-    
-    /**
-     * Judge whether is hint routed to write data source or not.
-     *
-     * @return whether is hint routed to write data source or not
-     */
-    public boolean isHintWriteRouteOnly() {
-        return sqlHintExtractor.isHintWriteRouteOnly();
-    }
-    
-    /**
-     * Judge whether hint skip sql rewrite or not.
-     *
-     * @return whether hint skip sql rewrite or not
-     */
-    public boolean isHintSkipSQLRewrite() {
-        return sqlHintExtractor.isHintSkipSQLRewrite();
     }
 }
