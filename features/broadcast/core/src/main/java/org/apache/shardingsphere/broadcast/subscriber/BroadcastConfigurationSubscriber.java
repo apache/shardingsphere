@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.broadcast.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.Setter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.event.config.AddBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.config.AlterBroadcastTableEvent;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.infra.rule.RuleChangedSubscriber;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
@@ -37,17 +38,12 @@ import java.util.Optional;
  * Broadcast configuration subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class BroadcastConfigurationSubscriber implements RuleConfigurationSubscribeCoordinator {
+@Setter
+public final class BroadcastConfigurationSubscriber implements RuleChangedSubscriber {
     
     private Map<String, ShardingSphereDatabase> databases;
     
     private InstanceContext instanceContext;
-    
-    @Override
-    public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        this.databases = databases;
-        this.instanceContext = instanceContext;
-    }
     
     /**
      * Renew with add broadcast configuration.

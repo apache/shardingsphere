@@ -22,13 +22,22 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Map;
 
-public interface RuleConfigurationSubscribeCoordinator {
+/**
+ * Rule changed subscriber.
+ */
+public interface RuleChangedSubscriber {
     
     /**
-     * Register rule configuration subscriber.
-     *
-     * @param databases databases
-     * @param instanceContext instance context
+     * Set databases.
+     * 
+     * @param databases databases databases to be set
      */
-    void registerRuleConfigurationSubscriber(Map<String, ShardingSphereDatabase> databases, InstanceContext instanceContext);
+    void setDatabases(Map<String, ShardingSphereDatabase> databases);
+    
+    /**
+     * Set instance context.
+     * 
+     * @param instanceContext instance context to be set
+     */
+    void setInstanceContext(InstanceContext instanceContext);
 }
