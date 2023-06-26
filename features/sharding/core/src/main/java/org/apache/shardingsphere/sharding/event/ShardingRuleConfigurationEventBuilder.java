@@ -93,7 +93,7 @@ public final class ShardingRuleConfigurationEventBuilder implements RuleConfigur
         if (ShardingNodeConverter.isDefaultShardingColumnWithActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createDefaultShardingColumnEvent(databaseName, event);
         }
-        Optional<String> algorithmName = ShardingNodeConverter.getShardingCacheNodeConverter().getNameByActiveVersionPath(event.getKey());
+        Optional<String> algorithmName = ShardingNodeConverter.getAlgorithmNodeConverter().getNameByActiveVersionPath(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShardingAlgorithmEvent(databaseName, algorithmName.get(), event);
         }

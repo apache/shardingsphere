@@ -61,8 +61,6 @@ public final class ShardingNodeConverter {
     
     private static final RuleItemNodeConverter AUDITOR_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "auditors");
     
-    private static final RuleItemNodeConverter SHARDING_CACHE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "sharding_cache");
-    
     /**
      * Get rule root node converter.
      *
@@ -124,15 +122,6 @@ public final class ShardingNodeConverter {
      */
     public static RuleItemNodeConverter getAuditorNodeConverter() {
         return AUDITOR_NODE_CONVERTER;
-    }
-    
-    /**
-     * Get sharding cache node converter.
-     *
-     * @return sharding cache node converter
-     */
-    public static RuleItemNodeConverter getShardingCacheNodeConverter() {
-        return SHARDING_CACHE_NODE_CONVERTER;
     }
     
     /**
