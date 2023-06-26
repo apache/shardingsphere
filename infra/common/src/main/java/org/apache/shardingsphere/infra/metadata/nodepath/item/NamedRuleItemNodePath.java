@@ -42,9 +42,9 @@ public final class NamedRuleItemNodePath {
     
     public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
         this.type = type;
-        pathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + type + "/.*", Pattern.CASE_INSENSITIVE);
-        namePathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + type + NAME, Pattern.CASE_INSENSITIVE);
-        activeVersionPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + type + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        pathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + type + "/.*");
+        namePathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + type + NAME);
+        activeVersionPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + type + ACTIVE_VERSION);
     }
     
     /**
@@ -75,7 +75,7 @@ public final class NamedRuleItemNodePath {
      */
     public Optional<String> getName(final String path) {
         Matcher matcher = namePathPattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     /**
@@ -86,6 +86,6 @@ public final class NamedRuleItemNodePath {
      */
     public Optional<String> getNameByActiveVersion(final String path) {
         Matcher matcher = activeVersionPathPattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 }

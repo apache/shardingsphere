@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  */
 public final class RuleRootNodePath {
     
-    private static final String RULE_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
+    private static final String RULE_NODE_PREFIX = "/[\\w\\-]+/[\\w\\-]+/rules/";
     
     @Getter
     private final String nodePrefix;
@@ -35,7 +35,7 @@ public final class RuleRootNodePath {
     
     public RuleRootNodePath(final String ruleType) {
         nodePrefix = RULE_NODE_PREFIX + ruleType;
-        pathPattern = Pattern.compile(nodePrefix + "/.*", Pattern.CASE_INSENSITIVE);
+        pathPattern = Pattern.compile(nodePrefix + "/.*");
     }
     
     /**
