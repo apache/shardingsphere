@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  */
 public final class RuleRootNodePath {
     
-    private static final String RULE_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
+    private static final String RULE_NODE_PREFIX = "/[\\w\\-]+/[\\w\\-]+/rules/";
     
     @Getter
     private final String nodePrefix;
