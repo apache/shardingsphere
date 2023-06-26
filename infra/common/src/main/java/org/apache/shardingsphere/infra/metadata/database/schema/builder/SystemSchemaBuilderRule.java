@@ -70,7 +70,19 @@ public enum SystemSchemaBuilderRule {
             "socket_summary_by_event_name", "socket_summary_by_instance", "status_by_account", "status_by_host", "status_by_thread", "status_by_user", "table_handles",
             "table_io_waits_summary_by_index_usage", "table_io_waits_summary_by_table", "table_lock_waits_summary_by_table", "threads", "user_variables_by_thread", "users", "variables_by_thread"))),
     
-    MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys_config"))),
+    MYSQL_SYS("MySQL", "sys",
+            new HashSet<>(Arrays.asList("host_summary", "host_summary_by_file_io", "host_summary_by_file_io_type", "host_summary_by_stages", "host_summary_by_statement_latency",
+                    "host_summary_by_statement_type", "innodb_buffer_stats_by_schema", "innodb_buffer_stats_by_table", "innodb_lock_waits",
+                    "io_by_thread_by_latency", "io_global_by_file_by_bytes", "io_global_by_file_by_latency", "io_global_by_wait_by_bytes", "io_global_by_wait_by_latency", "latest_file_io",
+                    "memory_by_host_by_current_bytes", "memory_by_thread_by_current_bytes", "memory_by_user_by_current_bytes",
+                    "memory_global_by_current_bytes", "memory_global_total", "metrics", "processlist", "ps_check_lost_instrumentation", "schema_auto_increment_columns", "schema_index_statistics",
+                    "schema_object_overview", "schema_redundant_indexes",
+                    "schema_table_lock_waits", "schema_table_statistics", "schema_table_statistics_with_buffer", "schema_tables_with_full_table_scans", "schema_unused_indexes", "session",
+                    "session_ssl_status", "statement_analysis", "statements_with_errors_or_warnings",
+                    "statements_with_full_table_scans", "statements_with_runtimes_in_95th_percentile", "statements_with_sorting", "statements_with_temp_tables", "sys_config", "user_summary",
+                    "user_summary_by_file_io", "user_summary_by_file_io_type", "user_summary_by_stages",
+                    "user_summary_by_statement_latency", "user_summary_by_statement_type", "version", "wait_classes_global_by_avg_latency", "wait_classes_global_by_latency",
+                    "waits_by_host_by_latency", "waits_by_user_by_latency", "waits_global_by_latency"))),
     
     MYSQL_SHARDING_SPHERE("MySQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
     
