@@ -37,20 +37,15 @@ class NamedRuleItemNodePathTest {
     }
     
     @Test
-    void assertIsValidatedPath() {
-        assertTrue(converter.isValidatedPath("/metadata/foo_db/rules/foo/tables/foo_table/versions/0"));
-    }
-    
-    @Test
-    void assertIsNotValidatedPath() {
-        assertFalse(converter.isValidatedPath("/metadata/foo_db/rules/bar/tables/foo_table/versions/0"));
-    }
-    
-    @Test
     void assertGetName() {
         Optional<String> actual = converter.getName("/metadata/foo_db/rules/foo/tables/foo_table/versions/0");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table"));
+    }
+    
+    @Test
+    void assertGetNameWithInvalidPath() {
+        assertFalse(converter.getName("/metadata/foo_db/rules/bar/tables/foo_table/versions/0").isPresent());
     }
     
     @Test

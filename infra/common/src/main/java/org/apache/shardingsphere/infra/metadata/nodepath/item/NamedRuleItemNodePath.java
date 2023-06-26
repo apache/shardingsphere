@@ -34,15 +34,12 @@ public final class NamedRuleItemNodePath {
     
     private final String type;
     
-    private final Pattern pathPattern;
-    
     private final Pattern namePathPattern;
     
     private final Pattern activeVersionPathPattern;
     
     public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
         this.type = type;
-        pathPattern = Pattern.compile(rootNodePath.getNodePrefix() + type + "/.*");
         namePathPattern = Pattern.compile(rootNodePath.getNodePrefix() + type + NAME);
         activeVersionPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + type + ACTIVE_VERSION);
     }
@@ -55,16 +52,6 @@ public final class NamedRuleItemNodePath {
      */
     public String getPath(final String itemName) {
         return String.join("/", type, itemName);
-    }
-    
-    /**
-     * Judge whether is validated rule item path.
-     *
-     * @param path path to be judged
-     * @return is validated rule item path or not
-     */
-    public boolean isValidatedPath(final String path) {
-        return pathPattern.matcher(path).find();
     }
     
     /**

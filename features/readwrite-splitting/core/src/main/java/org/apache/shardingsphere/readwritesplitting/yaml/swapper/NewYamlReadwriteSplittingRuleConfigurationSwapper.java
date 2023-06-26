@@ -72,13 +72,10 @@ public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements 
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         Map<String, AlgorithmConfiguration> loadBalancerMap = new LinkedHashMap<>();
         for (YamlDataNode each : dataNodes) {
-            if (ReadwriteSplittingNodeConverter.getDataSourceNodePath().isValidatedPath(each.getKey())) {
-                ReadwriteSplittingNodeConverter.getDataSourceNodePath().getName(each.getKey())
-                        .ifPresent(groupName -> dataSources.add(swapDataSource(groupName, YamlEngine.unmarshal(each.getValue(), YamlReadwriteSplittingDataSourceRuleConfiguration.class))));
-            } else if (ReadwriteSplittingNodeConverter.getLoadBalancerNodePath().isValidatedPath(each.getKey())) {
-                ReadwriteSplittingNodeConverter.getLoadBalancerNodePath().getName(each.getKey())
-                        .ifPresent(loadBalancerName -> loadBalancerMap.put(loadBalancerName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
-            }
+            ReadwriteSplittingNodeConverter.getDataSourceNodePath().getName(each.getKey())
+                    .ifPresent(optional -> dataSources.add(swapDataSource(optional, YamlEngine.unmarshal(each.getValue(), YamlReadwriteSplittingDataSourceRuleConfiguration.class))));
+            ReadwriteSplittingNodeConverter.getLoadBalancerNodePath().getName(each.getKey())
+                    .ifPresent(optional -> loadBalancerMap.put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
         }
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancerMap);
     }
