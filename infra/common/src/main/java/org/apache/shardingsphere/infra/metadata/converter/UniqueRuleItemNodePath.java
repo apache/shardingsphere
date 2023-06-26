@@ -21,9 +21,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Rule default item node converter.
+ * Unique rule item node path.
  */
-public final class RuleDefaultItemNodeConverter {
+public final class UniqueRuleItemNodePath {
     
     private static final String VERSIONS = "/versions/\\d+$";
     
@@ -37,14 +37,14 @@ public final class RuleDefaultItemNodeConverter {
     
     private final Pattern activeVersionPathPattern;
     
-    public RuleDefaultItemNodeConverter(final RuleRootNodePath ruleRootNodePath, final String itemsNode) {
+    public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String itemsNode) {
         parentNode = null;
         this.itemsNode = itemsNode;
         itemsPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + itemsNode + VERSIONS, Pattern.CASE_INSENSITIVE);
         activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + itemsNode + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     
-    public RuleDefaultItemNodeConverter(final RuleRootNodePath ruleRootNodePath, final String parentNode, final String itemsNode) {
+    public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String parentNode, final String itemsNode) {
         this.parentNode = parentNode;
         this.itemsNode = itemsNode;
         itemsPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + parentNode + "/" + itemsNode + VERSIONS, Pattern.CASE_INSENSITIVE);

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.single.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.UniqueRuleItemNodePath;
 import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 /**
@@ -32,14 +32,14 @@ public final class SingleNodeConverter {
     
     private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("single");
     
-    private static final RuleDefaultItemNodeConverter TABLE_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    private static final UniqueRuleItemNodePath TABLE_NODE_CONVERTER = new UniqueRuleItemNodePath(ROOT_NODE_CONVERTER, "tables");
     
     /**
      * Get table node converter.
      *
      * @return table node converter
      */
-    public static RuleDefaultItemNodeConverter getTableNodeConverter() {
+    public static UniqueRuleItemNodePath getTableNodeConverter() {
         return TABLE_NODE_CONVERTER;
     }
     

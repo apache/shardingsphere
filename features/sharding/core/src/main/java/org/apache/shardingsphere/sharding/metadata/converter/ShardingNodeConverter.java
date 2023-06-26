@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.UniqueRuleItemNodePath;
 import org.apache.shardingsphere.infra.metadata.converter.NamedRuleItemNodePath;
 import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
@@ -45,20 +45,20 @@ public final class ShardingNodeConverter {
     
     private static final NamedRuleItemNodePath AUDITOR_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "auditors");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_DATABASE_STRATEGY_NODE_CONVERTER =
-            new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_database_strategy");
+    private static final UniqueRuleItemNodePath DEFAULT_DATABASE_STRATEGY_NODE_CONVERTER =
+            new UniqueRuleItemNodePath(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_database_strategy");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_TABLE_STRATEGY_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_table_strategy");
+    private static final UniqueRuleItemNodePath DEFAULT_TABLE_STRATEGY_NODE_CONVERTER = new UniqueRuleItemNodePath(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_table_strategy");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_KEY_GENERATE_STRATEGY_NODE_CONVERTER =
-            new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_key_generate_strategy");
+    private static final UniqueRuleItemNodePath DEFAULT_KEY_GENERATE_STRATEGY_NODE_CONVERTER =
+            new UniqueRuleItemNodePath(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_key_generate_strategy");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_AUDIT_STRATEGY_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_audit_strategy");
+    private static final UniqueRuleItemNodePath DEFAULT_AUDIT_STRATEGY_NODE_CONVERTER = new UniqueRuleItemNodePath(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_audit_strategy");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_SHARDING_COLUMN_NODE_CONVERTER =
-            new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_sharding_column");
+    private static final UniqueRuleItemNodePath DEFAULT_SHARDING_COLUMN_NODE_CONVERTER =
+            new UniqueRuleItemNodePath(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_sharding_column");
     
-    private static final RuleDefaultItemNodeConverter SHARDING_CACHE_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, "sharding_cache");
+    private static final UniqueRuleItemNodePath SHARDING_CACHE_NODE_CONVERTER = new UniqueRuleItemNodePath(ROOT_NODE_CONVERTER, "sharding_cache");
     
     /**
      * Get rule root node converter.
@@ -128,7 +128,7 @@ public final class ShardingNodeConverter {
      *
      * @return default database strategy node converter
      */
-    public static RuleDefaultItemNodeConverter getDefaultDatabaseStrategyNodeConverter() {
+    public static UniqueRuleItemNodePath getDefaultDatabaseStrategyNodeConverter() {
         return DEFAULT_DATABASE_STRATEGY_NODE_CONVERTER;
     }
     
@@ -137,7 +137,7 @@ public final class ShardingNodeConverter {
      *
      * @return default table strategy node converter
      */
-    public static RuleDefaultItemNodeConverter getDefaultTableStrategyNodeConverter() {
+    public static UniqueRuleItemNodePath getDefaultTableStrategyNodeConverter() {
         return DEFAULT_TABLE_STRATEGY_NODE_CONVERTER;
     }
     
@@ -146,7 +146,7 @@ public final class ShardingNodeConverter {
      *
      * @return default key generate strategy node converter
      */
-    public static RuleDefaultItemNodeConverter getDefaultKeyGenerateStrategyNodeConverter() {
+    public static UniqueRuleItemNodePath getDefaultKeyGenerateStrategyNodeConverter() {
         return DEFAULT_KEY_GENERATE_STRATEGY_NODE_CONVERTER;
     }
     
@@ -155,7 +155,7 @@ public final class ShardingNodeConverter {
      *
      * @return default table strategy node converter
      */
-    public static RuleDefaultItemNodeConverter getDefaultAuditStrategyNodeConverter() {
+    public static UniqueRuleItemNodePath getDefaultAuditStrategyNodeConverter() {
         return DEFAULT_AUDIT_STRATEGY_NODE_CONVERTER;
     }
     
@@ -164,7 +164,7 @@ public final class ShardingNodeConverter {
      *
      * @return default sharding column node converter
      */
-    public static RuleDefaultItemNodeConverter getDefaultShardingColumnNodeConverter() {
+    public static UniqueRuleItemNodePath getDefaultShardingColumnNodeConverter() {
         return DEFAULT_SHARDING_COLUMN_NODE_CONVERTER;
     }
     
@@ -173,7 +173,7 @@ public final class ShardingNodeConverter {
      *
      * @return sharding cache node converter
      */
-    public static RuleDefaultItemNodeConverter getShardingCacheNodeConverter() {
+    public static UniqueRuleItemNodePath getShardingCacheNodeConverter() {
         return SHARDING_CACHE_NODE_CONVERTER;
     }
 }

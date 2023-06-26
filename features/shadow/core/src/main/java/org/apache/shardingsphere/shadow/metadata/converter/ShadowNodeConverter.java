@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.UniqueRuleItemNodePath;
 import org.apache.shardingsphere.infra.metadata.converter.NamedRuleItemNodePath;
 import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
@@ -37,7 +37,7 @@ public final class ShadowNodeConverter {
     
     private static final NamedRuleItemNodePath ALGORITHM_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "algorithms");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_ALGORITHM_NAME_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, "default_algorithm_name");
+    private static final UniqueRuleItemNodePath DEFAULT_ALGORITHM_NAME_NODE_CONVERTER = new UniqueRuleItemNodePath(ROOT_NODE_CONVERTER, "default_algorithm_name");
     
     /**
      * Get rule root node converter.
@@ -80,7 +80,7 @@ public final class ShadowNodeConverter {
      *
      * @return default algorithm name node converter
      */
-    public static RuleDefaultItemNodeConverter getDefaultAlgorithmNameNodeConverter() {
+    public static UniqueRuleItemNodePath getDefaultAlgorithmNameNodeConverter() {
         return DEFAULT_ALGORITHM_NAME_NODE_CONVERTER;
     }
 }
