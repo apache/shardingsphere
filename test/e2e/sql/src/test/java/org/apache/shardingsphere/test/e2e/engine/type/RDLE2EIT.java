@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.type;
 
 import com.google.common.base.Splitter;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
@@ -32,12 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,7 +62,11 @@ class RDLE2EIT {
         try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
             if (!INITIALIZED.containsKey(testParam.getKey())) {
                 INITIALIZED.put(testParam.getKey(), true);
-                Awaitility.await().atMost(16L, TimeUnit.SECONDS).pollInterval(15L, TimeUnit.SECONDS).until(() -> true);
+                if (testParam.getDatabaseType() instanceof OpenGaussDatabaseType) {
+                    Awaitility.await().atMost(31L, TimeUnit.SECONDS).pollInterval(30L, TimeUnit.SECONDS).until(() -> true);
+                } else {
+                    Awaitility.await().atMost(16L, TimeUnit.SECONDS).pollInterval(15L, TimeUnit.SECONDS).until(() -> true);
+                }
             }
             init(containerComposer);
             assertExecute(testParam, containerComposer);
