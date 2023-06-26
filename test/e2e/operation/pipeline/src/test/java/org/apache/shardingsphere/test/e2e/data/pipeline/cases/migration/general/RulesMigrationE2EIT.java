@@ -55,6 +55,7 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertNoRuleMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+            loadAllSingleTables(containerComposer);
             assertMigrationSuccess(containerComposer, null);
         }
     }
