@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
 import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 /**
  * Sharding node converter.
@@ -31,7 +31,7 @@ public final class ShardingNodeConverter {
     
     private static final String DEFAULT_STRATEGIES_NODE = "default_strategies";
     
-    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("sharding");
+    private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("sharding");
     
     private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
     
@@ -65,7 +65,7 @@ public final class ShardingNodeConverter {
      *
      * @return rule root node converter
      */
-    public static RuleRootNodeConverter getRuleRootNodeConverter() {
+    public static RuleRootNodePath getRuleRootNodeConverter() {
         return ROOT_NODE_CONVERTER;
     }
     

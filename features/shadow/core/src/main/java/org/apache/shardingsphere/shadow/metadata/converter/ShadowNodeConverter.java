@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
 import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 /**
  * Shadow node converter.
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowNodeConverter {
     
-    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("shadow");
+    private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("shadow");
     
     private static final RuleItemNodeConverter DATA_SOURCE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "data_sources");
     
@@ -44,7 +44,7 @@ public final class ShadowNodeConverter {
      *
      * @return rule root node converter
      */
-    public static RuleRootNodeConverter getRuleRootNodeConverter() {
+    public static RuleRootNodePath getRuleRootNodeConverter() {
         return ROOT_NODE_CONVERTER;
     }
     

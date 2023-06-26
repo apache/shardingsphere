@@ -37,18 +37,18 @@ public final class RuleDefaultItemNodeConverter {
     
     private final Pattern activeVersionPathPattern;
     
-    public RuleDefaultItemNodeConverter(final RuleRootNodeConverter ruleRootNodeConverter, final String itemsNode) {
+    public RuleDefaultItemNodeConverter(final RuleRootNodePath ruleRootNodePath, final String itemsNode) {
         parentNode = null;
         this.itemsNode = itemsNode;
-        itemsPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + VERSIONS, Pattern.CASE_INSENSITIVE);
-        activeVersionPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        itemsPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + itemsNode + VERSIONS, Pattern.CASE_INSENSITIVE);
+        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + itemsNode + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     
-    public RuleDefaultItemNodeConverter(final RuleRootNodeConverter ruleRootNodeConverter, final String parentNode, final String itemsNode) {
+    public RuleDefaultItemNodeConverter(final RuleRootNodePath ruleRootNodePath, final String parentNode, final String itemsNode) {
         this.parentNode = parentNode;
         this.itemsNode = itemsNode;
-        itemsPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + parentNode + "/" + itemsNode + VERSIONS, Pattern.CASE_INSENSITIVE);
-        activeVersionPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + parentNode + "/" + itemsNode + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        itemsPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + parentNode + "/" + itemsNode + VERSIONS, Pattern.CASE_INSENSITIVE);
+        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + parentNode + "/" + itemsNode + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     
     /**

@@ -24,18 +24,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RuleRootNodeConverterTest {
+class RuleRootNodePathTest {
     
-    private final RuleRootNodeConverter converter = new RuleRootNodeConverter("foo");
+    private final RuleRootNodePath nodePath = new RuleRootNodePath("foo");
     
     @Test
     void assertGetRuleNodePrefix() {
-        assertThat(converter.getRuleNodePrefix(), is("/([\\w\\-]+)/([\\w\\-]+)/rules/foo"));
+        assertThat(nodePath.getNodePrefix(), is("/([\\w\\-]+)/([\\w\\-]+)/rules/foo"));
     }
     
     @Test
     void assertIsRulePath() {
-        assertTrue(converter.isRulePath("/metadata/foo_db/rules/foo/tables/foo_table"));
-        assertFalse(converter.isRulePath("/metadata/foo_db/rules/bar/tables/foo_table"));
+        assertTrue(nodePath.isRulePath("/metadata/foo_db/rules/foo/tables/foo_table"));
+    }
+    
+    @Test
+    void assertIsNotRulePath() {
+        assertFalse(nodePath.isRulePath("/metadata/foo_db/rules/bar/tables/foo_table"));
     }
 }

@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RuleItemNodeConverterTest {
     
-    private final RuleItemNodeConverter converter = new RuleItemNodeConverter(new RuleRootNodeConverter("foo"), "tables");
+    private final RuleItemNodeConverter converter = new RuleItemNodeConverter(new RuleRootNodePath("foo"), "tables");
     
     @Test
     void assertGetNamePath() {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.metadata.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 /**
  * Readwrite-splitting node converter.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingNodeConverter {
     
-    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("readwrite_splitting");
+    private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("readwrite_splitting");
     
     private static final RuleItemNodeConverter DATA_SOURCE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "data_sources");
     
@@ -39,7 +39,7 @@ public final class ReadwriteSplittingNodeConverter {
      *
      * @return rule root node converter
      */
-    public static RuleRootNodeConverter getRuleRootNodeConverter() {
+    public static RuleRootNodePath getRuleRootNodeConverter() {
         return ROOT_NODE_CONVERTER;
     }
     

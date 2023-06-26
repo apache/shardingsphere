@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.metadata.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 /**
  * Encrypt node converter.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptNodeConverter {
     
-    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("encrypt");
+    private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("encrypt");
     
     private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
     
@@ -39,7 +39,7 @@ public final class EncryptNodeConverter {
      *
      * @return rule root node converter
      */
-    public static RuleRootNodeConverter getRuleRootNodeConverter() {
+    public static RuleRootNodePath getRuleRootNodeConverter() {
         return ROOT_NODE_CONVERTER;
     }
     

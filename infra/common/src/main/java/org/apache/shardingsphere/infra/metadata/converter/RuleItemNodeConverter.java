@@ -38,11 +38,11 @@ public final class RuleItemNodeConverter {
     
     private final Pattern itemVersionPathPattern;
     
-    public RuleItemNodeConverter(final RuleRootNodeConverter ruleRootNodeConverter, final String itemsNode) {
+    public RuleItemNodeConverter(final RuleRootNodePath ruleRootNodePath, final String itemsNode) {
         this.itemsNode = itemsNode;
-        itemsPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + "/.*", Pattern.CASE_INSENSITIVE);
-        itemNamePathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + RULE_NAME, Pattern.CASE_INSENSITIVE);
-        itemVersionPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        itemsPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + itemsNode + "/.*", Pattern.CASE_INSENSITIVE);
+        itemNamePathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + itemsNode + RULE_NAME, Pattern.CASE_INSENSITIVE);
+        itemVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + itemsNode + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     
     /**
