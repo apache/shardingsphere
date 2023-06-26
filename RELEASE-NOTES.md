@@ -82,7 +82,6 @@
 1. Kernel: Refactor encrypt integration test logic and add more test cases
 1. Kernel: Add salt props for MD5MaskAlgorithm, MD5EncryptAlgorithm
 1. Kernel: Refactor ShardingConditionEngine to support SPI configuration
-1. DistSQL: Support defining column level `QUERY_WITH_CIPHER_COLUMN` when `CREATE ENCRYPT RULE`
 1. DistSQL: Add algorithm type check for `CREATE SHARDING TABLE RULE`
 
 ### Bug Fixes
@@ -856,7 +855,6 @@
 1. Fix npe when using shadow and readwrite_splitting
 1. Fix wrong metadata when actual table is case insensitive
 1. Fix encrypt rewrite exception when execute multiple table join query
-1. Fix encrypt rewrite wrong result with table level queryWithCipherColumn
 1. Fix parsing chinese
 1. Fix encrypt exists sub query
 1. Fix full route caused by the MySQL BINARY keyword in the sharding condition
@@ -1188,7 +1186,6 @@
 1. Proxy for PostgreSQL decode parameters error in all types except String.
 1. COM_STM_EXECUTE of proxy for MySQL could not support sysbench.
 1. None sharding strategy could not config in spring-boot.
-1. Plain column could not get from resultSet in encrypt mode.
 1. WasNull field was wrong in GroupByStreamMergeResult.
 1. Metadata.getColumns could not work in JDBC.
 1. IN operator contains space and `\n` `\t` `\r` could not supported by parser.
