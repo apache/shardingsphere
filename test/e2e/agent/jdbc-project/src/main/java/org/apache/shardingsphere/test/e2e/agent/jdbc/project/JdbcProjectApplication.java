@@ -49,8 +49,7 @@ public class JdbcProjectApplication {
         Connection connection = getConnection();
         OrderService orderService = new OrderServiceImpl(connection);
         OrderController orderController = new OrderController(orderService);
-        long startTime = System.currentTimeMillis();
-        long endTime = startTime + (5 * 60 * 1000);
+        long endTime = System.currentTimeMillis() + (5 * 60 * 1000);
         while (System.currentTimeMillis() < endTime) {
             orderController.dropTable();
             orderController.createTable();
