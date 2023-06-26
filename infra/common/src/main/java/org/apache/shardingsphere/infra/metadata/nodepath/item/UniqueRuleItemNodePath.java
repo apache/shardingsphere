@@ -42,15 +42,15 @@ public final class UniqueRuleItemNodePath {
     public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String type) {
         parentNode = null;
         this.type = type;
-        pathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + type + VERSIONS);
-        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + type + ACTIVE_VERSION);
+        pathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + type + VERSIONS);
+        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + type + ACTIVE_VERSION);
     }
     
     public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String parentNode, final String type) {
         this.parentNode = parentNode;
         this.type = type;
-        pathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + parentNode + "/" + type + VERSIONS);
-        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + parentNode + "/" + type + ACTIVE_VERSION);
+        pathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + parentNode + "/" + type + VERSIONS);
+        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + parentNode + "/" + type + ACTIVE_VERSION);
     }
     
     /**

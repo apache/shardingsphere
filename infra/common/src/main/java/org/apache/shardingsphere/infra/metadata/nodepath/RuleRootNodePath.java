@@ -34,8 +34,8 @@ public final class RuleRootNodePath {
     private final Pattern pathPattern;
     
     public RuleRootNodePath(final String ruleType) {
-        nodePrefix = RULE_NODE_PREFIX + ruleType;
-        pathPattern = Pattern.compile(nodePrefix + "/.*");
+        nodePrefix = RULE_NODE_PREFIX + ruleType + "/";
+        pathPattern = Pattern.compile(nodePrefix + ".*");
     }
     
     /**

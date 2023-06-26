@@ -42,9 +42,9 @@ public final class NamedRuleItemNodePath {
     
     public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
         this.type = type;
-        pathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + type + "/.*");
-        namePathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + type + NAME);
-        activeVersionPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + type + ACTIVE_VERSION);
+        pathPattern = Pattern.compile(rootNodePath.getNodePrefix() + type + "/.*");
+        namePathPattern = Pattern.compile(rootNodePath.getNodePrefix() + type + NAME);
+        activeVersionPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + type + ACTIVE_VERSION);
     }
     
     /**

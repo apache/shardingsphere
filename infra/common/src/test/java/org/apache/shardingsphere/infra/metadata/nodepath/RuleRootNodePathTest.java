@@ -30,7 +30,7 @@ class RuleRootNodePathTest {
     
     @Test
     void assertGetRuleNodePrefix() {
-        assertThat(nodePath.getNodePrefix(), is("/[\\w\\-]+/[\\w\\-]+/rules/foo"));
+        assertThat(nodePath.getNodePrefix(), is("/[\\w\\-]+/[\\w\\-]+/rules/foo/"));
     }
     
     @Test
