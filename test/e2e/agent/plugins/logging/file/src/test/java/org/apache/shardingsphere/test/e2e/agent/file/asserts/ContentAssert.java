@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.test.e2e.agent.file.asserts;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Collection;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Content assert.
  */
+@Slf4j
 public final class ContentAssert {
     
     /**
@@ -37,7 +38,13 @@ public final class ContentAssert {
      */
     public static void assertIs(final Collection<String> actualLogLines, final String expectedLogRegex) {
         Pattern pattern = Pattern.compile(expectedLogRegex);
-        Collection<String> expectedLogs = actualLogLines.stream().filter(each -> pattern.matcher(each).find()).collect(Collectors.toList());
-        assertThat(String.format("The log for the specified regular `%s` does not exist", expectedLogRegex), expectedLogs.size(), greaterThan(0));
+        String actualLog = null;
+        for (String each : actualLogLines) {
+            if (pattern.matcher(each).find()) {
+                actualLog = each;
+                break;
+            }
+        }
+        assertNotNull(String.format("The log for the specified regular `%s` does not exist", expectedLogRegex), actualLog);
     }
 }
