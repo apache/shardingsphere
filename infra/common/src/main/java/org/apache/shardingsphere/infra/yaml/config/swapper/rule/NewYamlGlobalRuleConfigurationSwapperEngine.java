@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * TODO Rename YamlGlobalRuleConfigurationSwapperEngine when metadata structure adjustment completed. #25485
@@ -38,8 +39,8 @@ public final class NewYamlGlobalRuleConfigurationSwapperEngine {
      * @return YAML global rule configurations
      */
     @SuppressWarnings("rawtypes")
-    public Map<RuleConfiguration, NewYamGlobalRuleConfigurationSwapper> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
-        return OrderedSPILoader.getServices(NewYamGlobalRuleConfigurationSwapper.class, ruleConfigs);
+    public Map<RuleConfiguration, NewYamlGlobalRuleConfigurationSwapper> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
+        return OrderedSPILoader.getServices(NewYamlGlobalRuleConfigurationSwapper.class, ruleConfigs);
     }
     
     /**
@@ -51,9 +52,26 @@ public final class NewYamlGlobalRuleConfigurationSwapperEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlDataNode> dataNodes) {
         Collection<RuleConfiguration> result = new LinkedList<>();
-        for (NewYamGlobalRuleConfigurationSwapper each : OrderedSPILoader.getServices(NewYamGlobalRuleConfigurationSwapper.class)) {
+        for (NewYamlGlobalRuleConfigurationSwapper each : OrderedSPILoader.getServices(NewYamlGlobalRuleConfigurationSwapper.class)) {
             result.add((RuleConfiguration) each.swapToObject(dataNodes));
         }
         return result;
+    }
+    
+    /**
+     * Swap from single YAML global rule configuration to rule configurations.
+     *
+     * @param ruleName rule name
+     * @param dataNodes YAML data nodes
+     * @return global rule configuration
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Optional<RuleConfiguration> swapSingleRuleToRuleConfiguration(final String ruleName, final Collection<YamlDataNode> dataNodes) {
+        for (NewYamlGlobalRuleConfigurationSwapper each : OrderedSPILoader.getServices(NewYamlGlobalRuleConfigurationSwapper.class)) {
+            if (ruleName.equals(each.getRuleTagName().toLowerCase())) {
+                return Optional.of((RuleConfiguration) each.swapToObject(dataNodes));
+            }
+        }
+        return Optional.empty();
     }
 }

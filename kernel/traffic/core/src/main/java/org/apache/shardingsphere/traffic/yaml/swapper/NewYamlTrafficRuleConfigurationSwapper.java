@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.converter.GlobalNodeConverter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamGlobalRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.constant.TrafficOrder;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
@@ -36,7 +36,7 @@ import java.util.Optional;
  * TODO Rename YamlTrafficRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * New YAML traffic rule configuration swapper.
  */
-public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamGlobalRuleConfigurationSwapper<TrafficRuleConfiguration> {
+public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlGlobalRuleConfigurationSwapper<TrafficRuleConfiguration> {
     
     private final YamlTrafficStrategyConfigurationSwapper strategySwapper = new YamlTrafficStrategyConfigurationSwapper();
     

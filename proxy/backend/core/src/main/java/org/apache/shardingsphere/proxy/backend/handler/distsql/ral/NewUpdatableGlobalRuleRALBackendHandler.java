@@ -51,8 +51,7 @@ public final class NewUpdatableGlobalRuleRALBackendHandler implements DistSQLBac
         Collection<RuleConfiguration> ruleConfigurations = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigurations, ruleConfigClass);
         globalRuleUpdater.checkSQLStatement(currentRuleConfig, sqlStatement);
-        contextManager.getInstanceContext().getModeContextManager()
-                .alterGlobalRuleConfiguration(processUpdate(ruleConfigurations, sqlStatement, globalRuleUpdater, currentRuleConfig));
+        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigurations, sqlStatement, globalRuleUpdater, currentRuleConfig));
         return new UpdateResponseHeader(sqlStatement);
     }
     
