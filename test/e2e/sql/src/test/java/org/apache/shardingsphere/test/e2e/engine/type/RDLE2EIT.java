@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @E2ETestCaseSettings(SQLCommandType.RDL)
 class RDLE2EIT {
-
+    
     private static final Map<String, Boolean> INITIALIZED = new ConcurrentHashMap<>();
     
     @ParameterizedTest(name = "{0}")
