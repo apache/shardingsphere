@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.NewYamlConfigurationSwa
  * @param <T> type of rule configuration
  */
 @SingletonSPI
-public interface NewYamGlobalRuleConfigurationSwapper<T extends RuleConfiguration> extends NewYamlConfigurationSwapper<T>, OrderedSPI<T> {
+public interface NewYamlGlobalRuleConfigurationSwapper<T extends RuleConfiguration> extends NewYamlConfigurationSwapper<T>, OrderedSPI<T> {
     
     /**
      * Get YAML rule tag name.

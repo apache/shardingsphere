@@ -561,13 +561,14 @@ public final class ContextManager implements AutoCloseable {
     /**
      * Alter global rule configuration.
      *
-     * @param ruleName rule name
      * @param ruleConfig global rule configuration
      */
-    public synchronized void alterGlobalRuleConfiguration(final String ruleName, final RuleConfiguration ruleConfig) {
-        Collection<ShardingSphereRule> rules = removeSingleGlobalRule(ruleName);
-        rules.addAll(GlobalRulesBuilder.buildRules(Collections.singletonList(ruleConfig), metaDataContexts.get().getMetaData().getDatabases(),
-                metaDataContexts.get().getMetaData().getProps()));
+    public synchronized void alterGlobalRuleConfiguration(final RuleConfiguration ruleConfig) {
+        if (null == ruleConfig) {
+            return;
+        }
+        Collection<ShardingSphereRule> rules = removeSingleGlobalRule(ruleConfig);
+        rules.addAll(GlobalRulesBuilder.buildSingleRules(ruleConfig, metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getProps()));
         metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().clear();
         metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(
@@ -590,6 +591,12 @@ public final class ContextManager implements AutoCloseable {
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getDatabases(),
                 new ShardingSphereRuleMetaData(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules()), metaDataContexts.get().getMetaData().getProps());
         metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
+    }
+    
+    private Collection<ShardingSphereRule> removeSingleGlobalRule(final RuleConfiguration ruleConfig) {
+        Collection<ShardingSphereRule> result = new LinkedList<>(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules());
+        result.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
+        return result;
     }
     
     private Collection<ShardingSphereRule> removeSingleGlobalRule(final String ruleSimpleName) {
