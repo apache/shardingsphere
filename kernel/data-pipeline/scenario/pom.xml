@@ -31,5 +31,6 @@
     <modules>
         <module>migration</module>
         <module>consistencycheck</module>
+        <module>cdc</module>
     </modules>
 </project>

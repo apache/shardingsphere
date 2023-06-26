@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.core.dumper.AbstractColumnValueReader;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

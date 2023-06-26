@@ -1,0 +1,243 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: session
+columns:
+  thd_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: thd_id
+    primaryKey: false
+    unsigned: true
+    visible: true
+  conn_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: conn_id
+    primaryKey: false
+    unsigned: true
+    visible: true
+  user:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: user
+    primaryKey: false
+    unsigned: false
+    visible: true
+  db:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: db
+    primaryKey: false
+    unsigned: false
+    visible: true
+  command:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: command
+    primaryKey: false
+    unsigned: false
+    visible: true
+  state:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: state
+    primaryKey: false
+    unsigned: false
+    visible: true
+  time:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  current_statement:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: current_statement
+    primaryKey: false
+    unsigned: false
+    visible: true
+  statement_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: statement_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  progress:
+    caseSensitive: false
+    dataType: 3
+    generated: false
+    name: progress
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lock_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: lock_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rows_examined:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: rows_examined
+    primaryKey: false
+    unsigned: true
+    visible: true
+  rows_sent:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: rows_sent
+    primaryKey: false
+    unsigned: true
+    visible: true
+  rows_affected:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: rows_affected
+    primaryKey: false
+    unsigned: true
+    visible: true
+  tmp_tables:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: tmp_tables
+    primaryKey: false
+    unsigned: true
+    visible: true
+  tmp_disk_tables:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: tmp_disk_tables
+    primaryKey: false
+    unsigned: true
+    visible: true
+  full_scan:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: full_scan
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_statement:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: last_statement
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_statement_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: last_statement_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  current_memory:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: current_memory
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_wait:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: last_wait
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_wait_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: last_wait_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  source:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: source
+    primaryKey: false
+    unsigned: false
+    visible: true
+  trx_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: trx_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  trx_state:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: trx_state
+    primaryKey: false
+    unsigned: false
+    visible: true
+  trx_autocommit:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: trx_autocommit
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pid:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: pid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  program_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: program_name
+    primaryKey: false
+    unsigned: false
+    visible: true

@@ -70,7 +70,19 @@ public enum SystemSchemaBuilderRule {
             "socket_summary_by_event_name", "socket_summary_by_instance", "status_by_account", "status_by_host", "status_by_thread", "status_by_user", "table_handles",
             "table_io_waits_summary_by_index_usage", "table_io_waits_summary_by_table", "table_lock_waits_summary_by_table", "threads", "user_variables_by_thread", "users", "variables_by_thread"))),
     
-    MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys_config"))),
+    MYSQL_SYS("MySQL", "sys",
+            new HashSet<>(Arrays.asList("host_summary", "host_summary_by_file_io", "host_summary_by_file_io_type", "host_summary_by_stages", "host_summary_by_statement_latency",
+                    "host_summary_by_statement_type", "innodb_buffer_stats_by_schema", "innodb_buffer_stats_by_table", "innodb_lock_waits",
+                    "io_by_thread_by_latency", "io_global_by_file_by_bytes", "io_global_by_file_by_latency", "io_global_by_wait_by_bytes", "io_global_by_wait_by_latency", "latest_file_io",
+                    "memory_by_host_by_current_bytes", "memory_by_thread_by_current_bytes", "memory_by_user_by_current_bytes",
+                    "memory_global_by_current_bytes", "memory_global_total", "metrics", "processlist", "ps_check_lost_instrumentation", "schema_auto_increment_columns", "schema_index_statistics",
+                    "schema_object_overview", "schema_redundant_indexes",
+                    "schema_table_lock_waits", "schema_table_statistics", "schema_table_statistics_with_buffer", "schema_tables_with_full_table_scans", "schema_unused_indexes", "session",
+                    "session_ssl_status", "statement_analysis", "statements_with_errors_or_warnings",
+                    "statements_with_full_table_scans", "statements_with_runtimes_in_95th_percentile", "statements_with_sorting", "statements_with_temp_tables", "sys_config", "user_summary",
+                    "user_summary_by_file_io", "user_summary_by_file_io_type", "user_summary_by_stages",
+                    "user_summary_by_statement_latency", "user_summary_by_statement_type", "version", "wait_classes_global_by_avg_latency", "wait_classes_global_by_latency",
+                    "waits_by_host_by_latency", "waits_by_user_by_latency", "waits_global_by_latency"))),
     
     MYSQL_SHARDING_SPHERE("MySQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
     
@@ -112,7 +124,19 @@ public enum SystemSchemaBuilderRule {
     
     POSTGRESQL_SHARDING_SPHERE("PostgreSQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
     
-    OPEN_GAUSS_INFORMATION_SCHEMA("openGauss", "information_schema", Collections.emptySet()),
+    OPEN_GAUSS_INFORMATION_SCHEMA("openGauss", "information_schema",
+            new HashSet<>(Arrays.asList("_pg_foreign_data_wrappers", "_pg_foreign_servers", "_pg_foreign_table_columns", "_pg_foreign_tables", "_pg_user_mappings", "administrable_role_authorizations",
+                    "applicable_roles", "attributes", "character_sets",
+                    "check_constraint_routine_usage", "check_constraints", "collation_character_set_applicability", "collations", "column_domain_usage", "column_options", "column_privileges",
+                    "column_udt_usage", "columns",
+                    "constraint_column_usage", "constraint_table_usage", "data_type_privileges", "domain_constraints", "domain_udt_usage", "domains", "element_types", "enabled_roles",
+                    "foreign_data_wrapper_options",
+                    "foreign_data_wrappers", "foreign_server_options", "foreign_servers", "foreign_table_options", "foreign_tables", "information_schema_catalog_name", "key_column_usage",
+                    "parameters", "referential_constraints",
+                    "role_column_grants", "role_routine_grants", "role_table_grants", "role_udt_grants", "role_usage_grants", "routine_privileges", "routines", "schemata", "sequences",
+                    "sql_features", "sql_implementation_info", "sql_languages", "sql_packages", "sql_parts", "sql_sizing", "sql_sizing_profiles", "table_constraints", "table_privileges",
+                    "tables", "triggered_update_columns", "triggers", "udt_privileges", "usage_privileges", "user_defined_types", "user_mapping_options", "user_mappings", "view_column_usage",
+                    "view_routine_usage", "view_table_usage", "views"))),
     
     OPEN_GAUSS_PG_CATALOG("openGauss", "pg_catalog", new HashSet<>(Arrays.asList("pg_class", "pg_namespace"))),
     

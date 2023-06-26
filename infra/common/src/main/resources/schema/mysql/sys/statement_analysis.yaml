@@ -1,0 +1,203 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: statement_analysis
+columns:
+  query:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: query
+    primaryKey: false
+    unsigned: false
+    visible: true
+  db:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: db
+    primaryKey: false
+    unsigned: false
+    visible: true
+  full_scan:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: full_scan
+    primaryKey: false
+    unsigned: false
+    visible: true
+  exec_count:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: exec_count
+    primaryKey: false
+    unsigned: true
+    visible: true
+  err_count:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: err_count
+    primaryKey: false
+    unsigned: true
+    visible: true
+  warn_count:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: warn_count
+    primaryKey: false
+    unsigned: true
+    visible: true
+  total_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: total_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: max_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  avg_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: avg_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lock_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: lock_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rows_sent:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: rows_sent
+    primaryKey: false
+    unsigned: true
+    visible: true
+  rows_sent_avg:
+    caseSensitive: false
+    dataType: 3
+    generated: false
+    name: rows_sent_avg
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rows_examined:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: rows_examined
+    primaryKey: false
+    unsigned: true
+    visible: true
+  rows_examined_avg:
+    caseSensitive: false
+    dataType: 3
+    generated: false
+    name: rows_examined_avg
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rows_affected:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: rows_affected
+    primaryKey: false
+    unsigned: true
+    visible: true
+  rows_affected_avg:
+    caseSensitive: false
+    dataType: 3
+    generated: false
+    name: rows_affected_avg
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tmp_tables:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: tmp_tables
+    primaryKey: false
+    unsigned: true
+    visible: true
+  tmp_disk_tables:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: tmp_disk_tables
+    primaryKey: false
+    unsigned: true
+    visible: true
+  rows_sorted:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: rows_sorted
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sort_merge_passes:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: sort_merge_passes
+    primaryKey: false
+    unsigned: true
+    visible: true
+  digest:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: digest
+    primaryKey: false
+    unsigned: false
+    visible: true
+  first_seen:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: first_seen
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_seen:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: last_seen
+    primaryKey: false
+    unsigned: false
+    visible: true

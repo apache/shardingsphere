@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.event.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
@@ -32,8 +31,6 @@ public final class RegisterStorageUnitEvent implements GovernanceEvent {
     private final String databaseName;
     
     private final String storageUnitName;
-    
-    private final DataSourceProperties props;
     
     private final String activeVersionKey;
     
