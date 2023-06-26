@@ -45,6 +45,8 @@ public final class ShardingNodeConverter {
     
     private static final String SHARDING_CACHE_NODE = "sharding_cache";
     
+    private static final String VERSIONS = "/versions/\\d+$";
+    
     private static final String ACTIVE_VERSION = "/active_version$";
     
     private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("sharding");
@@ -185,7 +187,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isDefaultDatabaseStrategyPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_DATABASE_STRATEGY_NODE + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_DATABASE_STRATEGY_NODE + VERSIONS, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -197,7 +199,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isDefaultTableStrategyPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_TABLE_STRATEGY_NODE + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_TABLE_STRATEGY_NODE + VERSIONS, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -209,7 +211,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isDefaultKeyGenerateStrategyPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_KEY_GENERATE_STRATEGY_NODE + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_KEY_GENERATE_STRATEGY_NODE + VERSIONS, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -221,7 +223,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isDefaultAuditStrategyPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_AUDIT_STRATEGY_NODE + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_AUDIT_STRATEGY_NODE + VERSIONS, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -233,7 +235,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isDefaultShardingColumnPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_SHARDING_COLUMN_NODE + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_SHARDING_COLUMN_NODE + VERSIONS, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -245,7 +247,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isShardingCachePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + SHARDING_CACHE_NODE + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + SHARDING_CACHE_NODE + VERSIONS, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
