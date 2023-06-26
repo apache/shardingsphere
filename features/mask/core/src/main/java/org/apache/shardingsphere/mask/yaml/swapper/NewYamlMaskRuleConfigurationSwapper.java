@@ -63,13 +63,10 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
         Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> algorithms = new LinkedHashMap<>();
         for (YamlDataNode each : dataNodes) {
-            if (MaskNodeConverter.getTableNodePath().isValidatedPath(each.getKey())) {
-                MaskNodeConverter.getTableNodePath().getName(each.getKey())
-                        .ifPresent(tableName -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlMaskTableRuleConfiguration.class))));
-            } else if (MaskNodeConverter.getAlgorithmNodePath().isValidatedPath(each.getKey())) {
-                MaskNodeConverter.getAlgorithmNodePath().getName(each.getKey())
-                        .ifPresent(loadBalancerName -> algorithms.put(loadBalancerName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
-            }
+            MaskNodeConverter.getTableNodePath().getName(each.getKey())
+                    .ifPresent(optional -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlMaskTableRuleConfiguration.class))));
+            MaskNodeConverter.getAlgorithmNodePath().getName(each.getKey())
+                    .ifPresent(optional -> algorithms.put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
         }
         return new MaskRuleConfiguration(tables, algorithms);
     }
