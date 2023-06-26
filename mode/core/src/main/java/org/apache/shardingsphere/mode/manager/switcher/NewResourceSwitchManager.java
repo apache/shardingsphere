@@ -50,7 +50,8 @@ public final class NewResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource alterStorageUnit(final ShardingSphereResourceMetaData resourceMetaData, final String storageUnitName, final Map<String, DataSourceProperties> dataSourceProps) {
-        return new SwitchingResource(resourceMetaData, DataSourcePoolCreator.create(dataSourceProps), Collections.singletonMap(storageUnitName, resourceMetaData.getDataSources().remove(storageUnitName)));
+        return new SwitchingResource(resourceMetaData, DataSourcePoolCreator.create(dataSourceProps),
+                Collections.singletonMap(storageUnitName, resourceMetaData.getDataSources().remove(storageUnitName)));
     }
     
     /**

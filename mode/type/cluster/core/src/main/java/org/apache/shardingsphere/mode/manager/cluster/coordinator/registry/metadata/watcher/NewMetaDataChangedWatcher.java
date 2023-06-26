@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
@@ -46,7 +45,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 /**
