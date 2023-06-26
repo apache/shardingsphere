@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @E2ETestCaseSettings(SQLCommandType.RAL)
 class RALE2EIT {
     
-    private static final Map<String, Boolean> INITIALIZE = new ConcurrentHashMap<>(); 
+    private static final Map<String, Boolean> INITIALIZE = new ConcurrentHashMap<>();
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
