@@ -78,19 +78,19 @@ public final class ShardingRuleConfigurationEventBuilder implements RuleConfigur
         if (bindingTableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShardingTableReferenceConfigEvent(databaseName, bindingTableName.get(), event);
         }
-        if (ShardingNodeConverter.isDefaultDatabaseStrategyWithActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+        if (ShardingNodeConverter.getDefaultDatabaseStrategyNodeConverter().isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createDefaultDatabaseStrategyConfigEvent(databaseName, event);
         }
-        if (ShardingNodeConverter.isDefaultTableStrategyWithActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+        if (ShardingNodeConverter.getDefaultTableStrategyNodeConverter().isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createDefaultTableStrategyConfigEvent(databaseName, event);
         }
-        if (ShardingNodeConverter.isDefaultKeyGenerateStrategyWithActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+        if (ShardingNodeConverter.getDefaultKeyGenerateStrategyNodeConverter().isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createDefaultKeyGenerateStrategyConfigEvent(databaseName, event);
         }
-        if (ShardingNodeConverter.isDefaultAuditStrategyWithActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+        if (ShardingNodeConverter.getDefaultAuditStrategyNodeConverter().isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createDefaultShardingAuditorStrategyConfigEvent(databaseName, event);
         }
-        if (ShardingNodeConverter.isDefaultShardingColumnWithActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+        if (ShardingNodeConverter.getDefaultShardingColumnNodeConverter().isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createDefaultShardingColumnEvent(databaseName, event);
         }
         Optional<String> algorithmName = ShardingNodeConverter.getAlgorithmNodeConverter().getNameByActiveVersionPath(event.getKey());
@@ -105,7 +105,7 @@ public final class ShardingRuleConfigurationEventBuilder implements RuleConfigur
         if (auditorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createAuditorEvent(databaseName, auditorName.get(), event);
         }
-        if (ShardingNodeConverter.isShardingCacheWithActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+        if (ShardingNodeConverter.getShardingCacheNodeConverter().isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createShardingCacheEvent(databaseName, event);
         }
         return Optional.empty();
