@@ -28,13 +28,7 @@ import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SingleNodeConverter {
     
-    private static final String ROOT_NODE = "single";
-    
     private static final String TABLES_NODE = "tables";
-    
-    private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
-    
-    private static final String RULE_ACTIVE_VERSION = "/active_version$";
     
     private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("single");
     
