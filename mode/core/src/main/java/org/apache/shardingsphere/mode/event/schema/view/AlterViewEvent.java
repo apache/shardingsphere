@@ -33,7 +33,7 @@ public final class AlterViewEvent implements GovernanceEvent {
     
     private final String schemaName;
     
-    private final ShardingSphereView view;
+    private final String viewName;
     
     private final String activeVersionKey;
     

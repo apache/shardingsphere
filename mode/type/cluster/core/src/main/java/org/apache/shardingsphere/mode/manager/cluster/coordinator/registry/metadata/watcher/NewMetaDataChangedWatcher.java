@@ -17,12 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlViewSwapper;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.event.datasource.AlterStorageUnitEvent;
@@ -79,13 +75,11 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
             return createSchemaChangedEvent(databaseName.get(), schemaName.get(), event);
         }
         schemaName = NewDatabaseMetaDataNode.getSchemaNameByTableNode(key);
-        Optional<String> tableNameVersion = NewDatabaseMetaDataNode.getTableNameVersion(key);
-        if (databaseName.isPresent() && schemaName.isPresent() && tableNameVersion.isPresent()) {
-            return createTableChangedEvent(databaseName.get(), schemaName.get(), tableNameVersion.get(), event);
+        if (databaseName.isPresent() && schemaName.isPresent() && NewDatabaseMetaDataNode.isTableActiveVersionNode(event.getKey())) {
+            return createTableChangedEvent(databaseName.get(), schemaName.get(), event);
         }
-        Optional<String> viewNameVersion = NewDatabaseMetaDataNode.getViewNameVersion(key);
-        if (databaseName.isPresent() && schemaName.isPresent() && viewNameVersion.isPresent()) {
-            return createViewChangedEvent(databaseName.get(), schemaName.get(), viewNameVersion.get(), event);
+        if (databaseName.isPresent() && schemaName.isPresent() && NewDatabaseMetaDataNode.isViewActiveVersionNode(event.getKey())) {
+            return createViewChangedEvent(databaseName.get(), schemaName.get(), event);
         }
         if (!databaseName.isPresent()) {
             return Optional.empty();
@@ -116,20 +110,22 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createTableChangedEvent(final String databaseName, final String schemaName, final String tableNameVersion, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createTableChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
+        Optional<String> tableName = NewDatabaseMetaDataNode.getTableName(event.getKey());
+        Preconditions.checkState(tableName.isPresent(), "Not found table name.");
         if (Type.DELETED == event.getType()) {
-            return Optional.of(new DropTableEvent(databaseName, schemaName, NewDatabaseMetaDataNode.getTableName(event.getKey()).orElse(""), event.getKey(), tableNameVersion));
+            return Optional.of(new DropTableEvent(databaseName, schemaName, tableName.get()));
         }
-        return Optional.of(new AlterTableEvent(databaseName, schemaName,
-                new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereTable.class)), event.getKey(), tableNameVersion));
+        return Optional.of(new AlterTableEvent(databaseName, schemaName, tableName.get(), event.getKey(), event.getValue()));
     }
     
-    private Optional<GovernanceEvent> createViewChangedEvent(final String databaseName, final String schemaName, final String viewNameVersion, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createViewChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
+        Optional<String> viewName = NewDatabaseMetaDataNode.getViewName(event.getKey());
+        Preconditions.checkState(viewName.isPresent(), "Not found view name.");
         if (Type.DELETED == event.getType()) {
-            return Optional.of(new DropViewEvent(databaseName, schemaName, NewDatabaseMetaDataNode.getViewName(event.getKey()).orElse(""), event.getKey(), viewNameVersion));
+            return Optional.of(new DropViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
         }
-        return Optional.of(new AlterViewEvent(databaseName, schemaName,
-                new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereView.class)), event.getKey(), viewNameVersion));
+        return Optional.of(new AlterViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
     }
     
     @SuppressWarnings("unchecked")

@@ -81,10 +81,8 @@ class NewDatabaseMetaDataNodeTest {
     }
     
     @Test
-    void assertGetTableVersion() {
-        Optional<String> actual = NewDatabaseMetaDataNode.getTableNameVersion("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions/0");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("0"));
+    void assertIsTableActiveVersionNode() {
+        assertTrue(NewDatabaseMetaDataNode.isTableActiveVersionNode("/metadata/foo_db/schemas/foo_schema/tables/foo_table/active_version"));
     }
     
     @Test
@@ -95,10 +93,8 @@ class NewDatabaseMetaDataNodeTest {
     }
     
     @Test
-    void assertGetViewNameVersion() {
-        Optional<String> actual = NewDatabaseMetaDataNode.getViewNameVersion("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("0"));
+    void assertIsViewActiveVersionNode() {
+        assertTrue(NewDatabaseMetaDataNode.isViewActiveVersionNode("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
     }
     
     @Test
