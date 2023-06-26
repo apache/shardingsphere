@@ -1,0 +1,108 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="datid"/>
+        <column name="dbname"/>
+        <column name="schemaname"/>
+        <column name="nodename"/>
+        <column name="username"/>
+        <column name="application_name"/>
+        <column name="client_addr"/>
+        <column name="client_hostname"/>
+        <column name="client_port"/>
+        <column name="query_band"/>
+        <column name="block_time"/>
+        <column name="start_time"/>
+        <column name="finish_time"/>
+        <column name="duration"/>
+        <column name="estimate_total_time"/>
+        <column name="status"/>
+        <column name="abort_info"/>
+        <column name="resource_pool"/>
+        <column name="control_group"/>
+        <column name="estimate_memory"/>
+        <column name="min_peak_memory"/>
+        <column name="max_peak_memory"/>
+        <column name="average_peak_memory"/>
+        <column name="memory_skew_percent"/>
+        <column name="spill_info"/>
+        <column name="min_spill_size"/>
+        <column name="max_spill_size"/>
+        <column name="average_spill_size"/>
+        <column name="spill_skew_percent"/>
+        <column name="min_dn_time"/>
+        <column name="max_dn_time"/>
+        <column name="average_dn_time"/>
+        <column name="dntime_skew_percent"/>
+        <column name="min_cpu_time"/>
+        <column name="max_cpu_time"/>
+        <column name="total_cpu_time"/>
+        <column name="cpu_skew_percent"/>
+        <column name="min_peak_iops"/>
+        <column name="max_peak_iops"/>
+        <column name="average_peak_iops"/>
+        <column name="iops_skew_percent"/>
+        <column name="warning"/>
+        <column name="queryid"/>
+        <column name="query"/>
+        <column name="query_plan"/>
+        <column name="node_group"/>
+        <column name="cpu_top1_node_name"/>
+        <column name="cpu_top2_node_name"/>
+        <column name="cpu_top3_node_name"/>
+        <column name="cpu_top4_node_name"/>
+        <column name="cpu_top5_node_name"/>
+        <column name="mem_top1_node_name"/>
+        <column name="mem_top2_node_name"/>
+        <column name="mem_top3_node_name"/>
+        <column name="mem_top4_node_name"/>
+        <column name="mem_top5_node_name"/>
+        <column name="cpu_top1_value"/>
+        <column name="cpu_top2_value"/>
+        <column name="cpu_top3_value"/>
+        <column name="cpu_top4_value"/>
+        <column name="cpu_top5_value"/>
+        <column name="mem_top1_value"/>
+        <column name="mem_top2_value"/>
+        <column name="mem_top3_value"/>
+        <column name="mem_top4_value"/>
+        <column name="mem_top5_value"/>
+        <column name="top_mem_dn"/>
+        <column name="top_cpu_dn"/>
+        <column name="n_returned_rows"/>
+        <column name="n_tuples_fetched"/>
+        <column name="n_tuples_returned"/>
+        <column name="n_tuples_inserted"/>
+        <column name="n_tuples_updated"/>
+        <column name="n_tuples_deleted"/>
+        <column name="n_blocks_fetched"/>
+        <column name="n_blocks_hit"/>
+        <column name="db_time"/>
+        <column name="cpu_time"/>
+        <column name="execution_time"/>
+        <column name="parse_time"/>
+        <column name="plan_time"/>
+        <column name="rewrite_time"/>
+        <column name="pl_execution_time"/>
+        <column name="pl_compilation_time"/>
+        <column name="net_send_time"/>
+        <column name="data_io_time"/>
+        <column name="is_slow_query"/>
+    </metadata>
+</dataset>

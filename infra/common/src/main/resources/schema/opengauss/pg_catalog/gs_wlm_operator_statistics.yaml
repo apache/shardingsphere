@@ -1,0 +1,203 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: gs_wlm_operator_statistics
+columns:
+  queryid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: queryid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: pid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  plan_node_id:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: plan_node_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  plan_node_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: plan_node_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  start_time:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: start_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  duration:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: duration
+    primaryKey: false
+    unsigned: false
+    visible: true
+  status:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: status
+    primaryKey: false
+    unsigned: false
+    visible: true
+  query_dop:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: query_dop
+    primaryKey: false
+    unsigned: false
+    visible: true
+  estimated_rows:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: estimated_rows
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tuple_processed:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tuple_processed
+    primaryKey: false
+    unsigned: false
+    visible: true
+  min_peak_memory:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: min_peak_memory
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_peak_memory:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: max_peak_memory
+    primaryKey: false
+    unsigned: false
+    visible: true
+  average_peak_memory:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: average_peak_memory
+    primaryKey: false
+    unsigned: false
+    visible: true
+  memory_skew_percent:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: memory_skew_percent
+    primaryKey: false
+    unsigned: false
+    visible: true
+  min_spill_size:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: min_spill_size
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_spill_size:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: max_spill_size
+    primaryKey: false
+    unsigned: false
+    visible: true
+  average_spill_size:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: average_spill_size
+    primaryKey: false
+    unsigned: false
+    visible: true
+  spill_skew_percent:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: spill_skew_percent
+    primaryKey: false
+    unsigned: false
+    visible: true
+  min_cpu_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: min_cpu_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_cpu_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: max_cpu_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  total_cpu_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: total_cpu_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  cpu_skew_percent:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: cpu_skew_percent
+    primaryKey: false
+    unsigned: false
+    visible: true
+  warning:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: warning
+    primaryKey: false
+    unsigned: false
+    visible: true
