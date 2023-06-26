@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.UniqueRuleItemNodePath;
-import org.apache.shardingsphere.infra.metadata.converter.NamedRuleItemNodePath;
+import org.apache.shardingsphere.infra.metadata.converter.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.infra.metadata.converter.item.NamedRuleItemNodePath;
 import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 /**

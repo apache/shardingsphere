@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.converter;
+package org.apache.shardingsphere.infra.metadata.converter.item;
+
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
