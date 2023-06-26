@@ -33,24 +33,24 @@ public final class UniqueRuleItemNodePath {
     
     private final String parentNode;
     
-    private final String itemsNode;
+    private final String type;
     
-    private final Pattern itemsPathPattern;
+    private final Pattern pathPattern;
     
     private final Pattern activeVersionPathPattern;
     
-    public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String itemsNode) {
+    public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String type) {
         parentNode = null;
-        this.itemsNode = itemsNode;
-        itemsPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + itemsNode + VERSIONS, Pattern.CASE_INSENSITIVE);
-        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + itemsNode + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        this.type = type;
+        pathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + type + VERSIONS, Pattern.CASE_INSENSITIVE);
+        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + type + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     
-    public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String parentNode, final String itemsNode) {
+    public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String parentNode, final String type) {
         this.parentNode = parentNode;
-        this.itemsNode = itemsNode;
-        itemsPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + parentNode + "/" + itemsNode + VERSIONS, Pattern.CASE_INSENSITIVE);
-        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + parentNode + "/" + itemsNode + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        this.type = type;
+        pathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + parentNode + "/" + type + VERSIONS, Pattern.CASE_INSENSITIVE);
+        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + parentNode + "/" + type + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     
     /**
@@ -59,17 +59,17 @@ public final class UniqueRuleItemNodePath {
      * @return path
      */
     public String getPath() {
-        return null == parentNode ? String.join("/", itemsNode) : String.join("/", parentNode, itemsNode);
+        return null == parentNode ? String.join("/", type) : String.join("/", parentNode, type);
     }
     
     /**
-     * Is item path.
+     * Judge whether is validated rule item path.
      *
-     * @param rulePath rule path
-     * @return true or false
+     * @param path path to be judged
+     * @return is validated rule item path or not
      */
-    public boolean isPath(final String rulePath) {
-        return itemsPathPattern.matcher(rulePath).find();
+    public boolean isValidatedPath(final String path) {
+        return pathPattern.matcher(path).find();
     }
     
     /**

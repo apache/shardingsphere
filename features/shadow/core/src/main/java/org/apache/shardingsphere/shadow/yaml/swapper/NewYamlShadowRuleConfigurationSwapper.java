@@ -86,7 +86,7 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
                 ShadowNodeConverter.getAlgorithmNodePath().getName(each.getKey())
                         .ifPresent(algorithmName -> result.getShadowAlgorithms().put(algorithmName,
                                 algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
-            } else if (ShadowNodeConverter.getDefaultAlgorithmNameNodePath().isPath(each.getKey())) {
+            } else if (ShadowNodeConverter.getDefaultAlgorithmNameNodePath().isValidatedPath(each.getKey())) {
                 result.setDefaultShadowAlgorithmName(each.getValue());
             }
         }
