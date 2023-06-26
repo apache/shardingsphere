@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
-import org.apache.shardingsphere.readwritesplitting.event.config.AddReadwriteSplittingConfigurationEvent;
-import org.apache.shardingsphere.readwritesplitting.event.config.AlterReadwriteSplittingConfigurationEvent;
-import org.apache.shardingsphere.readwritesplitting.event.config.DeleteReadwriteSplittingConfigurationEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.AddReadwriteSplittingDataSourceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwriteSplittingDataSourceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.DeleteReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.metadata.converter.ReadwriteSplittingNodeConverter;
@@ -38,14 +38,14 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!ReadwriteSplittingNodeConverter.isReadwriteSplittingPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!ReadwriteSplittingNodeConverter.getRuleRootNodeConverter().isRulePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> groupName = ReadwriteSplittingNodeConverter.getGroupNameByActiveVersionPath(event.getKey());
+        Optional<String> groupName = ReadwriteSplittingNodeConverter.getDataSourceNodeConvertor().getNameByActiveVersionPath(event.getKey());
         if (groupName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createReadwriteSplittingConfigEvent(databaseName, groupName.get(), event);
         }
-        Optional<String> loadBalancerName = ReadwriteSplittingNodeConverter.getLoadBalancerNameByActiveVersionPath(event.getKey());
+        Optional<String> loadBalancerName = ReadwriteSplittingNodeConverter.getLoadBalancerNodeConverter().getNameByActiveVersionPath(event.getKey());
         if (loadBalancerName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createLoadBalanceEvent(databaseName, loadBalancerName.get(), event);
         }
@@ -54,18 +54,18 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
     
     private Optional<GovernanceEvent> createReadwriteSplittingConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddReadwriteSplittingConfigurationEvent(databaseName, groupName, event.getKey(), event.getValue()));
+            return Optional.of(new AddReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue()));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterReadwriteSplittingConfigurationEvent(databaseName, groupName, event.getKey(), event.getValue()));
+            return Optional.of(new AlterReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteReadwriteSplittingConfigurationEvent(databaseName, groupName));
+        return Optional.of(new DeleteReadwriteSplittingDataSourceEvent(databaseName, groupName));
     }
     
     private Optional<GovernanceEvent> createLoadBalanceEvent(final String databaseName, final String loadBalancerName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return Optional.of(new AlterLoadBalanceEvent(databaseName, loadBalancerName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteLoadBalanceEvent(databaseName, loadBalancerName, event.getKey(), event.getValue()));
+        return Optional.of(new DeleteLoadBalanceEvent(databaseName, loadBalancerName));
     }
 }

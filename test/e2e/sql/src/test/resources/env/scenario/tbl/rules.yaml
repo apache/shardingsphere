@@ -101,3 +101,7 @@ sqlFederation:
   executionPlanCache:
     initialCapacity: 2000
     maximumSize: 65535
+    
+sqlParser:
+  sqlCommentParseEnabled: true
+

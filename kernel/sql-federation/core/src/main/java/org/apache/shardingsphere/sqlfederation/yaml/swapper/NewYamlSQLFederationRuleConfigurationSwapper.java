@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sqlfederation.yaml.swapper;
 
-import org.apache.shardingsphere.infra.config.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.converter.GlobalNodeConverter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
@@ -34,7 +34,7 @@ import java.util.Optional;
  * TODO Rename YamlSQLTranslatorRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * YAML SQL federation rule configuration swapper.
  */
-public final class NewYamlSQLFederationRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<SQLFederationRuleConfiguration> {
+public final class NewYamlSQLFederationRuleConfigurationSwapper implements NewYamGlobalRuleConfigurationSwapper<SQLFederationRuleConfiguration> {
     
     private final YamlSQLFederationExecutionPlanCacheConfigurationSwapper executionPlanCacheConfigSwapper = new YamlSQLFederationExecutionPlanCacheConfigurationSwapper();
     
@@ -53,7 +53,7 @@ public final class NewYamlSQLFederationRuleConfigurationSwapper implements NewYa
     @Override
     public SQLFederationRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            Optional<String> version = GlobalRuleNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
+            Optional<String> version = GlobalNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }

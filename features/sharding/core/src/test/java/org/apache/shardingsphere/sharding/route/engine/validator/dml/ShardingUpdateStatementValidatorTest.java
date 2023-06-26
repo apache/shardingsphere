@@ -85,7 +85,7 @@ class ShardingUpdateStatementValidatorTest {
         SQLStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement);
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
-        when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
+        when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
         when(schema.containsTable("user")).thenReturn(true);
         when(database.getSchema(any())).thenReturn(schema);
         when(database.getName()).thenReturn("sharding_db");
@@ -103,7 +103,7 @@ class ShardingUpdateStatementValidatorTest {
         SQLStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement);
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
-        when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
+        when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
         when(schema.containsTable("user")).thenReturn(true);
         when(schema.containsTable("order")).thenReturn(true);
         when(database.getSchema(any())).thenReturn(schema);

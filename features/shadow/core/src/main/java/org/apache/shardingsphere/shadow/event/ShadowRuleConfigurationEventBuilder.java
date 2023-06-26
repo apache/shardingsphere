@@ -18,28 +18,19 @@
 package org.apache.shardingsphere.shadow.event;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
-import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.event.algorithm.AlterShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.event.algorithm.DeleteShadowAlgorithmEvent;
-import org.apache.shardingsphere.shadow.event.config.AddShadowConfigurationEvent;
-import org.apache.shardingsphere.shadow.event.config.AlterShadowConfigurationEvent;
-import org.apache.shardingsphere.shadow.event.config.DeleteShadowConfigurationEvent;
+import org.apache.shardingsphere.shadow.event.datasource.AddShadowDataSourceEvent;
+import org.apache.shardingsphere.shadow.event.datasource.AlterShadowDataSourceEvent;
+import org.apache.shardingsphere.shadow.event.datasource.DeleteShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.event.table.AddShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.DeleteShadowTableEvent;
 import org.apache.shardingsphere.shadow.metadata.converter.ShadowNodeConverter;
-import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
 import java.util.Optional;
 
@@ -50,70 +41,48 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!ShadowNodeConverter.isShadowPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!ShadowNodeConverter.getRuleRootNodeConverter().isRulePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> dataSourceName = ShadowNodeConverter.getDataSourceName(event.getKey());
+        Optional<String> dataSourceName = ShadowNodeConverter.getDataSourceNodeConvertor().getNameByActiveVersionPath(event.getKey());
         if (dataSourceName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            Optional<String> dataSourceVersion = ShadowNodeConverter.getDataSourceVersion(event.getKey());
-            if (dataSourceVersion.isPresent()) {
-                return createShadowConfigEvent(databaseName, dataSourceName.get(), dataSourceVersion.get(), event);
-            }
+            return createShadowConfigEvent(databaseName, dataSourceName.get(), event);
         }
-        Optional<String> tableName = ShadowNodeConverter.getTableName(event.getKey());
+        Optional<String> tableName = ShadowNodeConverter.getTableNodeConverter().getNameByActiveVersionPath(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            Optional<String> tableVersion = ShadowNodeConverter.getTableVersion(event.getKey());
-            if (tableVersion.isPresent()) {
-                return createShadowTableConfigEvent(databaseName, tableName.get(), tableVersion.get(), event);
-            }
+            return createShadowTableConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> algorithmName = ShadowNodeConverter.getAlgorithmName(event.getKey());
+        Optional<String> algorithmName = ShadowNodeConverter.getAlgorithmNodeConverter().getNameByActiveVersionPath(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            Optional<String> algorithmVersion = ShadowNodeConverter.getAlgorithmVersion(event.getKey());
-            if (algorithmVersion.isPresent()) {
-                return createShadowAlgorithmEvent(databaseName, algorithmName.get(), algorithmVersion.get(), event);
-            }
+            return createShadowAlgorithmEvent(databaseName, algorithmName.get(), event);
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createShadowConfigEvent(final String databaseName, final String dataSourceName, final String version, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createShadowConfigEvent(final String databaseName, final String dataSourceName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddShadowConfigurationEvent(databaseName, swapShadowDataSourceRuleConfig(dataSourceName, event.getValue()), event.getKey(), version));
+            return Optional.of(new AddShadowDataSourceEvent(databaseName, dataSourceName, event.getKey(), event.getValue()));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterShadowConfigurationEvent(databaseName, dataSourceName, swapShadowDataSourceRuleConfig(dataSourceName, event.getValue()), event.getKey(), version));
+            return Optional.of(new AlterShadowDataSourceEvent(databaseName, dataSourceName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteShadowConfigurationEvent(databaseName, dataSourceName, event.getKey(), version));
+        return Optional.of(new DeleteShadowDataSourceEvent(databaseName, dataSourceName));
     }
     
-    private ShadowDataSourceConfiguration swapShadowDataSourceRuleConfig(final String dataSourceName, final String yamlContext) {
-        YamlShadowDataSourceConfiguration yamlConfig = YamlEngine.unmarshal(yamlContext, YamlShadowDataSourceConfiguration.class);
-        return new ShadowDataSourceConfiguration(dataSourceName, yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
-    }
-    
-    private Optional<GovernanceEvent> createShadowTableConfigEvent(final String databaseName, final String tableName, final String version, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createShadowTableConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddShadowTableEvent(databaseName, tableName, swapToTableConfig(event.getValue()), event.getKey(), version));
+            return Optional.of(new AddShadowTableEvent(databaseName, tableName, event.getKey(), event.getValue()));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterShadowTableEvent(databaseName, tableName, swapToTableConfig(event.getValue()), event.getKey(), version));
+            return Optional.of(new AlterShadowTableEvent(databaseName, tableName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteShadowTableEvent(databaseName, tableName, event.getKey(), version));
+        return Optional.of(new DeleteShadowTableEvent(databaseName, tableName));
     }
     
-    private ShadowTableConfiguration swapToTableConfig(final String yamlContext) {
-        return new YamlShadowTableConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlShadowTableConfiguration.class));
-    }
-    
-    private Optional<GovernanceEvent> createShadowAlgorithmEvent(final String databaseName, final String algorithmName, final String version, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createShadowAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterShadowAlgorithmEvent(databaseName, algorithmName, swapToAlgorithmConfig(event.getValue()), event.getKey(), version));
+            return Optional.of(new AlterShadowAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteShadowAlgorithmEvent(databaseName, algorithmName, event.getKey(), version));
-    }
-    
-    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
-        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAlgorithmConfiguration.class));
+        return Optional.of(new DeleteShadowAlgorithmEvent(databaseName, algorithmName));
     }
 }

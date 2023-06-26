@@ -415,7 +415,11 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
             segment.getPartitions().addAll(((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
             result.setPartitionDefinition(segment);
         }
-        result.setName((IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.DEFAULT()) {
+            result.setName(new IdentifierValue(ctx.DEFAULT().getText()));
+        } else {
+            result.setName((IdentifierValue) visit(ctx.identifier()));
+        }
         return result;
     }
     

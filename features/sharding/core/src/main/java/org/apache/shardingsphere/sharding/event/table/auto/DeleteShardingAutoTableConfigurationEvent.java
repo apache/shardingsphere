@@ -31,8 +31,4 @@ public final class DeleteShardingAutoTableConfigurationEvent implements Governan
     private final String databaseName;
     
     private final String tableName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
 }

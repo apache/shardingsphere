@@ -36,7 +36,6 @@ public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleC
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final SingleRuleConfiguration data) {
-        // TODO Consider whether to split tables and defaultDataSource
         return Collections.singletonList(new YamlDataNode(SingleNodeConverter.getTablesPath(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     

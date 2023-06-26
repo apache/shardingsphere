@@ -27,6 +27,7 @@ import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -53,7 +54,7 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     
     @Override
     public Collection<MetaDataVersion> persistConfig(final String databaseName, final Map<String, DataSourceProperties> configs) {
-        return null;
+        return Collections.emptyList();
     }
     
     private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourceProperties> dataSourcePropsMap) {

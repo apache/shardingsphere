@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.shadow.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.infra.rule.RuleChangedSubscriber;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -29,6 +30,8 @@ import org.apache.shardingsphere.shadow.event.table.AddShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.DeleteShadowTableEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
 import java.util.Map;
 
@@ -36,19 +39,12 @@ import java.util.Map;
  * Shadow table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
-public final class ShadowTableSubscriber implements RuleConfigurationSubscribeCoordinator {
+@Setter
+public final class ShadowTableSubscriber implements RuleChangedSubscriber {
     
     private Map<String, ShardingSphereDatabase> databases;
     
     private InstanceContext instanceContext;
-    
-    @Override
-    public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        this.databases = databases;
-        this.instanceContext = instanceContext;
-        instanceContext.getEventBusContext().register(this);
-    }
     
     /**
      * Renew with add table.
@@ -57,7 +53,8 @@ public final class ShadowTableSubscriber implements RuleConfigurationSubscribeCo
      */
     @Subscribe
     public synchronized void renew(final AddShadowTableEvent event) {
-        renew(event.getDatabaseName(), event.getTableName(), event.getConfig());
+        renew(event.getDatabaseName(), event.getTableName(), swapToTableConfig(
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
     }
     
     /**
@@ -67,7 +64,8 @@ public final class ShadowTableSubscriber implements RuleConfigurationSubscribeCo
      */
     @Subscribe
     public synchronized void renew(final AlterShadowTableEvent event) {
-        renew(event.getDatabaseName(), event.getTableName(), event.getConfig());
+        renew(event.getDatabaseName(), event.getTableName(), swapToTableConfig(
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
     }
     
     private void renew(final String databaseName, final String tableName, final ShadowTableConfiguration tableConfig) {
@@ -88,5 +86,9 @@ public final class ShadowTableSubscriber implements RuleConfigurationSubscribeCo
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getTables().remove(event.getTableName());
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private ShadowTableConfiguration swapToTableConfig(final String yamlContext) {
+        return new YamlShadowTableConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlShadowTableConfiguration.class));
     }
 }

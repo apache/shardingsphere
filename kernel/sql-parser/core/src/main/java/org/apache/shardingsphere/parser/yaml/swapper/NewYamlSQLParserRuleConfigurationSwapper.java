@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.parser.yaml.swapper;
 
-import org.apache.shardingsphere.infra.config.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.converter.GlobalNodeConverter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.constant.SQLParserOrder;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -35,7 +35,7 @@ import java.util.Optional;
  * TODO Rename YamlSQLTranslatorRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * YAML SQL parser rule configuration swapper.
  */
-public final class NewYamlSQLParserRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<SQLParserRuleConfiguration> {
+public final class NewYamlSQLParserRuleConfigurationSwapper implements NewYamGlobalRuleConfigurationSwapper<SQLParserRuleConfiguration> {
     
     private final YamlSQLParserCacheOptionConfigurationSwapper cacheOptionSwapper = new YamlSQLParserCacheOptionConfigurationSwapper();
     
@@ -55,7 +55,7 @@ public final class NewYamlSQLParserRuleConfigurationSwapper implements NewYamlRu
     @Override
     public SQLParserRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            Optional<String> version = GlobalRuleNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
+            Optional<String> version = GlobalNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }

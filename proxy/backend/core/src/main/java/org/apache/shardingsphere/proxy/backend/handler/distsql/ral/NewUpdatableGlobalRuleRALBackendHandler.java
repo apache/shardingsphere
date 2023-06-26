@@ -53,7 +53,6 @@ public final class NewUpdatableGlobalRuleRALBackendHandler implements DistSQLBac
         globalRuleUpdater.checkSQLStatement(currentRuleConfig, sqlStatement);
         contextManager.getInstanceContext().getModeContextManager()
                 .alterGlobalRuleConfiguration(processUpdate(ruleConfigurations, sqlStatement, globalRuleUpdater, currentRuleConfig));
-        // TODO switch active version
         return new UpdateResponseHeader(sqlStatement);
     }
     

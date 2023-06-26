@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.infra.hint;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Hint value context.
@@ -48,4 +52,80 @@ public final class HintValueContext {
     private String disableAuditNames = "";
     
     private boolean shadow;
+    
+    /**
+     * Find hint disable audit names.
+     *
+     * @return disable audit names
+     */
+    public Collection<String> findDisableAuditNames() {
+        return SQLHintUtils.getSplitterSQLHintValue(disableAuditNames);
+    }
+    
+    /**
+     * Find hint data source name.
+     *
+     * @return data source name
+     */
+    public Optional<String> findHintDataSourceName() {
+        return dataSourceName.isEmpty() ? Optional.empty() : Optional.of(dataSourceName);
+    }
+    
+    /**
+     * Judge contains hint sharding databases value or not.
+     *
+     * @param tableName table name
+     * @return contains hint sharding databases value or not
+     */
+    public boolean containsHintShardingDatabaseValue(final String tableName) {
+        String key = Joiner.on(".").join(tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
+        return shardingDatabaseValues.containsKey(key) || shardingDatabaseValues.containsKey(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
+    }
+    
+    /**
+     * Judge contains hint sharding table value or not.
+     *
+     * @param tableName table name
+     * @return Contains hint sharding table value or not
+     */
+    public boolean containsHintShardingTableValue(final String tableName) {
+        String key = Joiner.on(".").join(tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
+        return shardingTableValues.containsKey(key) || shardingTableValues.containsKey(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
+    }
+    
+    /**
+     * Judge contains hint sharding value or not.
+     *
+     * @param tableName table name
+     * @return Contains hint sharding value or not
+     */
+    public boolean containsHintShardingValue(final String tableName) {
+        return containsHintShardingDatabaseValue(tableName) || containsHintShardingTableValue(tableName);
+    }
+    
+    /**
+     * Get hint sharding table value.
+     *
+     * @param tableName table name
+     * @return sharding table value
+     */
+    public Collection<Comparable<?>> getHintShardingTableValue(final String tableName) {
+        String key = String.join(".", tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
+        return shardingTableValues.containsKey(key)
+                ? shardingTableValues.get(key)
+                : shardingTableValues.get(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
+    }
+    
+    /**
+     * Get hint sharding database value.
+     *
+     * @param tableName table name
+     * @return sharding database value
+     */
+    public Collection<Comparable<?>> getHintShardingDatabaseValue(final String tableName) {
+        String key = String.join(".", tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
+        return shardingDatabaseValues.containsKey(key)
+                ? shardingDatabaseValues.get(key)
+                : shardingDatabaseValues.get(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
+    }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.event.algorithm.auditor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
@@ -32,8 +31,6 @@ public final class AlterAuditorEvent implements GovernanceEvent {
     private final String databaseName;
     
     private final String auditorName;
-    
-    private final AlgorithmConfiguration config;
     
     private final String activeVersionKey;
     

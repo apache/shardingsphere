@@ -52,8 +52,8 @@ class NewYamlCompatibleEncryptRuleConfigurationSwapperTest {
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(2));
         Iterator<YamlDataNode> iterator = result.iterator();
-        assertThat(iterator.next().getKey(), is("tables/foo"));
         assertThat(iterator.next().getKey(), is("encryptors/FOO"));
+        assertThat(iterator.next().getKey(), is("tables/foo"));
     }
     
     private CompatibleEncryptRuleConfiguration createMaximumEncryptRule() {

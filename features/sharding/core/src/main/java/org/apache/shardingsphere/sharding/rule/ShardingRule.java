@@ -513,12 +513,12 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     }
     
     /**
-     * Judge whether a table rule exists for logic tables.
+     * Judge whether contains sharding table or not.
      *
      * @param logicTableNames logic table names
-     * @return whether a table rule exists for logic tables
+     * @return whether contains sharding table or not
      */
-    public boolean tableRuleExists(final Collection<String> logicTableNames) {
+    public boolean containsShardingTable(final Collection<String> logicTableNames) {
         for (String each : logicTableNames) {
             if (isShardingTable(each)) {
                 return true;
@@ -685,7 +685,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     @Override
     public boolean isNeedAccumulate(final Collection<String> tables) {
-        return !tables.isEmpty() && tables.stream().anyMatch(this::isShardingTable);
+        return containsShardingTable(tables);
     }
     
     @Override

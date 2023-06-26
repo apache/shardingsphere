@@ -19,16 +19,13 @@ package org.apache.shardingsphere.single.event;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.event.config.AddSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.DeleteSingleTableEvent;
 import org.apache.shardingsphere.single.metadata.converter.SingleNodeConverter;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 
 import java.util.Optional;
 
@@ -42,7 +39,7 @@ public final class SingleRuleConfigurationEventBuilder implements RuleConfigurat
         if (!SingleNodeConverter.isSinglePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        if (SingleNodeConverter.isTablesPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+        if (SingleNodeConverter.isTablesActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createSingleConfigEvent(databaseName, event);
         }
         return Optional.empty();
@@ -50,21 +47,11 @@ public final class SingleRuleConfigurationEventBuilder implements RuleConfigurat
     
     private Optional<GovernanceEvent> createSingleConfigEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddSingleTableEvent(databaseName, swapSingleTableRuleConfig(event.getValue())));
+            return Optional.of(new AddSingleTableEvent(databaseName, event.getKey(), event.getValue()));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterSingleTableEvent(databaseName, swapSingleTableRuleConfig(event.getValue())));
+            return Optional.of(new AlterSingleTableEvent(databaseName, event.getKey(), event.getValue()));
         }
         return Optional.of(new DeleteSingleTableEvent(databaseName));
-    }
-    
-    private SingleRuleConfiguration swapSingleTableRuleConfig(final String yamlContext) {
-        SingleRuleConfiguration result = new SingleRuleConfiguration();
-        YamlSingleRuleConfiguration yamlSingleRuleConfiguration = YamlEngine.unmarshal(yamlContext, YamlSingleRuleConfiguration.class);
-        if (null != yamlSingleRuleConfiguration.getTables()) {
-            result.getTables().addAll(yamlSingleRuleConfiguration.getTables());
-        }
-        result.setDefaultDataSource(yamlSingleRuleConfiguration.getDefaultDataSource());
-        return result;
     }
 }

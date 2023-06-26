@@ -18,14 +18,11 @@
 package org.apache.shardingsphere.broadcast.event;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.event.config.AddBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.config.AlterBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.config.DeleteBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.metadata.converter.BroadcastNodeConverter;
-import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
@@ -39,30 +36,22 @@ public final class BroadcastRuleConfigurationEventBuilder implements RuleConfigu
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!BroadcastNodeConverter.isBroadcastPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!BroadcastNodeConverter.getRuleRootNodeConverter().isRulePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        if (BroadcastNodeConverter.isTablesPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
-            Optional<String> tablesVersion = BroadcastNodeConverter.getTablesVersion(event.getKey());
-            if (tablesVersion.isPresent()) {
-                return createBroadcastConfigEvent(databaseName, tablesVersion.get(), event);
-            }
+        if (BroadcastNodeConverter.getTableNodeConvertor().getNameByActiveVersionPath(event.getKey()).isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
+            return createBroadcastConfigEvent(databaseName, event);
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createBroadcastConfigEvent(final String databaseName, final String version, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createBroadcastConfigEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddBroadcastTableEvent(databaseName, swapBroadcastTableRuleConfig(event.getValue()), event.getKey(), version));
+            return Optional.of(new AddBroadcastTableEvent(databaseName, event.getKey(), event.getValue()));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterBroadcastTableEvent(databaseName, swapBroadcastTableRuleConfig(event.getValue()), event.getKey(), version));
+            return Optional.of(new AlterBroadcastTableEvent(databaseName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteBroadcastTableEvent(databaseName, event.getKey(), version));
-    }
-    
-    private BroadcastRuleConfiguration swapBroadcastTableRuleConfig(final String yamlContext) {
-        YamlBroadcastRuleConfiguration yamlBroadcastRuleConfiguration = YamlEngine.unmarshal(yamlContext, YamlBroadcastRuleConfiguration.class);
-        return new BroadcastRuleConfiguration(yamlBroadcastRuleConfiguration.getTables());
+        return Optional.of(new DeleteBroadcastTableEvent(databaseName));
     }
 }

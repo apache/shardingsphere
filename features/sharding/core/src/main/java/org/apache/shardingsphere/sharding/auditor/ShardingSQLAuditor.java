@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.auditor;
 
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditor;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,14 +38,12 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
     
     @Override
     public void audit(final SQLStatementContext sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData,
-                      final ShardingSphereDatabase database, final ShardingRule rule) {
+                      final ShardingSphereDatabase database, final ShardingRule rule, final HintValueContext hintValueContext) {
         Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(sqlStatementContext, rule);
         if (auditStrategies.isEmpty()) {
             return;
         }
-        Collection<String> disableAuditNames = sqlStatementContext instanceof CommonSQLStatementContext
-                ? ((CommonSQLStatementContext) sqlStatementContext).getSqlHintExtractor().findDisableAuditNames()
-                : Collections.emptyList();
+        Collection<String> disableAuditNames = hintValueContext.findDisableAuditNames();
         for (ShardingAuditStrategyConfiguration auditStrategy : auditStrategies) {
             for (String auditorName : auditStrategy.getAuditorNames()) {
                 if (!auditStrategy.isAllowHintDisable() || !disableAuditNames.contains(auditorName.toLowerCase())) {

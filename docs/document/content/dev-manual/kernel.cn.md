@@ -19,10 +19,9 @@ chapter = true
 
 |     | *配置标识*                 | *详细说明*        | *全限定类名*                                                                                                                                                                                                                                                                      |
 |:----|------------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|     | SingleRule             | 用于处理单表路由结果    | [`org.apache.shardingsphere.singletable.route.SingleTableSQLRouter`](https://github.com/apache/shardingsphere/blob/master/kernel/single-table/core/src/main/java/org/apache/shardingsphere/singletable/route/SingleTableSQLRouter.java)                                      |
+|     | SingleRule             | 用于处理单表路由结果    | [`org.apache.shardingsphere.single.route.SingleSQLRouter`](https://github.com/apache/shardingsphere/blob/master/kernel/single/core/src/main/java/org/apache/shardingsphere/single/route/SingleSQLRouter.java)                                      |
 |     | ShardingRule           | 用于处理分片路由结果    | [`org.apache.shardingsphere.sharding.route.engine.ShardingSQLRouter`](https://github.com/apache/shardingsphere/blob/master/infra/route/src/main/java/org/apache/shardingsphere/infra/route/SQLRouter.java)                                                                   |
 |     | ReadwriteSplittingRule | 用于处理读写分离路由结果  | [`org.apache.shardingsphere.readwritesplitting.route.ReadwriteSplittingSQLRouter`](https://github.com/apache/shardingsphere/blob/master/features/readwrite-splitting/core/src/main/java/org/apache/shardingsphere/readwritesplitting/route/ReadwriteSplittingSQLRouter.java) |
-|     | DatabaseDiscoveryRule  | 用于处理数据库发现路由结果 | [`org.apache.shardingsphere.dbdiscovery.route.DatabaseDiscoverySQLRouter`](https://github.com/apache/shardingsphere/blob/master/features/db-discovery/core/src/main/java/org/apache/shardingsphere/dbdiscovery/route/DatabaseDiscoverySQLRouter.java)                        |
 |     | ShadowRule             | 用于处理影子库路由结果   | [`org.apache.shardingsphere.shadow.route.ShadowSQLRouter`](https://github.com/apache/shardingsphere/blob/master/features/shadow/core/src/main/java/org/apache/shardingsphere/shadow/route/ShadowSQLRouter.java)                                                              |
 
 ## SQLRewriteContextDecorator
@@ -56,7 +55,7 @@ SQL 执行过程监听器
 
 | *配置标识* | *详细说明*            | *全限定类名*                                                                                                                                                                                                                                                                                |
 |--------|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 无      | 基于事务的 SQL 执行过程监听器 | [`org.apache.shardingsphere.transaction.base.seata.at.TransactionalSQLExecutionHook`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/type/base/seata-at/src/main/java/org/apache/shardingsphere/transaction/base/seata/at/TransactionalSQLExecutionHook.java) |
+| 无      | 基于事务的 SQL 执行过程监听器 | [`org.apache.shardingsphere.transaction.base.seata.at.SeataTransactionalSQLExecutionHook`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/type/base/seata-at/src/main/java/org/apache/shardingsphere/transaction/base/seata/at/SeataTransactionalSQLExecutionHook.java) |
 
 
 ## ResultProcessEngine

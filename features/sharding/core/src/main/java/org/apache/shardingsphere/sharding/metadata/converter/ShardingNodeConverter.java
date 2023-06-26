@@ -19,8 +19,9 @@ package org.apache.shardingsphere.sharding.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,14 +30,6 @@ import java.util.regex.Pattern;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingNodeConverter {
-    
-    private static final String ROOT_NODE = "sharding";
-    
-    private static final String TABLES_NODE = "tables";
-    
-    private static final String AUTO_TABLES_NODE = "auto_tables";
-    
-    private static final String BINDING_TABLES_NODE = "binding_tables";
     
     private static final String DEFAULT_STRATEGIES_NODE = "default_strategies";
     
@@ -50,48 +43,96 @@ public final class ShardingNodeConverter {
     
     private static final String DEFAULT_SHARDING_COLUMN_NODE = "default_sharding_column";
     
-    private static final String SHARDING_ALGORITHMS_NODE = "algorithms";
-    
-    private static final String KEY_GENERATORS_NODE = "key_generators";
-    
-    private static final String AUDITORS_NODE = "auditors";
-    
     private static final String SHARDING_CACHE_NODE = "sharding_cache";
     
-    private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
+    private static final String ACTIVE_VERSION = "/active_version$";
     
-    private static final String RULE_NAME_PATTERN = "/([\\w\\-]+)?";
+    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("sharding");
     
-    private static final String RULE_VERSION = "/([\\w\\-]+)/versions/([\\w\\-]+)$";
+    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    
+    private static final RuleItemNodeConverter AUTO_TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "auto_tables");
+    
+    private static final RuleItemNodeConverter BINDING_TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "binding_tables");
+    
+    private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
+    
+    private static final RuleItemNodeConverter KEY_GENERATOR_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "key_generators");
+    
+    private static final RuleItemNodeConverter AUDITOR_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "auditors");
+    
+    private static final RuleItemNodeConverter SHARDING_CACHE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "sharding_cache");
     
     /**
-     * Get table name path.
+     * Get rule root node converter.
      *
-     * @param tableName table name
-     * @return table name path
+     * @return rule root node converter
      */
-    public static String getTableNamePath(final String tableName) {
-        return String.join("/", TABLES_NODE, tableName);
+    public static RuleRootNodeConverter getRuleRootNodeConverter() {
+        return ROOT_NODE_CONVERTER;
     }
     
     /**
-     * Get auto table name path.
+     * Get table node converter.
      *
-     * @param tableName table name
-     * @return auto table name path
+     * @return table node converter
      */
-    public static String getAutoTableNamePath(final String tableName) {
-        return String.join("/", AUTO_TABLES_NODE, tableName);
+    public static RuleItemNodeConverter getTableNodeConverter() {
+        return TABLE_NODE_CONVERTER;
     }
     
     /**
-     * Get binding table name path.
+     * Get auto table node converter.
      *
-     * @param tableName table name
-     * @return binding table name path
+     * @return auto table node converter
      */
-    public static String getBindingTableNamePath(final String tableName) {
-        return String.join("/", BINDING_TABLES_NODE, tableName);
+    public static RuleItemNodeConverter getAutoTableNodeConverter() {
+        return AUTO_TABLE_NODE_CONVERTER;
+    }
+    
+    /**
+     * Get binding table node converter.
+     *
+     * @return binding table node converter
+     */
+    public static RuleItemNodeConverter getBindingTableNodeConverter() {
+        return BINDING_TABLE_NODE_CONVERTER;
+    }
+    
+    /**
+     * Get algorithm node converter.
+     *
+     * @return algorithm node converter
+     */
+    public static RuleItemNodeConverter getAlgorithmNodeConverter() {
+        return ALGORITHM_NODE_CONVERTER;
+    }
+    
+    /**
+     * Get key generator node converter.
+     *
+     * @return key generator node converter
+     */
+    public static RuleItemNodeConverter getKeyGeneratorNodeConverter() {
+        return KEY_GENERATOR_NODE_CONVERTER;
+    }
+    
+    /**
+     * Get auditor node converter.
+     *
+     * @return auditor node converter
+     */
+    public static RuleItemNodeConverter getAuditorNodeConverter() {
+        return AUDITOR_NODE_CONVERTER;
+    }
+    
+    /**
+     * Get sharding cache node converter.
+     *
+     * @return sharding cache node converter
+     */
+    public static RuleItemNodeConverter getShardingCacheNodeConverter() {
+        return SHARDING_CACHE_NODE_CONVERTER;
     }
     
     /**
@@ -140,36 +181,6 @@ public final class ShardingNodeConverter {
     }
     
     /**
-     * Get sharding algorithm path.
-     *
-     * @param shardingAlgorithmName sharding algorithm name
-     * @return sharding algorithm path
-     */
-    public static String getShardingAlgorithmPath(final String shardingAlgorithmName) {
-        return String.join("/", SHARDING_ALGORITHMS_NODE, shardingAlgorithmName);
-    }
-    
-    /**
-     * Get key generator path.
-     *
-     * @param keyGeneratorName key generator name
-     * @return key generator path
-     */
-    public static String getKeyGeneratorPath(final String keyGeneratorName) {
-        return String.join("/", KEY_GENERATORS_NODE, keyGeneratorName);
-    }
-    
-    /**
-     * Get auditor path.
-     *
-     * @param auditorName auditor name
-     * @return auditor path
-     */
-    public static String getAuditorPath(final String auditorName) {
-        return String.join("/", AUDITORS_NODE, auditorName);
-    }
-    
-    /**
      * Get sharding cache path.
      *
      * @return sharding cache path
@@ -179,61 +190,13 @@ public final class ShardingNodeConverter {
     }
     
     /**
-     * Is sharding path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isShardingPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is sharding table path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isTablePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is sharding auto table path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isAutoTablePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUTO_TABLES_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is binding table path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isBindingTablePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + BINDING_TABLES_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
      * Is default database strategy path.
      *
      * @param rulePath rule path
      * @return true or false
      */
     public static boolean isDefaultDatabaseStrategyPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_DATABASE_STRATEGY_NODE + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_DATABASE_STRATEGY_NODE + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -245,7 +208,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isDefaultTableStrategyPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_TABLE_STRATEGY_NODE + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_TABLE_STRATEGY_NODE + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -257,7 +220,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isDefaultKeyGenerateStrategyPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_KEY_GENERATE_STRATEGY_NODE + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_KEY_GENERATE_STRATEGY_NODE + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -269,7 +232,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isDefaultAuditStrategyPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_AUDIT_STRATEGY_NODE + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_AUDIT_STRATEGY_NODE + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -281,43 +244,7 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isDefaultShardingColumnPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_SHARDING_COLUMN_NODE + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is sharding algorithm path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isShardingAlgorithmPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + SHARDING_ALGORITHMS_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is key generator path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isKeyGeneratorPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + KEY_GENERATORS_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is sharding auditor path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isAuditorPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUDITORS_NODE + "\\.*", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_SHARDING_COLUMN_NODE + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -329,225 +256,81 @@ public final class ShardingNodeConverter {
      * @return true or false
      */
     public static boolean isShardingCachePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + SHARDING_CACHE_NODE + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + SHARDING_CACHE_NODE + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
     
     /**
-     * Get sharding table name.
+     * Is sharding algorithm with active version path.
      *
-     * @param rulePath rule path
-     * @return sharding table name
+     * @param activeVersionPath active version path
+     * @return true or false
      */
-    public static Optional<String> getTableName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    public static boolean isDefaultDatabaseStrategyWithActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_DATABASE_STRATEGY_NODE + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find();
     }
     
     /**
-     * Get auto table name.
+     * Is default table strategy with active version path.
      *
-     * @param rulePath rule path
-     * @return auto table name
+     * @param activeVersionPath active version path
+     * @return true or false
      */
-    public static Optional<String> getAutoTableName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUTO_TABLES_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    public static boolean isDefaultTableStrategyWithActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_TABLE_STRATEGY_NODE + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find();
     }
     
     /**
-     * Get binding table name.
+     * Is default key generate strategy with active version path.
      *
-     * @param rulePath rule path
-     * @return binding table name
+     * @param activeVersionPath active version path
+     * @return true or false
      */
-    public static Optional<String> getBindingTableName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + BINDING_TABLES_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    public static boolean isDefaultKeyGenerateStrategyWithActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(
+                ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_KEY_GENERATE_STRATEGY_NODE + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find();
     }
     
     /**
-     * Get sharding algorithm name.
+     * Is default audit strategy with active version path.
      *
-     * @param rulePath rule path
-     * @return sharding algorithm name
+     * @param activeVersionPath active version path
+     * @return true or false
      */
-    public static Optional<String> getShardingAlgorithmName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + SHARDING_ALGORITHMS_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    public static boolean isDefaultAuditStrategyWithActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_AUDIT_STRATEGY_NODE + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find();
     }
     
     /**
-     * Get key generator name.
+     * Is default sharding column with active version path.
      *
-     * @param rulePath rule path
-     * @return key generator name
+     * @param activeVersionPath active version path
+     * @return true or false
      */
-    public static Optional<String> getKeyGeneratorName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + KEY_GENERATORS_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    public static boolean isDefaultShardingColumnWithActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_SHARDING_COLUMN_NODE + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find();
     }
     
     /**
-     * Get auditor name.
+     * Is sharding cache with active version path.
      *
-     * @param rulePath rule path
-     * @return auditor name
+     * @param activeVersionPath active version path
+     * @return true or false
      */
-    public static Optional<String> getAuditorName(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUDITORS_NODE + RULE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get table name version.
-     *
-     * @param rulePath rule path
-     * @return table name version
-     */
-    public static Optional<String> getTableNameVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
-    }
-    
-    /**
-     * Get auto table name version.
-     *
-     * @param rulePath rule path
-     * @return auto table name version
-     */
-    public static Optional<String> getAutoTableNameVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUTO_TABLES_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
-    }
-    
-    /**
-     * Get binding table name version.
-     *
-     * @param rulePath rule path
-     * @return binding table name version
-     */
-    public static Optional<String> getBindingTableNameVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + BINDING_TABLES_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
-    }
-    
-    /**
-     * Get sharding algorithm version.
-     *
-     * @param rulePath rule path
-     * @return sharding algorithm version
-     */
-    public static Optional<String> getDefaultDatabaseStrategyVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_DATABASE_STRATEGY_NODE + "/versions/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get default table strategy version.
-     *
-     * @param rulePath rule path
-     * @return default table strategy version
-     */
-    public static Optional<String> getDefaultTableStrategyVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_TABLE_STRATEGY_NODE + "/versions/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get default key generate strategy version.
-     *
-     * @param rulePath rule path
-     * @return default key generate strategy version
-     */
-    public static Optional<String> getDefaultKeyGenerateStrategyVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_KEY_GENERATE_STRATEGY_NODE + "/versions/([\\w\\-]+)$",
-                Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get default audit strategy version.
-     *
-     * @param rulePath rule path
-     * @return default audit strategy version
-     */
-    public static Optional<String> getDefaultAuditStrategyVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_AUDIT_STRATEGY_NODE + "/versions/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get default sharding column version.
-     *
-     * @param rulePath rule path
-     * @return default sharding column version
-     */
-    public static Optional<String> getDefaultShardingColumnVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + DEFAULT_STRATEGIES_NODE + "/" + DEFAULT_SHARDING_COLUMN_NODE + "/versions/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get sharding algorithm version.
-     *
-     * @param rulePath rule path
-     * @return sharding algorithm version
-     */
-    public static Optional<String> getShardingAlgorithmVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + SHARDING_ALGORITHMS_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
-    }
-    
-    /**
-     * Get key generator version.
-     *
-     * @param rulePath rule path
-     * @return key generator version
-     */
-    public static Optional<String> getKeyGeneratorVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + KEY_GENERATORS_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
-    }
-    
-    /**
-     * Get auditor version.
-     *
-     * @param rulePath rule path
-     * @return auditor version
-     */
-    public static Optional<String> getAuditorVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + AUDITORS_NODE + RULE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
-    }
-    
-    /**
-     * Get sharding cache version.
-     *
-     * @param rulePath rule path
-     * @return sharding cache version
-     */
-    public static Optional<String> getShardingCacheVersion(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + SHARDING_CACHE_NODE + "/versions/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    public static boolean isShardingCacheWithActiveVersionPath(final String activeVersionPath) {
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + SHARDING_CACHE_NODE + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find();
     }
 }

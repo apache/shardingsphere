@@ -46,7 +46,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -88,9 +87,6 @@ class ConfigurationChangedSubscriberTest {
     private ContextManager contextManager;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private MetaDataPersistService persistService;
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @Mock
@@ -101,7 +97,7 @@ class ConfigurationChangedSubscriberTest {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
-        subscriber = new ConfigurationChangedSubscriber(persistService, new RegistryCenter(mock(ClusterPersistRepository.class),
+        subscriber = new ConfigurationChangedSubscriber(new RegistryCenter(mock(ClusterPersistRepository.class),
                 new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
     }
     
@@ -126,7 +122,6 @@ class ConfigurationChangedSubscriberTest {
     
     @Test
     void assertRenewForRuleConfigurationsChanged() {
-        when(persistService.getMetaDataVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("db"), is(database));
         subscriber.renew(new RuleConfigurationsChangedEvent("db", "0", Collections.emptyList()));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("db"), not(database));
@@ -134,7 +129,6 @@ class ConfigurationChangedSubscriberTest {
     
     @Test
     void assertRenewForDataSourceChanged() {
-        when(persistService.getMetaDataVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         subscriber.renew(new DataSourceChangedEvent("db", "0", createChangedDataSourcePropertiesMap()));
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getDataSources().containsKey("ds_2"));
     }

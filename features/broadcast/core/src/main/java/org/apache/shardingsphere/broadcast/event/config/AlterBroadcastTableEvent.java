@@ -19,7 +19,6 @@ package org.apache.shardingsphere.broadcast.event.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
@@ -31,9 +30,7 @@ public final class AlterBroadcastTableEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final BroadcastRuleConfiguration config;
-    
     private final String activeVersionKey;
     
-    private final String version;
+    private final String activeVersion;
 }
