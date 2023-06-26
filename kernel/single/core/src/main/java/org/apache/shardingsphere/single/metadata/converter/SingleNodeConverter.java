@@ -33,7 +33,7 @@ public final class SingleNodeConverter {
     
     private static final String TABLES_NODE = "tables";
     
-    private static final String RULES_NODE_PREFIX = "/(\\w+)/(\\w+)/rules/";
+    private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
     
     private static final String RULE_ACTIVE_VERSION = "/active_version$";
     
