@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shadow.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
+import org.apache.shardingsphere.infra.metadata.nodepath.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.item.NamedRuleItemNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 
 /**
  * Shadow node converter.
@@ -29,58 +29,58 @@ import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowNodeConverter {
     
-    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("shadow");
+    private static final RuleRootNodePath ROOT_NODE_PATH = new RuleRootNodePath("shadow");
     
-    private static final RuleItemNodeConverter DATA_SOURCE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "data_sources");
+    private static final NamedRuleItemNodePath DATA_SOURCE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "data_sources");
     
-    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    private static final NamedRuleItemNodePath TABLE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "tables");
     
-    private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
+    private static final NamedRuleItemNodePath ALGORITHM_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "algorithms");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_ALGORITHM_NAME_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, "default_algorithm_name");
+    private static final UniqueRuleItemNodePath DEFAULT_ALGORITHM_NAME_NODE_PATH = new UniqueRuleItemNodePath(ROOT_NODE_PATH, "default_algorithm_name");
     
     /**
-     * Get rule root node converter.
+     * Get rule root node path.
      *
-     * @return rule root node converter
+     * @return rule root node path
      */
-    public static RuleRootNodeConverter getRuleRootNodeConverter() {
-        return ROOT_NODE_CONVERTER;
+    public static RuleRootNodePath getRuleRootNodePath() {
+        return ROOT_NODE_PATH;
     }
     
     /**
-     * Get data source node converter.
+     * Get data source node path.
      *
-     * @return data source node converter
+     * @return data source node path
      */
-    public static RuleItemNodeConverter getDataSourceNodeConvertor() {
-        return DATA_SOURCE_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getDataSourceNodePath() {
+        return DATA_SOURCE_NODE_PATH;
     }
     
     /**
-     * Get table node converter.
+     * Get table node path.
      *
-     * @return table node converter
+     * @return table node path
      */
-    public static RuleItemNodeConverter getTableNodeConverter() {
-        return TABLE_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getTableNodePath() {
+        return TABLE_NODE_PATH;
     }
     
     /**
-     * Get algorithm node converter.
+     * Get algorithm node path.
      *
-     * @return algorithm node converter
+     * @return algorithm node path
      */
-    public static RuleItemNodeConverter getAlgorithmNodeConverter() {
-        return ALGORITHM_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getAlgorithmNodePath() {
+        return ALGORITHM_NODE_PATH;
     }
     
     /**
-     * Get default algorithm name node converter.
+     * Get default algorithm name node path.
      *
-     * @return default algorithm name node converter
+     * @return default algorithm name node path
      */
-    public static RuleDefaultItemNodeConverter getDefaultAlgorithmNameNodeConverter() {
-        return DEFAULT_ALGORITHM_NAME_NODE_CONVERTER;
+    public static UniqueRuleItemNodePath getDefaultAlgorithmNameNodePath() {
+        return DEFAULT_ALGORITHM_NAME_NODE_PATH;
     }
 }

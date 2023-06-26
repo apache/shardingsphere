@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.converter;
+package org.apache.shardingsphere.infra.metadata.nodepath.item;
+
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Rule default item node converter.
+ * Unique rule item node path.
  */
-public final class RuleDefaultItemNodeConverter {
+public final class UniqueRuleItemNodePath {
     
     private static final String VERSIONS = "/versions/\\d+$";
     
@@ -31,24 +33,24 @@ public final class RuleDefaultItemNodeConverter {
     
     private final String parentNode;
     
-    private final String itemsNode;
+    private final String type;
     
-    private final Pattern itemsPathPattern;
+    private final Pattern pathPattern;
     
     private final Pattern activeVersionPathPattern;
     
-    public RuleDefaultItemNodeConverter(final RuleRootNodeConverter ruleRootNodeConverter, final String itemsNode) {
+    public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String type) {
         parentNode = null;
-        this.itemsNode = itemsNode;
-        itemsPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + VERSIONS, Pattern.CASE_INSENSITIVE);
-        activeVersionPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        this.type = type;
+        pathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + type + VERSIONS, Pattern.CASE_INSENSITIVE);
+        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + type + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     
-    public RuleDefaultItemNodeConverter(final RuleRootNodeConverter ruleRootNodeConverter, final String parentNode, final String itemsNode) {
+    public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String parentNode, final String type) {
         this.parentNode = parentNode;
-        this.itemsNode = itemsNode;
-        itemsPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + parentNode + "/" + itemsNode + VERSIONS, Pattern.CASE_INSENSITIVE);
-        activeVersionPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + parentNode + "/" + itemsNode + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        this.type = type;
+        pathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + parentNode + "/" + type + VERSIONS, Pattern.CASE_INSENSITIVE);
+        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + parentNode + "/" + type + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     
     /**
@@ -57,17 +59,17 @@ public final class RuleDefaultItemNodeConverter {
      * @return path
      */
     public String getPath() {
-        return null == parentNode ? String.join("/", itemsNode) : String.join("/", parentNode, itemsNode);
+        return null == parentNode ? String.join("/", type) : String.join("/", parentNode, type);
     }
     
     /**
-     * Is item path.
+     * Judge whether is validated rule item path.
      *
-     * @param rulePath rule path
-     * @return true or false
+     * @param path path to be judged
+     * @return is validated rule item path or not
      */
-    public boolean isPath(final String rulePath) {
-        return itemsPathPattern.matcher(rulePath).find();
+    public boolean isValidatedPath(final String path) {
+        return pathPattern.matcher(path).find();
     }
     
     /**

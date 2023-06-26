@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mask.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
+import org.apache.shardingsphere.infra.metadata.nodepath.item.NamedRuleItemNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 
 /**
  * Mask node converter.
@@ -28,36 +28,36 @@ import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MaskNodeConverter {
     
-    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("mask");
+    private static final RuleRootNodePath ROOT_NODE_PATH = new RuleRootNodePath("mask");
     
-    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    private static final NamedRuleItemNodePath TABLE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "tables");
     
-    private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
+    private static final NamedRuleItemNodePath ALGORITHM_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "algorithms");
     
     /**
-     * Get rule root node converter.
+     * Get rule root node path.
      *
-     * @return rule root node converter
+     * @return rule root node path
      */
-    public static RuleRootNodeConverter getRuleRootNodeConverter() {
-        return ROOT_NODE_CONVERTER;
+    public static RuleRootNodePath getRuleRootNodePath() {
+        return ROOT_NODE_PATH;
     }
     
     /**
-     * Get table node converter.
+     * Get table node path.
      *
-     * @return table node converter
+     * @return table node path
      */
-    public static RuleItemNodeConverter getTableNodeConvertor() {
-        return TABLE_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getTableNodePath() {
+        return TABLE_NODE_PATH;
     }
     
     /**
-     * Get algorithm node converter.
+     * Get algorithm node path.
      *
-     * @return algorithm node converter
+     * @return algorithm node path
      */
-    public static RuleItemNodeConverter getAlgorithmNodeConvertor() {
-        return ALGORITHM_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getAlgorithmNodePath() {
+        return ALGORITHM_NODE_PATH;
     }
 }

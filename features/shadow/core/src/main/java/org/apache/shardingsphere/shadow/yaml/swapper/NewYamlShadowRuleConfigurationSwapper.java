@@ -51,16 +51,16 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
     public Collection<YamlDataNode> swapToDataNodes(final ShadowRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (Entry<String, AlgorithmConfiguration> entry : data.getShadowAlgorithms().entrySet()) {
-            result.add(new YamlDataNode(ShadowNodeConverter.getAlgorithmNodeConverter().getNamePath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
+            result.add(new YamlDataNode(ShadowNodeConverter.getAlgorithmNodePath().getPath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         if (!Strings.isNullOrEmpty(data.getDefaultShadowAlgorithmName())) {
-            result.add(new YamlDataNode(ShadowNodeConverter.getDefaultAlgorithmNameNodeConverter().getPath(), data.getDefaultShadowAlgorithmName()));
+            result.add(new YamlDataNode(ShadowNodeConverter.getDefaultAlgorithmNameNodePath().getPath(), data.getDefaultShadowAlgorithmName()));
         }
         for (ShadowDataSourceConfiguration each : data.getDataSources()) {
-            result.add(new YamlDataNode(ShadowNodeConverter.getDataSourceNodeConvertor().getNamePath(each.getName()), YamlEngine.marshal(swapToDataSourceYamlConfiguration(each))));
+            result.add(new YamlDataNode(ShadowNodeConverter.getDataSourceNodePath().getPath(each.getName()), YamlEngine.marshal(swapToDataSourceYamlConfiguration(each))));
         }
         for (Entry<String, ShadowTableConfiguration> entry : data.getTables().entrySet()) {
-            result.add(new YamlDataNode(ShadowNodeConverter.getTableNodeConverter().getNamePath(entry.getKey()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(entry.getValue()))));
+            result.add(new YamlDataNode(ShadowNodeConverter.getTableNodePath().getPath(entry.getKey()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         return result;
     }
@@ -76,17 +76,17 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
     public ShadowRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         for (YamlDataNode each : dataNodes) {
-            if (ShadowNodeConverter.getDataSourceNodeConvertor().isPath(each.getKey())) {
-                ShadowNodeConverter.getDataSourceNodeConvertor().getName(each.getKey())
+            if (ShadowNodeConverter.getDataSourceNodePath().isValidatedPath(each.getKey())) {
+                ShadowNodeConverter.getDataSourceNodePath().getName(each.getKey())
                         .ifPresent(dataSourceName -> result.getDataSources().add(swapDataSource(dataSourceName, YamlEngine.unmarshal(each.getValue(), YamlShadowDataSourceConfiguration.class))));
-            } else if (ShadowNodeConverter.getTableNodeConverter().isPath(each.getKey())) {
-                ShadowNodeConverter.getTableNodeConverter().getName(each.getKey())
+            } else if (ShadowNodeConverter.getTableNodePath().isValidatedPath(each.getKey())) {
+                ShadowNodeConverter.getTableNodePath().getName(each.getKey())
                         .ifPresent(tableName -> result.getTables().put(tableName, tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShadowTableConfiguration.class))));
-            } else if (ShadowNodeConverter.getAlgorithmNodeConverter().isPath(each.getKey())) {
-                ShadowNodeConverter.getAlgorithmNodeConverter().getName(each.getKey())
+            } else if (ShadowNodeConverter.getAlgorithmNodePath().isValidatedPath(each.getKey())) {
+                ShadowNodeConverter.getAlgorithmNodePath().getName(each.getKey())
                         .ifPresent(algorithmName -> result.getShadowAlgorithms().put(algorithmName,
                                 algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
-            } else if (ShadowNodeConverter.getDefaultAlgorithmNameNodeConverter().isPath(each.getKey())) {
+            } else if (ShadowNodeConverter.getDefaultAlgorithmNameNodePath().isValidatedPath(each.getKey())) {
                 result.setDefaultShadowAlgorithmName(each.getValue());
             }
         }

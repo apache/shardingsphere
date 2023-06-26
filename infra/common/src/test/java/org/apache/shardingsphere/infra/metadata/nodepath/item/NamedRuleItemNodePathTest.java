@@ -15,28 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.converter;
+package org.apache.shardingsphere.infra.metadata.nodepath.item;
 
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RuleItemNodeConverterTest {
+class NamedRuleItemNodePathTest {
     
-    private final RuleItemNodeConverter converter = new RuleItemNodeConverter(new RuleRootNodeConverter("foo"), "tables");
+    private final NamedRuleItemNodePath converter = new NamedRuleItemNodePath(new RuleRootNodePath("foo"), "tables");
     
     @Test
-    void assertGetNamePath() {
-        assertThat(converter.getNamePath("foo_table"), is("tables/foo_table"));
+    void assertGetPath() {
+        assertThat(converter.getPath("foo_table"), is("tables/foo_table"));
     }
     
     @Test
-    void assertIsPath() {
-        assertTrue(converter.isPath("/metadata/foo_db/rules/foo/tables/foo_table/versions/0"));
+    void assertIsValidatedPath() {
+        assertTrue(converter.isValidatedPath("/metadata/foo_db/rules/foo/tables/foo_table/versions/0"));
+    }
+    
+    @Test
+    void assertIsNotValidatedPath() {
+        assertFalse(converter.isValidatedPath("/metadata/foo_db/rules/bar/tables/foo_table/versions/0"));
     }
     
     @Test
@@ -48,7 +55,7 @@ class RuleItemNodeConverterTest {
     
     @Test
     void assertGetNameByActiveVersionPath() {
-        Optional<String> actual = converter.getNameByActiveVersionPath("/metadata/foo_db/rules/foo/tables/foo_table/active_version");
+        Optional<String> actual = converter.getNameByActiveVersion("/metadata/foo_db/rules/foo/tables/foo_table/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table"));
     }

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
+import org.apache.shardingsphere.infra.metadata.nodepath.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.item.NamedRuleItemNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 
 /**
  * Sharding node converter.
@@ -31,149 +31,149 @@ public final class ShardingNodeConverter {
     
     private static final String DEFAULT_STRATEGIES_NODE = "default_strategies";
     
-    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("sharding");
+    private static final RuleRootNodePath ROOT_NODE_PATH = new RuleRootNodePath("sharding");
     
-    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    private static final NamedRuleItemNodePath TABLE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "tables");
     
-    private static final RuleItemNodeConverter AUTO_TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "auto_tables");
+    private static final NamedRuleItemNodePath AUTO_TABLE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "auto_tables");
     
-    private static final RuleItemNodeConverter BINDING_TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "binding_tables");
+    private static final NamedRuleItemNodePath BINDING_TABLE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "binding_tables");
     
-    private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
+    private static final NamedRuleItemNodePath ALGORITHM_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "algorithms");
     
-    private static final RuleItemNodeConverter KEY_GENERATOR_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "key_generators");
+    private static final NamedRuleItemNodePath KEY_GENERATOR_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "key_generators");
     
-    private static final RuleItemNodeConverter AUDITOR_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "auditors");
+    private static final NamedRuleItemNodePath AUDITOR_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "auditors");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_DATABASE_STRATEGY_NODE_CONVERTER =
-            new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_database_strategy");
+    private static final UniqueRuleItemNodePath DEFAULT_DATABASE_STRATEGY_NODE_PATH =
+            new UniqueRuleItemNodePath(ROOT_NODE_PATH, DEFAULT_STRATEGIES_NODE, "default_database_strategy");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_TABLE_STRATEGY_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_table_strategy");
+    private static final UniqueRuleItemNodePath DEFAULT_TABLE_STRATEGY_NODE_PATH = new UniqueRuleItemNodePath(ROOT_NODE_PATH, DEFAULT_STRATEGIES_NODE, "default_table_strategy");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_KEY_GENERATE_STRATEGY_NODE_CONVERTER =
-            new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_key_generate_strategy");
+    private static final UniqueRuleItemNodePath DEFAULT_KEY_GENERATE_STRATEGY_NODE_PATH =
+            new UniqueRuleItemNodePath(ROOT_NODE_PATH, DEFAULT_STRATEGIES_NODE, "default_key_generate_strategy");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_AUDIT_STRATEGY_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_audit_strategy");
+    private static final UniqueRuleItemNodePath DEFAULT_AUDIT_STRATEGY_NODE_PATH = new UniqueRuleItemNodePath(ROOT_NODE_PATH, DEFAULT_STRATEGIES_NODE, "default_audit_strategy");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_SHARDING_COLUMN_NODE_CONVERTER =
-            new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_sharding_column");
+    private static final UniqueRuleItemNodePath DEFAULT_SHARDING_COLUMN_NODE_PATH =
+            new UniqueRuleItemNodePath(ROOT_NODE_PATH, DEFAULT_STRATEGIES_NODE, "default_sharding_column");
     
-    private static final RuleDefaultItemNodeConverter SHARDING_CACHE_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, "sharding_cache");
+    private static final UniqueRuleItemNodePath SHARDING_CACHE_NODE_PATH = new UniqueRuleItemNodePath(ROOT_NODE_PATH, "sharding_cache");
     
     /**
-     * Get rule root node converter.
+     * Get rule root node path.
      *
-     * @return rule root node converter
+     * @return rule root node path
      */
-    public static RuleRootNodeConverter getRuleRootNodeConverter() {
-        return ROOT_NODE_CONVERTER;
+    public static RuleRootNodePath getRuleRootNodePath() {
+        return ROOT_NODE_PATH;
     }
     
     /**
-     * Get table node converter.
+     * Get table node path.
      *
-     * @return table node converter
+     * @return table node path
      */
-    public static RuleItemNodeConverter getTableNodeConverter() {
-        return TABLE_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getTableNodePath() {
+        return TABLE_NODE_PATH;
     }
     
     /**
-     * Get auto table node converter.
+     * Get auto table node path.
      *
-     * @return auto table node converter
+     * @return auto table node path
      */
-    public static RuleItemNodeConverter getAutoTableNodeConverter() {
-        return AUTO_TABLE_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getAutoTableNodePath() {
+        return AUTO_TABLE_NODE_PATH;
     }
     
     /**
-     * Get binding table node converter.
+     * Get binding table node path.
      *
-     * @return binding table node converter
+     * @return binding table node path
      */
-    public static RuleItemNodeConverter getBindingTableNodeConverter() {
-        return BINDING_TABLE_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getBindingTableNodePath() {
+        return BINDING_TABLE_NODE_PATH;
     }
     
     /**
-     * Get algorithm node converter.
+     * Get algorithm node path.
      *
-     * @return algorithm node converter
+     * @return algorithm node path
      */
-    public static RuleItemNodeConverter getAlgorithmNodeConverter() {
-        return ALGORITHM_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getAlgorithmNodePath() {
+        return ALGORITHM_NODE_PATH;
     }
     
     /**
-     * Get key generator node converter.
+     * Get key generator node path.
      *
-     * @return key generator node converter
+     * @return key generator node path
      */
-    public static RuleItemNodeConverter getKeyGeneratorNodeConverter() {
-        return KEY_GENERATOR_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getKeyGeneratorNodePath() {
+        return KEY_GENERATOR_NODE_PATH;
     }
     
     /**
-     * Get auditor node converter.
+     * Get auditor node path.
      *
-     * @return auditor node converter
+     * @return auditor node path
      */
-    public static RuleItemNodeConverter getAuditorNodeConverter() {
-        return AUDITOR_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getAuditorNodePath() {
+        return AUDITOR_NODE_PATH;
     }
     
     /**
-     * Get default database strategy node converter.
+     * Get default database strategy node path.
      *
-     * @return default database strategy node converter
+     * @return default database strategy node path
      */
-    public static RuleDefaultItemNodeConverter getDefaultDatabaseStrategyNodeConverter() {
-        return DEFAULT_DATABASE_STRATEGY_NODE_CONVERTER;
+    public static UniqueRuleItemNodePath getDefaultDatabaseStrategyNodePath() {
+        return DEFAULT_DATABASE_STRATEGY_NODE_PATH;
     }
     
     /**
-     * Get default table strategy node converter.
+     * Get default table strategy node path.
      *
-     * @return default table strategy node converter
+     * @return default table strategy node path
      */
-    public static RuleDefaultItemNodeConverter getDefaultTableStrategyNodeConverter() {
-        return DEFAULT_TABLE_STRATEGY_NODE_CONVERTER;
+    public static UniqueRuleItemNodePath getDefaultTableStrategyNodePath() {
+        return DEFAULT_TABLE_STRATEGY_NODE_PATH;
     }
     
     /**
-     * Get default key generate strategy node converter.
+     * Get default key generate strategy node path.
      *
-     * @return default key generate strategy node converter
+     * @return default key generate strategy node path
      */
-    public static RuleDefaultItemNodeConverter getDefaultKeyGenerateStrategyNodeConverter() {
-        return DEFAULT_KEY_GENERATE_STRATEGY_NODE_CONVERTER;
+    public static UniqueRuleItemNodePath getDefaultKeyGenerateStrategyNodePath() {
+        return DEFAULT_KEY_GENERATE_STRATEGY_NODE_PATH;
     }
     
     /**
-     * Get default audit strategy node converter.
+     * Get default audit strategy node path.
      *
-     * @return default table strategy node converter
+     * @return default table strategy node path
      */
-    public static RuleDefaultItemNodeConverter getDefaultAuditStrategyNodeConverter() {
-        return DEFAULT_AUDIT_STRATEGY_NODE_CONVERTER;
+    public static UniqueRuleItemNodePath getDefaultAuditStrategyNodePath() {
+        return DEFAULT_AUDIT_STRATEGY_NODE_PATH;
     }
     
     /**
-     * Get default sharding column node converter.
+     * Get default sharding column node path.
      *
-     * @return default sharding column node converter
+     * @return default sharding column node path
      */
-    public static RuleDefaultItemNodeConverter getDefaultShardingColumnNodeConverter() {
-        return DEFAULT_SHARDING_COLUMN_NODE_CONVERTER;
+    public static UniqueRuleItemNodePath getDefaultShardingColumnNodePath() {
+        return DEFAULT_SHARDING_COLUMN_NODE_PATH;
     }
     
     /**
-     * Get sharding cache node converter.
+     * Get sharding cache node path.
      *
-     * @return sharding cache node converter
+     * @return sharding cache node path
      */
-    public static RuleDefaultItemNodeConverter getShardingCacheNodeConverter() {
-        return SHARDING_CACHE_NODE_CONVERTER;
+    public static UniqueRuleItemNodePath getShardingCacheNodePath() {
+        return SHARDING_CACHE_NODE_PATH;
     }
 }

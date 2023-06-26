@@ -38,14 +38,14 @@ public final class MaskRuleConfigurationEventBuilder implements RuleConfiguratio
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!MaskNodeConverter.getRuleRootNodeConverter().isRulePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!MaskNodeConverter.getRuleRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> tableName = MaskNodeConverter.getTableNodeConvertor().getNameByActiveVersionPath(event.getKey());
+        Optional<String> tableName = MaskNodeConverter.getTableNodePath().getNameByActiveVersion(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createMaskConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> algorithmName = MaskNodeConverter.getAlgorithmNodeConvertor().getNameByActiveVersionPath(event.getKey());
+        Optional<String> algorithmName = MaskNodeConverter.getAlgorithmNodePath().getNameByActiveVersion(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createMaskAlgorithmEvent(databaseName, algorithmName.get(), event);
         }

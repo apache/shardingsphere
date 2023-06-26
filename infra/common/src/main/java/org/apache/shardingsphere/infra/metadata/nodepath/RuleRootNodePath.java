@@ -15,36 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.converter;
+package org.apache.shardingsphere.infra.metadata.nodepath;
 
 import lombok.Getter;
 
 import java.util.regex.Pattern;
 
 /**
- * Rule root node converter.
+ * Rule root node path.
  */
-public final class RuleRootNodeConverter {
+public final class RuleRootNodePath {
     
     private static final String RULE_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
     
     @Getter
-    private final String ruleNodePrefix;
+    private final String nodePrefix;
     
-    private final Pattern rulePathPattern;
+    private final Pattern pathPattern;
     
-    public RuleRootNodeConverter(final String ruleType) {
-        ruleNodePrefix = RULE_NODE_PREFIX + ruleType;
-        rulePathPattern = Pattern.compile(ruleNodePrefix + "/.*", Pattern.CASE_INSENSITIVE);
+    public RuleRootNodePath(final String ruleType) {
+        nodePrefix = RULE_NODE_PREFIX + ruleType;
+        pathPattern = Pattern.compile(nodePrefix + "/.*", Pattern.CASE_INSENSITIVE);
     }
     
     /**
-     * Is rule path.
+     * Judge whether is validated rule path.
      *
-     * @param rulePath rule path to be judged
-     * @return true or false
+     * @param path path to be judged
+     * @return is validated rule path or not
      */
-    public boolean isRulePath(final String rulePath) {
-        return rulePathPattern.matcher(rulePath).find();
+    public boolean isValidatedPath(final String path) {
+        return pathPattern.matcher(path).find();
     }
 }
