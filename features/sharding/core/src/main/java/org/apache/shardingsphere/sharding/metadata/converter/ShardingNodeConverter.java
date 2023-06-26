@@ -45,18 +45,18 @@ public final class ShardingNodeConverter {
     
     private static final RuleItemNodeConverter AUDITOR_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "auditors");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_DATABASE_STRATEGY_NODE_CONVERTER
-            = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_database_strategy");
+    private static final RuleDefaultItemNodeConverter DEFAULT_DATABASE_STRATEGY_NODE_CONVERTER =
+            new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_database_strategy");
     
     private static final RuleDefaultItemNodeConverter DEFAULT_TABLE_STRATEGY_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_table_strategy");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_KEY_GENERATE_STRATEGY_NODE_CONVERTER
-            = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_key_generate_strategy");
+    private static final RuleDefaultItemNodeConverter DEFAULT_KEY_GENERATE_STRATEGY_NODE_CONVERTER =
+            new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_key_generate_strategy");
     
     private static final RuleDefaultItemNodeConverter DEFAULT_AUDIT_STRATEGY_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_audit_strategy");
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_SHARDING_COLUMN_NODE_CONVERTER
-            = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_sharding_column");
+    private static final RuleDefaultItemNodeConverter DEFAULT_SHARDING_COLUMN_NODE_CONVERTER =
+            new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_sharding_column");
     
     private static final RuleDefaultItemNodeConverter SHARDING_CACHE_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, "sharding_cache");
     
