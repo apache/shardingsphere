@@ -58,7 +58,7 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowAlgorithmEvent(databaseName, algorithmName.get(), event);
         }
-        if (ShadowNodeConverter.isDefaultAlgorithmNameWithActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+        if (ShadowNodeConverter.getDefaultAlgorithmNameNodeConverter().isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createDefaultShadowAlgorithmNameEvent(databaseName, event);
         }
         return Optional.empty();

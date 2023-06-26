@@ -49,7 +49,7 @@ public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleC
     @Override
     public SingleRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            if (SingleNodeConverter.isSinglePath(each.getKey())) {
+            if (SingleNodeConverter.getTableNodeConverter().isPath(each.getKey())) {
                 return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class));
             }
         }

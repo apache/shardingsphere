@@ -19,9 +19,8 @@ package org.apache.shardingsphere.single.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 
 /**
  * Single node converter.
@@ -29,13 +28,20 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SingleNodeConverter {
     
-    private static final String ROOT_NODE = "single";
-    
     private static final String TABLES_NODE = "tables";
     
-    private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
+    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("single");
     
-    private static final String RULE_ACTIVE_VERSION = "/active_version$";
+    private static final RuleDefaultItemNodeConverter TABLE_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    
+    /**
+     * Get table node converter.
+     *
+     * @return table node converter
+     */
+    public static RuleDefaultItemNodeConverter getTableNodeConverter() {
+        return TABLE_NODE_CONVERTER;
+    }
     
     /**
      * Get tables path.
@@ -44,29 +50,5 @@ public final class SingleNodeConverter {
      */
     public static String getTablesPath() {
         return TABLES_NODE;
-    }
-    
-    /**
-     * Is single path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isSinglePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is tables active version path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isTablesActiveVersionPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
     }
 }

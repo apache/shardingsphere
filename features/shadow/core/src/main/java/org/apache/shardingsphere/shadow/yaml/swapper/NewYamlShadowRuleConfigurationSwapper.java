@@ -54,7 +54,7 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
             result.add(new YamlDataNode(ShadowNodeConverter.getAlgorithmNodeConverter().getNamePath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         if (!Strings.isNullOrEmpty(data.getDefaultShadowAlgorithmName())) {
-            result.add(new YamlDataNode(ShadowNodeConverter.getDefaultShadowAlgorithmPath(), data.getDefaultShadowAlgorithmName()));
+            result.add(new YamlDataNode(ShadowNodeConverter.getDefaultAlgorithmNameNodeConverter().getPath(), data.getDefaultShadowAlgorithmName()));
         }
         for (ShadowDataSourceConfiguration each : data.getDataSources()) {
             result.add(new YamlDataNode(ShadowNodeConverter.getDataSourceNodeConvertor().getNamePath(each.getName()), YamlEngine.marshal(swapToDataSourceYamlConfiguration(each))));
@@ -86,7 +86,7 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
                 ShadowNodeConverter.getAlgorithmNodeConverter().getName(each.getKey())
                         .ifPresent(algorithmName -> result.getShadowAlgorithms().put(algorithmName,
                                 algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
-            } else if (ShadowNodeConverter.isDefaultAlgorithmNamePath(each.getKey())) {
+            } else if (ShadowNodeConverter.getDefaultAlgorithmNameNodeConverter().isPath(each.getKey())) {
                 result.setDefaultShadowAlgorithmName(each.getValue());
             }
         }
