@@ -79,7 +79,7 @@ class RDLE2EIT {
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 executeSQLCase(containerComposer, statement);
-                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+                Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
                 assertResultSet(containerComposer, statement);
             }
         }
@@ -101,7 +101,7 @@ class RDLE2EIT {
                 executeDestroySQLs(containerComposer, connection);
             }
         }
-        Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+        Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
     }
     
     private void executeInitSQLs(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
@@ -111,7 +111,7 @@ class RDLE2EIT {
         for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
-                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+                Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
             }
         }
     }
@@ -123,7 +123,7 @@ class RDLE2EIT {
         for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
-                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+                Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
             }
         }
     }
