@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.AbstractPipelineSQLBuilder;
+
 import java.util.Optional;
 
 public final class H2PipelineSQLBuilder extends AbstractPipelineSQLBuilder {

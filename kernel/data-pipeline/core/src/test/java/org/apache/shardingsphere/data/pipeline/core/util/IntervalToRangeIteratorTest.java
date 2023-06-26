@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.util;
 
 import org.apache.commons.lang3.Range;
+import org.apache.shardingsphere.data.pipeline.common.util.IntervalToRangeIterator;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;

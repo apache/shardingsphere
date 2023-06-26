@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.EmptyAckCallback;
+import org.apache.shardingsphere.data.pipeline.common.ingest.channel.EmptyAckCallback;
+import org.apache.shardingsphere.data.pipeline.common.ingest.channel.memory.SimpleMemoryPipelineChannel;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressListener;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

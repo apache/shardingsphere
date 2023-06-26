@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
+import org.apache.shardingsphere.data.pipeline.common.ratelimit.QPSJobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.ratelimit.JobRateLimitAlgorithmInitializationException;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;

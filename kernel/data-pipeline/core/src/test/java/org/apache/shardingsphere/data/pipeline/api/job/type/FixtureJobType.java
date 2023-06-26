@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job.type;
 
+import org.apache.shardingsphere.data.pipeline.common.job.type.AbstractJobType;
+
 /**
  * Fixture job type.
  */

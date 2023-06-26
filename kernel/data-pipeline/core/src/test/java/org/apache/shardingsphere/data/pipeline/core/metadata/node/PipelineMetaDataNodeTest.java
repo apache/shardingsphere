@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
 import org.apache.shardingsphere.data.pipeline.api.job.type.FixtureJobType;
+import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 

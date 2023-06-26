@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
-import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
-import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeEntry;
+import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLineConvertUtils;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.jupiter.api.Test;
 

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataMatchCalculatedResult;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

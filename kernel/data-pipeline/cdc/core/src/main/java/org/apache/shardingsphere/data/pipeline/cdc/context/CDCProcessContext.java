@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.context;
 
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.context.AbstractInventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.context.AbstractInventoryIncrementalProcessContext;
 
 /**
  * CDC process context.

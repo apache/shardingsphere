@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.yaml.process;
 
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineReadConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineReadConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.process.yaml.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.process.yaml.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.process.yaml.YamlPipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.process.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;

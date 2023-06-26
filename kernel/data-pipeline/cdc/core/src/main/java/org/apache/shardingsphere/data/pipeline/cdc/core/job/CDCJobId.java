@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.job;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 
 import java.util.List;

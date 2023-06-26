@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.util;
 
+import org.apache.shardingsphere.data.pipeline.common.util.InstanceTypeUtils;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.junit.jupiter.api.Test;
 

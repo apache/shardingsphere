@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.task;
 
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.util.CloseUtils;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
-import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
+import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 
 import java.util.Collection;
 

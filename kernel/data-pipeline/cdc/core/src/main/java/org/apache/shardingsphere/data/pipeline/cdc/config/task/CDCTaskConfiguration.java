@@ -19,9 +19,9 @@ package org.apache.shardingsphere.data.pipeline.cdc.config.task;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.PipelineTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.PipelineTaskConfiguration;
 
 /**
  * CDC task configuration.

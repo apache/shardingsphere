@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteCallback;
 
 /**
  * Task execute callback.

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import org.apache.shardingsphere.data.pipeline.common.util.DatabaseTypeUtils;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.junit.jupiter.api.Test;
 
