@@ -53,6 +53,9 @@ class SystemSchemaBuilderRuleTest {
         SystemSchemaBuilderRule actualOgInformationSchema = SystemSchemaBuilderRule.valueOf(new OpenGaussDatabaseType().getType(), "information_schema");
         assertThat(actualOgInformationSchema, is(SystemSchemaBuilderRule.OPEN_GAUSS_INFORMATION_SCHEMA));
         assertThat(actualOgInformationSchema.getTables().size(), is(66));
+        SystemSchemaBuilderRule actualOgPgCatalog = SystemSchemaBuilderRule.valueOf(new OpenGaussDatabaseType().getType(), "pg_catalog");
+        assertThat(actualOgPgCatalog, is(SystemSchemaBuilderRule.OPEN_GAUSS_PG_CATALOG));
+        assertThat(actualOgPgCatalog.getTables().size(), is(240));
     }
     
     @Test
