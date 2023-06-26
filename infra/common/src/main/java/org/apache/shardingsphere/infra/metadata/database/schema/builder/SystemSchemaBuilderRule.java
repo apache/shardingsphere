@@ -176,7 +176,7 @@ public enum SystemSchemaBuilderRule {
             "pg_ts_dict",
             "pg_ts_parser", "pg_ts_template", "pg_type", "pg_user", "pg_user_mapping", "pg_user_mappings", "pg_user_status", "pg_variable_info", "pg_views",
             "pg_wlm_statistics", "pg_workload_group", "pgxc_class", "pgxc_group", "pgxc_node", "pgxc_prepared_xacts", "pgxc_slice", "pgxc_thread_wait_status", "plan_table",
-            "plan_table_data", "statement_history", "streaming_cont_query", "streaming_reaper_status", "streaming_stream", "sys_dummy"))),
+            "plan_table_data", "statement_history", "streaming_cont_query", "streaming_stream", "streaming_reaper_status", "sys_dummy"))),
     
     OPEN_GAUSS_BLOCKCHAIN("openGauss", "blockchain", Collections.emptySet()),
     
