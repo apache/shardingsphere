@@ -19,8 +19,10 @@ package org.apache.shardingsphere.mask.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.nodepath.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Mask node converter.
@@ -28,36 +30,18 @@ import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MaskNodeConverter {
     
-    private static final RuleRootNodePath ROOT_NODE_PATH = new RuleRootNodePath("mask");
+    public static final String TABLES = "tables";
     
-    private static final NamedRuleItemNodePath TABLE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "tables");
+    public static final String ALGORITHMS = "algorithms";
     
-    private static final NamedRuleItemNodePath ALGORITHM_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "algorithms");
-    
-    /**
-     * Get rule root node path.
-     *
-     * @return rule root node path
-     */
-    public static RuleRootNodePath getRuleRootNodePath() {
-        return ROOT_NODE_PATH;
-    }
+    private static final RuleNodePath INSTANCE = new RuleNodePath("mask", Arrays.asList(TABLES, ALGORITHMS), Collections.emptyList());
     
     /**
-     * Get table node path.
+     * Get instance of rule node path.
      *
-     * @return table node path
+     * @return got instance
      */
-    public static NamedRuleItemNodePath getTableNodePath() {
-        return TABLE_NODE_PATH;
-    }
-    
-    /**
-     * Get algorithm node path.
-     *
-     * @return algorithm node path
-     */
-    public static NamedRuleItemNodePath getAlgorithmNodePath() {
-        return ALGORITHM_NODE_PATH;
+    public static RuleNodePath getInstance() {
+        return INSTANCE;
     }
 }

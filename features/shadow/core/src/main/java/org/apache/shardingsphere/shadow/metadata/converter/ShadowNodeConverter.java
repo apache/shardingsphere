@@ -19,9 +19,10 @@ package org.apache.shardingsphere.shadow.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.nodepath.item.UniqueRuleItemNodePath;
-import org.apache.shardingsphere.infra.metadata.nodepath.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Shadow node converter.
@@ -29,58 +30,22 @@ import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowNodeConverter {
     
-    private static final RuleRootNodePath ROOT_NODE_PATH = new RuleRootNodePath("shadow");
+    public static final String DATA_SOURCES = "data_sources";
     
-    private static final NamedRuleItemNodePath DATA_SOURCE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "data_sources");
+    public static final String TABLES = "tables";
     
-    private static final NamedRuleItemNodePath TABLE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "tables");
+    public static final String ALGORITHMS = "algorithms";
     
-    private static final NamedRuleItemNodePath ALGORITHM_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "algorithms");
+    public static final String DEFAULT_ALGORITHM = "default_algorithm_name";
     
-    private static final UniqueRuleItemNodePath DEFAULT_ALGORITHM_NAME_NODE_PATH = new UniqueRuleItemNodePath(ROOT_NODE_PATH, "default_algorithm_name");
-    
-    /**
-     * Get rule root node path.
-     *
-     * @return rule root node path
-     */
-    public static RuleRootNodePath getRuleRootNodePath() {
-        return ROOT_NODE_PATH;
-    }
+    private static final RuleNodePath INSTANCE = new RuleNodePath("shadow", Arrays.asList(DATA_SOURCES, TABLES, DEFAULT_ALGORITHM), Collections.singleton(DEFAULT_ALGORITHM));
     
     /**
-     * Get data source node path.
+     * Get instance of rule node path.
      *
-     * @return data source node path
+     * @return got instance
      */
-    public static NamedRuleItemNodePath getDataSourceNodePath() {
-        return DATA_SOURCE_NODE_PATH;
-    }
-    
-    /**
-     * Get table node path.
-     *
-     * @return table node path
-     */
-    public static NamedRuleItemNodePath getTableNodePath() {
-        return TABLE_NODE_PATH;
-    }
-    
-    /**
-     * Get algorithm node path.
-     *
-     * @return algorithm node path
-     */
-    public static NamedRuleItemNodePath getAlgorithmNodePath() {
-        return ALGORITHM_NODE_PATH;
-    }
-    
-    /**
-     * Get default algorithm name node path.
-     *
-     * @return default algorithm name node path
-     */
-    public static UniqueRuleItemNodePath getDefaultAlgorithmNameNodePath() {
-        return DEFAULT_ALGORITHM_NAME_NODE_PATH;
+    public static RuleNodePath getInstance() {
+        return INSTANCE;
     }
 }

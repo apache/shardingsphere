@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.event;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -36,16 +37,18 @@ import java.util.Optional;
  */
 public final class ReadwriteSplittingRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
+    private final RuleNodePath readwriteSplittingRuleNodePath = ReadwriteSplittingNodeConverter.getInstance();
+    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!ReadwriteSplittingNodeConverter.getRuleRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!readwriteSplittingRuleNodePath.getRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> groupName = ReadwriteSplittingNodeConverter.getDataSourceNodePath().getNameByActiveVersion(event.getKey());
+        Optional<String> groupName = readwriteSplittingRuleNodePath.getNamedRuleItemNodePath(ReadwriteSplittingNodeConverter.DATA_SOURCES).getNameByActiveVersion(event.getKey());
         if (groupName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createReadwriteSplittingConfigEvent(databaseName, groupName.get(), event);
         }
-        Optional<String> loadBalancerName = ReadwriteSplittingNodeConverter.getLoadBalancerNodePath().getNameByActiveVersion(event.getKey());
+        Optional<String> loadBalancerName = readwriteSplittingRuleNodePath.getNamedRuleItemNodePath(ReadwriteSplittingNodeConverter.LOAD_BALANCERS).getNameByActiveVersion(event.getKey());
         if (loadBalancerName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createLoadBalanceEvent(databaseName, loadBalancerName.get(), event);
         }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.nodepath.item;
 
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.root.RuleRootNodePath;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

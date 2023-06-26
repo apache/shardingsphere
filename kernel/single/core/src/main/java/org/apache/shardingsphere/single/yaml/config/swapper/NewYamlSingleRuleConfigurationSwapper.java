@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.yaml.config.swapper;
 
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
@@ -34,9 +35,11 @@ import java.util.Collections;
  */
 public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<SingleRuleConfiguration> {
     
+    private final RuleNodePath singleRuleNodePath = SingleNodeConverter.getInstance();
+    
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final SingleRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(SingleNodeConverter.getTablesPath(), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(SingleNodeConverter.TABLES, YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlSingleRuleConfiguration swapToYamlConfiguration(final SingleRuleConfiguration data) {
@@ -49,7 +52,7 @@ public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleC
     @Override
     public SingleRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            if (SingleNodeConverter.getTableNodePath().isValidatedPath(each.getKey())) {
+            if (singleRuleNodePath.getUniqueRuleItemNodePaths(SingleNodeConverter.TABLES).isValidatedPath(each.getKey())) {
                 return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class));
             }
         }
