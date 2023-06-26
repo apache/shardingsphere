@@ -39,6 +39,9 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
     @Override
     public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
         for (MetaDataVersion each : metaDataVersions) {
+            if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
+                continue;
+            }
             repository.persist(each.getKey() + "/" + ACTIVE_VERSION, each.getNextActiveVersion());
             repository.delete(String.join("/", each.getKey(), VERSIONS, each.getCurrentActiveVersion()));
         }
