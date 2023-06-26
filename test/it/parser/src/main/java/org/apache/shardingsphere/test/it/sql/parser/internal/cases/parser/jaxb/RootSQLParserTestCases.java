@@ -145,6 +145,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterSynonymStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterTablespaceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterTextSearchStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterTriggerStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterTypeStatementTestCase;
@@ -462,6 +463,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "alter-table")
     private final List<AlterTableStatementTestCase> alterTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-tablespace")
+    private final List<AlterTablespaceStatementTestCase> alterTablespaceTestCases = new LinkedList<>();
     
     @XmlElement(name = "rename-table")
     private final List<RenameTableStatementTestCase> renameTableTestCases = new LinkedList<>();

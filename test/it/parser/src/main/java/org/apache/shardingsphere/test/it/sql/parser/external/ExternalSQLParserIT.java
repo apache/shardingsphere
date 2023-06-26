@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.it.sql.parser.external;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
@@ -51,17 +50,17 @@ public abstract class ExternalSQLParserIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertParseSQL(final String sqlCaseId, final String databaseType, final String sql, final String reportType) throws IOException {
-        boolean isSuccess = true;
+        boolean isSuccess = false;
         try (
                 SQLParseResultReporter resultReporter = TypedSPILoader.getService(SQLParseResultReporterCreator.class, reportType)
                         .create(databaseType, SQLParserExternalITEnvironment.getInstance().getResultPath())) {
             try {
                 ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
                 new SQLStatementVisitorEngine(databaseType, true).visit(parseASTNode);
-            } catch (final ShardingSphereExternalException | ClassCastException | NullPointerException | IllegalArgumentException | IndexOutOfBoundsException ignore) {
-                isSuccess = false;
+                isSuccess = true;
+            } finally {
+                resultReporter.printResult(sqlCaseId, databaseType, isSuccess, sql);
             }
-            resultReporter.printResult(sqlCaseId, databaseType, isSuccess, sql);
         }
     }
     

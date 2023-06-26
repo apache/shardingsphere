@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.mask.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.infra.rule.RuleChangedSubscriber;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.event.algorithm.AddMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.rule.MaskRule;
@@ -36,29 +38,12 @@ import java.util.Map;
  * Mask algorithm subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
-public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribeCoordinator {
+@Setter
+public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
     
     private Map<String, ShardingSphereDatabase> databases;
     
     private InstanceContext instanceContext;
-    
-    @Override
-    public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        this.databases = databases;
-        this.instanceContext = instanceContext;
-        instanceContext.getEventBusContext().register(this);
-    }
-    
-    /**
-     * Renew with add algorithm.
-     *
-     * @param event add algorithm event
-     */
-    @Subscribe
-    public synchronized void renew(final AddMaskAlgorithmEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getAlgorithmName(), event.getConfig());
-    }
     
     /**
      * Renew with alter algorithm.
@@ -66,14 +51,11 @@ public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribe
      * @param event alter algorithm event
      */
     @Subscribe
-    public synchronized void renew(final AlterMaskAlgorithmEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getAlgorithmName(), event.getConfig());
-    }
-    
-    private void renew(final String databaseName, final String algorithmName, final AlgorithmConfiguration algorithmConfig) {
-        ShardingSphereDatabase database = databases.get(databaseName);
+    public synchronized void renew(final AlterMaskAlgorithmEvent event) {
+        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
-        config.getMaskAlgorithms().put(algorithmName, algorithmConfig);
+        config.getMaskAlgorithms().put(event.getAlgorithmName(), swapToAlgorithmConfig(
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
     }
     
     /**
@@ -87,5 +69,9 @@ public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribe
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
         config.getMaskAlgorithms().remove(event.getAlgorithmName());
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
+        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAlgorithmConfiguration.class));
     }
 }

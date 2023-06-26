@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.infra.rule.RuleChangedSubscriber;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -94,8 +94,11 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
     }
     
     private void registerRuleConfigurationSubscribers(final MetaDataContexts metaDataContexts, final InstanceContext instanceContext) {
-        ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationSubscribeCoordinator.class)
-                .forEach(each -> each.registerRuleConfigurationSubscriber(metaDataContexts.getMetaData().getDatabases(), instanceContext));
+        for (RuleChangedSubscriber each : ShardingSphereServiceLoader.getServiceInstances(RuleChangedSubscriber.class)) {
+            each.setDatabases(metaDataContexts.getMetaData().getDatabases());
+            each.setInstanceContext(instanceContext);
+            instanceContext.getEventBusContext().register(each);
+        }
     }
     
     @Override

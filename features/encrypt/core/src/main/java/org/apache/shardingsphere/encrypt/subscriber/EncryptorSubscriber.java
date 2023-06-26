@@ -18,16 +18,18 @@
 package org.apache.shardingsphere.encrypt.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.event.encryptor.AddEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.encryptor.AlterEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.encryptor.DeleteEncryptorEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.infra.rule.RuleChangedSubscriber;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
 import java.util.Map;
@@ -36,29 +38,12 @@ import java.util.Map;
  * Encrypt encryptor subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
-public final class EncryptorSubscriber implements RuleConfigurationSubscribeCoordinator {
+@Setter
+public final class EncryptorSubscriber implements RuleChangedSubscriber {
     
     private Map<String, ShardingSphereDatabase> databases;
     
     private InstanceContext instanceContext;
-    
-    @Override
-    public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        this.databases = databases;
-        this.instanceContext = instanceContext;
-        instanceContext.getEventBusContext().register(this);
-    }
-    
-    /**
-     * Renew with add encryptor.
-     *
-     * @param event add encryptor event
-     */
-    @Subscribe
-    public synchronized void renew(final AddEncryptorEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getEncryptorName(), event.getConfig());
-    }
     
     /**
      * Renew with alter encryptor.
@@ -66,14 +51,14 @@ public final class EncryptorSubscriber implements RuleConfigurationSubscribeCoor
      * @param event alter encryptor event
      */
     @Subscribe
-    public synchronized void renew(final AlterEncryptorEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getEncryptorName(), event.getConfig());
-    }
-    
-    private void renew(final String databaseName, final String encryptorName, final AlgorithmConfiguration encryptorConfig) {
-        ShardingSphereDatabase database = databases.get(databaseName);
+    public synchronized void renew(final AlterEncryptorEvent event) {
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
-        config.getEncryptors().put(encryptorName, encryptorConfig);
+        config.getEncryptors().put(event.getEncryptorName(), swapToAlgorithmConfig(
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
     }
     
     /**
@@ -83,9 +68,16 @@ public final class EncryptorSubscriber implements RuleConfigurationSubscribeCoor
      */
     @Subscribe
     public synchronized void renew(final DeleteEncryptorEvent event) {
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getEncryptors().remove(event.getEncryptorName());
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
+        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAlgorithmConfiguration.class));
     }
 }

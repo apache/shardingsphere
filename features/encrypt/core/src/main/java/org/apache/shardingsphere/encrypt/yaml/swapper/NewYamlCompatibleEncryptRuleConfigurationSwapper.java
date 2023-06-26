@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.yaml.swapper;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
-import org.apache.shardingsphere.encrypt.metadata.converter.EncryptNodeConverter;
+import org.apache.shardingsphere.encrypt.metadata.converter.CompatibleEncryptNodeConverter;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlCompatibleEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlCompatibleEncryptTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -53,11 +53,12 @@ public final class NewYamlCompatibleEncryptRuleConfigurationSwapper implements N
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final CompatibleEncryptRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
-        for (EncryptTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(EncryptNodeConverter.getTableNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
-        }
         for (Entry<String, AlgorithmConfiguration> entry : data.getEncryptors().entrySet()) {
-            result.add(new YamlDataNode(EncryptNodeConverter.getEncryptorPath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
+            result.add(new YamlDataNode(CompatibleEncryptNodeConverter.getEncryptorNodeConvertor().getNamePath(entry.getKey()),
+                    YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
+        }
+        for (EncryptTableRuleConfiguration each : data.getTables()) {
+            result.add(new YamlDataNode(CompatibleEncryptNodeConverter.getTableNodeConvertor().getNamePath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
         }
         return result;
     }
@@ -67,11 +68,11 @@ public final class NewYamlCompatibleEncryptRuleConfigurationSwapper implements N
         Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> encryptors = new HashMap<>();
         for (YamlDataNode each : dataNodes) {
-            if (EncryptNodeConverter.isTablePath(each.getKey())) {
-                EncryptNodeConverter.getTableName(each.getKey())
+            if (CompatibleEncryptNodeConverter.getTableNodeConvertor().isPath(each.getKey())) {
+                CompatibleEncryptNodeConverter.getTableNodeConvertor().getName(each.getKey())
                         .ifPresent(tableName -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlCompatibleEncryptTableRuleConfiguration.class))));
-            } else if (EncryptNodeConverter.isEncryptorPath(each.getKey())) {
-                EncryptNodeConverter.getEncryptorName(each.getKey())
+            } else if (CompatibleEncryptNodeConverter.getEncryptorNodeConvertor().isPath(each.getKey())) {
+                CompatibleEncryptNodeConverter.getEncryptorNodeConvertor().getName(each.getKey())
                         .ifPresent(encryptorName -> encryptors.put(encryptorName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
             }
         }

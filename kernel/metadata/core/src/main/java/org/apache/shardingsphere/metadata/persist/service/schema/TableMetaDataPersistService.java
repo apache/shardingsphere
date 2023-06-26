@@ -20,6 +20,7 @@ package org.apache.shardingsphere.metadata.persist.service.schema;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
@@ -43,6 +44,12 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
     public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
         tables.forEach((key, value) -> repository.persist(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, key.toLowerCase()),
                 YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(value))));
+    }
+    
+    // TODO Remove this when metadata structure adjustment completed. #25485
+    @Override
+    public Collection<MetaDataVersion> persistSchemaMetaData(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> schema) {
+        return Collections.emptyList();
     }
     
     @Override

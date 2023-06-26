@@ -137,6 +137,13 @@ public final class SingleTableInventoryDataConsistencyChecker {
             }
             progressContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
         }
+        if (sourceCalculatedResults.hasNext()) {
+            // TODO Refactor DataConsistencyCalculatedResult to represent inaccurate number
+            return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(sourceRecordsCount + 1, targetRecordsCount), new DataConsistencyContentCheckResult(false));
+        }
+        if (targetCalculatedResults.hasNext()) {
+            return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(sourceRecordsCount, targetRecordsCount + 1), new DataConsistencyContentCheckResult(false));
+        }
         return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(sourceRecordsCount, targetRecordsCount), new DataConsistencyContentCheckResult(contentMatched));
     }
     

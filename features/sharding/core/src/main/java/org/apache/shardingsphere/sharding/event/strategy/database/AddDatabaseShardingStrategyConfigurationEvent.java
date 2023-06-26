@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.event.strategy.database;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
 /**
  * Add default database sharding strategy configuration event.
@@ -31,5 +30,7 @@ public final class AddDatabaseShardingStrategyConfigurationEvent implements Gove
     
     private final String databaseName;
     
-    private final ShardingStrategyConfiguration config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

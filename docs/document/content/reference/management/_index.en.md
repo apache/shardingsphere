@@ -80,7 +80,7 @@ sqlParser:
 
 ### /props
 
-These are the properties configuration. Please refer to the [Configuration Manual](/en/user-manual/shardingsphere-jdbc/props/) for more details.
+These are the properties configuration. Please refer to the [Configuration Manual](/en/user-manual/common-config/props/) for more details.
 
 ```yaml
 kernel-executor-size: 20

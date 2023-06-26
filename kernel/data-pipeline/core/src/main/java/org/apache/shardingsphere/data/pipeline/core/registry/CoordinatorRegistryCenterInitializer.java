@@ -47,8 +47,8 @@ public final class CoordinatorRegistryCenterInitializer {
         return result;
     }
     
-    // TODO Merge registry center code in ElasticJob and ShardingSphere mode; Use spi to load impl;
     private ZookeeperConfiguration getZookeeperConfig(final ClusterPersistRepositoryConfiguration repositoryConfig, final String namespaceRelativePath) {
+        // TODO Merge registry center code in ElasticJob and ShardingSphere mode; Use SPI to load impl
         Properties props = repositoryConfig.getProps();
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
         String namespace = repositoryConfig.getNamespace() + (null != namespaceRelativePath ? namespaceRelativePath : "");

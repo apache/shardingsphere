@@ -43,7 +43,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataR
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
-import org.apache.shardingsphere.data.pipeline.core.exception.metadata.NoAnyRuleExistsException;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -51,6 +50,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.ArrayList;
@@ -122,7 +122,6 @@ public final class CDCBackendHandler {
     private Map<String, List<DataNode>> buildDataNodesMap(final ShardingSphereDatabase database, final Collection<String> tableNames) {
         Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         Optional<SingleRule> singleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
-        ShardingSpherePreconditions.checkState(shardingRule.isPresent() || singleRule.isPresent(), () -> new NoAnyRuleExistsException(database.getName()));
         Map<String, List<DataNode>> result = new HashMap<>();
         // TODO support virtual data source name
         for (String each : tableNames) {
@@ -130,7 +129,12 @@ public final class CDCBackendHandler {
                 result.put(each, new ArrayList<>(singleRule.get().getAllDataNodes().get(each)));
                 continue;
             }
-            shardingRule.flatMap(value -> value.findTableRule(each)).ifPresent(rule -> result.put(each, rule.getActualDataNodes()));
+            if (shardingRule.isPresent() && shardingRule.get().findTableRule(each).isPresent()) {
+                TableRule tableRule = shardingRule.get().getTableRule(each);
+                result.put(each, tableRule.getActualDataNodes());
+                continue;
+            }
+            throw new PipelineInvalidParameterException(String.format("Not find actual data nodes of `%s`", each));
         }
         return result;
     }

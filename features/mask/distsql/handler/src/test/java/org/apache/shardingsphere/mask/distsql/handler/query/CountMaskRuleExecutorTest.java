@@ -68,7 +68,9 @@ class CountMaskRuleExecutorTest {
     
     private MaskRule mockMaskRule() {
         MaskRule result = mock(MaskRule.class);
-        when(result.getLogicTableMapper()).thenReturn(new TableNamesMapper(Collections.singletonList("mask_table")));
+        TableNamesMapper tableNamesMapper = new TableNamesMapper();
+        tableNamesMapper.put("mask_table");
+        when(result.getLogicTableMapper()).thenReturn(tableNamesMapper);
         return result;
     }
 }

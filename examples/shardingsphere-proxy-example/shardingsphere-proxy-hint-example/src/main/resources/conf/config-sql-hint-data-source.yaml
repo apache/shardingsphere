@@ -46,10 +46,11 @@ rules:
       actualDataNodes: ds_${0..1}.t_order_item
   bindingTables:
   - t_order,t_order_item
-  broadcastTables:
-  - t_address
-
   defaultDatabaseStrategy:
     none:
   defaultTableStrategy:
     none:
+
+- !BROADCAST
+  tables:
+    - t_address

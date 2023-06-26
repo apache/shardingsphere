@@ -21,7 +21,10 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamGlobalRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.NewGlobalNode;
@@ -33,6 +36,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Map;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 
 /**
@@ -53,8 +57,8 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
-        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
-        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        Map<RuleConfiguration, NewYamGlobalRuleConfigurationSwapper> yamlConfigs = new NewYamlGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
+        for (Entry<RuleConfiguration, NewYamGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
@@ -63,22 +67,45 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
         }
     }
     
-    private void persistDataNodes(final Collection<YamlDataNode> dataNodes) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public Collection<MetaDataVersion> persistConfig(final Collection<RuleConfiguration> globalRuleConfigs) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
+        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
+        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+            Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
+            if (dataNodes.isEmpty()) {
+                continue;
+            }
+            result.addAll(persistDataNodes(dataNodes));
+        }
+        return result;
+    }
+    
+    private Collection<MetaDataVersion> persistDataNodes(final Collection<YamlDataNode> dataNodes) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlDataNode each : dataNodes) {
-            if (Strings.isNullOrEmpty(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()))) {
+            List<String> versions = repository.getChildrenKeys(NewGlobalNode.getGlobalRuleVersionsNode(each.getKey()));
+            String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            String persistKey = NewGlobalNode.getGlobalRuleVersionNode(each.getKey(), nextActiveVersion);
+            repository.persist(persistKey, each.getValue());
+            if (Strings.isNullOrEmpty(getActiveVersion(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey())))) {
                 repository.persist(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), DEFAULT_VERSION);
             }
-            List<String> versions = repository.getChildrenKeys(NewGlobalNode.getGlobalRuleVersionsNode(each.getKey()));
-            repository.persist(NewGlobalNode.getGlobalRuleVersionNode(each.getKey(), versions.isEmpty()
-                    ? DEFAULT_VERSION
-                    : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), each.getValue());
+            result.add(new MetaDataVersion(persistKey, NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), nextActiveVersion));
         }
+        return result;
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> load() {
         Collection<YamlDataNode> dataNodes = getDataNodes(NewGlobalNode.getGlobalRuleRootNode());
+        return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlGlobalRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
+    }
+    
+    @Override
+    public Collection<RuleConfiguration> load(final String ruleName) {
+        Collection<YamlDataNode> dataNodes = getDataNodes(NewGlobalNode.getGlobalRuleVersionsNode(ruleName));
         return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
     }
     

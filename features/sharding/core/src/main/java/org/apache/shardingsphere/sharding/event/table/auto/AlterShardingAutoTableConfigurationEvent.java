@@ -23,16 +23,16 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
  * Alter sharding auto table configuration event.
- *
- * @param <T> sharding auto table configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterShardingAutoTableConfigurationEvent<T> implements GovernanceEvent {
+public final class AlterShardingAutoTableConfigurationEvent implements GovernanceEvent {
     
     private final String databaseName;
     
     private final String tableName;
     
-    private final T config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

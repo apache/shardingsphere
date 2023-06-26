@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Data source state manager.
@@ -46,7 +47,7 @@ public final class DataSourceStateManager {
     
     private volatile boolean forceStart;
     
-    private volatile boolean initialized;
+    private final AtomicBoolean initialized = new AtomicBoolean(false);
     
     /**
      * Get data source state manager.
@@ -67,8 +68,9 @@ public final class DataSourceStateManager {
      */
     public void initStates(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, DataSourceState> storageDataSourceStates, final boolean forceStart) {
         this.forceStart = forceStart;
-        dataSources.forEach((key, value) -> initState(databaseName, storageDataSourceStates, key, value));
-        initialized = true;
+        if (initialized.compareAndSet(false, true)) {
+            dataSources.forEach((key, value) -> initState(databaseName, storageDataSourceStates, key, value));
+        }
     }
     
     private void initState(final String databaseName, final Map<String, DataSourceState> storageDataSourceStates, final String actualDataSourceName, final DataSource dataSource) {
@@ -108,7 +110,7 @@ public final class DataSourceStateManager {
      * @return enabled data source map
      */
     public Map<String, DataSource> getEnabledDataSourceMap(final String databaseName, final Map<String, DataSource> dataSources) {
-        if (dataSources.isEmpty() || !initialized) {
+        if (dataSources.isEmpty() || !initialized.get()) {
             return dataSources;
         }
         Map<String, DataSource> result = filterDisabledDataSources(databaseName, dataSources);

@@ -22,8 +22,7 @@ columns:
     dataType: -5
     generated: false
     name: oid
-    primaryKey: true
-    unsigned: false
+    primaryKey: false
     visible: true
   rulename:
     caseSensitive: true
@@ -31,7 +30,6 @@ columns:
     generated: false
     name: rulename
     primaryKey: false
-    unsigned: false
     visible: true
   ev_class:
     caseSensitive: true
@@ -39,7 +37,6 @@ columns:
     generated: false
     name: ev_class
     primaryKey: false
-    unsigned: false
     visible: true
   ev_type:
     caseSensitive: true
@@ -47,7 +44,6 @@ columns:
     generated: false
     name: ev_type
     primaryKey: false
-    unsigned: false
     visible: true
   ev_enabled:
     caseSensitive: true
@@ -55,15 +51,13 @@ columns:
     generated: false
     name: ev_enabled
     primaryKey: false
-    unsigned: false
     visible: true
   is_instead:
     caseSensitive: true
-    dataType: -7
+    dataType: 16
     generated: false
     name: is_instead
     primaryKey: false
-    unsigned: false
     visible: true
   ev_qual:
     caseSensitive: true
@@ -71,7 +65,6 @@ columns:
     generated: false
     name: ev_qual
     primaryKey: false
-    unsigned: false
     visible: true
   ev_action:
     caseSensitive: true
@@ -79,10 +72,9 @@ columns:
     generated: false
     name: ev_action
     primaryKey: false
-    unsigned: false
     visible: true
 indexes:
-  pg_rewrite_rel_rulename_index:
-    name: pg_rewrite_rel_rulename_index
   pg_rewrite_oid_index:
     name: pg_rewrite_oid_index
+  pg_rewrite_rel_rulename_index:
+    name: pg_rewrite_rel_rulename_index

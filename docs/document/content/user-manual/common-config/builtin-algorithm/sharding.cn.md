@@ -239,8 +239,6 @@ rules:
   defaultShardingColumn: account_id
   bindingTables:
     - t_order,t_order_item
-  broadcastTables:
-    - t_address
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
@@ -268,6 +266,10 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
+
+- !BROADCAST
+  tables:
+    - t_address
 ```
 
 ## 相关参考

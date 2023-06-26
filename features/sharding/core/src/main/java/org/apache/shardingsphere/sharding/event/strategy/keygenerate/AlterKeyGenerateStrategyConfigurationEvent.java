@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.event.strategy.keygenerate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 
 /**
  * Alter default key generate strategy configuration event.
@@ -31,5 +30,7 @@ public final class AlterKeyGenerateStrategyConfigurationEvent implements Governa
     
     private final String databaseName;
     
-    private final KeyGenerateStrategyConfiguration config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }
