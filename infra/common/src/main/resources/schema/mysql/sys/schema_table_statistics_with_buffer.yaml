@@ -1,0 +1,219 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: schema_table_statistics_with_buffer
+columns:
+  table_schema:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: table_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  table_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: table_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rows_fetched:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: rows_fetched
+    primaryKey: false
+    unsigned: true
+    visible: true
+  fetch_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: fetch_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rows_inserted:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: rows_inserted
+    primaryKey: false
+    unsigned: true
+    visible: true
+  insert_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: insert_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rows_updated:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: rows_updated
+    primaryKey: false
+    unsigned: true
+    visible: true
+  update_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: update_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rows_deleted:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: rows_deleted
+    primaryKey: false
+    unsigned: true
+    visible: true
+  delete_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: delete_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  io_read_requests:
+    caseSensitive: false
+    dataType: 3
+    generated: false
+    name: io_read_requests
+    primaryKey: false
+    unsigned: false
+    visible: true
+  io_read:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: io_read
+    primaryKey: false
+    unsigned: false
+    visible: true
+  io_read_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: io_read_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  io_write_requests:
+    caseSensitive: false
+    dataType: 3
+    generated: false
+    name: io_write_requests
+    primaryKey: false
+    unsigned: false
+    visible: true
+  io_write:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: io_write
+    primaryKey: false
+    unsigned: false
+    visible: true
+  io_write_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: io_write_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  io_misc_requests:
+    caseSensitive: false
+    dataType: 3
+    generated: false
+    name: io_misc_requests
+    primaryKey: false
+    unsigned: false
+    visible: true
+  io_misc_latency:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: io_misc_latency
+    primaryKey: false
+    unsigned: false
+    visible: true
+  innodb_buffer_allocated:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: innodb_buffer_allocated
+    primaryKey: false
+    unsigned: false
+    visible: true
+  innodb_buffer_data:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: innodb_buffer_data
+    primaryKey: false
+    unsigned: false
+    visible: true
+  innodb_buffer_free:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: innodb_buffer_free
+    primaryKey: false
+    unsigned: false
+    visible: true
+  innodb_buffer_pages:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: innodb_buffer_pages
+    primaryKey: false
+    unsigned: false
+    visible: true
+  innodb_buffer_pages_hashed:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: innodb_buffer_pages_hashed
+    primaryKey: false
+    unsigned: false
+    visible: true
+  innodb_buffer_pages_old:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: innodb_buffer_pages_old
+    primaryKey: false
+    unsigned: false
+    visible: true
+  innodb_buffer_rows_cached:
+    caseSensitive: false
+    dataType: 3
+    generated: false
+    name: innodb_buffer_rows_cached
+    primaryKey: false
+    unsigned: false
+    visible: true
