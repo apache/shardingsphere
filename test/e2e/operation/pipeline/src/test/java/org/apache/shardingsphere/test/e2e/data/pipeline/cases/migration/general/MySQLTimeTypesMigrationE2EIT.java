@@ -49,7 +49,6 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
                     + "`t_year` year DEFAULT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;";
             containerComposer.sourceExecuteWithLog(sql);
             insertOneRecordWithZeroValue(containerComposer, 1);
-            loadAllSingleTables(containerComposer);
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
             startMigration(containerComposer, "time_e2e", "time_e2e");
