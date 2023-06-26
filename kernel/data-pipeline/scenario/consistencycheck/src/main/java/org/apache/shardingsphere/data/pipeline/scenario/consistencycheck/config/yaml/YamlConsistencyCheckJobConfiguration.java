@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
 
 import java.util.Properties;
 

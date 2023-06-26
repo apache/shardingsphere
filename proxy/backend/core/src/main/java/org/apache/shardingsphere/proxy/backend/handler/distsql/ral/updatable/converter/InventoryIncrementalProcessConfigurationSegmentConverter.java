@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.co
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineReadConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineWriteConfiguration;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.ReadOrWriteSegment;

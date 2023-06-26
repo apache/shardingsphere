@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
  */
 public final class RuleDefaultItemNodeConverter {
     
+    private static final String VERSIONS = "/versions/\\d+$";
+    
     private static final String ACTIVE_VERSION = "/active_version$";
     
     private final String parentNode;
@@ -38,14 +40,14 @@ public final class RuleDefaultItemNodeConverter {
     public RuleDefaultItemNodeConverter(final RuleRootNodeConverter ruleRootNodeConverter, final String itemsNode) {
         parentNode = null;
         this.itemsNode = itemsNode;
-        itemsPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + "$", Pattern.CASE_INSENSITIVE);
+        itemsPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + VERSIONS, Pattern.CASE_INSENSITIVE);
         activeVersionPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + itemsNode + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     
     public RuleDefaultItemNodeConverter(final RuleRootNodeConverter ruleRootNodeConverter, final String parentNode, final String itemsNode) {
         this.parentNode = parentNode;
         this.itemsNode = itemsNode;
-        itemsPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + parentNode + "/" + itemsNode + "$", Pattern.CASE_INSENSITIVE);
+        itemsPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + parentNode + "/" + itemsNode + VERSIONS, Pattern.CASE_INSENSITIVE);
         activeVersionPathPattern = Pattern.compile(ruleRootNodeConverter.getRuleNodePrefix() + "/" + parentNode + "/" + itemsNode + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     

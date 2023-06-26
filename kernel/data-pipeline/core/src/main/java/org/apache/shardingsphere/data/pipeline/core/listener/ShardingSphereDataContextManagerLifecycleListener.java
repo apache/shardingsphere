@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.listener;
 
-import org.apache.shardingsphere.data.pipeline.core.execute.ShardingSphereDataJobWorker;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
@@ -25,6 +24,7 @@ import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleLi
 /**
  * ShardingSphere data context manager lifecycle listener.
  */
+// TODO now Move to mode-core module, and also referenced ShardingSphereDataJobWorker & ShardingSphereDataScheduleCollector
 public final class ShardingSphereDataContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
