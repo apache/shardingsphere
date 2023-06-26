@@ -38,7 +38,7 @@ public final class ShadowNodeConverter {
     
     public static final String DEFAULT_ALGORITHM = "default_algorithm_name";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("shadow", Arrays.asList(DATA_SOURCES, TABLES, DEFAULT_ALGORITHM), Collections.singleton(DEFAULT_ALGORITHM));
+    private static final RuleNodePath INSTANCE = new RuleNodePath("shadow", Arrays.asList(DATA_SOURCES, TABLES, ALGORITHMS), Collections.singleton(DEFAULT_ALGORITHM));
     
     /**
      * Get instance of rule node path.

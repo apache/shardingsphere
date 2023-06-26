@@ -40,19 +40,19 @@ public final class RuleNodePath {
     
     public RuleNodePath(final String ruleType, final Collection<String> namedRuleItemNodePathTypes, final Collection<String> uniqueRuleItemNodePathTypes) {
         rootNodePath = new RuleRootNodePath(ruleType);
-        namedRuleItemNodePaths = getNamedRuleItemNodePathMap(ruleType, namedRuleItemNodePathTypes);
-        uniqueRuleItemNodePaths = getUniqueRuleItemNodePathTypes(ruleType, uniqueRuleItemNodePathTypes);
+        namedRuleItemNodePaths = getNamedRuleItemNodePathMap(namedRuleItemNodePathTypes);
+        uniqueRuleItemNodePaths = getUniqueRuleItemNodePathMap(uniqueRuleItemNodePathTypes);
     }
     
-    private Map<String, NamedRuleItemNodePath> getNamedRuleItemNodePathMap(final String ruleType, final Collection<String> namedRuleItemNodePathTypes) {
+    private Map<String, NamedRuleItemNodePath> getNamedRuleItemNodePathMap(final Collection<String> namedRuleItemNodePathTypes) {
         Map<String, NamedRuleItemNodePath> result = new HashMap<>(namedRuleItemNodePathTypes.size(), 1F);
         for (String each : namedRuleItemNodePathTypes) {
-            result.put(each, new NamedRuleItemNodePath(rootNodePath, ruleType));
+            result.put(each, new NamedRuleItemNodePath(rootNodePath, each));
         }
         return result;
     }
     
-    private Map<String, UniqueRuleItemNodePath> getUniqueRuleItemNodePathTypes(final String ruleType, final Collection<String> uniqueRuleItemNodePathTypes) {
+    private Map<String, UniqueRuleItemNodePath> getUniqueRuleItemNodePathMap(final Collection<String> uniqueRuleItemNodePathTypes) {
         Map<String, UniqueRuleItemNodePath> result = new HashMap<>(uniqueRuleItemNodePathTypes.size(), 1F);
         for (String each : uniqueRuleItemNodePathTypes) {
             UniqueRuleItemNodePath uniqueRuleItemNodePath;
@@ -60,7 +60,7 @@ public final class RuleNodePath {
                 String[] values = each.split("\\.");
                 uniqueRuleItemNodePath = new UniqueRuleItemNodePath(rootNodePath, values[0], values[1]);
             } else {
-                uniqueRuleItemNodePath = new UniqueRuleItemNodePath(rootNodePath, ruleType);
+                uniqueRuleItemNodePath = new UniqueRuleItemNodePath(rootNodePath, each);
             }
             result.put(each, uniqueRuleItemNodePath);
         }
