@@ -96,9 +96,15 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
-    public Map<String, DataSourceProperties> load(final String databaseName, final String version) {
-        return Collections.emptyMap();
+    public Map<String, DataSourceProperties> load(final String databaseName, final String name) {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
+        String dataSourceValue = repository.getDirectly(NewDatabaseMetaDataNode.getDataSourceNodeWithVersion(databaseName, name, getDataSourceActiveVersion(databaseName, name)));
+        if (!Strings.isNullOrEmpty(dataSourceValue)) {
+            result.put(name, new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
+        }
+        return result;
     }
     
     @Override

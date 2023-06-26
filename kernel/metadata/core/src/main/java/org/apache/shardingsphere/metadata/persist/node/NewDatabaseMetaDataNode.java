@@ -288,15 +288,15 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
-     * Get version by data source node.
+     * Is  data source active version node.
      *
      * @param path path
-     * @return data source version
+     * @return true or false
      */
-    public static Optional<String> getVersionByDataSourceNode(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/([\\w\\-]+)/versions/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+    public static boolean isDataSourceActiveVersionNode(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/([\\w\\-]+)/active_version$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+        return matcher.find();
     }
     
     /**

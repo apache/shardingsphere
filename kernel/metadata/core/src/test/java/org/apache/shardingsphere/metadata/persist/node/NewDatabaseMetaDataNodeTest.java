@@ -41,10 +41,8 @@ class NewDatabaseMetaDataNodeTest {
     }
     
     @Test
-    void assertGetVersionByDataSourceNode() {
-        Optional<String> actual = NewDatabaseMetaDataNode.getVersionByDataSourceNode("/metadata/logic_db/data_sources/foo_ds/versions/0");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("0"));
+    void assertIsDataSourceActiveVersionNode() {
+        assertTrue(NewDatabaseMetaDataNode.isDataSourceActiveVersionNode("/metadata/logic_db/data_sources/foo_ds/active_version"));
     }
     
     @Test

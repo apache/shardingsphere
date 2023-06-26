@@ -33,8 +33,6 @@ public final class RegisterStorageUnitEvent implements GovernanceEvent {
     
     private final String storageUnitName;
     
-    private final DataSourceProperties props;
-    
     private final String activeVersionKey;
     
     private final String activeVersion;

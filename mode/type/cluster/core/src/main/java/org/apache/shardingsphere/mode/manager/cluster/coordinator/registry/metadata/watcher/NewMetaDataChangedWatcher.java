@@ -140,19 +140,16 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
         if (!dataSourceName.isPresent()) {
             return Optional.empty();
         }
-        Optional<String> version = NewDatabaseMetaDataNode.getVersionByDataSourceNode(event.getKey());
-        if (!version.isPresent()) {
-            return Optional.empty();
+        if (NewDatabaseMetaDataNode.isDataSourceActiveVersionNode(event.getKey())) {
+            if (Type.ADDED == event.getType()) {
+                return Optional.of(new RegisterStorageUnitEvent(databaseName, dataSourceName.get(), event.getKey(), event.getValue()));
+            }
+            if (Type.UPDATED == event.getType()) {
+                return Optional.of(new AlterStorageUnitEvent(databaseName, dataSourceName.get(), event.getKey(), event.getValue()));
+            }
+            return Optional.of(new UnregisterStorageUnitEvent(databaseName, dataSourceName.get()));
         }
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new RegisterStorageUnitEvent(databaseName, dataSourceName.get(),
-                    new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(YamlEngine.unmarshal(event.getValue(), Map.class)), event.getKey(), version.get()));
-        }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterStorageUnitEvent(databaseName, dataSourceName.get(),
-                    new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(YamlEngine.unmarshal(event.getValue(), Map.class)), event.getKey(), version.get()));
-        }
-        return Optional.of(new UnregisterStorageUnitEvent(databaseName, dataSourceName.get(), event.getKey(), version.get()));
+        return Optional.empty();
     }
     
     private Optional<GovernanceEvent> createDatabaseRuleEvent(final String databaseName, final DataChangedEvent event) {
