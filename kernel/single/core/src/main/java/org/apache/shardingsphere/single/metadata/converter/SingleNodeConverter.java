@@ -30,17 +30,17 @@ public final class SingleNodeConverter {
     
     private static final String TABLES_NODE = "tables";
     
-    private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("single");
+    private static final RuleRootNodePath ROOT_NODE_PATH = new RuleRootNodePath("single");
     
-    private static final UniqueRuleItemNodePath TABLE_NODE_CONVERTER = new UniqueRuleItemNodePath(ROOT_NODE_CONVERTER, "tables");
+    private static final UniqueRuleItemNodePath TABLE_NODE_PATH = new UniqueRuleItemNodePath(ROOT_NODE_PATH, "tables");
     
     /**
-     * Get table node converter.
+     * Get table node path.
      *
-     * @return table node converter
+     * @return table node path
      */
-    public static UniqueRuleItemNodePath getTableNodeConverter() {
-        return TABLE_NODE_CONVERTER;
+    public static UniqueRuleItemNodePath getTableNodePath() {
+        return TABLE_NODE_PATH;
     }
     
     /**

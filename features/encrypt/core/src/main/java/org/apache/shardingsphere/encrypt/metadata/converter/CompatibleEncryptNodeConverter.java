@@ -30,36 +30,36 @@ import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CompatibleEncryptNodeConverter {
     
-    private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("compatible_encrypt");
+    private static final RuleRootNodePath ROOT_NODE_PATH = new RuleRootNodePath("compatible_encrypt");
     
-    private static final NamedRuleItemNodePath TABLE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "tables");
+    private static final NamedRuleItemNodePath TABLE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "tables");
     
-    private static final NamedRuleItemNodePath ENCRYPTOR_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "encryptors");
+    private static final NamedRuleItemNodePath ENCRYPTOR_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "encryptors");
     
     /**
-     * Get rule root node converter.
+     * Get rule root node path.
      *
-     * @return rule root node converter
+     * @return rule root node path
      */
-    public static RuleRootNodePath getRuleRootNodeConverter() {
-        return ROOT_NODE_CONVERTER;
+    public static RuleRootNodePath getRuleRootNodePath() {
+        return ROOT_NODE_PATH;
     }
     
     /**
-     * Get table node converter.
+     * Get table node path.
      *
-     * @return table node converter
+     * @return table node path
      */
-    public static NamedRuleItemNodePath getTableNodeConvertor() {
-        return TABLE_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getTableNodePath() {
+        return TABLE_NODE_PATH;
     }
     
     /**
-     * Get encryptor node converter.
+     * Get encryptor node path.
      *
-     * @return encryptor node converter
+     * @return encryptor node path
      */
-    public static NamedRuleItemNodePath getEncryptorNodeConvertor() {
-        return ENCRYPTOR_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getEncryptorNodePath() {
+        return ENCRYPTOR_NODE_PATH;
     }
 }

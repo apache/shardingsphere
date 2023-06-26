@@ -29,58 +29,58 @@ import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowNodeConverter {
     
-    private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("shadow");
+    private static final RuleRootNodePath ROOT_NODE_PATH = new RuleRootNodePath("shadow");
     
-    private static final NamedRuleItemNodePath DATA_SOURCE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "data_sources");
+    private static final NamedRuleItemNodePath DATA_SOURCE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "data_sources");
     
-    private static final NamedRuleItemNodePath TABLE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "tables");
+    private static final NamedRuleItemNodePath TABLE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "tables");
     
-    private static final NamedRuleItemNodePath ALGORITHM_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "algorithms");
+    private static final NamedRuleItemNodePath ALGORITHM_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "algorithms");
     
-    private static final UniqueRuleItemNodePath DEFAULT_ALGORITHM_NAME_NODE_CONVERTER = new UniqueRuleItemNodePath(ROOT_NODE_CONVERTER, "default_algorithm_name");
+    private static final UniqueRuleItemNodePath DEFAULT_ALGORITHM_NAME_NODE_PATH = new UniqueRuleItemNodePath(ROOT_NODE_PATH, "default_algorithm_name");
     
     /**
-     * Get rule root node converter.
+     * Get rule root node path.
      *
-     * @return rule root node converter
+     * @return rule root node path
      */
-    public static RuleRootNodePath getRuleRootNodeConverter() {
-        return ROOT_NODE_CONVERTER;
+    public static RuleRootNodePath getRuleRootNodePath() {
+        return ROOT_NODE_PATH;
     }
     
     /**
-     * Get data source node converter.
+     * Get data source node path.
      *
-     * @return data source node converter
+     * @return data source node path
      */
-    public static NamedRuleItemNodePath getDataSourceNodeConvertor() {
-        return DATA_SOURCE_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getDataSourceNodePath() {
+        return DATA_SOURCE_NODE_PATH;
     }
     
     /**
-     * Get table node converter.
+     * Get table node path.
      *
-     * @return table node converter
+     * @return table node path
      */
-    public static NamedRuleItemNodePath getTableNodeConverter() {
-        return TABLE_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getTableNodePath() {
+        return TABLE_NODE_PATH;
     }
     
     /**
-     * Get algorithm node converter.
+     * Get algorithm node path.
      *
-     * @return algorithm node converter
+     * @return algorithm node path
      */
-    public static NamedRuleItemNodePath getAlgorithmNodeConverter() {
-        return ALGORITHM_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getAlgorithmNodePath() {
+        return ALGORITHM_NODE_PATH;
     }
     
     /**
-     * Get default algorithm name node converter.
+     * Get default algorithm name node path.
      *
-     * @return default algorithm name node converter
+     * @return default algorithm name node path
      */
-    public static UniqueRuleItemNodePath getDefaultAlgorithmNameNodeConverter() {
-        return DEFAULT_ALGORITHM_NAME_NODE_CONVERTER;
+    public static UniqueRuleItemNodePath getDefaultAlgorithmNameNodePath() {
+        return DEFAULT_ALGORITHM_NAME_NODE_PATH;
     }
 }

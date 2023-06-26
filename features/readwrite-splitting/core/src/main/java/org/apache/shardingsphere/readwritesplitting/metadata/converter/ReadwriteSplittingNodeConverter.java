@@ -28,36 +28,36 @@ import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingNodeConverter {
     
-    private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("readwrite_splitting");
+    private static final RuleRootNodePath ROOT_NODE_PATH = new RuleRootNodePath("readwrite_splitting");
     
-    private static final NamedRuleItemNodePath DATA_SOURCE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "data_sources");
+    private static final NamedRuleItemNodePath DATA_SOURCE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "data_sources");
     
-    private static final NamedRuleItemNodePath LOAD_BALANCER_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "load_balancers");
+    private static final NamedRuleItemNodePath LOAD_BALANCER_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "load_balancers");
     
     /**
-     * Get rule root node converter.
+     * Get rule root node path.
      *
-     * @return rule root node converter
+     * @return rule root node path
      */
-    public static RuleRootNodePath getRuleRootNodeConverter() {
-        return ROOT_NODE_CONVERTER;
+    public static RuleRootNodePath getRuleRootNodePath() {
+        return ROOT_NODE_PATH;
     }
     
     /**
-     * Get data source node converter.
+     * Get data source node path.
      *
-     * @return data source node converter
+     * @return data source node path
      */
-    public static NamedRuleItemNodePath getDataSourceNodeConvertor() {
-        return DATA_SOURCE_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getDataSourceNodePath() {
+        return DATA_SOURCE_NODE_PATH;
     }
     
     /**
-     * Get load balancer node converter.
+     * Get load balancer node path.
      *
-     * @return load balancer node converter
+     * @return load balancer node path
      */
-    public static NamedRuleItemNodePath getLoadBalancerNodeConverter() {
-        return LOAD_BALANCER_NODE_CONVERTER;
+    public static NamedRuleItemNodePath getLoadBalancerNodePath() {
+        return LOAD_BALANCER_NODE_PATH;
     }
 }
