@@ -15,36 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.converter;
+package org.apache.shardingsphere.infra.metadata.nodepath;
 
-import lombok.Getter;
+import org.junit.jupiter.api.Test;
 
-import java.util.regex.Pattern;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Rule root node path.
- */
-public final class RuleRootNodePath {
+class RuleRootNodePathTest {
     
-    private static final String RULE_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
+    private final RuleRootNodePath nodePath = new RuleRootNodePath("foo");
     
-    @Getter
-    private final String nodePrefix;
-    
-    private final Pattern pathPattern;
-    
-    public RuleRootNodePath(final String ruleType) {
-        nodePrefix = RULE_NODE_PREFIX + ruleType;
-        pathPattern = Pattern.compile(nodePrefix + "/.*", Pattern.CASE_INSENSITIVE);
+    @Test
+    void assertGetRuleNodePrefix() {
+        assertThat(nodePath.getNodePrefix(), is("/([\\w\\-]+)/([\\w\\-]+)/rules/foo"));
     }
     
-    /**
-     * Judge whether is rule path.
-     *
-     * @param path path to be judged
-     * @return is rule path or not
-     */
-    public boolean isRulePath(final String path) {
-        return pathPattern.matcher(path).find();
+    @Test
+    void assertIsRulePath() {
+        assertTrue(nodePath.isRulePath("/metadata/foo_db/rules/foo/tables/foo_table"));
+    }
+    
+    @Test
+    void assertIsNotRulePath() {
+        assertFalse(nodePath.isRulePath("/metadata/foo_db/rules/bar/tables/foo_table"));
     }
 }

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shadow.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.item.UniqueRuleItemNodePath;
-import org.apache.shardingsphere.infra.metadata.converter.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.item.NamedRuleItemNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 
 /**
  * Shadow node converter.

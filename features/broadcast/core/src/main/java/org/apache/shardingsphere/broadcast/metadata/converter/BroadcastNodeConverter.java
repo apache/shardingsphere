@@ -19,8 +19,8 @@ package org.apache.shardingsphere.broadcast.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.item.NamedRuleItemNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 
 /**
  * Broadcast node converter.
