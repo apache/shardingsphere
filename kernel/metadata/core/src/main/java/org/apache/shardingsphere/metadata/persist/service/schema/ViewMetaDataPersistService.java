@@ -58,6 +58,12 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
         return viewNames.isEmpty() ? Collections.emptyMap() : getViewMetaDataByViewNames(databaseName, schemaName, viewNames);
     }
     
+    // TODO Remove this when metadata structure adjustment completed. #25485
+    @Override
+    public Map<String, ShardingSphereView> load(final String databaseName, final String schemaName, final String tableName) {
+        return Collections.emptyMap();
+    }
+    
     @Override
     public void delete(final String databaseName, final String schemaName, final String viewName) {
         repository.delete(DatabaseMetaDataNode.getViewMetaDataPath(databaseName, schemaName, viewName.toLowerCase()));

@@ -89,6 +89,11 @@ public final class NewTableMetaDataPersistService implements SchemaMetaDataPersi
         return tableNames.isEmpty() ? Collections.emptyMap() : getTableMetaDataByTableNames(databaseName, schemaName, tableNames);
     }
     
+    @Override
+    public Map<String, ShardingSphereTable> load(final String databaseName, final String schemaName, final String tableName) {
+        return getTableMetaDataByTableNames(databaseName, schemaName, Collections.singletonList(tableName));
+    }
+    
     private Map<String, ShardingSphereTable> getTableMetaDataByTableNames(final String databaseName, final String schemaName, final Collection<String> tableNames) {
         Map<String, ShardingSphereTable> result = new LinkedHashMap<>(tableNames.size(), 1F);
         tableNames.forEach(each -> {
