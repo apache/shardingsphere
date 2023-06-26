@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.agent.file.asserts;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Content assert.
  */
-@Slf4j
 public final class ContentAssert {
     
     /**
