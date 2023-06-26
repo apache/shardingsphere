@@ -74,7 +74,19 @@ public enum SystemSchemaBuilderRule {
     
     MYSQL_SHARDING_SPHERE("MySQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
     
-    POSTGRESQL_INFORMATION_SCHEMA("PostgreSQL", "information_schema", new HashSet<>(Arrays.asList("columns", "tables", "views"))),
+    POSTGRESQL_INFORMATION_SCHEMA("PostgreSQL", "information_schema",
+            new HashSet<>(Arrays.asList("_pg_foreign_data_wrappers", "_pg_foreign_servers", "_pg_foreign_table_columns", "_pg_foreign_tables", "_pg_user_mappings", "administrable_role_authorizations",
+                    "applicable_roles", "attributes", "character_sets",
+                    "check_constraint_routine_usage", "check_constraints", "collation_character_set_applicability", "collations", "column_column_usage", "column_domain_usage", "column_options",
+                    "column_privileges", "column_udt_usage",
+                    "columns", "constraint_column_usage", "constraint_table_usage", "data_type_privileges", "domain_constraints", "domain_udt_usage", "domains", "element_types", "enabled_roles",
+                    "foreign_data_wrapper_options", "foreign_data_wrappers", "foreign_server_options", "foreign_servers", "foreign_table_options", "foreign_tables", "information_schema_catalog_name",
+                    "key_column_usage", "parameters",
+                    "referential_constraints", "role_column_grants", "role_routine_grants", "role_table_grants", "role_udt_grants", "role_usage_grants", "routine_column_usage", "routine_privileges",
+                    "routine_routine_usage",
+                    "routine_sequence_usage", "routine_table_usage", "routines", "schemata", "sequences", "sql_features", "sql_implementation_info", "sql_parts", "sql_sizing",
+                    "table_constraints", "table_privileges", "tables", "transforms", "triggered_update_columns", "triggers", "udt_privileges", "usage_privileges", "user_defined_types",
+                    "user_mapping_options", "user_mappings", "view_column_usage", "view_routine_usage", "view_table_usage", "views"))),
     
     POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", new HashSet<>(Arrays.asList("pg_aggregate", "pg_am", "pg_amop", "pg_amproc", "pg_attrdef", "pg_attribute", "pg_auth_members", "pg_authid",
             "pg_available_extension_versions", "pg_available_extensions", "pg_backend_memory_contexts", "pg_cast", "pg_class",
