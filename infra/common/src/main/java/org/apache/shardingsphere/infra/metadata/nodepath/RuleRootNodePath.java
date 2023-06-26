@@ -39,12 +39,12 @@ public final class RuleRootNodePath {
     }
     
     /**
-     * Judge whether is rule path.
+     * Judge whether is validated rule path.
      *
      * @param path path to be judged
-     * @return is rule path or not
+     * @return is validated rule path or not
      */
-    public boolean isRulePath(final String path) {
+    public boolean isValidatedPath(final String path) {
         return pathPattern.matcher(path).find();
     }
 }

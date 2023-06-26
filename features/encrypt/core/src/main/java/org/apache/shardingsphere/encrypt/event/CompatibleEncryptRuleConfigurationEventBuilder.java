@@ -40,14 +40,14 @@ public final class CompatibleEncryptRuleConfigurationEventBuilder implements Rul
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!CompatibleEncryptNodeConverter.getRuleRootNodePath().isRulePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!CompatibleEncryptNodeConverter.getRuleRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> tableName = CompatibleEncryptNodeConverter.getTableNodePath().getNameByActiveVersionPath(event.getKey());
+        Optional<String> tableName = CompatibleEncryptNodeConverter.getTableNodePath().getNameByActiveVersion(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createEncryptConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> encryptorName = CompatibleEncryptNodeConverter.getEncryptorNodePath().getNameByActiveVersionPath(event.getKey());
+        Optional<String> encryptorName = CompatibleEncryptNodeConverter.getEncryptorNodePath().getNameByActiveVersion(event.getKey());
         if (encryptorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createEncryptorEvent(databaseName, encryptorName.get(), event);
         }

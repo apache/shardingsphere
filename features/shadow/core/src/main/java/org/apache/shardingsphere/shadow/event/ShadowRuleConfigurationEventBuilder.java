@@ -43,18 +43,18 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!ShadowNodeConverter.getRuleRootNodePath().isRulePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!ShadowNodeConverter.getRuleRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> dataSourceName = ShadowNodeConverter.getDataSourceNodePath().getNameByActiveVersionPath(event.getKey());
+        Optional<String> dataSourceName = ShadowNodeConverter.getDataSourceNodePath().getNameByActiveVersion(event.getKey());
         if (dataSourceName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowConfigEvent(databaseName, dataSourceName.get(), event);
         }
-        Optional<String> tableName = ShadowNodeConverter.getTableNodePath().getNameByActiveVersionPath(event.getKey());
+        Optional<String> tableName = ShadowNodeConverter.getTableNodePath().getNameByActiveVersion(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowTableConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> algorithmName = ShadowNodeConverter.getAlgorithmNodePath().getNameByActiveVersionPath(event.getKey());
+        Optional<String> algorithmName = ShadowNodeConverter.getAlgorithmNodePath().getNameByActiveVersion(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowAlgorithmEvent(databaseName, algorithmName.get(), event);
         }

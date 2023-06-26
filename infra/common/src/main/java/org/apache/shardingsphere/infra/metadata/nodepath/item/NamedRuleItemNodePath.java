@@ -28,64 +28,64 @@ import java.util.regex.Pattern;
  */
 public final class NamedRuleItemNodePath {
     
-    private static final String RULE_NAME = "/(\\w+)/versions/\\d+$";
+    private static final String NAME = "/(\\w+)/versions/\\d+$";
     
-    private static final String RULE_ACTIVE_VERSION = "/(\\w+)/active_version$";
+    private static final String ACTIVE_VERSION = "/(\\w+)/active_version$";
     
-    private final String itemsNode;
+    private final String type;
     
-    private final Pattern itemsPathPattern;
+    private final Pattern pathPattern;
     
-    private final Pattern itemNamePathPattern;
+    private final Pattern namePathPattern;
     
-    private final Pattern itemVersionPathPattern;
+    private final Pattern activeVersionPathPattern;
     
-    public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String itemsNode) {
-        this.itemsNode = itemsNode;
-        itemsPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + itemsNode + "/.*", Pattern.CASE_INSENSITIVE);
-        itemNamePathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + itemsNode + RULE_NAME, Pattern.CASE_INSENSITIVE);
-        itemVersionPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + itemsNode + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+    public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
+        this.type = type;
+        pathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + type + "/.*", Pattern.CASE_INSENSITIVE);
+        namePathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + type + NAME, Pattern.CASE_INSENSITIVE);
+        activeVersionPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + type + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     
     /**
-     * Get item name path.
+     * Get rule item path.
      *
      * @param itemName item name
-     * @return item name path
+     * @return rule item path
      */
-    public String getNamePath(final String itemName) {
-        return String.join("/", itemsNode, itemName);
+    public String getPath(final String itemName) {
+        return String.join("/", type, itemName);
     }
     
     /**
-     * Is item path.
+     * Judge whether is validated rule item path.
      *
-     * @param rulePath rule path
-     * @return true or false
+     * @param path path to be judged
+     * @return is validated rule item path or not
      */
-    public boolean isPath(final String rulePath) {
-        return itemsPathPattern.matcher(rulePath).find();
+    public boolean isValidatedPath(final String path) {
+        return pathPattern.matcher(path).find();
     }
     
     /**
-     * Get item name.
+     * Get rule item name.
      *
-     * @param rulePath rule path
-     * @return item name
+     * @param path path
+     * @return got item rule name
      */
-    public Optional<String> getName(final String rulePath) {
-        Matcher matcher = itemNamePathPattern.matcher(rulePath);
+    public Optional<String> getName(final String path) {
+        Matcher matcher = namePathPattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     * Get item name by active version path.
+     * Get rule item name by active version.
      *
-     * @param rulePath rule path
-     * @return item version
+     * @param path path
+     * @return got rule item name
      */
-    public Optional<String> getNameByActiveVersionPath(final String rulePath) {
-        Matcher matcher = itemVersionPathPattern.matcher(rulePath);
+    public Optional<String> getNameByActiveVersion(final String path) {
+        Matcher matcher = activeVersionPathPattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
 }

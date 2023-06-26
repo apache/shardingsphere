@@ -31,13 +31,18 @@ class NamedRuleItemNodePathTest {
     private final NamedRuleItemNodePath converter = new NamedRuleItemNodePath(new RuleRootNodePath("foo"), "tables");
     
     @Test
-    void assertGetNamePath() {
-        assertThat(converter.getNamePath("foo_table"), is("tables/foo_table"));
+    void assertGetPath() {
+        assertThat(converter.getPath("foo_table"), is("tables/foo_table"));
     }
     
     @Test
-    void assertIsPath() {
-        assertTrue(converter.isPath("/metadata/foo_db/rules/foo/tables/foo_table/versions/0"));
+    void assertIsValidatedPath() {
+        assertTrue(converter.isValidatedPath("/metadata/foo_db/rules/foo/tables/foo_table/versions/0"));
+    }
+    
+    @Test
+    void assertIsNotValidatedPath() {
+        assertTrue(converter.isValidatedPath("/metadata/foo_db/rules/bar/tables/foo_table/versions/0"));
     }
     
     @Test
@@ -49,7 +54,7 @@ class NamedRuleItemNodePathTest {
     
     @Test
     void assertGetNameByActiveVersionPath() {
-        Optional<String> actual = converter.getNameByActiveVersionPath("/metadata/foo_db/rules/foo/tables/foo_table/active_version");
+        Optional<String> actual = converter.getNameByActiveVersion("/metadata/foo_db/rules/foo/tables/foo_table/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table"));
     }
