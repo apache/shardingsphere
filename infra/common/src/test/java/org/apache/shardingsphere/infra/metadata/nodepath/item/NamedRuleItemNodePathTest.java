@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NamedRuleItemNodePathTest {
@@ -42,7 +43,7 @@ class NamedRuleItemNodePathTest {
     
     @Test
     void assertIsNotValidatedPath() {
-        assertTrue(converter.isValidatedPath("/metadata/foo_db/rules/bar/tables/foo_table/versions/0"));
+        assertFalse(converter.isValidatedPath("/metadata/foo_db/rules/bar/tables/foo_table/versions/0"));
     }
     
     @Test
