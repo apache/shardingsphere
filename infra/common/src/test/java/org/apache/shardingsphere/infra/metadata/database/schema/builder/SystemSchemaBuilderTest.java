@@ -45,6 +45,10 @@ class SystemSchemaBuilderTest {
         assertThat(actualPerformanceSchema.size(), is(1));
         assertTrue(actualPerformanceSchema.containsKey("performance_schema"));
         assertThat(actualPerformanceSchema.get("performance_schema").getTables().size(), is(87));
+        Map<String, ShardingSphereSchema> actualSysSchema = SystemSchemaBuilder.build("sys", new MySQLDatabaseType());
+        assertThat(actualSysSchema.size(), is(1));
+        assertTrue(actualSysSchema.containsKey("sys"));
+        assertThat(actualSysSchema.get("sys").getTables().size(), is(53));
     }
     
     @Test
