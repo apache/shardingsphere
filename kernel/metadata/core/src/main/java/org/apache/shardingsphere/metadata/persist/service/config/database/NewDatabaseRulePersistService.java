@@ -127,7 +127,7 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
      */
     @Deprecated
     @Override
-    public Collection<RuleConfiguration> load(final String databaseName, final String version) {
+    public Collection<RuleConfiguration> load(final String databaseName, final String name) {
         // TODO Remove this method when metadata structure adjustment completed. #25485
         return Collections.emptyList();
     }
