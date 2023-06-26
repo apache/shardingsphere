@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mask.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleChangedSubscriber;
@@ -33,7 +34,9 @@ import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfigur
 import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
-import java.util.Collections;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -65,10 +68,18 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
         MaskRuleConfiguration config;
         if (rule.isPresent()) {
             config = (MaskRuleConfiguration) rule.get().getConfiguration();
-            config.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
-            config.getTables().add(needToAddedConfig);
+            if (null == config.getTables()) {
+                Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
+                tables.add(needToAddedConfig);
+                config = new MaskRuleConfiguration(tables, config.getMaskAlgorithms());
+            } else {
+                config.getTables().add(needToAddedConfig);
+            }
         } else {
-            config = new MaskRuleConfiguration(Collections.singletonList(needToAddedConfig), Collections.emptyMap());
+            Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
+            tables.add(needToAddedConfig);
+            Map<String, AlgorithmConfiguration> maskAlgorithms = new HashMap<>();
+            config = new MaskRuleConfiguration(tables, maskAlgorithms);
         }
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
