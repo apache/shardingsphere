@@ -103,6 +103,6 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
     
     @Override
     public String getType() {
-        return "New_Cluster";
+        return "Cluster";
     }
 }
