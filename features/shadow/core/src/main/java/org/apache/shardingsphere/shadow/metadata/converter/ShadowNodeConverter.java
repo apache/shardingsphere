@@ -19,19 +19,15 @@ package org.apache.shardingsphere.shadow.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
 import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
 import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Shadow node converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowNodeConverter {
-    
-    private static final String DEFAULT_ALGORITHM_NAME = "default_algorithm_name";
     
     private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("shadow");
     
@@ -40,6 +36,8 @@ public final class ShadowNodeConverter {
     private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
     
     private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
+    
+    private static final RuleDefaultItemNodeConverter DEFAULT_ALGORITHM_NAME_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, "default_algorithm_name");
     
     /**
      * Get rule root node converter.
@@ -78,23 +76,11 @@ public final class ShadowNodeConverter {
     }
     
     /**
-     * Get default shadow algorithm path.
+     * Get default algorithm name node converter.
      *
-     * @return default shadow algorithm path
+     * @return default algorithm name node converter
      */
-    public static String getDefaultShadowAlgorithmPath() {
-        return String.join("/", DEFAULT_ALGORITHM_NAME);
-    }
-    
-    /**
-     * Is default algorithm name path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isDefaultAlgorithmNamePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_ALGORITHM_NAME + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
+    public static RuleDefaultItemNodeConverter getDefaultAlgorithmNameNodeConverter() {
+        return DEFAULT_ALGORITHM_NAME_NODE_CONVERTER;
     }
 }

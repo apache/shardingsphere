@@ -91,6 +91,11 @@ public final class NewViewMetaDataPersistService implements SchemaMetaDataPersis
         return viewNames.isEmpty() ? Collections.emptyMap() : getViewMetaDataByViewNames(databaseName, schemaName, viewNames);
     }
     
+    @Override
+    public Map<String, ShardingSphereView> load(final String databaseName, final String schemaName, final String viewName) {
+        return getViewMetaDataByViewNames(databaseName, schemaName, Collections.singletonList(viewName));
+    }
+    
     private Map<String, ShardingSphereView> getViewMetaDataByViewNames(final String databaseName, final String schemaName, final Collection<String> viewNames) {
         Map<String, ShardingSphereView> result = new LinkedHashMap<>(viewNames.size(), 1F);
         viewNames.forEach(each -> {

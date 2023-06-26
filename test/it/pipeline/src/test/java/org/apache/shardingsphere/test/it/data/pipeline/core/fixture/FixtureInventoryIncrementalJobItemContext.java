@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
-import org.apache.shardingsphere.data.pipeline.spi.importer.sink.PipelineSink;
 
 import java.util.Collection;
 

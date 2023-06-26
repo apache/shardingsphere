@@ -36,10 +36,10 @@ public final class SingleRuleConfigurationEventBuilder implements RuleConfigurat
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!SingleNodeConverter.isSinglePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!SingleNodeConverter.getTableNodeConverter().isPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        if (SingleNodeConverter.isTablesActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+        if (SingleNodeConverter.getTableNodeConverter().isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createSingleConfigEvent(databaseName, event);
         }
         return Optional.empty();

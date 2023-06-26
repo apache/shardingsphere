@@ -26,9 +26,9 @@ import java.util.regex.Pattern;
  */
 public final class RuleItemNodeConverter {
     
-    private static final String RULE_NAME = "/([\\w\\-]+)?";
+    private static final String RULE_NAME = "/(\\w+)/versions/\\d+$";
     
-    private static final String RULE_ACTIVE_VERSION = "/([\\w\\-]+)/active_version$";
+    private static final String RULE_ACTIVE_VERSION = "/(\\w+)/active_version$";
     
     private final String itemsNode;
     

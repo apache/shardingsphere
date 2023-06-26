@@ -68,10 +68,10 @@ public interface DatabaseBasedPersistService<T> {
      * Load configurations based version.
      * 
      * @param databaseName database name
-     * @param version version
+     * @param name name
      * @return configurations
      */
-    T load(String databaseName, String version);
+    T load(String databaseName, String name);
     
     /**
      * TODO remove this after meta data refactor completed

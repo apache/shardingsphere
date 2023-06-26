@@ -22,7 +22,9 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.shadow.event.algorithm.AlterDefaultShadowAlgorithmNameEvent;
 import org.apache.shardingsphere.shadow.event.algorithm.AlterShadowAlgorithmEvent;
+import org.apache.shardingsphere.shadow.event.algorithm.DeleteDefaultShadowAlgorithmNameEvent;
 import org.apache.shardingsphere.shadow.event.algorithm.DeleteShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.event.datasource.AddShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.event.datasource.AlterShadowDataSourceEvent;
@@ -56,6 +58,9 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowAlgorithmEvent(databaseName, algorithmName.get(), event);
         }
+        if (ShadowNodeConverter.getDefaultAlgorithmNameNodeConverter().isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+            return createDefaultShadowAlgorithmNameEvent(databaseName, event);
+        }
         return Optional.empty();
     }
     
@@ -84,5 +89,12 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
             return Optional.of(new AlterShadowAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue()));
         }
         return Optional.of(new DeleteShadowAlgorithmEvent(databaseName, algorithmName));
+    }
+    
+    private Optional<GovernanceEvent> createDefaultShadowAlgorithmNameEvent(final String databaseName, final DataChangedEvent event) {
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterDefaultShadowAlgorithmNameEvent(databaseName, event.getKey(), event.getValue()));
+        }
+        return Optional.of(new DeleteDefaultShadowAlgorithmNameEvent(databaseName));
     }
 }
