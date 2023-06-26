@@ -19,8 +19,10 @@ package org.apache.shardingsphere.encrypt.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.nodepath.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Compatible encrypt node converter.
@@ -30,36 +32,18 @@ import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CompatibleEncryptNodeConverter {
     
-    private static final RuleRootNodePath ROOT_NODE_PATH = new RuleRootNodePath("compatible_encrypt");
+    public static final String TABLES = "tables";
     
-    private static final NamedRuleItemNodePath TABLE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "tables");
+    public static final String ENCRYPTORS = "encryptors";
     
-    private static final NamedRuleItemNodePath ENCRYPTOR_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "encryptors");
-    
-    /**
-     * Get rule root node path.
-     *
-     * @return rule root node path
-     */
-    public static RuleRootNodePath getRuleRootNodePath() {
-        return ROOT_NODE_PATH;
-    }
+    private static final RuleNodePath INSTANCE = new RuleNodePath("compatible_encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
     
     /**
-     * Get table node path.
+     * Get instance of rule node path.
      *
-     * @return table node path
+     * @return got instance
      */
-    public static NamedRuleItemNodePath getTableNodePath() {
-        return TABLE_NODE_PATH;
-    }
-    
-    /**
-     * Get encryptor node path.
-     *
-     * @return encryptor node path
-     */
-    public static NamedRuleItemNodePath getEncryptorNodePath() {
-        return ENCRYPTOR_NODE_PATH;
+    public static RuleNodePath getInstance() {
+        return INSTANCE;
     }
 }

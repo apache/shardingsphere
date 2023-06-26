@@ -22,6 +22,7 @@ import org.apache.shardingsphere.broadcast.event.config.AddBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.config.AlterBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.config.DeleteBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.metadata.converter.BroadcastNodeConverter;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -34,12 +35,14 @@ import java.util.Optional;
  */
 public final class BroadcastRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
+    private final RuleNodePath broadcastRuleNodePath = BroadcastNodeConverter.getInstance();
+    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!BroadcastNodeConverter.getRuleRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!broadcastRuleNodePath.getRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        if (BroadcastNodeConverter.getTableNodePath().getNameByActiveVersion(event.getKey()).isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
+        if (broadcastRuleNodePath.getNamedRuleItemNodePath(BroadcastNodeConverter.TABLES).getNameByActiveVersion(event.getKey()).isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createBroadcastConfigEvent(databaseName, event);
         }
         return Optional.empty();

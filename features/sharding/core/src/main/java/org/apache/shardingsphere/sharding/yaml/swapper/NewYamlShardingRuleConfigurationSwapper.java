@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
@@ -67,6 +68,8 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
     
     private final YamlShardingCacheConfigurationSwapper shardingCacheYamlSwapper = new YamlShardingCacheConfigurationSwapper();
     
+    private final RuleNodePath shardingRuleNodePath = ShardingNodeConverter.getInstance();
+    
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final ShardingRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
@@ -74,10 +77,10 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
         swapStrategies(data, result);
         swapTableRules(data, result);
         if (null != data.getDefaultShardingColumn()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getDefaultShardingColumnNodePath().getPath(), data.getDefaultShardingColumn()));
+            result.add(new YamlDataNode(shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.DEFAULT_SHARDING_COLUMN).getPath(), data.getDefaultShardingColumn()));
         }
         if (null != data.getShardingCache()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getShardingCacheNodePath().getPath(),
+            result.add(new YamlDataNode(shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.SHARDING_CACHE).getPath(),
                     YamlEngine.marshal(shardingCacheYamlSwapper.swapToYamlConfiguration(data.getShardingCache()))));
         }
         return result;
@@ -85,46 +88,50 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
     
     private void swapAlgorithms(final ShardingRuleConfiguration data, final Collection<YamlDataNode> result) {
         for (Entry<String, AlgorithmConfiguration> each : data.getShardingAlgorithms().entrySet()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getAlgorithmNodePath().getPath(each.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(each.getValue()))));
+            result.add(new YamlDataNode(shardingRuleNodePath.getNamedRuleItemNodePath(ShardingNodeConverter.ALGORITHMS).getPath(each.getKey()),
+                    YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(each.getValue()))));
         }
         for (Entry<String, AlgorithmConfiguration> each : data.getKeyGenerators().entrySet()) {
-            result.add(new YamlDataNode(
-                    ShardingNodeConverter.getKeyGeneratorNodePath().getPath(each.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(each.getValue()))));
+            result.add(new YamlDataNode(shardingRuleNodePath.getNamedRuleItemNodePath(ShardingNodeConverter.KEY_GENERATORS).getPath(each.getKey()),
+                    YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(each.getValue()))));
         }
         for (Entry<String, AlgorithmConfiguration> each : data.getAuditors().entrySet()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getAuditorNodePath().getPath(each.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(each.getValue()))));
+            result.add(new YamlDataNode(shardingRuleNodePath.getNamedRuleItemNodePath(ShardingNodeConverter.AUDITORS).getPath(each.getKey()),
+                    YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(each.getValue()))));
         }
     }
     
     private void swapStrategies(final ShardingRuleConfiguration data, final Collection<YamlDataNode> result) {
         if (null != data.getDefaultDatabaseShardingStrategy()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getDefaultDatabaseStrategyNodePath().getPath(),
+            result.add(new YamlDataNode(shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.DEFAULT_DATABASE_STRATEGY).getPath(),
                     YamlEngine.marshal(shardingStrategySwapper.swapToYamlConfiguration(data.getDefaultDatabaseShardingStrategy()))));
         }
         if (null != data.getDefaultTableShardingStrategy()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getDefaultTableStrategyNodePath().getPath(),
+            result.add(new YamlDataNode(shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.DEFAULT_TABLE_STRATEGY).getPath(),
                     YamlEngine.marshal(shardingStrategySwapper.swapToYamlConfiguration(data.getDefaultTableShardingStrategy()))));
         }
         if (null != data.getDefaultKeyGenerateStrategy()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getDefaultKeyGenerateStrategyNodePath().getPath(),
+            result.add(new YamlDataNode(shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.DEFAULT_KEY_GENERATE_STRATEGY).getPath(),
                     YamlEngine.marshal(keyGenerateStrategySwapper.swapToYamlConfiguration(data.getDefaultKeyGenerateStrategy()))));
         }
         if (null != data.getDefaultAuditStrategy()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getDefaultAuditStrategyNodePath().getPath(),
+            result.add(new YamlDataNode(shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.DEFAULT_AUDIT_STRATEGY).getPath(),
                     YamlEngine.marshal(auditStrategySwapper.swapToYamlConfiguration(data.getDefaultAuditStrategy()))));
         }
     }
     
     private void swapTableRules(final ShardingRuleConfiguration data, final Collection<YamlDataNode> result) {
         for (ShardingTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getTableNodePath().getPath(each.getLogicTable()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
+            result.add(new YamlDataNode(shardingRuleNodePath.getNamedRuleItemNodePath(ShardingNodeConverter.TABLES).getPath(each.getLogicTable()),
+                    YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
         }
         for (ShardingAutoTableRuleConfiguration each : data.getAutoTables()) {
-            result.add(new YamlDataNode(ShardingNodeConverter.getAutoTableNodePath().getPath(each.getLogicTable()), YamlEngine.marshal(autoTableYamlSwapper.swapToYamlConfiguration(each))));
+            result.add(new YamlDataNode(shardingRuleNodePath.getNamedRuleItemNodePath(ShardingNodeConverter.AUTO_TABLES).getPath(each.getLogicTable()),
+                    YamlEngine.marshal(autoTableYamlSwapper.swapToYamlConfiguration(each))));
         }
         for (ShardingTableReferenceRuleConfiguration each : data.getBindingTableGroups()) {
-            result.add(new YamlDataNode(
-                    ShardingNodeConverter.getBindingTableNodePath().getPath(each.getName()), YamlShardingTableReferenceRuleConfigurationConverter.convertToYamlString(each)));
+            result.add(new YamlDataNode(shardingRuleNodePath.getNamedRuleItemNodePath(ShardingNodeConverter.BINDING_TABLES).getPath(each.getName()),
+                    YamlShardingTableReferenceRuleConfigurationConverter.convertToYamlString(each)));
         }
     }
     
@@ -132,29 +139,29 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
     public ShardingRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (YamlDataNode each : dataNodes) {
-            ShardingNodeConverter.getTableNodePath().getName(each.getKey())
+            shardingRuleNodePath.getNamedRuleItemNodePath(ShardingNodeConverter.TABLES).getName(each.getKey())
                     .ifPresent(optional -> result.getTables().add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTableRuleConfiguration.class))));
-            ShardingNodeConverter.getAutoTableNodePath().getName(each.getKey())
+            shardingRuleNodePath.getNamedRuleItemNodePath(ShardingNodeConverter.AUTO_TABLES).getName(each.getKey())
                     .ifPresent(optional -> result.getAutoTables().add(autoTableYamlSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingAutoTableRuleConfiguration.class))));
-            ShardingNodeConverter.getBindingTableNodePath().getName(each.getKey())
+            shardingRuleNodePath.getNamedRuleItemNodePath(ShardingNodeConverter.BINDING_TABLES).getName(each.getKey())
                     .ifPresent(optional -> result.getBindingTableGroups().add(YamlShardingTableReferenceRuleConfigurationConverter.convertToObject(each.getValue())));
-            ShardingNodeConverter.getAlgorithmNodePath().getName(each.getKey())
+            shardingRuleNodePath.getNamedRuleItemNodePath(ShardingNodeConverter.ALGORITHMS).getName(each.getKey())
                     .ifPresent(optional -> result.getShardingAlgorithms().put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
-            ShardingNodeConverter.getKeyGeneratorNodePath().getName(each.getKey())
+            shardingRuleNodePath.getNamedRuleItemNodePath(ShardingNodeConverter.KEY_GENERATORS).getName(each.getKey())
                     .ifPresent(optional -> result.getKeyGenerators().put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
-            ShardingNodeConverter.getAuditorNodePath().getName(each.getKey())
+            shardingRuleNodePath.getNamedRuleItemNodePath(ShardingNodeConverter.AUDITORS).getName(each.getKey())
                     .ifPresent(optional -> result.getAuditors().put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
-            if (ShardingNodeConverter.getDefaultDatabaseStrategyNodePath().isValidatedPath(each.getKey())) {
+            if (shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.DEFAULT_DATABASE_STRATEGY).isValidatedPath(each.getKey())) {
                 result.setDefaultDatabaseShardingStrategy(shardingStrategySwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingStrategyConfiguration.class)));
-            } else if (ShardingNodeConverter.getDefaultTableStrategyNodePath().isValidatedPath(each.getKey())) {
+            } else if (shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.DEFAULT_TABLE_STRATEGY).isValidatedPath(each.getKey())) {
                 result.setDefaultTableShardingStrategy(shardingStrategySwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingStrategyConfiguration.class)));
-            } else if (ShardingNodeConverter.getDefaultKeyGenerateStrategyNodePath().isValidatedPath(each.getKey())) {
+            } else if (shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.DEFAULT_KEY_GENERATE_STRATEGY).isValidatedPath(each.getKey())) {
                 result.setDefaultKeyGenerateStrategy(keyGenerateStrategySwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlKeyGenerateStrategyConfiguration.class)));
-            } else if (ShardingNodeConverter.getDefaultAuditStrategyNodePath().isValidatedPath(each.getKey())) {
+            } else if (shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.DEFAULT_AUDIT_STRATEGY).isValidatedPath(each.getKey())) {
                 result.setDefaultAuditStrategy(auditStrategySwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingAuditStrategyConfiguration.class)));
-            } else if (ShardingNodeConverter.getDefaultShardingColumnNodePath().isValidatedPath(each.getKey())) {
+            } else if (shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.DEFAULT_SHARDING_COLUMN).isValidatedPath(each.getKey())) {
                 result.setDefaultShardingColumn(each.getValue());
-            } else if (ShardingNodeConverter.getShardingCacheNodePath().isValidatedPath(each.getKey())) {
+            } else if (shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.SHARDING_CACHE).isValidatedPath(each.getKey())) {
                 result.setShardingCache(shardingCacheYamlSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingCacheConfiguration.class)));
             }
         }

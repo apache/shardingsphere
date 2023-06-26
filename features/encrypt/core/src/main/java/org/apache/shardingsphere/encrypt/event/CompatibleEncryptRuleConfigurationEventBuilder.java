@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.event.compatible.table.AddCompatibleEnc
 import org.apache.shardingsphere.encrypt.event.compatible.table.AlterCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.DeleteCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.metadata.converter.CompatibleEncryptNodeConverter;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -38,16 +39,18 @@ import java.util.Optional;
 @Deprecated
 public final class CompatibleEncryptRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
+    private final RuleNodePath encryptRuleNodePath = CompatibleEncryptNodeConverter.getInstance();
+    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!CompatibleEncryptNodeConverter.getRuleRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!encryptRuleNodePath.getRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> tableName = CompatibleEncryptNodeConverter.getTableNodePath().getNameByActiveVersion(event.getKey());
+        Optional<String> tableName = encryptRuleNodePath.getNamedRuleItemNodePath(CompatibleEncryptNodeConverter.TABLES).getNameByActiveVersion(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createEncryptConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> encryptorName = CompatibleEncryptNodeConverter.getEncryptorNodePath().getNameByActiveVersion(event.getKey());
+        Optional<String> encryptorName = encryptRuleNodePath.getNamedRuleItemNodePath(CompatibleEncryptNodeConverter.ENCRYPTORS).getNameByActiveVersion(event.getKey());
         if (encryptorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createEncryptorEvent(databaseName, encryptorName.get(), event);
         }

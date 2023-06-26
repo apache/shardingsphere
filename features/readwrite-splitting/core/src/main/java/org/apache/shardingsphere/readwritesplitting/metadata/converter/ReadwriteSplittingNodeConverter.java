@@ -19,8 +19,10 @@ package org.apache.shardingsphere.readwritesplitting.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.nodepath.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Readwrite-splitting node converter.
@@ -28,36 +30,18 @@ import org.apache.shardingsphere.infra.metadata.nodepath.RuleRootNodePath;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingNodeConverter {
     
-    private static final RuleRootNodePath ROOT_NODE_PATH = new RuleRootNodePath("readwrite_splitting");
+    public static final String DATA_SOURCES = "data_sources";
     
-    private static final NamedRuleItemNodePath DATA_SOURCE_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "data_sources");
+    public static final String LOAD_BALANCERS = "load_balancers";
     
-    private static final NamedRuleItemNodePath LOAD_BALANCER_NODE_PATH = new NamedRuleItemNodePath(ROOT_NODE_PATH, "load_balancers");
-    
-    /**
-     * Get rule root node path.
-     *
-     * @return rule root node path
-     */
-    public static RuleRootNodePath getRuleRootNodePath() {
-        return ROOT_NODE_PATH;
-    }
+    private static final RuleNodePath INSTANCE = new RuleNodePath("readwrite_splitting", Arrays.asList(DATA_SOURCES, LOAD_BALANCERS), Collections.emptyList());
     
     /**
-     * Get data source node path.
+     * Get instance of rule node path.
      *
-     * @return data source node path
+     * @return got instance
      */
-    public static NamedRuleItemNodePath getDataSourceNodePath() {
-        return DATA_SOURCE_NODE_PATH;
-    }
-    
-    /**
-     * Get load balancer node path.
-     *
-     * @return load balancer node path
-     */
-    public static NamedRuleItemNodePath getLoadBalancerNodePath() {
-        return LOAD_BALANCER_NODE_PATH;
+    public static RuleNodePath getInstance() {
+        return INSTANCE;
     }
 }
