@@ -195,3 +195,17 @@ jobs:
         uses: github/codeql-action/analyze@v2
         with:
           category: "/language:java"
+  
+  check-stale:
+    if: (github.repository == 'apache/shardingsphere')
+    name: Check - Stale Issues
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/stale@v8
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          days-before-issue-stale: 30
+          stale-issue-label: "stale"

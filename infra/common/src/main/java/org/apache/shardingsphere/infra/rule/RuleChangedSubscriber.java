@@ -30,7 +30,7 @@ public interface RuleChangedSubscriber {
     /**
      * Set databases.
      * 
-     * @param databases databases databases to be set
+     * @param databases databases to be set
      */
     void setDatabases(Map<String, ShardingSphereDatabase> databases);
     
