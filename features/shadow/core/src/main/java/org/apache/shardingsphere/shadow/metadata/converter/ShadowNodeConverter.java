@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.metadata.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.NamedRuleItemNodePath;
 import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 /**
@@ -31,11 +31,11 @@ public final class ShadowNodeConverter {
     
     private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("shadow");
     
-    private static final RuleItemNodeConverter DATA_SOURCE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "data_sources");
+    private static final NamedRuleItemNodePath DATA_SOURCE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "data_sources");
     
-    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    private static final NamedRuleItemNodePath TABLE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "tables");
     
-    private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
+    private static final NamedRuleItemNodePath ALGORITHM_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "algorithms");
     
     private static final RuleDefaultItemNodeConverter DEFAULT_ALGORITHM_NAME_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, "default_algorithm_name");
     
@@ -53,7 +53,7 @@ public final class ShadowNodeConverter {
      *
      * @return data source node converter
      */
-    public static RuleItemNodeConverter getDataSourceNodeConvertor() {
+    public static NamedRuleItemNodePath getDataSourceNodeConvertor() {
         return DATA_SOURCE_NODE_CONVERTER;
     }
     
@@ -62,7 +62,7 @@ public final class ShadowNodeConverter {
      *
      * @return table node converter
      */
-    public static RuleItemNodeConverter getTableNodeConverter() {
+    public static NamedRuleItemNodePath getTableNodeConverter() {
         return TABLE_NODE_CONVERTER;
     }
     
@@ -71,7 +71,7 @@ public final class ShadowNodeConverter {
      *
      * @return algorithm node converter
      */
-    public static RuleItemNodeConverter getAlgorithmNodeConverter() {
+    public static NamedRuleItemNodePath getAlgorithmNodeConverter() {
         return ALGORITHM_NODE_CONVERTER;
     }
     

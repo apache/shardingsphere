@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.NamedRuleItemNodePath;
 import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 /**
@@ -30,9 +30,9 @@ public final class ReadwriteSplittingNodeConverter {
     
     private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("readwrite_splitting");
     
-    private static final RuleItemNodeConverter DATA_SOURCE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "data_sources");
+    private static final NamedRuleItemNodePath DATA_SOURCE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "data_sources");
     
-    private static final RuleItemNodeConverter LOAD_BALANCER_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "load_balancers");
+    private static final NamedRuleItemNodePath LOAD_BALANCER_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "load_balancers");
     
     /**
      * Get rule root node converter.
@@ -48,7 +48,7 @@ public final class ReadwriteSplittingNodeConverter {
      *
      * @return data source node converter
      */
-    public static RuleItemNodeConverter getDataSourceNodeConvertor() {
+    public static NamedRuleItemNodePath getDataSourceNodeConvertor() {
         return DATA_SOURCE_NODE_CONVERTER;
     }
     
@@ -57,7 +57,7 @@ public final class ReadwriteSplittingNodeConverter {
      *
      * @return load balancer node converter
      */
-    public static RuleItemNodeConverter getLoadBalancerNodeConverter() {
+    public static NamedRuleItemNodePath getLoadBalancerNodeConverter() {
         return LOAD_BALANCER_NODE_CONVERTER;
     }
 }

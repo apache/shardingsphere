@@ -22,9 +22,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Rule item node converter.
+ * Named rule item node path.
  */
-public final class RuleItemNodeConverter {
+public final class NamedRuleItemNodePath {
     
     private static final String RULE_NAME = "/(\\w+)/versions/\\d+$";
     
@@ -38,11 +38,11 @@ public final class RuleItemNodeConverter {
     
     private final Pattern itemVersionPathPattern;
     
-    public RuleItemNodeConverter(final RuleRootNodePath ruleRootNodePath, final String itemsNode) {
+    public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String itemsNode) {
         this.itemsNode = itemsNode;
-        itemsPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + itemsNode + "/.*", Pattern.CASE_INSENSITIVE);
-        itemNamePathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + itemsNode + RULE_NAME, Pattern.CASE_INSENSITIVE);
-        itemVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + "/" + itemsNode + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
+        itemsPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + itemsNode + "/.*", Pattern.CASE_INSENSITIVE);
+        itemNamePathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + itemsNode + RULE_NAME, Pattern.CASE_INSENSITIVE);
+        itemVersionPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + "/" + itemsNode + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
     }
     
     /**

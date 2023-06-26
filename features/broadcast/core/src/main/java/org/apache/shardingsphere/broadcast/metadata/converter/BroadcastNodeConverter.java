@@ -19,7 +19,7 @@ package org.apache.shardingsphere.broadcast.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.NamedRuleItemNodePath;
 import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 /**
@@ -32,7 +32,7 @@ public final class BroadcastNodeConverter {
     
     private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("broadcast");
     
-    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, TABLES_NODE);
+    private static final NamedRuleItemNodePath TABLE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, TABLES_NODE);
     
     /**
      * Get rule root node converter.
@@ -48,7 +48,7 @@ public final class BroadcastNodeConverter {
      *
      * @return table node converter
      */
-    public static RuleItemNodeConverter getTableNodeConvertor() {
+    public static NamedRuleItemNodePath getTableNodeConvertor() {
         return TABLE_NODE_CONVERTER;
     }
     

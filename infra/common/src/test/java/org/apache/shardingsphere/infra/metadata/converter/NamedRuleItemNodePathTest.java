@@ -25,9 +25,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RuleItemNodeConverterTest {
+class NamedRuleItemNodePathTest {
     
-    private final RuleItemNodeConverter converter = new RuleItemNodeConverter(new RuleRootNodePath("foo"), "tables");
+    private final NamedRuleItemNodePath converter = new NamedRuleItemNodePath(new RuleRootNodePath("foo"), "tables");
     
     @Test
     void assertGetNamePath() {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.NamedRuleItemNodePath;
 import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 /**
@@ -32,9 +32,9 @@ public final class CompatibleEncryptNodeConverter {
     
     private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("compatible_encrypt");
     
-    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    private static final NamedRuleItemNodePath TABLE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "tables");
     
-    private static final RuleItemNodeConverter ENCRYPTOR_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "encryptors");
+    private static final NamedRuleItemNodePath ENCRYPTOR_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "encryptors");
     
     /**
      * Get rule root node converter.
@@ -50,7 +50,7 @@ public final class CompatibleEncryptNodeConverter {
      *
      * @return table node converter
      */
-    public static RuleItemNodeConverter getTableNodeConvertor() {
+    public static NamedRuleItemNodePath getTableNodeConvertor() {
         return TABLE_NODE_CONVERTER;
     }
     
@@ -59,7 +59,7 @@ public final class CompatibleEncryptNodeConverter {
      *
      * @return encryptor node converter
      */
-    public static RuleItemNodeConverter getEncryptorNodeConvertor() {
+    public static NamedRuleItemNodePath getEncryptorNodeConvertor() {
         return ENCRYPTOR_NODE_CONVERTER;
     }
 }

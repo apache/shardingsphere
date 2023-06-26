@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.metadata.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.NamedRuleItemNodePath;
 import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 /**
@@ -33,17 +33,17 @@ public final class ShardingNodeConverter {
     
     private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("sharding");
     
-    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    private static final NamedRuleItemNodePath TABLE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "tables");
     
-    private static final RuleItemNodeConverter AUTO_TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "auto_tables");
+    private static final NamedRuleItemNodePath AUTO_TABLE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "auto_tables");
     
-    private static final RuleItemNodeConverter BINDING_TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "binding_tables");
+    private static final NamedRuleItemNodePath BINDING_TABLE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "binding_tables");
     
-    private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
+    private static final NamedRuleItemNodePath ALGORITHM_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "algorithms");
     
-    private static final RuleItemNodeConverter KEY_GENERATOR_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "key_generators");
+    private static final NamedRuleItemNodePath KEY_GENERATOR_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "key_generators");
     
-    private static final RuleItemNodeConverter AUDITOR_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "auditors");
+    private static final NamedRuleItemNodePath AUDITOR_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "auditors");
     
     private static final RuleDefaultItemNodeConverter DEFAULT_DATABASE_STRATEGY_NODE_CONVERTER =
             new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, DEFAULT_STRATEGIES_NODE, "default_database_strategy");
@@ -74,7 +74,7 @@ public final class ShardingNodeConverter {
      *
      * @return table node converter
      */
-    public static RuleItemNodeConverter getTableNodeConverter() {
+    public static NamedRuleItemNodePath getTableNodeConverter() {
         return TABLE_NODE_CONVERTER;
     }
     
@@ -83,7 +83,7 @@ public final class ShardingNodeConverter {
      *
      * @return auto table node converter
      */
-    public static RuleItemNodeConverter getAutoTableNodeConverter() {
+    public static NamedRuleItemNodePath getAutoTableNodeConverter() {
         return AUTO_TABLE_NODE_CONVERTER;
     }
     
@@ -92,7 +92,7 @@ public final class ShardingNodeConverter {
      *
      * @return binding table node converter
      */
-    public static RuleItemNodeConverter getBindingTableNodeConverter() {
+    public static NamedRuleItemNodePath getBindingTableNodeConverter() {
         return BINDING_TABLE_NODE_CONVERTER;
     }
     
@@ -101,7 +101,7 @@ public final class ShardingNodeConverter {
      *
      * @return algorithm node converter
      */
-    public static RuleItemNodeConverter getAlgorithmNodeConverter() {
+    public static NamedRuleItemNodePath getAlgorithmNodeConverter() {
         return ALGORITHM_NODE_CONVERTER;
     }
     
@@ -110,7 +110,7 @@ public final class ShardingNodeConverter {
      *
      * @return key generator node converter
      */
-    public static RuleItemNodeConverter getKeyGeneratorNodeConverter() {
+    public static NamedRuleItemNodePath getKeyGeneratorNodeConverter() {
         return KEY_GENERATOR_NODE_CONVERTER;
     }
     
@@ -119,7 +119,7 @@ public final class ShardingNodeConverter {
      *
      * @return auditor node converter
      */
-    public static RuleItemNodeConverter getAuditorNodeConverter() {
+    public static NamedRuleItemNodePath getAuditorNodeConverter() {
         return AUDITOR_NODE_CONVERTER;
     }
     

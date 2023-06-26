@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mask.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
+import org.apache.shardingsphere.infra.metadata.converter.NamedRuleItemNodePath;
 import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodePath;
 
 /**
@@ -30,9 +30,9 @@ public final class MaskNodeConverter {
     
     private static final RuleRootNodePath ROOT_NODE_CONVERTER = new RuleRootNodePath("mask");
     
-    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    private static final NamedRuleItemNodePath TABLE_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "tables");
     
-    private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
+    private static final NamedRuleItemNodePath ALGORITHM_NODE_CONVERTER = new NamedRuleItemNodePath(ROOT_NODE_CONVERTER, "algorithms");
     
     /**
      * Get rule root node converter.
@@ -48,7 +48,7 @@ public final class MaskNodeConverter {
      *
      * @return table node converter
      */
-    public static RuleItemNodeConverter getTableNodeConvertor() {
+    public static NamedRuleItemNodePath getTableNodeConvertor() {
         return TABLE_NODE_CONVERTER;
     }
     
@@ -57,7 +57,7 @@ public final class MaskNodeConverter {
      *
      * @return algorithm node converter
      */
-    public static RuleItemNodeConverter getAlgorithmNodeConvertor() {
+    public static NamedRuleItemNodePath getAlgorithmNodeConvertor() {
         return ALGORITHM_NODE_CONVERTER;
     }
 }
