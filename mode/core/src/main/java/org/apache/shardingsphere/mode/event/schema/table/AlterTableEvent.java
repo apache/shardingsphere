@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.event.schema.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
