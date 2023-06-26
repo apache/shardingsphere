@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @E2ETestCaseSettings(SQLCommandType.RAL)
 class RALE2EIT {
     
-    private static final Map<String, Boolean> INITIALIZE = new ConcurrentHashMap<>();
+    private static final Map<String, Boolean> INITIALIZED = new ConcurrentHashMap<>();
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -64,8 +64,8 @@ class RALE2EIT {
             return;
         }
         try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            if (!INITIALIZE.containsKey(testParam.getKey())) {
-                INITIALIZE.put(testParam.getKey(), true);
+            if (!INITIALIZED.containsKey(testParam.getKey())) {
+                INITIALIZED.put(testParam.getKey(), true);
                 Awaitility.await().atMost(16L, TimeUnit.SECONDS).pollInterval(15L, TimeUnit.SECONDS).until(() -> true);
             }
             init(containerComposer);
