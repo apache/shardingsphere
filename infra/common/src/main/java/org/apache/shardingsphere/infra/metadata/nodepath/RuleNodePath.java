@@ -55,14 +55,12 @@ public final class RuleNodePath {
     private Map<String, UniqueRuleItemNodePath> getUniqueRuleItemNodePathMap(final Collection<String> uniqueRuleItemNodePathTypes) {
         Map<String, UniqueRuleItemNodePath> result = new HashMap<>(uniqueRuleItemNodePathTypes.size(), 1F);
         for (String each : uniqueRuleItemNodePathTypes) {
-            UniqueRuleItemNodePath uniqueRuleItemNodePath;
             if (each.contains(".")) {
                 String[] values = each.split("\\.");
-                uniqueRuleItemNodePath = new UniqueRuleItemNodePath(rootNodePath, values[0], values[1]);
+                result.put(values[1], new UniqueRuleItemNodePath(rootNodePath, values[0], values[1]));
             } else {
-                uniqueRuleItemNodePath = new UniqueRuleItemNodePath(rootNodePath, each);
+                result.put(each, new UniqueRuleItemNodePath(rootNodePath, each));
             }
-            result.put(each, uniqueRuleItemNodePath);
         }
         return result;
     }
