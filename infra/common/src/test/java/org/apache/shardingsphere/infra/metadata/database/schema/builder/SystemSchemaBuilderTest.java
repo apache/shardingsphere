@@ -69,6 +69,7 @@ class SystemSchemaBuilderTest {
         assertThat(actual.size(), is(16));
         assertTrue(actual.containsKey("pg_catalog"));
         assertTrue(actual.containsKey("shardingsphere"));
+        assertThat(actual.get("information_schema").getTables().size(), is(66));
         assertThat(actual.get("pg_catalog").getTables().size(), is(240));
         assertThat(actual.get("shardingsphere").getTables().size(), is(2));
     }
