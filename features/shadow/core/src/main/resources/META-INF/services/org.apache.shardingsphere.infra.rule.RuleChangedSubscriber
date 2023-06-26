@@ -18,3 +18,4 @@
 org.apache.shardingsphere.shadow.subscriber.ShadowDataSourceSubscriber
 org.apache.shardingsphere.shadow.subscriber.ShadowTableSubscriber
 org.apache.shardingsphere.shadow.subscriber.ShadowAlgorithmSubscriber
+org.apache.shardingsphere.shadow.subscriber.DefaultShadowAlgorithmNameSubscriber

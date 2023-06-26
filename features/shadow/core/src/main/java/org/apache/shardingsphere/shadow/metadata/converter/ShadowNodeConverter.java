@@ -33,6 +33,10 @@ public final class ShadowNodeConverter {
     
     private static final String DEFAULT_ALGORITHM_NAME = "default_algorithm_name";
     
+    private static final String VERSIONS = "/versions/\\d+$";
+    
+    private static final String ACTIVE_VERSION = "/active_version$";
+    
     private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("shadow");
     
     private static final RuleItemNodeConverter DATA_SOURCE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "data_sources");
@@ -93,7 +97,19 @@ public final class ShadowNodeConverter {
      * @return true or false
      */
     public static boolean isDefaultAlgorithmNamePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_ALGORITHM_NAME + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_ALGORITHM_NAME + VERSIONS, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulePath);
+        return matcher.find();
+    }
+    
+    /**
+     * Is default algorithm name with active version path.
+     *
+     * @param rulePath rule path
+     * @return true or false
+     */
+    public static boolean isDefaultAlgorithmNameWithActiveVersionPath(final String rulePath) {
+        Pattern pattern = Pattern.compile(ROOT_NODE_CONVERTER.getRuleNodePrefix() + "/" + DEFAULT_ALGORITHM_NAME + ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }

@@ -36,12 +36,12 @@ class RuleItemNodeConverterTest {
     
     @Test
     void assertIsPath() {
-        assertTrue(converter.isPath("/metadata/foo_db/rules/foo/tables/foo_table"));
+        assertTrue(converter.isPath("/metadata/foo_db/rules/foo/tables/foo_table/versions/0"));
     }
     
     @Test
     void assertGetName() {
-        Optional<String> actual = converter.getName("/metadata/foo_db/rules/foo/tables/foo_table");
+        Optional<String> actual = converter.getName("/metadata/foo_db/rules/foo/tables/foo_table/versions/0");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table"));
     }
