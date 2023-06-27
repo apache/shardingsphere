@@ -49,7 +49,6 @@ public final class NewPropertiesPersistService implements GlobalPersistService<P
         repository.persist(NewGlobalNode.getPropsVersionNode(versions.isEmpty()
                 ? DEFAULT_VERSION
                 : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(props));
-        
     }
     
     @Override
