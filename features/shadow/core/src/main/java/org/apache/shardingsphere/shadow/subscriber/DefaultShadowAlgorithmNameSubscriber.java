@@ -67,6 +67,9 @@ public final class DefaultShadowAlgorithmNameSubscriber implements RuleChangedSu
      */
     @Subscribe
     public synchronized void renew(final DeleteDefaultShadowAlgorithmNameEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.setDefaultShadowAlgorithmName(null);

@@ -93,7 +93,7 @@ public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscr
      */
     @Subscribe
     public synchronized void renew(final DeleteCompatibleEncryptTableEvent event) {
-        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());

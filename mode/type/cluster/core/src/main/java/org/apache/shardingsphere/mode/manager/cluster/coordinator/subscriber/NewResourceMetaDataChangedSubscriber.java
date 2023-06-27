@@ -109,7 +109,6 @@ public final class NewResourceMetaDataChangedSubscriber {
     @Subscribe
     public synchronized void renew(final DropTableEvent event) {
         contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), null);
-        
     }
     
     /**

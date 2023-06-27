@@ -96,6 +96,9 @@ public final class BroadcastConfigurationSubscriber implements RuleChangedSubscr
      */
     @Subscribe
     public synchronized void renew(final DeleteBroadcastTableEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         BroadcastRuleConfiguration config = database.getRuleMetaData().getSingleRule(BroadcastRule.class).getConfiguration();
         config.getTables().clear();

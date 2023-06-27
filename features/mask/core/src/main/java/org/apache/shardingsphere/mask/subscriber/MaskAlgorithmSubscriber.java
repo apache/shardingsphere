@@ -69,6 +69,9 @@ public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DeleteMaskAlgorithmEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
         config.getMaskAlgorithms().remove(event.getAlgorithmName());
