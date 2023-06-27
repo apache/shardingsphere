@@ -51,7 +51,7 @@ public final class ShardingSphereSchemaDataRegistrySubscriber {
     public void update(final ShardingSphereSchemaDataAlteredEvent event) {
         String databaseName = event.getDatabaseName();
         String schemaName = event.getSchemaName();
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(String.format(GlobalLockNames.SYS_DATA.getLockName(), event.getDatabaseName(), event.getSchemaName(), event.getTableName()));
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(String.format(GlobalLockNames.STATISTICS.getLockName(), event.getDatabaseName(), event.getSchemaName(), event.getTableName()));
         if (lockPersistService.tryLock(lockDefinition, 10_000)) {
             try {
                 persistService.getTableRowDataPersistService().persist(databaseName, schemaName, event.getTableName(), event.getAddedRows());
