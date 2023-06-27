@@ -47,11 +47,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * ShardingSphere data schedule collector.
+ * ShardingSphere statistics schedule collector.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ShardingSphereDataScheduleCollector {
+public final class ShardingSphereStatisticsScheduleCollector {
     
     private final ScheduledExecutorService dataCollectorExecutor = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("data-collect-%d"));
     
@@ -101,7 +101,7 @@ public final class ShardingSphereDataScheduleCollector {
         }
         
         private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
-                                     final Map<String, ShardingSphereDatabase> databases, final ShardingSphereStatistics changedShardingSphereData) {
+                                     final Map<String, ShardingSphereDatabase> databases, final ShardingSphereStatistics statistics) {
             Optional<ShardingSphereStatisticsCollector> dataCollector = TypedSPILoader.findService(ShardingSphereStatisticsCollector.class, table.getName());
             if (!dataCollector.isPresent()) {
                 return;
@@ -112,11 +112,12 @@ public final class ShardingSphereDataScheduleCollector {
             } catch (final SQLException ex) {
                 log.error("Collect data failed!", ex);
             }
-            tableData.ifPresent(optional -> changedShardingSphereData.getDatabaseData().computeIfAbsent(databaseName.toLowerCase(), key -> new ShardingSphereDatabaseData())
+            tableData.ifPresent(optional -> statistics.getDatabaseData().computeIfAbsent(databaseName.toLowerCase(), key -> new ShardingSphereDatabaseData())
                     .getSchemaData().computeIfAbsent(schemaName, key -> new ShardingSphereSchemaData()).getTableData().put(table.getName().toLowerCase(), optional));
         }
         
-        private void compareUpdateAndSendEvent(final ShardingSphereStatistics shardingSphereData, final ShardingSphereStatistics changedShardingSphereData, final Map<String, ShardingSphereDatabase> databases) {
+        private void compareUpdateAndSendEvent(final ShardingSphereStatistics shardingSphereData, final ShardingSphereStatistics changedShardingSphereData,
+                                               final Map<String, ShardingSphereDatabase> databases) {
             changedShardingSphereData.getDatabaseData().forEach((key, value) -> compareUpdateAndSendEventForDatabase(key, shardingSphereData.getDatabaseData().get(key), value, shardingSphereData,
                     databases.get(key.toLowerCase())));
         }

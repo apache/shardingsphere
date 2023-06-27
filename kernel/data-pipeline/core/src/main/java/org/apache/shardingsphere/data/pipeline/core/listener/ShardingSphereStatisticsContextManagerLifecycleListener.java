@@ -22,10 +22,10 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
 /**
- * ShardingSphere data context manager lifecycle listener.
+ * ShardingSphere statistics context manager lifecycle listener.
  */
 // TODO now Move to mode-core module, and also referenced ShardingSphereDataJobWorker & ShardingSphereDataScheduleCollector
-public final class ShardingSphereDataContextManagerLifecycleListener implements ContextManagerLifecycleListener {
+public final class ShardingSphereStatisticsContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
     public void onInitialized(final String databaseName, final ContextManager contextManager) {
@@ -35,7 +35,7 @@ public final class ShardingSphereDataContextManagerLifecycleListener implements 
         if (InstanceType.PROXY != contextManager.getInstanceContext().getInstance().getMetaData().getType()) {
             return;
         }
-        ShardingSphereDataJobWorker.initialize(contextManager);
+        ShardingSphereStatisticsJobWorker.initialize(contextManager);
     }
     
     @Override

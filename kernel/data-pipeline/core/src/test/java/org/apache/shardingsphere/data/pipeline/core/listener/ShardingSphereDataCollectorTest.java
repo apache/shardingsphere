@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.listener;
 
-import org.apache.shardingsphere.data.pipeline.core.listener.ShardingSphereDataScheduleCollector.ShardingSphereDataCollectorRunnable;
+import org.apache.shardingsphere.data.pipeline.core.listener.ShardingSphereStatisticsScheduleCollector.ShardingSphereDataCollectorRunnable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
