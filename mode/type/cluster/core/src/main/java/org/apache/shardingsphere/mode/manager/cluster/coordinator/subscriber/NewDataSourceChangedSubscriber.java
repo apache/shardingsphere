@@ -72,6 +72,9 @@ public final class NewDataSourceChangedSubscriber {
      */
     @Subscribe
     public void renew(final UnregisterStorageUnitEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         contextManager.unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
     }
 }

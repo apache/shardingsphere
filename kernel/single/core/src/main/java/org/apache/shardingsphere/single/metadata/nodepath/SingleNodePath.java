@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.metadata.converter;
+package org.apache.shardingsphere.single.metadata.nodepath;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Shadow node path.
+ * Single node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShadowNodePath {
-    
-    public static final String DATA_SOURCES = "data_sources";
+public final class SingleNodePath {
     
     public static final String TABLES = "tables";
     
-    public static final String ALGORITHMS = "algorithms";
-    
-    public static final String DEFAULT_ALGORITHM = "default_algorithm_name";
-    
-    private static final RuleNodePath INSTANCE = new RuleNodePath("shadow", Arrays.asList(DATA_SOURCES, TABLES, ALGORITHMS), Collections.singleton(DEFAULT_ALGORITHM));
+    private static final RuleNodePath INSTANCE = new RuleNodePath("single", Collections.emptyList(), Collections.singleton(TABLES));
     
     /**
      * Get instance of rule node path.

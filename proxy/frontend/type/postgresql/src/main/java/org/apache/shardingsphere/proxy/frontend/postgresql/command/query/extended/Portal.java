@@ -34,11 +34,10 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -93,7 +92,7 @@ public final class Portal {
             ((ParameterAware) sqlStatementContext).setUpParameters(params);
         }
         DatabaseType protocolType = ProxyContext.getInstance().getDatabase(databaseName).getProtocolType();
-        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, new HintValueContext(), true);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(), true);
         databaseConnectionManager.getConnectionSession().setQueryContext(queryContext);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolType, queryContext, databaseConnectionManager.getConnectionSession(), true);
     }

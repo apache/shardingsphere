@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.binder.statement.UnknownSQLStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -103,13 +104,13 @@ class MySQLComStmtExecuteExecutorTest {
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         SQLStatementContext selectStatementContext = prepareSelectStatementContext();
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
-                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE id = ?", selectStatementContext, Collections.emptyList()));
+                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE id = ?", selectStatementContext, new HintValueContext(), Collections.emptyList()));
         UpdateStatementContext updateStatementContext = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
         when(updateStatementContext.getSqlStatement()).thenReturn(prepareUpdateStatement());
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2))
-                .thenReturn(new MySQLServerPreparedStatement("UPDATE tbl SET col=1 WHERE id = ?", updateStatementContext, Collections.emptyList()));
+                .thenReturn(new MySQLServerPreparedStatement("UPDATE tbl SET col=1 WHERE id = ?", updateStatementContext, new HintValueContext(), Collections.emptyList()));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(3))
-                .thenReturn(new MySQLServerPreparedStatement("COMMIT", new UnknownSQLStatementContext(new MySQLCommitStatement()), Collections.emptyList()));
+                .thenReturn(new MySQLServerPreparedStatement("COMMIT", new UnknownSQLStatementContext(new MySQLCommitStatement()), new HintValueContext(), Collections.emptyList()));
     }
     
     private SQLStatementContext prepareSelectStatementContext() {

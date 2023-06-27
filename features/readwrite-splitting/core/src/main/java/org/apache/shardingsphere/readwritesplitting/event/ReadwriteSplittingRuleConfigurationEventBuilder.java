@@ -28,7 +28,7 @@ import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwr
 import org.apache.shardingsphere.readwritesplitting.event.datasource.DeleteReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
-import org.apache.shardingsphere.readwritesplitting.metadata.converter.ReadwriteSplittingNodePath;
+import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingNodePath;
 
 import java.util.Optional;
 

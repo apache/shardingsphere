@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.single.event.config.AddSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.DeleteSingleTableEvent;
-import org.apache.shardingsphere.single.metadata.converter.SingleNodePath;
+import org.apache.shardingsphere.single.metadata.nodepath.SingleNodePath;
 
 import java.util.Optional;
 
@@ -39,7 +39,7 @@ public final class SingleRuleConfigurationEventBuilder implements RuleConfigurat
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!singleRuleNodePath.getUniqueItem(SingleNodePath.TABLES).isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!singleRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
         if (singleRuleNodePath.getUniqueItem(SingleNodePath.TABLES).isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {

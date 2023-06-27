@@ -42,7 +42,7 @@ class PostgreSQLComParsePacketTest {
         when(payload.readInt2()).thenReturn(1);
         when(payload.readInt4()).thenReturn(0);
         when(payload.readStringNul()).thenReturn("sql");
-        PostgreSQLComParsePacket actual = new PostgreSQLComParsePacket(payload);
+        PostgreSQLComParsePacket actual = new PostgreSQLComParsePacket(payload, false);
         actual.write(payload);
         assertThat(actual.getIdentifier(), is(PostgreSQLCommandPacketType.PARSE_COMMAND));
         assertThat(actual.getSQL(), is("sql"));

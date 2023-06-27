@@ -88,6 +88,9 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DeleteShadowTableEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getTables().remove(event.getTableName());

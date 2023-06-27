@@ -77,16 +77,18 @@ public final class ProxyBackendHandlerFactory {
      * @param databaseType database type
      * @param sql SQL to be executed
      * @param connectionSession connection session
+     * @param hintValueContext hint value context
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql,
+                                                  final ConnectionSession connectionSession, final HintValueContext hintValueContext) throws SQLException {
         if (Strings.isNullOrEmpty(SQLUtils.trimComment(sql))) {
             return new SkipBackendHandler(new EmptyStatement());
         }
         SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(getProtocolType(databaseType, connectionSession).getType()).parse(sql, false);
-        return newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
+        return newInstance(databaseType, sql, sqlStatement, connectionSession, hintValueContext);
     }
     
     /**

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.yaml.swapper;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
-import org.apache.shardingsphere.encrypt.metadata.converter.EncryptNodePath;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptNodePath;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;

@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.broadcast.event.config.AddBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.config.AlterBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.config.DeleteBroadcastTableEvent;
-import org.apache.shardingsphere.broadcast.metadata.converter.BroadcastNodePath;
+import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastNodePath;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;

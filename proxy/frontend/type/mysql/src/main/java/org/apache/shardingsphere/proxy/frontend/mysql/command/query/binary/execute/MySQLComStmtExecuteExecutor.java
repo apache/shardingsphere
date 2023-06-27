@@ -31,7 +31,6 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -77,7 +76,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(params);
         }
-        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, new HintValueContext(), true);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(), true);
         connectionSession.setQueryContext(queryContext);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "MySQL"), queryContext, connectionSession, true);
         ResponseHeader responseHeader = proxyBackendHandler.execute();

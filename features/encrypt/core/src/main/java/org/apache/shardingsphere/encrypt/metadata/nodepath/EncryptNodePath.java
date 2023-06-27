@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.metadata.converter;
+package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

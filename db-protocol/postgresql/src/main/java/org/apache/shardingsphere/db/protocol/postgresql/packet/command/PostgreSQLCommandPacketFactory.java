@@ -46,29 +46,31 @@ public final class PostgreSQLCommandPacketFactory {
      *
      * @param commandPacketType command packet type for PostgreSQL
      * @param payload packet payload for PostgreSQL
+     * @param sqlCommentParseEnabled SQL comment parse enabled
      * @return created instance
      */
-    public static PostgreSQLCommandPacket newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload) {
+    public static PostgreSQLCommandPacket newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final boolean sqlCommentParseEnabled) {
         if (!PostgreSQLCommandPacketType.isExtendedProtocolPacketType(commandPacketType)) {
             payload.getByteBuf().skipBytes(1);
-            return getPostgreSQLCommandPacket(commandPacketType, payload);
+            return getPostgreSQLCommandPacket(commandPacketType, payload, sqlCommentParseEnabled);
         }
         List<PostgreSQLCommandPacket> result = new ArrayList<>();
         while (payload.hasCompletePacket()) {
             PostgreSQLCommandPacketType type = PostgreSQLCommandPacketType.valueOf(payload.readInt1());
             int length = payload.getByteBuf().getInt(payload.getByteBuf().readerIndex());
             PostgreSQLPacketPayload slicedPayload = new PostgreSQLPacketPayload(payload.getByteBuf().readSlice(length), payload.getCharset());
-            result.add(getPostgreSQLCommandPacket(type, slicedPayload));
+            result.add(getPostgreSQLCommandPacket(type, slicedPayload, sqlCommentParseEnabled));
         }
         return new PostgreSQLAggregatedCommandPacket(result);
     }
     
-    private static PostgreSQLCommandPacket getPostgreSQLCommandPacket(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload) {
+    private static PostgreSQLCommandPacket getPostgreSQLCommandPacket(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload,
+                                                                      final boolean sqlCommentParseEnabled) {
         switch (commandPacketType) {
             case SIMPLE_QUERY:
-                return new PostgreSQLComQueryPacket(payload);
+                return new PostgreSQLComQueryPacket(payload, sqlCommentParseEnabled);
             case PARSE_COMMAND:
-                return new PostgreSQLComParsePacket(payload);
+                return new PostgreSQLComParsePacket(payload, sqlCommentParseEnabled);
             case BIND_COMMAND:
                 return new PostgreSQLComBindPacket(payload);
             case DESCRIBE_COMMAND:

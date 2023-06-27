@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.event.encryptor.DeleteEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.table.AddEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.table.AlterEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.table.DeleteEncryptTableEvent;
-import org.apache.shardingsphere.encrypt.metadata.converter.EncryptNodePath;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptNodePath;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -62,13 +62,13 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
         if (Type.UPDATED == event.getType()) {
             return Optional.of(new AlterEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue()));
+        return Optional.of(new DeleteEncryptTableEvent(databaseName, groupName));
     }
     
     private Optional<GovernanceEvent> createEncryptorEvent(final String databaseName, final String encryptorName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return Optional.of(new AlterEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue()));
+        return Optional.of(new DeleteEncryptorEvent(databaseName, encryptorName));
     }
 }
