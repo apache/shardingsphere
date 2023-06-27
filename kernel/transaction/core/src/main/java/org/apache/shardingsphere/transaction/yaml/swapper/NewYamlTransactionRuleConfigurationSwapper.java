@@ -61,7 +61,7 @@ public final class NewYamlTransactionRuleConfigurationSwapper implements NewYaml
         }
         return new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties());
     }
-
+    
     private TransactionRuleConfiguration swapToObject(final YamlTransactionRuleConfiguration yamlConfig) {
         return new TransactionRuleConfiguration(yamlConfig.getDefaultType(), yamlConfig.getProviderType(), null == yamlConfig.getProps() ? new Properties() : yamlConfig.getProps());
     }
