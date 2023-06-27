@@ -84,7 +84,7 @@ class ShardingSphereDataCollectorTest {
         Collection<ShardingSphereColumn> columns = new LinkedList<>();
         columns.add(new ShardingSphereColumn("column1", Types.INTEGER, false, false, false, true, false));
         columns.add(new ShardingSphereColumn("column2", Types.INTEGER, false, false, false, true, false));
-        when(table.getColumns()).thenReturn(columns);
+        when(table.getColumnValues()).thenReturn(columns);
         return result;
     }
 }

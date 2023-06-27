@@ -32,8 +32,6 @@ services:
   shardingsphere-jdbc-agent-logging:
     image: apache/shardingsphere-jdbc-agent-logging-file-test
     container_name: shardingsphere-jdbc-agent-logging-file
-    ports:
-      - "18080:80"
     links:
       - "mysql:mysql.agent.jdbc.logging.host"
     volumes:

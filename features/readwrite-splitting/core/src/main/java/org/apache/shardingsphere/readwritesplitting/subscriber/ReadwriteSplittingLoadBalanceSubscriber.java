@@ -32,7 +32,10 @@ import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadB
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Readwrite-splitting load-balance subscriber.
@@ -55,10 +58,10 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChange
         if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
-        config.getLoadBalancers().put(event.getLoadBalanceName(),
-                swapToAlgorithmConfig(instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
+        AlgorithmConfiguration needToAltered =
+                swapToAlgorithmConfig(instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(),
+                getConfig(databases.get(event.getDatabaseName()), event.getLoadBalanceName(), needToAltered)));
     }
     
     /**
@@ -72,6 +75,26 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChange
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
         config.getLoadBalancers().remove(event.getLoadBalanceName());
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private ReadwriteSplittingRuleConfiguration getConfig(final ShardingSphereDatabase database, final String loadBalanceName, final AlgorithmConfiguration needToAltered) {
+        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
+        if (rule.isPresent()) {
+            return getConfig((ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration(), loadBalanceName, needToAltered);
+        }
+        Map<String, AlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+        loadBalancers.put(loadBalanceName, needToAltered);
+        return new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), loadBalancers);
+    }
+    
+    private ReadwriteSplittingRuleConfiguration getConfig(final ReadwriteSplittingRuleConfiguration result, final String loadBalanceName, final AlgorithmConfiguration needToAltered) {
+        if (null == result.getLoadBalancers()) {
+            Map<String, AlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+            loadBalancers.put(loadBalanceName, needToAltered);
+            return new ReadwriteSplittingRuleConfiguration(result.getDataSources(), loadBalancers);
+        }
+        result.getLoadBalancers().put(loadBalanceName, needToAltered);
+        return result;
     }
     
     private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {

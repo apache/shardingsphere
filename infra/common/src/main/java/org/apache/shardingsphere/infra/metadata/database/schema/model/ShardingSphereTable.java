@@ -118,7 +118,7 @@ public final class ShardingSphereTable {
      *
      * @return column meta data collection
      */
-    public Collection<ShardingSphereColumn> getColumns() {
+    public Collection<ShardingSphereColumn> getColumnValues() {
         return columns.values();
     }
     
@@ -165,7 +165,7 @@ public final class ShardingSphereTable {
      *
      * @return index meta data collection
      */
-    public Collection<ShardingSphereIndex> getIndexes() {
+    public Collection<ShardingSphereIndex> getIndexValues() {
         return indexes.values();
     }
     
@@ -184,7 +184,7 @@ public final class ShardingSphereTable {
      *
      * @return constraint meta data collection
      */
-    public Collection<ShardingSphereConstraint> getConstraints() {
+    public Collection<ShardingSphereConstraint> getConstraintValues() {
         return constraints.values();
     }
 }
