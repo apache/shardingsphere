@@ -54,14 +54,14 @@ public final class NewPropertiesPersistService implements GlobalPersistService<P
     
     @Override
     public Collection<MetaDataVersion> persistConfig(final Properties props) {
-        if (Strings.isNullOrEmpty(getActiveVersion())) {
-            repository.persist(NewGlobalNode.getPropsActiveVersionNode(), DEFAULT_VERSION);
-        }
         List<String> versions = repository.getChildrenKeys(NewGlobalNode.getPropsVersionsNode());
         String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
         String persistKey = NewGlobalNode.getPropsVersionNode(nextActiveVersion);
         repository.persist(persistKey, YamlEngine.marshal(props));
-        return Collections.singletonList(new MetaDataVersion(persistKey, getActiveVersion(), nextActiveVersion));
+        if (Strings.isNullOrEmpty(getActiveVersion())) {
+            repository.persist(NewGlobalNode.getPropsActiveVersionNode(), DEFAULT_VERSION);
+        }
+        return Collections.singletonList(new MetaDataVersion(NewGlobalNode.getPropsRootNode(), getActiveVersion(), nextActiveVersion));
     }
     
     @Override

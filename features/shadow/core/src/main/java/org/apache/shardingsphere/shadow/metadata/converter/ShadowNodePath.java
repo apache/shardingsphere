@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.metadata.converter;
+package org.apache.shardingsphere.shadow.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,16 +25,20 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Readwrite-splitting node converter.
+ * Shadow node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadwriteSplittingNodeConverter {
+public final class ShadowNodePath {
     
     public static final String DATA_SOURCES = "data_sources";
     
-    public static final String LOAD_BALANCERS = "load_balancers";
+    public static final String TABLES = "tables";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("readwrite_splitting", Arrays.asList(DATA_SOURCES, LOAD_BALANCERS), Collections.emptyList());
+    public static final String ALGORITHMS = "algorithms";
+    
+    public static final String DEFAULT_ALGORITHM = "default_algorithm_name";
+    
+    private static final RuleNodePath INSTANCE = new RuleNodePath("shadow", Arrays.asList(DATA_SOURCES, TABLES, ALGORITHMS), Collections.singleton(DEFAULT_ALGORITHM));
     
     /**
      * Get instance of rule node path.

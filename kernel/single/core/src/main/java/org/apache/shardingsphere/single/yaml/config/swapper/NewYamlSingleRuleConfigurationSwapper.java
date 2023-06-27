@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
-import org.apache.shardingsphere.single.metadata.converter.SingleNodeConverter;
+import org.apache.shardingsphere.single.metadata.converter.SingleNodePath;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 
 import java.util.Collection;
@@ -35,11 +35,11 @@ import java.util.Collections;
  */
 public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<SingleRuleConfiguration> {
     
-    private final RuleNodePath singleRuleNodePath = SingleNodeConverter.getInstance();
+    private final RuleNodePath singleRuleNodePath = SingleNodePath.getInstance();
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final SingleRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(SingleNodeConverter.TABLES, YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(SingleNodePath.TABLES, YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlSingleRuleConfiguration swapToYamlConfiguration(final SingleRuleConfiguration data) {
@@ -52,7 +52,7 @@ public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleC
     @Override
     public SingleRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            if (singleRuleNodePath.getUniqueRuleItemNodePaths(SingleNodeConverter.TABLES).isValidatedPath(each.getKey())) {
+            if (singleRuleNodePath.getUniqueItem(SingleNodePath.TABLES).isValidatedPath(each.getKey())) {
                 return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class));
             }
         }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.broadcast.yaml.swapper;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
-import org.apache.shardingsphere.broadcast.metadata.converter.BroadcastNodeConverter;
+import org.apache.shardingsphere.broadcast.metadata.converter.BroadcastNodePath;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -35,7 +35,7 @@ import java.util.Collections;
  */
 public final class NewYamlBroadcastRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<BroadcastRuleConfiguration> {
     
-    private final RuleNodePath broadcastRuleNodePath = BroadcastNodeConverter.getInstance();
+    private final RuleNodePath broadcastRuleNodePath = BroadcastNodePath.getInstance();
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final BroadcastRuleConfiguration data) {
@@ -44,13 +44,13 @@ public final class NewYamlBroadcastRuleConfigurationSwapper implements NewYamlRu
         }
         YamlBroadcastRuleConfiguration yamlBroadcastRuleConfiguration = new YamlBroadcastRuleConfiguration();
         yamlBroadcastRuleConfiguration.getTables().addAll(data.getTables());
-        return Collections.singleton(new YamlDataNode(BroadcastNodeConverter.TABLES, YamlEngine.marshal(yamlBroadcastRuleConfiguration)));
+        return Collections.singleton(new YamlDataNode(BroadcastNodePath.TABLES, YamlEngine.marshal(yamlBroadcastRuleConfiguration)));
     }
     
     @Override
     public BroadcastRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            if (broadcastRuleNodePath.getRootNodePath().isValidatedPath(each.getKey())) {
+            if (broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())) {
                 YamlBroadcastRuleConfiguration yamlBroadcastRuleConfiguration = YamlEngine.unmarshal(each.getValue(), YamlBroadcastRuleConfiguration.class);
                 return new BroadcastRuleConfiguration(yamlBroadcastRuleConfiguration.getTables());
             }

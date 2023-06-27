@@ -25,10 +25,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Global node converter.
+ * Global node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GlobalNodeConverter {
+public final class GlobalNodePath {
     
     private static final String RULES_NODE = "rules";
     

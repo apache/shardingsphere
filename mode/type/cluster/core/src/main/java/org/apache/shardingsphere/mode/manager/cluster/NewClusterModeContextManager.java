@@ -157,12 +157,8 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     
     @Override
     public void alterProperties(final Properties props) {
-        contextManager.getMetaDataContexts().getPersistService().getPropsService().persist(props);
-    }
-    
-    @Override
-    public Collection<MetaDataVersion> newAlterProperties(final Properties props) {
-        return contextManager.getMetaDataContexts().getPersistService().getPropsService().persistConfig(props);
+        Collection<MetaDataVersion> versions = contextManager.getMetaDataContexts().getPersistService().getPropsService().persistConfig(props);
+        contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(versions);
     }
     
     @Override
