@@ -27,4 +27,4 @@ rules:
 
 ## Related References
 
-- [Single Table](en/features/sharding/concept/#single-table)
+- [Single Table](/en/features/sharding/concept/#single-table)
