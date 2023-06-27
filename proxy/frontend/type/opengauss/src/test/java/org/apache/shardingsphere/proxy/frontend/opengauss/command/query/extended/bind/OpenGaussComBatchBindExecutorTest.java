@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseTy
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
@@ -84,7 +85,8 @@ class OpenGaussComBatchBindExecutorTest {
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ConnectionSession connectionSession = mockConnectionSession();
-        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, Collections.emptyList(), Collections.emptyList());
+        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), Collections.emptyList(),
+                Collections.emptyList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statement, serverPreparedStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
