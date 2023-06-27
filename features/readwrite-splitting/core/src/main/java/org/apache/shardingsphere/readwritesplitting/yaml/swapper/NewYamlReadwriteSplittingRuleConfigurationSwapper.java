@@ -37,6 +37,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * TODO Rename YamlReadwriteSplittingRuleConfigurationSwapper when metadata structure adjustment completed. #25485
@@ -51,7 +52,7 @@ public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements 
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final ReadwriteSplittingRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
-        for (Map.Entry<String, AlgorithmConfiguration> entry : data.getLoadBalancers().entrySet()) {
+        for (Entry<String, AlgorithmConfiguration> entry : data.getLoadBalancers().entrySet()) {
             result.add(new YamlDataNode(readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodePath.LOAD_BALANCERS).getPath(entry.getKey()),
                     YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
