@@ -276,12 +276,12 @@ public final class ContextManager implements AutoCloseable {
      * @param dataSourceProps data source properties
      */
     @SuppressWarnings("rawtypes")
-    public synchronized void registerStorageUnit(final String databaseName, final String storageUnitName, final Map<String, DataSourceProperties> dataSourceProps) {
+    public synchronized void registerStorageUnit(final String databaseName, final Map<String, DataSourceProperties> dataSourceProps) {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
             SwitchingResource switchingResource =
-                    new NewResourceSwitchManager().registerStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), storageUnitName, dataSourceProps);
+                    new NewResourceSwitchManager().registerStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), dataSourceProps);
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed", databaseName, ex);

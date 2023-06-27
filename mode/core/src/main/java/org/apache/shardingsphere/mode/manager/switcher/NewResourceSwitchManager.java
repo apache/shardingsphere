@@ -45,7 +45,8 @@ public final class NewResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource registerStorageUnit(final ShardingSphereResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> dataSourceProps) {
-        return new SwitchingResource(resourceMetaData, DataSourcePoolCreator.create(dataSourceProps), Collections.emptyMap());
+        return new SwitchingResource(resourceMetaData, DataSourcePoolCreator.createStorageResource(dataSourceProps),
+                new StorageResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap()), dataSourceProps);
     }
     
     /**
@@ -58,14 +59,11 @@ public final class NewResourceSwitchManager {
      */
     public SwitchingResource alterStorageUnit(final ShardingSphereResourceMetaData resourceMetaData, final String storageUnitName, final Map<String, DataSourceProperties> dataSourceProps) {
         return new SwitchingResource(resourceMetaData, DataSourcePoolCreator.createStorageResource(dataSourceProps),
-                Collections.singletonMap(storageUnitName, resourceMetaData.getDataSources().remove(storageUnitName)));
-    public SwitchingResource alterStorageUnit(final ShardingSphereResourceMetaData resourceMetaData, final String storageUnitName, final DataSourceProperties dataSourceProps) {
-        return new SwitchingResource(resourceMetaData, DataSourcePoolCreator.createStorageResource(Collections.singletonMap(storageUnitName, dataSourceProps)),
-                getStaleStorageResource(resourceMetaData, storageUnitName, dataSourceProps), Collections.singletonMap(storageUnitName, dataSourceProps));
+                getStaleStorageResource(resourceMetaData, dataSourceProps), dataSourceProps);
     }
     
-    private StorageResource getStaleStorageResource(final ShardingSphereResourceMetaData resourceMetaData, final String storageUnitName, final DataSourceProperties dataSourceProps) {
-        StorageResourceWithProperties toBeChangedStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(Collections.singletonMap(storageUnitName, dataSourceProps));
+    private StorageResource getStaleStorageResource(final ShardingSphereResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> dataSourceProps) {
+        StorageResourceWithProperties toBeChangedStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(dataSourceProps);
         Map<String, DataSource> storageNodes = new LinkedHashMap<>(resourceMetaData.getDataSources().size(), 1F);
         storageNodes.putAll(getToBeChangedDataSources(resourceMetaData.getDataSources(), toBeChangedStorageResource.getStorageNodes()));
         return new StorageResource(storageNodes, Collections.emptyMap(), Collections.emptyMap());
