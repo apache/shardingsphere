@@ -39,7 +39,7 @@ public final class SingleRuleConfigurationEventBuilder implements RuleConfigurat
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!singleRuleNodePath.getUniqueItem(SingleNodePath.TABLES).isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!singleRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
         if (singleRuleNodePath.getUniqueItem(SingleNodePath.TABLES).isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {

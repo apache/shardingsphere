@@ -35,6 +35,9 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.update.DropReadwriteSplittingRuleStatementUpdater;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
+import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
+import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
@@ -98,6 +101,9 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
         if (null != currentRuleConfig) {
             updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         }
+        if (sqlStatement instanceof LoadSingleTableStatement || sqlStatement instanceof SetDefaultSingleTableStorageUnitStatement) {
+            return ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), currentRuleConfig);
+        }
         return ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), toBeCreatedRuleConfig);
     }
     
@@ -106,6 +112,9 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
         final RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
         final RuleConfiguration toBeDroppedRuleConfig = updater.buildToBeDroppedRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
+        if (sqlStatement instanceof UnloadSingleTableStatement) {
+            return ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), currentRuleConfig);
+        }
         ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().removeRuleConfiguration(database.getName(), toBeDroppedRuleConfig);
         return ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
     }
