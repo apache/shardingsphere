@@ -95,6 +95,7 @@ jobs:
 
   e2e-mixture-rule:
     name: mixture rule
+    needs: build-e2e-image
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
