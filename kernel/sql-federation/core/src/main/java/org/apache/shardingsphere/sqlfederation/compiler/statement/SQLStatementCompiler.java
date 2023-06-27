@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.statement;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.RelOptPlanner;
@@ -36,6 +37,7 @@ import java.util.Objects;
  * SQL statement compiler.
  */
 @RequiredArgsConstructor
+@EqualsAndHashCode
 public final class SQLStatementCompiler {
     
     private final SqlToRelConverter converter;

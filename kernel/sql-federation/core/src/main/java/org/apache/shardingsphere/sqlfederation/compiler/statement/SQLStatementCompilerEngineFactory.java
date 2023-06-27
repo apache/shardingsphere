@@ -43,7 +43,7 @@ public final class SQLStatementCompilerEngineFactory {
      */
     public static SQLStatementCompilerEngine getSQLStatementCompilerEngine(final String databaseName, final String schemaName, final SQLStatementCompiler sqlStatementCompiler,
                                                                            final CacheOption cacheOption) {
-        String cacheKey = databaseName + "." + schemaName;
+        String cacheKey = databaseName + "." + schemaName + "." + sqlStatementCompiler.hashCode();
         SQLStatementCompilerEngine result = COMPILER_ENGINES.get(cacheKey);
         if (null == result) {
             result = COMPILER_ENGINES.computeIfAbsent(cacheKey, unused -> new SQLStatementCompilerEngine(sqlStatementCompiler, cacheOption));
