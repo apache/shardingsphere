@@ -116,3 +116,7 @@ rules:
         type: SQL_HINT
         props:
           foo: bar
+          
+props:
+  sql-show: true
+

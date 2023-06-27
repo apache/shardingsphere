@@ -43,3 +43,7 @@ rules:
           maskAlgorithm: mask_before_special_chars_mask
         telephone:
           maskAlgorithm: keep_first_n_last_m_mask
+          
+props:
+  sql-show: true
+
