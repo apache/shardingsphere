@@ -156,15 +156,6 @@ public interface ModeContextManager {
     void alterProperties(Properties props);
     
     /**
-     * TODO Need to DistSQL handle call it
-     * New alter properties.
-     *
-     * @param props pros
-     * @return meta data versions
-     */
-    Collection<MetaDataVersion> newAlterProperties(Properties props);
-    
-    /**
      * TODO Remove to MetaDataPersistService
      * Get active version by key.
      *
