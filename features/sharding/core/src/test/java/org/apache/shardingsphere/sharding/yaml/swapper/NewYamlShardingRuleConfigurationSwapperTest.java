@@ -68,11 +68,11 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         assertThat(iterator.next().getKey(), is("default_strategies/default_table_strategy"));
         assertThat(iterator.next().getKey(), is("default_strategies/default_key_generate_strategy"));
         assertThat(iterator.next().getKey(), is("default_strategies/default_audit_strategy"));
+        assertThat(iterator.next().getKey(), is("default_strategies/default_sharding_column"));
         assertThat(iterator.next().getKey(), is("tables/LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("tables/SUB_LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("auto_tables/auto_table"));
         assertThat(iterator.next().getKey(), is("binding_tables/foo"));
-        assertThat(iterator.next().getKey(), is("default_strategies/default_sharding_column"));
     }
     
     private ShardingRuleConfiguration createMaximumShardingRule() {
