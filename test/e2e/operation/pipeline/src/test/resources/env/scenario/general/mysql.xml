@@ -29,7 +29,7 @@
         `t_unsigned_tinyint` tinyint UNSIGNED NULL,
         `t_float` float NULL,
         `t_double` double NULL,
-        `t_decimal` decimal ( 10, 2 ) NULL,
+        `t_decimal` decimal ( 24, 10 ) NULL,
         `t_timestamp` timestamp(3) NULL,
         `t_datetime` datetime(6) NULL,
         `t_date` date NULL,
