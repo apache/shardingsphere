@@ -36,7 +36,7 @@ import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -109,7 +109,7 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
         }
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSourceConfigs = new LinkedList<>();
         dataSourceConfigs.add(needToAddedConfig);
-        return new ReadwriteSplittingRuleConfiguration(dataSourceConfigs, Collections.emptyMap());
+        return new ReadwriteSplittingRuleConfiguration(dataSourceConfigs, new LinkedHashMap<>());
     }
     
     private ReadwriteSplittingRuleConfiguration getConfig(final ReadwriteSplittingRuleConfiguration result, final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {

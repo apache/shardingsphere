@@ -33,8 +33,8 @@ import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadB
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -88,7 +88,7 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChange
         }
         Map<String, AlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
         loadBalancers.put(loadBalanceName, needToAltered);
-        return new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), loadBalancers);
+        return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(), loadBalancers);
     }
     
     private ReadwriteSplittingRuleConfiguration getConfig(final ReadwriteSplittingRuleConfiguration result, final String loadBalanceName, final AlgorithmConfiguration needToAltered) {
