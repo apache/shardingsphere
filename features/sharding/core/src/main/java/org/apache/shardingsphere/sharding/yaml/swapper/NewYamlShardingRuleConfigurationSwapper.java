@@ -137,6 +137,10 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
     
     @Override
     public ShardingRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+        if (dataNodes.stream().noneMatch(each -> shardingRuleNodePath.getRoot().isValidatedPath(each.getKey()))) {
+            // TODO refactor this use Optional
+            return null;
+        }
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (YamlDataNode each : dataNodes) {
             shardingRuleNodePath.getNamedItem(ShardingNodePath.TABLES).getName(each.getKey())

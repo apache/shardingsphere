@@ -33,7 +33,8 @@ import org.apache.shardingsphere.infra.rule.RuleChangedSubscriber;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
-import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -61,15 +62,7 @@ public final class EncryptTableSubscriber implements RuleChangedSubscriber {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptTableRuleConfiguration needToAddedConfig = swapEncryptTableRuleConfig(
                 instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        EncryptRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = (EncryptRuleConfiguration) rule.get().getConfiguration();
-            config.getTables().add(needToAddedConfig);
-        } else {
-            config = new EncryptRuleConfiguration(Collections.singletonList(needToAddedConfig), Collections.emptyMap());
-        }
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getEncryptRuleConfiguration(database, needToAddedConfig)));
     }
     
     /**
@@ -109,5 +102,20 @@ public final class EncryptTableSubscriber implements RuleChangedSubscriber {
     
     private EncryptTableRuleConfiguration swapEncryptTableRuleConfig(final String yamlContext) {
         return new YamlEncryptTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlEncryptTableRuleConfiguration.class));
+    }
+    
+    private EncryptRuleConfiguration getEncryptRuleConfiguration(final ShardingSphereDatabase database, final EncryptTableRuleConfiguration needToAddedConfig) {
+        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
+        EncryptRuleConfiguration config = rule.map(encryptRule -> getEncryptRuleConfiguration((EncryptRuleConfiguration) encryptRule.getConfiguration()))
+                .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+        config.getTables().add(needToAddedConfig);
+        return config;
+    }
+    
+    private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration config) {
+        if (null == config.getTables()) {
+            return new EncryptRuleConfiguration(new LinkedList<>(), config.getEncryptors());
+        }
+        return config;
     }
 }
