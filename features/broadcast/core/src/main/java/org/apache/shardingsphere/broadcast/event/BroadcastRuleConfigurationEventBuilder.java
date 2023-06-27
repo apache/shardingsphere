@@ -39,10 +39,10 @@ public final class BroadcastRuleConfigurationEventBuilder implements RuleConfigu
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!broadcastRuleNodePath.getRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!broadcastRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        if (broadcastRuleNodePath.getNamedRuleItemNodePath(BroadcastNodeConverter.TABLES).getNameByActiveVersion(event.getKey()).isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
+        if (broadcastRuleNodePath.getNamedItem(BroadcastNodeConverter.TABLES).getNameByActiveVersion(event.getKey()).isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createBroadcastConfigEvent(databaseName, event);
         }
         return Optional.empty();

@@ -41,14 +41,14 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!encryptRuleNodePath.getRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!encryptRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> tableName = encryptRuleNodePath.getNamedRuleItemNodePath(EncryptNodeConverter.TABLES).getNameByActiveVersion(event.getKey());
+        Optional<String> tableName = encryptRuleNodePath.getNamedItem(EncryptNodeConverter.TABLES).getNameByActiveVersion(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createEncryptConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> encryptorName = encryptRuleNodePath.getNamedRuleItemNodePath(EncryptNodeConverter.ENCRYPTORS).getNameByActiveVersion(event.getKey());
+        Optional<String> encryptorName = encryptRuleNodePath.getNamedItem(EncryptNodeConverter.ENCRYPTORS).getNameByActiveVersion(event.getKey());
         if (encryptorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createEncryptorEvent(databaseName, encryptorName.get(), event);
         }

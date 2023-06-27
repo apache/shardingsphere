@@ -41,14 +41,14 @@ public final class MaskRuleConfigurationEventBuilder implements RuleConfiguratio
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!maskRuleNodePath.getRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!maskRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> tableName = maskRuleNodePath.getNamedRuleItemNodePath(MaskNodeConverter.TABLES).getNameByActiveVersion(event.getKey());
+        Optional<String> tableName = maskRuleNodePath.getNamedItem(MaskNodeConverter.TABLES).getNameByActiveVersion(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createMaskConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> algorithmName = maskRuleNodePath.getNamedRuleItemNodePath(MaskNodeConverter.ALGORITHMS).getNameByActiveVersion(event.getKey());
+        Optional<String> algorithmName = maskRuleNodePath.getNamedItem(MaskNodeConverter.ALGORITHMS).getNameByActiveVersion(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createMaskAlgorithmEvent(databaseName, algorithmName.get(), event);
         }
