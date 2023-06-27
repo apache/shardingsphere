@@ -29,6 +29,10 @@ import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLFederationFunctionUtils {
     
+    private static final int DEFAULT_PASSWORD_DEADLINE = 90;
+    
+    private static final int DEFAULT_PASSWORD_NOTIFY_TIME = 7;
+    
     /**
      * Registry user defined function.
      * 
@@ -85,7 +89,7 @@ public final class SQLFederationFunctionUtils {
      */
     @SuppressWarnings("unused")
     public static int gsPasswordDeadline() {
-        return 90;
+        return DEFAULT_PASSWORD_DEADLINE;
     }
     
     /**
@@ -107,6 +111,6 @@ public final class SQLFederationFunctionUtils {
      */
     @SuppressWarnings("unused")
     public static int gsPasswordNotifyTime() {
-        return 7;
+        return DEFAULT_PASSWORD_NOTIFY_TIME;
     }
 }
