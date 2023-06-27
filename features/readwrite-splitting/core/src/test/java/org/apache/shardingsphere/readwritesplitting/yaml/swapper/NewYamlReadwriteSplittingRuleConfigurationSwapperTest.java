@@ -33,6 +33,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NewYamlReadwriteSplittingRuleConfigurationSwapperTest {
     
@@ -62,14 +63,13 @@ class NewYamlReadwriteSplittingRuleConfigurationSwapperTest {
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
         ReadwriteSplittingRuleConfiguration result = swapper.swapToObject(config);
-        assertThat(result.getDataSources().size(), is(0));
-        assertThat(result.getLoadBalancers().size(), is(0));
+        assertTrue(result == null);
     }
     
     @Test
     void assertSwapToObject() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0/version/0", "loadBalancerName: random\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0/versions/0", "loadBalancerName: random\n"
                 + "readDataSourceNames:\n"
                 + "- read_ds_0\n"
                 + "- read_ds_1\n"

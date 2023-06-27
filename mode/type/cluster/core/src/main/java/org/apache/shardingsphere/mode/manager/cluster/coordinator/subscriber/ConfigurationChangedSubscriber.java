@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 
@@ -43,14 +42,11 @@ import java.util.stream.Collectors;
 @SuppressWarnings("UnstableApiUsage")
 public final class ConfigurationChangedSubscriber {
     
-    private final MetaDataPersistService persistService;
-    
     private final RegistryCenter registryCenter;
     
     private final ContextManager contextManager;
     
-    public ConfigurationChangedSubscriber(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
-        this.persistService = persistService;
+    public ConfigurationChangedSubscriber(final RegistryCenter registryCenter, final ContextManager contextManager) {
         this.registryCenter = registryCenter;
         this.contextManager = contextManager;
         contextManager.getInstanceContext().getEventBusContext().register(this);
@@ -128,6 +124,6 @@ public final class ConfigurationChangedSubscriber {
     
     private Map<String, StorageNodeDataSource> getDisabledDataSources() {
         return registryCenter.getStorageNodeStatusService().loadStorageNodes().entrySet()
-                .stream().filter(entry -> DataSourceState.DISABLED == entry.getValue().getStatus()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .stream().filter(entry -> DataSourceState.DISABLED == entry.getValue().getStatus()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 }

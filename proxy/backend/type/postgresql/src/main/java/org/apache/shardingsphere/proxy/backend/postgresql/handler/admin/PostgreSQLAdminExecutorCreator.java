@@ -55,8 +55,6 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     
     private static final String PG_CLASS = "pg_class";
     
-    private static final String PG_ROLES = "pg_roles";
-    
     private static final String PG_PREFIX = "pg_";
     
     private static final String PG_NAMESPACE = "pg_namespace";

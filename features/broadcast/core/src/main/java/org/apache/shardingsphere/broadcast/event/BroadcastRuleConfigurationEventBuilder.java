@@ -21,7 +21,8 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.broadcast.event.config.AddBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.config.AlterBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.config.DeleteBroadcastTableEvent;
-import org.apache.shardingsphere.broadcast.metadata.converter.BroadcastNodeConverter;
+import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastNodePath;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -34,24 +35,22 @@ import java.util.Optional;
  */
 public final class BroadcastRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
+    private final RuleNodePath broadcastRuleNodePath = BroadcastNodePath.getInstance();
+    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!BroadcastNodeConverter.isBroadcastPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
-        }
-        if (BroadcastNodeConverter.isTablesActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
-            return createBroadcastConfigEvent(databaseName, event);
-        }
-        return Optional.empty();
+        return Strings.isNullOrEmpty(event.getValue()) || !broadcastRuleNodePath.getUniqueItem(BroadcastNodePath.TABLES).isActiveVersionPath(event.getKey())
+                ? Optional.empty()
+                : Optional.of(createBroadcastConfigEvent(databaseName, event));
     }
     
-    private Optional<GovernanceEvent> createBroadcastConfigEvent(final String databaseName, final DataChangedEvent event) {
+    private GovernanceEvent createBroadcastConfigEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddBroadcastTableEvent(databaseName, event.getKey(), event.getValue()));
+            return new AddBroadcastTableEvent(databaseName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterBroadcastTableEvent(databaseName, event.getKey(), event.getValue()));
+            return new AlterBroadcastTableEvent(databaseName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteBroadcastTableEvent(databaseName));
+        return new DeleteBroadcastTableEvent(databaseName);
     }
 }

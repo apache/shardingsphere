@@ -41,13 +41,11 @@ public final class NewResourceSwitchManager {
      * Register storage unit.
      *
      * @param resourceMetaData resource meta data
-     * @param storageUnitName storage unit name
      * @param dataSourceProps data source properties
      * @return created switching resource
      */
-    public SwitchingResource registerStorageUnit(final ShardingSphereResourceMetaData resourceMetaData, final String storageUnitName, final DataSourceProperties dataSourceProps) {
-        return new SwitchingResource(resourceMetaData, DataSourcePoolCreator.createStorageResource(Collections.singletonMap(storageUnitName, dataSourceProps)),
-                new StorageResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap()), Collections.singletonMap(storageUnitName, dataSourceProps));
+    public SwitchingResource registerStorageUnit(final ShardingSphereResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> dataSourceProps) {
+        return new SwitchingResource(resourceMetaData, DataSourcePoolCreator.create(dataSourceProps), Collections.emptyMap());
     }
     
     /**
@@ -58,6 +56,9 @@ public final class NewResourceSwitchManager {
      * @param dataSourceProps data source properties
      * @return created switching resource
      */
+    public SwitchingResource alterStorageUnit(final ShardingSphereResourceMetaData resourceMetaData, final String storageUnitName, final Map<String, DataSourceProperties> dataSourceProps) {
+        return new SwitchingResource(resourceMetaData, DataSourcePoolCreator.createStorageResource(dataSourceProps),
+                Collections.singletonMap(storageUnitName, resourceMetaData.getDataSources().remove(storageUnitName)));
     public SwitchingResource alterStorageUnit(final ShardingSphereResourceMetaData resourceMetaData, final String storageUnitName, final DataSourceProperties dataSourceProps) {
         return new SwitchingResource(resourceMetaData, DataSourcePoolCreator.createStorageResource(Collections.singletonMap(storageUnitName, dataSourceProps)),
                 getStaleStorageResource(resourceMetaData, storageUnitName, dataSourceProps), Collections.singletonMap(storageUnitName, dataSourceProps));

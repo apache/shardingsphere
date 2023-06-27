@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -81,7 +81,7 @@ public final class ShadowRuleConfigurationImportChecker {
     private void checkTables(final ShadowRuleConfiguration currentRuleConfig, final String databaseName) {
         Collection<String> tableNames = currentRuleConfig.getTables().keySet();
         Collection<String> duplicatedTables = tableNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
-                .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
+                .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(duplicatedTables.isEmpty(), () -> new DuplicateRuleException("SHADOW", databaseName, duplicatedTables));
     }
     

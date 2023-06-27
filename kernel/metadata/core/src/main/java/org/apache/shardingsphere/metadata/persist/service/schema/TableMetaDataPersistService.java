@@ -58,6 +58,12 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
         return tableNames.isEmpty() ? Collections.emptyMap() : getTableMetaDataByTableNames(databaseName, schemaName, tableNames);
     }
     
+    // TODO Remove this when metadata structure adjustment completed. #25485
+    @Override
+    public Map<String, ShardingSphereTable> load(final String databaseName, final String schemaName, final String tableName) {
+        return Collections.emptyMap();
+    }
+    
     @Override
     public void delete(final String databaseName, final String schemaName, final String tableName) {
         repository.delete(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, tableName.toLowerCase()));

@@ -33,6 +33,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NewYamlEncryptRuleConfigurationSwapperTest {
     
@@ -65,21 +66,20 @@ class NewYamlEncryptRuleConfigurationSwapperTest {
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
         EncryptRuleConfiguration result = swapper.swapToObject(config);
-        assertThat(result.getTables().size(), is(0));
-        assertThat(result.getEncryptors().size(), is(0));
+        assertTrue(result == null);
     }
     
     @Test
     void assertSwapToObject() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/encrypt/tables/foo", "columns:\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/encrypt/tables/foo/versions/0", "columns:\n"
                 + "  foo_column:\n"
                 + "    cipher:\n"
                 + "      encryptorName: FOO\n"
                 + "      name: FIXTURE\n"
                 + "    name: foo_column\n"
                 + "name: foo\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/encrypt/encryptors/FOO", "type: FOO\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/encrypt/encryptors/FOO/versions/0", "type: FOO\n"));
         EncryptRuleConfiguration result = swapper.swapToObject(config);
         assertThat(result.getTables().size(), is(1));
         assertThat(result.getTables().iterator().next().getName(), is("foo"));

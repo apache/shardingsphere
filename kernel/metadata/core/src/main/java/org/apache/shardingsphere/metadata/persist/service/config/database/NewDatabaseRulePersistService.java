@@ -80,12 +80,12 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlDataNode each : dataNodes) {
-            if (Strings.isNullOrEmpty(getActiveVersion(databaseName, ruleName, each.getKey()))) {
-                repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()), DEFAULT_VERSION);
-            }
             List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getDatabaseRuleVersionsNode(databaseName, ruleName, each.getKey()));
             String nextVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), nextVersion), each.getValue());
+            if (Strings.isNullOrEmpty(getActiveVersion(databaseName, ruleName, each.getKey()))) {
+                repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()), DEFAULT_VERSION);
+            }
             result.add(new MetaDataVersion(NewDatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey()), getActiveVersion(databaseName, ruleName, each.getKey()), nextVersion));
         }
         return result;
@@ -127,7 +127,7 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
      */
     @Deprecated
     @Override
-    public Collection<RuleConfiguration> load(final String databaseName, final String version) {
+    public Collection<RuleConfiguration> load(final String databaseName, final String name) {
         // TODO Remove this method when metadata structure adjustment completed. #25485
         return Collections.emptyList();
     }

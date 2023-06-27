@@ -27,7 +27,6 @@ import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,13 +48,13 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
     public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourceConfigs) {
         for (Entry<String, DataSourceProperties> entry : dataSourceConfigs.entrySet()) {
             String activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
-            if (Strings.isNullOrEmpty(activeVersion)) {
-                repository.persist(NewDatabaseMetaDataNode.getDataSourceActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
-            }
             List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getDataSourceVersionsNode(databaseName, entry.getKey()));
             repository.persist(NewDatabaseMetaDataNode.getDataSourceNodeWithVersion(databaseName, entry.getKey(), versions.isEmpty()
                     ? DEFAULT_VERSION
                     : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
+            if (Strings.isNullOrEmpty(activeVersion)) {
+                repository.persist(NewDatabaseMetaDataNode.getDataSourceActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
+            }
         }
     }
     
@@ -70,13 +69,13 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
     public Collection<MetaDataVersion> persistConfig(final String databaseName, final Map<String, DataSourceProperties> dataSourceConfigs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (Entry<String, DataSourceProperties> entry : dataSourceConfigs.entrySet()) {
-            if (Strings.isNullOrEmpty(getDataSourceActiveVersion(databaseName, entry.getKey()))) {
-                repository.persist(NewDatabaseMetaDataNode.getDataSourceActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
-            }
             List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getDataSourceVersionsNode(databaseName, entry.getKey()));
             String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(NewDatabaseMetaDataNode.getDataSourceNodeWithVersion(databaseName, entry.getKey(), nextActiveVersion),
                     YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
+            if (Strings.isNullOrEmpty(getDataSourceActiveVersion(databaseName, entry.getKey()))) {
+                repository.persist(NewDatabaseMetaDataNode.getDataSourceActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
+            }
             result.add(new MetaDataVersion(NewDatabaseMetaDataNode.getDataSourceNode(databaseName, entry.getKey()),
                     getDataSourceActiveVersion(databaseName, entry.getKey()), nextActiveVersion));
         }
@@ -96,9 +95,15 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
-    public Map<String, DataSourceProperties> load(final String databaseName, final String version) {
-        return Collections.emptyMap();
+    public Map<String, DataSourceProperties> load(final String databaseName, final String name) {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
+        String dataSourceValue = repository.getDirectly(NewDatabaseMetaDataNode.getDataSourceNodeWithVersion(databaseName, name, getDataSourceActiveVersion(databaseName, name)));
+        if (!Strings.isNullOrEmpty(dataSourceValue)) {
+            result.put(name, new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
+        }
+        return result;
     }
     
     @Override

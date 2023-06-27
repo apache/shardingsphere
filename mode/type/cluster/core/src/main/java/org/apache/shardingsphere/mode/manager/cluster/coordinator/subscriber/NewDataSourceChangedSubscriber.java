@@ -47,7 +47,8 @@ public final class NewDataSourceChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.registerStorageUnit(event.getDatabaseName(), event.getStorageUnitName(), event.getProps());
+        contextManager.registerStorageUnit(event.getDatabaseName(),
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
     /**
@@ -60,7 +61,8 @@ public final class NewDataSourceChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(), event.getProps());
+        contextManager.alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(),
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
     /**
@@ -70,7 +72,7 @@ public final class NewDataSourceChangedSubscriber {
      */
     @Subscribe
     public void renew(final UnregisterStorageUnitEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         contextManager.unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());

@@ -58,6 +58,12 @@ Refers to tables that exist in all data sources. The table structure and its dat
 
 Refers to the only table that exists in all sharded data sources. Suitable for tables with a small amount of data and do not need to be sharded.
 
+Note: Single tables that meet the following conditions will be automatically loaded:
+- A single table showing the configuration in rules such as encrypt and mask
+- A single table created by users executing DDL statements through ShardingSphere
+
+For other single tables that do not meet the above conditions, ShardingSphere will not automatically load them, and users can configure single table rules as needed for management.
+
 ## Data Nodes
 
 The smallest unit of the data shard, consists of the data source name and the real table. Example: `ds_0.t_order_0`.

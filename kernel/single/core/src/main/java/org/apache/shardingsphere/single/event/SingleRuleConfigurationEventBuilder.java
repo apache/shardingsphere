@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.event;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -25,7 +26,7 @@ import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.single.event.config.AddSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.DeleteSingleTableEvent;
-import org.apache.shardingsphere.single.metadata.converter.SingleNodeConverter;
+import org.apache.shardingsphere.single.metadata.nodepath.SingleNodePath;
 
 import java.util.Optional;
 
@@ -34,24 +35,22 @@ import java.util.Optional;
  */
 public final class SingleRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
+    private final RuleNodePath singleRuleNodePath = SingleNodePath.getInstance();
+    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!SingleNodeConverter.isSinglePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
-        }
-        if (SingleNodeConverter.isTablesActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
-            return createSingleConfigEvent(databaseName, event);
-        }
-        return Optional.empty();
+        return Strings.isNullOrEmpty(event.getValue()) || !singleRuleNodePath.getUniqueItem(SingleNodePath.TABLES).isActiveVersionPath(event.getKey())
+                ? Optional.empty()
+                : Optional.of(createSingleConfigEvent(databaseName, event));
     }
     
-    private Optional<GovernanceEvent> createSingleConfigEvent(final String databaseName, final DataChangedEvent event) {
+    private GovernanceEvent createSingleConfigEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddSingleTableEvent(databaseName, event.getKey(), event.getValue()));
+            return new AddSingleTableEvent(databaseName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterSingleTableEvent(databaseName, event.getKey(), event.getValue()));
+            return new AlterSingleTableEvent(databaseName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteSingleTableEvent(databaseName));
+        return new DeleteSingleTableEvent(databaseName);
     }
 }

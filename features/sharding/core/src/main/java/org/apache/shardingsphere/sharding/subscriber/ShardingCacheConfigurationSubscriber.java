@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.sharding.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.event.cache.AddShardingCacheConfigurationEvent;
@@ -32,23 +34,18 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.cache.YamlShardingCacheConfigurationSwapper;
 
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * Sharding cache configuration subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ShardingCacheConfigurationSubscriber implements RuleConfigurationSubscribeCoordinator {
+@Setter
+public final class ShardingCacheConfigurationSubscriber implements RuleChangedSubscriber {
     
-    private Map<String, ShardingSphereDatabase> databases;
+    private ContextManager contextManager;
     
     private InstanceContext instanceContext;
-    
-    @Override
-    public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        this.databases = databases;
-        this.instanceContext = instanceContext;
-    }
     
     /**
      * Renew with add sharding cache configuration.
@@ -57,8 +54,18 @@ public final class ShardingCacheConfigurationSubscriber implements RuleConfigura
      */
     @Subscribe
     public synchronized void renew(final AddShardingCacheConfigurationEvent event) {
-        renewShardingCacheConfig(event.getDatabaseName(), swapToShardingCacheConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingCacheConfiguration needToAddedConfig = swapToShardingCacheConfig(
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        ShardingRuleConfiguration config;
+        if (rule.isPresent()) {
+            config = (ShardingRuleConfiguration) rule.get().getConfiguration();
+        } else {
+            config = new ShardingRuleConfiguration();
+        }
+        config.setShardingCache(needToAddedConfig);
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -68,8 +75,12 @@ public final class ShardingCacheConfigurationSubscriber implements RuleConfigura
      */
     @Subscribe
     public synchronized void renew(final AlterShardingCacheConfigurationEvent event) {
-        renewShardingCacheConfig(event.getDatabaseName(), swapToShardingCacheConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingCacheConfiguration needToAlteredConfig = swapToShardingCacheConfig(
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+        ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
+        config.setShardingCache(needToAlteredConfig);
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -79,21 +90,16 @@ public final class ShardingCacheConfigurationSubscriber implements RuleConfigura
      */
     @Subscribe
     public synchronized void renew(final DeleteShardingCacheConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setShardingCache(null);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    private void renewShardingCacheConfig(final String databaseName, final ShardingCacheConfiguration shardingCacheConfiguration) {
-        ShardingSphereDatabase database = databases.get(databaseName);
-        ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
-        config.setShardingCache(shardingCacheConfiguration);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
-    }
-    
     private ShardingCacheConfiguration swapToShardingCacheConfig(final String yamlContext) {
         return new YamlShardingCacheConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlShardingCacheConfiguration.class));
     }
-    
 }

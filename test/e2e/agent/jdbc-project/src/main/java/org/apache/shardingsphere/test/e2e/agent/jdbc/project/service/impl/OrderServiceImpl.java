@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.enums.StatementType;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.OrderService;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,11 +36,10 @@ import java.util.LinkedList;
  * Order service impl.
  */
 @Slf4j
-@Service
-public class OrderServiceImpl implements OrderService {
+@RequiredArgsConstructor
+public final class OrderServiceImpl implements OrderService {
     
-    @Resource
-    private DataSource dataSource;
+    private final Connection connection;
     
     @Override
     public void createTable() {
@@ -58,9 +55,10 @@ public class OrderServiceImpl implements OrderService {
     
     @Override
     public void insert(final OrderEntity order, final StatementType statementType, final boolean isRollback) {
-        if (StatementType.STATEMENT == statementType) {
+        if (StatementType.PREPARED == statementType) {
             String sql = "INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)";
-            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            log.info("execute sql:{}", sql);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 connection.setAutoCommit(false);
                 preparedStatement.setLong(1, order.getOrderId());
                 preparedStatement.setLong(2, order.getUserId());
@@ -71,9 +69,10 @@ public class OrderServiceImpl implements OrderService {
                 } else {
                     connection.commit();
                 }
-            } catch (final SQLException ignored) {
+            } catch (final SQLException ex) {
+                log.error(String.format("execute `%s` error", sql), ex);
             }
-        } else if (StatementType.PREPARED == statementType) {
+        } else if (StatementType.STATEMENT == statementType) {
             String sql = String.format("INSERT INTO t_order (order_id, user_id, status) VALUES (%d, %d, '%s')", order.getOrderId(), order.getUserId(), order.getStatus());
             execute(sql, false, isRollback);
         }
@@ -81,14 +80,16 @@ public class OrderServiceImpl implements OrderService {
     
     @Override
     public void delete(final Long orderId, final StatementType statementType) {
-        if (StatementType.STATEMENT == statementType) {
+        if (StatementType.PREPARED == statementType) {
             String sql = "DELETE FROM t_order WHERE order_id=?";
-            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            log.info("execute sql:{}", sql);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setLong(1, orderId);
                 preparedStatement.executeUpdate();
-            } catch (final SQLException ignored) {
+            } catch (final SQLException ex) {
+                log.error(String.format("execute `%s` error", sql), ex);
             }
-        } else if (StatementType.PREPARED == statementType) {
+        } else if (StatementType.STATEMENT == statementType) {
             String sql = String.format("DELETE FROM t_order WHERE order_id = %d", orderId);
             execute(sql, true, false);
         }
@@ -96,17 +97,19 @@ public class OrderServiceImpl implements OrderService {
     
     @Override
     public void update(final OrderEntity order, final StatementType statementType) {
-        if (StatementType.STATEMENT == statementType) {
+        if (StatementType.PREPARED == statementType) {
             String sql = "UPDATE t_order SET status = ? WHERE order_id = ?";
-            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            log.info("execute sql:{}", sql);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 connection.setAutoCommit(false);
                 preparedStatement.setString(1, order.getStatus());
                 preparedStatement.setLong(2, order.getOrderId());
                 preparedStatement.executeUpdate();
                 connection.commit();
-            } catch (final SQLException ignored) {
+            } catch (final SQLException ex) {
+                log.error(String.format("execute `%s` error", sql), ex);
             }
-        } else if (StatementType.PREPARED == statementType) {
+        } else if (StatementType.STATEMENT == statementType) {
             String sql = String.format("UPDATE t_order SET status = '%s' WHERE order_id = %d", order.getStatus(), order.getOrderId());
             execute(sql, false, false);
         }
@@ -115,15 +118,18 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Collection<OrderEntity> selectAll(final StatementType statementType) {
         String sql = "SELECT * FROM t_order";
-        if (StatementType.STATEMENT == statementType) {
-            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        log.info("execute sql:{}", sql);
+        if (StatementType.PREPARED == statementType) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 return getOrders(preparedStatement.executeQuery());
-            } catch (final SQLException ignored) {
+            } catch (final SQLException ex) {
+                log.error(String.format("execute `%s` error", sql), ex);
             }
-        } else if (StatementType.PREPARED == statementType) {
-            try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+        } else if (StatementType.STATEMENT == statementType) {
+            try (Statement statement = connection.createStatement()) {
                 return getOrders(statement.executeQuery(sql));
-            } catch (final SQLException ignored) {
+            } catch (final SQLException ex) {
+                log.error(String.format("execute `%s` error", sql), ex);
             }
         }
         return Collections.emptyList();
@@ -140,7 +146,7 @@ public class OrderServiceImpl implements OrderService {
     
     private void execute(final String sql, final boolean autoCommit, final boolean isRollback) {
         log.info("execute sql:{}", sql);
-        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             if (autoCommit) {
                 statement.execute(sql);
             } else {
@@ -152,7 +158,8 @@ public class OrderServiceImpl implements OrderService {
                     connection.commit();
                 }
             }
-        } catch (final SQLException ignored) {
+        } catch (final SQLException ex) {
+            log.error(String.format("execute `%s` error", sql), ex);
         }
     }
 }

@@ -53,6 +53,12 @@ SELECT i.* FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE
 
 指所有的分片数据源中仅唯一存在的表。 适用于数据量不大且无需分片的表。
 
+注意：符合以下条件的单表会被自动加载：
+- 数据加密、数据脱敏等规则中显示配置的单表
+- 用户通过 ShardingSphere 执行 DDL 语句创建的单表
+
+其余不符合上述条件的单表，ShardingSphere 不会自动加载，用户可根据需要配置单表规则进行管理。
+
 ## 数据节点
 
 数据分片的最小单元，由数据源名称和真实表组成。 例：ds_0.t_order_0。

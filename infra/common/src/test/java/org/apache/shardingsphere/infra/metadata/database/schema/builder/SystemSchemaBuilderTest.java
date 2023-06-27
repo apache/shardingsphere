@@ -45,6 +45,10 @@ class SystemSchemaBuilderTest {
         assertThat(actualPerformanceSchema.size(), is(1));
         assertTrue(actualPerformanceSchema.containsKey("performance_schema"));
         assertThat(actualPerformanceSchema.get("performance_schema").getTables().size(), is(87));
+        Map<String, ShardingSphereSchema> actualSysSchema = SystemSchemaBuilder.build("sys", new MySQLDatabaseType());
+        assertThat(actualSysSchema.size(), is(1));
+        assertTrue(actualSysSchema.containsKey("sys"));
+        assertThat(actualSysSchema.get("sys").getTables().size(), is(53));
     }
     
     @Test
@@ -54,8 +58,8 @@ class SystemSchemaBuilderTest {
         assertTrue(actual.containsKey("information_schema"));
         assertTrue(actual.containsKey("pg_catalog"));
         assertTrue(actual.containsKey("shardingsphere"));
-        assertThat(actual.get("information_schema").getTables().size(), is(3));
-        assertThat(actual.get("pg_catalog").getTables().size(), is(31));
+        assertThat(actual.get("information_schema").getTables().size(), is(69));
+        assertThat(actual.get("pg_catalog").getTables().size(), is(134));
         assertThat(actual.get("shardingsphere").getTables().size(), is(2));
     }
     
@@ -65,7 +69,8 @@ class SystemSchemaBuilderTest {
         assertThat(actual.size(), is(16));
         assertTrue(actual.containsKey("pg_catalog"));
         assertTrue(actual.containsKey("shardingsphere"));
-        assertThat(actual.get("pg_catalog").getTables().size(), is(2));
+        assertThat(actual.get("information_schema").getTables().size(), is(66));
+        assertThat(actual.get("pg_catalog").getTables().size(), is(240));
         assertThat(actual.get("shardingsphere").getTables().size(), is(2));
     }
 }

@@ -33,10 +33,10 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列             | 说明         |
-|---------------|------------|
-| table_name    | 单表名称       |
-| resource_name | 单表所在的数据源名称 |
+| 列                | 说明              |
+|-------------------|-------------------|
+| table_name        | 单表名称           |
+| storage_unit_name | 单表所在的数据源名称 |
 
 
 ### 示例
@@ -65,11 +65,11 @@ SHOW SINGLE TABLE t_user;
 
 ```sql
 mysql> SHOW SINGLE TABLE t_user;
-+------------+---------------+
-| table_name | resource_name |
-+------------+---------------+
-| t_user     | ds_0          |
-+------------+---------------+
++------------+-------------------+
+| table_name | storage_unit_name |
++------------+-------------------+
+| t_user     | ds_0              |
++------------+-------------------+
 1 row in set (0.00 sec)
 ```
 
@@ -81,11 +81,11 @@ SHOW SINGLE TABLES FROM sharding_db;
 
 ```sql
 mysql> SHOW SINGLE TABLES FROM sharding_db;
-+------------+---------------+
-| table_name | resource_name |
-+------------+---------------+
-| t_user     | ds_0          |
-+------------+---------------+
++------------+-------------------+
+| table_name | storage_unit_name |
++------------+-------------------+
+| t_user     | ds_0              |
++------------+-------------------+
 1 row in set (0.00 sec)
 ```
 
@@ -97,11 +97,11 @@ SHOW SINGLE TABLES;
 
 ```sql
 mysql> SHOW SINGLE TABLES;
-+------------+---------------+
-| table_name | resource_name |
-+------------+---------------+
-| t_user     | ds_0          |
-+------------+---------------+
++------------+-------------------+
+| table_name | storage_unit_name |
++------------+-------------------+
+| t_user     | ds_0              |
++------------+-------------------+
 1 row in set (0.00 sec)
 ```
 

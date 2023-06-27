@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.checker;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
@@ -53,7 +52,6 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     @Override
     public void check(final String databaseName, final ReadwriteSplittingRuleConfiguration config, final Map<String, StorageUnit> storageUnits, final Collection<ShardingSphereRule> builtRules) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs = config.getDataSources();
-        Preconditions.checkArgument(!configs.isEmpty(), "Readwrite-splitting data source rules can not be empty.");
         checkDataSources(databaseName, configs, storageUnits, builtRules);
         checkLoadBalancerDataSourceName(databaseName, configs, getLoadBalancer(config));
     }

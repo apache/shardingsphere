@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.ral.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
@@ -35,13 +36,10 @@ import java.util.LinkedList;
 /**
  * Updatable RAL backend handler for global rule.
  */
+@RequiredArgsConstructor
 public final class UpdatableGlobalRuleRALBackendHandler implements DistSQLBackendHandler {
     
     private final UpdatableGlobalRuleRALStatement sqlStatement;
-    
-    public UpdatableGlobalRuleRALBackendHandler(final UpdatableGlobalRuleRALStatement sqlStatement) {
-        this.sqlStatement = sqlStatement;
-    }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override

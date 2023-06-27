@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mask.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
@@ -30,24 +30,23 @@ import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 
-import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Mask algorithm subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribeCoordinator {
+@Setter
+public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
     
-    private Map<String, ShardingSphereDatabase> databases;
+    private ContextManager contextManager;
     
     private InstanceContext instanceContext;
-    
-    @Override
-    public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        this.databases = databases;
-        this.instanceContext = instanceContext;
-    }
     
     /**
      * Renew with alter algorithm.
@@ -56,10 +55,11 @@ public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribe
      */
     @Subscribe
     public synchronized void renew(final AlterMaskAlgorithmEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
-        config.getMaskAlgorithms().put(event.getAlgorithmName(), swapToAlgorithmConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
+        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getMaskRuleConfiguration(database, event)));
     }
     
     /**
@@ -69,10 +69,29 @@ public final class MaskAlgorithmSubscriber implements RuleConfigurationSubscribe
      */
     @Subscribe
     public synchronized void renew(final DeleteMaskAlgorithmEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
         config.getMaskAlgorithms().remove(event.getAlgorithmName());
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private MaskRuleConfiguration getMaskRuleConfiguration(final ShardingSphereDatabase database, final AlterMaskAlgorithmEvent event) {
+        Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
+        MaskRuleConfiguration config = rule.map(encryptRule -> getMaskRuleConfiguration((MaskRuleConfiguration) encryptRule.getConfiguration()))
+                .orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+        config.getMaskAlgorithms().put(event.getAlgorithmName(), swapToAlgorithmConfig(
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
+        return config;
+    }
+    
+    private MaskRuleConfiguration getMaskRuleConfiguration(final MaskRuleConfiguration config) {
+        if (null == config.getMaskAlgorithms()) {
+            return new MaskRuleConfiguration(config.getTables(), new LinkedHashMap<>());
+        }
+        return config;
     }
     
     private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {

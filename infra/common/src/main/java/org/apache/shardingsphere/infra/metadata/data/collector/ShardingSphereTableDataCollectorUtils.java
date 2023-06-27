@@ -82,7 +82,7 @@ public final class ShardingSphereTableDataCollectorUtils {
     
     private static List<Object> getRow(final ShardingSphereTable table, final ResultSet resultSet, final Collection<String> selectedColumnNames) throws SQLException {
         List<Object> result = new LinkedList<>();
-        for (ShardingSphereColumn each : table.getColumns()) {
+        for (ShardingSphereColumn each : table.getColumnValues()) {
             if (selectedColumnNames.contains(each.getName())) {
                 result.add(convertIfNecessary(resultSet.getObject(each.getName()), each.getDataType()));
             } else {

@@ -68,11 +68,11 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         assertThat(iterator.next().getKey(), is("default_strategies/default_table_strategy"));
         assertThat(iterator.next().getKey(), is("default_strategies/default_key_generate_strategy"));
         assertThat(iterator.next().getKey(), is("default_strategies/default_audit_strategy"));
+        assertThat(iterator.next().getKey(), is("default_strategies/default_sharding_column"));
         assertThat(iterator.next().getKey(), is("tables/LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("tables/SUB_LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("auto_tables/auto_table"));
         assertThat(iterator.next().getKey(), is("binding_tables/foo"));
-        assertThat(iterator.next().getKey(), is("default_strategies/default_sharding_column"));
     }
     
     private ShardingRuleConfiguration createMaximumShardingRule() {
@@ -115,24 +115,13 @@ class NewYamlShardingRuleConfigurationSwapperTest {
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
         ShardingRuleConfiguration result = swapper.swapToObject(config);
-        assertThat(result.getTables().size(), is(0));
-        assertThat(result.getAutoTables().size(), is(0));
-        assertThat(result.getBindingTableGroups().size(), is(0));
-        assertNull(result.getDefaultDatabaseShardingStrategy());
-        assertNull(result.getDefaultTableShardingStrategy());
-        assertNull(result.getDefaultKeyGenerateStrategy());
-        assertNull(result.getDefaultAuditStrategy());
-        assertNull(result.getDefaultShardingColumn());
-        assertThat(result.getShardingAlgorithms().size(), is(0));
-        assertThat(result.getKeyGenerators().size(), is(0));
-        assertThat(result.getAuditors().size(), is(0));
-        assertNull(result.getShardingCache());
+        assertTrue(result == null);
     }
     
     @Test
     void assertSwapToObject() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/tables/LOGIC_TABLE", "actualDataNodes: ds_${0..1}.table_${0..2}\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/tables/LOGIC_TABLE/versions/0", "actualDataNodes: ds_${0..1}.table_${0..2}\n"
                 + "auditStrategy:\n"
                 + "  allowHintDisable: false\n"
                 + "  auditorNames:\n"
@@ -149,7 +138,7 @@ class NewYamlShardingRuleConfigurationSwapperTest {
                 + "  standard:\n"
                 + "    shardingAlgorithmName: table_inline\n"
                 + "    shardingColumn: order_id\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/tables/SUB_LOGIC_TABLE", "actualDataNodes: ds_${0..1}.sub_table_${0..2}\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/tables/SUB_LOGIC_TABLE/versions/0", "actualDataNodes: ds_${0..1}.sub_table_${0..2}\n"
                 + "databaseStrategy:\n"
                 + "  standard:\n"
                 + "    shardingAlgorithmName: database_inline\n"
@@ -162,7 +151,7 @@ class NewYamlShardingRuleConfigurationSwapperTest {
                 + "  standard:\n"
                 + "    shardingAlgorithmName: table_inline\n"
                 + "    shardingColumn: order_id\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/auto_tables/auto_table", "actualDataSources: ds_1,ds_2\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/auto_tables/auto_table/versions/0", "actualDataSources: ds_1,ds_2\n"
                 + "auditStrategy:\n"
                 + "  allowHintDisable: true\n"
                 + "  auditorNames:\n"
@@ -175,27 +164,27 @@ class NewYamlShardingRuleConfigurationSwapperTest {
                 + "  standard:\n"
                 + "    shardingAlgorithmName: hash_mod\n"
                 + "    shardingColumn: user_id\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/binding_tables/foo", "foo:LOGIC_TABLE,SUB_LOGIC_TABLE"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy", "standard:\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/binding_tables/foo/versions/0", "foo:LOGIC_TABLE,SUB_LOGIC_TABLE"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy/versions/0", "standard:\n"
                 + "  shardingAlgorithmName: standard\n"
                 + "  shardingColumn: ds_id\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_table_strategy", "standard:\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_table_strategy/versions/0", "standard:\n"
                 + "  shardingAlgorithmName: standard\n"
                 + "  shardingColumn: table_id\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_key_generate_strategy", "column: id\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_key_generate_strategy/versions/0", "column: id\n"
                 + "keyGeneratorName: default\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_audit_strategy", "allowHintDisable: false\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_audit_strategy/versions/0", "allowHintDisable: false\n"
                 + "auditorNames:\n"
                 + "- audit_algorithm\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/algorithms/core_standard_fixture", "type: CORE.STANDARD.FIXTURE\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/algorithms/hash_mod", "props:\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/algorithms/core_standard_fixture/versions/0", "type: CORE.STANDARD.FIXTURE\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/algorithms/hash_mod/versions/0", "props:\n"
                 + "  sharding-count: '4'\n"
                 + "type: hash_mod\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/key_generators/uuid", "type: UUID\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/key_generators/default", "type: UUID\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/key_generators/auto_increment", "type: AUTO_INCREMENT.FIXTURE\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/auditors/audit_algorithm", "type: DML_SHARDING_CONDITIONS\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_sharding_column", "table_id"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/key_generators/uuid/versions/0", "type: UUID\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/key_generators/default/versions/0", "type: UUID\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/key_generators/auto_increment/versions/0", "type: AUTO_INCREMENT.FIXTURE\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/auditors/audit_algorithm/versions/0", "type: DML_SHARDING_CONDITIONS\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_sharding_column/versions/0", "table_id"));
         ShardingRuleConfiguration result = swapper.swapToObject(config);
         assertThat(result.getTables().size(), is(2));
         assertThat(result.getTables().iterator().next().getLogicTable(), is("LOGIC_TABLE"));

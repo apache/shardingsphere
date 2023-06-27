@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -84,7 +84,7 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
         loadClusterStatus(registryCenter, contextManager);
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
-        registerRuleConfigurationSubscribers(contextManager.getMetaDataContexts(), contextManager.getInstanceContext());
+        registerRuleConfigurationSubscribers(contextManager, contextManager.getInstanceContext());
         new NewContextManagerSubscriberFacade(registryCenter, contextManager);
     }
     
@@ -93,9 +93,10 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
         contextManager.updateClusterState(registryCenter.getClusterStatusService().loadClusterStatus());
     }
     
-    private void registerRuleConfigurationSubscribers(final MetaDataContexts metaDataContexts, final InstanceContext instanceContext) {
-        for (RuleConfigurationSubscribeCoordinator each : ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationSubscribeCoordinator.class)) {
-            each.registerRuleConfigurationSubscriber(metaDataContexts.getMetaData().getDatabases(), instanceContext);
+    private void registerRuleConfigurationSubscribers(final ContextManager contextManager, final InstanceContext instanceContext) {
+        for (RuleChangedSubscriber each : ShardingSphereServiceLoader.getServiceInstances(RuleChangedSubscriber.class)) {
+            each.setContextManager(contextManager);
+            each.setInstanceContext(instanceContext);
             instanceContext.getEventBusContext().register(each);
         }
     }

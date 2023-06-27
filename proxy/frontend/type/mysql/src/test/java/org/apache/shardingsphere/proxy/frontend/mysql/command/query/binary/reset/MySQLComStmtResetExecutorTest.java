@@ -21,6 +21,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.r
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
@@ -45,7 +46,7 @@ class MySQLComStmtResetExecutorTest {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
-        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("", mock(SQLStatementContext.class), Collections.emptyList());
+        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("", mock(SQLStatementContext.class), new HintValueContext(), Collections.emptyList());
         preparedStatement.getLongData().put(0, new byte[0]);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
         MySQLComStmtResetPacket packet = mock(MySQLComStmtResetPacket.class);

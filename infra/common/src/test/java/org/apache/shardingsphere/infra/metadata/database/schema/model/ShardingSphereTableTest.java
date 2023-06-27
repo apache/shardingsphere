@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasItems;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -48,7 +49,7 @@ class ShardingSphereTableTest {
         shardingSphereTable.putColumn(column2);
         assertThat(shardingSphereTable.getColumn("foo_column_1"), is(column1));
         assertThat(shardingSphereTable.getColumn("foo_column_2"), is(column2));
-        assertThat(shardingSphereTable.getColumns(), hasSize(2));
+        assertThat(shardingSphereTable.getColumnValues(), hasSize(2));
     }
     
     @Test
@@ -66,8 +67,8 @@ class ShardingSphereTableTest {
         ShardingSphereColumn column2 = new ShardingSphereColumn("foo_column_2", Types.INTEGER, false, true, false, true, false);
         shardingSphereTable.putColumn(column1);
         shardingSphereTable.putColumn(column2);
-        assertThat(shardingSphereTable.getColumns(), hasItems(column1, column2));
-        assertThat(shardingSphereTable.getColumns(), hasSize(2));
+        assertThat(shardingSphereTable.getColumnValues(), hasItems(column1, column2));
+        assertThat(shardingSphereTable.getColumnValues(), hasSize(2));
     }
     
     @Test
@@ -87,7 +88,7 @@ class ShardingSphereTableTest {
         assertThat(shardingSphereTable.getIndex("foo_index_1"), is(index1));
         assertThat(shardingSphereTable.getIndex("foo_index_2"), is(index2));
         assertNull(shardingSphereTable.getIndex("invalid"));
-        assertThat(shardingSphereTable.getIndexes(), hasSize(2));
+        assertThat(shardingSphereTable.getIndexValues(), hasSize(2));
     }
     
     @Test
@@ -109,7 +110,7 @@ class ShardingSphereTableTest {
         assertNull(shardingSphereTable.getIndex("foo_index_1"));
         shardingSphereTable.removeIndex("invalid");
         assertThat(shardingSphereTable.getIndex("foo_index_2"), is(index2));
-        assertThat(shardingSphereTable.getIndexes(), hasSize(1));
+        assertThat(shardingSphereTable.getIndexValues(), hasSize(1));
     }
     
     @Test
@@ -118,8 +119,8 @@ class ShardingSphereTableTest {
         ShardingSphereIndex index2 = new ShardingSphereIndex("foo_index_2");
         shardingSphereTable.putIndex(index1);
         shardingSphereTable.putIndex(index2);
-        assertThat(shardingSphereTable.getIndexes(), hasItems(index1, index2));
-        assertThat(shardingSphereTable.getIndexes(), hasSize(2));
+        assertThat(shardingSphereTable.getIndexValues(), hasItems(index1, index2));
+        assertThat(shardingSphereTable.getIndexValues(), hasSize(2));
     }
     
     @Test
@@ -137,7 +138,17 @@ class ShardingSphereTableTest {
     void assertGetConstraints() {
         ShardingSphereConstraint constraint = new ShardingSphereConstraint("t_order_foreign_key", "t_user");
         ShardingSphereTable table = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.singletonList(constraint));
-        assertThat(table.getConstraints(), hasItems(constraint));
-        assertThat(table.getConstraints(), hasSize(1));
+        assertThat(table.getConstraintValues(), hasItems(constraint));
+        assertThat(table.getConstraintValues(), hasSize(1));
+    }
+    
+    @Test
+    void assertTableEquals() {
+        shardingSphereTable.putColumn(new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false));
+        shardingSphereTable.putIndex(new ShardingSphereIndex("foo_index_1"));
+        ShardingSphereTable otherTable = new ShardingSphereTable();
+        otherTable.putColumn(new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false));
+        otherTable.putIndex(new ShardingSphereIndex("foo_index_1"));
+        assertEquals(shardingSphereTable, otherTable);
     }
 }
