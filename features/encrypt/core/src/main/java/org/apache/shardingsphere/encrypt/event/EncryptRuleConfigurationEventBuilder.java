@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.event.table.AddEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.table.AlterEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.table.DeleteEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.metadata.converter.EncryptNodeConverter;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -36,16 +37,18 @@ import java.util.Optional;
  */
 public final class EncryptRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
+    private final RuleNodePath encryptRuleNodePath = EncryptNodeConverter.getInstance();
+    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!EncryptNodeConverter.getRuleRootNodeConverter().isRulePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!encryptRuleNodePath.getRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> tableName = EncryptNodeConverter.getTableNodeConvertor().getNameByActiveVersionPath(event.getKey());
+        Optional<String> tableName = encryptRuleNodePath.getNamedRuleItemNodePath(EncryptNodeConverter.TABLES).getNameByActiveVersion(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createEncryptConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> encryptorName = EncryptNodeConverter.getEncryptorNodeConvertor().getNameByActiveVersionPath(event.getKey());
+        Optional<String> encryptorName = encryptRuleNodePath.getNamedRuleItemNodePath(EncryptNodeConverter.ENCRYPTORS).getNameByActiveVersion(event.getKey());
         if (encryptorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createEncryptorEvent(databaseName, encryptorName.get(), event);
         }

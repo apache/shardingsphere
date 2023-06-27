@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mask.event;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
@@ -36,16 +37,18 @@ import java.util.Optional;
  */
 public final class MaskRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
+    private final RuleNodePath maskRuleNodePath = MaskNodeConverter.getInstance();
+    
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!MaskNodeConverter.getRuleRootNodeConverter().isRulePath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!maskRuleNodePath.getRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> tableName = MaskNodeConverter.getTableNodeConvertor().getNameByActiveVersionPath(event.getKey());
+        Optional<String> tableName = maskRuleNodePath.getNamedRuleItemNodePath(MaskNodeConverter.TABLES).getNameByActiveVersion(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createMaskConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> algorithmName = MaskNodeConverter.getAlgorithmNodeConvertor().getNameByActiveVersionPath(event.getKey());
+        Optional<String> algorithmName = maskRuleNodePath.getNamedRuleItemNodePath(MaskNodeConverter.ALGORITHMS).getNameByActiveVersion(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createMaskAlgorithmEvent(databaseName, algorithmName.get(), event);
         }

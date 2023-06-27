@@ -15,41 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.converter;
+package org.apache.shardingsphere.infra.metadata.nodepath.root;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RuleItemNodeConverterTest {
+class RuleRootNodePathTest {
     
-    private final RuleItemNodeConverter converter = new RuleItemNodeConverter(new RuleRootNodeConverter("foo"), "tables");
+    private final RuleRootNodePath nodePath = new RuleRootNodePath("foo");
     
     @Test
-    void assertGetNamePath() {
-        assertThat(converter.getNamePath("foo_table"), is("tables/foo_table"));
+    void assertGetRuleNodePrefix() {
+        assertThat(nodePath.getNodePrefix(), is("/[\\w\\-]+/[\\w\\-]+/rules/foo/"));
     }
     
     @Test
-    void assertIsPath() {
-        assertTrue(converter.isPath("/metadata/foo_db/rules/foo/tables/foo_table/versions/0"));
+    void assertIsValidatedPath() {
+        assertTrue(nodePath.isValidatedPath("/metadata/foo_db/rules/foo/tables/foo_table"));
     }
     
     @Test
-    void assertGetName() {
-        Optional<String> actual = converter.getName("/metadata/foo_db/rules/foo/tables/foo_table/versions/0");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_table"));
-    }
-    
-    @Test
-    void assertGetNameByActiveVersionPath() {
-        Optional<String> actual = converter.getNameByActiveVersionPath("/metadata/foo_db/rules/foo/tables/foo_table/active_version");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_table"));
+    void assertIsNotValidatedPath() {
+        assertFalse(nodePath.isValidatedPath("/metadata/foo_db/rules/bar/tables/foo_table"));
     }
 }

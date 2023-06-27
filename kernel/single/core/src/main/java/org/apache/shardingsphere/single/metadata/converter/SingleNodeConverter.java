@@ -19,8 +19,9 @@ package org.apache.shardingsphere.single.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+
+import java.util.Collections;
 
 /**
  * Single node converter.
@@ -28,27 +29,16 @@ import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SingleNodeConverter {
     
-    private static final String TABLES_NODE = "tables";
+    public static final String TABLES = "tables";
     
-    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("single");
-    
-    private static final RuleDefaultItemNodeConverter TABLE_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    private static final RuleNodePath INSTANCE = new RuleNodePath("single", Collections.emptyList(), Collections.singleton(TABLES));
     
     /**
-     * Get table node converter.
+     * Get instance of rule node path.
      *
-     * @return table node converter
+     * @return got instance
      */
-    public static RuleDefaultItemNodeConverter getTableNodeConverter() {
-        return TABLE_NODE_CONVERTER;
-    }
-    
-    /**
-     * Get tables path.
-     *
-     * @return tables path
-     */
-    public static String getTablesPath() {
-        return TABLES_NODE;
+    public static RuleNodePath getInstance() {
+        return INSTANCE;
     }
 }

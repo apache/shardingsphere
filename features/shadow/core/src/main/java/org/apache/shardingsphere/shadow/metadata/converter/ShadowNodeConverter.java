@@ -19,9 +19,10 @@ package org.apache.shardingsphere.shadow.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleDefaultItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Shadow node converter.
@@ -29,58 +30,22 @@ import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowNodeConverter {
     
-    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("shadow");
+    public static final String DATA_SOURCES = "data_sources";
     
-    private static final RuleItemNodeConverter DATA_SOURCE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "data_sources");
+    public static final String TABLES = "tables";
     
-    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    public static final String ALGORITHMS = "algorithms";
     
-    private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
+    public static final String DEFAULT_ALGORITHM = "default_algorithm_name";
     
-    private static final RuleDefaultItemNodeConverter DEFAULT_ALGORITHM_NAME_NODE_CONVERTER = new RuleDefaultItemNodeConverter(ROOT_NODE_CONVERTER, "default_algorithm_name");
-    
-    /**
-     * Get rule root node converter.
-     *
-     * @return rule root node converter
-     */
-    public static RuleRootNodeConverter getRuleRootNodeConverter() {
-        return ROOT_NODE_CONVERTER;
-    }
+    private static final RuleNodePath INSTANCE = new RuleNodePath("shadow", Arrays.asList(DATA_SOURCES, TABLES, ALGORITHMS), Collections.singleton(DEFAULT_ALGORITHM));
     
     /**
-     * Get data source node converter.
+     * Get instance of rule node path.
      *
-     * @return data source node converter
+     * @return got instance
      */
-    public static RuleItemNodeConverter getDataSourceNodeConvertor() {
-        return DATA_SOURCE_NODE_CONVERTER;
-    }
-    
-    /**
-     * Get table node converter.
-     *
-     * @return table node converter
-     */
-    public static RuleItemNodeConverter getTableNodeConverter() {
-        return TABLE_NODE_CONVERTER;
-    }
-    
-    /**
-     * Get algorithm node converter.
-     *
-     * @return algorithm node converter
-     */
-    public static RuleItemNodeConverter getAlgorithmNodeConverter() {
-        return ALGORITHM_NODE_CONVERTER;
-    }
-    
-    /**
-     * Get default algorithm name node converter.
-     *
-     * @return default algorithm name node converter
-     */
-    public static RuleDefaultItemNodeConverter getDefaultAlgorithmNameNodeConverter() {
-        return DEFAULT_ALGORITHM_NAME_NODE_CONVERTER;
+    public static RuleNodePath getInstance() {
+        return INSTANCE;
     }
 }
