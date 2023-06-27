@@ -17,44 +17,42 @@
 
 package org.apache.shardingsphere.encrypt.event;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.encrypt.event.compatible.encryptor.AlterCompatibleEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.encryptor.DeleteCompatibleEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.AddCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.AlterCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.DeleteCompatibleEncryptTableEvent;
-import org.apache.shardingsphere.encrypt.metadata.nodepath.CompatibleEncryptNodePath;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
-
-import java.util.Optional;
+import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 
 /**
- * Compatible encrypt rule configuration event builder.
+ * Compatible encrypt rule changed event creator.
  * @deprecated compatible support will remove in next version.
  */
 @Deprecated
-public final class CompatibleEncryptRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
-    
-    private final RuleNodePath encryptRuleNodePath = CompatibleEncryptNodePath.getInstance();
+public final class CompatibleEncryptRuleChangedEventCreator implements RuleChangedEventCreator {
     
     @Override
-    public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!encryptRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
+        switch (itemType) {
+            case EncryptRuleNodePathProvider.TABLES:
+                return createTableEvent(databaseName, itemName, event);
+            case EncryptRuleNodePathProvider.ENCRYPTORS:
+                return createEncryptorEvent(databaseName, itemName, event);
+            default:
+                throw new UnsupportedOperationException(itemType);
         }
-        Optional<String> tableName = encryptRuleNodePath.getNamedItem(CompatibleEncryptNodePath.TABLES).getNameByActiveVersion(event.getKey());
-        if (tableName.isPresent()) {
-            return Optional.of(createEncryptConfigEvent(databaseName, tableName.get(), event));
-        }
-        Optional<String> encryptorName = encryptRuleNodePath.getNamedItem(CompatibleEncryptNodePath.ENCRYPTORS).getNameByActiveVersion(event.getKey());
-        return encryptorName.map(optional -> createEncryptorEvent(databaseName, optional, event));
     }
     
-    private GovernanceEvent createEncryptConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
+    @Override
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
+        throw new UnsupportedOperationException(itemType);
+    }
+    
+    private GovernanceEvent createTableEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddCompatibleEncryptTableEvent(databaseName, event.getKey(), event.getValue());
         }
@@ -69,5 +67,10 @@ public final class CompatibleEncryptRuleConfigurationEventBuilder implements Rul
             return new AlterCompatibleEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue());
         }
         return new DeleteCompatibleEncryptorEvent(databaseName, encryptorName);
+    }
+    
+    @Override
+    public String getType() {
+        return "compatible_encrypt";
     }
 }

@@ -17,42 +17,40 @@
 
 package org.apache.shardingsphere.readwritesplitting.event;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 import org.apache.shardingsphere.readwritesplitting.event.datasource.AddReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.datasource.DeleteReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
-import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingNodePath;
-
-import java.util.Optional;
+import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
 
 /**
- * Readwrite-splitting rule configuration event builder.
+ * Readwrite-splitting rule changed event creator.
  */
-public final class ReadwriteSplittingRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
-    
-    private final RuleNodePath readwriteSplittingRuleNodePath = ReadwriteSplittingNodePath.getInstance();
+public final class ReadwriteSplittingRuleChangedEventCreator implements RuleChangedEventCreator {
     
     @Override
-    public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!readwriteSplittingRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
+        switch (itemType) {
+            case ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES:
+                return createDataSourceEvent(databaseName, itemName, event);
+            case ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS:
+                return createLoadBalanceEvent(databaseName, itemName, event);
+            default:
+                throw new UnsupportedOperationException(itemType);
         }
-        Optional<String> groupName = readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodePath.DATA_SOURCES).getNameByActiveVersion(event.getKey());
-        if (groupName.isPresent()) {
-            return Optional.of(createReadwriteSplittingConfigEvent(databaseName, groupName.get(), event));
-        }
-        Optional<String> loadBalancerName = readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodePath.LOAD_BALANCERS).getNameByActiveVersion(event.getKey());
-        return loadBalancerName.map(optional -> createLoadBalanceEvent(databaseName, optional, event));
     }
     
-    private GovernanceEvent createReadwriteSplittingConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
+    @Override
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
+        throw new UnsupportedOperationException(itemType);
+    }
+    
+    private GovernanceEvent createDataSourceEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue());
         }
@@ -67,5 +65,10 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
             return new AlterLoadBalanceEvent(databaseName, loadBalancerName, event.getKey(), event.getValue());
         }
         return new DeleteLoadBalanceEvent(databaseName, loadBalancerName);
+    }
+    
+    @Override
+    public String getType() {
+        return "readwrite_splitting";
     }
 }

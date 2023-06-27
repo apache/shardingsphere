@@ -17,34 +17,37 @@
 
 package org.apache.shardingsphere.single.event;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 import org.apache.shardingsphere.single.event.config.AddSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.DeleteSingleTableEvent;
-import org.apache.shardingsphere.single.metadata.nodepath.SingleNodePath;
-
-import java.util.Optional;
+import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
 
 /**
- * Single rule configuration event builder.
+ * Single rule changed event creator.
  */
-public final class SingleRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
-    
-    private final RuleNodePath singleRuleNodePath = SingleNodePath.getInstance();
+public final class SingleRuleChangedEventCreator implements RuleChangedEventCreator {
     
     @Override
-    public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        return Strings.isNullOrEmpty(event.getValue()) || !singleRuleNodePath.getUniqueItem(SingleNodePath.TABLES).isActiveVersionPath(event.getKey())
-                ? Optional.empty()
-                : Optional.of(createSingleConfigEvent(databaseName, event));
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
+        throw new UnsupportedOperationException(itemType);
     }
     
-    private GovernanceEvent createSingleConfigEvent(final String databaseName, final DataChangedEvent event) {
+    @SuppressWarnings("SwitchStatementWithTooFewBranches")
+    @Override
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
+        switch (itemType) {
+            case SingleRuleNodePathProvider.TABLES:
+                return createTableEvent(databaseName, event);
+            default:
+                throw new UnsupportedOperationException(itemType);
+        }
+    }
+    
+    private GovernanceEvent createTableEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddSingleTableEvent(databaseName, event.getKey(), event.getValue());
         }
@@ -52,5 +55,10 @@ public final class SingleRuleConfigurationEventBuilder implements RuleConfigurat
             return new AlterSingleTableEvent(databaseName, event.getKey(), event.getValue());
         }
         return new DeleteSingleTableEvent(databaseName);
+    }
+    
+    @Override
+    public String getType() {
+        return "single";
     }
 }

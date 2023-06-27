@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.event.EncryptRuleConfigurationEventBuilder
-org.apache.shardingsphere.encrypt.event.CompatibleEncryptRuleConfigurationEventBuilder
+org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider

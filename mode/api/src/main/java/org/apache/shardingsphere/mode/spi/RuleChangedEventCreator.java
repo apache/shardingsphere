@@ -18,21 +18,34 @@
 package org.apache.shardingsphere.mode.spi;
 
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 
-import java.util.Optional;
-
 /**
- * Rule configuration event builder.
+ * Rule changed event creator.
  */
-public interface RuleConfigurationEventBuilder {
+@SingletonSPI
+public interface RuleChangedEventCreator extends TypedSPI {
     
     /**
-     * Build rule changed event.
+     * Create rule changed event.
+     * 
+     * @param databaseName database name
+     * @param event data changed event
+     * @param itemType item type
+     * @param itemName item name
+     * @return rule configuration changed event
+     */
+    GovernanceEvent create(String databaseName, DataChangedEvent event, String itemType, String itemName);
+    
+    /**
+     * Create rule changed event.
      *
      * @param databaseName database name
      * @param event data changed event
-     * @return rule changed event
+     * @param itemType item type
+     * @return rule configuration changed event
      */
-    Optional<GovernanceEvent> build(String databaseName, DataChangedEvent event);
+    GovernanceEvent create(String databaseName, DataChangedEvent event, String itemType);
 }

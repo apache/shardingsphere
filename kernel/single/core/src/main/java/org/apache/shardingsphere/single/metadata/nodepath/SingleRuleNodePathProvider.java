@@ -15,35 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.metadata.nodepath;
+package org.apache.shardingsphere.single.metadata.nodepath;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Compatible encrypt node path.
- * @deprecated compatible support will remove in next version.
+ * Single rule node path provider.
  */
-@Deprecated
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CompatibleEncryptNodePath {
+public final class SingleRuleNodePathProvider implements RuleNodePathProvider {
     
     public static final String TABLES = "tables";
     
-    public static final String ENCRYPTORS = "encryptors";
+    private static final RuleNodePath INSTANCE = new RuleNodePath("single", Collections.emptyList(), Collections.singleton(TABLES));
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("compatible_encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
-    
-    /**
-     * Get instance of rule node path.
-     *
-     * @return got instance
-     */
-    public static RuleNodePath getInstance() {
+    @Override
+    public RuleNodePath getRuleNodePath() {
         return INSTANCE;
     }
 }
