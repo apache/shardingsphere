@@ -57,9 +57,13 @@ public final class NewYamlTransactionRuleConfigurationSwapper implements NewYaml
             if (!version.isPresent()) {
                 continue;
             }
-            return YamlEngine.unmarshal(each.getValue(), TransactionRuleConfiguration.class);
+            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTransactionRuleConfiguration.class));
         }
         return new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties());
+    }
+
+    private TransactionRuleConfiguration swapToObject(final YamlTransactionRuleConfiguration yamlConfig) {
+        return new TransactionRuleConfiguration(yamlConfig.getDefaultType(), yamlConfig.getProviderType(), null == yamlConfig.getProps() ? new Properties() : yamlConfig.getProps());
     }
     
     @Override
