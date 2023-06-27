@@ -65,6 +65,8 @@ public final class ShadowDataSourceSubscriber implements RuleChangedSubscriber {
         } else {
             config = new ShadowRuleConfiguration();
         }
+        // TODO refactor DistSQL to only persist config
+        config.getDataSources().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
         config.getDataSources().add(needToAddedConfig);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
