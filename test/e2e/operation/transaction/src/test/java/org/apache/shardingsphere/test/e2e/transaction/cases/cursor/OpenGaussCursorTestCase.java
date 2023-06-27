@@ -77,7 +77,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     private void singleTableCursorTest(final Connection connection) throws SQLException {
-        String cursorName = cursorSQLCommand.getSingleTableCursor().getSql();
+        String cursorName = cursorSQLCommand.getSingleTableCursor().getCursorName();
         String sql = cursorSQLCommand.getSingleTableCursor().getSql();
         executeWithLog(connection, "start transaction;");
         executeWithLog(connection, sql);
@@ -100,7 +100,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     private void singleTableCursorOrderByTest(final Connection connection) throws SQLException {
-        String cursorName = cursorSQLCommand.getSingleTableCursorOrderBy().getSql();
+        String cursorName = cursorSQLCommand.getSingleTableCursorOrderBy().getCursorName();
         String sql = cursorSQLCommand.getSingleTableCursorOrderBy().getSql();
         executeWithLog(connection, "start transaction;");
         executeWithLog(connection, sql);
@@ -115,7 +115,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     private void broadcastTableCursorTest(final Connection connection) throws SQLException {
-        String cursorName = cursorSQLCommand.getBroadcastTablesCursor().getSql();
+        String cursorName = cursorSQLCommand.getBroadcastTablesCursor().getCursorName();
         String sql = cursorSQLCommand.getBroadcastTablesCursor().getSql();
         executeWithLog(connection, "start transaction;");
         executeWithLog(connection, sql);
@@ -130,7 +130,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     private void broadcastTableCursorTest2(final Connection connection) throws SQLException {
-        String cursorName = cursorSQLCommand.getBroadcastTablesCursor2().getSql();
+        String cursorName = cursorSQLCommand.getBroadcastTablesCursor2().getCursorName();
         String sql = cursorSQLCommand.getBroadcastTablesCursor2().getSql();
         executeWithLog(connection, "start transaction;");
         executeWithLog(connection, sql);
@@ -145,7 +145,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     private void broadcastAndSingleTablesCursorTest(final Connection connection) throws SQLException {
-        String cursorName = cursorSQLCommand.getBroadcastAndSingleTablesCursor().getSql();
+        String cursorName = cursorSQLCommand.getBroadcastAndSingleTablesCursor().getCursorName();
         String sql = cursorSQLCommand.getBroadcastAndSingleTablesCursor().getSql();
         executeWithLog(connection, "start transaction;");
         executeWithLog(connection, sql);
@@ -160,7 +160,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     private void broadcastAndSingleTablesCursorTest2(final Connection connection) throws SQLException {
-        String cursorName = cursorSQLCommand.getBroadcastTablesCursor2().getSql();
+        String cursorName = cursorSQLCommand.getBroadcastTablesCursor2().getCursorName();
         String sql = cursorSQLCommand.getBroadcastTablesCursor2().getSql();
         executeWithLog(connection, "start transaction;");
         executeWithLog(connection, sql);
@@ -175,7 +175,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     private void viewCursorTest(final Connection connection) throws SQLException {
-        String cursorName = cursorSQLCommand.getViewCursor().getSql();
+        String cursorName = cursorSQLCommand.getViewCursor().getCursorName();
         String sql = cursorSQLCommand.getViewCursor().getSql();
         executeWithLog(connection, "start transaction;");
         executeWithLog(connection, sql);
