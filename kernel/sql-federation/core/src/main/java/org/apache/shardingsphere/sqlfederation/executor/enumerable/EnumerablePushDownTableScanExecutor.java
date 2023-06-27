@@ -40,11 +40,13 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.util.SqlString;
 import org.apache.calcite.tools.RelBuilder;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
@@ -63,11 +65,14 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -90,12 +95,16 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -109,6 +118,16 @@ public final class EnumerablePushDownTableScanExecutor {
     private static final JavaTypeFactory JAVA_TYPE_FACTORY = new JavaTypeFactoryImpl();
     
     private static final Pattern COLUMN_INFORMATION_PATTERN = Pattern.compile("\\{.*}");
+    
+    private static final Set<String> SYSTEM_CATALOG_TABLES = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    
+    private static final String DAT_COMPATIBILITY = "PG";
+    
+    private static final String PG_DATABASE = "pg_database";
+    
+    private static final String PG_TABLES = "pg_tables";
+    
+    private static final String PG_ROLES = "pg_roles";
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
@@ -126,6 +145,12 @@ public final class EnumerablePushDownTableScanExecutor {
     
     private final ProcessEngine processEngine = new ProcessEngine();
     
+    static {
+        SYSTEM_CATALOG_TABLES.add(PG_DATABASE);
+        SYSTEM_CATALOG_TABLES.add(PG_TABLES);
+        SYSTEM_CATALOG_TABLES.add(PG_ROLES);
+    }
+    
     /**
      * Execute.
      *
@@ -138,7 +163,7 @@ public final class EnumerablePushDownTableScanExecutor {
         String schemaName = executorContext.getSchemaName().toLowerCase();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
         if (databaseType.getSystemSchemas().contains(schemaName)) {
-            return executeByScalarShardingSphereData(databaseName, schemaName, table);
+            return executeByScalarShardingSphereData(databaseName, schemaName, table, databaseType, scanContext.getProjects());
         }
         SqlString sqlString = createSQLString(table, scanContext, SQLDialectFactory.getSQLDialect(databaseType.getType()));
         SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
@@ -162,10 +187,68 @@ public final class EnumerablePushDownTableScanExecutor {
         };
     }
     
-    private Enumerable<Object> executeByScalarShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table) {
+    private Enumerable<Object> executeByScalarShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table, final DatabaseType databaseType,
+                                                                 final int[] projects) {
+        // TODO move this logic to ShardingSphere statistics
+        if (SYSTEM_CATALOG_TABLES.contains(table.getName()) && databaseType instanceof OpenGaussDatabaseType) {
+            return createMemoryScalarEnumerator(createSystemCatalogTableData(table, projects));
+        }
         Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
                 .map(ShardingSphereSchemaData::getTableData).map(shardingSphereData -> shardingSphereData.get(table.getName()));
         return tableData.map(this::createMemoryScalarEnumerator).orElseGet(this::createEmptyScalarEnumerable);
+    }
+    
+    private ShardingSphereTableData createSystemCatalogTableData(final ShardingSphereTable table, final int[] projects) {
+        ShardingSphereTableData result = new ShardingSphereTableData(table.getName());
+        ShardingSphereMetaData metaData = executorContext.getFederationContext().getMetaData();
+        if (table.getName().equalsIgnoreCase(PG_DATABASE)) {
+            appendOpenGaussDatabaseData(result, metaData.getDatabases().values(), projects);
+        }
+        if (table.getName().equalsIgnoreCase(PG_TABLES)) {
+            for (ShardingSphereDatabase each : metaData.getDatabases().values()) {
+                appendOpenGaussTableData(result, each.getSchemas(), projects);
+            }
+        }
+        if (table.getName().equalsIgnoreCase(PG_ROLES)) {
+            appendOpenGaussRoleData(result, metaData, projects);
+        }
+        return result;
+    }
+    
+    private void appendOpenGaussDatabaseData(final ShardingSphereTableData tableData, final Collection<ShardingSphereDatabase> databases, final int[] projects) {
+        for (ShardingSphereDatabase each : databases) {
+            Object[] rows = new Object[15];
+            rows[0] = each.getName();
+            rows[11] = DAT_COMPATIBILITY;
+            tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(filterRows(rows, projects))));
+        }
+    }
+    
+    private Object[] filterRows(final Object[] rows, final int[] projects) {
+        Object[] result = new Object[projects.length];
+        for (int index = 0; index < projects.length; index++) {
+            result[index] = rows[projects[index]];
+        }
+        return result;
+    }
+    
+    private void appendOpenGaussTableData(final ShardingSphereTableData tableData, final Map<String, ShardingSphereSchema> schemas, final int[] projects) {
+        for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
+            for (String each : entry.getValue().getAllTableNames()) {
+                Object[] rows = new Object[10];
+                rows[0] = entry.getKey();
+                rows[1] = each;
+                tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(filterRows(rows, projects))));
+            }
+        }
+    }
+    
+    private void appendOpenGaussRoleData(final ShardingSphereTableData tableData, final ShardingSphereMetaData metaData, final int[] projects) {
+        for (ShardingSphereUser each : metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers()) {
+            Object[] rows = new Object[27];
+            rows[0] = each.getGrantee().getUsername();
+            tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(filterRows(rows, projects))));
+        }
     }
     
     private Enumerable<Object> createMemoryScalarEnumerator(final ShardingSphereTableData tableData) {
@@ -230,7 +313,7 @@ public final class EnumerablePushDownTableScanExecutor {
         String schemaName = executorContext.getSchemaName().toLowerCase();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
         if (databaseType.getSystemSchemas().contains(schemaName)) {
-            return executeByShardingSphereData(databaseName, schemaName, table);
+            return executeByShardingSphereData(databaseName, schemaName, table, databaseType, scanContext.getProjects());
         }
         SqlString sqlString = createSQLString(table, scanContext, SQLDialectFactory.getSQLDialect(databaseType.getType()));
         SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
@@ -263,7 +346,12 @@ public final class EnumerablePushDownTableScanExecutor {
         }
     }
     
-    private Enumerable<Object[]> executeByShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table) {
+    private Enumerable<Object[]> executeByShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table, final DatabaseType databaseType,
+                                                             final int[] projects) {
+        // TODO move this logic to ShardingSphere statistics
+        if (SYSTEM_CATALOG_TABLES.contains(table.getName()) && databaseType instanceof OpenGaussDatabaseType) {
+            return createMemoryEnumerator(createSystemCatalogTableData(table, projects));
+        }
         Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
                 .map(ShardingSphereSchemaData::getTableData).map(shardingSphereData -> shardingSphereData.get(table.getName()));
         return tableData.map(this::createMemoryEnumerator).orElseGet(this::createEmptyEnumerable);
