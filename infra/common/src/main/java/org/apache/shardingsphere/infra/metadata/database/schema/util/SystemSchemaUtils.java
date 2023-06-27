@@ -27,8 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 
 import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.HashSet;
 
 /**
  * System schema utility.
@@ -36,10 +35,10 @@ import java.util.TreeSet;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SystemSchemaUtils {
     
-    private static final Set<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    private static final Collection<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new HashSet<>(3, 1F);
     
     static {
-        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("VERSION()");
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("version()");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("intervaltonum(gs_password_deadline())");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("gs_password_notifytime()");
     }
@@ -76,6 +75,6 @@ public final class SystemSchemaUtils {
             return false;
         }
         return 1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment
-                && SYSTEM_CATALOG_QUERY_EXPRESSIONS.contains(((ExpressionProjectionSegment) projections.iterator().next()).getText());
+                && SYSTEM_CATALOG_QUERY_EXPRESSIONS.contains(((ExpressionProjectionSegment) projections.iterator().next()).getText().toLowerCase());
     }
 }
