@@ -60,11 +60,8 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChange
         }
         AlgorithmConfiguration needToAltered =
                 swapToAlgorithmConfig(instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        ReadwriteSplittingRuleConfiguration config = rule.map(each -> getConfig((ReadwriteSplittingRuleConfiguration) each.getConfiguration(), event.getLoadBalanceName(), needToAltered))
-                .orElseGet(() -> new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.singletonMap(event.getLoadBalanceName(), needToAltered)));
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(),
+                getConfig(databases.get(event.getDatabaseName()), event.getLoadBalanceName(), needToAltered)));
     }
     
     /**
@@ -78,6 +75,16 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChange
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
         config.getLoadBalancers().remove(event.getLoadBalanceName());
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private ReadwriteSplittingRuleConfiguration getConfig(final ShardingSphereDatabase database, final String loadBalanceName, final AlgorithmConfiguration needToAltered) {
+        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
+        if (rule.isPresent()) {
+            return getConfig((ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration(), loadBalanceName, needToAltered);
+        }
+        Map<String, AlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+        loadBalancers.put(loadBalanceName, needToAltered);
+        return new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), loadBalancers);
     }
     
     private ReadwriteSplittingRuleConfiguration getConfig(final ReadwriteSplittingRuleConfiguration config, final String loadBalanceName, final AlgorithmConfiguration needToAltered) {
