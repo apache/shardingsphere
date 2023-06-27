@@ -42,7 +42,7 @@ public final class BroadcastRuleConfigurationEventBuilder implements RuleConfigu
         if (!broadcastRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        if (broadcastRuleNodePath.getNamedItem(BroadcastNodePath.TABLES).getNameByActiveVersion(event.getKey()).isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
+        if (broadcastRuleNodePath.getUniqueItem(BroadcastNodePath.TABLES).isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createBroadcastConfigEvent(databaseName, event);
         }
         return Optional.empty();
