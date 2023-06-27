@@ -33,7 +33,8 @@ import org.apache.shardingsphere.infra.rule.RuleChangedSubscriber;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
-import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -63,15 +64,7 @@ public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscr
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         EncryptTableRuleConfiguration needToAddedConfig = swapEncryptTableRuleConfig(
                 instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        CompatibleEncryptRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = (CompatibleEncryptRuleConfiguration) rule.get().getConfiguration();
-            config.getTables().add(needToAddedConfig);
-        } else {
-            config = new CompatibleEncryptRuleConfiguration(Collections.singletonList(needToAddedConfig), Collections.emptyMap());
-        }
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getCompatibleEncryptRuleConfiguration(database, needToAddedConfig)));
     }
     
     /**
@@ -111,5 +104,20 @@ public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscr
     
     private EncryptTableRuleConfiguration swapEncryptTableRuleConfig(final String yamlContext) {
         return new YamlEncryptTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlEncryptTableRuleConfiguration.class));
+    }
+    
+    private CompatibleEncryptRuleConfiguration getCompatibleEncryptRuleConfiguration(final ShardingSphereDatabase database, final EncryptTableRuleConfiguration needToAddedConfig) {
+        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
+        CompatibleEncryptRuleConfiguration config = rule.map(encryptRule -> getCompatibleEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) encryptRule.getConfiguration()))
+                .orElseGet(() -> new CompatibleEncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+        config.getTables().add(needToAddedConfig);
+        return config;
+    }
+    
+    private CompatibleEncryptRuleConfiguration getCompatibleEncryptRuleConfiguration(final CompatibleEncryptRuleConfiguration config) {
+        if (null == config.getTables()) {
+            return new CompatibleEncryptRuleConfiguration(new LinkedList<>(), config.getEncryptors());
+        }
+        return config;
     }
 }

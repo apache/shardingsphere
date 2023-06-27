@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mask.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleChangedSubscriber;
@@ -34,8 +33,7 @@ import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfigur
 import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -64,24 +62,7 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
         MaskTableRuleConfiguration needToAddedConfig = swapMaskTableRuleConfig(
                 instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
-        MaskRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = (MaskRuleConfiguration) rule.get().getConfiguration();
-            if (null == config.getTables()) {
-                Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
-                tables.add(needToAddedConfig);
-                config = new MaskRuleConfiguration(tables, config.getMaskAlgorithms());
-            } else {
-                config.getTables().add(needToAddedConfig);
-            }
-        } else {
-            Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
-            tables.add(needToAddedConfig);
-            Map<String, AlgorithmConfiguration> maskAlgorithms = new HashMap<>();
-            config = new MaskRuleConfiguration(tables, maskAlgorithms);
-        }
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getMaskRuleConfiguration(database, needToAddedConfig)));
     }
     
     /**
@@ -118,5 +99,20 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
     
     private MaskTableRuleConfiguration swapMaskTableRuleConfig(final String yamlContext) {
         return new YamlMaskTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlMaskTableRuleConfiguration.class));
+    }
+    
+    private MaskRuleConfiguration getMaskRuleConfiguration(final ShardingSphereDatabase database, final MaskTableRuleConfiguration needToAddedConfig) {
+        Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
+        MaskRuleConfiguration config = rule.map(encryptRule -> getMaskRuleConfiguration((MaskRuleConfiguration) encryptRule.getConfiguration()))
+                .orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+        config.getTables().add(needToAddedConfig);
+        return config;
+    }
+    
+    private MaskRuleConfiguration getMaskRuleConfiguration(final MaskRuleConfiguration config) {
+        if (null == config.getTables()) {
+            return new MaskRuleConfiguration(new LinkedList<>(), config.getMaskAlgorithms());
+        }
+        return config;
     }
 }

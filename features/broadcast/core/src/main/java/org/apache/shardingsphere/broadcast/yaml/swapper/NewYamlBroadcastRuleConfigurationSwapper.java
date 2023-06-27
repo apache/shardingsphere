@@ -49,6 +49,10 @@ public final class NewYamlBroadcastRuleConfigurationSwapper implements NewYamlRu
     
     @Override
     public BroadcastRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+        if (dataNodes.stream().noneMatch(each -> broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey()))) {
+            // TODO refactor this use Optional
+            return null;
+        }
         for (YamlDataNode each : dataNodes) {
             if (broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())) {
                 YamlBroadcastRuleConfiguration yamlBroadcastRuleConfiguration = YamlEngine.unmarshal(each.getValue(), YamlBroadcastRuleConfiguration.class);
