@@ -48,7 +48,7 @@ public final class MySQLRLStatementVisitor extends MySQLStatementVisitor impleme
     public ASTNode visitStopSlave(final StopSlaveContext ctx) {
         return new MySQLStopSlaveStatement();
     }
-
+    
     @Override
     public ASTNode visitChangeReplicationSourceTo(final ChangeReplicationSourceToContext ctx) {
         return new MySQLChangeReplicationSourceToStatement();
