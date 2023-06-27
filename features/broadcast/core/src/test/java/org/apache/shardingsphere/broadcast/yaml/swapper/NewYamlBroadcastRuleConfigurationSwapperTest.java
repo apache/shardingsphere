@@ -29,6 +29,7 @@ import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NewYamlBroadcastRuleConfigurationSwapperTest {
     
@@ -58,7 +59,7 @@ class NewYamlBroadcastRuleConfigurationSwapperTest {
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
         BroadcastRuleConfiguration result = swapper.swapToObject(config);
-        assertThat(result.getTables().size(), is(0));
+        assertTrue(result == null);
     }
     
     @Test

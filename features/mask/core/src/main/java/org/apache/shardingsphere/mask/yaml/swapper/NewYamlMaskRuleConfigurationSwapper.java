@@ -64,6 +64,10 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
     
     @Override
     public MaskRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+        if (dataNodes.stream().noneMatch(each -> maskRuleNodePath.getRoot().isValidatedPath(each.getKey()))) {
+            // TODO refactor this use Optional
+            return null;
+        }
         Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> algorithms = new LinkedHashMap<>();
         for (YamlDataNode each : dataNodes) {

@@ -66,6 +66,9 @@ public final class NewYamlEncryptRuleConfigurationSwapper implements NewYamlRule
     
     @Override
     public EncryptRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+        if (dataNodes.stream().noneMatch(each -> encryptRuleNodePath.getRoot().isValidatedPath(each.getKey()))) {
+            return null;
+        }
         Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> encryptors = new HashMap<>();
         for (YamlDataNode each : dataNodes) {
