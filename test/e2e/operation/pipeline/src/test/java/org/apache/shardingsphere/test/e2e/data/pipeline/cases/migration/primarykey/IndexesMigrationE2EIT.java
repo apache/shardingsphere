@@ -233,7 +233,6 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
             PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, SOURCE_TABLE_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         }
-        loadAllSingleTables(containerComposer);
         addMigrationProcessConfig(containerComposer);
         addMigrationSourceResource(containerComposer);
         addMigrationTargetResource(containerComposer);
