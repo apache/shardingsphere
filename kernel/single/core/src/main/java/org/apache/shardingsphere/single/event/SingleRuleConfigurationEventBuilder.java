@@ -39,22 +39,18 @@ public final class SingleRuleConfigurationEventBuilder implements RuleConfigurat
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!singleRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
-        }
-        if (singleRuleNodePath.getUniqueItem(SingleNodePath.TABLES).isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
-            return createSingleConfigEvent(databaseName, event);
-        }
-        return Optional.empty();
+        return Strings.isNullOrEmpty(event.getValue()) || !singleRuleNodePath.getUniqueItem(SingleNodePath.TABLES).isActiveVersionPath(event.getKey())
+                ? Optional.empty()
+                : Optional.of(createSingleConfigEvent(databaseName, event));
     }
     
-    private Optional<GovernanceEvent> createSingleConfigEvent(final String databaseName, final DataChangedEvent event) {
+    private GovernanceEvent createSingleConfigEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddSingleTableEvent(databaseName, event.getKey(), event.getValue()));
+            return new AddSingleTableEvent(databaseName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterSingleTableEvent(databaseName, event.getKey(), event.getValue()));
+            return new AlterSingleTableEvent(databaseName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteSingleTableEvent(databaseName));
+        return new DeleteSingleTableEvent(databaseName);
     }
 }

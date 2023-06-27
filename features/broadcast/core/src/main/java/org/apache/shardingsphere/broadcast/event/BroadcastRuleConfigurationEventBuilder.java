@@ -39,22 +39,18 @@ public final class BroadcastRuleConfigurationEventBuilder implements RuleConfigu
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!broadcastRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
-        }
-        if (broadcastRuleNodePath.getUniqueItem(BroadcastNodePath.TABLES).isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
-            return createBroadcastConfigEvent(databaseName, event);
-        }
-        return Optional.empty();
+        return Strings.isNullOrEmpty(event.getValue()) || !broadcastRuleNodePath.getUniqueItem(BroadcastNodePath.TABLES).isActiveVersionPath(event.getKey())
+                ? Optional.empty()
+                : Optional.of(createBroadcastConfigEvent(databaseName, event));
     }
     
-    private Optional<GovernanceEvent> createBroadcastConfigEvent(final String databaseName, final DataChangedEvent event) {
+    private GovernanceEvent createBroadcastConfigEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddBroadcastTableEvent(databaseName, event.getKey(), event.getValue()));
+            return new AddBroadcastTableEvent(databaseName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterBroadcastTableEvent(databaseName, event.getKey(), event.getValue()));
+            return new AlterBroadcastTableEvent(databaseName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteBroadcastTableEvent(databaseName));
+        return new DeleteBroadcastTableEvent(databaseName);
     }
 }
