@@ -22,28 +22,32 @@ columns:
     dataType: -5
     generated: false
     name: objoid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   classoid:
     caseSensitive: true
     dataType: -5
     generated: false
     name: classoid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   objsubid:
     caseSensitive: true
     dataType: 4
     generated: false
     name: objsubid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   provider:
     caseSensitive: true
     dataType: 12
     generated: false
     name: provider
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   label:
     caseSensitive: true
@@ -51,6 +55,7 @@ columns:
     generated: false
     name: label
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
   pg_seclabel_object_index:

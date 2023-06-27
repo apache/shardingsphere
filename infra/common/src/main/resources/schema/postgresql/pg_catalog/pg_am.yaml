@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: oid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   amname:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: amname
     primaryKey: false
+    unsigned: false
     visible: true
   amhandler:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: amhandler
     primaryKey: false
+    unsigned: false
     visible: true
   amtype:
     caseSensitive: true
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: amtype
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
   pg_am_name_index:
