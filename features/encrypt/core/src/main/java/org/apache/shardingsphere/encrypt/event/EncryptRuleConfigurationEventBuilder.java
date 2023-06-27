@@ -45,30 +45,27 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
             return Optional.empty();
         }
         Optional<String> tableName = encryptRuleNodePath.getNamedItem(EncryptNodePath.TABLES).getNameByActiveVersion(event.getKey());
-        if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createEncryptConfigEvent(databaseName, tableName.get(), event);
+        if (tableName.isPresent()) {
+            return Optional.of(createEncryptConfigEvent(databaseName, tableName.get(), event));
         }
         Optional<String> encryptorName = encryptRuleNodePath.getNamedItem(EncryptNodePath.ENCRYPTORS).getNameByActiveVersion(event.getKey());
-        if (encryptorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createEncryptorEvent(databaseName, encryptorName.get(), event);
-        }
-        return Optional.empty();
+        return encryptorName.flatMap(optional -> Optional.of(createEncryptorEvent(databaseName, optional, event)));
     }
     
-    private Optional<GovernanceEvent> createEncryptConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
+    private GovernanceEvent createEncryptConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddEncryptTableEvent(databaseName, event.getKey(), event.getValue()));
+            return new AddEncryptTableEvent(databaseName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue()));
+            return new AlterEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteEncryptTableEvent(databaseName, groupName));
+        return new DeleteEncryptTableEvent(databaseName, groupName);
     }
     
-    private Optional<GovernanceEvent> createEncryptorEvent(final String databaseName, final String encryptorName, final DataChangedEvent event) {
+    private GovernanceEvent createEncryptorEvent(final String databaseName, final String encryptorName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue()));
+            return new AlterEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteEncryptorEvent(databaseName, encryptorName));
+        return new DeleteEncryptorEvent(databaseName, encryptorName);
     }
 }
