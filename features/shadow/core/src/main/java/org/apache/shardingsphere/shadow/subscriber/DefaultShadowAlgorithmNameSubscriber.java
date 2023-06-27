@@ -50,9 +50,11 @@ public final class DefaultShadowAlgorithmNameSubscriber implements RuleChangedSu
     @Subscribe
     public synchronized void renew(final AlterDefaultShadowAlgorithmNameEvent event) {
         Optional<ShadowRule> rule = databases.get(event.getDatabaseName()).getRuleMetaData().findSingleRule(ShadowRule.class);
-        ShadowRuleConfiguration config = new ShadowRuleConfiguration();
+        ShadowRuleConfiguration config;
         if (rule.isPresent()) {
             config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+        } else {
+            config = new ShadowRuleConfiguration();
         }
         config.setDefaultShadowAlgorithmName(instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));

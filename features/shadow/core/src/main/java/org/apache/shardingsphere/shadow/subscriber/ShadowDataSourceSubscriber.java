@@ -59,9 +59,11 @@ public final class ShadowDataSourceSubscriber implements RuleChangedSubscriber {
         ShadowDataSourceConfiguration needToAddedConfig = swapShadowDataSourceRuleConfig(event.getDataSourceName(),
                 instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         Optional<ShadowRule> rule = databases.get(event.getDatabaseName()).getRuleMetaData().findSingleRule(ShadowRule.class);
-        ShadowRuleConfiguration config = new ShadowRuleConfiguration();
+        ShadowRuleConfiguration config;
         if (rule.isPresent()) {
             config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+        } else {
+            config = new ShadowRuleConfiguration();
         }
         config.getDataSources().add(needToAddedConfig);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));

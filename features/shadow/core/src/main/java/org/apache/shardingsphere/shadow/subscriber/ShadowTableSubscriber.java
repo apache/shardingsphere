@@ -71,9 +71,11 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
     
     private void renew(final String databaseName, final String tableName, final ShadowTableConfiguration needToAlteredConfig) {
         Optional<ShadowRule> rule = databases.get(databaseName).getRuleMetaData().findSingleRule(ShadowRule.class);
-        ShadowRuleConfiguration config = new ShadowRuleConfiguration();
+        ShadowRuleConfiguration config;
         if (rule.isPresent()) {
             config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+        } else {
+            config = new ShadowRuleConfiguration();
         }
         config.getTables().put(tableName, needToAlteredConfig);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));

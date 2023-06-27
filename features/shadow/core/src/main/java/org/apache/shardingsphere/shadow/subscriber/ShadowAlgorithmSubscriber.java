@@ -56,9 +56,11 @@ public final class ShadowAlgorithmSubscriber implements RuleChangedSubscriber {
         AlgorithmConfiguration needToAlteredConfig =
                 swapToAlgorithmConfig(instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         Optional<ShadowRule> rule = databases.get(event.getDatabaseName()).getRuleMetaData().findSingleRule(ShadowRule.class);
-        ShadowRuleConfiguration config = new ShadowRuleConfiguration();
+        ShadowRuleConfiguration config;
         if (rule.isPresent()) {
             config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+        } else {
+            config = new ShadowRuleConfiguration();
         }
         config.getShadowAlgorithms().put(event.getAlgorithmName(), needToAlteredConfig);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
