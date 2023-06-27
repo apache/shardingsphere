@@ -36,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * TODO Rename to YamlMaskRuleConfigurationSwapper when metadata structure adjustment completed.
@@ -52,7 +53,7 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final MaskRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
-        for (Map.Entry<String, AlgorithmConfiguration> entry : data.getMaskAlgorithms().entrySet()) {
+        for (Entry<String, AlgorithmConfiguration> entry : data.getMaskAlgorithms().entrySet()) {
             result.add(new YamlDataNode(maskRuleNodePath.getNamedItem(MaskNodePath.ALGORITHMS).getPath(entry.getKey()),
                     YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
