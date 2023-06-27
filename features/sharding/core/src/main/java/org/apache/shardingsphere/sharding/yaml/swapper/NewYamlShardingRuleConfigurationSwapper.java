@@ -75,7 +75,6 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         swapAlgorithms(data, result);
         swapStrategies(data, result);
-        swapTableRules(data, result);
         if (null != data.getDefaultShardingColumn()) {
             result.add(new YamlDataNode(shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.DEFAULT_SHARDING_COLUMN).getPath(), data.getDefaultShardingColumn()));
         }
@@ -83,6 +82,7 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
             result.add(new YamlDataNode(shardingRuleNodePath.getUniqueRuleItemNodePaths(ShardingNodeConverter.SHARDING_CACHE).getPath(),
                     YamlEngine.marshal(shardingCacheYamlSwapper.swapToYamlConfiguration(data.getShardingCache()))));
         }
+        swapTableRules(data, result);
         return result;
     }
     
