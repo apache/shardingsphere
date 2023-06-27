@@ -19,8 +19,10 @@ package org.apache.shardingsphere.readwritesplitting.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Readwrite-splitting node converter.
@@ -28,36 +30,18 @@ import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingNodeConverter {
     
-    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("readwrite_splitting");
+    public static final String DATA_SOURCES = "data_sources";
     
-    private static final RuleItemNodeConverter DATA_SOURCE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "data_sources");
+    public static final String LOAD_BALANCERS = "load_balancers";
     
-    private static final RuleItemNodeConverter LOAD_BALANCER_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "load_balancers");
-    
-    /**
-     * Get rule root node converter.
-     *
-     * @return rule root node converter
-     */
-    public static RuleRootNodeConverter getRuleRootNodeConverter() {
-        return ROOT_NODE_CONVERTER;
-    }
+    private static final RuleNodePath INSTANCE = new RuleNodePath("readwrite_splitting", Arrays.asList(DATA_SOURCES, LOAD_BALANCERS), Collections.emptyList());
     
     /**
-     * Get data source node converter.
+     * Get instance of rule node path.
      *
-     * @return data source node converter
+     * @return got instance
      */
-    public static RuleItemNodeConverter getDataSourceNodeConvertor() {
-        return DATA_SOURCE_NODE_CONVERTER;
-    }
-    
-    /**
-     * Get load balancer node converter.
-     *
-     * @return load balancer node converter
-     */
-    public static RuleItemNodeConverter getLoadBalancerNodeConverter() {
-        return LOAD_BALANCER_NODE_CONVERTER;
+    public static RuleNodePath getInstance() {
+        return INSTANCE;
     }
 }

@@ -1,0 +1,227 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: gs_sql_count
+columns:
+  node_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: node_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  user_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: user_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  select_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: select_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  update_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: update_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  insert_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: insert_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  delete_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: delete_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  mergeinto_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: mergeinto_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ddl_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: ddl_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  dml_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: dml_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  dcl_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: dcl_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  total_select_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: total_select_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  avg_select_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: avg_select_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_select_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: max_select_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  min_select_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: min_select_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  total_update_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: total_update_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  avg_update_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: avg_update_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_update_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: max_update_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  min_update_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: min_update_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  total_insert_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: total_insert_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  avg_insert_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: avg_insert_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_insert_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: max_insert_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  min_insert_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: min_insert_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  total_delete_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: total_delete_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  avg_delete_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: avg_delete_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_delete_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: max_delete_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  min_delete_elapse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: min_delete_elapse
+    primaryKey: false
+    unsigned: false
+    visible: true

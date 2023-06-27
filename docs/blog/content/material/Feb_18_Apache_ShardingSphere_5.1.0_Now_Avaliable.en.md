@@ -273,8 +273,6 @@ Read/write-splitting supports static and dynamic configuration
 
 20. Fix encrypt rewrite exception when execute multiple table join query
 
-21. Fix encrypt rewrite wrong result with table level `queryWithCipherColumn`
-
 22. Fix parsing chinese
 
 23. Fix encrypt exists sub query

@@ -19,8 +19,9 @@ package org.apache.shardingsphere.broadcast.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+
+import java.util.Collections;
 
 /**
  * Broadcast node converter.
@@ -28,36 +29,16 @@ import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BroadcastNodeConverter {
     
-    private static final String TABLES_NODE = "tables";
+    public static final String TABLES = "tables";
     
-    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("broadcast");
-    
-    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, TABLES_NODE);
+    private static final RuleNodePath INSTANCE = new RuleNodePath("broadcast", Collections.singleton(TABLES), Collections.emptyList());
     
     /**
-     * Get rule root node converter.
-     *
-     * @return rule root node converter
+     * Get instance of rule node path.
+     * 
+     * @return got instance
      */
-    public static RuleRootNodeConverter getRuleRootNodeConverter() {
-        return ROOT_NODE_CONVERTER;
-    }
-    
-    /**
-     * Get table node converter.
-     *
-     * @return table node converter
-     */
-    public static RuleItemNodeConverter getTableNodeConvertor() {
-        return TABLE_NODE_CONVERTER;
-    }
-    
-    /**
-     * Get tables path.
-     *
-     * @return tables path
-     */
-    public static String getTablesPath() {
-        return TABLES_NODE;
+    public static RuleNodePath getInstance() {
+        return INSTANCE;
     }
 }

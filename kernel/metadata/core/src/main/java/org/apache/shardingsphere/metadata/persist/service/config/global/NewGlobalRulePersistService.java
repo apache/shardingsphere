@@ -23,21 +23,19 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamGlobalRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.NewGlobalNode;
 import org.apache.shardingsphere.metadata.persist.service.config.AbstractPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
-import java.util.Map;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * TODO Rename GlobalRulePersistService when metadata structure adjustment completed. #25485
@@ -57,8 +55,8 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
-        Map<RuleConfiguration, NewYamGlobalRuleConfigurationSwapper> yamlConfigs = new NewYamlGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
-        for (Entry<RuleConfiguration, NewYamGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        Map<RuleConfiguration, NewYamlGlobalRuleConfigurationSwapper> yamlConfigs = new NewYamlGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
+        for (Entry<RuleConfiguration, NewYamlGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
@@ -71,8 +69,8 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
     @Override
     public Collection<MetaDataVersion> persistConfig(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
-        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        Map<RuleConfiguration, NewYamlGlobalRuleConfigurationSwapper> yamlConfigs = new NewYamlGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
+        for (Entry<RuleConfiguration, NewYamlGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
@@ -92,7 +90,7 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
             if (Strings.isNullOrEmpty(getActiveVersion(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey())))) {
                 repository.persist(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), DEFAULT_VERSION);
             }
-            result.add(new MetaDataVersion(persistKey, NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), nextActiveVersion));
+            result.add(new MetaDataVersion(NewGlobalNode.getGlobalRuleNode(each.getKey()), getActiveVersion(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey())), nextActiveVersion));
         }
         return result;
     }
@@ -104,9 +102,9 @@ public final class NewGlobalRulePersistService extends AbstractPersistService im
     }
     
     @Override
-    public Collection<RuleConfiguration> load(final String ruleName) {
-        Collection<YamlDataNode> dataNodes = getDataNodes(NewGlobalNode.getGlobalRuleVersionsNode(ruleName));
-        return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
+    public RuleConfiguration load(final String ruleName) {
+        Collection<YamlDataNode> dataNodes = getDataNodes(NewGlobalNode.getGlobalRuleNode(ruleName));
+        return new NewYamlGlobalRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, dataNodes).orElse(null);
     }
     
     /**

@@ -19,8 +19,10 @@ package org.apache.shardingsphere.mask.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.converter.RuleItemNodeConverter;
-import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Mask node converter.
@@ -28,36 +30,18 @@ import org.apache.shardingsphere.infra.metadata.converter.RuleRootNodeConverter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MaskNodeConverter {
     
-    private static final RuleRootNodeConverter ROOT_NODE_CONVERTER = new RuleRootNodeConverter("mask");
+    public static final String TABLES = "tables";
     
-    private static final RuleItemNodeConverter TABLE_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "tables");
+    public static final String ALGORITHMS = "algorithms";
     
-    private static final RuleItemNodeConverter ALGORITHM_NODE_CONVERTER = new RuleItemNodeConverter(ROOT_NODE_CONVERTER, "algorithms");
-    
-    /**
-     * Get rule root node converter.
-     *
-     * @return rule root node converter
-     */
-    public static RuleRootNodeConverter getRuleRootNodeConverter() {
-        return ROOT_NODE_CONVERTER;
-    }
+    private static final RuleNodePath INSTANCE = new RuleNodePath("mask", Arrays.asList(TABLES, ALGORITHMS), Collections.emptyList());
     
     /**
-     * Get table node converter.
+     * Get instance of rule node path.
      *
-     * @return table node converter
+     * @return got instance
      */
-    public static RuleItemNodeConverter getTableNodeConvertor() {
-        return TABLE_NODE_CONVERTER;
-    }
-    
-    /**
-     * Get algorithm node converter.
-     *
-     * @return algorithm node converter
-     */
-    public static RuleItemNodeConverter getAlgorithmNodeConvertor() {
-        return ALGORITHM_NODE_CONVERTER;
+    public static RuleNodePath getInstance() {
+        return INSTANCE;
     }
 }

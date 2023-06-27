@@ -59,8 +59,8 @@ public interface GlobalPersistService<T> {
      * @param ruleName rule name
      * @return single rule configuration
      */
-    default Collection<RuleConfiguration> load(String ruleName) {
-        return Collections.emptyList();
+    default RuleConfiguration load(String ruleName) {
+        return null;
     }
     
     /**

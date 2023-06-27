@@ -33,10 +33,10 @@ databaseName ::=
 
 ### Return value description
 
-| Column        | Description                                         |
-|---------------|-----------------------------------------------------|
-| table_name    | Single table name                                   |
-| resource_name | The resource name where the single table is located |
+| Column            | Description                                             |
+|-------------------|---------------------------------------------------------|
+| table_name        | Single table name                                       |
+| storage_unit_name | The storage unit name where the single table is located |
 
 
 ### Example
@@ -49,11 +49,11 @@ SHOW SINGLE TABLE t_user FROM sharding_db;
 
 ```sql
 mysql> SHOW SINGLE TABLE t_user FROM sharding_db;
-+------------+---------------+
-| table_name | resource_name |
-+------------+---------------+
-| t_user     | ds_0          |
-+------------+---------------+
++------------+-------------------+
+| table_name | storage_unit_name |
++------------+-------------------+
+| t_user     | ds_0              |
++------------+-------------------+
 1 row in set (0.00 sec)
 ```
 
@@ -65,11 +65,11 @@ SHOW SINGLE TABLE t_user;
 
 ```sql
 mysql> SHOW SINGLE TABLE t_user;
-+------------+---------------+
-| table_name | resource_name |
-+------------+---------------+
-| t_user     | ds_0          |
-+------------+---------------+
++------------+-------------------+
+| table_name | storage_unit_name |
++------------+-------------------+
+| t_user     | ds_0              |
++------------+-------------------+
 1 row in set (0.00 sec)
 ```
 
@@ -81,11 +81,11 @@ SHOW SINGLE TABLES FROM sharding_db;
 
 ```sql
 mysql> SHOW SINGLE TABLES FROM sharding_db;
-+------------+---------------+
-| table_name | resource_name |
-+------------+---------------+
-| t_user     | ds_0          |
-+------------+---------------+
++------------+-------------------+
+| table_name | storage_unit_name |
++------------+-------------------+
+| t_user     | ds_0              |
++------------+-------------------+
 1 row in set (0.00 sec)
 ```
 
@@ -97,11 +97,11 @@ SHOW SINGLE TABLES;
 
 ```sql
 mysql> SHOW SINGLE TABLES;
-+------------+---------------+
-| table_name | resource_name |
-+------------+---------------+
-| t_user     | ds_0          |
-+------------+---------------+
++------------+-------------------+
+| table_name | storage_unit_name |
++------------+-------------------+
+| t_user     | ds_0              |
++------------+-------------------+
 1 row in set (0.00 sec)
 ```
 
