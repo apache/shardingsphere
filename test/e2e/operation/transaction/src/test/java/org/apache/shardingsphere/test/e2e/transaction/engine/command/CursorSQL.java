@@ -22,36 +22,17 @@ import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
 
-@XmlRootElement(name = "command")
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class CursorSQLCommand {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class CursorSQL {
     
-    @XmlElement(name = "single-table-cursor")
-    private CursorSQL singleTableCursor;
+    @XmlAttribute(name = "cursor-name")
+    private String cursorName;
     
-    @XmlElement(name = "single-table-cursor-order-by")
-    private CursorSQL singleTableCursorOrderBy;
-    
-    @XmlElement(name = "broadcast-tables-cursor")
-    private CursorSQL broadcastTablesCursor;
-    
-    @XmlElement(name = "broadcast-tables-cursor2")
-    private CursorSQL broadcastTablesCursor2;
-    
-    @XmlElement(name = "broadcast-and-sharding-tables-cursor")
-    private CursorSQL broadcastAndShardingTablesCursor;
-    
-    @XmlElement(name = "broadcast-and-single-tables-cursor")
-    private CursorSQL broadcastAndSingleTablesCursor;
-    
-    @XmlElement(name = "broadcast-and-single-tables-cursor2")
-    private String broadcastAndSingleTablesCursor2;
-    
-    @XmlElement(name = "view-cursor")
-    private CursorSQL viewCursor;
+    @XmlValue
+    private String sql;
 }
