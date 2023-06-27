@@ -278,7 +278,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    private ShardingRuleConfiguration getShardingRuleConfiguration(ShardingSphereDatabase database) {
+    private ShardingRuleConfiguration getShardingRuleConfiguration(final ShardingSphereDatabase database) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         ShardingRuleConfiguration config;
         if (rule.isPresent()) {
