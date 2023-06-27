@@ -22,7 +22,9 @@ if [ ! -d "${LOGS_DIR}" ]; then
     mkdir "${LOGS_DIR}"
 fi
 STDOUT_FILE=${LOGS_DIR}/stdout.log
-JAR_FILE=$1
+
+CLASS_PATH=".:${DEPLOY_DIR}/lib/*:${DEPLOY_DIR}/conf"
+MAIN_CLASS=org.apache.shardingsphere.test.e2e.agent.jdbc.project.JdbcProjectApplication
 
 AGENT_FILE=${DEPLOY_DIR}/agent/shardingsphere-agent.jar
 function set_agent_name() {
@@ -51,4 +53,4 @@ do
   let PARAMETER_INDEX+=1
 done
 
-nohup java ${AGENT_PARAM} -jar ${DEPLOY_DIR}/${JAR_FILE} >> ${STDOUT_FILE} 2>&1 &
+nohup java -classpath ${CLASS_PATH} ${AGENT_PARAM} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
