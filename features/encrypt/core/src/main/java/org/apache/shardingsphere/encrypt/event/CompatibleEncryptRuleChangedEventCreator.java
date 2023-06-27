@@ -47,11 +47,6 @@ public final class CompatibleEncryptRuleChangedEventCreator implements RuleChang
         }
     }
     
-    @Override
-    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
-        throw new UnsupportedOperationException(itemType);
-    }
-    
     private GovernanceEvent createTableEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddCompatibleEncryptTableEvent(databaseName, event.getKey(), event.getValue());

@@ -31,11 +31,6 @@ import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
  */
 public final class BroadcastRuleChangedEventCreator implements RuleChangedEventCreator {
     
-    @Override
-    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        throw new UnsupportedOperationException(itemType);
-    }
-    
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {

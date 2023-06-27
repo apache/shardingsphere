@@ -36,8 +36,11 @@ public interface RuleChangedEventCreator extends TypedSPI {
      * @param itemType item type
      * @param itemName item name
      * @return rule configuration changed event
+     * @throws UnsupportedOperationException unsupported item type
      */
-    GovernanceEvent create(String databaseName, DataChangedEvent event, String itemType, String itemName);
+    default GovernanceEvent create(String databaseName, DataChangedEvent event, String itemType, String itemName) {
+        throw new UnsupportedOperationException(itemType);
+    }
     
     /**
      * Create rule changed event.
@@ -46,6 +49,9 @@ public interface RuleChangedEventCreator extends TypedSPI {
      * @param event data changed event
      * @param itemType item type
      * @return rule configuration changed event
+     * @throws UnsupportedOperationException unsupported item type
      */
-    GovernanceEvent create(String databaseName, DataChangedEvent event, String itemType);
+    default GovernanceEvent create(String databaseName, DataChangedEvent event, String itemType) {
+        throw new UnsupportedOperationException(itemType);
+    }
 }

@@ -45,11 +45,6 @@ public final class ReadwriteSplittingRuleChangedEventCreator implements RuleChan
         }
     }
     
-    @Override
-    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
-        throw new UnsupportedOperationException(itemType);
-    }
-    
     private GovernanceEvent createDataSourceEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue());

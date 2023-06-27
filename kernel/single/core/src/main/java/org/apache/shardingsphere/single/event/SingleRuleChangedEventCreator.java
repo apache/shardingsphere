@@ -31,11 +31,6 @@ import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProv
  */
 public final class SingleRuleChangedEventCreator implements RuleChangedEventCreator {
     
-    @Override
-    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        throw new UnsupportedOperationException(itemType);
-    }
-    
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {

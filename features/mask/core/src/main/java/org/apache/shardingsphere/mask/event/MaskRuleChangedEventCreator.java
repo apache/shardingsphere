@@ -45,11 +45,6 @@ public final class MaskRuleChangedEventCreator implements RuleChangedEventCreato
         }
     }
     
-    @Override
-    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
-        throw new UnsupportedOperationException(itemType);
-    }
-    
     private GovernanceEvent createTableEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddMaskTableEvent(databaseName, event.getKey(), event.getValue());
