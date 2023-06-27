@@ -21,6 +21,7 @@ import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -50,11 +51,7 @@ class NewYamlBroadcastRuleConfigurationSwapperTest {
     }
     
     private BroadcastRuleConfiguration createMaximumBroadcastRule() {
-        Collection<String> tables = new LinkedList<>();
-        tables.add(("foo_table"));
-        tables.add(("foo_table2"));
-        BroadcastRuleConfiguration result = new BroadcastRuleConfiguration(tables);
-        return result;
+        return new BroadcastRuleConfiguration(Arrays.asList("foo_table", "foo_table2"));
     }
     
     @Test
@@ -67,9 +64,9 @@ class NewYamlBroadcastRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObject() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/broadcast/tables", "tables:\n" +
-                "- foo_table\n" +
-                "- foo_table2\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/broadcast/tables", "tables:\n"
+                + "- foo_table\n"
+                + "- foo_table2\n"));
         BroadcastRuleConfiguration result = swapper.swapToObject(config);
         assertThat(result.getTables().size(), is(2));
         Iterator<String> iterator = result.getTables().iterator();
