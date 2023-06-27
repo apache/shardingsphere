@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.converter;
 
+import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

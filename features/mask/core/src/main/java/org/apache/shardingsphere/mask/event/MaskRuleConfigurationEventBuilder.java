@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.table.AddMaskTableEvent;
 import org.apache.shardingsphere.mask.event.table.AlterMaskTableEvent;
 import org.apache.shardingsphere.mask.event.table.DeleteMaskTableEvent;
-import org.apache.shardingsphere.mask.metadata.converter.MaskNodePath;
+import org.apache.shardingsphere.mask.metadata.nodepath.MaskNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;

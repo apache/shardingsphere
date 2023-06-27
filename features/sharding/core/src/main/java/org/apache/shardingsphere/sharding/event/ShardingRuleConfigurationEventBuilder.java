@@ -53,7 +53,7 @@ import org.apache.shardingsphere.sharding.event.table.auto.DeleteShardingAutoTab
 import org.apache.shardingsphere.sharding.event.table.sharding.AddShardingTableConfigurationEvent;
 import org.apache.shardingsphere.sharding.event.table.sharding.AlterShardingTableConfigurationEvent;
 import org.apache.shardingsphere.sharding.event.table.sharding.DeleteShardingTableConfigurationEvent;
-import org.apache.shardingsphere.sharding.metadata.converter.ShardingNodePath;
+import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingNodePath;
 
 import java.util.Optional;
 

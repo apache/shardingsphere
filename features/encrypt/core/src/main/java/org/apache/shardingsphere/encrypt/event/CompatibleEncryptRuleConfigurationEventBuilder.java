@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.event.compatible.encryptor.DeleteCompat
 import org.apache.shardingsphere.encrypt.event.compatible.table.AddCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.AlterCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.DeleteCompatibleEncryptTableEvent;
-import org.apache.shardingsphere.encrypt.metadata.converter.CompatibleEncryptNodePath;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.CompatibleEncryptNodePath;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;

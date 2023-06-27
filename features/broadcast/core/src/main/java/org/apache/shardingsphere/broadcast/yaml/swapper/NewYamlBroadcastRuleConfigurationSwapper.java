@@ -19,7 +19,7 @@ package org.apache.shardingsphere.broadcast.yaml.swapper;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
-import org.apache.shardingsphere.broadcast.metadata.converter.BroadcastNodePath;
+import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastNodePath;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
