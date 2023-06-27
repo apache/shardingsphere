@@ -99,6 +99,9 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
      */
     @Subscribe
     public synchronized void renew(final DeleteShardingAlgorithmEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.getShardingAlgorithms().remove(event.getAlgorithmName());
@@ -112,6 +115,9 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
      */
     @Subscribe
     public synchronized void renew(final DeleteKeyGeneratorEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.getKeyGenerators().remove(event.getKeyGeneratorName());
@@ -125,6 +131,9 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
      */
     @Subscribe
     public synchronized void renew(final DeleteAuditorEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.getAuditors().remove(event.getAuditorName());

@@ -64,13 +64,13 @@ public final class CompatibleEncryptRuleConfigurationEventBuilder implements Rul
         if (Type.UPDATED == event.getType()) {
             return Optional.of(new AlterCompatibleEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteCompatibleEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue()));
+        return Optional.of(new DeleteCompatibleEncryptTableEvent(databaseName, groupName));
     }
     
     private Optional<GovernanceEvent> createEncryptorEvent(final String databaseName, final String encryptorName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return Optional.of(new AlterCompatibleEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteCompatibleEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue()));
+        return Optional.of(new DeleteCompatibleEncryptorEvent(databaseName, encryptorName));
     }
 }

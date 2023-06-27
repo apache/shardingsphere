@@ -62,13 +62,13 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
         if (Type.UPDATED == event.getType()) {
             return Optional.of(new AlterEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue()));
+        return Optional.of(new DeleteEncryptTableEvent(databaseName, groupName));
     }
     
     private Optional<GovernanceEvent> createEncryptorEvent(final String databaseName, final String encryptorName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return Optional.of(new AlterEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue()));
         }
-        return Optional.of(new DeleteEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue()));
+        return Optional.of(new DeleteEncryptorEvent(databaseName, encryptorName));
     }
 }

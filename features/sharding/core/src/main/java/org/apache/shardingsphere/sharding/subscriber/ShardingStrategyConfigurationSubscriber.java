@@ -220,6 +220,9 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      */
     @Subscribe
     public synchronized void renew(final DeleteDatabaseShardingStrategyConfigurationEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultDatabaseShardingStrategy(null);
@@ -233,6 +236,9 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      */
     @Subscribe
     public synchronized void renew(final DeleteTableShardingStrategyConfigurationEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultTableShardingStrategy(null);
@@ -246,6 +252,9 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      */
     @Subscribe
     public synchronized void renew(final DeleteKeyGenerateStrategyConfigurationEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultKeyGenerateStrategy(null);
@@ -259,6 +268,9 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      */
     @Subscribe
     public synchronized void renew(final DeleteShardingAuditorStrategyConfigurationEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultAuditStrategy(null);
@@ -272,6 +284,9 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      */
     @Subscribe
     public synchronized void renew(final DeleteDefaultShardingColumnEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultAuditStrategy(null);

@@ -180,6 +180,9 @@ public final class ContextManager implements AutoCloseable {
      * @param schemaName schema name
      */
     public synchronized void dropSchema(final String databaseName, final String schemaName) {
+        if (!metaDataContexts.get().getMetaData().containsDatabase(databaseName)) {
+            return;
+        }
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         if (!database.containsSchema(schemaName)) {
             return;
@@ -197,6 +200,9 @@ public final class ContextManager implements AutoCloseable {
      * @param toBeDeletedViewName to be deleted view name
      */
     public synchronized void alterSchema(final String databaseName, final String schemaName, final String toBeDeletedTableName, final String toBeDeletedViewName) {
+        if (!metaDataContexts.get().getMetaData().containsDatabase(databaseName) || !metaDataContexts.get().getMetaData().getDatabase(databaseName).containsSchema(schemaName)) {
+            return;
+        }
         Optional.ofNullable(toBeDeletedTableName).ifPresent(optional -> dropTable(databaseName, schemaName, optional));
         Optional.ofNullable(toBeDeletedViewName).ifPresent(optional -> dropView(databaseName, schemaName, optional));
         alterMetaDataHeldRule(metaDataContexts.get().getMetaData().getDatabase(databaseName));

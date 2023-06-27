@@ -90,6 +90,9 @@ public final class ShardingCacheConfigurationSubscriber implements RuleChangedSu
      */
     @Subscribe
     public synchronized void renew(final DeleteShardingCacheConfigurationEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setShardingCache(null);
