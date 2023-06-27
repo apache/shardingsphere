@@ -200,15 +200,13 @@ public final class EnumerablePushDownTableScanExecutor {
     private ShardingSphereTableData createSystemCatalogTableData(final ShardingSphereTable table, final int[] projects) {
         ShardingSphereTableData result = new ShardingSphereTableData(table.getName());
         ShardingSphereMetaData metaData = executorContext.getFederationContext().getMetaData();
-        if (table.getName().equalsIgnoreCase(PG_DATABASE)) {
+        if (PG_DATABASE.equalsIgnoreCase(table.getName())) {
             appendOpenGaussDatabaseData(result, metaData.getDatabases().values(), projects);
-        }
-        if (table.getName().equalsIgnoreCase(PG_TABLES)) {
+        } else if (PG_TABLES.equalsIgnoreCase(table.getName())) {
             for (ShardingSphereDatabase each : metaData.getDatabases().values()) {
                 appendOpenGaussTableData(result, each.getSchemas(), projects);
             }
-        }
-        if (table.getName().equalsIgnoreCase(PG_ROLES)) {
+        } else if (PG_ROLES.equalsIgnoreCase(table.getName())) {
             appendOpenGaussRoleData(result, metaData, projects);
         }
         return result;
