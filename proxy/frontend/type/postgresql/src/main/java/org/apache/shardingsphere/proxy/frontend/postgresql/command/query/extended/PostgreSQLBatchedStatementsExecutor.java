@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -95,13 +96,13 @@ public final class PostgreSQLBatchedStatementsExecutor {
         if (parameterSetsIterator.hasNext()) {
             List<Object> firstGroupOfParam = parameterSetsIterator.next();
             sqlStatementContext = createSQLStatementContext(firstGroupOfParam);
-            executionContext = createExecutionContext(createQueryContext(sqlStatementContext, firstGroupOfParam));
+            executionContext = createExecutionContext(createQueryContext(sqlStatementContext, firstGroupOfParam, preparedStatement.getHintValueContext()));
             for (ExecutionUnit each : executionContext.getExecutionUnits()) {
                 executionUnitParams.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
             }
         }
         anyExecutionContext = executionContext;
-        prepareForRestOfParametersSet(parameterSetsIterator, sqlStatementContext);
+        prepareForRestOfParametersSet(parameterSetsIterator, sqlStatementContext, preparedStatement.getHintValueContext());
     }
     
     private SQLStatementContext createSQLStatementContext(final List<Object> params) {
@@ -109,21 +110,21 @@ public final class PostgreSQLBatchedStatementsExecutor {
                 connectionSession.getDatabaseName());
     }
     
-    private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext sqlStatementContext) {
+    private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
         while (paramSetsIterator.hasNext()) {
             List<Object> eachGroupOfParam = paramSetsIterator.next();
             if (sqlStatementContext instanceof ParameterAware) {
                 ((ParameterAware) sqlStatementContext).setUpParameters(eachGroupOfParam);
             }
-            ExecutionContext eachExecutionContext = createExecutionContext(createQueryContext(sqlStatementContext, eachGroupOfParam));
+            ExecutionContext eachExecutionContext = createExecutionContext(createQueryContext(sqlStatementContext, eachGroupOfParam, hintValueContext));
             for (ExecutionUnit each : eachExecutionContext.getExecutionUnits()) {
                 executionUnitParams.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
             }
         }
     }
     
-    private QueryContext createQueryContext(final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), params);
+    private QueryContext createQueryContext(final SQLStatementContext sqlStatementContext, final List<Object> params, final HintValueContext hintValueContext) {
+        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, hintValueContext);
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
