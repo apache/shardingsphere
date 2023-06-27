@@ -40,6 +40,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRe
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataResult;
+import org.apache.shardingsphere.data.pipeline.cdc.util.CDCDataNodeUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtils;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
@@ -49,18 +50,12 @@ import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseTy
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.single.rule.SingleRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -109,7 +104,7 @@ public final class CDCBackendHandler {
             tableNames = schemaTableNames;
         }
         ShardingSpherePreconditions.checkState(!tableNames.isEmpty(), () -> new CDCExceptionWrapper(requestId, new NotFindStreamDataSourceTableException()));
-        Map<String, List<DataNode>> actualDataNodesMap = buildDataNodesMap(database, tableNames);
+        Map<String, List<DataNode>> actualDataNodesMap = CDCDataNodeUtils.buildDataNodesMap(database, tableNames);
         ShardingSpherePreconditions.checkState(!actualDataNodesMap.isEmpty(), () -> new PipelineInvalidParameterException(String.format("Not find table %s", tableNames)));
         boolean decodeWithTx = database.getProtocolType() instanceof OpenGaussDatabaseType;
         StreamDataParameter parameter = new StreamDataParameter(requestBody.getDatabase(), new LinkedList<>(schemaTableNames), requestBody.getFull(), actualDataNodesMap, decodeWithTx);
@@ -117,26 +112,6 @@ public final class CDCBackendHandler {
         connectionContext.setJobId(jobId);
         startStreaming(jobId, connectionContext, channel);
         return CDCResponseGenerator.succeedBuilder(requestId).setStreamDataResult(StreamDataResult.newBuilder().setStreamingId(jobId).build()).build();
-    }
-    
-    private Map<String, List<DataNode>> buildDataNodesMap(final ShardingSphereDatabase database, final Collection<String> tableNames) {
-        Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        Optional<SingleRule> singleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
-        Map<String, List<DataNode>> result = new HashMap<>();
-        // TODO support virtual data source name
-        for (String each : tableNames) {
-            if (singleRule.isPresent() && singleRule.get().getAllDataNodes().containsKey(each)) {
-                result.put(each, new ArrayList<>(singleRule.get().getAllDataNodes().get(each)));
-                continue;
-            }
-            if (shardingRule.isPresent() && shardingRule.get().findTableRule(each).isPresent()) {
-                TableRule tableRule = shardingRule.get().getTableRule(each);
-                result.put(each, tableRule.getActualDataNodes());
-                continue;
-            }
-            throw new PipelineInvalidParameterException(String.format("Not find actual data nodes of `%s`", each));
-        }
-        return result;
     }
     
     /**
