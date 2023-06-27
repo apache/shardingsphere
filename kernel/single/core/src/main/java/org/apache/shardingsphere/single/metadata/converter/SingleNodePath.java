@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.metadata.converter;
+package org.apache.shardingsphere.single.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Compatible encrypt node converter.
- * @deprecated compatible support will remove in next version.
+ * Single node path.
  */
-@Deprecated
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CompatibleEncryptNodeConverter {
+public final class SingleNodePath {
     
     public static final String TABLES = "tables";
     
-    public static final String ENCRYPTORS = "encryptors";
-    
-    private static final RuleNodePath INSTANCE = new RuleNodePath("compatible_encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath("single", Collections.emptyList(), Collections.singleton(TABLES));
     
     /**
      * Get instance of rule node path.

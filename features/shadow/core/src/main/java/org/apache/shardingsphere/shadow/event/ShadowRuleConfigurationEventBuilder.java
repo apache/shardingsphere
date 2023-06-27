@@ -33,7 +33,7 @@ import org.apache.shardingsphere.shadow.event.datasource.DeleteShadowDataSourceE
 import org.apache.shardingsphere.shadow.event.table.AddShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.DeleteShadowTableEvent;
-import org.apache.shardingsphere.shadow.metadata.converter.ShadowNodeConverter;
+import org.apache.shardingsphere.shadow.metadata.converter.ShadowNodePath;
 
 import java.util.Optional;
 
@@ -42,26 +42,26 @@ import java.util.Optional;
  */
 public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
-    private final RuleNodePath shadowRuleNodePath = ShadowNodeConverter.getInstance();
+    private final RuleNodePath shadowRuleNodePath = ShadowNodePath.getInstance();
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
         if (!shadowRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> dataSourceName = shadowRuleNodePath.getNamedItem(ShadowNodeConverter.DATA_SOURCES).getNameByActiveVersion(event.getKey());
+        Optional<String> dataSourceName = shadowRuleNodePath.getNamedItem(ShadowNodePath.DATA_SOURCES).getNameByActiveVersion(event.getKey());
         if (dataSourceName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowConfigEvent(databaseName, dataSourceName.get(), event);
         }
-        Optional<String> tableName = shadowRuleNodePath.getNamedItem(ShadowNodeConverter.TABLES).getNameByActiveVersion(event.getKey());
+        Optional<String> tableName = shadowRuleNodePath.getNamedItem(ShadowNodePath.TABLES).getNameByActiveVersion(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowTableConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> algorithmName = shadowRuleNodePath.getNamedItem(ShadowNodeConverter.ALGORITHMS).getNameByActiveVersion(event.getKey());
+        Optional<String> algorithmName = shadowRuleNodePath.getNamedItem(ShadowNodePath.ALGORITHMS).getNameByActiveVersion(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowAlgorithmEvent(databaseName, algorithmName.get(), event);
         }
-        if (shadowRuleNodePath.getUniqueItem(ShadowNodeConverter.DEFAULT_ALGORITHM).isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+        if (shadowRuleNodePath.getUniqueItem(ShadowNodePath.DEFAULT_ALGORITHM).isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createDefaultShadowAlgorithmNameEvent(databaseName, event);
         }
         return Optional.empty();
