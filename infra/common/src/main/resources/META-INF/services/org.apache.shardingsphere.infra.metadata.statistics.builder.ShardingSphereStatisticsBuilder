@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.data.collector.tables.PgNamespaceTableCollector
-org.apache.shardingsphere.infra.metadata.data.collector.tables.PgClassTableCollector
+org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.MySQLShardingSphereStatisticsBuilder
+org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.PostgreSQLShardingSphereStatisticsBuilder

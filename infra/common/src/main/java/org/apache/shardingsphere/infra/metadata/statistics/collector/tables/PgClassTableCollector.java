@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data.collector.tables;
+package org.apache.shardingsphere.infra.metadata.statistics.collector.tables;
 
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDataCollector;
-import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereTableDataCollectorUtils;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereTableDataCollectorUtils;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  * Table pg_class data collector.
  */
-public final class PgClassTableCollector implements ShardingSphereDataCollector {
+public final class PgClassTableCollector implements ShardingSphereStatisticsCollector {
     
     private static final String PG_CLASS = "pg_class";
     

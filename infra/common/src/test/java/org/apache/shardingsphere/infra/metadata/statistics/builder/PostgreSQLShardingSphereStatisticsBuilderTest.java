@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data.builder;
+package org.apache.shardingsphere.infra.metadata.statistics.builder;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.data.builder.dialect.PostgreSQLShardingSphereDataBuilder;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.PostgreSQLShardingSphereStatisticsBuilder;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -32,12 +32,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class PostgreSQLShardingSphereDataBuilderTest {
+class PostgreSQLShardingSphereStatisticsBuilderTest {
     
     @Test
     void assertBuild() {
         ShardingSphereMetaData metaData = mockMetaData();
-        ShardingSphereStatistics shardingSphereData = new PostgreSQLShardingSphereDataBuilder().build(metaData);
+        ShardingSphereStatistics shardingSphereData = new PostgreSQLShardingSphereStatisticsBuilder().build(metaData);
         assertTrue(shardingSphereData.getDatabaseData().containsKey("logic_db"));
         assertTrue(shardingSphereData.getDatabaseData().get("logic_db").getSchemaData().containsKey("pg_catalog"));
         assertTrue(shardingSphereData.getDatabaseData().get("logic_db").getSchemaData().get("pg_catalog").getTableData().containsKey("pg_class"));

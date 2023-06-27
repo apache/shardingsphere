@@ -20,11 +20,11 @@ package org.apache.shardingsphere.mode.metadata;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilder;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
@@ -56,7 +56,7 @@ public final class MetaDataContexts implements AutoCloseable {
         }
         ShardingSphereStatistics result = Optional.ofNullable(metaData.getDatabases().values().iterator().next().getProtocolType())
                 // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
-                .flatMap(protocolType -> TypedSPILoader.findService(ShardingSphereDataBuilder.class, protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType())
+                .flatMap(protocolType -> TypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType())
                         .map(builder -> builder.build(metaData)))
                 .orElseGet(ShardingSphereStatistics::new);
         Optional<ShardingSphereStatistics> loadedShardingSphereData = Optional.ofNullable(persistService.getShardingSphereDataPersistService())

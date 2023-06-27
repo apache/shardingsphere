@@ -21,13 +21,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDataCollector;
-import org.apache.shardingsphere.infra.metadata.data.event.ShardingSphereSchemaDataAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.event.ShardingSphereSchemaDataAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -102,7 +102,7 @@ public final class ShardingSphereDataScheduleCollector {
         
         private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
                                      final Map<String, ShardingSphereDatabase> databases, final ShardingSphereStatistics changedShardingSphereData) {
-            Optional<ShardingSphereDataCollector> dataCollector = TypedSPILoader.findService(ShardingSphereDataCollector.class, table.getName());
+            Optional<ShardingSphereStatisticsCollector> dataCollector = TypedSPILoader.findService(ShardingSphereStatisticsCollector.class, table.getName());
             if (!dataCollector.isPresent()) {
                 return;
             }

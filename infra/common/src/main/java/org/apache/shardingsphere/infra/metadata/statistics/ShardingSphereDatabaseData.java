@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data;
+package org.apache.shardingsphere.infra.metadata.statistics;
 
 import lombok.Getter;
 

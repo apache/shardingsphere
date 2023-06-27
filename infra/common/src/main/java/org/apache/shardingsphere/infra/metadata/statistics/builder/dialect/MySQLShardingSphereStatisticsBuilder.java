@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data.builder.dialect;
+package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilder;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
@@ -33,10 +33,10 @@ import java.util.Collections;
 import java.util.Map.Entry;
 
 /**
- * ShardingSphere data builder for MySQL.
+ * ShardingSphere statistics builder for MySQL.
  */
 
-public final class MySQLShardingSphereDataBuilder implements ShardingSphereDataBuilder {
+public final class MySQLShardingSphereStatisticsBuilder implements ShardingSphereStatisticsBuilder {
     
     private static final String SHARDING_SPHERE = "shardingsphere";
     

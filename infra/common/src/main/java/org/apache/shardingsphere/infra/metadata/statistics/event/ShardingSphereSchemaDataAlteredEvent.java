@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data;
+package org.apache.shardingsphere.infra.metadata.statistics.event;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.TreeSet;
+import java.util.LinkedList;
 
 /**
- * ShardingSphere table data.
+ * Schema altered event.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class ShardingSphereTableData {
+public final class ShardingSphereSchemaDataAlteredEvent {
     
-    private final String name;
+    private final String databaseName;
     
-    private final Collection<ShardingSphereRowData> rows = new TreeSet<>(Comparator.comparing(ShardingSphereRowData::getUniqueKey));
+    private final String schemaName;
+    
+    private final String tableName;
+    
+    private final Collection<YamlShardingSphereRowData> addedRows = new LinkedList<>();
+    
+    private final Collection<YamlShardingSphereRowData> updatedRows = new LinkedList<>();
+    
+    private final Collection<YamlShardingSphereRowData> deletedRows = new LinkedList<>();
 }
