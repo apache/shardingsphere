@@ -110,6 +110,8 @@ public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscr
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
         CompatibleEncryptRuleConfiguration config = rule.map(encryptRule -> getCompatibleEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) encryptRule.getConfiguration()))
                 .orElseGet(() -> new CompatibleEncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+        // TODO refactor DistSQL to only persist config
+        config.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
         config.getTables().add(needToAddedConfig);
         return config;
     }

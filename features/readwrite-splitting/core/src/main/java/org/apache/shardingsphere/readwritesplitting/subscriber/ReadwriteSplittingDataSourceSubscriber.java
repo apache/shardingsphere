@@ -115,6 +115,8 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
             dataSources.add(dataSourceRuleConfig);
             return new ReadwriteSplittingRuleConfiguration(dataSources, result.getLoadBalancers());
         }
+        // TODO refactor DistSQL to only persist config
+        result.getDataSources().removeIf(each -> each.getName().equals(dataSourceRuleConfig.getName()));
         result.getDataSources().add(dataSourceRuleConfig);
         return result;
     }

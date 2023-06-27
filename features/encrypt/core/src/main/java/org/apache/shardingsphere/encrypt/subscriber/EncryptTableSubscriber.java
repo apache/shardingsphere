@@ -108,6 +108,8 @@ public final class EncryptTableSubscriber implements RuleChangedSubscriber {
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
         EncryptRuleConfiguration config = rule.map(encryptRule -> getEncryptRuleConfiguration((EncryptRuleConfiguration) encryptRule.getConfiguration()))
                 .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+        // TODO refactor DistSQL to only persist config
+        config.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
         config.getTables().add(needToAddedConfig);
         return config;
     }
