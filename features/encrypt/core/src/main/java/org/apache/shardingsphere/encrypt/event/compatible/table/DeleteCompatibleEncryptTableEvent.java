@@ -33,8 +33,4 @@ public final class DeleteCompatibleEncryptTableEvent implements GovernanceEvent 
     private final String databaseName;
     
     private final String tableName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
 }
