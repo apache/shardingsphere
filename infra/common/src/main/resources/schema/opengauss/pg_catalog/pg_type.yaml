@@ -1,0 +1,264 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_type
+columns:
+  typname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: typname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typnamespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: typnamespace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typowner:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: typowner
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typlen:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: typlen
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typbyval:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: typbyval
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typtype:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: typtype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typcategory:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: typcategory
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typispreferred:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: typispreferred
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typisdefined:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: typisdefined
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typdelim:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: typdelim
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typrelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: typrelid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typelem:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: typelem
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typarray:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: typarray
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typinput:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: typinput
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typoutput:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: typoutput
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typreceive:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: typreceive
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typsend:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: typsend
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typmodin:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: typmodin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typmodout:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: typmodout
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typanalyze:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: typanalyze
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typalign:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: typalign
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typstorage:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: typstorage
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typnotnull:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: typnotnull
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typbasetype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: typbasetype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typtypmod:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: typtypmod
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typndims:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: typndims
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typcollation:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: typcollation
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typdefaultbin:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: typdefaultbin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typdefault:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: typdefault
+    primaryKey: false
+    unsigned: false
+    visible: true
+  typacl:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: typacl
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_type_oid_index:
+    name: pg_type_oid_index
+  pg_type_typname_nsp_index:
+    name: pg_type_typname_nsp_index
