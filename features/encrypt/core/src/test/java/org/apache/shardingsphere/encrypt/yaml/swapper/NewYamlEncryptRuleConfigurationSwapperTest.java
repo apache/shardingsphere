@@ -33,6 +33,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NewYamlEncryptRuleConfigurationSwapperTest {
     
@@ -65,8 +66,7 @@ class NewYamlEncryptRuleConfigurationSwapperTest {
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
         EncryptRuleConfiguration result = swapper.swapToObject(config);
-        assertThat(result.getTables().size(), is(0));
-        assertThat(result.getEncryptors().size(), is(0));
+        assertTrue(result == null);
     }
     
     @Test

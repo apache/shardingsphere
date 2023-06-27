@@ -115,18 +115,7 @@ class NewYamlShardingRuleConfigurationSwapperTest {
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
         ShardingRuleConfiguration result = swapper.swapToObject(config);
-        assertThat(result.getTables().size(), is(0));
-        assertThat(result.getAutoTables().size(), is(0));
-        assertThat(result.getBindingTableGroups().size(), is(0));
-        assertNull(result.getDefaultDatabaseShardingStrategy());
-        assertNull(result.getDefaultTableShardingStrategy());
-        assertNull(result.getDefaultKeyGenerateStrategy());
-        assertNull(result.getDefaultAuditStrategy());
-        assertNull(result.getDefaultShardingColumn());
-        assertThat(result.getShardingAlgorithms().size(), is(0));
-        assertThat(result.getKeyGenerators().size(), is(0));
-        assertThat(result.getAuditors().size(), is(0));
-        assertNull(result.getShardingCache());
+        assertTrue(result == null);
     }
     
     @Test
