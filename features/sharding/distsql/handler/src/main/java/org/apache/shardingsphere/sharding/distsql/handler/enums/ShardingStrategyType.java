@@ -177,7 +177,7 @@ public enum ShardingStrategyType {
      * @return sharding strategy type
      */
     public static ShardingStrategyType getValueOf(final ShardingStrategyConfiguration config) {
-        Optional<ShardingStrategyType> result = Arrays.stream(values()).filter(each -> config.getClass().getName().equals(each.getImplementedClass().getName())).findFirst();
+        Optional<ShardingStrategyType> result = Arrays.stream(values()).filter(each -> config.getClass().isAssignableFrom(each.getImplementedClass())).findFirst();
         ShardingSpherePreconditions.checkState(result.isPresent(), () -> new UnsupportedOperationException(String.format("unsupported strategy type: `%s`.", config.getClass().getName())));
         return result.get();
     }
