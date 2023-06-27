@@ -52,11 +52,11 @@ public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements 
     public Collection<YamlDataNode> swapToDataNodes(final ReadwriteSplittingRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (Map.Entry<String, AlgorithmConfiguration> entry : data.getLoadBalancers().entrySet()) {
-            result.add(new YamlDataNode(readwriteSplittingRuleNodePath.getNamedRuleItemNodePath(ReadwriteSplittingNodeConverter.LOAD_BALANCERS).getPath(entry.getKey()),
+            result.add(new YamlDataNode(readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodeConverter.LOAD_BALANCERS).getPath(entry.getKey()),
                     YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         for (ReadwriteSplittingDataSourceRuleConfiguration each : data.getDataSources()) {
-            result.add(new YamlDataNode(readwriteSplittingRuleNodePath.getNamedRuleItemNodePath(ReadwriteSplittingNodeConverter.DATA_SOURCES).getPath(each.getName()),
+            result.add(new YamlDataNode(readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodeConverter.DATA_SOURCES).getPath(each.getName()),
                     YamlEngine.marshal(swapToYamlConfiguration(each))));
         }
         return result;
@@ -76,9 +76,9 @@ public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements 
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         Map<String, AlgorithmConfiguration> loadBalancerMap = new LinkedHashMap<>();
         for (YamlDataNode each : dataNodes) {
-            readwriteSplittingRuleNodePath.getNamedRuleItemNodePath(ReadwriteSplittingNodeConverter.DATA_SOURCES).getName(each.getKey())
+            readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodeConverter.DATA_SOURCES).getName(each.getKey())
                     .ifPresent(optional -> dataSources.add(swapDataSource(optional, YamlEngine.unmarshal(each.getValue(), YamlReadwriteSplittingDataSourceRuleConfiguration.class))));
-            readwriteSplittingRuleNodePath.getNamedRuleItemNodePath(ReadwriteSplittingNodeConverter.LOAD_BALANCERS).getName(each.getKey())
+            readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodeConverter.LOAD_BALANCERS).getName(each.getKey())
                     .ifPresent(optional -> loadBalancerMap.put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
         }
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancerMap);

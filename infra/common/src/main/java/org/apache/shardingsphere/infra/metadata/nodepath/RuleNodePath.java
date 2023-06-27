@@ -32,22 +32,22 @@ import java.util.Map;
 public final class RuleNodePath {
     
     @Getter
-    private final RuleRootNodePath rootNodePath;
+    private final RuleRootNodePath root;
     
-    private final Map<String, NamedRuleItemNodePath> namedRuleItemNodePaths;
+    private final Map<String, NamedRuleItemNodePath> namedItems;
     
-    private final Map<String, UniqueRuleItemNodePath> uniqueRuleItemNodePaths;
+    private final Map<String, UniqueRuleItemNodePath> uniqueItems;
     
     public RuleNodePath(final String ruleType, final Collection<String> namedRuleItemNodePathTypes, final Collection<String> uniqueRuleItemNodePathTypes) {
-        rootNodePath = new RuleRootNodePath(ruleType);
-        namedRuleItemNodePaths = getNamedRuleItemNodePathMap(namedRuleItemNodePathTypes);
-        uniqueRuleItemNodePaths = getUniqueRuleItemNodePathMap(uniqueRuleItemNodePathTypes);
+        root = new RuleRootNodePath(ruleType);
+        namedItems = getNamedRuleItemNodePathMap(namedRuleItemNodePathTypes);
+        uniqueItems = getUniqueRuleItemNodePathMap(uniqueRuleItemNodePathTypes);
     }
     
     private Map<String, NamedRuleItemNodePath> getNamedRuleItemNodePathMap(final Collection<String> namedRuleItemNodePathTypes) {
         Map<String, NamedRuleItemNodePath> result = new HashMap<>(namedRuleItemNodePathTypes.size(), 1F);
         for (String each : namedRuleItemNodePathTypes) {
-            result.put(each, new NamedRuleItemNodePath(rootNodePath, each));
+            result.put(each, new NamedRuleItemNodePath(root, each));
         }
         return result;
     }
@@ -57,9 +57,9 @@ public final class RuleNodePath {
         for (String each : uniqueRuleItemNodePathTypes) {
             if (each.contains(".")) {
                 String[] values = each.split("\\.");
-                result.put(values[1], new UniqueRuleItemNodePath(rootNodePath, values[0], values[1]));
+                result.put(values[1], new UniqueRuleItemNodePath(root, values[0], values[1]));
             } else {
-                result.put(each, new UniqueRuleItemNodePath(rootNodePath, each));
+                result.put(each, new UniqueRuleItemNodePath(root, each));
             }
         }
         return result;
@@ -71,8 +71,8 @@ public final class RuleNodePath {
      * @param itemType item type
      * @return named rule item node path
      */
-    public NamedRuleItemNodePath getNamedRuleItemNodePath(final String itemType) {
-        return namedRuleItemNodePaths.get(itemType);
+    public NamedRuleItemNodePath getNamedItem(final String itemType) {
+        return namedItems.get(itemType);
     }
     
     /**
@@ -81,7 +81,7 @@ public final class RuleNodePath {
      * @param itemType item type
      * @return unique rule item node path
      */
-    public UniqueRuleItemNodePath getUniqueRuleItemNodePaths(final String itemType) {
-        return uniqueRuleItemNodePaths.get(itemType);
+    public UniqueRuleItemNodePath getUniqueItem(final String itemType) {
+        return uniqueItems.get(itemType);
     }
 }

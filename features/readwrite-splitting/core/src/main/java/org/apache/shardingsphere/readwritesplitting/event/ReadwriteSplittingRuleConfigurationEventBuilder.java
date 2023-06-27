@@ -41,14 +41,14 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!readwriteSplittingRuleNodePath.getRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!readwriteSplittingRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> groupName = readwriteSplittingRuleNodePath.getNamedRuleItemNodePath(ReadwriteSplittingNodeConverter.DATA_SOURCES).getNameByActiveVersion(event.getKey());
+        Optional<String> groupName = readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodeConverter.DATA_SOURCES).getNameByActiveVersion(event.getKey());
         if (groupName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createReadwriteSplittingConfigEvent(databaseName, groupName.get(), event);
         }
-        Optional<String> loadBalancerName = readwriteSplittingRuleNodePath.getNamedRuleItemNodePath(ReadwriteSplittingNodeConverter.LOAD_BALANCERS).getNameByActiveVersion(event.getKey());
+        Optional<String> loadBalancerName = readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodeConverter.LOAD_BALANCERS).getNameByActiveVersion(event.getKey());
         if (loadBalancerName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createLoadBalanceEvent(databaseName, loadBalancerName.get(), event);
         }

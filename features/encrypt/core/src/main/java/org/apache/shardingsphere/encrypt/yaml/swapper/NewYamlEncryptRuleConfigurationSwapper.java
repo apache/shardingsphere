@@ -54,11 +54,11 @@ public final class NewYamlEncryptRuleConfigurationSwapper implements NewYamlRule
     public Collection<YamlDataNode> swapToDataNodes(final EncryptRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (Entry<String, AlgorithmConfiguration> entry : data.getEncryptors().entrySet()) {
-            result.add(new YamlDataNode(encryptRuleNodePath.getNamedRuleItemNodePath(EncryptNodeConverter.ENCRYPTORS).getPath(entry.getKey()),
+            result.add(new YamlDataNode(encryptRuleNodePath.getNamedItem(EncryptNodeConverter.ENCRYPTORS).getPath(entry.getKey()),
                     YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         for (EncryptTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(encryptRuleNodePath.getNamedRuleItemNodePath(EncryptNodeConverter.TABLES).getPath(each.getName()),
+            result.add(new YamlDataNode(encryptRuleNodePath.getNamedItem(EncryptNodeConverter.TABLES).getPath(each.getName()),
                     YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
         }
         return result;
@@ -69,9 +69,9 @@ public final class NewYamlEncryptRuleConfigurationSwapper implements NewYamlRule
         Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> encryptors = new HashMap<>();
         for (YamlDataNode each : dataNodes) {
-            encryptRuleNodePath.getNamedRuleItemNodePath(EncryptNodeConverter.TABLES).getName(each.getKey())
+            encryptRuleNodePath.getNamedItem(EncryptNodeConverter.TABLES).getName(each.getKey())
                     .ifPresent(optional -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlEncryptTableRuleConfiguration.class))));
-            encryptRuleNodePath.getNamedRuleItemNodePath(EncryptNodeConverter.ENCRYPTORS).getName(each.getKey())
+            encryptRuleNodePath.getNamedItem(EncryptNodeConverter.ENCRYPTORS).getName(each.getKey())
                     .ifPresent(optional -> encryptors.put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
         }
         return new EncryptRuleConfiguration(tables, encryptors);

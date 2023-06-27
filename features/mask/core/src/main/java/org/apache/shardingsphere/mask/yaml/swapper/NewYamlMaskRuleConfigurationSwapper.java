@@ -53,11 +53,11 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
     public Collection<YamlDataNode> swapToDataNodes(final MaskRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (Map.Entry<String, AlgorithmConfiguration> entry : data.getMaskAlgorithms().entrySet()) {
-            result.add(new YamlDataNode(maskRuleNodePath.getNamedRuleItemNodePath(MaskNodeConverter.ALGORITHMS).getPath(entry.getKey()),
+            result.add(new YamlDataNode(maskRuleNodePath.getNamedItem(MaskNodeConverter.ALGORITHMS).getPath(entry.getKey()),
                     YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         for (MaskTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(maskRuleNodePath.getNamedRuleItemNodePath(MaskNodeConverter.TABLES).getPath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
+            result.add(new YamlDataNode(maskRuleNodePath.getNamedItem(MaskNodeConverter.TABLES).getPath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
         }
         return result;
     }
@@ -67,9 +67,9 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
         Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> algorithms = new LinkedHashMap<>();
         for (YamlDataNode each : dataNodes) {
-            maskRuleNodePath.getNamedRuleItemNodePath(MaskNodeConverter.TABLES).getName(each.getKey())
+            maskRuleNodePath.getNamedItem(MaskNodeConverter.TABLES).getName(each.getKey())
                     .ifPresent(optional -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlMaskTableRuleConfiguration.class))));
-            maskRuleNodePath.getNamedRuleItemNodePath(MaskNodeConverter.ALGORITHMS).getName(each.getKey())
+            maskRuleNodePath.getNamedItem(MaskNodeConverter.ALGORITHMS).getName(each.getKey())
                     .ifPresent(optional -> algorithms.put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
         }
         return new MaskRuleConfiguration(tables, algorithms);

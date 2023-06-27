@@ -46,22 +46,22 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!shadowRuleNodePath.getRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!shadowRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> dataSourceName = shadowRuleNodePath.getNamedRuleItemNodePath(ShadowNodeConverter.DATA_SOURCES).getNameByActiveVersion(event.getKey());
+        Optional<String> dataSourceName = shadowRuleNodePath.getNamedItem(ShadowNodeConverter.DATA_SOURCES).getNameByActiveVersion(event.getKey());
         if (dataSourceName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowConfigEvent(databaseName, dataSourceName.get(), event);
         }
-        Optional<String> tableName = shadowRuleNodePath.getNamedRuleItemNodePath(ShadowNodeConverter.TABLES).getNameByActiveVersion(event.getKey());
+        Optional<String> tableName = shadowRuleNodePath.getNamedItem(ShadowNodeConverter.TABLES).getNameByActiveVersion(event.getKey());
         if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowTableConfigEvent(databaseName, tableName.get(), event);
         }
-        Optional<String> algorithmName = shadowRuleNodePath.getNamedRuleItemNodePath(ShadowNodeConverter.ALGORITHMS).getNameByActiveVersion(event.getKey());
+        Optional<String> algorithmName = shadowRuleNodePath.getNamedItem(ShadowNodeConverter.ALGORITHMS).getNameByActiveVersion(event.getKey());
         if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createShadowAlgorithmEvent(databaseName, algorithmName.get(), event);
         }
-        if (shadowRuleNodePath.getUniqueRuleItemNodePaths(ShadowNodeConverter.DEFAULT_ALGORITHM).isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+        if (shadowRuleNodePath.getUniqueItem(ShadowNodeConverter.DEFAULT_ALGORITHM).isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createDefaultShadowAlgorithmNameEvent(databaseName, event);
         }
         return Optional.empty();
