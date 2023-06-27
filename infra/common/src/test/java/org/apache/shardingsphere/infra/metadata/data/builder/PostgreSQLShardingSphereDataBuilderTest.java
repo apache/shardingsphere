@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.data.builder;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.data.builder.dialect.PostgreSQLShardingSphereDataBuilder;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -37,7 +37,7 @@ class PostgreSQLShardingSphereDataBuilderTest {
     @Test
     void assertBuild() {
         ShardingSphereMetaData metaData = mockMetaData();
-        ShardingSphereData shardingSphereData = new PostgreSQLShardingSphereDataBuilder().build(metaData);
+        ShardingSphereStatistics shardingSphereData = new PostgreSQLShardingSphereDataBuilder().build(metaData);
         assertTrue(shardingSphereData.getDatabaseData().containsKey("logic_db"));
         assertTrue(shardingSphereData.getDatabaseData().get("logic_db").getSchemaData().containsKey("pg_catalog"));
         assertTrue(shardingSphereData.getDatabaseData().get("logic_db").getSchemaData().get("pg_catalog").getTableData().containsKey("pg_class"));

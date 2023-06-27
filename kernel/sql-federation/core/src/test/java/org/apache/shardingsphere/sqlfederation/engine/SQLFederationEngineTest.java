@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -75,7 +75,7 @@ class SQLFederationEngineTest {
     private SQLFederationEngine createSQLFederationEngine(final Collection<ShardingSphereRule> globalRules, final Collection<ShardingSphereRule> databaseRules) {
         when(metaData.getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(databaseRules);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(globalRules));
-        return new SQLFederationEngine(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, metaData, mock(ShardingSphereData.class), mock(JDBCExecutor.class));
+        return new SQLFederationEngine(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, metaData, mock(ShardingSphereStatistics.class), mock(JDBCExecutor.class));
     }
     
     @Test

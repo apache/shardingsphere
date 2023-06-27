@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerable;
 
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
@@ -48,7 +48,7 @@ class EnumerablePushDownTableScanExecutorTest {
         TableScanExecutorContext executorContext = Mockito.mock(TableScanExecutorContext.class);
         when(executorContext.getDatabaseName()).thenReturn("db");
         when(executorContext.getSchemaName()).thenReturn("pg_catalog");
-        ShardingSphereData shardingSphereData = mock(ShardingSphereData.class, RETURNS_DEEP_STUBS);
+        ShardingSphereStatistics shardingSphereData = mock(ShardingSphereStatistics.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabaseData databaseData = mock(ShardingSphereDatabaseData.class, RETURNS_DEEP_STUBS);
         when(shardingSphereData.getDatabaseData().get("db")).thenReturn(databaseData);
         ShardingSphereSchemaData schemaData = mock(ShardingSphereSchemaData.class, RETURNS_DEEP_STUBS);

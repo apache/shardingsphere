@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.data.builder;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
@@ -34,5 +34,5 @@ public interface ShardingSphereDataBuilder extends TypedSPI {
      * @param metaData meta data
      * @return ShardingSphere data
      */
-    ShardingSphereData build(ShardingSphereMetaData metaData);
+    ShardingSphereStatistics build(ShardingSphereMetaData metaData);
 }

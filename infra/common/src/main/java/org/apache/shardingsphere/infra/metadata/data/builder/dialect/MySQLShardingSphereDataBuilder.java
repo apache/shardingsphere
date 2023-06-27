@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.data.builder.dialect;
 
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
@@ -43,8 +43,8 @@ public final class MySQLShardingSphereDataBuilder implements ShardingSphereDataB
     private static final String CLUSTER_INFORMATION = "cluster_information";
     
     @Override
-    public ShardingSphereData build(final ShardingSphereMetaData metaData) {
-        ShardingSphereData result = new ShardingSphereData();
+    public ShardingSphereStatistics build(final ShardingSphereMetaData metaData) {
+        ShardingSphereStatistics result = new ShardingSphereStatistics();
         Optional<ShardingSphereSchema> shardingSphereSchema = Optional.ofNullable(metaData.getDatabase(SHARDING_SPHERE)).map(database -> database.getSchema(SHARDING_SPHERE));
         if (!shardingSphereSchema.isPresent()) {
             return result;

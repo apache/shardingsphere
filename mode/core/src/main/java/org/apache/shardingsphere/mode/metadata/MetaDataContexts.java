@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
@@ -42,7 +42,7 @@ public final class MetaDataContexts implements AutoCloseable {
     
     private final ShardingSphereMetaData metaData;
     
-    private final ShardingSphereData shardingSphereData;
+    private final ShardingSphereStatistics shardingSphereData;
     
     public MetaDataContexts(final MetaDataBasedPersistService persistService, final ShardingSphereMetaData metaData) {
         this.persistService = persistService;
@@ -50,22 +50,22 @@ public final class MetaDataContexts implements AutoCloseable {
         this.shardingSphereData = initShardingSphereData(metaData);
     }
     
-    private ShardingSphereData initShardingSphereData(final ShardingSphereMetaData metaData) {
+    private ShardingSphereStatistics initShardingSphereData(final ShardingSphereMetaData metaData) {
         if (metaData.getDatabases().isEmpty()) {
-            return new ShardingSphereData();
+            return new ShardingSphereStatistics();
         }
-        ShardingSphereData result = Optional.ofNullable(metaData.getDatabases().values().iterator().next().getProtocolType())
+        ShardingSphereStatistics result = Optional.ofNullable(metaData.getDatabases().values().iterator().next().getProtocolType())
                 // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
                 .flatMap(protocolType -> TypedSPILoader.findService(ShardingSphereDataBuilder.class, protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType())
                         .map(builder -> builder.build(metaData)))
-                .orElseGet(ShardingSphereData::new);
-        Optional<ShardingSphereData> loadedShardingSphereData = Optional.ofNullable(persistService.getShardingSphereDataPersistService())
+                .orElseGet(ShardingSphereStatistics::new);
+        Optional<ShardingSphereStatistics> loadedShardingSphereData = Optional.ofNullable(persistService.getShardingSphereDataPersistService())
                 .flatMap(shardingSphereDataPersistService -> shardingSphereDataPersistService.load(metaData));
         loadedShardingSphereData.ifPresent(optional -> useLoadedToReplaceInit(result, optional));
         return result;
     }
     
-    private void useLoadedToReplaceInit(final ShardingSphereData initShardingSphereData, final ShardingSphereData loadedShardingSphereData) {
+    private void useLoadedToReplaceInit(final ShardingSphereStatistics initShardingSphereData, final ShardingSphereStatistics loadedShardingSphereData) {
         for (Entry<String, ShardingSphereDatabaseData> entry : initShardingSphereData.getDatabaseData().entrySet()) {
             if (loadedShardingSphereData.getDatabaseData().containsKey(entry.getKey())) {
                 useLoadedToReplaceInitByDatabaseData(entry.getValue(), loadedShardingSphereData.getDatabaseData().get(entry.getKey()));
