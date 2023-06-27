@@ -72,6 +72,8 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
         ShardingTableRuleConfiguration needToAddedConfig = swapShardingTableRuleConfig(
                 instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = getShardingRuleConfiguration(database);
+        // TODO refactor DistSQL to only persist config
+        config.getTables().removeIf(each -> each.getLogicTable().equals(needToAddedConfig.getLogicTable()));
         config.getTables().add(needToAddedConfig);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -90,6 +92,8 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
         ShardingAutoTableRuleConfiguration needToAddedConfig = swapShardingAutoTableRuleConfig(
                 instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = getShardingRuleConfiguration(database);
+        // TODO refactor DistSQL to only persist config
+        config.getAutoTables().removeIf(each -> each.getLogicTable().equals(needToAddedConfig.getLogicTable()));
         config.getAutoTables().add(needToAddedConfig);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -105,6 +109,8 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
         ShardingTableReferenceRuleConfiguration needToAddedConfig = swapShardingTableReferenceRuleConfig(
                 instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = getShardingRuleConfiguration(database);
+        // TODO refactor DistSQL to only persist config
+        config.getBindingTableGroups().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
         config.getBindingTableGroups().add(needToAddedConfig);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }

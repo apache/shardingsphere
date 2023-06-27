@@ -105,6 +105,8 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
         MaskRuleConfiguration config = rule.map(encryptRule -> getMaskRuleConfiguration((MaskRuleConfiguration) encryptRule.getConfiguration()))
                 .orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+        // TODO refactor DistSQL to only persist config
+        config.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
         config.getTables().add(needToAddedConfig);
         return config;
     }
