@@ -72,14 +72,14 @@ class ShardingRuleConfigurationImportCheckerTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         Collection<String> dataSources = new LinkedList<>();
         dataSources.add("su_1");
-        when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(dataSources);
+        when(result.getResourceMetaData().getNotExistedStorageUnits(any())).thenReturn(dataSources);
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         return result;
     }
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
+        when(result.getResourceMetaData().getNotExistedStorageUnits(any())).thenReturn(Collections.emptyList());
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         return result;
     }

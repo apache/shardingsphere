@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.datasource.storage;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 
 import java.util.Optional;
 
@@ -35,10 +36,14 @@ public final class StorageUnit {
     
     private final String catalog;
     
+    private final DataSourceProperties dataSourceProps;
+    
     public StorageUnit(final String name, final String nodeName) {
-        this.name = name;
-        this.nodeName = nodeName;
-        this.catalog = null;
+        this(name, nodeName, null);
+    }
+    
+    public StorageUnit(final String name, final String nodeName, final DataSourceProperties dataSourceProps) {
+        this(name, nodeName, null, dataSourceProps);
     }
     
     /**

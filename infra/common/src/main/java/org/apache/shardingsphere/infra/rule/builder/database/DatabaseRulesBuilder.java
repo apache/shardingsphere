@@ -60,7 +60,7 @@ public final class DatabaseRulesBuilder {
             RuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(
                     RuleConfigurationChecker.class, Collections.singleton(entry.getKey().getClass())).get(entry.getKey().getClass());
             if (null != configChecker) {
-                configChecker.check(databaseName, entry.getKey(), databaseConfig.getDataSources(), result);
+                configChecker.check(databaseName, entry.getKey(), databaseConfig.getStorageResource().getStorageUnits(), result);
             }
             result.add(entry.getValue().build(entry.getKey(), databaseName, databaseConfig.getStorageResource(), result, instanceContext));
         }
@@ -86,7 +86,7 @@ public final class DatabaseRulesBuilder {
             RuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(
                     RuleConfigurationChecker.class, Collections.singleton(entry.getKey().getClass())).get(entry.getKey().getClass());
             if (null != configChecker) {
-                configChecker.check(databaseName, entry.getKey(), storageResource.getStorageNodes(), rules);
+                configChecker.check(databaseName, entry.getKey(), storageResource.getStorageUnits(), rules);
             }
             result.add(entry.getValue().build(entry.getKey(), databaseName, storageResource, rules, instanceContext));
         }

@@ -30,10 +30,10 @@ import org.apache.shardingsphere.encrypt.exception.metadata.MissingEncryptorExce
 import org.apache.shardingsphere.encrypt.exception.metadata.UnregisteredEncryptorException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
@@ -43,7 +43,7 @@ import java.util.Map;
 public final class EncryptRuleConfigurationChecker implements RuleConfigurationChecker<EncryptRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final EncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+    public void check(final String databaseName, final EncryptRuleConfiguration config, final Map<String, StorageUnit> storageUnits, final Collection<ShardingSphereRule> builtRules) {
         checkTableConfiguration(databaseName, config.getTables(), config.getEncryptors());
     }
     

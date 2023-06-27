@@ -108,7 +108,7 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
         if (requiredDataSources.isEmpty()) {
             return;
         }
-        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
+        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedStorageUnits(requiredDataSources);
         Collection<String> logicDataSources = getLogicDataSources(database);
         notExistedDataSources.removeIf(logicDataSources::contains);
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));

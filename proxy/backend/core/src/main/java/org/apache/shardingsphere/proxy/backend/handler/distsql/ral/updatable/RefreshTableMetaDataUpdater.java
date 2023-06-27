@@ -24,13 +24,13 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStor
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater.ConnectionSessionRequiredRALUpdater;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.Map;
 
@@ -43,7 +43,7 @@ public final class RefreshTableMetaDataUpdater implements ConnectionSessionRequi
     public void executeUpdate(final ConnectionSession connectionSession, final RefreshTableMetaDataStatement sqlStatement) {
         String databaseName = getDatabaseName(connectionSession);
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        checkDataSources(databaseName, contextManager.getDataSourceMap(databaseName), sqlStatement);
+        checkDataSources(databaseName, contextManager.getStorageUnitMap(databaseName), sqlStatement);
         String schemaName = getSchemaName(databaseName, sqlStatement, connectionSession);
         if (sqlStatement.getStorageUnitName().isPresent()) {
             if (sqlStatement.getTableName().isPresent()) {
@@ -60,11 +60,12 @@ public final class RefreshTableMetaDataUpdater implements ConnectionSessionRequi
         }
     }
     
-    private void checkDataSources(final String databaseName, final Map<String, DataSource> dataSources, final RefreshTableMetaDataStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(!dataSources.isEmpty(), () -> new EmptyStorageUnitException(databaseName));
+    private void checkDataSources(final String databaseName, final Map<String, StorageUnit> storageUnits, final RefreshTableMetaDataStatement sqlStatement) {
+        ShardingSpherePreconditions.checkState(!storageUnits.isEmpty(), () -> new EmptyStorageUnitException(databaseName));
         if (sqlStatement.getStorageUnitName().isPresent()) {
             String storageUnitName = sqlStatement.getStorageUnitName().get();
-            ShardingSpherePreconditions.checkState(dataSources.containsKey(storageUnitName), () -> new MissingRequiredStorageUnitsException(databaseName, Collections.singletonList(storageUnitName)));
+            ShardingSpherePreconditions.checkState(storageUnits.containsKey(storageUnitName),
+                    () -> new MissingRequiredStorageUnitsException(databaseName, Collections.singletonList(storageUnitName)));
         }
     }
     

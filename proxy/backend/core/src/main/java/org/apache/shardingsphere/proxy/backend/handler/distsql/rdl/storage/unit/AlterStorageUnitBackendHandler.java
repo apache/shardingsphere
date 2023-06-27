@@ -29,9 +29,11 @@ import org.apache.shardingsphere.distsql.parser.segment.converter.DataSourceSegm
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.type.DataSourceAggregatable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -100,20 +102,20 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
     }
     
     private void checkStorageUnitNameExisted(final String databaseName, final Collection<String> storageUnitNames) {
-        Map<String, DataSource> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
-        Collection<String> notExistedStorageUnitNames = storageUnitNames.stream().filter(each -> !storageUnits.containsKey(each)).collect(Collectors.toList());
+        Collection<String> notExistedStorageUnitNames = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getNotExistedStorageUnits(storageUnitNames);
         ShardingSpherePreconditions.checkState(notExistedStorageUnitNames.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedStorageUnitNames));
     }
     
     private void checkDatabase(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
-        Map<String, DataSource> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
+        Map<String, StorageUnit> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
+        Map<String, DataSource> storageNodes = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
         Collection<String> invalidStorageUnitNames = sqlStatement.getStorageUnits().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
-                .filter(each -> !isIdenticalDatabase(each.getValue(), storageUnits.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
+                .filter(each -> !isIdenticalDatabase(each.getValue(), storageUnits.get(each.getKey()), storageNodes)).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(invalidStorageUnitNames.isEmpty(),
                 () -> new InvalidStorageUnitsException(Collections.singleton(String.format("Cannot alter the database of %s", invalidStorageUnitNames))));
     }
     
-    private boolean isIdenticalDatabase(final DataSourceSegment segment, final DataSource dataSource) {
+    private boolean isIdenticalDatabase(final DataSourceSegment segment, final StorageUnit storageUnit, final Map<String, DataSource> storageNodes) {
         String hostName = null;
         String port = null;
         String database = null;
@@ -128,9 +130,20 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
             port = String.valueOf(segmentJdbcUrl.getPort());
             database = segmentJdbcUrl.getDatabase();
         }
+        if (storageUnit.getCatalog().isPresent()) {
+            database = storageUnit.getCatalog().get();
+        }
+        DataSource dataSource = storageNodes.get(storageUnit.getNodeName());
         String url = String.valueOf(DataSourcePropertiesCreator.create(dataSource).getConnectionPropertySynonyms().getStandardProperties().get("url"));
         JdbcUrl dataSourceJdbcUrl = new StandardJdbcUrlParser().parse(url);
         return Objects.equals(hostName, dataSourceJdbcUrl.getHostname()) && Objects.equals(port, String.valueOf(dataSourceJdbcUrl.getPort()))
-                && Objects.equals(database, dataSourceJdbcUrl.getDatabase());
+                && isValidDataBase(database, dataSourceJdbcUrl.getDatabase());
+    }
+    
+    private boolean isValidDataBase(final String requiredDatabase, final String currentDatabase) {
+        if (databaseType instanceof DataSourceAggregatable) {
+            return true;
+        }
+        return Objects.equals(requiredDatabase, currentDatabase);
     }
 }

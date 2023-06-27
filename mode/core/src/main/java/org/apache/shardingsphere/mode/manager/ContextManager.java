@@ -432,11 +432,15 @@ public final class ContextManager implements AutoCloseable {
      * @return ShardingSphere databases
      */
     public Map<String, ShardingSphereDatabase> renewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
-        Map<String, DataSource> newDataSource =
-                database.getResourceMetaData().getDataSources().entrySet().stream().filter(entry -> !resource.getStaleDataSources().containsKey(entry.getKey()))
+        Map<String, DataSource> newStorageNodes =
+                database.getResourceMetaData().getDataSources().entrySet().stream().filter(entry -> !resource.getStaleStorageResource().getStorageNodes().containsKey(entry.getKey()))
                         .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Map<String, StorageUnit> newStorageUnits =
+                database.getResourceMetaData().getStorageUnits().entrySet().stream().filter(entry -> !resource.getStaleStorageResource().getStorageUnits().containsKey(entry.getKey()))
+                        .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        StorageResource newStorageResource = new StorageResource(newStorageNodes, Collections.emptyMap(), newStorageUnits);
         return Collections.singletonMap(database.getName().toLowerCase(),
-                new ShardingSphereDatabase(database.getName(), database.getProtocolType(), new ShardingSphereResourceMetaData(database.getName(), newDataSource),
+                new ShardingSphereDatabase(database.getName(), database.getProtocolType(), new ShardingSphereResourceMetaData(database.getName(), newStorageResource),
                         database.getRuleMetaData(), database.getSchemas()));
     }
     
@@ -510,14 +514,18 @@ public final class ContextManager implements AutoCloseable {
      */
     public synchronized Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName, final boolean internalLoadMetaData,
                                                                                    final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        if (null != switchingResource && !switchingResource.getNewDataSources().isEmpty()) {
-            metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources().putAll(switchingResource.getNewDataSources());
+        ShardingSphereResourceMetaData resourceMetaData = metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData();
+        if (null != switchingResource && null != switchingResource.getNewStorageResource() && !switchingResource.getNewStorageResource().getStorageNodes().isEmpty()) {
+            resourceMetaData.getDataSources().putAll(switchingResource.getNewStorageResource().getStorageNodes());
+        }
+        if (null != switchingResource && null != switchingResource.getNewStorageResource() && !switchingResource.getNewStorageResource().getStorageUnits().isEmpty()) {
+            resourceMetaData.getStorageUnits().putAll(switchingResource.getNewStorageResource().getStorageUnits());
         }
         Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs
                 ? metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getConfigurations()
                 : ruleConfigs;
-        DatabaseConfiguration toBeCreatedDatabaseConfig =
-                new DataSourceProvidedDatabaseConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageResource(), toBeCreatedRuleConfigs);
+        DatabaseConfiguration toBeCreatedDatabaseConfig = new DataSourceProvidedDatabaseConfiguration(resourceMetaData.getStorageResource(),
+                toBeCreatedRuleConfigs, resourceMetaData.getDataSourcePropsMap());
         ShardingSphereDatabase changedDatabase = createChangedDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), internalLoadMetaData,
                 metaDataContexts.get().getPersistService(), toBeCreatedDatabaseConfig, metaDataContexts.get().getMetaData().getProps(), instanceContext);
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.get().getMetaData().getDatabases());

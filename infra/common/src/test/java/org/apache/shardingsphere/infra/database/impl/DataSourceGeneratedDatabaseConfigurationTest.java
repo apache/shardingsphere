@@ -60,7 +60,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     @Test
     void assertGetDataSourceProperties() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSourceProperties props = databaseConfig.getDataSourceProperties().get("normal_db");
+        DataSourceProperties props = databaseConfig.getDataSourcePropsMap().get("normal_db");
         Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
         assertThat(poolStandardProps.size(), is(6));
         assertThat(poolStandardProps.get("connectionTimeoutMilliseconds"), is(2000L));

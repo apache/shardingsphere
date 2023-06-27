@@ -20,7 +20,7 @@ package org.apache.shardingsphere.metadata.persist;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -40,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * TODO replace the old implementation after meta data refactor completed
@@ -115,28 +116,10 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
      * @return effective data sources
      */
     @Override
-    public Map<String, DataSource> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+    public Map<String, DataSourceConfiguration> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+        databaseConfigs.get(databaseName).getDataSources().values().forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
         Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(databaseName);
-        return databaseConfigs.containsKey(databaseName)
-                ? mergeEffectiveDataSources(persistedDataPropsMap, databaseConfigs.get(databaseName).getDataSources())
-                : DataSourcePoolCreator.create(persistedDataPropsMap);
-    }
-    
-    private Map<String, DataSource> mergeEffectiveDataSources(final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) {
-        Map<String, DataSource> result = new LinkedHashMap<>(persistedDataSourcePropsMap.size(), 1F);
-        for (Entry<String, DataSourceProperties> entry : persistedDataSourcePropsMap.entrySet()) {
-            String dataSourceName = entry.getKey();
-            DataSourceProperties persistedDataSourceProps = entry.getValue();
-            DataSource localConfiguredDataSource = localConfiguredDataSources.get(dataSourceName);
-            if (null == localConfiguredDataSource) {
-                result.put(dataSourceName, DataSourcePoolCreator.create(persistedDataSourceProps));
-            } else if (DataSourcePropertiesCreator.create(localConfiguredDataSource).equals(persistedDataSourceProps)) {
-                result.put(dataSourceName, localConfiguredDataSource);
-            } else {
-                result.put(dataSourceName, DataSourcePoolCreator.create(persistedDataSourceProps));
-                new DataSourcePoolDestroyer(localConfiguredDataSource).asyncDestroy();
-            }
-        }
-        return result;
+        return persistedDataPropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
+                entry -> DataSourcePropertiesCreator.createConfiguration(entry.getValue()), (key, value) -> value, LinkedHashMap::new));
     }
 }

@@ -19,9 +19,14 @@ package org.apache.shardingsphere.infra.datasource.props;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourceReflection;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.synonym.ConnectionPropertySynonyms;
+import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
@@ -29,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Data source properties creator.
@@ -90,5 +96,34 @@ public final class DataSourcePropertiesCreator {
     
     private static boolean isValidProperty(final String key, final Object value, final DataSourcePoolMetaData poolMetaData) {
         return !poolMetaData.getInvalidProperties().containsKey(key) || null == value || !value.equals(poolMetaData.getInvalidProperties().get(key));
+    }
+    
+    /**
+     * Create data source configuration.
+     *
+     * @param dataSourceProps data source properties
+     * @return created data source configuration
+     */
+    public static DataSourceConfiguration createConfiguration(final DataSourceProperties dataSourceProps) {
+        return new DataSourceConfiguration(getConnectionConfiguration(dataSourceProps.getConnectionPropertySynonyms()),
+                getPoolConfiguration(dataSourceProps.getPoolPropertySynonyms(), dataSourceProps.getCustomDataSourceProperties()));
+    }
+    
+    private static ConnectionConfiguration getConnectionConfiguration(final ConnectionPropertySynonyms connectionPropertySynonyms) {
+        Map<String, Object> standardProperties = connectionPropertySynonyms.getStandardProperties();
+        return new ConnectionConfiguration((String) standardProperties.get("url"), (String) standardProperties.get("username"), (String) standardProperties.get("password"));
+    }
+    
+    private static PoolConfiguration getPoolConfiguration(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourceProperties customDataSourceProperties) {
+        Map<String, Object> standardProperties = poolPropertySynonyms.getStandardProperties();
+        Long connectionTimeoutMilliseconds = (Long) standardProperties.get("connectionTimeoutMilliseconds");
+        Long idleTimeoutMilliseconds = (Long) standardProperties.get("idleTimeoutMilliseconds");
+        Long maxLifetimeMilliseconds = (Long) standardProperties.get("maxLifetimeMilliseconds");
+        Integer maxPoolSize = (Integer) standardProperties.get("maxPoolSize");
+        Integer minPoolSize = (Integer) standardProperties.get("minPoolSize");
+        Boolean readOnly = (Boolean) standardProperties.get("readOnly");
+        Properties customProperties = new Properties();
+        customProperties.putAll(customDataSourceProperties.getProperties());
+        return new PoolConfiguration(connectionTimeoutMilliseconds, idleTimeoutMilliseconds, maxLifetimeMilliseconds, maxPoolSize, minPoolSize, readOnly, customProperties);
     }
 }

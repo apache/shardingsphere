@@ -58,7 +58,7 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
                 requiredDataSources.addAll(each.getReadDataSourceNames());
             }
         }
-        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
+        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedStorageUnits(requiredDataSources);
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
     }
     

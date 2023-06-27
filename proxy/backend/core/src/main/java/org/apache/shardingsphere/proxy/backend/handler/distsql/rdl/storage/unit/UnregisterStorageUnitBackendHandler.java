@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRe
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -74,13 +74,13 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
     }
     
     private void checkExisted(final String databaseName, final Collection<String> storageUnitNames) {
-        Map<String, DataSource> dataSources = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
+        Map<String, StorageUnit> dataSources = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
         Collection<String> notExistedStorageUnits = storageUnitNames.stream().filter(each -> !dataSources.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedStorageUnits));
     }
     
     private void checkInUsed(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
-        Multimap<String, String> inUsedStorageUnits = getInUsedResources(databaseName);
+        Multimap<String, String> inUsedStorageUnits = getInUsedStorageUnits(databaseName);
         Collection<String> inUsedStorageUnitNames = inUsedStorageUnits.keySet();
         inUsedStorageUnitNames.retainAll(sqlStatement.getStorageUnitNames());
         if (!inUsedStorageUnitNames.isEmpty()) {
@@ -93,7 +93,7 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
         }
     }
     
-    private Multimap<String, String> getInUsedResources(final String databaseName) {
+    private Multimap<String, String> getInUsedStorageUnits(final String databaseName) {
         Multimap<String, String> result = LinkedListMultimap.create();
         for (DataSourceContainedRule each : ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().findRules(DataSourceContainedRule.class)) {
             getInUsedResourceNames(each).forEach(eachResource -> result.put(eachResource, each.getType()));

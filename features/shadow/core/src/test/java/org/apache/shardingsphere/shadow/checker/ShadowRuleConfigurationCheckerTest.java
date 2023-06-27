@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.checker;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -38,13 +38,13 @@ class ShadowRuleConfigurationCheckerTest {
     
     @Test
     void assertCheck() {
-        new ShadowRuleConfigurationChecker().check("", createShadowRuleConfiguration(), createDataSourceMap(), Collections.emptyList());
+        new ShadowRuleConfigurationChecker().check("", createShadowRuleConfiguration(), createStorageUnits(), Collections.emptyList());
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
-        result.put("ds", mock(DataSource.class));
-        result.put("ds_shadow", mock(DataSource.class));
+    private Map<String, StorageUnit> createStorageUnits() {
+        Map<String, StorageUnit> result = new LinkedHashMap<>(2, 1F);
+        result.put("ds", mock(StorageUnit.class));
+        result.put("ds_shadow", mock(StorageUnit.class));
         return result;
     }
     

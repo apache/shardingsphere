@@ -29,7 +29,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class StorageResource {
+public class StorageResource {
     
     private final Map<String, DataSource> storageNodes;
     

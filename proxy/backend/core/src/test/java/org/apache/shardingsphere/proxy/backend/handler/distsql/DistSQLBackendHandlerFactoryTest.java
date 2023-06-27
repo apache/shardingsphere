@@ -93,7 +93,7 @@ class DistSQLBackendHandlerFactoryTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
-        when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
+        when(result.getResourceMetaData().getNotExistedStorageUnits(any())).thenReturn(Collections.emptyList());
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         return result;
     }

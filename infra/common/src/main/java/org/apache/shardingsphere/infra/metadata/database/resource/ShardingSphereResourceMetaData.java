@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
@@ -153,6 +154,19 @@ public final class ShardingSphereResourceMetaData {
     }
     
     /**
+     * Get data source props map.
+     *
+     * @return data source props map
+     */
+    public Map<String, DataSourceProperties> getDataSourcePropsMap() {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(storageUnits.size(), 1F);
+        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getDataSourceProps());
+        }
+        return result;
+    }
+    
+    /**
      * Get storage unit type.
      *
      * @param storageUnitName storage unit name
@@ -163,13 +177,13 @@ public final class ShardingSphereResourceMetaData {
     }
     
     /**
-     * Get not existed resource name.
+     * Get not existed storage unit names.
      * 
-     * @param resourceNames resource names to be judged
-     * @return not existed resource names
+     * @param storageUnitNames storage unit names to be judged
+     * @return not existed storage unit names
      */
-    public Collection<String> getNotExistedDataSources(final Collection<String> resourceNames) {
-        return resourceNames.stream().filter(each -> !dataSources.containsKey(each)).collect(Collectors.toSet());
+    public Collection<String> getNotExistedStorageUnits(final Collection<String> storageUnitNames) {
+        return storageUnitNames.stream().filter(each -> !storageUnits.containsKey(each)).collect(Collectors.toSet());
     }
     
     /**

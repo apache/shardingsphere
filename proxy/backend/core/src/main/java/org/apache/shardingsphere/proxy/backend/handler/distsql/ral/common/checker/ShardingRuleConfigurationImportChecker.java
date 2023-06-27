@@ -76,7 +76,7 @@ public final class ShardingRuleConfigurationImportChecker {
     
     private void checkResources(final String databaseName, final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> requiredResource = getRequiredResources(currentRuleConfig);
-        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedDataSources(requiredResource);
+        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedStorageUnits(requiredResource);
         Collection<String> logicResources = getLogicResources(database);
         notExistedResources.removeIf(logicResources::contains);
         ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedResources));

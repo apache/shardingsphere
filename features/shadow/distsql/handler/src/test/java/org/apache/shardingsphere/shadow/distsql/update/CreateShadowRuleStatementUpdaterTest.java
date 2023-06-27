@@ -97,7 +97,7 @@ class CreateShadowRuleStatementUpdaterTest {
     
     @Test
     void assertExecuteWithNotExistResource() {
-        when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Arrays.asList("ds0", "ds1"));
+        when(resourceMetaData.getNotExistedStorageUnits(any())).thenReturn(Arrays.asList("ds0", "ds1"));
         CreateShadowRuleStatement sqlStatement = new CreateShadowRuleStatement(false, Collections.singleton(new ShadowRuleSegment("ruleName", "ds1", null, null)));
         assertThrows(MissingRequiredStorageUnitsException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentConfig));
     }

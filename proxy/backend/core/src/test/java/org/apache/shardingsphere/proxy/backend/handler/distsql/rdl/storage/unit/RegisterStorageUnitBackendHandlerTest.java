@@ -96,7 +96,7 @@ class RegisterStorageUnitBackendHandlerTest {
     @Test
     void assertExecuteWithDuplicateStorageUnitNamesWithResourceMetaData() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getDataSourceMap("foo_db").keySet()).thenReturn(Collections.singleton("ds_0"));
+        when(contextManager.getStorageUnitMap("foo_db").keySet()).thenReturn(Collections.singleton("ds_0"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThrows(DuplicateStorageUnitException.class, () -> handler.execute("foo_db", createRegisterStorageUnitStatement()));
     }

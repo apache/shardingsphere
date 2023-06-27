@@ -151,8 +151,8 @@ public final class ReadwriteSplittingRuleStatementChecker {
             requiredDataSources.add(each.getWriteDataSource());
             requiredDataSources.addAll(each.getReadDataSources());
         });
-        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
-        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
+        Collection<String> notExistedStorageUnits = database.getResourceMetaData().getNotExistedStorageUnits(requiredDataSources);
+        ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedStorageUnits));
     }
     
     private static Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {

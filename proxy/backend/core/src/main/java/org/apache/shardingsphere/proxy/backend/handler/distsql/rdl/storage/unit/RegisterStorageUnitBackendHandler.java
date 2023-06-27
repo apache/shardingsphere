@@ -85,12 +85,12 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
     public void checkSQLStatement(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
         Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getStorageUnits().size());
         if (!sqlStatement.isIfNotExists()) {
-            checkDuplicatedDataSourceNames(databaseName, dataSourceNames, sqlStatement);
+            checkDuplicatedStorageUnitNames(databaseName, dataSourceNames, sqlStatement);
             checkDuplicatedLogicalDataSourceNames(databaseName, dataSourceNames);
         }
     }
     
-    private void checkDuplicatedDataSourceNames(final String databaseName, final Collection<String> dataSourceNames, final RegisterStorageUnitStatement sqlStatement) {
+    private void checkDuplicatedStorageUnitNames(final String databaseName, final Collection<String> dataSourceNames, final RegisterStorageUnitStatement sqlStatement) {
         Collection<String> duplicatedDataSourceNames = new HashSet<>(sqlStatement.getStorageUnits().size(), 1F);
         for (DataSourceSegment each : sqlStatement.getStorageUnits()) {
             if (dataSourceNames.contains(each.getName()) || getCurrentStorageUnitNames(databaseName).contains(each.getName())) {
@@ -112,7 +112,7 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
     }
     
     private Collection<String> getCurrentStorageUnitNames(final String databaseName) {
-        return ProxyContext.getInstance().getContextManager().getDataSourceMap(databaseName).keySet();
+        return ProxyContext.getInstance().getContextManager().getStorageUnitMap(databaseName).keySet();
     }
     
     private Collection<String> getLogicalDataSourceNames(final String databaseName) {

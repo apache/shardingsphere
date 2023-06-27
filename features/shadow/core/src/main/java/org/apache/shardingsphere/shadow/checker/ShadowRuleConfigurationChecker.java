@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shadow.checker;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredShadow
 import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredShadowConfigurationException;
 import org.apache.shardingsphere.shadow.exception.metadata.ShadowDataSourceMappingNotFoundException;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -43,9 +43,9 @@ import java.util.Set;
 public final class ShadowRuleConfigurationChecker implements RuleConfigurationChecker<ShadowRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final ShadowRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+    public void check(final String databaseName, final ShadowRuleConfiguration config, final Map<String, StorageUnit> storageUnits, final Collection<ShardingSphereRule> builtRules) {
         Map<String, ShadowDataSourceConfiguration> dataSources = initShadowDataSources(config.getDataSources());
-        checkDataSources(dataSources, dataSourceMap, databaseName);
+        checkDataSources(dataSources, storageUnits, databaseName);
         Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
         checkShadowTableDataSourcesAutoReferences(shadowTables, dataSources);
         checkShadowTableDataSourcesReferences(shadowTables, dataSources);
@@ -56,12 +56,12 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
         checkShadowTableAlgorithmsReferences(shadowTables, databaseName);
     }
     
-    private void checkDataSources(final Map<String, ShadowDataSourceConfiguration> shadowDataSources, final Map<String, DataSource> dataSourceMap, final String databaseName) {
-        Set<String> dataSource = dataSourceMap.keySet();
+    private void checkDataSources(final Map<String, ShadowDataSourceConfiguration> shadowDataSources, final Map<String, StorageUnit> storageUnits, final String databaseName) {
+        Set<String> storageUnitNames = storageUnits.keySet();
         for (Entry<String, ShadowDataSourceConfiguration> entry : shadowDataSources.entrySet()) {
-            ShardingSpherePreconditions.checkState(dataSource.contains(entry.getValue().getProductionDataSourceName()),
+            ShardingSpherePreconditions.checkState(storageUnitNames.contains(entry.getValue().getProductionDataSourceName()),
                     () -> new MissingRequiredShadowConfigurationException("ProductionDataSourceName", databaseName));
-            ShardingSpherePreconditions.checkState(dataSource.contains(entry.getValue().getShadowDataSourceName()),
+            ShardingSpherePreconditions.checkState(storageUnitNames.contains(entry.getValue().getShadowDataSourceName()),
                     () -> new MissingRequiredShadowConfigurationException("ShadowDataSourceName", databaseName));
         }
     }

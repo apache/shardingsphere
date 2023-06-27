@@ -27,6 +27,7 @@ import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedData
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -78,7 +79,8 @@ class AlterStorageUnitBackendHandlerTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_0")));
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource(3306, "ds_0")));
+        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", new StorageUnit("ds_0", "ds_0")));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThat(handler.execute("foo_db", createAlterStorageUnitStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
     }
@@ -103,7 +105,8 @@ class AlterStorageUnitBackendHandlerTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_1")));
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource(3307, "ds_1")));
+        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", new StorageUnit("ds_0", "ds_0")));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThrows(InvalidStorageUnitsException.class, () -> handler.execute("foo_db", createAlterStorageUnitStatement("ds_0")));
     }
@@ -125,9 +128,9 @@ class AlterStorageUnitBackendHandlerTest {
         return new AlterStorageUnitStatement(result);
     }
     
-    private HikariDataSource mockHikariDataSource(final String database) {
+    private HikariDataSource mockHikariDataSource(final int port, final String database) {
         HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl(String.format("jdbc:mysql://127.0.0.1:3306/%s?serverTimezone=UTC&useSSL=false", database));
+        result.setJdbcUrl(String.format("jdbc:mysql://127.0.0.1:%s/%s?serverTimezone=UTC&useSSL=false", port, database));
         return result;
     }
 }

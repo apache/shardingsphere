@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.checker;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingAlgorithmException;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
@@ -44,7 +44,7 @@ import java.util.Map;
 public final class ShardingRuleConfigurationChecker implements RuleConfigurationChecker<ShardingRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final ShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+    public void check(final String databaseName, final ShardingRuleConfiguration config, final Map<String, StorageUnit> storageUnits, final Collection<ShardingSphereRule> builtRules) {
         Collection<String> keyGenerators = config.getKeyGenerators().keySet();
         Collection<String> auditors = config.getAuditors().keySet();
         Collection<String> shardingAlgorithms = config.getShardingAlgorithms().keySet();

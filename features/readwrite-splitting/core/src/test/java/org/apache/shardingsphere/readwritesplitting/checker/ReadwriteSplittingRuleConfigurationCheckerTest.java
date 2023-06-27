@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.checker;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -69,7 +69,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
                 "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")), createDataSourceRuleConfig("write_ds_2", Arrays.asList("read_ds_0", "read_ds_1")));
         when(config.getDataSources()).thenReturn(configurations);
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(DataSourceNameExistedException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
+        assertThrows(DataSourceNameExistedException.class, () -> checker.check("test", config, mockStorageUnits(), Collections.emptyList()));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -80,7 +80,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
                 "write_ds_0", Arrays.asList("read_ds_0", "read_ds_0")), createDataSourceRuleConfig("write_ds_1", Arrays.asList("read_ds_0", "read_ds_0")));
         when(config.getDataSources()).thenReturn(configurations);
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(DuplicateDataSourceException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
+        assertThrows(DuplicateDataSourceException.class, () -> checker.check("test", config, mockStorageUnits(), Collections.emptyList()));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -92,7 +92,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         AlgorithmConfiguration algorithm = new AlgorithmConfiguration("WEIGHT", PropertiesBuilder.build(new Property("read_ds_2", "1"), new Property("read_ds_1", "2")));
         when(config.getLoadBalancers()).thenReturn(Collections.singletonMap("weight_ds", algorithm));
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(InvalidWeightLoadBalancerConfigurationException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
+        assertThrows(InvalidWeightLoadBalancerConfigurationException.class, () -> checker.check("test", config, mockStorageUnits(), Collections.emptyList()));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -102,7 +102,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class, RETURNS_DEEP_STUBS);
         when(dataSourceContainedRule.getDataSourceMapper().containsKey("otherDatasourceName")).thenReturn(true);
-        checker.check("test", config, mockDataSources(), Collections.singleton(dataSourceContainedRule));
+        checker.check("test", config, mockStorageUnits(), Collections.singleton(dataSourceContainedRule));
     }
     
     private ReadwriteSplittingRuleConfiguration createContainsOtherRulesDatasourceConfig() {
@@ -124,12 +124,12 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         return result;
     }
     
-    private Map<String, DataSource> mockDataSources() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
-        result.put("read_ds_0", mock(DataSource.class));
-        result.put("read_ds_1", mock(DataSource.class));
-        result.put("write_ds_0", mock(DataSource.class));
-        result.put("write_ds_1", mock(DataSource.class));
+    private Map<String, StorageUnit> mockStorageUnits() {
+        Map<String, StorageUnit> result = new LinkedHashMap<>(2, 1F);
+        result.put("read_ds_0", mock(StorageUnit.class));
+        result.put("read_ds_1", mock(StorageUnit.class));
+        result.put("write_ds_0", mock(StorageUnit.class));
+        result.put("write_ds_1", mock(StorageUnit.class));
         return result;
     }
 }

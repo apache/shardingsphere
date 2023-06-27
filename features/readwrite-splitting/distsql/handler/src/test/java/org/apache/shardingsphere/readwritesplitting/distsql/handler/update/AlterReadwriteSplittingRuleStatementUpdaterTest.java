@@ -76,7 +76,7 @@ class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithoutExistedResources() {
-        when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Collections.singleton("read_ds_0"));
+        when(resourceMetaData.getNotExistedStorageUnits(any())).thenReturn(Collections.singleton("read_ds_0"));
         assertThrows(MissingRequiredStorageUnitsException.class, () -> updater.checkSQLStatement(database, createSQLStatement("TEST"), createCurrentRuleConfiguration()));
     }
     

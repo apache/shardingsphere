@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
@@ -46,7 +47,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -63,7 +63,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,6 +75,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -113,9 +113,12 @@ class ConfigurationChangedSubscriberTest {
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
         when(database.getName()).thenReturn("db");
-        when(database.getResourceMetaData().getDataSources()).thenReturn(new LinkedHashMap<>());
-        when(database.getResourceMetaData().getStorageUnitTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
-        when(database.getResourceMetaData().getStorageResource().getStorageNodes()).thenReturn(Collections.emptyMap());
+        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(resourceMetaData.getDataSources()).thenReturn(new LinkedHashMap<>());
+        when(resourceMetaData.getStorageUnits()).thenReturn(new LinkedHashMap<>());
+        when(resourceMetaData.getStorageUnitTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
+        when(resourceMetaData.getStorageResource().getStorageNodes()).thenReturn(Collections.emptyMap());
         when(database.getSchemas()).thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema()));
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));
@@ -174,36 +177,5 @@ class ConfigurationChangedSubscriberTest {
     void assertRenewProperties() {
         subscriber.renew(new PropertiesChangedEvent(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString()))));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.TRUE.toString()));
-    }
-    
-    private Map<String, DataSource> initContextManager() {
-        Map<String, DataSource> result = getDataSourceMap();
-        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", result);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("db", new MySQLDatabaseType(), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().put("db", database);
-        return result;
-    }
-    
-    private Map<String, DataSource> getDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(3, 1F);
-        result.put("ds_0", new MockedDataSource());
-        result.put("ds_1", new MockedDataSource());
-        result.put("db", new MockedDataSource());
-        return result;
-    }
-    
-    private Map<String, DataSourceProperties> getVersionChangedDataSourcePropertiesMap() {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1F);
-        result.put("primary_ds", DataSourcePropertiesCreator.create(new MockedDataSource()));
-        result.put("ds_0", DataSourcePropertiesCreator.create(new MockedDataSource()));
-        result.put("ds_1", DataSourcePropertiesCreator.create(getChangedDataSource()));
-        return result;
-    }
-    
-    private MockedDataSource getChangedDataSource() {
-        MockedDataSource result = new MockedDataSource();
-        result.setMaxPoolSize(5);
-        result.setUsername("username");
-        return result;
     }
 }

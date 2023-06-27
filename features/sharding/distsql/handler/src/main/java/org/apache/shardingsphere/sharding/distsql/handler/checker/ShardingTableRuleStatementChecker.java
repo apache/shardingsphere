@@ -306,7 +306,7 @@ public final class ShardingTableRuleStatementChecker {
     
     private static void checkDataSources(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereDatabase database) {
         Collection<String> requiredDataSource = getRequiredDataSources(rules);
-        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSource);
+        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedStorageUnits(requiredDataSource);
         Collection<String> logicDataSources = getLogicDataSources(database);
         notExistedDataSources.removeIf(logicDataSources::contains);
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));

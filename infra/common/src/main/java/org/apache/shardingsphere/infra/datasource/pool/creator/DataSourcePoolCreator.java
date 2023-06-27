@@ -26,14 +26,15 @@ import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlPars
 import org.apache.shardingsphere.infra.database.type.DataSourceAggregatable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
-import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
+import org.apache.shardingsphere.infra.datasource.storage.StorageNodeProperties;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResourceWithProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
@@ -71,9 +72,9 @@ public final class DataSourcePoolCreator {
         Map<String, DatabaseType> storageNodesTypes = new LinkedHashMap<>();
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>();
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
-            StorageNode storageNode = getStorageNode(entry.getKey(), entry.getValue());
-            if (storageNodes.containsKey(storageNode.getName())) {
-                appendStorageUnit(storageUnits, storageNode, entry.getKey(), storageNode.getDatabaseType());
+            StorageNodeProperties storageNodeProperties = getStorageNodeProperties(entry.getKey(), entry.getValue());
+            if (storageNodes.containsKey(storageNodeProperties.getName())) {
+                appendStorageUnit(storageUnits, storageNodeProperties, entry.getKey(), entry.getValue(), storageNodeProperties.getDatabaseType());
                 continue;
             }
             DataSource dataSource;
@@ -87,34 +88,65 @@ public final class DataSourcePoolCreator {
                 }
                 throw ex;
             }
-            storageNodes.put(storageNode.getName(), dataSource);
-            storageNodesTypes.put(storageNode.getName(), storageNode.getDatabaseType());
-            appendStorageUnit(storageUnits, storageNode, entry.getKey(), storageNode.getDatabaseType());
+            storageNodes.put(storageNodeProperties.getName(), dataSource);
+            storageNodesTypes.put(storageNodeProperties.getName(), storageNodeProperties.getDatabaseType());
+            appendStorageUnit(storageUnits, storageNodeProperties, entry.getKey(), entry.getValue(), storageNodeProperties.getDatabaseType());
         }
         return new StorageResource(storageNodes, storageNodesTypes, storageUnits);
     }
     
-    private static void appendStorageUnit(final Map<String, StorageUnit> storageUnits, final StorageNode storageNode, final String unitName, final DatabaseType databaseType) {
+    /**
+     * Create storage resource without data source.
+     *
+     * @param dataSourcePropsMap data source properties map
+     * @return created storage resource
+     */
+    public static StorageResourceWithProperties createStorageResourceWithoutDataSource(final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        Map<String, DataSource> storageNodes = new LinkedHashMap<>();
+        Map<String, DatabaseType> storageNodesTypes = new LinkedHashMap<>();
+        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>();
+        Map<String, DataSourceProperties> dataSourcePropertiesMap = new LinkedHashMap<>();
+        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
+            StorageNodeProperties storageNodeProperties = getStorageNodeProperties(entry.getKey(), entry.getValue());
+            if (storageNodes.containsKey(storageNodeProperties.getName())) {
+                appendStorageUnit(storageUnits, storageNodeProperties, entry.getKey(), entry.getValue(), storageNodeProperties.getDatabaseType());
+                continue;
+            }
+            storageNodes.put(storageNodeProperties.getName(), null);
+            storageNodesTypes.put(storageNodeProperties.getName(), storageNodeProperties.getDatabaseType());
+            appendStorageUnit(storageUnits, storageNodeProperties, entry.getKey(), entry.getValue(), storageNodeProperties.getDatabaseType());
+            dataSourcePropertiesMap.put(storageNodeProperties.getName(), entry.getValue());
+        }
+        return new StorageResourceWithProperties(storageNodes, storageNodesTypes, storageUnits, dataSourcePropertiesMap);
+    }
+    
+    private static void appendStorageUnit(final Map<String, StorageUnit> storageUnits, final StorageNodeProperties storageNodeProperties,
+                                          final String unitName, final DataSourceProperties dataSourceProps, final DatabaseType databaseType) {
         if (databaseType instanceof DataSourceAggregatable) {
-            storageUnits.put(unitName, new StorageUnit(unitName, storageNode.getName(), storageNode.getDatabase()));
+            storageUnits.put(unitName, new StorageUnit(unitName, storageNodeProperties.getName(), storageNodeProperties.getDatabase(), dataSourceProps));
         } else {
-            storageUnits.put(unitName, new StorageUnit(unitName, storageNode.getName()));
+            storageUnits.put(unitName, new StorageUnit(unitName, storageNodeProperties.getName(), dataSourceProps));
         }
     }
     
-    private static StorageNode getStorageNode(final String dataSourceName, final DataSourceProperties dataSourceProperties) {
+    private static StorageNodeProperties getStorageNodeProperties(final String dataSourceName, final DataSourceProperties dataSourceProperties) {
         Map<String, Object> standardProperties = dataSourceProperties.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProperties.get("url").toString();
         String username = standardProperties.get("username").toString();
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(url);
-        StorageNode storageNode;
+        StorageNodeProperties storageNodeProperties;
         try {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-            storageNode = new StorageNode(databaseType, jdbcUrl, username);
+            String nodeName = databaseType instanceof DataSourceAggregatable ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
+            storageNodeProperties = new StorageNodeProperties(nodeName, databaseType, dataSourceProperties, jdbcUrl.getDatabase());
         } catch (final UnrecognizedDatabaseURLException ex) {
-            storageNode = new StorageNode(databaseType, dataSourceName);
+            storageNodeProperties = new StorageNodeProperties(dataSourceName, databaseType, dataSourceProperties, null);
         }
-        return storageNode;
+        return storageNodeProperties;
+    }
+    
+    private static String generateStorageNodeName(final String hostname, final int port, final String username) {
+        return String.format("%s_%s_%s", hostname, port, username);
     }
     
     /**
