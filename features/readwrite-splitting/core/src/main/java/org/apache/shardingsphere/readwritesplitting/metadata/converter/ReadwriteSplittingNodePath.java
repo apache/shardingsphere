@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.metadata.converter;
+package org.apache.shardingsphere.readwritesplitting.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,16 +25,16 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Mask node converter.
+ * Readwrite-splitting node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MaskNodeConverter {
+public final class ReadwriteSplittingNodePath {
     
-    public static final String TABLES = "tables";
+    public static final String DATA_SOURCES = "data_sources";
     
-    public static final String ALGORITHMS = "algorithms";
+    public static final String LOAD_BALANCERS = "load_balancers";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("mask", Arrays.asList(TABLES, ALGORITHMS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath("readwrite_splitting", Arrays.asList(DATA_SOURCES, LOAD_BALANCERS), Collections.emptyList());
     
     /**
      * Get instance of rule node path.
