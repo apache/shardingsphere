@@ -44,7 +44,7 @@ public final class GlobalNodeConverter {
      * @return version
      */
     public static Optional<String> getVersion(final String ruleName, final String rulePath) {
-        Pattern pattern = Pattern.compile(getVersionsNode(ruleName) + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getVersionsNode(ruleName) + "/(\\d+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
@@ -60,7 +60,7 @@ public final class GlobalNodeConverter {
      * @return true or false
      */
     public static boolean isRuleActiveVersionPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(getRuleNameNode() + "/([\\w\\-]+)/active_version$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getRuleNameNode() + "/(\\w+)/active_version$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -88,7 +88,7 @@ public final class GlobalNodeConverter {
      * @return rule name
      */
     public static Optional<String> getRuleName(final String rulePath) {
-        Pattern pattern = Pattern.compile(getRuleNameNode() + "/([\\w\\-]+)/active_version$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getRuleNameNode() + "/(\\w+)/active_version$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }

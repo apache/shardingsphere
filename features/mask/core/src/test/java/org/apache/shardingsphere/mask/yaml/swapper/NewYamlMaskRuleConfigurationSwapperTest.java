@@ -71,12 +71,12 @@ class NewYamlMaskRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObject() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/mask/tables/foo", "columns:\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/mask/tables/foo/versions/0", "columns:\n"
                 + "  foo_column:\n"
                 + "    logicColumn: foo_column\n"
                 + "    maskAlgorithm: FIXTURE\n"
                 + "name: foo\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/mask/algorithms/FIXTURE", "type: FIXTURE\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/mask/algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
         MaskRuleConfiguration result = swapper.swapToObject(config);
         assertThat(result.getTables().size(), is(1));
         assertThat(result.getTables().iterator().next().getName(), is("foo"));

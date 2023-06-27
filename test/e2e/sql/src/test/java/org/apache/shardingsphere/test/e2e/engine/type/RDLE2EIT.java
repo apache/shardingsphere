@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.engine.type;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
@@ -42,8 +41,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -54,8 +51,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @E2ETestCaseSettings(SQLCommandType.RDL)
 class RDLE2EIT {
     
-    private static final Map<String, Boolean> INITIALIZED = new ConcurrentHashMap<>();
-    
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
@@ -65,14 +60,6 @@ class RDLE2EIT {
             return;
         }
         try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            if (!INITIALIZED.containsKey(testParam.getKey())) {
-                INITIALIZED.put(testParam.getKey(), true);
-                if (testParam.getDatabaseType() instanceof OpenGaussDatabaseType) {
-                    Awaitility.await().atMost(31L, TimeUnit.SECONDS).pollInterval(30L, TimeUnit.SECONDS).until(() -> true);
-                } else {
-                    Awaitility.await().atMost(16L, TimeUnit.SECONDS).pollInterval(15L, TimeUnit.SECONDS).until(() -> true);
-                }
-            }
             init(containerComposer);
             assertExecute(testParam, containerComposer);
             tearDown(containerComposer);

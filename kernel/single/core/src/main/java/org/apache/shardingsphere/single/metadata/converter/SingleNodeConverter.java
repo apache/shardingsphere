@@ -19,9 +19,9 @@ package org.apache.shardingsphere.single.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Collections;
 
 /**
  * Single node converter.
@@ -29,44 +29,16 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SingleNodeConverter {
     
-    private static final String ROOT_NODE = "single";
+    public static final String TABLES = "tables";
     
-    private static final String TABLES_NODE = "tables";
-    
-    private static final String RULES_NODE_PREFIX = "/([\\w\\-]+)/([\\w\\-]+)/rules/";
-    
-    private static final String RULE_ACTIVE_VERSION = "/active_version$";
+    private static final RuleNodePath INSTANCE = new RuleNodePath("single", Collections.emptyList(), Collections.singleton(TABLES));
     
     /**
-     * Get tables path.
+     * Get instance of rule node path.
      *
-     * @return tables path
+     * @return got instance
      */
-    public static String getTablesPath() {
-        return TABLES_NODE;
-    }
-    
-    /**
-     * Is single path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isSinglePath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/.*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
-    }
-    
-    /**
-     * Is tables active version path.
-     *
-     * @param rulePath rule path
-     * @return true or false
-     */
-    public static boolean isTablesActiveVersionPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(RULES_NODE_PREFIX + ROOT_NODE + "/" + TABLES_NODE + RULE_ACTIVE_VERSION, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
+    public static RuleNodePath getInstance() {
+        return INSTANCE;
     }
 }

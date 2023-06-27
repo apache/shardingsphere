@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import org.apache.shardingsphere.data.pipeline.api.job.type.AbstractJobType;
+import org.apache.shardingsphere.data.pipeline.common.job.type.AbstractJobType;
 
 /**
  * Consistency check job type.
