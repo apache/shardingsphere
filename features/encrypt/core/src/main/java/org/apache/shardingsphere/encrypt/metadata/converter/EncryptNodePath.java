@@ -15,19 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.datanode;
+package org.apache.shardingsphere.encrypt.metadata.converter;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
- * YAML data node.
+ * Encrypt node path.
  */
-@RequiredArgsConstructor
-@Getter
-public final class YamlDataNode {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class EncryptNodePath {
     
-    private final String key;
+    public static final String TABLES = "tables";
     
-    private final String value;
+    public static final String ENCRYPTORS = "encryptors";
+    
+    private static final RuleNodePath INSTANCE = new RuleNodePath("encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
+    
+    /**
+     * Get instance of rule node path.
+     *
+     * @return got instance
+     */
+    public static RuleNodePath getInstance() {
+        return INSTANCE;
+    }
 }

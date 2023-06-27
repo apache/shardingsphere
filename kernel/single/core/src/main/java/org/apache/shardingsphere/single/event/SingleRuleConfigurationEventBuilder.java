@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.single.event.config.AddSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.DeleteSingleTableEvent;
-import org.apache.shardingsphere.single.metadata.converter.SingleNodeConverter;
+import org.apache.shardingsphere.single.metadata.converter.SingleNodePath;
 
 import java.util.Optional;
 
@@ -35,14 +35,14 @@ import java.util.Optional;
  */
 public final class SingleRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
-    private final RuleNodePath singleRuleNodePath = SingleNodeConverter.getInstance();
+    private final RuleNodePath singleRuleNodePath = SingleNodePath.getInstance();
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!singleRuleNodePath.getUniqueRuleItemNodePaths(SingleNodeConverter.TABLES).isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!singleRuleNodePath.getUniqueItem(SingleNodePath.TABLES).isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        if (singleRuleNodePath.getUniqueRuleItemNodePaths(SingleNodeConverter.TABLES).isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
+        if (singleRuleNodePath.getUniqueItem(SingleNodePath.TABLES).isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
             return createSingleConfigEvent(databaseName, event);
         }
         return Optional.empty();

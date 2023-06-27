@@ -15,30 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.metadata.converter;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
-
-import java.util.Collections;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Broadcast node converter.
+ * My SQL change replication source statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BroadcastNodeConverter {
-    
-    public static final String TABLES = "tables";
-    
-    private static final RuleNodePath INSTANCE = new RuleNodePath("broadcast", Collections.singleton(TABLES), Collections.emptyList());
-    
-    /**
-     * Get instance of rule node path.
-     * 
-     * @return got instance
-     */
-    public static RuleNodePath getInstance() {
-        return INSTANCE;
-    }
+public final class MySQLChangeReplicationSourceToStatement extends AbstractSQLStatement implements RLStatement, MySQLStatement {
 }

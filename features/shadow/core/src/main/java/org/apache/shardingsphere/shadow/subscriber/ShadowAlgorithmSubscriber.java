@@ -33,6 +33,7 @@ import org.apache.shardingsphere.shadow.event.algorithm.DeleteShadowAlgorithmEve
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Shadow algorithm subscriber.
@@ -52,10 +53,17 @@ public final class ShadowAlgorithmSubscriber implements RuleChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterShadowAlgorithmEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getShadowAlgorithms().put(event.getAlgorithmName(), swapToAlgorithmConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
+        AlgorithmConfiguration needToAlteredConfig =
+                swapToAlgorithmConfig(instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+        Optional<ShadowRule> rule = databases.get(event.getDatabaseName()).getRuleMetaData().findSingleRule(ShadowRule.class);
+        ShadowRuleConfiguration config;
+        if (rule.isPresent()) {
+            config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+        } else {
+            config = new ShadowRuleConfiguration();
+        }
+        config.getShadowAlgorithms().put(event.getAlgorithmName(), needToAlteredConfig);
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**

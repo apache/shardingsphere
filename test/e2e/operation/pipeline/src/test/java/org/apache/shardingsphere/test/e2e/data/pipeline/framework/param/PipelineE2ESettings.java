@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.param;
 
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.PipelineE2EExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Pipeline E2E settings.
  */
+@ExtendWith(PipelineE2EExtension.class)
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PipelineE2ESettings {

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.authority.converter.YamlUsersConfigurationConve
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.converter.GlobalNodeConverter;
+import org.apache.shardingsphere.infra.config.converter.GlobalNodePath;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
@@ -61,7 +61,7 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlGl
     @Override
     public AuthorityRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            Optional<String> version = GlobalNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
+            Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }

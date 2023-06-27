@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.metadata.converter;
+package org.apache.shardingsphere.mask.metadata.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Single node converter.
+ * Mask node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SingleNodeConverter {
+public final class MaskNodePath {
     
     public static final String TABLES = "tables";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("single", Collections.emptyList(), Collections.singleton(TABLES));
+    public static final String ALGORITHMS = "algorithms";
+    
+    private static final RuleNodePath INSTANCE = new RuleNodePath("mask", Arrays.asList(TABLES, ALGORITHMS), Collections.emptyList());
     
     /**
      * Get instance of rule node path.

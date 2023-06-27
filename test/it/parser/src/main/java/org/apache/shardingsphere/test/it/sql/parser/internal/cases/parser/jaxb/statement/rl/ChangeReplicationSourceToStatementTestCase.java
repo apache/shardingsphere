@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.datanode;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * YAML data node.
+ * Change replication source to statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class YamlDataNode {
-    
-    private final String key;
-    
-    private final String value;
+public final class ChangeReplicationSourceToStatementTestCase extends SQLParserTestCase {
 }

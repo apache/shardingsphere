@@ -32,7 +32,10 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Compatible encrypt encryptor subscriber.
@@ -58,9 +61,7 @@ public final class CompatibleEncryptorSubscriber implements RuleChangedSubscribe
             return;
         }
         ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        CompatibleEncryptRuleConfiguration config = (CompatibleEncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
-        config.getEncryptors().put(event.getEncryptorName(), swapToAlgorithmConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
+        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getCompatibleEncryptRuleConfiguration(database, event)));
     }
     
     /**
@@ -77,6 +78,22 @@ public final class CompatibleEncryptorSubscriber implements RuleChangedSubscribe
         CompatibleEncryptRuleConfiguration config = (CompatibleEncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getEncryptors().remove(event.getEncryptorName());
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private CompatibleEncryptRuleConfiguration getCompatibleEncryptRuleConfiguration(final ShardingSphereDatabase database, final AlterCompatibleEncryptorEvent event) {
+        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
+        CompatibleEncryptRuleConfiguration config = rule.map(encryptRule -> getEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) encryptRule.getConfiguration()))
+                .orElseGet(() -> new CompatibleEncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+        config.getEncryptors().put(event.getEncryptorName(), swapToAlgorithmConfig(
+                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
+        return config;
+    }
+    
+    private CompatibleEncryptRuleConfiguration getEncryptRuleConfiguration(final CompatibleEncryptRuleConfiguration config) {
+        if (null == config.getEncryptors()) {
+            return new CompatibleEncryptRuleConfiguration(config.getTables(), new LinkedHashMap<>());
+        }
+        return config;
     }
     
     private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {

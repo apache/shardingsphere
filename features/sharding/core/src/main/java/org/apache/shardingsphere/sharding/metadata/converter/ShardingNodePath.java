@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import java.util.Arrays;
 
 /**
- * Sharding node converter.
+ * Sharding node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingNodeConverter {
+public final class ShardingNodePath {
     
     public static final String TABLES = "tables";
     

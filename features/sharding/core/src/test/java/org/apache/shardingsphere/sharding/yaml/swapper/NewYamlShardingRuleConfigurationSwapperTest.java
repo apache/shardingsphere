@@ -68,11 +68,11 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         assertThat(iterator.next().getKey(), is("default_strategies/default_table_strategy"));
         assertThat(iterator.next().getKey(), is("default_strategies/default_key_generate_strategy"));
         assertThat(iterator.next().getKey(), is("default_strategies/default_audit_strategy"));
+        assertThat(iterator.next().getKey(), is("default_strategies/default_sharding_column"));
         assertThat(iterator.next().getKey(), is("tables/LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("tables/SUB_LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("auto_tables/auto_table"));
         assertThat(iterator.next().getKey(), is("binding_tables/foo"));
-        assertThat(iterator.next().getKey(), is("default_strategies/default_sharding_column"));
     }
     
     private ShardingRuleConfiguration createMaximumShardingRule() {
@@ -115,18 +115,7 @@ class NewYamlShardingRuleConfigurationSwapperTest {
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
         ShardingRuleConfiguration result = swapper.swapToObject(config);
-        assertThat(result.getTables().size(), is(0));
-        assertThat(result.getAutoTables().size(), is(0));
-        assertThat(result.getBindingTableGroups().size(), is(0));
-        assertNull(result.getDefaultDatabaseShardingStrategy());
-        assertNull(result.getDefaultTableShardingStrategy());
-        assertNull(result.getDefaultKeyGenerateStrategy());
-        assertNull(result.getDefaultAuditStrategy());
-        assertNull(result.getDefaultShardingColumn());
-        assertThat(result.getShardingAlgorithms().size(), is(0));
-        assertThat(result.getKeyGenerators().size(), is(0));
-        assertThat(result.getAuditors().size(), is(0));
-        assertNull(result.getShardingCache());
+        assertTrue(result == null);
     }
     
     @Test

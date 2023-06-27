@@ -28,7 +28,7 @@ import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwr
 import org.apache.shardingsphere.readwritesplitting.event.datasource.DeleteReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
-import org.apache.shardingsphere.readwritesplitting.metadata.converter.ReadwriteSplittingNodeConverter;
+import org.apache.shardingsphere.readwritesplitting.metadata.converter.ReadwriteSplittingNodePath;
 
 import java.util.Optional;
 
@@ -37,18 +37,18 @@ import java.util.Optional;
  */
 public final class ReadwriteSplittingRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
-    private final RuleNodePath readwriteSplittingRuleNodePath = ReadwriteSplittingNodeConverter.getInstance();
+    private final RuleNodePath readwriteSplittingRuleNodePath = ReadwriteSplittingNodePath.getInstance();
     
     @Override
     public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!readwriteSplittingRuleNodePath.getRootNodePath().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!readwriteSplittingRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<String> groupName = readwriteSplittingRuleNodePath.getNamedRuleItemNodePath(ReadwriteSplittingNodeConverter.DATA_SOURCES).getNameByActiveVersion(event.getKey());
+        Optional<String> groupName = readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodePath.DATA_SOURCES).getNameByActiveVersion(event.getKey());
         if (groupName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createReadwriteSplittingConfigEvent(databaseName, groupName.get(), event);
         }
-        Optional<String> loadBalancerName = readwriteSplittingRuleNodePath.getNamedRuleItemNodePath(ReadwriteSplittingNodeConverter.LOAD_BALANCERS).getNameByActiveVersion(event.getKey());
+        Optional<String> loadBalancerName = readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodePath.LOAD_BALANCERS).getNameByActiveVersion(event.getKey());
         if (loadBalancerName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
             return createLoadBalanceEvent(databaseName, loadBalancerName.get(), event);
         }

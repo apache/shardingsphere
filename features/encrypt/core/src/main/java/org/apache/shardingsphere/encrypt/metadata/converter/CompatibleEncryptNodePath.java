@@ -25,16 +25,18 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Encrypt node converter.
+ * Compatible encrypt node path.
+ * @deprecated compatible support will remove in next version.
  */
+@Deprecated
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptNodeConverter {
+public final class CompatibleEncryptNodePath {
     
     public static final String TABLES = "tables";
     
     public static final String ENCRYPTORS = "encryptors";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath("compatible_encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
     
     /**
      * Get instance of rule node path.

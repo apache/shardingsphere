@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
@@ -282,11 +281,6 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
             contextManager.getMetaDataContexts().getPersistService().getPropsService().persist(props);
         }
         clearServiceCache();
-    }
-    
-    @Override
-    public Collection<MetaDataVersion> newAlterProperties(final Properties props) {
-        return Collections.emptyList();
     }
     
     private void clearServiceCache() {

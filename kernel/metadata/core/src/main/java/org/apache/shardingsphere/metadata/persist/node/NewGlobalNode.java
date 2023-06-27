@@ -113,7 +113,12 @@ public final class NewGlobalNode {
         return String.join("/", getPropsRootNode(), VERSIONS);
     }
     
-    private static String getPropsRootNode() {
+    /**
+     * Get properties node.
+     *
+     * @return properties node
+     */
+    public static String getPropsRootNode() {
         return String.join("/", "", PROPS_NODE);
     }
 }

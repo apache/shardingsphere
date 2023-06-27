@@ -29,6 +29,7 @@ import org.apache.shardingsphere.shadow.event.algorithm.DeleteDefaultShadowAlgor
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Default shadow algorithm name subscriber.
@@ -48,8 +49,13 @@ public final class DefaultShadowAlgorithmNameSubscriber implements RuleChangedSu
      */
     @Subscribe
     public synchronized void renew(final AlterDefaultShadowAlgorithmNameEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
+        Optional<ShadowRule> rule = databases.get(event.getDatabaseName()).getRuleMetaData().findSingleRule(ShadowRule.class);
+        ShadowRuleConfiguration config;
+        if (rule.isPresent()) {
+            config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+        } else {
+            config = new ShadowRuleConfiguration();
+        }
         config.setDefaultShadowAlgorithmName(instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
