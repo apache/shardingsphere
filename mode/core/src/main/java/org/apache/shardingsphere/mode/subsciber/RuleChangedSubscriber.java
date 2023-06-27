@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule;
+package org.apache.shardingsphere.mode.subsciber;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-
-import java.util.Map;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Rule changed subscriber.
@@ -28,11 +26,11 @@ import java.util.Map;
 public interface RuleChangedSubscriber {
     
     /**
-     * Set databases.
+     * Set context manager.
      * 
-     * @param databases databases to be set
+     * @param contextManager context manager
      */
-    void setDatabases(Map<String, ShardingSphereDatabase> databases);
+    void setContextManager(ContextManager contextManager);
     
     /**
      * Set instance context.

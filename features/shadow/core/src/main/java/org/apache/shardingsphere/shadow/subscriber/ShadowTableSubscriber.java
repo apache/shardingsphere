@@ -21,9 +21,10 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleChangedSubscriber;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.event.table.AddShadowTableEvent;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -43,7 +43,7 @@ import java.util.Optional;
 @Setter
 public final class ShadowTableSubscriber implements RuleChangedSubscriber {
     
-    private Map<String, ShardingSphereDatabase> databases;
+    private ContextManager contextManager;
     
     private InstanceContext instanceContext;
     
@@ -70,7 +70,7 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
     }
     
     private void renew(final String databaseName, final String tableName, final ShadowTableConfiguration needToAlteredConfig) {
-        Optional<ShadowRule> rule = databases.get(databaseName).getRuleMetaData().findSingleRule(ShadowRule.class);
+        Optional<ShadowRule> rule = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().findSingleRule(ShadowRule.class);
         ShadowRuleConfiguration config;
         if (rule.isPresent()) {
             config = (ShadowRuleConfiguration) rule.get().getConfiguration();
@@ -88,7 +88,7 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DeleteShadowTableEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getTables().remove(event.getTableName());
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
