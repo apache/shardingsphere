@@ -33,7 +33,7 @@ import org.apache.shardingsphere.shadow.event.datasource.DeleteShadowDataSourceE
 import org.apache.shardingsphere.shadow.event.table.AddShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.DeleteShadowTableEvent;
-import org.apache.shardingsphere.shadow.metadata.converter.ShadowNodePath;
+import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowNodePath;
 
 import java.util.Optional;
 

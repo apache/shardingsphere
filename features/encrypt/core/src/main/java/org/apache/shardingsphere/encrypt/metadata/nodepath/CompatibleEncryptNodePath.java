@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.metadata.converter;
+package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,16 +25,18 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Readwrite-splitting node path.
+ * Compatible encrypt node path.
+ * @deprecated compatible support will remove in next version.
  */
+@Deprecated
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadwriteSplittingNodePath {
+public final class CompatibleEncryptNodePath {
     
-    public static final String DATA_SOURCES = "data_sources";
+    public static final String TABLES = "tables";
     
-    public static final String LOAD_BALANCERS = "load_balancers";
+    public static final String ENCRYPTORS = "encryptors";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("readwrite_splitting", Arrays.asList(DATA_SOURCES, LOAD_BALANCERS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath("compatible_encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
     
     /**
      * Get instance of rule node path.

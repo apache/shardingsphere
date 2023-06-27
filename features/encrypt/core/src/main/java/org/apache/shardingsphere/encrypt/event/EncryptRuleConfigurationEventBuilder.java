@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.event.encryptor.DeleteEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.table.AddEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.table.AlterEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.table.DeleteEncryptTableEvent;
-import org.apache.shardingsphere.encrypt.metadata.converter.EncryptNodePath;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptNodePath;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;

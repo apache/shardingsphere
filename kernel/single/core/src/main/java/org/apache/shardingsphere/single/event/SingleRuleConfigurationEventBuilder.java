@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.single.event.config.AddSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.DeleteSingleTableEvent;
-import org.apache.shardingsphere.single.metadata.converter.SingleNodePath;
+import org.apache.shardingsphere.single.metadata.nodepath.SingleNodePath;
 
 import java.util.Optional;
 

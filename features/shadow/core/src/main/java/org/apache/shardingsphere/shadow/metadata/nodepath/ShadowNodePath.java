@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.metadata.converter;
+package org.apache.shardingsphere.shadow.metadata.nodepath;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,18 +25,20 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Compatible encrypt node path.
- * @deprecated compatible support will remove in next version.
+ * Shadow node path.
  */
-@Deprecated
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CompatibleEncryptNodePath {
+public final class ShadowNodePath {
+    
+    public static final String DATA_SOURCES = "data_sources";
     
     public static final String TABLES = "tables";
     
-    public static final String ENCRYPTORS = "encryptors";
+    public static final String ALGORITHMS = "algorithms";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("compatible_encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
+    public static final String DEFAULT_ALGORITHM = "default_algorithm_name";
+    
+    private static final RuleNodePath INSTANCE = new RuleNodePath("shadow", Arrays.asList(DATA_SOURCES, TABLES, ALGORITHMS), Collections.singleton(DEFAULT_ALGORITHM));
     
     /**
      * Get instance of rule node path.
