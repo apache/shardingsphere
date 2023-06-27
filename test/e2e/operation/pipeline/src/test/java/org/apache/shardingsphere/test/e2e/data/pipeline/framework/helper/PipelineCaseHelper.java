@@ -85,7 +85,7 @@ public final class PipelineCaseHelper {
                 int randomInt = generateInt(-100, 100);
                 Object orderId = keyGenerateAlgorithm.generateKey();
                 int randomUnsignedInt = generateInt(0, 100);
-                LocalDateTime now = LocalDateTime.now().withNano(0);
+                LocalDateTime now = LocalDateTime.now();
                 Object[] addObjs = {orderId, generateInt(0, 100), generateString(6), randomInt, randomInt, randomInt,
                         randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(),
                         BigDecimal.valueOf(generateDouble()), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue(), "1", "t", "e", "s", "t", generateString(2),
