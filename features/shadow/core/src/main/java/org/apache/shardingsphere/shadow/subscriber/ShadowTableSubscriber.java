@@ -34,6 +34,7 @@ import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfigu
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Shadow table subscriber.
@@ -68,10 +69,13 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
                 instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
     }
     
-    private void renew(final String databaseName, final String tableName, final ShadowTableConfiguration tableConfig) {
-        ShardingSphereDatabase database = databases.get(databaseName);
-        ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getTables().put(tableName, tableConfig);
+    private void renew(final String databaseName, final String tableName, final ShadowTableConfiguration needToAlteredConfig) {
+        Optional<ShadowRule> rule = databases.get(databaseName).getRuleMetaData().findSingleRule(ShadowRule.class);
+        ShadowRuleConfiguration config = new ShadowRuleConfiguration();
+        if (rule.isPresent()) {
+            config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+        }
+        config.getTables().put(tableName, needToAlteredConfig);
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
     }
     
