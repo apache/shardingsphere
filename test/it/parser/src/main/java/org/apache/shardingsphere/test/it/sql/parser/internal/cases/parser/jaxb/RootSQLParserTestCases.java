@@ -423,6 +423,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.SetTransactionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.UnlockStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.XATestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rl.ChangeReplicationSourceToStatementTestCase;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -1663,6 +1664,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "alter-readwrite-splitting-storage-unit-status-disable")
     private final List<AlterReadwriteSplittingStorageUnitStatusStatementTestCase> alterReadwriteSplittingStorageUnitStatusStatementDisableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "change-replication-source-to")
+    private final List<ChangeReplicationSourceToStatementTestCase> changeReplicationSourceToStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
