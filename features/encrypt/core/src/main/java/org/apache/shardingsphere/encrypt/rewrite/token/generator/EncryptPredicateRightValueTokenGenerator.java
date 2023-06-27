@@ -78,8 +78,7 @@ public final class EncryptPredicateRightValueTokenGenerator
         Collection<SQLToken> result = new LinkedHashSet<>();
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (EncryptCondition each : encryptConditions) {
-            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(each.getTableName());
-            encryptTable.ifPresent(table -> result.add(generateSQLToken(schemaName, table, each)));
+            encryptRule.findEncryptTable(each.getTableName()).ifPresent(optional -> result.add(generateSQLToken(schemaName, optional, each)));
         }
         return result;
     }
