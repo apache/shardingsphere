@@ -50,54 +50,54 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
             return Optional.empty();
         }
         Optional<String> dataSourceName = shadowRuleNodePath.getNamedItem(ShadowNodePath.DATA_SOURCES).getNameByActiveVersion(event.getKey());
-        if (dataSourceName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createShadowConfigEvent(databaseName, dataSourceName.get(), event);
+        if (dataSourceName.isPresent()) {
+            return Optional.of(createShadowConfigEvent(databaseName, dataSourceName.get(), event));
         }
         Optional<String> tableName = shadowRuleNodePath.getNamedItem(ShadowNodePath.TABLES).getNameByActiveVersion(event.getKey());
-        if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createShadowTableConfigEvent(databaseName, tableName.get(), event);
+        if (tableName.isPresent()) {
+            return Optional.of(createShadowTableConfigEvent(databaseName, tableName.get(), event));
         }
         Optional<String> algorithmName = shadowRuleNodePath.getNamedItem(ShadowNodePath.ALGORITHMS).getNameByActiveVersion(event.getKey());
-        if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createShadowAlgorithmEvent(databaseName, algorithmName.get(), event);
+        if (algorithmName.isPresent()) {
+            return Optional.of(createShadowAlgorithmEvent(databaseName, algorithmName.get(), event));
         }
-        if (shadowRuleNodePath.getUniqueItem(ShadowNodePath.DEFAULT_ALGORITHM).isActiveVersionPath(event.getKey()) && !Strings.isNullOrEmpty(event.getValue())) {
-            return createDefaultShadowAlgorithmNameEvent(databaseName, event);
+        if (shadowRuleNodePath.getUniqueItem(ShadowNodePath.DEFAULT_ALGORITHM).isActiveVersionPath(event.getKey())) {
+            return Optional.of(createDefaultShadowAlgorithmNameEvent(databaseName, event));
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createShadowConfigEvent(final String databaseName, final String dataSourceName, final DataChangedEvent event) {
+    private GovernanceEvent createShadowConfigEvent(final String databaseName, final String dataSourceName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddShadowDataSourceEvent(databaseName, dataSourceName, event.getKey(), event.getValue()));
+            return new AddShadowDataSourceEvent(databaseName, dataSourceName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterShadowDataSourceEvent(databaseName, dataSourceName, event.getKey(), event.getValue()));
+            return new AlterShadowDataSourceEvent(databaseName, dataSourceName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteShadowDataSourceEvent(databaseName, dataSourceName));
+        return new DeleteShadowDataSourceEvent(databaseName, dataSourceName);
     }
     
-    private Optional<GovernanceEvent> createShadowTableConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
+    private GovernanceEvent createShadowTableConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddShadowTableEvent(databaseName, tableName, event.getKey(), event.getValue()));
+            return new AddShadowTableEvent(databaseName, tableName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterShadowTableEvent(databaseName, tableName, event.getKey(), event.getValue()));
+            return new AlterShadowTableEvent(databaseName, tableName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteShadowTableEvent(databaseName, tableName));
+        return new DeleteShadowTableEvent(databaseName, tableName);
     }
     
-    private Optional<GovernanceEvent> createShadowAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
+    private GovernanceEvent createShadowAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterShadowAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue()));
+            return new AlterShadowAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteShadowAlgorithmEvent(databaseName, algorithmName));
+        return new DeleteShadowAlgorithmEvent(databaseName, algorithmName);
     }
     
-    private Optional<GovernanceEvent> createDefaultShadowAlgorithmNameEvent(final String databaseName, final DataChangedEvent event) {
+    private GovernanceEvent createDefaultShadowAlgorithmNameEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterDefaultShadowAlgorithmNameEvent(databaseName, event.getKey(), event.getValue()));
+            return new AlterDefaultShadowAlgorithmNameEvent(databaseName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteDefaultShadowAlgorithmNameEvent(databaseName));
+        return new DeleteDefaultShadowAlgorithmNameEvent(databaseName);
     }
 }
