@@ -109,16 +109,14 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
         return new ReadwriteSplittingRuleConfiguration(dataSourceConfigs, Collections.emptyMap());
     }
     
-    private ReadwriteSplittingRuleConfiguration getConfig(final ReadwriteSplittingRuleConfiguration config, final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
-        Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources;
-        if (null == config.getDataSources()) {
-            dataSources = new LinkedList<>();
+    private ReadwriteSplittingRuleConfiguration getConfig(final ReadwriteSplittingRuleConfiguration result, final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
+        if (null == result.getDataSources()) {
+            Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
             dataSources.add(dataSourceRuleConfig);
-        } else {
-            dataSources = new LinkedList<>(config.getDataSources());
-            dataSources.add(dataSourceRuleConfig);
+            return new ReadwriteSplittingRuleConfiguration(dataSources, result.getLoadBalancers());
         }
-        return new ReadwriteSplittingRuleConfiguration(dataSources, config.getLoadBalancers());
+        result.getDataSources().add(dataSourceRuleConfig);
+        return result;
     }
     
     private ReadwriteSplittingDataSourceRuleConfiguration swapDataSource(final String name, final String yamlContext) {

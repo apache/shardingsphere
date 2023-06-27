@@ -87,16 +87,14 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChange
         return new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), loadBalancers);
     }
     
-    private ReadwriteSplittingRuleConfiguration getConfig(final ReadwriteSplittingRuleConfiguration config, final String loadBalanceName, final AlgorithmConfiguration needToAltered) {
-        Map<String, AlgorithmConfiguration> loadBalancers;
-        if (null == config.getLoadBalancers()) {
-            loadBalancers = new LinkedHashMap<>();
+    private ReadwriteSplittingRuleConfiguration getConfig(final ReadwriteSplittingRuleConfiguration result, final String loadBalanceName, final AlgorithmConfiguration needToAltered) {
+        if (null == result.getLoadBalancers()) {
+            Map<String, AlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
             loadBalancers.put(loadBalanceName, needToAltered);
-        } else {
-            loadBalancers = new LinkedHashMap<>(config.getLoadBalancers());
-            loadBalancers.put(loadBalanceName, needToAltered);
+            return new ReadwriteSplittingRuleConfiguration(result.getDataSources(), loadBalancers);
         }
-        return new ReadwriteSplittingRuleConfiguration(config.getDataSources(), loadBalancers);
+        result.getLoadBalancers().put(loadBalanceName, needToAltered);
+        return result;
     }
     
     private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
