@@ -203,6 +203,7 @@ jobs:
     timeout-minutes: 10
     permissions:
       issues: write
+      pull-requests: write
     steps:
       - uses: actions/stale@v8
         with:
@@ -211,3 +212,6 @@ jobs:
           days-before-pr-stale: 30
           days-before-close: -1
           stale-issue-label: "stale"
+          stale-pr-label: "stale"
+          operations-per-run: 1000
+          remove-stale-when-updated: true
