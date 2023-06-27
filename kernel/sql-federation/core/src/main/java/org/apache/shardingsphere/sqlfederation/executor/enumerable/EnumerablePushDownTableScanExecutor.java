@@ -98,13 +98,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -119,7 +118,7 @@ public final class EnumerablePushDownTableScanExecutor {
     
     private static final Pattern COLUMN_INFORMATION_PATTERN = Pattern.compile("\\{.*}");
     
-    private static final Set<String> SYSTEM_CATALOG_TABLES = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    private static final Collection<String> SYSTEM_CATALOG_TABLES = new HashSet<>(3, 1F);
     
     private static final String DAT_COMPATIBILITY = "PG";
     
@@ -190,7 +189,7 @@ public final class EnumerablePushDownTableScanExecutor {
     private Enumerable<Object> executeByScalarShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table, final DatabaseType databaseType,
                                                                  final int[] projects) {
         // TODO move this logic to ShardingSphere statistics
-        if (SYSTEM_CATALOG_TABLES.contains(table.getName()) && databaseType instanceof OpenGaussDatabaseType) {
+        if (databaseType instanceof OpenGaussDatabaseType && SYSTEM_CATALOG_TABLES.contains(table.getName().toLowerCase())) {
             return createMemoryScalarEnumerator(createSystemCatalogTableData(table, projects));
         }
         Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
@@ -349,7 +348,7 @@ public final class EnumerablePushDownTableScanExecutor {
     private Enumerable<Object[]> executeByShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table, final DatabaseType databaseType,
                                                              final int[] projects) {
         // TODO move this logic to ShardingSphere statistics
-        if (SYSTEM_CATALOG_TABLES.contains(table.getName()) && databaseType instanceof OpenGaussDatabaseType) {
+        if (databaseType instanceof OpenGaussDatabaseType && SYSTEM_CATALOG_TABLES.contains(table.getName().toLowerCase())) {
             return createMemoryEnumerator(createSystemCatalogTableData(table, projects));
         }
         Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
