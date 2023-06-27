@@ -41,8 +41,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -53,8 +51,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @E2ETestCaseSettings(SQLCommandType.RAL)
 class RALE2EIT {
     
-    private static final Map<String, Boolean> INITIALIZED = new ConcurrentHashMap<>();
-    
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
@@ -64,10 +60,6 @@ class RALE2EIT {
             return;
         }
         try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            if (!INITIALIZED.containsKey(testParam.getKey())) {
-                INITIALIZED.put(testParam.getKey(), true);
-                Awaitility.await().atMost(16L, TimeUnit.SECONDS).pollInterval(15L, TimeUnit.SECONDS).until(() -> true);
-            }
             init(containerComposer);
             assertExecute(containerComposer);
             tearDown(containerComposer);
