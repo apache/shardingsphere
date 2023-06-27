@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -63,7 +63,7 @@ public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
         if (rule.isPresent()) {
             config = (MaskRuleConfiguration) rule.get().getConfiguration();
             if (null == config.getMaskAlgorithms()) {
-                Map<String, AlgorithmConfiguration> maskAlgorithms = new HashMap<>();
+                Map<String, AlgorithmConfiguration> maskAlgorithms = new LinkedHashMap<>();
                 maskAlgorithms.put(event.getAlgorithmName(), swapToAlgorithmConfig(
                         instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
                 config = new MaskRuleConfiguration(config.getTables(), maskAlgorithms);
@@ -73,7 +73,7 @@ public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
             }
         } else {
             Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
-            Map<String, AlgorithmConfiguration> maskAlgorithms = new HashMap<>();
+            Map<String, AlgorithmConfiguration> maskAlgorithms = new LinkedHashMap<>();
             maskAlgorithms.put(event.getAlgorithmName(), swapToAlgorithmConfig(
                     instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
             config = new MaskRuleConfiguration(tables, maskAlgorithms);

@@ -35,7 +35,7 @@ import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigu
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -78,7 +78,7 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
         } else {
             Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
             tables.add(needToAddedConfig);
-            Map<String, AlgorithmConfiguration> maskAlgorithms = new HashMap<>();
+            Map<String, AlgorithmConfiguration> maskAlgorithms = new LinkedHashMap<>();
             config = new MaskRuleConfiguration(tables, maskAlgorithms);
         }
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
