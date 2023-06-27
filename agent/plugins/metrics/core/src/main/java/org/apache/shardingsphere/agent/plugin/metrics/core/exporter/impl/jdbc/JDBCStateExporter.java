@@ -34,6 +34,7 @@ import java.sql.DriverManager;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -53,7 +54,7 @@ public final class JDBCStateExporter implements MetricsExporter {
         result.cleanMetrics();
         DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(shardingSphereDriverOptional.get(), "dataSourceCache");
         Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) entry.getValue();
             ContextManager contextManager = AgentReflectionUtils.getFieldValue(shardingSphereDataSource, "contextManager");
             result.addMetric(Collections.emptyList(), contextManager.getInstanceContext().getInstance().getState().getCurrentState().ordinal());

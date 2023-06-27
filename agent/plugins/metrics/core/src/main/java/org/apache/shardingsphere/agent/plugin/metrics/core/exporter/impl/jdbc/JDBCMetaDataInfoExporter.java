@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -56,7 +57,7 @@ public final class JDBCMetaDataInfoExporter implements MetricsExporter {
         result.cleanMetrics();
         DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(shardingSphereDriverOptional.get(), "dataSourceCache");
         Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) entry.getValue();
             String databaseName = AgentReflectionUtils.getFieldValue(shardingSphereDataSource, "databaseName");
             ContextManager contextManager = AgentReflectionUtils.getFieldValue(shardingSphereDataSource, "contextManager");
