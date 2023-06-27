@@ -180,7 +180,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private ExecutionPlanCacheKey buildCacheKey(final SQLFederationExecutorContext federationContext, final SelectStatementContext selectStatementContext) {
         ShardingSphereSchema schema = federationContext.getMetaData().getDatabase(databaseName).getSchema(schemaName);
-        ExecutionPlanCacheKey result = new ExecutionPlanCacheKey(federationContext.getQueryContext().getSql(), selectStatementContext.getSqlStatement());
+        ExecutionPlanCacheKey result = new ExecutionPlanCacheKey(federationContext.getQueryContext().getSql(), selectStatementContext.getSqlStatement(), databaseName, schemaName);
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
             ShardingSphereTable table = schema.getTable(each);
             ShardingSpherePreconditions.checkState(null != table, () -> new NoSuchTableException(each));

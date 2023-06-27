@@ -38,10 +38,10 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
-import org.apache.shardingsphere.sqlfederation.compiler.statement.SQLStatementCompiler;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.util.SQLFederationPlannerUtils;
+import org.apache.shardingsphere.sqlfederation.compiler.statement.SQLStatementCompiler;
 import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederationRuleConfigurationBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -253,7 +253,8 @@ class SQLFederationCompilerEngineIT {
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertCompile(final TestCase testcase) {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType())).parse(testcase.getSql(), false);
-        String actual = sqlFederationCompilerEngine.compile(new ExecutionPlanCacheKey(testcase.getSql(), sqlStatement), false).getPhysicalPlan().explain().replaceAll("[\r\n]", "");
+        String actual = sqlFederationCompilerEngine.compile(new ExecutionPlanCacheKey(testcase.getSql(), sqlStatement, DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME), false).getPhysicalPlan()
+                .explain().replaceAll("[\r\n]", "");
         assertThat(actual, is(testcase.getAssertion().getExpectedResult()));
     }
     

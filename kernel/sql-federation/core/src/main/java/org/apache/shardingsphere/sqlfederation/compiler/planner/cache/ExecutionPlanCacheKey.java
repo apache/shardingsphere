@@ -30,13 +30,17 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(of = {"sql", "tableMetaDataVersions"})
+@EqualsAndHashCode(of = {"sql", "databaseName", "schemaName", "tableMetaDataVersions"})
 public final class ExecutionPlanCacheKey {
     
     // TODO replace sql with parameterized sql
     private final String sql;
     
     private final SQLStatement sqlStatement;
+    
+    private final String databaseName;
+    
+    private final String schemaName;
     
     private final Map<String, Integer> tableMetaDataVersions = new LinkedHashMap<>();
 }
