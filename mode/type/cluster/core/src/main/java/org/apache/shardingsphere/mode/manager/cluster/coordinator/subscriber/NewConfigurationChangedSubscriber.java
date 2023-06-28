@@ -45,6 +45,9 @@ public final class NewConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DatabaseRuleConfigurationChangedEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
     }
     

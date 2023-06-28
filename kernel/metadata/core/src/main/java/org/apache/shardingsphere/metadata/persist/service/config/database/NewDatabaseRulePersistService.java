@@ -104,7 +104,9 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
             if (dataNodes.isEmpty()) {
                 continue;
             }
-            deleteDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), dataNodes);
+            List<YamlDataNode> result = new LinkedList<>(dataNodes);
+            Collections.reverse(result);
+            deleteDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), result);
         }
     }
     
