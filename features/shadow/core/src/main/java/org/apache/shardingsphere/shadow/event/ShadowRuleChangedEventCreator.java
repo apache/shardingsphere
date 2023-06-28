@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.shadow.event;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 import org.apache.shardingsphere.shadow.event.algorithm.AlterDefaultShadowAlgorithmNameEvent;
 import org.apache.shardingsphere.shadow.event.algorithm.AlterShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.event.algorithm.DeleteDefaultShadowAlgorithmNameEvent;
@@ -33,41 +31,39 @@ import org.apache.shardingsphere.shadow.event.datasource.DeleteShadowDataSourceE
 import org.apache.shardingsphere.shadow.event.table.AddShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.DeleteShadowTableEvent;
-import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowNodePath;
-
-import java.util.Optional;
+import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 
 /**
- * Shadow rule configuration event builder.
+ * Shadow rule changed event creator.
  */
-public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
-    
-    private final RuleNodePath shadowRuleNodePath = ShadowNodePath.getInstance();
+public final class ShadowRuleChangedEventCreator implements RuleChangedEventCreator {
     
     @Override
-    public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!shadowRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
+        switch (itemType) {
+            case ShadowRuleNodePathProvider.DATA_SOURCES:
+                return createShadowDataSourceEvent(databaseName, itemName, event);
+            case ShadowRuleNodePathProvider.TABLES:
+                return createShadowTableEvent(databaseName, itemName, event);
+            case ShadowRuleNodePathProvider.ALGORITHMS:
+                return createShadowAlgorithmEvent(databaseName, itemName, event);
+            default:
+                throw new UnsupportedOperationException(itemType);
         }
-        Optional<String> dataSourceName = shadowRuleNodePath.getNamedItem(ShadowNodePath.DATA_SOURCES).getNameByActiveVersion(event.getKey());
-        if (dataSourceName.isPresent()) {
-            return Optional.of(createShadowConfigEvent(databaseName, dataSourceName.get(), event));
-        }
-        Optional<String> tableName = shadowRuleNodePath.getNamedItem(ShadowNodePath.TABLES).getNameByActiveVersion(event.getKey());
-        if (tableName.isPresent()) {
-            return Optional.of(createShadowTableConfigEvent(databaseName, tableName.get(), event));
-        }
-        Optional<String> algorithmName = shadowRuleNodePath.getNamedItem(ShadowNodePath.ALGORITHMS).getNameByActiveVersion(event.getKey());
-        if (algorithmName.isPresent()) {
-            return Optional.of(createShadowAlgorithmEvent(databaseName, algorithmName.get(), event));
-        }
-        if (shadowRuleNodePath.getUniqueItem(ShadowNodePath.DEFAULT_ALGORITHM).isActiveVersionPath(event.getKey())) {
-            return Optional.of(createDefaultShadowAlgorithmNameEvent(databaseName, event));
-        }
-        return Optional.empty();
     }
     
-    private GovernanceEvent createShadowConfigEvent(final String databaseName, final String dataSourceName, final DataChangedEvent event) {
+    @SuppressWarnings("SwitchStatementWithTooFewBranches")
+    @Override
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
+        switch (itemType) {
+            case ShadowRuleNodePathProvider.DEFAULT_ALGORITHM:
+                return createDefaultShadowAlgorithmNameEvent(databaseName, event);
+            default:
+                throw new UnsupportedOperationException(itemType);
+        }
+    }
+    
+    private GovernanceEvent createShadowDataSourceEvent(final String databaseName, final String dataSourceName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddShadowDataSourceEvent(databaseName, dataSourceName, event.getKey(), event.getValue());
         }
@@ -77,7 +73,7 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
         return new DeleteShadowDataSourceEvent(databaseName, dataSourceName);
     }
     
-    private GovernanceEvent createShadowTableConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
+    private GovernanceEvent createShadowTableEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddShadowTableEvent(databaseName, tableName, event.getKey(), event.getValue());
         }
@@ -99,5 +95,10 @@ public final class ShadowRuleConfigurationEventBuilder implements RuleConfigurat
             return new AlterDefaultShadowAlgorithmNameEvent(databaseName, event.getKey(), event.getValue());
         }
         return new DeleteDefaultShadowAlgorithmNameEvent(databaseName);
+    }
+    
+    @Override
+    public String getType() {
+        return "shadow";
     }
 }

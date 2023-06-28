@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRul
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
+import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederationRuleConfigurationBuilder;
 import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration;
 
 import java.util.Collection;
@@ -59,7 +60,7 @@ public final class NewYamlSQLFederationRuleConfigurationSwapper implements NewYa
             }
             return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLFederationRuleConfiguration.class));
         }
-        return new SQLFederationRuleConfiguration(false, new CacheOption(0, 0));
+        return new DefaultSQLFederationRuleConfigurationBuilder().build();
     }
     
     private SQLFederationRuleConfiguration swapToObject(final YamlSQLFederationRuleConfiguration yamlConfig) {

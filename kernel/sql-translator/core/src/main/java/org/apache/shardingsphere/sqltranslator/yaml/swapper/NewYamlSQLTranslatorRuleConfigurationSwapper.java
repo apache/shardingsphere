@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.constant.SQLTranslatorOrder;
+import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
 
 import java.util.Collection;
@@ -56,7 +57,7 @@ public final class NewYamlSQLTranslatorRuleConfigurationSwapper implements NewYa
             }
             return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLTranslatorRuleConfiguration.class));
         }
-        return new SQLTranslatorRuleConfiguration();
+        return new DefaultSQLTranslatorRuleConfigurationBuilder().build();
     }
     
     private SQLTranslatorRuleConfiguration swapToObject(final YamlSQLTranslatorRuleConfiguration yamlConfig) {

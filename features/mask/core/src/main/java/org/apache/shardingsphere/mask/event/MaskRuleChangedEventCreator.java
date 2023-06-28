@@ -17,42 +17,35 @@
 
 package org.apache.shardingsphere.mask.event;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.table.AddMaskTableEvent;
 import org.apache.shardingsphere.mask.event.table.AlterMaskTableEvent;
 import org.apache.shardingsphere.mask.event.table.DeleteMaskTableEvent;
-import org.apache.shardingsphere.mask.metadata.nodepath.MaskNodePath;
+import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
-
-import java.util.Optional;
+import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 
 /**
- * Mask rule configuration event builder.
+ * Mask rule changed event creator.
  */
-public final class MaskRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
-    
-    private final RuleNodePath maskRuleNodePath = MaskNodePath.getInstance();
+public final class MaskRuleChangedEventCreator implements RuleChangedEventCreator {
     
     @Override
-    public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!maskRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
+        switch (itemType) {
+            case MaskRuleNodePathProvider.TABLES:
+                return createTableEvent(databaseName, itemName, event);
+            case MaskRuleNodePathProvider.ALGORITHMS:
+                return createAlgorithmEvent(databaseName, itemName, event);
+            default:
+                throw new UnsupportedOperationException(itemType);
         }
-        Optional<String> tableName = maskRuleNodePath.getNamedItem(MaskNodePath.TABLES).getNameByActiveVersion(event.getKey());
-        if (tableName.isPresent()) {
-            return Optional.of(createMaskConfigEvent(databaseName, tableName.get(), event));
-        }
-        Optional<String> algorithmName = maskRuleNodePath.getNamedItem(MaskNodePath.ALGORITHMS).getNameByActiveVersion(event.getKey());
-        return algorithmName.map(optional -> createMaskAlgorithmEvent(databaseName, optional, event));
     }
     
-    private GovernanceEvent createMaskConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
+    private GovernanceEvent createTableEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddMaskTableEvent(databaseName, event.getKey(), event.getValue());
         }
@@ -62,10 +55,15 @@ public final class MaskRuleConfigurationEventBuilder implements RuleConfiguratio
         return new DeleteMaskTableEvent(databaseName, tableName);
     }
     
-    private GovernanceEvent createMaskAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
+    private GovernanceEvent createAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterMaskAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue());
         }
         return new DeleteMaskAlgorithmEvent(databaseName, algorithmName);
+    }
+    
+    @Override
+    public String getType() {
+        return "mask";
     }
 }

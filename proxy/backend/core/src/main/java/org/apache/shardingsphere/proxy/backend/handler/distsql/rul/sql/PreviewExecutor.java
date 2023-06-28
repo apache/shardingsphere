@@ -102,7 +102,7 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(connectionSession.getDatabaseName()));
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(database.getProtocolType(), databaseName));
-        SQLFederationEngine sqlFederationEngine = new SQLFederationEngine(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
+        SQLFederationEngine sqlFederationEngine = new SQLFederationEngine(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(),
                 new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext()));
         Collection<ExecutionUnit> executionUnits = isUseFederation(queryContext, metaDataContexts, connectionSession, sqlFederationEngine)
                 ? getFederationExecutionUnits(queryContext, metaDataContexts, connectionSession, sqlFederationEngine)

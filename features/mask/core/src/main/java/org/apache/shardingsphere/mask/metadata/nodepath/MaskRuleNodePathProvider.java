@@ -15,33 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.metadata.nodepath;
+package org.apache.shardingsphere.mask.metadata.nodepath;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Encrypt node path.
+ * Mask rule node path provider.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptNodePath {
+public final class MaskRuleNodePathProvider implements RuleNodePathProvider {
     
     public static final String TABLES = "tables";
     
-    public static final String ENCRYPTORS = "encryptors";
+    public static final String ALGORITHMS = "algorithms";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath("mask", Arrays.asList(TABLES, ALGORITHMS), Collections.emptyList());
     
-    /**
-     * Get instance of rule node path.
-     *
-     * @return got instance
-     */
-    public static RuleNodePath getInstance() {
+    @Override
+    public RuleNodePath getRuleNodePath() {
         return INSTANCE;
     }
 }

@@ -67,7 +67,7 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlGl
             }
             return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAuthorityRuleConfiguration.class));
         }
-        return new AuthorityRuleConfiguration(Collections.emptyList(), new DefaultAuthorityRuleConfigurationBuilder().build().getAuthorityProvider(), "");
+        return new DefaultAuthorityRuleConfigurationBuilder().build();
     }
     
     private AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {

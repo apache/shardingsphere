@@ -17,42 +17,35 @@
 
 package org.apache.shardingsphere.encrypt.event;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.encrypt.event.encryptor.AlterEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.encryptor.DeleteEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.table.AddEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.table.AlterEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.table.DeleteEncryptTableEvent;
-import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptNodePath;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
-
-import java.util.Optional;
+import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 
 /**
- * Encrypt rule configuration event builder.
+ * Encrypt rule changed event creator.
  */
-public final class EncryptRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
-    
-    private final RuleNodePath encryptRuleNodePath = EncryptNodePath.getInstance();
+public final class EncryptRuleChangedEventCreator implements RuleChangedEventCreator {
     
     @Override
-    public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!encryptRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
+        switch (itemType) {
+            case EncryptRuleNodePathProvider.TABLES:
+                return createTableEvent(databaseName, itemName, event);
+            case EncryptRuleNodePathProvider.ENCRYPTORS:
+                return createEncryptorEvent(databaseName, itemName, event);
+            default:
+                throw new UnsupportedOperationException(itemType);
         }
-        Optional<String> tableName = encryptRuleNodePath.getNamedItem(EncryptNodePath.TABLES).getNameByActiveVersion(event.getKey());
-        if (tableName.isPresent()) {
-            return Optional.of(createEncryptConfigEvent(databaseName, tableName.get(), event));
-        }
-        Optional<String> encryptorName = encryptRuleNodePath.getNamedItem(EncryptNodePath.ENCRYPTORS).getNameByActiveVersion(event.getKey());
-        return encryptorName.map(optional -> createEncryptorEvent(databaseName, optional, event));
     }
     
-    private GovernanceEvent createEncryptConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
+    private GovernanceEvent createTableEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddEncryptTableEvent(databaseName, event.getKey(), event.getValue());
         }
@@ -67,5 +60,10 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
             return new AlterEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue());
         }
         return new DeleteEncryptorEvent(databaseName, encryptorName);
+    }
+    
+    @Override
+    public String getType() {
+        return "encrypt";
     }
 }

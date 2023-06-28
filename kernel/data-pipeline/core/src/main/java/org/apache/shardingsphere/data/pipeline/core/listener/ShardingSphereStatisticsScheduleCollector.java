@@ -71,31 +71,31 @@ public final class ShardingSphereStatisticsScheduleCollector {
         
         @Override
         public void run() {
-            ShardingSphereStatistics shardingSphereData = contextManager.getMetaDataContexts().getShardingSphereData();
+            ShardingSphereStatistics statistics = contextManager.getMetaDataContexts().getStatistics();
             ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
-            ShardingSphereStatistics changedShardingSphereData = new ShardingSphereStatistics();
-            shardingSphereData.getDatabaseData().forEach((key, value) -> {
+            ShardingSphereStatistics changedStatistics = new ShardingSphereStatistics();
+            statistics.getDatabaseData().forEach((key, value) -> {
                 if (metaData.containsDatabase(key)) {
-                    collectForDatabase(key, value, metaData.getDatabases(), changedShardingSphereData);
+                    collectForDatabase(key, value, metaData.getDatabases(), changedStatistics);
                 }
             });
-            compareUpdateAndSendEvent(shardingSphereData, changedShardingSphereData, metaData.getDatabases());
+            compareUpdateAndSendEvent(statistics, changedStatistics, metaData.getDatabases());
         }
         
         private void collectForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData,
-                                        final Map<String, ShardingSphereDatabase> databases, final ShardingSphereStatistics changedShardingSphereData) {
+                                        final Map<String, ShardingSphereDatabase> databases, final ShardingSphereStatistics statistics) {
             databaseData.getSchemaData().forEach((key, value) -> {
                 if (databases.get(databaseName.toLowerCase()).containsSchema(key)) {
-                    collectForSchema(databaseName, key, value, databases, changedShardingSphereData);
+                    collectForSchema(databaseName, key, value, databases, statistics);
                 }
             });
         }
         
         private void collectForSchema(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData,
-                                      final Map<String, ShardingSphereDatabase> databases, final ShardingSphereStatistics changedShardingSphereData) {
+                                      final Map<String, ShardingSphereDatabase> databases, final ShardingSphereStatistics statistics) {
             schemaData.getTableData().forEach((key, value) -> {
                 if (databases.get(databaseName.toLowerCase()).getSchema(schemaName).containsTable(key)) {
-                    collectForTable(databaseName, schemaName, databases.get(databaseName).getSchema(schemaName).getTable(key), databases, changedShardingSphereData);
+                    collectForTable(databaseName, schemaName, databases.get(databaseName).getSchema(schemaName).getTable(key), databases, statistics);
                 }
             });
         }
@@ -116,30 +116,30 @@ public final class ShardingSphereStatisticsScheduleCollector {
                     .getSchemaData().computeIfAbsent(schemaName, key -> new ShardingSphereSchemaData()).getTableData().put(table.getName().toLowerCase(), optional));
         }
         
-        private void compareUpdateAndSendEvent(final ShardingSphereStatistics shardingSphereData, final ShardingSphereStatistics changedShardingSphereData,
+        private void compareUpdateAndSendEvent(final ShardingSphereStatistics statistics, final ShardingSphereStatistics changedStatistics,
                                                final Map<String, ShardingSphereDatabase> databases) {
-            changedShardingSphereData.getDatabaseData().forEach((key, value) -> compareUpdateAndSendEventForDatabase(key, shardingSphereData.getDatabaseData().get(key), value, shardingSphereData,
+            changedStatistics.getDatabaseData().forEach((key, value) -> compareUpdateAndSendEventForDatabase(key, statistics.getDatabaseData().get(key), value, statistics,
                     databases.get(key.toLowerCase())));
         }
         
         private void compareUpdateAndSendEventForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData, final ShardingSphereDatabaseData changedDatabaseData,
-                                                          final ShardingSphereStatistics shardingSphereData, final ShardingSphereDatabase database) {
-            changedDatabaseData.getSchemaData().forEach((key, value) -> compareUpdateAndSendEventForSchema(databaseName, key, databaseData.getSchemaData().get(key), value, shardingSphereData,
+                                                          final ShardingSphereStatistics statistics, final ShardingSphereDatabase database) {
+            changedDatabaseData.getSchemaData().forEach((key, value) -> compareUpdateAndSendEventForSchema(databaseName, key, databaseData.getSchemaData().get(key), value, statistics,
                     database.getSchema(key)));
         }
         
         private void compareUpdateAndSendEventForSchema(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData,
-                                                        final ShardingSphereSchemaData changedSchemaData, final ShardingSphereStatistics shardingSphereData, final ShardingSphereSchema schema) {
-            changedSchemaData.getTableData().forEach((key, value) -> compareUpdateAndSendEventForTable(databaseName, schemaName, schemaData.getTableData().get(key), value, shardingSphereData,
+                                                        final ShardingSphereSchemaData changedSchemaData, final ShardingSphereStatistics statistics, final ShardingSphereSchema schema) {
+            changedSchemaData.getTableData().forEach((key, value) -> compareUpdateAndSendEventForTable(databaseName, schemaName, schemaData.getTableData().get(key), value, statistics,
                     schema.getTable(key)));
         }
         
         private void compareUpdateAndSendEventForTable(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,
-                                                       final ShardingSphereTableData changedTableData, final ShardingSphereStatistics shardingSphereData, final ShardingSphereTable table) {
+                                                       final ShardingSphereTableData changedTableData, final ShardingSphereStatistics statistics, final ShardingSphereTable table) {
             if (tableData.equals(changedTableData)) {
                 return;
             }
-            shardingSphereData.getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().put(changedTableData.getName().toLowerCase(), changedTableData);
+            statistics.getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().put(changedTableData.getName().toLowerCase(), changedTableData);
             ShardingSphereSchemaDataAlteredEvent event = getShardingSphereSchemaDataAlteredEvent(databaseName, schemaName, tableData, changedTableData, table);
             contextManager.getInstanceContext().getEventBusContext().post(event);
         }
