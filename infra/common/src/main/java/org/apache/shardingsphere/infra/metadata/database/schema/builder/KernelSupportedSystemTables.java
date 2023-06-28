@@ -41,7 +41,7 @@ public enum KernelSupportedSystemTables {
     
     OPEN_GAUSS_SHARDING_SPHERE("openGauss", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information")));
     
-    private static final Map<String, KernelSupportedSystemTables> SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP = new HashMap<>(values().length, 1F);
+    private static final Map<String, KernelSupportedSystemTables> SCHEMA_NAME_TO_TABLES = new HashMap<>(values().length, 1F);
     
     private final String databaseType;
     
@@ -51,16 +51,16 @@ public enum KernelSupportedSystemTables {
     
     static {
         for (KernelSupportedSystemTables each : values()) {
-            SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP.put(each.getDatabaseType() + "." + each.getSchema(), each);
+            SCHEMA_NAME_TO_TABLES.put(each.getDatabaseType() + "." + each.getSchema(), each);
         }
     }
     
     /**
-     * Judge whether current table is system table or not.
+     * Judge whether current table is kernel supported system table or not.
      *
      * @param schema schema
      * @param tableName table name
-     * @return whether current table is system table or not
+     * @return whether current table is kernel supported system table or not
      */
     public static boolean isSupportedSystemTable(final String schema, final String tableName) {
         for (KernelSupportedSystemTables each : values()) {
