@@ -58,9 +58,8 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     
     @Override
     public void dropDatabase(final String databaseName) {
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
         // TODO Avoid drop database to generate child node events
-        database.getRuleMetaData().getConfigurations().forEach(each -> removeRuleConfiguration(databaseName, each));
+        contextManager.getMetaDataContexts().getMetaData().dropDatabase(databaseName);
         contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().dropDatabase(databaseName);
     }
     
