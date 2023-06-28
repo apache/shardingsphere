@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNo
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -586,6 +587,7 @@ class ShardingRuleTest {
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singletonList(new WhereSegment(0, 0, condition)));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftDatabaseJoin, rightDatabaseJoin), schema)).thenReturn(createColumnTableNameMap());
         when(sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftTableJoin, rightTableJoin), schema)).thenReturn(createColumnTableNameMap());
