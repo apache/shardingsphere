@@ -69,7 +69,7 @@ public final class ShardingRuleChangedEventCreator implements RuleChangedEventCr
             case ShardingRuleNodePathProvider.AUTO_TABLES:
                 return createShardingAutoTableEvent(databaseName, itemName, event);
             case ShardingRuleNodePathProvider.BINDING_TABLES:
-                return createShardingTableReferenceConfigEvent(databaseName, itemName, event);
+                return createShardingTableReferenceEvent(databaseName, itemName, event);
             case ShardingRuleNodePathProvider.ALGORITHMS:
                 return createShardingAlgorithmEvent(databaseName, itemName, event);
             case ShardingRuleNodePathProvider.KEY_GENERATORS:
@@ -121,7 +121,7 @@ public final class ShardingRuleChangedEventCreator implements RuleChangedEventCr
         return new DeleteShardingAutoTableConfigurationEvent(databaseName, tableName);
     }
     
-    private GovernanceEvent createShardingTableReferenceConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
+    private GovernanceEvent createShardingTableReferenceEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddShardingTableReferenceConfigurationEvent(databaseName, event.getKey(), event.getValue());
         }
