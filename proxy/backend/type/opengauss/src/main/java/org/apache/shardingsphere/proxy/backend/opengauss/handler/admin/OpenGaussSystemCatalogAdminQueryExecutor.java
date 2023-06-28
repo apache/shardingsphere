@@ -88,7 +88,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
             SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, new QueryContext(sqlStatementContext, sql, parameters), metaDataContexts.getMetaData());
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
             ResultSet resultSet = sqlFederationEngine.executeQuery(prepareEngine,
-                    createOpenGaussSystemCatalogAdminQueryCallback(database.getProtocolType(), database.getResourceMetaData().getStorageTypes(), sqlStatementContext.getSqlStatement()), context);
+                    createOpenGaussSystemCatalogAdminQueryCallback(database.getProtocolType(), database.getResourceMetaData().getStorageUnitTypes(), sqlStatementContext.getSqlStatement()), context);
             queryResultMetaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
             mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCMemoryQueryResult(resultSet, connectionSession.getProtocolType())));
         }
@@ -100,7 +100,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionSession.getDatabaseConnectionManager(),
                 connectionSession.getStatementManager(), new StatementOption(false),
                 metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageTypes());
+                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitTypes());
     }
     
     private JDBCExecutorCallback<ExecuteResult> createOpenGaussSystemCatalogAdminQueryCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes,
