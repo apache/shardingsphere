@@ -136,7 +136,7 @@ public abstract class AbstractMigrationE2EIT {
     }
     
     protected void commitMigrationByJobId(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException {
-        containerComposer.proxyExecuteWithLog(String.format("COMMIT MIGRATION '%s'", jobId), 2);
+        containerComposer.proxyExecuteWithLog(String.format("COMMIT MIGRATION '%s'", jobId), 1);
     }
     
     protected List<String> listJobId(final PipelineContainerComposer containerComposer) {

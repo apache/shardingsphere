@@ -547,10 +547,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * Generate ShardingSphere data source from proxy.
      *
      * @return ShardingSphere data source
-     * @throws SQLException SQL exception
      */
     // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
-    public DataSource generateShardingSphereDataSourceFromProxy() throws SQLException {
+    public DataSource generateShardingSphereDataSourceFromProxy() {
         Awaitility.await().atMost(5L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> null != getYamlRootConfig().getRules());
         YamlRootConfiguration rootConfig = getYamlRootConfig();
         ShardingSpherePreconditions.checkNotNull(rootConfig.getDataSources(), () -> new IllegalStateException("dataSources is null"));
