@@ -15,24 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data.builder;
+package org.apache.shardingsphere.infra.metadata.statistics.collector;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.Optional;
+
 /**
- * ShardingSphere data builder.
+ * ShardingSphere statistics collector.
  */
 @SingletonSPI
-public interface ShardingSphereDataBuilder extends TypedSPI {
+public interface ShardingSphereStatisticsCollector extends TypedSPI {
     
     /**
-     * Build ShardingSphere data.
+     * Collect.
      *
-     * @param metaData meta data
-     * @return ShardingSphere data
+     * @param databaseName database name
+     * @param table table
+     * @param shardingSphereDatabases ShardingSphere databases
+     * @return ShardingSphere table data
+     * @throws SQLException sql exception
      */
-    ShardingSphereData build(ShardingSphereMetaData metaData);
+    Optional<ShardingSphereTableData> collect(String databaseName, ShardingSphereTable table, Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException;
 }
