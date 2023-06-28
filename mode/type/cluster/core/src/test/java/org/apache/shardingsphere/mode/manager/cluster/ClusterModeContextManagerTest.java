@@ -288,7 +288,7 @@ class ClusterModeContextManagerTest {
         Map<String, ShardingSphereDatabase> databases = new HashMap<>();
         ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService,
-                new ShardingSphereMetaData(databases, globalRuleMetaData, new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(databases, mock(ShardingSphereResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties())));
         ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
         WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
         ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
@@ -406,7 +406,7 @@ class ClusterModeContextManagerTest {
     private ShardingSphereMetaData createShardingSphereMetaData() {
         return new ShardingSphereMetaData(Collections.singletonMap("db", new ShardingSphereDatabase("db", new MySQLDatabaseType(),
                 new ShardingSphereResourceMetaData("db", Collections.emptyMap()), new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.emptyMap())),
-                new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+                mock(ShardingSphereResourceMetaData.class), new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
     
     @Test

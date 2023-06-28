@@ -130,7 +130,8 @@ class ShardingRouteCacheableCheckerTest {
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DATABASE_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+        return new ShardingSphereMetaData(Collections.singletonMap(DATABASE_NAME, database), mock(ShardingSphereResourceMetaData.class),
+                mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     private SQLStatement parse(final String sql) {

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge.common;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
@@ -71,7 +72,8 @@ class IteratorStreamMergedResultTest {
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereResourceMetaData.class),
+                mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     @Test

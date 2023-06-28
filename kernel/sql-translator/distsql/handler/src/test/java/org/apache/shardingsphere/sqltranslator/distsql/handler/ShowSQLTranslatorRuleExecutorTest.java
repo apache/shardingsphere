@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqltranslator.distsql.handler;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.parser.statement.ShowSQLTranslatorRuleStatement;
@@ -64,7 +65,8 @@ class ShowSQLTranslatorRuleExecutorTest {
     private ShardingSphereMetaData mockMetaData() {
         SQLTranslatorRule sqlTranslatorRule = mock(SQLTranslatorRule.class);
         when(sqlTranslatorRule.getConfiguration()).thenReturn(createSQLTranslatorRuleConfiguration());
-        return new ShardingSphereMetaData(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.singleton(sqlTranslatorRule)), new ConfigurationProperties(new Properties()));
+        return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ShardingSphereResourceMetaData.class),
+                new ShardingSphereRuleMetaData(Collections.singleton(sqlTranslatorRule)), new ConfigurationProperties(new Properties()));
     }
     
     private SQLTranslatorRuleConfiguration createSQLTranslatorRuleConfiguration() {

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
@@ -40,6 +41,8 @@ public final class ContextManagerBuilderParameter {
     private final ModeConfiguration modeConfig;
     
     private final Map<String, DatabaseConfiguration> databaseConfigs;
+    
+    private final Map<String, DataSource> globalDataSources;
     
     private final Collection<RuleConfiguration> globalRuleConfigs;
     

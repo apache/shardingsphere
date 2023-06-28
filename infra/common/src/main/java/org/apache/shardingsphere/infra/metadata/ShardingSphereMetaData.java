@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
@@ -41,6 +42,8 @@ public final class ShardingSphereMetaData {
     
     private final Map<String, ShardingSphereDatabase> databases;
     
+    private final ShardingSphereResourceMetaData globalResourceMetaData;
+    
     private final ShardingSphereRuleMetaData globalRuleMetaData;
     
     private final ConfigurationProperties props;
@@ -48,12 +51,15 @@ public final class ShardingSphereMetaData {
     private final TemporaryConfigurationProperties temporaryProps;
     
     public ShardingSphereMetaData() {
-        this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        this(new LinkedHashMap<>(), new ShardingSphereResourceMetaData(Collections.emptyMap()), new ShardingSphereRuleMetaData(Collections.emptyList()),
+                new ConfigurationProperties(new Properties()));
     }
     
-    public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
+    public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereResourceMetaData globalResourceMetaData,
+                                  final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
         this.databases = new ConcurrentHashMap<>(databases.size(), 1F);
         databases.forEach((key, value) -> this.databases.put(key.toLowerCase(), value));
+        this.globalResourceMetaData = globalResourceMetaData;
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
         temporaryProps = new TemporaryConfigurationProperties(props.getProps());
