@@ -61,7 +61,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -447,9 +446,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
-        Collection<WhereSegment> joinSegments = WhereExtractUtils.getJoinWhereSegments(select.getSqlStatement());
-        return isJoinConditionContainsShardingColumns(schema, select, logicTableNames, joinSegments)
-                || isJoinConditionContainsShardingColumns(schema, select, logicTableNames, select.getWhereSegments());
+        return isJoinConditionContainsShardingColumns(schema, select, logicTableNames, select.getWhereSegments());
     }
     
     private Optional<BindingTableRule> findBindingTableRule(final Collection<String> logicTableNames) {
