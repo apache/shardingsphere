@@ -22,6 +22,9 @@ import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChan
 import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.global.AlterPropertiesEvent;
 import org.apache.shardingsphere.mode.event.config.global.DeleteGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.event.datasource.AlterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.RegisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.UnregisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
@@ -36,6 +39,47 @@ public final class NewConfigurationChangedSubscriber {
     public NewConfigurationChangedSubscriber(final ContextManager contextManager) {
         this.contextManager = contextManager;
         contextManager.getInstanceContext().getEventBusContext().register(this);
+    }
+    
+    /**
+     * Renew for register storage unit.
+     *
+     * @param event register storage unit event
+     */
+    @Subscribe
+    public void renew(final RegisterStorageUnitEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        contextManager.registerStorageUnit(event.getDatabaseName(),
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(event.getDatabaseName(), event.getStorageUnitName()));
+    }
+    
+    /**
+     * Renew for alter storage unit.
+     *
+     * @param event register storage unit event
+     */
+    @Subscribe
+    public void renew(final AlterStorageUnitEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        contextManager.alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(),
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(event.getDatabaseName(), event.getStorageUnitName()));
+    }
+    
+    /**
+     * Renew for unregister storage unit.
+     *
+     * @param event register storage unit event
+     */
+    @Subscribe
+    public void renew(final UnregisterStorageUnitEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        contextManager.unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
     }
     
     /**
