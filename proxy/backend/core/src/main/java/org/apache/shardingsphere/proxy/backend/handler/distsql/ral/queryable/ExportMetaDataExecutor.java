@@ -65,8 +65,8 @@ public final class ExportMetaDataExecutor implements MetaDataRequiredQueryableRA
             return Collections.singleton(new LocalDataQueryResultRow(ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(),
                     String.format("Successfully exported to：'%s'", filePath)));
         }
-        return Collections.singleton(
-                new LocalDataQueryResultRow(ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), exportedData));
+        return Collections.singleton(new LocalDataQueryResultRow(
+                ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), Base64.encodeBase64String(exportedData.getBytes())));
     }
     
     private String generateExportData(final ShardingSphereMetaData metaData) {
@@ -78,7 +78,7 @@ public final class ExportMetaDataExecutor implements MetaDataRequiredQueryableRA
         ExportedClusterInfo exportedClusterInfo = new ExportedClusterInfo();
         exportedClusterInfo.setMetaData(exportedMetaData);
         generateSnapshotInfo(metaData, exportedClusterInfo);
-        return Base64.encodeBase64String(JsonUtils.toJsonString(exportedClusterInfo).getBytes());
+        return JsonUtils.toJsonString(exportedClusterInfo);
     }
     
     private Map<String, String> getDatabases(final ProxyContext proxyContext) {

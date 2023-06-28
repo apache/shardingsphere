@@ -54,7 +54,7 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
         if (sqlStatement.getFilePath().isPresent()) {
             File file = new File(sqlStatement.getFilePath().get());
             try {
-                jsonMetaDataConfig = new String(Base64.decodeBase64(FileUtils.readFileToString(file, Charset.defaultCharset())));
+                jsonMetaDataConfig = FileUtils.readFileToString(file, Charset.defaultCharset());
             } catch (final IOException ex) {
                 throw new FileIOException(ex);
             }

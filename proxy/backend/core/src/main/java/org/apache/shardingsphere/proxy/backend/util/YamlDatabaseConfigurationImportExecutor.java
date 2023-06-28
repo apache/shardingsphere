@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.util;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.yaml.swapper.YamlBroadcastRuleConfigurationSwapper;
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
@@ -68,6 +72,10 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
+import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -192,6 +200,16 @@ public final class YamlDatabaseConfigurationImportExecutor {
                 MaskRuleConfiguration maskRuleConfig = swapper.swapToObject((YamlMaskRuleConfiguration) each);
                 ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
                 ruleConfigsMap.get(swapper.getOrder()).add(maskRuleConfig);
+            } else if (each instanceof YamlBroadcastRuleConfiguration) {
+                YamlBroadcastRuleConfigurationSwapper swapper = new YamlBroadcastRuleConfigurationSwapper();
+                BroadcastRuleConfiguration maskRuleConfig = swapper.swapToObject((YamlBroadcastRuleConfiguration) each);
+                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+                ruleConfigsMap.get(swapper.getOrder()).add(maskRuleConfig);
+            } else if (each instanceof YamlSingleRuleConfiguration) {
+                YamlSingleRuleConfigurationSwapper swapper = new YamlSingleRuleConfigurationSwapper();
+                SingleRuleConfiguration maskRuleConfig = swapper.swapToObject((YamlSingleRuleConfiguration) each);
+                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+                ruleConfigsMap.get(swapper.getOrder()).add(maskRuleConfig);
             }
         }
         ruleConfigsMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())
@@ -216,6 +234,10 @@ public final class YamlDatabaseConfigurationImportExecutor {
             ruleConfigs.forEach(each -> addShadowRuleConfiguration((ShadowRuleConfiguration) each, allRuleConfigs, database));
         } else if (ruleConfig instanceof MaskRuleConfiguration) {
             ruleConfigs.forEach(each -> addMaskRuleConfiguration((MaskRuleConfiguration) each, allRuleConfigs, database));
+        } else if (ruleConfig instanceof BroadcastRuleConfiguration) {
+            ruleConfigs.forEach(each -> addBroadcastRuleConfiguration((BroadcastRuleConfiguration) each, allRuleConfigs, database));
+        } else if (ruleConfig instanceof SingleRuleConfiguration) {
+            ruleConfigs.forEach(each -> addSingleRuleConfiguration((SingleRuleConfiguration) each, allRuleConfigs, database));
         }
     }
     
@@ -251,6 +273,16 @@ public final class YamlDatabaseConfigurationImportExecutor {
         maskRuleConfigImportChecker.check(database, maskRuleConfig);
         allRuleConfigs.add(maskRuleConfig);
         database.getRuleMetaData().getRules().add(new MaskRule(maskRuleConfig));
+    }
+    
+    private void addBroadcastRuleConfiguration(final BroadcastRuleConfiguration broadcastRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
+        allRuleConfigs.add(broadcastRuleConfig);
+        database.getRuleMetaData().getRules().add(new BroadcastRule(broadcastRuleConfig, database.getName(), database.getResourceMetaData().getDataSources()));
+    }
+    
+    private void addSingleRuleConfiguration(final SingleRuleConfiguration broadcastRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
+        allRuleConfigs.add(broadcastRuleConfig);
+        database.getRuleMetaData().getRules().add(new SingleRule(broadcastRuleConfig, database.getName(), database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules()));
     }
     
     private void dropDatabase(final String databaseName) {
