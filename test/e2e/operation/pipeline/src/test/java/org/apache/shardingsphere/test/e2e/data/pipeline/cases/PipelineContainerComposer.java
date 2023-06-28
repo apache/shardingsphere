@@ -404,20 +404,12 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public List<Map<String, Object>> queryForListWithLog(final DataSource dataSource, final String sql) {
         log.info("Query SQL: {}", sql);
-        int retryNumber = 0;
-        while (retryNumber <= 3) {
-            try (Connection connection = dataSource.getConnection()) {
-                ResultSet resultSet = connection.createStatement().executeQuery(sql);
-                return transformResultSetToList(resultSet);
-                // CHECKSTYLE:OFF
-            } catch (final SQLException | RuntimeException ex) {
-                // CHECKSTYLE:ON
-                log.error("Data access error, sql: {}.", sql, ex);
-            }
-            Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
-            retryNumber++;
+        try (Connection connection = dataSource.getConnection()) {
+            ResultSet resultSet = connection.createStatement().executeQuery(sql);
+            return transformResultSetToList(resultSet);
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
         }
-        throw new RuntimeException("Can not get result from proxy.");
     }
     
     /**

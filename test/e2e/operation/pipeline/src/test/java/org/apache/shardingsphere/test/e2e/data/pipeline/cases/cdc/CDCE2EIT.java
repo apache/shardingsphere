@@ -105,7 +105,7 @@ class CDCE2EIT {
             for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {
                 containerComposer.registerStorageUnit(each);
             }
-            Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> containerComposer.showStorageUnitsName()
+            Awaitility.await().ignoreExceptions().atMost(10L, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> containerComposer.showStorageUnitsName()
                     .containsAll(Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)));
             createOrderTableRule(containerComposer);
             try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
@@ -150,7 +150,8 @@ class CDCE2EIT {
     }
     
     private void createOrderTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
-        containerComposer.proxyExecuteWithLog(CREATE_SHARDING_RULE_SQL, 2);
+        containerComposer.proxyExecuteWithLog(CREATE_SHARDING_RULE_SQL, 0);
+        Awaitility.await().atMost(20L, TimeUnit.SECONDS).pollInterval(2L, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
     }
     
     private void initSchemaAndTable(final PipelineContainerComposer containerComposer, final Connection connection, final int sleepSeconds) throws SQLException {
