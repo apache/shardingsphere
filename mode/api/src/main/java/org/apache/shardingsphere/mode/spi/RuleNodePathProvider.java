@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema;
+package org.apache.shardingsphere.mode.spi;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 /**
- * TODO we should refactor this with our federation modules.
- * System catalog schema of openGauss.
+ * Rule node path provider.
  */
-@RequiredArgsConstructor
-public final class OpenGaussSystemCatalog {
+@SingletonSPI
+public interface RuleNodePathProvider {
     
-    // CHECKSTYLE:OFF
-    public final OpenGaussDatabase[] pg_database;
-    
-    public final OpenGaussTables[] pg_tables;
-    
-    public final OpenGaussRoles[] pg_roles;
-    // CHECKSTYLE:ON
+    /**
+     * Get rule node path.
+     * 
+     * @return got rule node path
+     */
+    RuleNodePath getRuleNodePath();
 }

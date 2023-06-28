@@ -105,6 +105,8 @@ class CDCE2EIT {
             for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {
                 containerComposer.registerStorageUnit(each);
             }
+            Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> containerComposer.showStorageUnitsName()
+                    .containsAll(Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)));
             createOrderTableRule(containerComposer);
             try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
                 initSchemaAndTable(containerComposer, connection, 3);

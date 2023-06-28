@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.spi;
+package org.apache.shardingsphere.mask.metadata.nodepath;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
-import java.util.Optional;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
- * Rule configuration event builder.
+ * Mask rule node path provider.
  */
-public interface RuleConfigurationEventBuilder {
+public final class MaskRuleNodePathProvider implements RuleNodePathProvider {
     
-    /**
-     * Build rule changed event.
-     *
-     * @param databaseName database name
-     * @param event data changed event
-     * @return rule changed event
-     */
-    Optional<GovernanceEvent> build(String databaseName, DataChangedEvent event);
+    public static final String TABLES = "tables";
+    
+    public static final String ALGORITHMS = "algorithms";
+    
+    private static final RuleNodePath INSTANCE = new RuleNodePath("mask", Arrays.asList(TABLES, ALGORITHMS), Collections.emptyList());
+    
+    @Override
+    public RuleNodePath getRuleNodePath() {
+        return INSTANCE;
+    }
 }

@@ -17,34 +17,32 @@
 
 package org.apache.shardingsphere.broadcast.event;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.broadcast.event.config.AddBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.config.AlterBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.config.DeleteBroadcastTableEvent;
-import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastNodePath;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
-
-import java.util.Optional;
+import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 
 /**
- * Broadcast rule configuration event builder.
+ * Broadcast rule changed event creator.
  */
-public final class BroadcastRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
+public final class BroadcastRuleChangedEventCreator implements RuleChangedEventCreator {
     
-    private final RuleNodePath broadcastRuleNodePath = BroadcastNodePath.getInstance();
-    
+    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     @Override
-    public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        return Strings.isNullOrEmpty(event.getValue()) || !broadcastRuleNodePath.getUniqueItem(BroadcastNodePath.TABLES).isActiveVersionPath(event.getKey())
-                ? Optional.empty()
-                : Optional.of(createBroadcastConfigEvent(databaseName, event));
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
+        switch (itemType) {
+            case BroadcastRuleNodePathProvider.TABLES:
+                return createTableEvent(databaseName, event);
+            default:
+                throw new UnsupportedOperationException(itemType);
+        }
     }
     
-    private GovernanceEvent createBroadcastConfigEvent(final String databaseName, final DataChangedEvent event) {
+    private GovernanceEvent createTableEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddBroadcastTableEvent(databaseName, event.getKey(), event.getValue());
         }
@@ -52,5 +50,10 @@ public final class BroadcastRuleConfigurationEventBuilder implements RuleConfigu
             return new AlterBroadcastTableEvent(databaseName, event.getKey(), event.getValue());
         }
         return new DeleteBroadcastTableEvent(databaseName);
+    }
+    
+    @Override
+    public String getType() {
+        return "broadcast";
     }
 }

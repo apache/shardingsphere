@@ -47,8 +47,8 @@ class ShardingSphereDataCollectorTest {
     @Test
     void assertCollect() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereStatistics shardingSphereData = mockShardingSphereData();
-        when(contextManager.getMetaDataContexts().getShardingSphereData()).thenReturn(shardingSphereData);
+        ShardingSphereStatistics statistics = mockStatistics();
+        when(contextManager.getMetaDataContexts().getStatistics()).thenReturn(statistics);
         ShardingSphereMetaData metaData = mockMetaData();
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
@@ -56,7 +56,7 @@ class ShardingSphereDataCollectorTest {
         verify(contextManager).getInstanceContext();
     }
     
-    private ShardingSphereStatistics mockShardingSphereData() {
+    private ShardingSphereStatistics mockStatistics() {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         ShardingSphereDatabaseData shardingSphereDatabaseData = new ShardingSphereDatabaseData();
         result.getDatabaseData().put("logic_db", shardingSphereDatabaseData);

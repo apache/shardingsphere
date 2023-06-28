@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.shadow.metadata.nodepath;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Shadow node path.
+ * Shadow rule node path provider.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShadowNodePath {
+public final class ShadowRuleNodePathProvider implements RuleNodePathProvider {
     
     public static final String DATA_SOURCES = "data_sources";
     
@@ -40,12 +38,8 @@ public final class ShadowNodePath {
     
     private static final RuleNodePath INSTANCE = new RuleNodePath("shadow", Arrays.asList(DATA_SOURCES, TABLES, ALGORITHMS), Collections.singleton(DEFAULT_ALGORITHM));
     
-    /**
-     * Get instance of rule node path.
-     *
-     * @return got instance
-     */
-    public static RuleNodePath getInstance() {
+    @Override
+    public RuleNodePath getRuleNodePath() {
         return INSTANCE;
     }
 }

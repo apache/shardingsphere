@@ -19,7 +19,7 @@ package org.apache.shardingsphere.broadcast.yaml.swapper;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
-import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastNodePath;
+import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -35,7 +35,7 @@ import java.util.Collections;
  */
 public final class NewYamlBroadcastRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<BroadcastRuleConfiguration> {
     
-    private final RuleNodePath broadcastRuleNodePath = BroadcastNodePath.getInstance();
+    private final RuleNodePath broadcastRuleNodePath = new BroadcastRuleNodePathProvider().getRuleNodePath();
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final BroadcastRuleConfiguration data) {
@@ -44,7 +44,7 @@ public final class NewYamlBroadcastRuleConfigurationSwapper implements NewYamlRu
         }
         YamlBroadcastRuleConfiguration yamlBroadcastRuleConfiguration = new YamlBroadcastRuleConfiguration();
         yamlBroadcastRuleConfiguration.getTables().addAll(data.getTables());
-        return Collections.singleton(new YamlDataNode(BroadcastNodePath.TABLES, YamlEngine.marshal(yamlBroadcastRuleConfiguration)));
+        return Collections.singleton(new YamlDataNode(BroadcastRuleNodePathProvider.TABLES, YamlEngine.marshal(yamlBroadcastRuleConfiguration)));
     }
     
     @Override

@@ -17,31 +17,27 @@
 
 package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Encrypt node path.
+ * Compatible encrypt rule node path provider.
+ * @deprecated compatible support will remove in next version.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptNodePath {
+@Deprecated
+public final class CompatibleEncryptRuleNodePathProvider implements RuleNodePathProvider {
     
     public static final String TABLES = "tables";
     
     public static final String ENCRYPTORS = "encryptors";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath("compatible_encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
     
-    /**
-     * Get instance of rule node path.
-     *
-     * @return got instance
-     */
-    public static RuleNodePath getInstance() {
+    @Override
+    public RuleNodePath getRuleNodePath() {
         return INSTANCE;
     }
 }

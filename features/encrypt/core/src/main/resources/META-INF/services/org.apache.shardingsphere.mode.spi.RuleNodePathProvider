@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.event.ReadwriteSplittingRuleConfigurationEventBuilder
+org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider
+org.apache.shardingsphere.encrypt.metadata.nodepath.CompatibleEncryptRuleNodePathProvider

@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema;
+package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
- * System table which maintains databases in openGauss system catalog schema.
+ * Encrypt rule node path provider.
  */
-@RequiredArgsConstructor
-public final class OpenGaussDatabase {
+public final class EncryptRuleNodePathProvider implements RuleNodePathProvider {
     
-    // CHECKSTYLE:OFF
-    public final String datname;
+    public static final String TABLES = "tables";
     
-    public final String datcompatibility;
-    // CHECKSTYLE:ON
+    public static final String ENCRYPTORS = "encryptors";
+    
+    private static final RuleNodePath INSTANCE = new RuleNodePath("encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
+    
+    @Override
+    public RuleNodePath getRuleNodePath() {
+        return INSTANCE;
+    }
 }

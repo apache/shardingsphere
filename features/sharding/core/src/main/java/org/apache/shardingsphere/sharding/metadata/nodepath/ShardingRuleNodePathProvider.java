@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.sharding.metadata.nodepath;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
 import java.util.Arrays;
 
 /**
- * Sharding node path.
+ * Sharding rule node path provider.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingNodePath {
+public final class ShardingRuleNodePathProvider implements RuleNodePathProvider {
     
     public static final String TABLES = "tables";
     
@@ -61,12 +59,8 @@ public final class ShardingNodePath {
                     DEFAULT_STRATEGIES_PREFIX + DEFAULT_KEY_GENERATE_STRATEGY, DEFAULT_STRATEGIES_PREFIX + DEFAULT_AUDIT_STRATEGY, DEFAULT_STRATEGIES_PREFIX + DEFAULT_SHARDING_COLUMN,
                     SHARDING_CACHE));
     
-    /**
-     * Get instance of rule node path.
-     *
-     * @return got instance
-     */
-    public static RuleNodePath getInstance() {
+    @Override
+    public RuleNodePath getRuleNodePath() {
         return INSTANCE;
     }
 }

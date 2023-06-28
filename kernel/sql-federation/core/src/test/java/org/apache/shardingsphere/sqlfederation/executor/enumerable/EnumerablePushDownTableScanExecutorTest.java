@@ -48,9 +48,9 @@ class EnumerablePushDownTableScanExecutorTest {
         TableScanExecutorContext executorContext = Mockito.mock(TableScanExecutorContext.class);
         when(executorContext.getDatabaseName()).thenReturn("db");
         when(executorContext.getSchemaName()).thenReturn("pg_catalog");
-        ShardingSphereStatistics shardingSphereData = mock(ShardingSphereStatistics.class, RETURNS_DEEP_STUBS);
+        ShardingSphereStatistics statistics = mock(ShardingSphereStatistics.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabaseData databaseData = mock(ShardingSphereDatabaseData.class, RETURNS_DEEP_STUBS);
-        when(shardingSphereData.getDatabaseData().get("db")).thenReturn(databaseData);
+        when(statistics.getDatabaseData().get("db")).thenReturn(databaseData);
         ShardingSphereSchemaData schemaData = mock(ShardingSphereSchemaData.class, RETURNS_DEEP_STUBS);
         when(databaseData.getSchemaData().get("pg_catalog")).thenReturn(schemaData);
         ShardingSphereTableData tableData = mock(ShardingSphereTableData.class);
@@ -58,7 +58,7 @@ class EnumerablePushDownTableScanExecutorTest {
         when(schemaData.getTableData().get("test")).thenReturn(tableData);
         ShardingSphereTable shardingSphereTable = mock(ShardingSphereTable.class);
         when(shardingSphereTable.getName()).thenReturn("test");
-        Enumerable<Object[]> enumerable = new EnumerablePushDownTableScanExecutor(null, null, null, optimizerContext, null, executorContext, shardingSphereData)
+        Enumerable<Object[]> enumerable = new EnumerablePushDownTableScanExecutor(null, null, null, optimizerContext, null, executorContext, statistics)
                 .execute(shardingSphereTable, mock(EnumerablePushDownTableScanExecutorContext.class));
         try (Enumerator<Object[]> actual = enumerable.enumerator()) {
             actual.moveNext();
