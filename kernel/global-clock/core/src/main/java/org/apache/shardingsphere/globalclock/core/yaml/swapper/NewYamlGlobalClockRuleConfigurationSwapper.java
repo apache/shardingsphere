@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.globalclock.core.yaml.swapper;
 
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
+import org.apache.shardingsphere.globalclock.core.rule.builder.DefaultGlobalClockRuleConfigurationBuilder;
 import org.apache.shardingsphere.globalclock.core.rule.constant.GlobalClockOrder;
 import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
@@ -59,7 +60,7 @@ public final class NewYamlGlobalClockRuleConfigurationSwapper implements NewYaml
             }
             return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class));
         }
-        return new GlobalClockRuleConfiguration("", "", false, new Properties());
+        return new DefaultGlobalClockRuleConfigurationBuilder().build();
     }
     
     private GlobalClockRuleConfiguration swapToObject(final YamlGlobalClockRuleConfiguration yamlConfig) {
