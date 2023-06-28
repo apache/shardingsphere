@@ -70,8 +70,9 @@ public final class StorageUtils {
         for (Entry<String, Collection<String>> entry : builtRule.getDataSourceMapper().entrySet()) {
             for (String each : entry.getValue()) {
                 if (storageUnits.containsKey(each)) {
+                    StorageUnit storageUnit = storageUnits.get(each);
                     storageUnits.remove(each);
-                    result.putIfAbsent(entry.getKey(), new StorageUnit(entry.getKey(), entry.getKey()));
+                    result.putIfAbsent(entry.getKey(), new StorageUnit(entry.getKey(), storageUnit.getNodeName()));
                 }
             }
         }

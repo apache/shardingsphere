@@ -120,7 +120,8 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
             return;
         }
         ShardingSphereResourceMetaData resourceMetaData = database.getResourceMetaData();
-        Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(resourceMetaData.getDataSources(), database.getRuleMetaData().getRules());
+        Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(resourceMetaData.getDataSources(),
+                resourceMetaData.getStorageUnits(), database.getRuleMetaData().getRules());
         Map<String, StorageUnit> storageUnits = StorageUtils.getAggregatedStorageUnits(resourceMetaData.getStorageUnits(), database.getRuleMetaData().getRules());
         Map<String, Map<String, Collection<String>>> actualTableNodes = new LinkedHashMap<>();
         for (String each : requiredStorageUnits) {

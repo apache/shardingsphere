@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -49,24 +50,28 @@ public final class SingleTableLoadUtils {
      * 
      * @param dataSourceMap data source map
      * @param builtRules built rules
+     * @param storageUnits storageUnit
      * @return aggregated data source map
      */
-    public static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+    public static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final Map<String, StorageUnit> storageUnits,
+                                                                     final Collection<ShardingSphereRule> builtRules) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
         for (ShardingSphereRule each : builtRules) {
             if (each instanceof DataSourceContainedRule) {
-                result = getAggregatedDataSourceMap(result, (DataSourceContainedRule) each);
+                result = getAggregatedDataSourceMap(result, storageUnits, (DataSourceContainedRule) each);
             }
         }
         return result;
     }
     
-    private static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceContainedRule builtRule) {
+    private static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final Map<String, StorageUnit> storageUnits,
+                                                                      final DataSourceContainedRule builtRule) {
         Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, Collection<String>> entry : builtRule.getDataSourceMapper().entrySet()) {
             for (String each : entry.getValue()) {
-                if (dataSourceMap.containsKey(each)) {
-                    result.putIfAbsent(entry.getKey(), dataSourceMap.remove(each));
+                if (storageUnits.containsKey(each)) {
+                    StorageUnit storageUnit = storageUnits.get(each);
+                    result.putIfAbsent(entry.getKey(), dataSourceMap.get(storageUnit.getNodeName()));
                 }
             }
         }

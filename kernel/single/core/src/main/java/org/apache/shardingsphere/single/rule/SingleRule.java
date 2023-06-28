@@ -76,7 +76,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
         configuration = ruleConfig;
         defaultDataSource = ruleConfig.getDefaultDataSource().orElse(null);
         Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, storageResource.getStorageNodes());
-        Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(enabledDataSources, builtRules);
+        Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(enabledDataSources, storageResource.getStorageUnits(), builtRules);
         databaseType = DatabaseTypeEngine.getStorageType(enabledDataSources.values());
         Map<String, StorageUnit> storageUnits = StorageUtils.getAggregatedStorageUnits(storageResource.getStorageUnits(), builtRules);
         dataSourceNames = storageUnits.keySet();
