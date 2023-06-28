@@ -193,7 +193,7 @@ public final class EnumerablePushDownTableScanExecutor {
             return createMemoryScalarEnumerator(createSystemCatalogTableData(table, projects));
         }
         Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
-                .map(ShardingSphereSchemaData::getTableData).map(shardingSphereData -> shardingSphereData.get(table.getName()));
+                .map(optional -> optional.getTable(table.getName()));
         return tableData.map(this::createMemoryScalarEnumerator).orElseGet(this::createEmptyScalarEnumerable);
     }
     
