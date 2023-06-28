@@ -33,7 +33,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NewYamlReadwriteSplittingRuleConfigurationSwapperTest {
     
@@ -62,8 +62,7 @@ class NewYamlReadwriteSplittingRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        ReadwriteSplittingRuleConfiguration result = swapper.swapToObject(config);
-        assertTrue(result == null);
+        assertFalse(swapper.swapToObject(config).isPresent());
     }
     
     @Test
@@ -76,7 +75,7 @@ class NewYamlReadwriteSplittingRuleConfigurationSwapperTest {
                 + "transactionalReadQueryStrategy: DYNAMIC\n"
                 + "writeDataSourceName: write_ds\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random/versions/0", "type: random\n"));
-        ReadwriteSplittingRuleConfiguration result = swapper.swapToObject(config);
+        ReadwriteSplittingRuleConfiguration result = swapper.swapToObject(config).get();
         assertThat(result.getDataSources().size(), is(1));
         assertThat(result.getDataSources().iterator().next().getName(), is("group_0"));
         assertThat(result.getDataSources().iterator().next().getWriteDataSourceName(), is("write_ds"));
