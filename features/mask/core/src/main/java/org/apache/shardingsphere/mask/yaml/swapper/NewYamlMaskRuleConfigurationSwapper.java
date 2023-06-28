@@ -35,8 +35,11 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * TODO Rename to YamlMaskRuleConfigurationSwapper when metadata structure adjustment completed.
@@ -64,20 +67,20 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
     }
     
     @Override
-    public MaskRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        if (dataNodes.stream().noneMatch(each -> maskRuleNodePath.getRoot().isValidatedPath(each.getKey()))) {
-            // TODO refactor this use Optional
-            return null;
+    public Optional<MaskRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
+        List<YamlDataNode> validDataNodes = dataNodes.stream().filter(each -> maskRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        if (validDataNodes.isEmpty()) {
+            return Optional.empty();
         }
         Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> algorithms = new LinkedHashMap<>();
-        for (YamlDataNode each : dataNodes) {
+        for (YamlDataNode each : validDataNodes) {
             maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getName(each.getKey())
                     .ifPresent(optional -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlMaskTableRuleConfiguration.class))));
             maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.ALGORITHMS).getName(each.getKey())
                     .ifPresent(optional -> algorithms.put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
         }
-        return new MaskRuleConfiguration(tables, algorithms);
+        return Optional.of(new MaskRuleConfiguration(tables, algorithms));
     }
     
     @Override

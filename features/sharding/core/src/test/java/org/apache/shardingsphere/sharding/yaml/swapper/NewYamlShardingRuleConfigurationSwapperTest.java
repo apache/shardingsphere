@@ -114,8 +114,7 @@ class NewYamlShardingRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        ShardingRuleConfiguration result = swapper.swapToObject(config);
-        assertTrue(result == null);
+        assertFalse(swapper.swapToObject(config).isPresent());
     }
     
     @Test
@@ -185,7 +184,7 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/key_generators/auto_increment/versions/0", "type: AUTO_INCREMENT.FIXTURE\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/auditors/audit_algorithm/versions/0", "type: DML_SHARDING_CONDITIONS\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_sharding_column/versions/0", "table_id"));
-        ShardingRuleConfiguration result = swapper.swapToObject(config);
+        ShardingRuleConfiguration result = swapper.swapToObject(config).get();
         assertThat(result.getTables().size(), is(2));
         assertThat(result.getTables().iterator().next().getLogicTable(), is("LOGIC_TABLE"));
         assertThat(result.getTables().iterator().next().getActualDataNodes(), is("ds_${0..1}.table_${0..2}"));

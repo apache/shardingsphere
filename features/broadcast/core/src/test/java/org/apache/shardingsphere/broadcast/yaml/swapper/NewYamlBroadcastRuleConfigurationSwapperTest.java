@@ -29,7 +29,7 @@ import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NewYamlBroadcastRuleConfigurationSwapperTest {
     
@@ -58,8 +58,7 @@ class NewYamlBroadcastRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        BroadcastRuleConfiguration result = swapper.swapToObject(config);
-        assertTrue(result == null);
+        assertFalse(swapper.swapToObject(config).isPresent());
     }
     
     @Test
@@ -68,7 +67,7 @@ class NewYamlBroadcastRuleConfigurationSwapperTest {
         config.add(new YamlDataNode("/metadata/foo_db/rules/broadcast/tables", "tables:\n"
                 + "- foo_table\n"
                 + "- foo_table2\n"));
-        BroadcastRuleConfiguration result = swapper.swapToObject(config);
+        BroadcastRuleConfiguration result = swapper.swapToObject(config).get();
         assertThat(result.getTables().size(), is(2));
         Iterator<String> iterator = result.getTables().iterator();
         assertThat(iterator.next(), is("foo_table"));

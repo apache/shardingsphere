@@ -53,7 +53,7 @@ public final class NewYamlGlobalRuleConfigurationSwapperEngine {
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlDataNode> dataNodes) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (NewYamlGlobalRuleConfigurationSwapper each : OrderedSPILoader.getServices(NewYamlGlobalRuleConfigurationSwapper.class)) {
-            result.add((RuleConfiguration) each.swapToObject(dataNodes));
+            each.swapToObject(dataNodes).ifPresent(optional -> result.add((RuleConfiguration) optional));
         }
         return result;
     }
@@ -69,7 +69,7 @@ public final class NewYamlGlobalRuleConfigurationSwapperEngine {
     public Optional<RuleConfiguration> swapSingleRuleToRuleConfiguration(final String ruleName, final Collection<YamlDataNode> dataNodes) {
         for (NewYamlGlobalRuleConfigurationSwapper each : OrderedSPILoader.getServices(NewYamlGlobalRuleConfigurationSwapper.class)) {
             if (ruleName.equals(each.getRuleTagName().toLowerCase())) {
-                return Optional.of((RuleConfiguration) each.swapToObject(dataNodes));
+                return each.swapToObject(dataNodes);
             }
         }
         return Optional.empty();
