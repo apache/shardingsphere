@@ -136,7 +136,7 @@ public final class ContextManager implements AutoCloseable {
             return;
         }
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.get().getMetaData().getProps());
-        metaDataContexts.get().getMetaData().addDatabase(databaseName, protocolType);
+        metaDataContexts.get().getMetaData().addDatabase(databaseName, protocolType, metaDataContexts.get().getMetaData().getProps());
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         alterMetaDataHeldRule(database);
     }

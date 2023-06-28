@@ -61,12 +61,13 @@ public final class ShardingSphereMetaData {
     
     /**
      * Add database.
-     * 
+     *
      * @param databaseName database name
      * @param protocolType protocol database type
+     * @param props configuration properties
      */
-    public void addDatabase(final String databaseName, final DatabaseType protocolType) {
-        ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
+    public void addDatabase(final String databaseName, final DatabaseType protocolType, final ConfigurationProperties props) {
+        ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType, props);
         putDatabase(database);
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
     }
