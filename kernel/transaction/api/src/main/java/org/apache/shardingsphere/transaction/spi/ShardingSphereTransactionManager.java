@@ -37,9 +37,10 @@ public interface ShardingSphereTransactionManager extends TypedSPI, AutoCloseabl
      *
      * @param databaseTypes database types
      * @param dataSources data sources
+     * @param storageUnits storage units
      * @param providerType transaction manager provider type 
      */
-    void init(Map<String, DatabaseType> databaseTypes, Map<String, DataSource> dataSources, String providerType);
+    void init(Map<String, DatabaseType> databaseTypes, Map<String, DataSource> dataSources, Map<String, StorageUnit> storageUnits, String providerType);
     
     /**
      * Get transaction type.

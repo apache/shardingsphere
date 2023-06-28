@@ -33,7 +33,7 @@ public class ShardingSphereTransactionManagerFixture implements ShardingSphereTr
     private Runnable caller;
     
     @Override
-    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
+    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final Map<String, StorageUnit> storageUnits, final String providerType) {
         if (null != caller) {
             caller.run();
         }

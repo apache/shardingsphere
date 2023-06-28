@@ -44,7 +44,7 @@ class ShardingSphereTransactionManagerEngineTest {
         Runnable caller = mock(Runnable.class);
         ShardingSphereTransactionManagerFixture transactionManager = (ShardingSphereTransactionManagerFixture) transactionManagerEngine.getTransactionManager(TransactionType.XA);
         transactionManager.setCaller(caller);
-        transactionManagerEngine.init(Collections.singletonMap("sharding_db.ds_0", TypedSPILoader.getService(DatabaseType.class, "H2")), Collections.emptyMap(), "Atomikos");
+        transactionManagerEngine.init(Collections.singletonMap("sharding_db.ds_0", TypedSPILoader.getService(DatabaseType.class, "H2")), Collections.emptyMap(), Collections.emptyMap(), "Atomikos");
         verify(caller).run();
     }
 }

@@ -55,18 +55,21 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     private XATransactionManagerProvider xaTransactionManagerProvider;
     
     @Override
-    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
+    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final Map<String, StorageUnit> storageUnits, final String providerType) {
         dataSources.forEach((key, value) -> TypedSPILoader.getService(DataSourcePrivilegeChecker.class, databaseTypes.get(key).getType()).checkPrivilege(value));
         xaTransactionManagerProvider = TypedSPILoader.getService(XATransactionManagerProvider.class, providerType);
         xaTransactionManagerProvider.init();
-        Map<String, ResourceDataSource> resourceDataSources = getResourceDataSources(dataSources);
-        resourceDataSources.forEach((key, value) -> cachedDataSources.put(value.getOriginalName(), newXATransactionDataSource(databaseTypes.get(key), value)));
+        Map<String, ResourceDataSource> resourceDataSources = getResourceDataSources(dataSources, storageUnits);
+        resourceDataSources.forEach((key, value) -> {
+            DatabaseType databaseType = databaseTypes.get(storageUnits.get(key).getNodeName());
+            cachedDataSources.put(value.getOriginalName(), newXATransactionDataSource(databaseType, value));
+        });
     }
     
-    private Map<String, ResourceDataSource> getResourceDataSources(final Map<String, DataSource> dataSourceMap) {
+    private Map<String, ResourceDataSource> getResourceDataSources(final Map<String, DataSource> dataSourceMap, final Map<String, StorageUnit> storageUnits) {
         Map<String, ResourceDataSource> result = new LinkedHashMap<>(dataSourceMap.size(), 1F);
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), new ResourceDataSource(entry.getKey(), entry.getValue()));
+        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
+            result.put(entry.getKey(), new ResourceDataSource(entry.getKey(), dataSourceMap.get(entry.getValue().getNodeName())));
         }
         return result;
     }

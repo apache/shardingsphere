@@ -52,7 +52,8 @@ class XAShardingSphereTransactionManagerTest {
     void setUp() {
         Map<String, DataSource> dataSources = createDataSources(TypedSPILoader.getService(DatabaseType.class, "H2"));
         Map<String, DatabaseType> databaseTypes = createDatabaseTypes(TypedSPILoader.getService(DatabaseType.class, "H2"));
-        xaTransactionManager.init(databaseTypes, dataSources, "Atomikos");
+        Map<String, StorageUnit> storageUnits = createStorageUnits();
+        xaTransactionManager.init(databaseTypes, dataSources, storageUnits, "Atomikos");
     }
     
     @AfterEach
@@ -113,7 +114,7 @@ class XAShardingSphereTransactionManagerTest {
     }
     
     @Test
-    void assertClose() throws Exception {
+    void assertClose() {
         xaTransactionManager.close();
         Map<String, XATransactionDataSource> cachedSingleXADataSourceMap = getCachedDataSources();
         assertTrue(cachedSingleXADataSourceMap.isEmpty());
@@ -160,6 +161,14 @@ class XAShardingSphereTransactionManagerTest {
         result.put("sharding_db.ds_0", databaseType);
         result.put("sharding_db.ds_1", databaseType);
         result.put("sharding_db.ds_2", databaseType);
+        return result;
+    }
+    
+    private Map<String, StorageUnit> createStorageUnits() {
+        Map<String, StorageUnit> result = new LinkedHashMap<>(3, 1F);
+        result.put("sharding_db.ds_0", new StorageUnit("sharding_db.ds_0", "sharding_db.ds_0"));
+        result.put("sharding_db.ds_1", new StorageUnit("sharding_db.ds_1", "sharding_db.ds_1"));
+        result.put("sharding_db.ds_2", new StorageUnit("sharding_db.ds_2", "sharding_db.ds_2"));
         return result;
     }
 }

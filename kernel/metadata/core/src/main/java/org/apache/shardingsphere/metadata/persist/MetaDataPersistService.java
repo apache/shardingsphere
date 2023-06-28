@@ -95,8 +95,10 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     
     @Override
     public Map<String, DataSourceConfiguration> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        databaseConfigs.get(databaseName).getDataSources().values().forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
         Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(databaseName);
+        if (databaseConfigs.containsKey(databaseName) && !databaseConfigs.get(databaseName).getDataSources().isEmpty()) {
+            databaseConfigs.get(databaseName).getDataSources().values().forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
+        }
         return persistedDataPropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
                 entry -> DataSourcePropertiesCreator.createConfiguration(entry.getValue()), (key, value) -> value, LinkedHashMap::new));
     }

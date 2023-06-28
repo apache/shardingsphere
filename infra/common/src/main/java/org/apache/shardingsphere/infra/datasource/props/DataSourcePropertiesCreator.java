@@ -116,12 +116,12 @@ public final class DataSourcePropertiesCreator {
     
     private static PoolConfiguration getPoolConfiguration(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourceProperties customDataSourceProperties) {
         Map<String, Object> standardProperties = poolPropertySynonyms.getStandardProperties();
-        Long connectionTimeoutMilliseconds = (Long) standardProperties.get("connectionTimeoutMilliseconds");
-        Long idleTimeoutMilliseconds = (Long) standardProperties.get("idleTimeoutMilliseconds");
-        Long maxLifetimeMilliseconds = (Long) standardProperties.get("maxLifetimeMilliseconds");
-        Integer maxPoolSize = (Integer) standardProperties.get("maxPoolSize");
-        Integer minPoolSize = (Integer) standardProperties.get("minPoolSize");
-        Boolean readOnly = (Boolean) standardProperties.get("readOnly");
+        Long connectionTimeoutMilliseconds = Long.valueOf(String.valueOf(standardProperties.get("connectionTimeoutMilliseconds")));
+        Long idleTimeoutMilliseconds = Long.valueOf(String.valueOf(standardProperties.get("idleTimeoutMilliseconds")));
+        Long maxLifetimeMilliseconds = Long.valueOf(String.valueOf(standardProperties.get("maxLifetimeMilliseconds")));
+        Integer maxPoolSize = Integer.valueOf(String.valueOf(standardProperties.get("maxPoolSize")));
+        Integer minPoolSize = Integer.valueOf(String.valueOf(standardProperties.get("minPoolSize")));
+        Boolean readOnly = Boolean.valueOf(String.valueOf(standardProperties.get("readOnly")));
         Properties customProperties = new Properties();
         customProperties.putAll(customDataSourceProperties.getProperties());
         return new PoolConfiguration(connectionTimeoutMilliseconds, idleTimeoutMilliseconds, maxLifetimeMilliseconds, maxPoolSize, minPoolSize, readOnly, customProperties);

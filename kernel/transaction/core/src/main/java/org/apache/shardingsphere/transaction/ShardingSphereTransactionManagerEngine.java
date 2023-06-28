@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -48,11 +49,12 @@ public final class ShardingSphereTransactionManagerEngine {
      *
      * @param databaseTypes database types
      * @param dataSourceMap data source map
+     * @param storageUnitMap storage unit map
      * @param providerType transaction manager provider type
      */
-    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSourceMap, final String providerType) {
+    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSourceMap, final Map<String, StorageUnit> storageUnitMap, final String providerType) {
         if (TransactionType.LOCAL != transactionType) {
-            transactionManager.init(databaseTypes, dataSourceMap, providerType);
+            transactionManager.init(databaseTypes, dataSourceMap, storageUnitMap, providerType);
         }
     }
     

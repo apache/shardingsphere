@@ -20,12 +20,13 @@ package org.apache.shardingsphere.transaction.rule;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -69,16 +70,19 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         }
         Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(databases.size(), 1F);
         Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(databases.size(), 1F);
+        Map<String, StorageUnit> storageUnitMap = new LinkedHashMap<>(databases.size(), 1F);
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             ShardingSphereDatabase database = entry.getValue();
             database.getResourceMetaData().getDataSources().forEach((key, value) -> dataSourceMap.put(database.getName() + "." + key, value));
             database.getResourceMetaData().getStorageNodeTypes().forEach((key, value) -> databaseTypes.put(database.getName() + "." + key, value));
+            database.getResourceMetaData().getStorageUnits().forEach((key, value) -> storageUnitMap.put(database.getName() + "." + key,
+                    new StorageUnit(value.getName(), database.getName() + "." + value.getNodeName())));
         }
         if (dataSourceMap.isEmpty()) {
             return new ShardingSphereTransactionManagerEngine(defaultType);
         }
         ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine(defaultType);
-        result.init(databaseTypes, dataSourceMap, providerType);
+        result.init(databaseTypes, dataSourceMap, storageUnitMap, providerType);
         return result;
     }
     

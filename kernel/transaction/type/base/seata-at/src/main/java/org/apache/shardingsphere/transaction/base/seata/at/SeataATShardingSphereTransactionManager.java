@@ -67,10 +67,10 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     }
     
     @Override
-    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
+    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final Map<String, StorageUnit> storageUnits, final String providerType) {
         if (enableSeataAT) {
             initSeataRPCClient();
-            dataSources.forEach((key, value) -> dataSourceMap.put(key, new DataSourceProxy(value)));
+            storageUnits.forEach((key, value) -> dataSourceMap.put(key, new DataSourceProxy(dataSources.get(value.getNodeName()))));
         }
     }
     

@@ -95,7 +95,7 @@ class SeataATShardingSphereTransactionManagerTest {
     @BeforeEach
     void setUp() {
         seataTransactionManager.init(Collections.singletonMap("sharding_db.ds_0", TypedSPILoader.getService(DatabaseType.class, "MySQL")),
-                Collections.singletonMap(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource()), "Seata");
+                Collections.singletonMap(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource()), getStorageUnits(DATA_SOURCE_UNIQUE_NAME), "Seata");
     }
     
     @AfterEach
@@ -209,5 +209,9 @@ class SeataATShardingSphereTransactionManagerTest {
         Plugins.getMemberAccessor().set(TmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance"), TmNettyRemotingClient.getInstance(), null);
         Plugins.getMemberAccessor().set(RmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized"), RmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
         Plugins.getMemberAccessor().set(RmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance"), RmNettyRemotingClient.getInstance(), null);
+    }
+    
+    private Map<String, StorageUnit> getStorageUnits(final String name) {
+        return Collections.singletonMap(name, new StorageUnit(name, name));
     }
 }
