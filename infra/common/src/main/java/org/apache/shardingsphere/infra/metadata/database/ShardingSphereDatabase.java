@@ -88,7 +88,7 @@ public final class ShardingSphereDatabase {
         Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder
                 .build(new GenericSchemaBuilderMaterial(protocolType, storageTypes, DataSourceStateManager.getInstance().getEnabledDataSourceMap(name, databaseConfig.getDataSources()), databaseRules,
                         props, DatabaseTypeEngine.getDefaultSchemaName(protocolType, name))));
-        SystemSchemaBuilder.build(name, protocolType).forEach(schemas::putIfAbsent);
+        SystemSchemaBuilder.build(name, protocolType, props).forEach(schemas::putIfAbsent);
         return create(name, protocolType, databaseConfig, databaseRules, schemas);
     }
     
@@ -99,9 +99,9 @@ public final class ShardingSphereDatabase {
      * @param protocolType protocol database type
      * @return system database meta data
      */
-    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType) {
+    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final ConfigurationProperties props) {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>());
-        return create(name, protocolType, databaseConfig, new LinkedList<>(), SystemSchemaBuilder.build(name, protocolType));
+        return create(name, protocolType, databaseConfig, new LinkedList<>(), SystemSchemaBuilder.build(name, protocolType, props));
     }
     
     /**

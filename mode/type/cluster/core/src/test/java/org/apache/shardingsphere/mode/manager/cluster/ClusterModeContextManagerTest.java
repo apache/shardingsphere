@@ -108,7 +108,7 @@ class ClusterModeContextManagerTest {
     @Test
     void assertAlterSchema() {
         ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData();
-        shardingSphereMetaData.addDatabase("db", new H2DatabaseType());
+        shardingSphereMetaData.addDatabase("db", new H2DatabaseType(), new ConfigurationProperties(new Properties()));
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 new MetaDataPersistService(new ClusterPersistRepositoryFixture()), shardingSphereMetaData);
         ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
