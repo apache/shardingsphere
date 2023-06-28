@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorit
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.constant.TrafficOrder;
-import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficStrategyConfiguration;
 
@@ -65,15 +64,15 @@ public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlGlob
     }
     
     @Override
-    public TrafficRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+    public Optional<TrafficRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
             Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }
-            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class));
+            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class)));
         }
-        return new DefaultTrafficRuleConfigurationBuilder().build();
+        return Optional.empty();
     }
     
     private TrafficRuleConfiguration swapToObject(final YamlTrafficRuleConfiguration yamlConfig) {

@@ -46,7 +46,10 @@ import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStra
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * TODO Rename to YamlShardingRuleConfigurationSwapper when metadata structure adjustment completed. #25485
@@ -136,13 +139,13 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
     }
     
     @Override
-    public ShardingRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        if (dataNodes.stream().noneMatch(each -> shardingRuleNodePath.getRoot().isValidatedPath(each.getKey()))) {
-            // TODO refactor this use Optional
-            return null;
+    public Optional<ShardingRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
+        List<YamlDataNode> validDataNodes = dataNodes.stream().filter(each -> shardingRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        if (validDataNodes.isEmpty()) {
+            return Optional.empty();
         }
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        for (YamlDataNode each : dataNodes) {
+        for (YamlDataNode each : validDataNodes) {
             shardingRuleNodePath.getNamedItem(ShardingRuleNodePathProvider.TABLES).getName(each.getKey())
                     .ifPresent(optional -> result.getTables().add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTableRuleConfiguration.class))));
             shardingRuleNodePath.getNamedItem(ShardingRuleNodePathProvider.AUTO_TABLES).getName(each.getKey())
@@ -169,7 +172,7 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
                 result.setShardingCache(shardingCacheYamlSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlShardingCacheConfiguration.class)));
             }
         }
-        return result;
+        return Optional.of(result);
     }
     
     @Override

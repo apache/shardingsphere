@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.constant.TransactionOrder;
-import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRuleConfigurationBuilder;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
 
 import java.util.Collection;
@@ -51,15 +50,15 @@ public final class NewYamlTransactionRuleConfigurationSwapper implements NewYaml
     }
     
     @Override
-    public TransactionRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+    public Optional<TransactionRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
             Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }
-            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTransactionRuleConfiguration.class));
+            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTransactionRuleConfiguration.class)));
         }
-        return new DefaultTransactionRuleConfigurationBuilder().build();
+        return Optional.empty();
     }
     
     private TransactionRuleConfiguration swapToObject(final YamlTransactionRuleConfiguration yamlConfig) {
