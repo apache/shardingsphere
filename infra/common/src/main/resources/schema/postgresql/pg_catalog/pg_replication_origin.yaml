@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: roident
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   roname:
     caseSensitive: true
@@ -30,9 +31,10 @@ columns:
     generated: false
     name: roname
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
-  pg_replication_origin_roiident_index:
-    name: pg_replication_origin_roiident_index
   pg_replication_origin_roname_index:
     name: pg_replication_origin_roname_index
+  pg_replication_origin_roiident_index:
+    name: pg_replication_origin_roiident_index

@@ -19,47 +19,49 @@ name: pg_stat_progress_basebackup
 columns:
   pid:
     caseSensitive: true
-    dataType: 5
+    dataType: 4
     generated: false
     name: pid
     primaryKey: false
+    unsigned: false
     visible: true
   phase:
     caseSensitive: true
-    dataType: 2003
+    dataType: 12
     generated: false
     name: phase
     primaryKey: false
+    unsigned: false
     visible: true
   backup_total:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: backup_total
     primaryKey: false
+    unsigned: false
     visible: true
   backup_streamed:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: backup_streamed
     primaryKey: false
+    unsigned: false
     visible: true
   tablespaces_total:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: tablespaces_total
     primaryKey: false
+    unsigned: false
     visible: true
   tablespaces_streamed:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: tablespaces_streamed
     primaryKey: false
+    unsigned: false
     visible: true
-indexes:
-  pg_stat_progress_basebackup_pid_index:
-    name: pg_stat_progress_basebackup_pid_index
-

@@ -19,10 +19,11 @@ name: pg_stat_progress_cluster
 columns:
   pid:
     caseSensitive: true
-    dataType: 5
+    dataType: 4
     generated: false
     name: pid
     primaryKey: false
+    unsigned: false
     visible: true
   datid:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: datid
     primaryKey: false
+    unsigned: false
     visible: true
   datname:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: datname
     primaryKey: false
+    unsigned: false
     visible: true
   relid:
     caseSensitive: true
@@ -44,57 +47,69 @@ columns:
     generated: false
     name: relid
     primaryKey: false
+    unsigned: false
     visible: true
   command:
     caseSensitive: true
-    dataType: 2003
+    dataType: 12
     generated: false
     name: command
     primaryKey: false
+    unsigned: false
     visible: true
   phase:
     caseSensitive: true
-    dataType: 2003
+    dataType: 12
     generated: false
     name: phase
     primaryKey: false
+    unsigned: false
+    visible: true
+  cluster_index_relid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: cluster_index_relid
+    primaryKey: false
+    unsigned: false
     visible: true
   heap_tuples_scanned:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: heap_tuples_scanned
     primaryKey: false
+    unsigned: false
     visible: true
   heap_tuples_written:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: heap_tuples_written
     primaryKey: false
+    unsigned: false
     visible: true
   heap_blks_total:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: heap_blks_total
     primaryKey: false
+    unsigned: false
     visible: true
   heap_blks_scanned:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: heap_blks_scanned
     primaryKey: false
+    unsigned: false
     visible: true
   index_rebuild_count:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: index_rebuild_count
     primaryKey: false
+    unsigned: false
     visible: true
-indexes:
-  pg_stat_progress_cluster_pid_index:
-    name: pg_stat_progress_cluster_pid_index
-
