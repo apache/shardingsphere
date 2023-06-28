@@ -146,7 +146,7 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
     
     @Override
     public String toString() {
-        return null == table ? "" : table.getName();
+        return "SQLFederationTable";
     }
     
     @Override
