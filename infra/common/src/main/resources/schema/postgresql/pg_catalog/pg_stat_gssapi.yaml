@@ -19,10 +19,11 @@ name: pg_stat_gssapi
 columns:
   pid:
     caseSensitive: true
-    dataType: 5
+    dataType: 4
     generated: false
     name: pid
     primaryKey: false
+    unsigned: false
     visible: true
   gss_authenticated:
     caseSensitive: true
@@ -30,13 +31,15 @@ columns:
     generated: false
     name: gss_authenticated
     primaryKey: false
+    unsigned: false
     visible: true
   principal:
     caseSensitive: true
-    dataType: 2003
+    dataType: 12
     generated: false
     name: principal
     primaryKey: false
+    unsigned: false
     visible: true
   encrypted:
     caseSensitive: true
@@ -44,8 +47,5 @@ columns:
     generated: false
     name: encrypted
     primaryKey: false
+    unsigned: false
     visible: true
-indexes:
-  pg_stat_gssapi_pid_index:
-    name: pg_stat_gssapi_pid_index
-

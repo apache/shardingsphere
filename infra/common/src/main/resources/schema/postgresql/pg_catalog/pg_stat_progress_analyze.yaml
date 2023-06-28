@@ -19,10 +19,11 @@ name: pg_stat_progress_analyze
 columns:
   pid:
     caseSensitive: true
-    dataType: 5
+    dataType: 4
     generated: false
     name: pid
     primaryKey: false
+    unsigned: false
     visible: true
   datid:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: datid
     primaryKey: false
+    unsigned: false
     visible: true
   datname:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: datname
     primaryKey: false
+    unsigned: false
     visible: true
   relid:
     caseSensitive: true
@@ -44,55 +47,63 @@ columns:
     generated: false
     name: relid
     primaryKey: false
+    unsigned: false
     visible: true
   phase:
     caseSensitive: true
-    dataType: 2003
+    dataType: 12
     generated: false
     name: phase
     primaryKey: false
+    unsigned: false
     visible: true
   sample_blks_total:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: sample_blks_total
     primaryKey: false
+    unsigned: false
     visible: true
   sample_blks_scanned:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: sample_blks_scanned
     primaryKey: false
+    unsigned: false
     visible: true
   ext_stats_total:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: ext_stats_total
     primaryKey: false
+    unsigned: false
     visible: true
   ext_stats_computed:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: ext_stats_computed
     primaryKey: false
+    unsigned: false
     visible: true
   child_tables_total:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: child_tables_total
     primaryKey: false
+    unsigned: false
     visible: true
   child_tables_done:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: child_tables_done
     primaryKey: false
+    unsigned: false
     visible: true
   current_child_table_relid:
     caseSensitive: true
@@ -100,8 +111,5 @@ columns:
     generated: false
     name: current_child_table_relid
     primaryKey: false
+    unsigned: false
     visible: true
-indexes:
-  pg_stat_progress_analyze_pid_index:
-    name: pg_stat_progress_analyze_pid_index
-

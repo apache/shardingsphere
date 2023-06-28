@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: rngtypid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   rngsubtype:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: rngsubtype
     primaryKey: false
+    unsigned: false
     visible: true
   rngmultitypid:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: rngmultitypid
     primaryKey: false
+    unsigned: false
     visible: true
   rngcollation:
     caseSensitive: true
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: rngcollation
     primaryKey: false
+    unsigned: false
     visible: true
   rngsubopc:
     caseSensitive: true
@@ -51,6 +55,7 @@ columns:
     generated: false
     name: rngsubopc
     primaryKey: false
+    unsigned: false
     visible: true
   rngcanonical:
     caseSensitive: true
@@ -58,6 +63,7 @@ columns:
     generated: false
     name: rngcanonical
     primaryKey: false
+    unsigned: false
     visible: true
   rngsubdiff:
     caseSensitive: true
@@ -65,6 +71,7 @@ columns:
     generated: false
     name: rngsubdiff
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
   pg_range_rngmultitypid_index:

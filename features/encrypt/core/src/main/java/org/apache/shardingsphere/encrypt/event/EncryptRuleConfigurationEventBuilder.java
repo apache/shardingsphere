@@ -49,7 +49,7 @@ public final class EncryptRuleConfigurationEventBuilder implements RuleConfigura
             return Optional.of(createEncryptConfigEvent(databaseName, tableName.get(), event));
         }
         Optional<String> encryptorName = encryptRuleNodePath.getNamedItem(EncryptNodePath.ENCRYPTORS).getNameByActiveVersion(event.getKey());
-        return encryptorName.flatMap(optional -> Optional.of(createEncryptorEvent(databaseName, optional, event)));
+        return encryptorName.map(optional -> createEncryptorEvent(databaseName, optional, event));
     }
     
     private GovernanceEvent createEncryptConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {

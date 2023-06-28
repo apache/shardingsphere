@@ -49,7 +49,7 @@ public final class MaskRuleConfigurationEventBuilder implements RuleConfiguratio
             return Optional.of(createMaskConfigEvent(databaseName, tableName.get(), event));
         }
         Optional<String> algorithmName = maskRuleNodePath.getNamedItem(MaskNodePath.ALGORITHMS).getNameByActiveVersion(event.getKey());
-        return algorithmName.flatMap(optional -> Optional.of(createMaskAlgorithmEvent(databaseName, optional, event)));
+        return algorithmName.map(optional -> createMaskAlgorithmEvent(databaseName, optional, event));
     }
     
     private GovernanceEvent createMaskConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {

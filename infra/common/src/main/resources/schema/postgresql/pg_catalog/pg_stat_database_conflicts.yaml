@@ -23,6 +23,7 @@ columns:
     generated: false
     name: datid
     primaryKey: false
+    unsigned: false
     visible: true
   datname:
     caseSensitive: true
@@ -30,44 +31,45 @@ columns:
     generated: false
     name: datname
     primaryKey: false
+    unsigned: false
     visible: true
   confl_tablespace:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: confl_tablespace
     primaryKey: false
+    unsigned: false
     visible: true
   confl_lock:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: confl_lock
     primaryKey: false
+    unsigned: false
     visible: true
   confl_snapshot:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: confl_snapshot
     primaryKey: false
+    unsigned: false
     visible: true
   confl_bufferpin:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: confl_bufferpin
     primaryKey: false
+    unsigned: false
     visible: true
   confl_deadlock:
     caseSensitive: true
-    dataType: 5
+    dataType: -5
     generated: false
     name: confl_deadlock
     primaryKey: false
+    unsigned: false
     visible: true
-indexes:
-  pg_stat_database_conflicts_datid_index:
-    name: pg_stat_database_conflicts_datid_index
-  pg_stat_database_conflicts_datname_index:
-    name: pg_stat_database_conflicts_datname_index

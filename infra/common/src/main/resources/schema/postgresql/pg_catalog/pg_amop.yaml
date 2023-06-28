@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: oid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   amopfamily:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: amopfamily
     primaryKey: false
+    unsigned: false
     visible: true
   amoplefttype:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: amoplefttype
     primaryKey: false
+    unsigned: false
     visible: true
   amoprighttype:
     caseSensitive: true
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: amoprighttype
     primaryKey: false
+    unsigned: false
     visible: true
   amopstrategy:
     caseSensitive: true
@@ -51,6 +55,7 @@ columns:
     generated: false
     name: amopstrategy
     primaryKey: false
+    unsigned: false
     visible: true
   amoppurpose:
     caseSensitive: true
@@ -58,6 +63,7 @@ columns:
     generated: false
     name: amoppurpose
     primaryKey: false
+    unsigned: false
     visible: true
   amopopr:
     caseSensitive: true
@@ -65,6 +71,7 @@ columns:
     generated: false
     name: amopopr
     primaryKey: false
+    unsigned: false
     visible: true
   amopmethod:
     caseSensitive: true
@@ -72,6 +79,7 @@ columns:
     generated: false
     name: amopmethod
     primaryKey: false
+    unsigned: false
     visible: true
   amopsortfamily:
     caseSensitive: true
@@ -79,11 +87,12 @@ columns:
     generated: false
     name: amopsortfamily
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
   pg_amop_fam_strat_index:
     name: pg_amop_fam_strat_index
-  pg_amop_oid_index:
-    name: pg_amop_oid_index
   pg_amop_opr_fam_index:
     name: pg_amop_opr_fam_index
+  pg_amop_oid_index:
+    name: pg_amop_oid_index

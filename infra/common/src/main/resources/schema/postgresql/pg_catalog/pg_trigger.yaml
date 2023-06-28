@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: oid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   tgrelid:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: tgrelid
     primaryKey: false
+    unsigned: false
     visible: true
   tgparentid:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: tgparentid
     primaryKey: false
+    unsigned: false
     visible: true
   tgname:
     caseSensitive: true
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: tgname
     primaryKey: false
+    unsigned: false
     visible: true
   tgfoid:
     caseSensitive: true
@@ -51,6 +55,7 @@ columns:
     generated: false
     name: tgfoid
     primaryKey: false
+    unsigned: false
     visible: true
   tgtype:
     caseSensitive: true
@@ -58,6 +63,7 @@ columns:
     generated: false
     name: tgtype
     primaryKey: false
+    unsigned: false
     visible: true
   tgenabled:
     caseSensitive: true
@@ -65,6 +71,7 @@ columns:
     generated: false
     name: tgenabled
     primaryKey: false
+    unsigned: false
     visible: true
   tgisinternal:
     caseSensitive: true
@@ -72,6 +79,7 @@ columns:
     generated: false
     name: tgisinternal
     primaryKey: false
+    unsigned: false
     visible: true
   tgconstrrelid:
     caseSensitive: true
@@ -79,6 +87,7 @@ columns:
     generated: false
     name: tgconstrrelid
     primaryKey: false
+    unsigned: false
     visible: true
   tgconstrindid:
     caseSensitive: true
@@ -86,6 +95,7 @@ columns:
     generated: false
     name: tgconstrindid
     primaryKey: false
+    unsigned: false
     visible: true
   tgconstraint:
     caseSensitive: true
@@ -93,6 +103,7 @@ columns:
     generated: false
     name: tgconstraint
     primaryKey: false
+    unsigned: false
     visible: true
   tgdeferrable:
     caseSensitive: true
@@ -100,6 +111,7 @@ columns:
     generated: false
     name: tgdeferrable
     primaryKey: false
+    unsigned: false
     visible: true
   tginitdeferred:
     caseSensitive: true
@@ -107,6 +119,7 @@ columns:
     generated: false
     name: tginitdeferred
     primaryKey: false
+    unsigned: false
     visible: true
   tgnargs:
     caseSensitive: true
@@ -114,6 +127,7 @@ columns:
     generated: false
     name: tgnargs
     primaryKey: false
+    unsigned: false
     visible: true
   tgattr:
     caseSensitive: true
@@ -121,6 +135,7 @@ columns:
     generated: false
     name: tgattr
     primaryKey: false
+    unsigned: false
     visible: true
   tgargs:
     caseSensitive: true
@@ -128,6 +143,7 @@ columns:
     generated: false
     name: tgargs
     primaryKey: false
+    unsigned: false
     visible: true
   tgqual:
     caseSensitive: true
@@ -135,6 +151,7 @@ columns:
     generated: false
     name: tgqual
     primaryKey: false
+    unsigned: false
     visible: true
   tgoldtable:
     caseSensitive: true
@@ -142,6 +159,7 @@ columns:
     generated: false
     name: tgoldtable
     primaryKey: false
+    unsigned: false
     visible: true
   tgnewtable:
     caseSensitive: true
@@ -149,11 +167,12 @@ columns:
     generated: false
     name: tgnewtable
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
-  pg_trigger_oid_index:
-    name: pg_trigger_oid_index
   pg_trigger_tgconstraint_index:
     name: pg_trigger_tgconstraint_index
   pg_trigger_tgrelid_tgname_index:
     name: pg_trigger_tgrelid_tgname_index
+  pg_trigger_oid_index:
+    name: pg_trigger_oid_index

@@ -57,7 +57,7 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Collection<ShardingAuditStrategyConfiguration> result = new ArrayList<>(tableNames.size());
         for (String each : tableNames) {
-            rule.findTableRule(each).ifPresent(tableRule -> result.add(rule.getAuditStrategyConfiguration(tableRule)));
+            rule.findTableRule(each).ifPresent(optional -> result.add(rule.getAuditStrategyConfiguration(optional)));
         }
         return result;
     }
