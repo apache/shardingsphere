@@ -74,7 +74,7 @@ class ContextManagerTest {
     private MetaDataContexts metaDataContexts;
     
     private ContextManager contextManager;
-    
+
     @BeforeEach
     void setUp() {
         metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
@@ -121,14 +121,14 @@ class ContextManagerTest {
     @Test
     void assertAddDatabase() {
         contextManager.addDatabase("new_db");
-        verify(metaDataContexts.getMetaData()).addDatabase(eq("new_db"), any(DatabaseType.class), new ConfigurationProperties(new Properties()));
+        verify(metaDataContexts.getMetaData()).addDatabase(eq("new_db"), any(DatabaseType.class), any(ConfigurationProperties.class));
     }
     
     @Test
     void assertAddExistedDatabase() {
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         contextManager.addDatabase("foo_db");
-        verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class), new ConfigurationProperties(new Properties()));
+        verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class), any(ConfigurationProperties.class));
     }
     
     @Test
