@@ -41,7 +41,7 @@ public interface RuleConfigurationDecorator<T extends RuleConfiguration> extends
      * @param dataSources data sources
      * @param builtRules built rules
      * @param ruleConfig rule configuration to be decorated
-     * @return  decorated rule configuration
+     * @return decorated rule configuration
      */
     T decorate(String databaseName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, T ruleConfig);
 }
