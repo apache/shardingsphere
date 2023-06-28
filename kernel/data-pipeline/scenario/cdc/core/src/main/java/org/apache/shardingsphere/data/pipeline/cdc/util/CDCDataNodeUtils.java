@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -34,6 +36,7 @@ import java.util.Optional;
 /**
  * CDC data node utils.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CDCDataNodeUtils {
     
     /**
