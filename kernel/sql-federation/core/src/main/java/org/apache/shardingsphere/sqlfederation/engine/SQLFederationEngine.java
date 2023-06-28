@@ -174,13 +174,14 @@ public final class SQLFederationEngine implements AutoCloseable {
         Schema sqlFederationSchema = plannerContext.getValidator(schemaName).getCatalogReader().getRootSchema().plus().getSubSchema(schemaName);
         registerTableScanExecutor(sqlFederationSchema, prepareEngine, callback, federationContext, sqlFederationRule.getOptimizerContext());
         SQLStatementCompiler sqlStatementCompiler = new SQLStatementCompiler(plannerContext.getConverter(schemaName), plannerContext.getHepPlanner());
-        SQLFederationCompilerEngine compilerEngine = new SQLFederationCompilerEngine(databaseName, schemaName, sqlStatementCompiler, sqlFederationRule.getConfiguration().getExecutionPlanCache());
-        return compilerEngine.compile(buildCacheKey(federationContext, selectStatementContext), federationContext.getQueryContext().isUseCache());
+        SQLFederationCompilerEngine compilerEngine = new SQLFederationCompilerEngine(databaseName, schemaName, sqlFederationRule.getConfiguration().getExecutionPlanCache());
+        return compilerEngine.compile(buildCacheKey(federationContext, selectStatementContext, sqlStatementCompiler), federationContext.getQueryContext().isUseCache());
     }
     
-    private ExecutionPlanCacheKey buildCacheKey(final SQLFederationExecutorContext federationContext, final SelectStatementContext selectStatementContext) {
+    private ExecutionPlanCacheKey buildCacheKey(final SQLFederationExecutorContext federationContext, final SelectStatementContext selectStatementContext,
+                                                final SQLStatementCompiler sqlStatementCompiler) {
         ShardingSphereSchema schema = federationContext.getMetaData().getDatabase(databaseName).getSchema(schemaName);
-        ExecutionPlanCacheKey result = new ExecutionPlanCacheKey(federationContext.getQueryContext().getSql(), selectStatementContext.getSqlStatement());
+        ExecutionPlanCacheKey result = new ExecutionPlanCacheKey(federationContext.getQueryContext().getSql(), selectStatementContext.getSqlStatement(), sqlStatementCompiler);
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
             ShardingSphereTable table = schema.getTable(each);
             ShardingSpherePreconditions.checkState(null != table, () -> new NoSuchTableException(each));

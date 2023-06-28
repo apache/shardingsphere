@@ -37,16 +37,14 @@ public final class SQLStatementCompilerEngineFactory {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param sqlStatementCompiler sql statement compiler
      * @param cacheOption execution plan cache option
      * @return SQL statement compiler engine
      */
-    public static SQLStatementCompilerEngine getSQLStatementCompilerEngine(final String databaseName, final String schemaName, final SQLStatementCompiler sqlStatementCompiler,
-                                                                           final CacheOption cacheOption) {
-        String cacheKey = databaseName + "." + schemaName + "." + sqlStatementCompiler.hashCode();
+    public static SQLStatementCompilerEngine getSQLStatementCompilerEngine(final String databaseName, final String schemaName, final CacheOption cacheOption) {
+        String cacheKey = databaseName + "." + schemaName;
         SQLStatementCompilerEngine result = COMPILER_ENGINES.get(cacheKey);
         if (null == result) {
-            result = COMPILER_ENGINES.computeIfAbsent(cacheKey, unused -> new SQLStatementCompilerEngine(sqlStatementCompiler, cacheOption));
+            result = COMPILER_ENGINES.computeIfAbsent(cacheKey, unused -> new SQLStatementCompilerEngine(cacheOption));
         }
         return result;
     }

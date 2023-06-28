@@ -72,6 +72,8 @@ class SQLFederationCompilerEngineIT {
     
     private SQLFederationCompilerEngine sqlFederationCompilerEngine;
     
+    private SQLStatementCompiler sqlStatementCompiler;
+    
     @BeforeEach
     void init() {
         Map<String, ShardingSphereTable> tables = new HashMap<>();
@@ -87,9 +89,9 @@ class SQLFederationCompilerEngineIT {
         tables.put("t_product_detail", createTProductDetailMetaData());
         tables.put("multi_types_first", createMultiTypesFirstTableMetaData());
         tables.put("multi_types_second", createMultiTypesSecondTableMetaData());
-        sqlFederationCompilerEngine = new SQLFederationCompilerEngine(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME,
-                new SQLStatementCompiler(createSqlToRelConverter(new ShardingSphereSchema(tables, Collections.emptyMap())), SQLFederationPlannerUtils.createHepPlanner()),
-                DefaultSQLFederationRuleConfigurationBuilder.DEFAULT_EXECUTION_PLAN_CACHE_OPTION);
+        sqlStatementCompiler = new SQLStatementCompiler(createSqlToRelConverter(new ShardingSphereSchema(tables, Collections.emptyMap())), SQLFederationPlannerUtils.createHepPlanner());
+        sqlFederationCompilerEngine =
+                new SQLFederationCompilerEngine(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, DefaultSQLFederationRuleConfigurationBuilder.DEFAULT_EXECUTION_PLAN_CACHE_OPTION);
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {
@@ -253,7 +255,7 @@ class SQLFederationCompilerEngineIT {
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertCompile(final TestCase testcase) {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType())).parse(testcase.getSql(), false);
-        String actual = sqlFederationCompilerEngine.compile(new ExecutionPlanCacheKey(testcase.getSql(), sqlStatement), false).getPhysicalPlan()
+        String actual = sqlFederationCompilerEngine.compile(new ExecutionPlanCacheKey(testcase.getSql(), sqlStatement, sqlStatementCompiler), false).getPhysicalPlan()
                 .explain().replaceAll("[\r\n]", "");
         assertThat(actual, is(testcase.getAssertion().getExpectedResult()));
     }
