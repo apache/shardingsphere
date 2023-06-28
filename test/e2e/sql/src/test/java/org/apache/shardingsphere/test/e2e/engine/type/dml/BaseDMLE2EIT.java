@@ -43,6 +43,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -118,7 +119,7 @@ public abstract class BaseDMLE2EIT {
         assertThat(actual.getColumnCount(), is(expected.size()));
         int index = 1;
         for (DataSetColumn each : expected) {
-            assertThat(actual.getColumnLabel(index++), is(each.getName()));
+            assertThat(actual.getColumnLabel(index++).toUpperCase(), is(each.getName().toUpperCase()));
         }
     }
     
@@ -136,12 +137,13 @@ public abstract class BaseDMLE2EIT {
     }
     
     private void assertValue(final AssertionTestParameter testParam, final ResultSet actual, final int columnIndex, final String expected) throws SQLException {
-        if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
+        if (Arrays.asList(Types.DATE, Types.TIME, Types.TIMESTAMP, Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP_WITH_TIMEZONE).contains(actual.getMetaData().getColumnType(columnIndex))) {
             if (!E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
                 assertThat(dateTimeFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
             }
         } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
-                && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType()))) {
+                && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType())
+                || "Oracle".equals(testParam.getDatabaseType().getType()))) {
             assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
         } else if (isPostgreSQLOrOpenGaussMoney(testParam, actual.getMetaData().getColumnTypeName(columnIndex))) {
             assertThat(actual.getString(columnIndex), is(expected));

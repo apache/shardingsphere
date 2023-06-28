@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -46,6 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Data set environment manager.
@@ -70,10 +73,9 @@ public final class DataSetEnvironmentManager {
     
     /**
      * Fill data.
-     *
-     * @throws SQLException SQL exception
      */
-    public void fillData() throws SQLException {
+    @SneakyThrows({SQLException.class, InterruptedException.class, ExecutionException.class})
+    public void fillData() {
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         List<Callable<Void>> fillDataTasks = new LinkedList<>();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
@@ -87,15 +89,13 @@ public final class DataSetEnvironmentManager {
             String insertSQL;
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
                 DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(connection.getMetaData().getURL());
-                insertSQL = generateInsertSQL(databaseType.getQuoteCharacter().wrap(dataNode.getTableName()), dataSetMetaData.getColumns(), databaseType.getType());
+                insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetaData.getColumns(), databaseType);
             }
             fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
         }
-        try {
-            EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ignored) {
-            // CHECKSTYLE:ON
+        final List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
+        for (final Future<Void> future : futures) {
+            future.get();
         }
     }
     
@@ -111,14 +111,15 @@ public final class DataSetEnvironmentManager {
         return result;
     }
     
-    private String generateInsertSQL(final String tableName, final Collection<DataSetColumn> columnMetaData, final String databaseTypeName) {
+    private String generateInsertSQL(final String tableName, final Collection<DataSetColumn> columnMetaData, final DatabaseType databaseType) {
         List<String> columnNames = new LinkedList<>();
         List<String> placeholders = new LinkedList<>();
         for (DataSetColumn each : columnMetaData) {
-            columnNames.add(each.getName());
-            placeholders.add(generateProperPlaceholderExpression(databaseTypeName, each));
+            columnNames.add(databaseType.getQuoteCharacter().wrap(each.getName()));
+            placeholders.add(generateProperPlaceholderExpression(databaseType.getType(), each));
         }
-        return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, String.join(",", columnNames), String.join(",", placeholders));
+        return String.format("INSERT INTO %s (%s) VALUES (%s)", databaseType.getQuoteCharacter().wrap(tableName.toUpperCase()), String.join(",", columnNames).toUpperCase(),
+                String.join(",", placeholders));
     }
     
     private String generateProperPlaceholderExpression(final String databaseTypeName, final DataSetColumn dataSetColumn) {
@@ -134,16 +135,15 @@ public final class DataSetEnvironmentManager {
     /**
      * Clean data.
      */
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     public void cleanData() {
         List<Callable<Void>> deleteTasks = new LinkedList<>();
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
             deleteTasks.add(new DeleteTask(dataSourceMap.get(entry.getKey()), entry.getValue()));
         }
-        try {
-            EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ignored) {
-            // CHECKSTYLE:ON
+        final List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);
+        for (final Future<Void> future : futures) {
+            future.get();
         }
     }
     
@@ -214,7 +214,7 @@ public final class DataSetEnvironmentManager {
             try (Connection connection = dataSource.getConnection()) {
                 for (String each : tableNames) {
                     DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(connection.getMetaData().getURL());
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", databaseType.getQuoteCharacter().wrap(each)))) {
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", databaseType.getQuoteCharacter().wrap(each.toUpperCase())))) {
                         preparedStatement.execute();
                     }
                 }
