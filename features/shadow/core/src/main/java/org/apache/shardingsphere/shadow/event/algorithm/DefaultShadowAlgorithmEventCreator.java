@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.event.loadbalance;
+package org.apache.shardingsphere.shadow.event.algorithm;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 
 /**
- * Delete load-balance event.
+ * Default shadow algorithm event creator.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DeleteLoadBalanceEvent implements GovernanceEvent {
+public final class DefaultShadowAlgorithmEventCreator implements UniqueRuleItemChangedEventCreator {
     
-    private final String databaseName;
-    
-    private final String loadBalanceName;
+    @Override
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event) {
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return new AlterDefaultShadowAlgorithmNameEvent(databaseName, event.getKey(), event.getValue());
+        }
+        return new DeleteDefaultShadowAlgorithmNameEvent(databaseName);
+    }
 }

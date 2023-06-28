@@ -19,11 +19,9 @@ package org.apache.shardingsphere.single.event;
 
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
-import org.apache.shardingsphere.single.event.config.AddSingleTableEvent;
-import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
-import org.apache.shardingsphere.single.event.config.DeleteSingleTableEvent;
+import org.apache.shardingsphere.single.event.config.SingleTableEventCreator;
 import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
 
 /**
@@ -31,25 +29,19 @@ import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProv
  */
 public final class SingleRuleChangedEventCreator implements RuleChangedEventCreator {
     
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
+        return getUniqueRuleItemChangedEventCreator(itemType).create(databaseName, event);
+    }
+    
+    @SuppressWarnings("SwitchStatementWithTooFewBranches")
+    private UniqueRuleItemChangedEventCreator getUniqueRuleItemChangedEventCreator(final String itemType) {
         switch (itemType) {
             case SingleRuleNodePathProvider.TABLES:
-                return createTableEvent(databaseName, event);
+                return new SingleTableEventCreator();
             default:
                 throw new UnsupportedOperationException(itemType);
         }
-    }
-    
-    private GovernanceEvent createTableEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new AddSingleTableEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
-            return new AlterSingleTableEvent(databaseName, event.getKey(), event.getValue());
-        }
-        return new DeleteSingleTableEvent(databaseName);
     }
     
     @Override

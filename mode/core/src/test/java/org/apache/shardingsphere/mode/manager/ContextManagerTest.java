@@ -121,14 +121,14 @@ class ContextManagerTest {
     @Test
     void assertAddDatabase() {
         contextManager.addDatabase("new_db");
-        verify(metaDataContexts.getMetaData()).addDatabase(eq("new_db"), any(DatabaseType.class));
+        verify(metaDataContexts.getMetaData()).addDatabase(eq("new_db"), any(DatabaseType.class), any(ConfigurationProperties.class));
     }
     
     @Test
     void assertAddExistedDatabase() {
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         contextManager.addDatabase("foo_db");
-        verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
+        verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class), any(ConfigurationProperties.class));
     }
     
     @Test
