@@ -47,7 +47,7 @@ public enum KernelSupportedSystemTables {
     
     OPEN_GAUSS_INFORMATION_SCHEMA("openGauss", "information_schema", Collections.emptySet()),
     
-    OPEN_GAUSS_PG_CATALOG("openGauss", "pg_catalog", new HashSet<>(Arrays.asList("pg_class", "pg_namespace"))),
+    OPEN_GAUSS_PG_CATALOG("openGauss", "pg_catalog", new HashSet<>(Arrays.asList("pg_class", "pg_namespace", "pg_database", "pg_roles", "pg_tables", "pg_tablespace"))),
     
     OPEN_GAUSS_BLOCKCHAIN("openGauss", "blockchain", Collections.emptySet()),
     
