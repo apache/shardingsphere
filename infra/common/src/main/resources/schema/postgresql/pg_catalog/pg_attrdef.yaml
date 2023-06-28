@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: oid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   adrelid:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: adrelid
     primaryKey: false
+    unsigned: false
     visible: true
   adnum:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: adnum
     primaryKey: false
+    unsigned: false
     visible: true
   adbin:
     caseSensitive: true
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: adbin
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
   pg_attrdef_adrelid_adnum_index:
