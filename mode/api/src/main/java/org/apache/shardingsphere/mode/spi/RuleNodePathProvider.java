@@ -17,22 +17,19 @@
 
 package org.apache.shardingsphere.mode.spi;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 /**
- * Rule configuration event builder.
+ * Rule node path provider.
  */
-public interface RuleConfigurationEventBuilder {
+@SingletonSPI
+public interface RuleNodePathProvider {
     
     /**
-     * Build rule changed event.
-     *
-     * @param databaseName database name
-     * @param event data changed event
-     * @return rule changed event
+     * Get rule node path.
+     * 
+     * @return got rule node path
      */
-    Optional<GovernanceEvent> build(String databaseName, DataChangedEvent event);
+    RuleNodePath getRuleNodePath();
 }

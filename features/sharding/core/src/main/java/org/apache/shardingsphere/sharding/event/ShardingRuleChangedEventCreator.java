@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.sharding.event;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 import org.apache.shardingsphere.sharding.event.algorithm.auditor.AlterAuditorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.auditor.DeleteAuditorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.AlterKeyGeneratorEvent;
@@ -56,68 +54,54 @@ import org.apache.shardingsphere.sharding.event.table.binding.DeleteShardingTabl
 import org.apache.shardingsphere.sharding.event.table.sharding.AddShardingTableConfigurationEvent;
 import org.apache.shardingsphere.sharding.event.table.sharding.AlterShardingTableConfigurationEvent;
 import org.apache.shardingsphere.sharding.event.table.sharding.DeleteShardingTableConfigurationEvent;
-import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingNodePath;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 
 /**
- * Sharding rule configuration event builder.
+ * Sharding rule changed event creator.
  */
-public final class ShardingRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
-    
-    private final RuleNodePath shardingRuleNodePath = ShardingNodePath.getInstance();
+public final class ShardingRuleChangedEventCreator implements RuleChangedEventCreator {
     
     @Override
-    public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
-        if (!shardingRuleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
+        switch (itemType) {
+            case ShardingRuleNodePathProvider.TABLES:
+                return createShardingTableEvent(databaseName, itemName, event);
+            case ShardingRuleNodePathProvider.AUTO_TABLES:
+                return createShardingAutoTableEvent(databaseName, itemName, event);
+            case ShardingRuleNodePathProvider.BINDING_TABLES:
+                return createShardingTableReferenceConfigEvent(databaseName, itemName, event);
+            case ShardingRuleNodePathProvider.ALGORITHMS:
+                return createShardingAlgorithmEvent(databaseName, itemName, event);
+            case ShardingRuleNodePathProvider.KEY_GENERATORS:
+                return createKeyGeneratorEvent(databaseName, itemName, event);
+            case ShardingRuleNodePathProvider.AUDITORS:
+                return createAuditorEvent(databaseName, itemName, event);
+            default:
+                throw new UnsupportedOperationException(itemType);
         }
-        Optional<String> tableName = shardingRuleNodePath.getNamedItem(ShardingNodePath.TABLES).getNameByActiveVersion(event.getKey());
-        if (tableName.isPresent()) {
-            return Optional.of(createShardingTableConfigEvent(databaseName, tableName.get(), event));
-        }
-        Optional<String> autoTableName = shardingRuleNodePath.getNamedItem(ShardingNodePath.AUTO_TABLES).getNameByActiveVersion(event.getKey());
-        if (autoTableName.isPresent()) {
-            return Optional.of(createShardingAutoTableConfigEvent(databaseName, autoTableName.get(), event));
-        }
-        Optional<String> bindingTableName = shardingRuleNodePath.getNamedItem(ShardingNodePath.BINDING_TABLES).getNameByActiveVersion(event.getKey());
-        if (bindingTableName.isPresent()) {
-            return Optional.of(createShardingTableReferenceConfigEvent(databaseName, bindingTableName.get(), event));
-        }
-        if (shardingRuleNodePath.getUniqueItem(ShardingNodePath.DEFAULT_DATABASE_STRATEGY).isActiveVersionPath(event.getKey())) {
-            return Optional.of(createDefaultDatabaseStrategyConfigEvent(databaseName, event));
-        }
-        if (shardingRuleNodePath.getUniqueItem(ShardingNodePath.DEFAULT_TABLE_STRATEGY).isActiveVersionPath(event.getKey())) {
-            return Optional.of(createDefaultTableStrategyConfigEvent(databaseName, event));
-        }
-        if (shardingRuleNodePath.getUniqueItem(ShardingNodePath.DEFAULT_KEY_GENERATE_STRATEGY).isActiveVersionPath(event.getKey())) {
-            return Optional.of(createDefaultKeyGenerateStrategyConfigEvent(databaseName, event));
-        }
-        if (shardingRuleNodePath.getUniqueItem(ShardingNodePath.DEFAULT_AUDIT_STRATEGY).isActiveVersionPath(event.getKey())) {
-            return Optional.of(createDefaultShardingAuditorStrategyConfigEvent(databaseName, event));
-        }
-        if (shardingRuleNodePath.getUniqueItem(ShardingNodePath.DEFAULT_SHARDING_COLUMN).isActiveVersionPath(event.getKey())) {
-            return Optional.of(createDefaultShardingColumnEvent(databaseName, event));
-        }
-        Optional<String> algorithmName = shardingRuleNodePath.getNamedItem(ShardingNodePath.ALGORITHMS).getNameByActiveVersion(event.getKey());
-        if (algorithmName.isPresent()) {
-            return Optional.of(createShardingAlgorithmEvent(databaseName, algorithmName.get(), event));
-        }
-        Optional<String> keyGeneratorName = shardingRuleNodePath.getNamedItem(ShardingNodePath.KEY_GENERATORS).getNameByActiveVersion(event.getKey());
-        if (keyGeneratorName.isPresent()) {
-            return Optional.of(createKeyGeneratorEvent(databaseName, keyGeneratorName.get(), event));
-        }
-        Optional<String> auditorName = shardingRuleNodePath.getNamedItem(ShardingNodePath.AUDITORS).getNameByActiveVersion(event.getKey());
-        if (auditorName.isPresent()) {
-            return Optional.of(createAuditorEvent(databaseName, auditorName.get(), event));
-        }
-        if (shardingRuleNodePath.getUniqueItem(ShardingNodePath.SHARDING_CACHE).isActiveVersionPath(event.getKey())) {
-            return Optional.of(createShardingCacheEvent(databaseName, event));
-        }
-        return Optional.empty();
     }
     
-    private GovernanceEvent createShardingTableConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
+    @Override
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
+        switch (itemType) {
+            case ShardingRuleNodePathProvider.DEFAULT_DATABASE_STRATEGY:
+                return createDefaultDatabaseStrategyEvent(databaseName, event);
+            case ShardingRuleNodePathProvider.DEFAULT_TABLE_STRATEGY:
+                return createDefaultTableStrategyEvent(databaseName, event);
+            case ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY:
+                return createDefaultKeyGenerateStrategyEvent(databaseName, event);
+            case ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY:
+                return createDefaultShardingAuditorStrategyEvent(databaseName, event);
+            case ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN:
+                return createDefaultShardingColumnEvent(databaseName, event);
+            case ShardingRuleNodePathProvider.SHARDING_CACHE:
+                return createShardingCacheEvent(databaseName, event);
+            default:
+                throw new UnsupportedOperationException(itemType);
+        }
+    }
+    
+    private GovernanceEvent createShardingTableEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddShardingTableConfigurationEvent(databaseName, event.getKey(), event.getValue());
         }
@@ -127,7 +111,7 @@ public final class ShardingRuleConfigurationEventBuilder implements RuleConfigur
         return new DeleteShardingTableConfigurationEvent(databaseName, tableName);
     }
     
-    private GovernanceEvent createShardingAutoTableConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
+    private GovernanceEvent createShardingAutoTableEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddShardingAutoTableConfigurationEvent(databaseName, event.getKey(), event.getValue());
         }
@@ -145,56 +129,6 @@ public final class ShardingRuleConfigurationEventBuilder implements RuleConfigur
             return new AlterShardingTableReferenceConfigurationEvent(databaseName, tableName, event.getKey(), event.getValue());
         }
         return new DeleteShardingTableReferenceConfigurationEvent(databaseName, tableName);
-    }
-    
-    private GovernanceEvent createDefaultDatabaseStrategyConfigEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new AddDatabaseShardingStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
-            return new AlterDatabaseShardingStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
-        }
-        return new DeleteDatabaseShardingStrategyConfigurationEvent(databaseName);
-    }
-    
-    private GovernanceEvent createDefaultTableStrategyConfigEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new AddTableShardingStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
-            return new AlterTableShardingStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
-        }
-        return new DeleteTableShardingStrategyConfigurationEvent(databaseName);
-    }
-    
-    private GovernanceEvent createDefaultKeyGenerateStrategyConfigEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new AddKeyGenerateStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
-            return new AlterKeyGenerateStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
-        }
-        return new DeleteKeyGenerateStrategyConfigurationEvent(databaseName);
-    }
-    
-    private GovernanceEvent createDefaultShardingAuditorStrategyConfigEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new AddShardingAuditorStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
-            return new AlterShardingAuditorStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
-        }
-        return new DeleteShardingAuditorStrategyConfigurationEvent(databaseName);
-    }
-    
-    private GovernanceEvent createDefaultShardingColumnEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new AddDefaultShardingColumnEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
-            return new AlterDefaultShardingColumnEvent(databaseName, event.getKey(), event.getValue());
-        }
-        return new DeleteDefaultShardingColumnEvent(databaseName);
     }
     
     private GovernanceEvent createShardingAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
@@ -218,6 +152,56 @@ public final class ShardingRuleConfigurationEventBuilder implements RuleConfigur
         return new DeleteAuditorEvent(databaseName, algorithmName);
     }
     
+    private GovernanceEvent createDefaultDatabaseStrategyEvent(final String databaseName, final DataChangedEvent event) {
+        if (Type.ADDED == event.getType()) {
+            return new AddDatabaseShardingStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
+        }
+        if (Type.UPDATED == event.getType()) {
+            return new AlterDatabaseShardingStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
+        }
+        return new DeleteDatabaseShardingStrategyConfigurationEvent(databaseName);
+    }
+    
+    private GovernanceEvent createDefaultTableStrategyEvent(final String databaseName, final DataChangedEvent event) {
+        if (Type.ADDED == event.getType()) {
+            return new AddTableShardingStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
+        }
+        if (Type.UPDATED == event.getType()) {
+            return new AlterTableShardingStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
+        }
+        return new DeleteTableShardingStrategyConfigurationEvent(databaseName);
+    }
+    
+    private GovernanceEvent createDefaultKeyGenerateStrategyEvent(final String databaseName, final DataChangedEvent event) {
+        if (Type.ADDED == event.getType()) {
+            return new AddKeyGenerateStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
+        }
+        if (Type.UPDATED == event.getType()) {
+            return new AlterKeyGenerateStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
+        }
+        return new DeleteKeyGenerateStrategyConfigurationEvent(databaseName);
+    }
+    
+    private GovernanceEvent createDefaultShardingAuditorStrategyEvent(final String databaseName, final DataChangedEvent event) {
+        if (Type.ADDED == event.getType()) {
+            return new AddShardingAuditorStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
+        }
+        if (Type.UPDATED == event.getType()) {
+            return new AlterShardingAuditorStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
+        }
+        return new DeleteShardingAuditorStrategyConfigurationEvent(databaseName);
+    }
+    
+    private GovernanceEvent createDefaultShardingColumnEvent(final String databaseName, final DataChangedEvent event) {
+        if (Type.ADDED == event.getType()) {
+            return new AddDefaultShardingColumnEvent(databaseName, event.getKey(), event.getValue());
+        }
+        if (Type.UPDATED == event.getType()) {
+            return new AlterDefaultShardingColumnEvent(databaseName, event.getKey(), event.getValue());
+        }
+        return new DeleteDefaultShardingColumnEvent(databaseName);
+    }
+    
     private GovernanceEvent createShardingCacheEvent(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new AddShardingCacheConfigurationEvent(databaseName, event.getKey(), event.getValue());
@@ -226,5 +210,10 @@ public final class ShardingRuleConfigurationEventBuilder implements RuleConfigur
             return new AlterShardingCacheConfigurationEvent(databaseName, event.getKey(), event.getValue());
         }
         return new DeleteShardingCacheConfigurationEvent(databaseName);
+    }
+    
+    @Override
+    public String getType() {
+        return "sharding";
     }
 }

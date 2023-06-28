@@ -29,11 +29,15 @@ public final class RuleRootNodePath {
     private static final String RULE_NODE_PREFIX = "/[\\w\\-]+/[\\w\\-]+/rules/";
     
     @Getter
+    private final String ruleType;
+    
+    @Getter
     private final String nodePrefix;
     
     private final Pattern pathPattern;
     
     public RuleRootNodePath(final String ruleType) {
+        this.ruleType = ruleType;
         nodePrefix = RULE_NODE_PREFIX + ruleType + "/";
         pathPattern = Pattern.compile(nodePrefix + ".*");
     }
