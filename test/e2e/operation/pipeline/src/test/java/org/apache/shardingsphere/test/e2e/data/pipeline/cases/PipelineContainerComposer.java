@@ -226,7 +226,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
                 .replace("${user}", getUsername())
                 .replace("${password}", getPassword())
                 .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, true));
-        proxyExecuteWithLog(registerStorageUnitTemplate, 2);
+        proxyExecuteWithLog(registerStorageUnitTemplate, 1);
     }
     
     /**
@@ -235,9 +235,18 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @param distSQL dist SQL
      * @throws SQLException SQL exception
      */
-    // TODO Use registerStorageUnit instead, and remove the method
+    // TODO Use registerStorageUnit instead, and remove the method, keep it now
     public void addResource(final String distSQL) throws SQLException {
         proxyExecuteWithLog(distSQL, 2);
+    }
+    
+    /**
+     * Show storage units names.
+     *
+     * @return storage units names
+     */
+    public List<String> showStorageUnitsName() {
+        return queryForListWithLog(proxyDataSource, "SHOW STORAGE UNITS").stream().map(each -> String.valueOf(each.get("name"))).collect(Collectors.toList());
     }
     
     /**
