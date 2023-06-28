@@ -37,10 +37,10 @@ class PostgreSQLShardingSphereStatisticsBuilderTest {
     @Test
     void assertBuild() {
         ShardingSphereMetaData metaData = mockMetaData();
-        ShardingSphereStatistics shardingSphereData = new PostgreSQLShardingSphereStatisticsBuilder().build(metaData);
-        assertTrue(shardingSphereData.getDatabaseData().containsKey("logic_db"));
-        assertTrue(shardingSphereData.getDatabaseData().get("logic_db").getSchemaData().containsKey("pg_catalog"));
-        assertTrue(shardingSphereData.getDatabaseData().get("logic_db").getSchemaData().get("pg_catalog").getTableData().containsKey("pg_class"));
+        ShardingSphereStatistics statistics = new PostgreSQLShardingSphereStatisticsBuilder().build(metaData);
+        assertTrue(statistics.getDatabaseData().containsKey("logic_db"));
+        assertTrue(statistics.getDatabaseData().get("logic_db").getSchemaData().containsKey("pg_catalog"));
+        assertTrue(statistics.getDatabaseData().get("logic_db").getSchemaData().get("pg_catalog").getTableData().containsKey("pg_class"));
     }
     
     private ShardingSphereMetaData mockMetaData() {

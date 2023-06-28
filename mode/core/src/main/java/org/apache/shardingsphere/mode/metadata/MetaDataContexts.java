@@ -42,15 +42,15 @@ public final class MetaDataContexts implements AutoCloseable {
     
     private final ShardingSphereMetaData metaData;
     
-    private final ShardingSphereStatistics shardingSphereData;
+    private final ShardingSphereStatistics statistics;
     
     public MetaDataContexts(final MetaDataBasedPersistService persistService, final ShardingSphereMetaData metaData) {
         this.persistService = persistService;
         this.metaData = metaData;
-        this.shardingSphereData = initShardingSphereData(metaData);
+        this.statistics = initStatistics(metaData);
     }
     
-    private ShardingSphereStatistics initShardingSphereData(final ShardingSphereMetaData metaData) {
+    private ShardingSphereStatistics initStatistics(final ShardingSphereMetaData metaData) {
         if (metaData.getDatabases().isEmpty()) {
             return new ShardingSphereStatistics();
         }
@@ -59,16 +59,16 @@ public final class MetaDataContexts implements AutoCloseable {
                 .flatMap(protocolType -> TypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType())
                         .map(builder -> builder.build(metaData)))
                 .orElseGet(ShardingSphereStatistics::new);
-        Optional<ShardingSphereStatistics> loadedShardingSphereData = Optional.ofNullable(persistService.getShardingSphereDataPersistService())
+        Optional<ShardingSphereStatistics> loadedStatistics = Optional.ofNullable(persistService.getShardingSphereDataPersistService())
                 .flatMap(shardingSphereDataPersistService -> shardingSphereDataPersistService.load(metaData));
-        loadedShardingSphereData.ifPresent(optional -> useLoadedToReplaceInit(result, optional));
+        loadedStatistics.ifPresent(optional -> useLoadedToReplaceInit(result, optional));
         return result;
     }
     
-    private void useLoadedToReplaceInit(final ShardingSphereStatistics initShardingSphereData, final ShardingSphereStatistics loadedShardingSphereData) {
-        for (Entry<String, ShardingSphereDatabaseData> entry : initShardingSphereData.getDatabaseData().entrySet()) {
-            if (loadedShardingSphereData.getDatabaseData().containsKey(entry.getKey())) {
-                useLoadedToReplaceInitByDatabaseData(entry.getValue(), loadedShardingSphereData.getDatabaseData().get(entry.getKey()));
+    private void useLoadedToReplaceInit(final ShardingSphereStatistics initStatistics, final ShardingSphereStatistics loadedStatistics) {
+        for (Entry<String, ShardingSphereDatabaseData> entry : initStatistics.getDatabaseData().entrySet()) {
+            if (loadedStatistics.getDatabaseData().containsKey(entry.getKey())) {
+                useLoadedToReplaceInitByDatabaseData(entry.getValue(), loadedStatistics.getDatabaseData().get(entry.getKey()));
             }
         }
     }
