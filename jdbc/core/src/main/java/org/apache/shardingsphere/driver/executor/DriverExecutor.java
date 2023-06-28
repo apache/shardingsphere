@@ -52,7 +52,7 @@ public final class DriverExecutor implements AutoCloseable {
         rawExecutor = new RawExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext());
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName());
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(database.getProtocolType(), connection.getDatabaseName());
-        sqlFederationEngine = new SQLFederationEngine(connection.getDatabaseName(), schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(), jdbcExecutor);
+        sqlFederationEngine = new SQLFederationEngine(connection.getDatabaseName(), schemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
         trafficExecutor = new TrafficExecutor();
     }
     
