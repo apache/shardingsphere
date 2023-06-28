@@ -61,8 +61,7 @@ public final class NewYamlSQLParserRuleConfigurationSwapper implements NewYamlGl
             }
             return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLParserRuleConfiguration.class));
         }
-        return new SQLParserRuleConfiguration(false, DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION,
-                DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION);
+        return new DefaultSQLParserRuleConfigurationBuilder().build();
     }
     
     private SQLParserRuleConfiguration swapToObject(final YamlSQLParserRuleConfiguration yamlConfig) {
