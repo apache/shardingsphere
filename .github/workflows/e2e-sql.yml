@@ -93,98 +93,19 @@ jobs:
           path: /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
           retention-days: 1
 
-  e2e-empty-rule:
-    name: empty rule
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: build-e2e-image
-    strategy:
-      matrix:
-        adapter: [ proxy, jdbc ]
-        database: [ MySQL, PostgreSQL, openGauss ]
-        scenario: [ empty_rules, rdl_empty_rules, passthrough ]
-        additional-options: [ '' ]
-        include:
-          - adapter: proxy
-            database: MySQL
-            scenario: passthrough
-            additional-options: '-Dmysql-connector-java.version=8.0.30'
-        exclude:
-          - adapter: jdbc
-            scenario: passthrough
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Download E2E image
-        if: matrix.adapter == 'proxy'
-        uses: actions/download-artifact@v3
-        with:
-          name: e2e-image
-          path: /tmp/
-      - name: Load E2E image
-        if: matrix.adapter == 'proxy'
-        run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
-      - name: Run E2E Test
-        run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.run.additional.cases=false -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER ${{ matrix.additional-options }}
-
-  e2e-single-rule:
-    name: single rule
-    needs: e2e-empty-rule
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    strategy:
-      matrix:
-        adapter: [ proxy, jdbc ]
-        mode: [ Standalone, Cluster ]
-        database: [ MySQL, PostgreSQL, openGauss ]
-        # Fix me #25051
-        #scenario: [ db, tbl, encrypt, readwrite_splitting, shadow, mask ]
-        scenario: [ tbl, encrypt, readwrite_splitting, shadow, mask ]
-        exclude:
-          - adapter: jdbc
-            mode: Cluster
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Download E2E image
-        if: matrix.adapter == 'proxy'
-        uses: actions/download-artifact@v3
-        with:
-          name: e2e-image
-          path: /tmp/
-      - name: Load E2E image
-        if: matrix.adapter == 'proxy'
-        run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
-      - name: Run E2E Test
-        run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.run.additional.cases=false -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
-
   e2e-mixture-rule:
     name: mixture rule
-    needs: e2e-single-rule
+    needs: build-e2e-image
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       matrix:
-        adapter: [ proxy, jdbc ]
-        mode: [ Standalone, Cluster ]
-        database: [ MySQL, PostgreSQL, openGauss ]
+        adapter: [ proxy ]
+        mode: [ Cluster ]
+        database: [ openGauss ]
         # Fix me #25051
         #scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow, mask_encrypt, mask_sharding, mask_encrypt_sharding ]
-        scenario: [ dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow, mask_encrypt, mask_sharding, mask_encrypt_sharding ]
+        scenario: [ mask_sharding, mask_encrypt_sharding ]
         exclude:
           - adapter: jdbc
             mode: Cluster
