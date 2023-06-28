@@ -18,14 +18,11 @@
 package org.apache.shardingsphere.mask.event;
 
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
-import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
-import org.apache.shardingsphere.mask.event.table.AddMaskTableEvent;
-import org.apache.shardingsphere.mask.event.table.AlterMaskTableEvent;
-import org.apache.shardingsphere.mask.event.table.DeleteMaskTableEvent;
+import org.apache.shardingsphere.mask.event.algorithm.MaskEventCreator;
+import org.apache.shardingsphere.mask.event.table.MaskTableCreator;
 import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 
 /**
@@ -35,31 +32,18 @@ public final class MaskRuleChangedEventCreator implements RuleChangedEventCreato
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
+        return getNamedRuleItemChangedEventCreator(itemType).create(databaseName, itemName, event);
+    }
+    
+    private NamedRuleItemChangedEventCreator getNamedRuleItemChangedEventCreator(final String itemType) {
         switch (itemType) {
             case MaskRuleNodePathProvider.TABLES:
-                return createTableEvent(databaseName, itemName, event);
+                return new MaskTableCreator();
             case MaskRuleNodePathProvider.ALGORITHMS:
-                return createAlgorithmEvent(databaseName, itemName, event);
+                return new MaskEventCreator();
             default:
                 throw new UnsupportedOperationException(itemType);
         }
-    }
-    
-    private GovernanceEvent createTableEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new AddMaskTableEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
-            return new AlterMaskTableEvent(databaseName, tableName, event.getKey(), event.getValue());
-        }
-        return new DeleteMaskTableEvent(databaseName, tableName);
-    }
-    
-    private GovernanceEvent createAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return new AlterMaskAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue());
-        }
-        return new DeleteMaskAlgorithmEvent(databaseName, algorithmName);
     }
     
     @Override

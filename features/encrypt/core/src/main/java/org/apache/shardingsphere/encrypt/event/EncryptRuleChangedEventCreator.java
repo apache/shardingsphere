@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.encrypt.event;
 
-import org.apache.shardingsphere.encrypt.event.encryptor.AlterEncryptorEvent;
-import org.apache.shardingsphere.encrypt.event.encryptor.DeleteEncryptorEvent;
-import org.apache.shardingsphere.encrypt.event.table.AddEncryptTableEvent;
-import org.apache.shardingsphere.encrypt.event.table.AlterEncryptTableEvent;
-import org.apache.shardingsphere.encrypt.event.table.DeleteEncryptTableEvent;
+import org.apache.shardingsphere.encrypt.event.encryptor.EncryptorEventCreator;
+import org.apache.shardingsphere.encrypt.event.table.EncryptTableEventCreator;
 import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 
 /**
@@ -35,31 +32,18 @@ public final class EncryptRuleChangedEventCreator implements RuleChangedEventCre
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
+        return getNamedRuleItemChangedEventCreator(itemType).create(databaseName, itemName, event);
+    }
+    
+    private NamedRuleItemChangedEventCreator getNamedRuleItemChangedEventCreator(final String itemType) {
         switch (itemType) {
             case EncryptRuleNodePathProvider.TABLES:
-                return createTableEvent(databaseName, itemName, event);
+                return new EncryptTableEventCreator();
             case EncryptRuleNodePathProvider.ENCRYPTORS:
-                return createEncryptorEvent(databaseName, itemName, event);
+                return new EncryptorEventCreator();
             default:
                 throw new UnsupportedOperationException(itemType);
         }
-    }
-    
-    private GovernanceEvent createTableEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new AddEncryptTableEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
-            return new AlterEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue());
-        }
-        return new DeleteEncryptTableEvent(databaseName, groupName);
-    }
-    
-    private GovernanceEvent createEncryptorEvent(final String databaseName, final String encryptorName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return new AlterEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue());
-        }
-        return new DeleteEncryptorEvent(databaseName, encryptorName);
     }
     
     @Override
