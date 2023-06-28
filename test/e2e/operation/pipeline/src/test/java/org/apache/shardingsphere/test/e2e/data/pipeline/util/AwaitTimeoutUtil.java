@@ -15,34 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.swapper;
+package org.apache.shardingsphere.test.e2e.data.pipeline.util;
 
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 
-import java.util.Collection;
-import java.util.Optional;
-
-/**
- * TODO Rename YamlConfigurationSwapper when metadata structure adjustment completed. #25485
- * YAML configuration swapper.
- *
- * @param <T> type of swapped object
- */
-public interface NewYamlConfigurationSwapper<T> {
+public final class AwaitTimeoutUtil {
     
     /**
-    * Swap to YAML data node.
-    *
-    * @param data data to be swapped
-    * @return YAML data nodes
-    */
-    Collection<YamlDataNode> swapToDataNodes(T data);
-    
-    /**
-     * Swap from data node to object.
+     * Get timeout, openGauss metadata reload slowly need special handling.
      *
-     * @param dataNodes data nodes
-     * @return swapped object
+     * @param databaseType database type.
+     * @return timeout
      */
-    Optional<T> swapToObject(Collection<YamlDataNode> dataNodes);
+    public static long getTimeout(final DatabaseType databaseType) {
+        return databaseType instanceof OpenGaussDatabaseType ? 60 : 10;
+    }
 }

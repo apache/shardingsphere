@@ -34,7 +34,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NewYamlShadowRuleConfigurationSwapperTest {
     
@@ -77,8 +77,7 @@ class NewYamlShadowRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        ShadowRuleConfiguration result = swapper.swapToObject(config);
-        assertTrue(result == null);
+        assertFalse(swapper.swapToObject(config).isPresent());
     }
     
     @Test
@@ -92,7 +91,7 @@ class NewYamlShadowRuleConfigurationSwapperTest {
                 + "- FIXTURE\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/default_algorithm_name/versions/0", "FIXTURE"));
-        ShadowRuleConfiguration result = swapper.swapToObject(config);
+        ShadowRuleConfiguration result = swapper.swapToObject(config).get();
         assertThat(result.getDataSources().size(), is(1));
         assertThat(result.getDataSources().iterator().next().getName(), is("foo_db"));
         assertThat(result.getDataSources().iterator().next().getProductionDataSourceName(), is("ds_0"));

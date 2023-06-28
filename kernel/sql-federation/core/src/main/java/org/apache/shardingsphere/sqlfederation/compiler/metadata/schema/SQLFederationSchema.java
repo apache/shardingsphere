@@ -54,10 +54,10 @@ public final class SQLFederationSchema extends AbstractSchema {
         Map<String, Table> result = new LinkedHashMap<>(schema.getTables().size(), 1F);
         for (ShardingSphereTable each : schema.getTables().values()) {
             if (schema.containsView(each.getName())) {
-                result.put(each.getName(), getViewTable(schema, each, protocolType, javaTypeFactory));
+                result.put(each.getName().toLowerCase(), getViewTable(schema, each, protocolType, javaTypeFactory));
             } else {
                 // TODO implement table statistic logic after using custom operators
-                result.put(each.getName(), new SQLFederationTable(each, new SQLFederationStatistic(), protocolType));
+                result.put(each.getName().toLowerCase(), new SQLFederationTable(each, new SQLFederationStatistic(), protocolType));
             }
         }
         return result;
