@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,11 +34,46 @@ import java.util.Map;
 @Getter
 public enum KernelSupportedSystemTables {
     
+    MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys_config"))),
+    
     MYSQL_SHARDING_SPHERE("MySQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
     
-    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", new HashSet<>(Arrays.asList("pg_class", "pg_namespace"))),
+    POSTGRESQL_INFORMATION_SCHEMA("PostgreSQL", "information_schema", new HashSet<>(Arrays.asList("columns", "tables", "views"))),
+    
+    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", new HashSet<>(Arrays.asList("pg_aggregate", "pg_class", "pg_database", "pg_tables", "pg_inherits",
+            "pg_tablespace", "pg_trigger", "pg_namespace", "pg_roles"))),
     
     POSTGRESQL_SHARDING_SPHERE("PostgreSQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
+    
+    OPEN_GAUSS_INFORMATION_SCHEMA("openGauss", "information_schema", Collections.emptySet()),
+    
+    OPEN_GAUSS_PG_CATALOG("openGauss", "pg_catalog", new HashSet<>(Arrays.asList("pg_class", "pg_namespace"))),
+    
+    OPEN_GAUSS_BLOCKCHAIN("openGauss", "blockchain", Collections.emptySet()),
+    
+    OPEN_GAUSS_CSTORE("openGauss", "cstore", Collections.emptySet()),
+    
+    OPEN_GAUSS_DB4AI("openGauss", "db4ai", Collections.emptySet()),
+    
+    OPEN_GAUSS_DBE_PERF("openGauss", "dbe_perf", Collections.emptySet()),
+    
+    OPEN_GAUSS_DBE_PLDEBUGGER("openGauss", "dbe_pldebugger", Collections.emptySet()),
+    
+    OPEN_GAUSS_GAUSSDB("openGauss", "gaussdb", Collections.emptySet()),
+    
+    OPEN_GAUSS_ORACLE("openGauss", "oracle", Collections.emptySet()),
+    
+    OPEN_GAUSS_PKG_SERVICE("openGauss", "pkg_service", Collections.emptySet()),
+    
+    OPEN_GAUSS_SNAPSHOT("openGauss", "snapshot", Collections.emptySet()),
+    
+    OPEN_GAUSS_PLDEVELOPER("openGauss", "dbe_pldeveloper", Collections.emptySet()),
+    
+    OPEN_GAUSS_PG_TOAST("openGauss", "pg_toast", Collections.emptySet()),
+    
+    OPEN_GAUSS_PKG_UTIL("openGauss", "pkg_util", Collections.emptySet()),
+    
+    OPEN_GAUSS_SQLADVISOR("openGauss", "sqladvisor", Collections.emptySet()),
     
     OPEN_GAUSS_SHARDING_SPHERE("openGauss", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information")));
     
