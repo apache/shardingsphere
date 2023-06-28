@@ -74,7 +74,7 @@ class ContextManagerTest {
     private MetaDataContexts metaDataContexts;
     
     private ContextManager contextManager;
-
+    
     @BeforeEach
     void setUp() {
         metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
