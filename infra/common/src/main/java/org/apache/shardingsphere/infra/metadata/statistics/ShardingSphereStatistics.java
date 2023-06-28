@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data;
+package org.apache.shardingsphere.infra.metadata.statistics;
 
 import lombok.Getter;
 
@@ -23,10 +23,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * ShardingSphere data.
+ * ShardingSphere statistics.
  */
 @Getter
-public final class ShardingSphereData {
+public final class ShardingSphereStatistics {
     
     private final Map<String, ShardingSphereDatabaseData> databaseData = new LinkedHashMap<>();
     

@@ -25,10 +25,10 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * ShardingSphere data job worker.
+ * ShardingSphere statistics job worker.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereDataJobWorker {
+public final class ShardingSphereStatisticsJobWorker {
     
     private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
     
@@ -47,6 +47,6 @@ public final class ShardingSphereDataJobWorker {
     }
     
     private static void startScheduleThread(final ContextManager contextManager) {
-        new ShardingSphereDataScheduleCollector(contextManager).start();
+        new ShardingSphereStatisticsScheduleCollector(contextManager).start();
     }
 }
