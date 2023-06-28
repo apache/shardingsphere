@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.broadcast.event;
 
-import org.apache.shardingsphere.broadcast.event.config.AddBroadcastTableEvent;
-import org.apache.shardingsphere.broadcast.event.config.AlterBroadcastTableEvent;
-import org.apache.shardingsphere.broadcast.event.config.DeleteBroadcastTableEvent;
+import org.apache.shardingsphere.broadcast.event.config.BroadcastTableEventCreator;
 import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 
 /**
@@ -31,25 +29,19 @@ import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
  */
 public final class BroadcastRuleChangedEventCreator implements RuleChangedEventCreator {
     
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
+        return getUniqueRuleItemChangedEventCreator(itemType).create(databaseName, event);
+    }
+    
+    @SuppressWarnings("SwitchStatementWithTooFewBranches")
+    private UniqueRuleItemChangedEventCreator getUniqueRuleItemChangedEventCreator(final String itemType) {
         switch (itemType) {
             case BroadcastRuleNodePathProvider.TABLES:
-                return createTableEvent(databaseName, event);
+                return new BroadcastTableEventCreator();
             default:
                 throw new UnsupportedOperationException(itemType);
         }
-    }
-    
-    private GovernanceEvent createTableEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new AddBroadcastTableEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
-            return new AlterBroadcastTableEvent(databaseName, event.getKey(), event.getValue());
-        }
-        return new DeleteBroadcastTableEvent(databaseName);
     }
     
     @Override

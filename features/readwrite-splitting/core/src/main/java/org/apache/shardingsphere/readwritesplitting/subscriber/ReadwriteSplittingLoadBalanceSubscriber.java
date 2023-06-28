@@ -29,8 +29,8 @@ import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChan
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadBalanceEvent;
-import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadBalancerEvent;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalancerEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.LinkedHashMap;
@@ -55,7 +55,7 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChange
      * @param event alter load-balance event
      */
     @Subscribe
-    public synchronized void renew(final AlterLoadBalanceEvent event) {
+    public synchronized void renew(final AlterLoadBalancerEvent event) {
         if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -71,7 +71,7 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChange
      * @param event delete load-balance event
      */
     @Subscribe
-    public synchronized void renew(final DeleteLoadBalanceEvent event) {
+    public synchronized void renew(final DeleteLoadBalancerEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

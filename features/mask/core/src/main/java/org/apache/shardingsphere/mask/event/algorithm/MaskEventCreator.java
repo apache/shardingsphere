@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.event.loadbalance;
+package org.apache.shardingsphere.mask.event.algorithm;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 
 /**
- * Alter load-balance event.
+ * Mask event creator.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterLoadBalanceEvent implements GovernanceEvent {
+public final class MaskEventCreator implements NamedRuleItemChangedEventCreator {
     
-    private final String databaseName;
-    
-    private final String loadBalanceName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    @Override
+    public GovernanceEvent create(final String databaseName, final String algorithmName, final DataChangedEvent event) {
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return new AlterMaskAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue());
+        }
+        return new DeleteMaskAlgorithmEvent(databaseName, algorithmName);
+    }
 }
