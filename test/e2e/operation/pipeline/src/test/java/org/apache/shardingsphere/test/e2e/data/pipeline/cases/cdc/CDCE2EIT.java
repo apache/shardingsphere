@@ -49,6 +49,7 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.Pipeline
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
+import org.apache.shardingsphere.test.e2e.data.pipeline.util.AwaitTimeoutUtil;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -105,8 +106,8 @@ class CDCE2EIT {
             for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {
                 containerComposer.registerStorageUnit(each);
             }
-            Awaitility.await().ignoreExceptions().atMost(10L, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> containerComposer.showStorageUnitsName()
-                    .containsAll(Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)));
+            Awaitility.await().ignoreExceptions().atMost(AwaitTimeoutUtil.getTimeout(containerComposer.getDatabaseType()), TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS)
+                    .until(() -> containerComposer.showStorageUnitsName().containsAll(Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)));
             createOrderTableRule(containerComposer);
             try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
                 initSchemaAndTable(containerComposer, connection, 3);
