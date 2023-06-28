@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.config;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.exception.MetaDataSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Properties;
 
 /**
- * Proxy global configuration.
+ * Duplicated data source exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ProxyGlobalConfiguration {
+public final class DuplicatedDataSourceException extends MetaDataSQLException {
     
-    private final Map<String, DataSource> dataSources;
+    private static final long serialVersionUID = -8215195072425201836L;
     
-    private final Collection<RuleConfiguration> rules;
-    
-    private final Properties properties;
-    
-    private final Collection<String> labels;
+    public DuplicatedDataSourceException(final String databaseName, final Collection<String> dataSourceNames) {
+        super(XOpenSQLState.DUPLICATE, 1, "Duplicated data source `%s` in database `%s` and global data sources.", dataSourceNames, databaseName);
+    }
 }
