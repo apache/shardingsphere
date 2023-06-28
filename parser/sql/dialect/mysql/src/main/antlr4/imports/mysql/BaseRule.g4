@@ -457,6 +457,7 @@ identifierKeywordsUnambiguous
     | SWAPS
     | SWITCHES
     | SYSTEM
+    | TABLE
     | TABLES
     | TABLESPACE
     | TABLE_CHECKSUM

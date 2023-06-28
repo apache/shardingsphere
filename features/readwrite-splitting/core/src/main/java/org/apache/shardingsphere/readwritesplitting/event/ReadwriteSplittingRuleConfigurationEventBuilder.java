@@ -49,7 +49,7 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
             return Optional.of(createReadwriteSplittingConfigEvent(databaseName, groupName.get(), event));
         }
         Optional<String> loadBalancerName = readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodePath.LOAD_BALANCERS).getNameByActiveVersion(event.getKey());
-        return loadBalancerName.flatMap(optional -> Optional.of(createLoadBalanceEvent(databaseName, optional, event)));
+        return loadBalancerName.map(optional -> createLoadBalanceEvent(databaseName, optional, event));
     }
     
     private GovernanceEvent createReadwriteSplittingConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {

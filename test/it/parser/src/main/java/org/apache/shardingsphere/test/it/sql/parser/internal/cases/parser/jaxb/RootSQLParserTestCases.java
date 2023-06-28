@@ -261,6 +261,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropTypeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.FetchStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.ExecuteStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.FlashbackDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.FlashbackTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.ListenStatementTestCase;
@@ -1559,6 +1560,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "move")
     private final List<MoveStatementTestCase> moveTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "execute")
+    private final List<ExecuteStatementTestCase> executeTestCases = new LinkedList<>();
     
     @XmlElement(name = "fetch")
     private final List<FetchStatementTestCase> fetchTestCases = new LinkedList<>();

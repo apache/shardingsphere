@@ -18,11 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
-import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.SelectDatabaseExecutor;
-import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.SelectTableExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
@@ -45,17 +42,7 @@ import java.util.Optional;
  */
 public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecutorCreator {
     
-    private static final String PG_TABLESPACE = "pg_tablespace";
-    
-    private static final String PG_DATABASE = "pg_database";
-    
-    private static final String PG_TRIGGER = "pg_trigger";
-    
-    private static final String PG_INHERITS = "pg_inherits";
-    
     private static final String PG_CLASS = "pg_class";
-    
-    private static final String PG_PREFIX = "pg_";
     
     private static final String PG_NAMESPACE = "pg_namespace";
     
@@ -78,17 +65,6 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
             if (KERNEL_SUPPORTED_TABLES.containsAll(selectedTableNames)) {
                 return Optional.empty();
             }
-            if (selectedTableNames.contains(PG_DATABASE)) {
-                return Optional.of(new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql, parameters));
-            }
-            if (isQueryPgTable(selectedTableNames)) {
-                return Optional.of(new SelectTableExecutor(sql, parameters));
-            }
-            for (String each : selectedTableNames) {
-                if (each.startsWith(PG_PREFIX)) {
-                    return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
-                }
-            }
         }
         if (sqlStatement instanceof SetStatement) {
             return Optional.of(new PostgreSQLSetVariableAdminExecutor((SetStatement) sqlStatement));
@@ -97,11 +73,6 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
             return Optional.of(new PostgreSQLResetVariableAdminExecutor((ResetParameterStatement) sqlStatement));
         }
         return Optional.empty();
-    }
-    
-    private boolean isQueryPgTable(final Collection<String> selectedTableNames) {
-        boolean isComplexQueryTable = selectedTableNames.contains(PG_CLASS) && selectedTableNames.contains(PG_TRIGGER) && selectedTableNames.contains(PG_INHERITS);
-        return isComplexQueryTable || selectedTableNames.contains(PG_TABLESPACE);
     }
     
     private Collection<String> getSelectedTableNames(final SelectStatement sqlStatement) {

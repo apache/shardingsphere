@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.listener;
 
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDataCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * ShardingSphere data collector fixture.
  */
-public final class ShardingSphereDataCollectorFixture implements ShardingSphereDataCollector {
+public final class ShardingSphereDataCollectorFixture implements ShardingSphereStatisticsCollector {
     
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
