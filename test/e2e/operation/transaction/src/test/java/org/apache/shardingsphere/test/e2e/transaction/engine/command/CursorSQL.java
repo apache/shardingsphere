@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.metadata.converter;
+package org.apache.shardingsphere.test.e2e.transaction.engine.command;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Collections;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
 
-/**
- * Broadcast node path.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BroadcastNodePath {
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class CursorSQL {
     
-    public static final String TABLES = "tables";
+    @XmlAttribute(name = "cursor-name")
+    private String cursorName;
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("broadcast", Collections.singleton(TABLES), Collections.emptyList());
-    
-    /**
-     * Get instance of rule node path.
-     * 
-     * @return got instance
-     */
-    public static RuleNodePath getInstance() {
-        return INSTANCE;
-    }
+    @XmlValue
+    private String sql;
 }

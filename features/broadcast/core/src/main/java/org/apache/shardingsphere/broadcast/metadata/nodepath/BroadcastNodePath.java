@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.metadata.converter;
+package org.apache.shardingsphere.broadcast.metadata.nodepath;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Encrypt node path.
+ * Broadcast node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptNodePath {
+public final class BroadcastNodePath {
     
     public static final String TABLES = "tables";
     
-    public static final String ENCRYPTORS = "encryptors";
-    
-    private static final RuleNodePath INSTANCE = new RuleNodePath("encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath("broadcast", Collections.emptyList(), Collections.singleton(TABLES));
     
     /**
      * Get instance of rule node path.
-     *
+     * 
      * @return got instance
      */
     public static RuleNodePath getInstance() {

@@ -15,29 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule;
+package org.apache.shardingsphere.mask.metadata.nodepath;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
- * Rule changed subscriber.
+ * Mask node path.
  */
-public interface RuleChangedSubscriber {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MaskNodePath {
+    
+    public static final String TABLES = "tables";
+    
+    public static final String ALGORITHMS = "algorithms";
+    
+    private static final RuleNodePath INSTANCE = new RuleNodePath("mask", Arrays.asList(TABLES, ALGORITHMS), Collections.emptyList());
     
     /**
-     * Set databases.
-     * 
-     * @param databases databases to be set
+     * Get instance of rule node path.
+     *
+     * @return got instance
      */
-    void setDatabases(Map<String, ShardingSphereDatabase> databases);
-    
-    /**
-     * Set instance context.
-     * 
-     * @param instanceContext instance context to be set
-     */
-    void setInstanceContext(InstanceContext instanceContext);
+    public static RuleNodePath getInstance() {
+        return INSTANCE;
+    }
 }

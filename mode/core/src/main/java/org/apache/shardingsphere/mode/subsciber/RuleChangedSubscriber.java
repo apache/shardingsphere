@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.metadata.converter;
+package org.apache.shardingsphere.mode.subsciber;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
-
-import java.util.Collections;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
- * Single node path.
+ * Rule changed subscriber.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SingleNodePath {
-    
-    public static final String TABLES = "tables";
-    
-    private static final RuleNodePath INSTANCE = new RuleNodePath("single", Collections.emptyList(), Collections.singleton(TABLES));
+public interface RuleChangedSubscriber {
     
     /**
-     * Get instance of rule node path.
-     *
-     * @return got instance
+     * Set context manager.
+     * 
+     * @param contextManager context manager
      */
-    public static RuleNodePath getInstance() {
-        return INSTANCE;
-    }
+    void setContextManager(ContextManager contextManager);
+    
+    /**
+     * Set instance context.
+     * 
+     * @param instanceContext instance context to be set
+     */
+    void setInstanceContext(InstanceContext instanceContext);
 }

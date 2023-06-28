@@ -83,7 +83,7 @@ public final class CDCSchemaTableUtils {
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
             if (!systemSchemas.contains(entry.getKey())) {
                 entry.getValue().getAllTableNames().stream().filter(tableName -> tableName.equals(table.getTable())).findFirst()
-                        .ifPresent(tableName -> result.computeIfAbsent(entry.getKey(), ignored -> new HashSet<>()).add(tableName));
+                        .ifPresent(optional -> result.computeIfAbsent(entry.getKey(), ignored -> new HashSet<>()).add(optional));
             }
         }
         return result;

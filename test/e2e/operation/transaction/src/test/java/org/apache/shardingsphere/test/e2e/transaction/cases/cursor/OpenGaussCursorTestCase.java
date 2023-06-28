@@ -64,119 +64,133 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     
     @Override
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
+        // TODO fix #25236
         try (Connection connection = getDataSource().getConnection()) {
             singleTableCursorTest(connection);
             singleTableCursorOrderByTest(connection);
             broadcastTableCursorTest(connection);
             broadcastTableCursorTest2(connection);
-            // TODO fix #26299
-            // broadcastAndSingleTablesCursorTest(connection);
+            broadcastAndSingleTablesCursorTest(connection);
             broadcastAndSingleTablesCursorTest2(connection);
             viewCursorTest(connection);
         }
     }
     
     private void singleTableCursorTest(final Connection connection) throws SQLException {
+        String cursorName = cursorSQLCommand.getSingleTableCursor().getCursorName();
+        String sql = cursorSQLCommand.getSingleTableCursor().getSql();
         executeWithLog(connection, "start transaction;");
-        executeWithLog(connection, cursorSQLCommand.getSingleTableCursor());
-        executeWithLog(connection, "close test;");
-        executeWithLog(connection, cursorSQLCommand.getSingleTableCursor());
-        fetch(connection, 1);
-        fetch(connection, 2);
-        fetch(connection, 3);
-        fetch(connection, 4);
-        fetchOverTest(connection);
+        executeWithLog(connection, sql);
+        executeWithLog(connection, String.format("close %s;", cursorName));
+        executeWithLog(connection, sql);
+        fetch(connection, 1, cursorName);
+        fetch(connection, 2, cursorName);
+        fetch(connection, 3, cursorName);
+        fetch(connection, 4, cursorName);
+        fetchOverTest(connection, cursorName);
         executeWithLog(connection, "rollback;");
     }
     
-    private void fetchOverTest(final Connection connection) throws SQLException {
-        fetchOver(connection);
-        fetchOver(connection);
-        fetchForwardOver(connection);
-        fetchForwardAllOver(connection);
-        fetchForwardOver(connection);
+    private void fetchOverTest(final Connection connection, final String cursorName) throws SQLException {
+        fetchOver(connection, cursorName);
+        fetchOver(connection, cursorName);
+        fetchForwardOver(connection, cursorName);
+        fetchForwardAllOver(connection, cursorName);
+        fetchForwardOver(connection, cursorName);
     }
     
     private void singleTableCursorOrderByTest(final Connection connection) throws SQLException {
+        String cursorName = cursorSQLCommand.getSingleTableCursorOrderBy().getCursorName();
+        String sql = cursorSQLCommand.getSingleTableCursorOrderBy().getSql();
         executeWithLog(connection, "start transaction;");
-        executeWithLog(connection, cursorSQLCommand.getSingleTableCursorOrderBy());
-        executeWithLog(connection, "close test;");
-        executeWithLog(connection, cursorSQLCommand.getSingleTableCursorOrderBy());
-        fetch(connection, 4);
-        fetch(connection, 3);
-        fetch(connection, 2);
-        fetch(connection, 1);
-        fetchOverTest(connection);
+        executeWithLog(connection, sql);
+        executeWithLog(connection, String.format("close %s;", cursorName));
+        executeWithLog(connection, sql);
+        fetch(connection, 4, cursorName);
+        fetch(connection, 3, cursorName);
+        fetch(connection, 2, cursorName);
+        fetch(connection, 1, cursorName);
+        fetchOverTest(connection, cursorName);
         executeWithLog(connection, "rollback;");
     }
     
     private void broadcastTableCursorTest(final Connection connection) throws SQLException {
+        String cursorName = cursorSQLCommand.getBroadcastTablesCursor().getCursorName();
+        String sql = cursorSQLCommand.getBroadcastTablesCursor().getSql();
         executeWithLog(connection, "start transaction;");
-        executeWithLog(connection, cursorSQLCommand.getBroadcastTablesCursor());
-        executeWithLog(connection, "close test;");
-        executeWithLog(connection, cursorSQLCommand.getBroadcastTablesCursor());
-        fetch(connection, 10101);
-        fetch(connection, 10102);
-        fetch(connection, 10201);
-        fetch(connection, 10202);
-        fetchOverTest(connection);
+        executeWithLog(connection, sql);
+        executeWithLog(connection, String.format("close %s;", cursorName));
+        executeWithLog(connection, sql);
+        fetch(connection, 10101, cursorName);
+        fetch(connection, 10102, cursorName);
+        fetch(connection, 10201, cursorName);
+        fetch(connection, 10202, cursorName);
+        fetchOverTest(connection, cursorName);
         executeWithLog(connection, "rollback;");
     }
     
     private void broadcastTableCursorTest2(final Connection connection) throws SQLException {
+        String cursorName = cursorSQLCommand.getBroadcastTablesCursor2().getCursorName();
+        String sql = cursorSQLCommand.getBroadcastTablesCursor2().getSql();
         executeWithLog(connection, "start transaction;");
-        executeWithLog(connection, cursorSQLCommand.getBroadcastTablesCursor2());
-        executeWithLog(connection, "close test;");
-        executeWithLog(connection, cursorSQLCommand.getBroadcastTablesCursor2());
-        fetch(connection, 10101);
-        fetch(connection, 10102);
-        fetch(connection, 10201);
-        fetch(connection, 10202);
-        fetchOverTest(connection);
+        executeWithLog(connection, sql);
+        executeWithLog(connection, String.format("close %s;", cursorName));
+        executeWithLog(connection, sql);
+        fetch(connection, 10101, cursorName);
+        fetch(connection, 10102, cursorName);
+        fetch(connection, 10201, cursorName);
+        fetch(connection, 10202, cursorName);
+        fetchOverTest(connection, cursorName);
         executeWithLog(connection, "rollback;");
     }
     
     private void broadcastAndSingleTablesCursorTest(final Connection connection) throws SQLException {
+        String cursorName = cursorSQLCommand.getBroadcastAndSingleTablesCursor().getCursorName();
+        String sql = cursorSQLCommand.getBroadcastAndSingleTablesCursor().getSql();
         executeWithLog(connection, "start transaction;");
-        executeWithLog(connection, cursorSQLCommand.getBroadcastAndSingleTablesCursor());
-        executeWithLog(connection, "close test;");
-        executeWithLog(connection, cursorSQLCommand.getBroadcastAndSingleTablesCursor());
-        fetch(connection, 1);
-        fetch(connection, 2);
-        fetch(connection, 3);
-        fetch(connection, 4);
-        fetchOverTest(connection);
+        executeWithLog(connection, sql);
+        executeWithLog(connection, String.format("close %s;", cursorName));
+        executeWithLog(connection, sql);
+        fetch(connection, 1, cursorName);
+        fetch(connection, 2, cursorName);
+        fetch(connection, 3, cursorName);
+        fetch(connection, 4, cursorName);
+        fetchOverTest(connection, cursorName);
         executeWithLog(connection, "rollback;");
     }
     
     private void broadcastAndSingleTablesCursorTest2(final Connection connection) throws SQLException {
+        String cursorName = cursorSQLCommand.getBroadcastTablesCursor2().getCursorName();
+        String sql = cursorSQLCommand.getBroadcastTablesCursor2().getSql();
         executeWithLog(connection, "start transaction;");
-        executeWithLog(connection, cursorSQLCommand.getBroadcastTablesCursor2());
-        executeWithLog(connection, "close test;");
-        executeWithLog(connection, cursorSQLCommand.getBroadcastTablesCursor2());
-        fetch(connection, 10101);
-        fetch(connection, 10102);
-        fetch(connection, 10201);
-        fetch(connection, 10202);
-        fetchOverTest(connection);
+        executeWithLog(connection, sql);
+        executeWithLog(connection, String.format("close %s;", cursorName));
+        executeWithLog(connection, sql);
+        fetch(connection, 10101, cursorName);
+        fetch(connection, 10102, cursorName);
+        fetch(connection, 10201, cursorName);
+        fetch(connection, 10202, cursorName);
+        fetchOverTest(connection, cursorName);
         executeWithLog(connection, "rollback;");
     }
     
     private void viewCursorTest(final Connection connection) throws SQLException {
+        String cursorName = cursorSQLCommand.getViewCursor().getCursorName();
+        String sql = cursorSQLCommand.getViewCursor().getSql();
         executeWithLog(connection, "start transaction;");
-        executeWithLog(connection, cursorSQLCommand.getViewCursor());
-        executeWithLog(connection, "close test;");
-        executeWithLog(connection, cursorSQLCommand.getViewCursor());
-        fetch(connection, 1);
-        fetch(connection, 1);
-        fetch(connection, 2);
-        fetch(connection, 2);
-        fetchOverTest(connection);
+        executeWithLog(connection, sql);
+        executeWithLog(connection, String.format("close %s;", cursorName));
+        executeWithLog(connection, sql);
+        fetch(connection, 1, cursorName);
+        fetch(connection, 1, cursorName);
+        fetch(connection, 2, cursorName);
+        fetch(connection, 2, cursorName);
+        fetchOverTest(connection, cursorName);
         executeWithLog(connection, "rollback;");
     }
     
-    private void fetch(final Connection connection, final int expectedId) throws SQLException {
-        ResultSet resultSet = executeQueryWithLog(connection, "fetch test;");
+    private void fetch(final Connection connection, final int expectedId, final String cursorName) throws SQLException {
+        ResultSet resultSet = executeQueryWithLog(connection, String.format("fetch %s;", cursorName));
         if (resultSet.next()) {
             assertThat(resultSet.getInt("id"), is(expectedId));
         } else {
@@ -184,15 +198,15 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         }
     }
     
-    private void fetchOver(final Connection connection) throws SQLException {
-        assertFalse(executeQueryWithLog(connection, "fetch test;").next());
+    private void fetchOver(final Connection connection, final String cursorName) throws SQLException {
+        assertFalse(executeQueryWithLog(connection, String.format("fetch %s;", cursorName)).next());
     }
     
-    private void fetchForwardOver(final Connection connection) throws SQLException {
-        assertFalse(executeQueryWithLog(connection, "fetch forward from test;").next());
+    private void fetchForwardOver(final Connection connection, final String cursorName) throws SQLException {
+        assertFalse(executeQueryWithLog(connection, String.format("fetch forward from %s;", cursorName)).next());
     }
     
-    private void fetchForwardAllOver(final Connection connection) throws SQLException {
-        assertFalse(executeQueryWithLog(connection, "fetch forward all from test;").next());
+    private void fetchForwardAllOver(final Connection connection, final String cursorName) throws SQLException {
+        assertFalse(executeQueryWithLog(connection, String.format("fetch forward all from %s;", cursorName)).next());
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.table.AddMaskTableEvent;
 import org.apache.shardingsphere.mask.event.table.AlterMaskTableEvent;
 import org.apache.shardingsphere.mask.event.table.DeleteMaskTableEvent;
-import org.apache.shardingsphere.mask.metadata.converter.MaskNodePath;
+import org.apache.shardingsphere.mask.metadata.nodepath.MaskNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
@@ -45,30 +45,27 @@ public final class MaskRuleConfigurationEventBuilder implements RuleConfiguratio
             return Optional.empty();
         }
         Optional<String> tableName = maskRuleNodePath.getNamedItem(MaskNodePath.TABLES).getNameByActiveVersion(event.getKey());
-        if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createMaskConfigEvent(databaseName, tableName.get(), event);
+        if (tableName.isPresent()) {
+            return Optional.of(createMaskConfigEvent(databaseName, tableName.get(), event));
         }
         Optional<String> algorithmName = maskRuleNodePath.getNamedItem(MaskNodePath.ALGORITHMS).getNameByActiveVersion(event.getKey());
-        if (algorithmName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createMaskAlgorithmEvent(databaseName, algorithmName.get(), event);
-        }
-        return Optional.empty();
+        return algorithmName.map(optional -> createMaskAlgorithmEvent(databaseName, optional, event));
     }
     
-    private Optional<GovernanceEvent> createMaskConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
+    private GovernanceEvent createMaskConfigEvent(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddMaskTableEvent(databaseName, event.getKey(), event.getValue()));
+            return new AddMaskTableEvent(databaseName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterMaskTableEvent(databaseName, tableName, event.getKey(), event.getValue()));
+            return new AlterMaskTableEvent(databaseName, tableName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteMaskTableEvent(databaseName, tableName));
+        return new DeleteMaskTableEvent(databaseName, tableName);
     }
     
-    private Optional<GovernanceEvent> createMaskAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
+    private GovernanceEvent createMaskAlgorithmEvent(final String databaseName, final String algorithmName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterMaskAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue()));
+            return new AlterMaskAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteMaskAlgorithmEvent(databaseName, algorithmName));
+        return new DeleteMaskAlgorithmEvent(databaseName, algorithmName);
     }
 }

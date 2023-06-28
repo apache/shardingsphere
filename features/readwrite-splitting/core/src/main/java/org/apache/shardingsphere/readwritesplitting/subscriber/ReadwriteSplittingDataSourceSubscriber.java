@@ -22,9 +22,10 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleChangedSubscriber;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
@@ -34,11 +35,10 @@ import org.apache.shardingsphere.readwritesplitting.event.datasource.DeleteReadw
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Readwrite-splitting configuration subscriber.
@@ -47,7 +47,7 @@ import java.util.LinkedList;
 @Setter
 public final class ReadwriteSplittingDataSourceSubscriber implements RuleChangedSubscriber {
     
-    private Map<String, ShardingSphereDatabase> databases;
+    private ContextManager contextManager;
     
     private InstanceContext instanceContext;
     
@@ -64,7 +64,7 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
         ReadwriteSplittingDataSourceRuleConfiguration needToAddedConfig = swapDataSource(event.getGroupName(),
                 instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(),
-                getConfig(databases.get(event.getDatabaseName()), needToAddedConfig)));
+                getConfig(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName()), needToAddedConfig)));
     }
     
     /**
@@ -77,7 +77,7 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
         if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ReadwriteSplittingDataSourceRuleConfiguration needToAlteredConfig = swapDataSource(event.getGroupName(),
                 instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
@@ -93,7 +93,10 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
      */
     @Subscribe
     public synchronized void renew(final DeleteReadwriteSplittingDataSourceEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(event.getGroupName()));
         instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
@@ -106,7 +109,7 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
         }
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSourceConfigs = new LinkedList<>();
         dataSourceConfigs.add(needToAddedConfig);
-        return new ReadwriteSplittingRuleConfiguration(dataSourceConfigs, Collections.emptyMap());
+        return new ReadwriteSplittingRuleConfiguration(dataSourceConfigs, new LinkedHashMap<>());
     }
     
     private ReadwriteSplittingRuleConfiguration getConfig(final ReadwriteSplittingRuleConfiguration result, final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
@@ -115,6 +118,8 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
             dataSources.add(dataSourceRuleConfig);
             return new ReadwriteSplittingRuleConfiguration(dataSources, result.getLoadBalancers());
         }
+        // TODO refactor DistSQL to only persist config
+        result.getDataSources().removeIf(each -> each.getName().equals(dataSourceRuleConfig.getName()));
         result.getDataSources().add(dataSourceRuleConfig);
         return result;
     }

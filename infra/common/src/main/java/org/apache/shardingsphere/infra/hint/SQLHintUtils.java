@@ -99,7 +99,7 @@ public final class SQLHintUtils {
      * @return Hint value context
      */
     public static Optional<HintValueContext> extractHint(final String sql) {
-        if (null == sql || !startWithHint(sql)) {
+        if (!startWithHint(sql)) {
             return Optional.empty();
         }
         HintValueContext result = new HintValueContext();
@@ -136,7 +136,7 @@ public final class SQLHintUtils {
     }
     
     private static boolean startWithHint(final String sql) {
-        return sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getKey()) || sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getAlias());
+        return null != sql && (sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getKey()) || sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getAlias()));
     }
     
     private static boolean containsPropertyKey(final Properties hintProperties, final SQLHintPropertiesKey sqlHintPropertiesKey) {

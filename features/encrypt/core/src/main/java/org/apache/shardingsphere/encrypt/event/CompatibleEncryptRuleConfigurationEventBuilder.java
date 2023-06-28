@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.event.compatible.encryptor.DeleteCompat
 import org.apache.shardingsphere.encrypt.event.compatible.table.AddCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.AlterCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.DeleteCompatibleEncryptTableEvent;
-import org.apache.shardingsphere.encrypt.metadata.converter.CompatibleEncryptNodePath;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.CompatibleEncryptNodePath;
 import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -47,30 +47,27 @@ public final class CompatibleEncryptRuleConfigurationEventBuilder implements Rul
             return Optional.empty();
         }
         Optional<String> tableName = encryptRuleNodePath.getNamedItem(CompatibleEncryptNodePath.TABLES).getNameByActiveVersion(event.getKey());
-        if (tableName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createEncryptConfigEvent(databaseName, tableName.get(), event);
+        if (tableName.isPresent()) {
+            return Optional.of(createEncryptConfigEvent(databaseName, tableName.get(), event));
         }
         Optional<String> encryptorName = encryptRuleNodePath.getNamedItem(CompatibleEncryptNodePath.ENCRYPTORS).getNameByActiveVersion(event.getKey());
-        if (encryptorName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createEncryptorEvent(databaseName, encryptorName.get(), event);
-        }
-        return Optional.empty();
+        return encryptorName.map(optional -> createEncryptorEvent(databaseName, optional, event));
     }
     
-    private Optional<GovernanceEvent> createEncryptConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
+    private GovernanceEvent createEncryptConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddCompatibleEncryptTableEvent(databaseName, event.getKey(), event.getValue()));
+            return new AddCompatibleEncryptTableEvent(databaseName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterCompatibleEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue()));
+            return new AlterCompatibleEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteCompatibleEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue()));
+        return new DeleteCompatibleEncryptTableEvent(databaseName, groupName);
     }
     
-    private Optional<GovernanceEvent> createEncryptorEvent(final String databaseName, final String encryptorName, final DataChangedEvent event) {
+    private GovernanceEvent createEncryptorEvent(final String databaseName, final String encryptorName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterCompatibleEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue()));
+            return new AlterCompatibleEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteCompatibleEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue()));
+        return new DeleteCompatibleEncryptorEvent(databaseName, encryptorName);
     }
 }

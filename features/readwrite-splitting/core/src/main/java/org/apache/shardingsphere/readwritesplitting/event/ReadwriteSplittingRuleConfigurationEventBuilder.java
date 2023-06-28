@@ -28,7 +28,7 @@ import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwr
 import org.apache.shardingsphere.readwritesplitting.event.datasource.DeleteReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
-import org.apache.shardingsphere.readwritesplitting.metadata.converter.ReadwriteSplittingNodePath;
+import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingNodePath;
 
 import java.util.Optional;
 
@@ -45,30 +45,27 @@ public final class ReadwriteSplittingRuleConfigurationEventBuilder implements Ru
             return Optional.empty();
         }
         Optional<String> groupName = readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodePath.DATA_SOURCES).getNameByActiveVersion(event.getKey());
-        if (groupName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createReadwriteSplittingConfigEvent(databaseName, groupName.get(), event);
+        if (groupName.isPresent()) {
+            return Optional.of(createReadwriteSplittingConfigEvent(databaseName, groupName.get(), event));
         }
         Optional<String> loadBalancerName = readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingNodePath.LOAD_BALANCERS).getNameByActiveVersion(event.getKey());
-        if (loadBalancerName.isPresent() && !Strings.isNullOrEmpty(event.getValue())) {
-            return createLoadBalanceEvent(databaseName, loadBalancerName.get(), event);
-        }
-        return Optional.empty();
+        return loadBalancerName.map(optional -> createLoadBalanceEvent(databaseName, optional, event));
     }
     
-    private Optional<GovernanceEvent> createReadwriteSplittingConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
+    private GovernanceEvent createReadwriteSplittingConfigEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new AddReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue()));
+            return new AddReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue()));
+            return new AlterReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteReadwriteSplittingDataSourceEvent(databaseName, groupName));
+        return new DeleteReadwriteSplittingDataSourceEvent(databaseName, groupName);
     }
     
-    private Optional<GovernanceEvent> createLoadBalanceEvent(final String databaseName, final String loadBalancerName, final DataChangedEvent event) {
+    private GovernanceEvent createLoadBalanceEvent(final String databaseName, final String loadBalancerName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterLoadBalanceEvent(databaseName, loadBalancerName, event.getKey(), event.getValue()));
+            return new AlterLoadBalanceEvent(databaseName, loadBalancerName, event.getKey(), event.getValue());
         }
-        return Optional.of(new DeleteLoadBalanceEvent(databaseName, loadBalancerName));
+        return new DeleteLoadBalanceEvent(databaseName, loadBalancerName);
     }
 }
