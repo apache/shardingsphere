@@ -97,6 +97,7 @@ public final class ShardingSphereDatabase {
      * 
      * @param name system database name
      * @param protocolType protocol database type
+     * @param props configuration properties                    
      * @return system database meta data
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final ConfigurationProperties props) {
