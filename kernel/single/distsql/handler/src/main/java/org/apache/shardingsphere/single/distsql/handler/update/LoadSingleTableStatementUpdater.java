@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.single.distsql.handler.update;
 
-import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -35,13 +34,16 @@ import org.apache.shardingsphere.single.distsql.handler.exception.MissingRequire
 import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
 import org.apache.shardingsphere.single.exception.InvalidSingleRuleConfigurationException;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -58,25 +60,20 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     }
     
     private void checkTables(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig, final String defaultSchemaName) {
+        Optional<SingleRule> currentSingleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
+        Collection<String> currentSingleTables = currentSingleRule.isPresent() ? currentSingleRule.get().getSingleTableDataNodes().keySet() : Collections.emptyList();
         Collection<SingleTableSegment> tableSegments = sqlStatement.getTables();
         boolean isSchemaSupportedDatabaseType = database.getProtocolType() instanceof SchemaSupportedDatabaseType;
         ShardingSphereSchema schema = database.getSchema(defaultSchemaName);
         for (SingleTableSegment each : tableSegments) {
-            checkTableRuleExist(currentRuleConfig, each);
             checkDatabaseTypeAndTableNodeStyle(isSchemaSupportedDatabaseType, each);
             if (SingleTableConstants.ASTERISK.equals(each.getTableName())) {
                 continue;
             }
-            ShardingSpherePreconditions.checkState(!schema.containsTable(each.getTableName()), () -> new TableExistsException(each.getTableName()));
+            boolean isNotSingleTable = schema.containsTable(each.getTableName()) && !currentSingleTables.contains(each.getTableName());
+            ShardingSpherePreconditions.checkState(isNotSingleTable, () -> new InvalidSingleRuleConfigurationException(String.format("Table `%s` existed and is not a single table in database `%s`",
+                    each.getTableName(), database.getName())));
         }
-    }
-    
-    private void checkTableRuleExist(final SingleRuleConfiguration currentRuleConfig, final SingleTableSegment segment) {
-        if (null == currentRuleConfig) {
-            return;
-        }
-        ShardingSpherePreconditions.checkState(!currentRuleConfig.getTables().contains(segment.toString()),
-                () -> new InvalidSingleRuleConfigurationException(String.format("Duplicated table definition `%s`", segment)));
     }
     
     private void checkDatabaseTypeAndTableNodeStyle(final boolean isSchemaSupportedDatabaseType, final SingleTableSegment singleTableSegment) {
@@ -92,8 +89,8 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
         }
     }
     
-    private Collection<String> getRequiredTables(final LoadSingleTableStatement sqlStatement) {
-        return sqlStatement.getTables().stream().map(SingleTableSegment::toString).collect(Collectors.toSet());
+    private Collection<String> getRequiredTables(final SingleRuleConfiguration currentRuleConfig, final LoadSingleTableStatement sqlStatement) {
+        return sqlStatement.getTables().stream().map(SingleTableSegment::toString).filter(each -> !currentRuleConfig.getTables().contains(each)).collect(Collectors.toSet());
     }
     
     private Collection<String> getRequiredDataSources(final LoadSingleTableStatement sqlStatement) {
@@ -146,7 +143,7 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     @Override
     public SingleRuleConfiguration buildToBeCreatedRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final LoadSingleTableStatement sqlStatement) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
-        result.getTables().addAll(getRequiredTables(sqlStatement));
+        result.getTables().addAll(getRequiredTables(currentRuleConfig, sqlStatement));
         return result;
     }
     

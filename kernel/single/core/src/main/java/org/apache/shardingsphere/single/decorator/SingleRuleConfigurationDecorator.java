@@ -162,7 +162,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
                         () -> new InvalidSingleRuleConfigurationException(String.format("Data source `%s` does not exist in database `%s`", each.getDataSourceName(), databaseName)));
             }
             ShardingSpherePreconditions.checkState(!excludedTables.contains(each.getTableName()),
-                    () -> new InvalidSingleRuleConfigurationException(String.format("Table `%s` already exists or cannot be loaded as a single table in database `%s`",
+                    () -> new InvalidSingleRuleConfigurationException(String.format("Table `%s` existed and is not a single table in database `%s`",
                             each.getTableName(), databaseName)));
         }
     }
