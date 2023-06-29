@@ -74,25 +74,6 @@ public final class SingleTableDataNodeLoader {
         return loadSpecifiedDataNodes(actualDataNodes, featureRequiredSingleTables, expectedTableMap);
     }
     
-    private static void checkExpectedTablesExist(final Map<String, Collection<DataNode>> actualDataNodes, final Collection<DataNode> expectedDataNodes) {
-        for (final DataNode each : expectedDataNodes) {
-            if (SingleTableConstants.ASTERISK.equals(each.getTableName())) {
-                continue;
-            }
-            ShardingSpherePreconditions.checkState(actualDataNodes.containsKey(each.getTableName()), () -> new SingleTableNotFoundException(each.getTableName()));
-            checkExpectedTableExists(actualDataNodes.get(each.getTableName()), each);
-        }
-    }
-    
-    private static void checkExpectedTableExists(final Collection<DataNode> actualDataNodes, final DataNode expectedDataNode) {
-        for (final DataNode each : actualDataNodes) {
-            if (each.getDataSourceName().equals(expectedDataNode.getDataSourceName())) {
-                return;
-            }
-        }
-        throw new SingleTableNotFoundException(expectedDataNode.getDataSourceName(), expectedDataNode.getTableName());
-    }
-    
     /**
      * Load single table data nodes.
      *
@@ -134,6 +115,25 @@ public final class SingleTableDataNodeLoader {
             }
         }
         return result;
+    }
+    
+    private static void checkExpectedTablesExist(final Map<String, Collection<DataNode>> actualDataNodes, final Collection<DataNode> expectedDataNodes) {
+        for (final DataNode each : expectedDataNodes) {
+            if (SingleTableConstants.ASTERISK.equals(each.getTableName())) {
+                continue;
+            }
+            ShardingSpherePreconditions.checkState(actualDataNodes.containsKey(each.getTableName()), () -> new SingleTableNotFoundException(each.getTableName()));
+            checkExpectedTableExists(actualDataNodes.get(each.getTableName()), each);
+        }
+    }
+    
+    private static void checkExpectedTableExists(final Collection<DataNode> actualDataNodes, final DataNode expectedDataNode) {
+        for (final DataNode each : actualDataNodes) {
+            if (each.getDataSourceName().equals(expectedDataNode.getDataSourceName())) {
+                return;
+            }
+        }
+        throw new SingleTableNotFoundException(expectedDataNode.getDataSourceName(), expectedDataNode.getTableName());
     }
     
     private static Map<String, Collection<DataNode>> loadSpecifiedDataNodes(final Map<String, Collection<DataNode>> actualDataNodes, final Collection<String> featureRequiredSingleTables,
