@@ -90,18 +90,25 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     private List<Connection> createConnections(final String databaseName, final String dataSourceName,
                                                final DataSource dataSource, final int connectionSize, final TransactionType transactionType) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
-        for (int i = 0; i < connectionSize; i++) {
-            try {
-                result.add(createConnection(databaseName, dataSourceName, dataSource, transactionType));
-            } catch (final SQLException ignored) {
-                for (Connection each : result) {
-                    each.close();
-                }
-                throw new OverallConnectionNotEnoughException(connectionSize, result.size());
-            }
-        }
-        return result;
-    }
+        try {
+			for (int i = 0; i < connectionSize; i++) {
+				result.add(createConnection(databaseName, dataSourceName, dataSource, transactionType));
+			}
+		} catch (final SQLException ignored) {
+			closeConnections(result);
+			throw new OverallConnectionNotEnoughException(connectionSize, result.size());
+		}
+		return result;
+	}
+
+	private void closeConnections(List<Connection> connections) {
+		for (Connection connection : connections) {
+			try (connection) {
+				// There is no need to explicitly call connection.close()
+				// The connection will be automatically closed after the try-with-resources statement block ends.
+			}
+		}
+	}
     
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
