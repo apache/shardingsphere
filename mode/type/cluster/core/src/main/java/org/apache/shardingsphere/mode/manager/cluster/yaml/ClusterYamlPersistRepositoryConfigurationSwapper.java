@@ -44,6 +44,6 @@ public final class ClusterYamlPersistRepositoryConfigurationSwapper implements Y
     
     @Override
     public String getType() {
-        return "Cluster";
+        return "Compatible_Cluster";
     }
 }

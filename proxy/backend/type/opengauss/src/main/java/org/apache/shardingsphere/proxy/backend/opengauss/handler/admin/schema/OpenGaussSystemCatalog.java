@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.config;
+package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Properties;
 
 /**
- * Proxy global configuration.
+ * TODO we should refactor this with our federation modules.
+ * System catalog schema of openGauss.
  */
 @RequiredArgsConstructor
-@Getter
-public final class ProxyGlobalConfiguration {
+public final class OpenGaussSystemCatalog {
     
-    private final Map<String, DataSource> dataSources;
+    // CHECKSTYLE:OFF
+    public final OpenGaussDatabase[] pg_database;
     
-    private final Collection<RuleConfiguration> rules;
+    public final OpenGaussTables[] pg_tables;
     
-    private final Properties properties;
-    
-    private final Collection<String> labels;
+    public final OpenGaussRoles[] pg_roles;
+    // CHECKSTYLE:ON
 }
