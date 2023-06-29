@@ -51,12 +51,12 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
             insertOneRecordWithZeroValue(containerComposer, 1);
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
-            loadAllSingleTables(containerComposer);
             startMigration(containerComposer, "time_e2e", "time_e2e");
             String jobId = listJobId(containerComposer).get(0);
             containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
             insertOneRecordWithZeroValue(containerComposer, 2);
             containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+            loadAllSingleTables(containerComposer);
             assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
         }
     }
