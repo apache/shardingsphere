@@ -195,6 +195,8 @@ header .select-style select{
 
 #body-inner{
     padding-right: 250px;
+    word-wrap:break-word;
+    word-break: break-all;
 }
 
 #chapter img{
