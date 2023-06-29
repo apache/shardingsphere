@@ -56,14 +56,11 @@ public final class ShadowRuleChangedEventCreator implements RuleChangedEventCrea
         }
     }
     
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     private UniqueRuleItemChangedEventCreator getUniqueRuleItemChangedEventCreator(final String itemType) {
-        switch (itemType) {
-            case ShadowRuleNodePathProvider.DATA_SOURCES:
-                return new DefaultShadowAlgorithmEventCreator();
-            default:
-                throw new UnsupportedOperationException(itemType);
+        if (itemType.equals(ShadowRuleNodePathProvider.DATA_SOURCES)) {
+            return new DefaultShadowAlgorithmEventCreator();
         }
+        throw new UnsupportedOperationException(itemType);
     }
     
     @Override

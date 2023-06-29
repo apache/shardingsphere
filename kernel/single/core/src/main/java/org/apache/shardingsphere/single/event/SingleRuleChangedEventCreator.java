@@ -34,14 +34,11 @@ public final class SingleRuleChangedEventCreator implements RuleChangedEventCrea
         return getUniqueRuleItemChangedEventCreator(itemType).create(databaseName, event);
     }
     
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     private UniqueRuleItemChangedEventCreator getUniqueRuleItemChangedEventCreator(final String itemType) {
-        switch (itemType) {
-            case SingleRuleNodePathProvider.TABLES:
-                return new SingleTableEventCreator();
-            default:
-                throw new UnsupportedOperationException(itemType);
+        if (itemType.equals(SingleRuleNodePathProvider.TABLES)) {
+            return new SingleTableEventCreator();
         }
+        throw new UnsupportedOperationException(itemType);
     }
     
     @Override
