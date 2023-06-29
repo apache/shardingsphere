@@ -28,8 +28,8 @@ import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChan
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.event.algorithm.auditor.AlterAuditorEvent;
-import org.apache.shardingsphere.sharding.event.algorithm.auditor.DeleteAuditorEvent;
+import org.apache.shardingsphere.sharding.event.algorithm.auditor.AlterShardingAuditorEvent;
+import org.apache.shardingsphere.sharding.event.algorithm.auditor.DeleteShardingAuditorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.AlterKeyGeneratorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.DeleteKeyGeneratorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.sharding.AlterShardingAlgorithmEvent;
@@ -87,7 +87,7 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
      * @param event alter sharding algorithm event
      */
     @Subscribe
-    public synchronized void renew(final AlterAuditorEvent event) {
+    public synchronized void renew(final AlterShardingAuditorEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -136,7 +136,7 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
      * @param event delete key generator event
      */
     @Subscribe
-    public synchronized void renew(final DeleteAuditorEvent event) {
+    public synchronized void renew(final DeleteShardingAuditorEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

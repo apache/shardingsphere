@@ -26,9 +26,9 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
-import org.apache.shardingsphere.sharding.event.cache.AddShardingCacheConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.cache.AlterShardingCacheConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.cache.DeleteShardingCacheConfigurationEvent;
+import org.apache.shardingsphere.sharding.event.cache.AddShardingCacheEvent;
+import org.apache.shardingsphere.sharding.event.cache.AlterShardingCacheEvent;
+import org.apache.shardingsphere.sharding.event.cache.DeleteShardingCacheEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.cache.YamlShardingCacheConfigurationSwapper;
@@ -50,7 +50,7 @@ public final class ShardingCacheConfigurationSubscriber implements RuleChangedSu
      * @param event add sharding cache configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddShardingCacheConfigurationEvent event) {
+    public synchronized void renew(final AddShardingCacheEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -74,7 +74,7 @@ public final class ShardingCacheConfigurationSubscriber implements RuleChangedSu
      * @param event alter sharding cache configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterShardingCacheConfigurationEvent event) {
+    public synchronized void renew(final AlterShardingCacheEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -92,7 +92,7 @@ public final class ShardingCacheConfigurationSubscriber implements RuleChangedSu
      * @param event delete sharding cache configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShardingCacheConfigurationEvent event) {
+    public synchronized void renew(final DeleteShardingCacheEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
