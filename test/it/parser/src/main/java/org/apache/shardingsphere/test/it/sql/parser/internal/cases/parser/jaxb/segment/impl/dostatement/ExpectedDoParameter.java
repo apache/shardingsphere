@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.function.ExpectedFunction;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -41,4 +42,7 @@ public final class ExpectedDoParameter extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "common-expression")
     private ExpectedCommonExpression commonExpression;
+    
+    @XmlElement
+    private ExpectedFunction function;
 }

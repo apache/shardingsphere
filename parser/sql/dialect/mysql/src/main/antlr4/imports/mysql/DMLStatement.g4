@@ -166,7 +166,7 @@ call
     ;
 
 doStatement
-    : DO expr (COMMA_ expr)*
+    : DO expr (AS? alias)? (COMMA_ expr (AS? alias)?)*
     ;
 
 handlerStatement
