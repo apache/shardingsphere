@@ -38,11 +38,11 @@ import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.util.SQLFederationDataTypeUtils;
 import org.apache.shardingsphere.sqlfederation.compiler.operator.physical.enumerable.EnumerablePushDownTableScan;
 import org.apache.shardingsphere.sqlfederation.compiler.statistic.SQLFederationStatistic;
-import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutor;
-import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutorContext;
 
 import java.lang.reflect.Type;
 
