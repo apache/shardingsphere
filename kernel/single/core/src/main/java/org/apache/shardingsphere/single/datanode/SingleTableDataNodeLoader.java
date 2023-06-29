@@ -23,7 +23,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
+import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.single.exception.SingleTablesLoadingException;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
@@ -51,20 +53,44 @@ public final class SingleTableDataNodeLoader {
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param builtRules built rules
-     * @param configuredTables configured tables
+     * @param expectedSingleTables expected single tables
      * @return single table data node map
      */
     public static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                         final Collection<ShardingSphereRule> builtRules, final Collection<String> configuredTables) {
+                                                         final Collection<ShardingSphereRule> builtRules, final Collection<String> expectedSingleTables) {
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);
+        Collection<String> featureRequiredSingleTables = SingleTableLoadUtils.getFeatureRequiredSingleTables(builtRules);
+        if (expectedSingleTables.isEmpty() && featureRequiredSingleTables.isEmpty()) {
+            return Collections.emptyMap();
+        }
         Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, databaseType, dataSourceMap, excludedTables);
-        Collection<String> splitTables = SingleTableLoadUtils.splitTableLines(configuredTables);
+        Collection<String> splitTables = SingleTableLoadUtils.splitTableLines(expectedSingleTables);
+        Collection<DataNode> expectedDataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, expectedSingleTables);
+        checkExpectedTablesExist(actualDataNodes, expectedDataNodes);
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return actualDataNodes;
         }
-        Collection<String> featureRequiredSingleTables = SingleTableLoadUtils.getFeatureRequiredSingleTables(builtRules);
-        Map<String, Map<String, Collection<String>>> configuredTableMap = getConfiguredTableMap(databaseName, databaseType, splitTables);
-        return loadSpecifiedDataNodes(actualDataNodes, featureRequiredSingleTables, configuredTableMap);
+        Map<String, Map<String, Collection<String>>> expectedTableMap = getExpectedTableMap(expectedDataNodes);
+        return loadSpecifiedDataNodes(actualDataNodes, featureRequiredSingleTables, expectedTableMap);
+    }
+    
+    private static void checkExpectedTablesExist(final Map<String, Collection<DataNode>> actualDataNodes, final Collection<DataNode> expectedDataNodes) {
+        for (final DataNode each : expectedDataNodes) {
+            if (SingleTableConstants.ASTERISK.equals(each.getTableName())) {
+                continue;
+            }
+            ShardingSpherePreconditions.checkState(actualDataNodes.containsKey(each.getTableName()), () -> new SingleTableNotFoundException(each.getTableName()));
+            checkExpectedTableExists(actualDataNodes.get(each.getTableName()), each);
+        }
+    }
+    
+    private static void checkExpectedTableExists(final Collection<DataNode> actualDataNodes, final DataNode expectedDataNode) {
+        for (final DataNode each : actualDataNodes) {
+            if (each.getDataSourceName().equals(expectedDataNode.getDataSourceName())) {
+                return;
+            }
+        }
+        throw new SingleTableNotFoundException(expectedDataNode.getDataSourceName(), expectedDataNode.getTableName());
     }
     
     /**
@@ -138,13 +164,9 @@ public final class SingleTableDataNodeLoader {
         return result;
     }
     
-    private static Map<String, Map<String, Collection<String>>> getConfiguredTableMap(final String databaseName, final DatabaseType databaseType, final Collection<String> configuredTables) {
-        if (configuredTables.isEmpty()) {
-            return Collections.emptyMap();
-        }
+    private static Map<String, Map<String, Collection<String>>> getExpectedTableMap(final Collection<DataNode> expectedDataNodes) {
         Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>();
-        Collection<DataNode> dataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, configuredTables);
-        for (DataNode each : dataNodes) {
+        for (DataNode each : expectedDataNodes) {
             Map<String, Collection<String>> schemaTables = result.getOrDefault(each.getDataSourceName(), new LinkedHashMap<>());
             Collection<String> tables = schemaTables.getOrDefault(each.getSchemaName(), new LinkedList<>());
             tables.add(each.getTableName());

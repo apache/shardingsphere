@@ -30,4 +30,8 @@ public final class SingleTableNotFoundException extends MetaDataSQLException {
     public SingleTableNotFoundException(final String tableName) {
         super(XOpenSQLState.NOT_FOUND, 21, "Single table `%s` does not exist.", tableName);
     }
+    
+    public SingleTableNotFoundException(final String dataSourceName, final String tableName) {
+        super(XOpenSQLState.NOT_FOUND, 21, "Single table `%s` does not exist in data source `%s`.", tableName, dataSourceName);
+    }
 }
