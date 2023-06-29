@@ -91,6 +91,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     @Override
     public String getType() {
-        return "Cluster";
+        return "Compatible_Cluster";
     }
 }
