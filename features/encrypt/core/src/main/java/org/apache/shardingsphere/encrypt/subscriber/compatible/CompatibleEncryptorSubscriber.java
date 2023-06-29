@@ -79,18 +79,18 @@ public final class CompatibleEncryptorSubscriber implements RuleChangedSubscribe
     
     private CompatibleEncryptRuleConfiguration getCompatibleEncryptRuleConfiguration(final ShardingSphereDatabase database, final AlterCompatibleEncryptorEvent event) {
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        CompatibleEncryptRuleConfiguration config = rule.map(encryptRule -> getEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) encryptRule.getConfiguration()))
+        CompatibleEncryptRuleConfiguration result = rule.map(encryptRule -> getEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) encryptRule.getConfiguration()))
                 .orElseGet(() -> new CompatibleEncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-        config.getEncryptors().put(event.getEncryptorName(), swapToAlgorithmConfig(
+        result.getEncryptors().put(event.getEncryptorName(), swapToAlgorithmConfig(
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
-        return config;
+        return result;
     }
     
-    private CompatibleEncryptRuleConfiguration getEncryptRuleConfiguration(final CompatibleEncryptRuleConfiguration config) {
-        if (null == config.getEncryptors()) {
-            return new CompatibleEncryptRuleConfiguration(config.getTables(), new LinkedHashMap<>());
+    private CompatibleEncryptRuleConfiguration getEncryptRuleConfiguration(final CompatibleEncryptRuleConfiguration result) {
+        if (null == result.getEncryptors()) {
+            return new CompatibleEncryptRuleConfiguration(result.getTables(), new LinkedHashMap<>());
         }
-        return config;
+        return result;
     }
     
     private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {

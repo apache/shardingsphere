@@ -103,18 +103,18 @@ public final class EncryptTableSubscriber implements RuleChangedSubscriber {
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration(final ShardingSphereDatabase database, final EncryptTableRuleConfiguration needToAddedConfig) {
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        EncryptRuleConfiguration config = rule.map(encryptRule -> getEncryptRuleConfiguration((EncryptRuleConfiguration) encryptRule.getConfiguration()))
+        EncryptRuleConfiguration result = rule.map(encryptRule -> getEncryptRuleConfiguration((EncryptRuleConfiguration) encryptRule.getConfiguration()))
                 .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
         // TODO refactor DistSQL to only persist config
-        config.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
-        config.getTables().add(needToAddedConfig);
-        return config;
+        result.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
+        result.getTables().add(needToAddedConfig);
+        return result;
     }
     
-    private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration config) {
-        if (null == config.getTables()) {
-            return new EncryptRuleConfiguration(new LinkedList<>(), config.getEncryptors());
+    private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration result) {
+        if (null == result.getTables()) {
+            return new EncryptRuleConfiguration(new LinkedList<>(), result.getEncryptors());
         }
-        return config;
+        return result;
     }
 }

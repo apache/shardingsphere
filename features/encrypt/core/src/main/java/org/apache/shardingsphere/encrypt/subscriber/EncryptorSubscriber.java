@@ -77,18 +77,18 @@ public final class EncryptorSubscriber implements RuleChangedSubscriber {
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration(final ShardingSphereDatabase database, final AlterEncryptorEvent event) {
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        EncryptRuleConfiguration config = rule.map(encryptRule -> getEncryptRuleConfiguration((EncryptRuleConfiguration) encryptRule.getConfiguration()))
+        EncryptRuleConfiguration result = rule.map(encryptRule -> getEncryptRuleConfiguration((EncryptRuleConfiguration) encryptRule.getConfiguration()))
                 .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-        config.getEncryptors().put(event.getEncryptorName(), swapToAlgorithmConfig(
+        result.getEncryptors().put(event.getEncryptorName(), swapToAlgorithmConfig(
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
-        return config;
+        return result;
     }
     
-    private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration config) {
-        if (null == config.getEncryptors()) {
-            return new EncryptRuleConfiguration(config.getTables(), new LinkedHashMap<>());
+    private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration result) {
+        if (null == result.getEncryptors()) {
+            return new EncryptRuleConfiguration(result.getTables(), new LinkedHashMap<>());
         }
-        return config;
+        return result;
     }
     
     private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {

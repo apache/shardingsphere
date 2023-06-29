@@ -103,18 +103,18 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
     
     private MaskRuleConfiguration getMaskRuleConfiguration(final ShardingSphereDatabase database, final MaskTableRuleConfiguration needToAddedConfig) {
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
-        MaskRuleConfiguration config = rule.map(maskRule -> getMaskRuleConfiguration((MaskRuleConfiguration) maskRule.getConfiguration()))
+        MaskRuleConfiguration result = rule.map(maskRule -> getMaskRuleConfiguration((MaskRuleConfiguration) maskRule.getConfiguration()))
                 .orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
         // TODO refactor DistSQL to only persist config
-        config.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
-        config.getTables().add(needToAddedConfig);
-        return config;
+        result.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
+        result.getTables().add(needToAddedConfig);
+        return result;
     }
     
-    private MaskRuleConfiguration getMaskRuleConfiguration(final MaskRuleConfiguration config) {
-        if (null == config.getTables()) {
-            return new MaskRuleConfiguration(new LinkedList<>(), config.getMaskAlgorithms());
+    private MaskRuleConfiguration getMaskRuleConfiguration(final MaskRuleConfiguration result) {
+        if (null == result.getTables()) {
+            return new MaskRuleConfiguration(new LinkedList<>(), result.getMaskAlgorithms());
         }
-        return config;
+        return result;
     }
 }
