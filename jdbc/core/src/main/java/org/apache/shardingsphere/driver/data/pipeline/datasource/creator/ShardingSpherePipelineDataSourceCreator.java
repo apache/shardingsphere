@@ -26,9 +26,12 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
+import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
+import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -47,7 +50,15 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         }
         rootConfig.setDatabaseName(rootConfig.getDatabaseName());
         rootConfig.setSchemaName(rootConfig.getSchemaName());
+        updateSingleRuleConfiguration(rootConfig);
         return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
+    }
+    
+    private void updateSingleRuleConfiguration(final YamlRootConfiguration rootConfig) {
+        rootConfig.getRules().removeIf(each -> each instanceof YamlSingleRuleConfiguration);
+        YamlSingleRuleConfiguration singleRuleConfig = new YamlSingleRuleConfiguration();
+        singleRuleConfig.setTables(Collections.singletonList(SingleTableConstants.ALL_TABLES));
+        rootConfig.getRules().add(singleRuleConfig);
     }
     
     // TODO Another way is improving ExecuteQueryCallback.executeSQL to enable streaming query, then remove it
