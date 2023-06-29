@@ -15,17 +15,17 @@
 # limitations under the License.
 #
 
-#mode:
-#  type: Cluster
-#  repository:
-#    type: ZooKeeper
-#    props:
-#      namespace: it_db
-#      server-lists: zk.host:2181
-#      timeToLiveSeconds: 60
-#      operationTimeoutMilliseconds: 500
-#      retryIntervalMilliseconds: 500
-#      maxRetries: 3
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: it_db
+      server-lists: zk.host:2181
+      timeToLiveSeconds: 60
+      operationTimeoutMilliseconds: 500
+      retryIntervalMilliseconds: 500
+      maxRetries: 3
 
 authority:
   users:
@@ -33,7 +33,7 @@ authority:
       password: Proxy@123
   privilege:
     type: ALL_PERMITTED
-
+    
 sqlParser:
   sqlCommentParseEnabled: true
   sqlStatementCache:
@@ -42,6 +42,12 @@ sqlParser:
   parseTreeCache:
     initialCapacity: 128
     maximumSize: 1024
+    
+sqlFederation:
+  sqlFederationEnabled: true
+  executionPlanCache:
+    initialCapacity: 2000
+    maximumSize: 65535
 
 props:
   max-connections-size-per-query: 1
