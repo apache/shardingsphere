@@ -19,5 +19,13 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="values_with_row" />
-    <select sql-case-id="values_with_order_limit" />
+    <select sql-case-id="values_with_order_limit">
+        <order-by>
+            <column-item name="column_1" order-direction="DESC" start-index="52" stop-index="59" />
+            <column-item name="column_0" order-direction="DESC" start-index="68" stop-index="75" />
+        </order-by>
+        <limit start-index="82" stop-index="89">
+            <row-count value="10" start-index="88" stop-index="89" />
+        </limit>
+    </select>
 </sql-parser-test-cases>
