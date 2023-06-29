@@ -123,8 +123,6 @@
                     </function>
                 </parameter>
             </function>
-
-            <literal-expression value="CRC32(CHAR(1.134475E+308))" start-index="3" stop-index="28" />
         </parameter>
     </do>
 </sql-parser-test-cases>
