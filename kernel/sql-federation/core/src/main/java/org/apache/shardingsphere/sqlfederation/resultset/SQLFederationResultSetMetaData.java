@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 
 import java.sql.ResultSetMetaData;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -104,19 +103,12 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public String getColumnLabel(final int column) {
-        if (indexAndColumnLabels.size() < column) {
-            return resultColumnType.getFieldList().get(column - 1).getName();
-        }
         return indexAndColumnLabels.get(column);
     }
     
     @Override
     public String getColumnName(final int column) {
-        List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
-        if (expandProjections.size() < column) {
-            return resultColumnType.getFieldList().get(column - 1).getName();
-        }
-        Projection projection = expandProjections.get(column - 1);
+        Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(column - 1);
         if (projection instanceof ColumnProjection) {
             return ((ColumnProjection) projection).getName();
         }
@@ -181,8 +173,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     }
     
     private Optional<String> findTableName(final int column) {
-        List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
-        Projection projection = expandProjections.size() < column ? new ColumnProjection(null, resultColumnType.getFieldList().get(column - 1).getName(), null) : expandProjections.get(column - 1);
+        Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(column - 1);
         if (projection instanceof ColumnProjection) {
             Map<String, String> tableNamesByColumnProjection =
                     selectStatementContext.getTablesContext().findTableNamesByColumnProjection(Collections.singletonList((ColumnProjection) projection), schema);
