@@ -55,7 +55,6 @@ public final class SQLStatementCompiler {
         RelDataType resultColumnType = Objects.requireNonNull(converter.validator).getValidatedNodeType(sqlNode);
         RelNode rewritePlan = rewrite(logicPlan, hepPlanner);
         RelNode physicalPlan = optimize(rewritePlan, converter);
-        RelMetadataQueryBase.THREAD_PROVIDERS.remove();
         return new SQLFederationExecutionPlan(physicalPlan, resultColumnType);
     }
     

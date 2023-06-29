@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
@@ -56,8 +55,6 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
     
     private ContextManager contextManager;
     
-    private InstanceContext instanceContext;
-    
     /**
      * Renew with add sharding table configuration.
      *
@@ -65,17 +62,17 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      */
     @Subscribe
     public synchronized void renew(final AddShardingTableEvent event) {
-        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingTableRuleConfiguration needToAddedConfig = swapShardingTableRuleConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = getShardingRuleConfiguration(database);
         // TODO refactor DistSQL to only persist config
         config.getTables().removeIf(each -> each.getLogicTable().equals(needToAddedConfig.getLogicTable()));
         config.getTables().add(needToAddedConfig);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -85,17 +82,17 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      */
     @Subscribe
     public synchronized void renew(final AddShardingAutoTableEvent event) {
-        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingAutoTableRuleConfiguration needToAddedConfig = swapShardingAutoTableRuleConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = getShardingRuleConfiguration(database);
         // TODO refactor DistSQL to only persist config
         config.getAutoTables().removeIf(each -> each.getLogicTable().equals(needToAddedConfig.getLogicTable()));
         config.getAutoTables().add(needToAddedConfig);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -105,14 +102,17 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      */
     @Subscribe
     public synchronized void renew(final AddShardingTableReferenceEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingTableReferenceRuleConfiguration needToAddedConfig = swapShardingTableReferenceRuleConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = getShardingRuleConfiguration(database);
         // TODO refactor DistSQL to only persist config
         config.getBindingTableGroups().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
         config.getBindingTableGroups().add(needToAddedConfig);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -122,16 +122,16 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      */
     @Subscribe
     public synchronized void renew(final AlterShardingTableEvent event) {
-        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingTableRuleConfiguration needToAlteredConfig = swapShardingTableRuleConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getLogicTable().equals(event.getTableName()));
         config.getTables().add(needToAlteredConfig);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -141,16 +141,16 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      */
     @Subscribe
     public synchronized void renew(final AlterShardingAutoTableEvent event) {
-        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingAutoTableRuleConfiguration needToAlteredConfig = swapShardingAutoTableRuleConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.getAutoTables().removeIf(each -> each.getLogicTable().equals(event.getTableName()));
         config.getAutoTables().add(needToAlteredConfig);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -160,13 +160,16 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      */
     @Subscribe
     public synchronized void renew(final AlterShardingTableReferenceEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingTableReferenceRuleConfiguration needToAlteredConfig = swapShardingTableReferenceRuleConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.getBindingTableGroups().removeIf(each -> each.getName().equals(event.getTableName()));
         config.getBindingTableGroups().add(needToAlteredConfig);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -182,7 +185,7 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getLogicTable().equals(event.getTableName()));
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -192,10 +195,13 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      */
     @Subscribe
     public synchronized void renew(final DeleteShardingAutoTableEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.getAutoTables().removeIf(each -> each.getLogicTable().equals(event.getTableName()));
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -205,10 +211,13 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      */
     @Subscribe
     public synchronized void renew(final DeleteShardingTableReferenceEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.getBindingTableGroups().removeIf(each -> each.getName().equals(event.getTableName()));
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration(final ShardingSphereDatabase database) {

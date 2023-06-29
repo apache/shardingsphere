@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.distsql.handler.query;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -47,7 +48,7 @@ class ShowTransactionRuleExecutorTest {
         ShowTransactionRuleExecutor executor = new ShowTransactionRuleExecutor();
         ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData(TransactionType.XA.name(), "Atomikos",
                 PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts")));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedHashMap<>(), ruleMetaData, new ConfigurationProperties(new Properties()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ShardingSphereResourceMetaData.class), ruleMetaData, new ConfigurationProperties(new Properties()));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowTransactionRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
@@ -63,7 +64,7 @@ class ShowTransactionRuleExecutorTest {
     void assertExecuteWithLocal() {
         ShowTransactionRuleExecutor executor = new ShowTransactionRuleExecutor();
         ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData(TransactionType.LOCAL.name(), null, new Properties());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedHashMap<>(), ruleMetaData, new ConfigurationProperties(new Properties()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ShardingSphereResourceMetaData.class), ruleMetaData, new ConfigurationProperties(new Properties()));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowTransactionRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();

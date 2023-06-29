@@ -96,7 +96,8 @@ class ConfigurationChangedSubscriberTest {
     void setUp() throws SQLException {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
-                contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
+                contextManager.getMetaDataContexts().getMetaData().getGlobalResourceMetaData(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
+                new ConfigurationProperties(new Properties()))));
         subscriber = new ConfigurationChangedSubscriber(new RegistryCenter(mock(ClusterPersistRepository.class),
                 new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
     }
@@ -104,7 +105,8 @@ class ConfigurationChangedSubscriberTest {
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
         ModeConfiguration modeConfig = new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()));
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
-        return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceMetaData, false);
+        return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(),
+                new Properties(), Collections.emptyList(), instanceMetaData, false);
     }
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
