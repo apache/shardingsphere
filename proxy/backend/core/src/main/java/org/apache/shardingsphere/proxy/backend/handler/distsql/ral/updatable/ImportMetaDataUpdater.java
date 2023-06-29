@@ -73,8 +73,8 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
             return;
         }
         Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().getGlobalRuleService().persist(rules);
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().getPropsService().persist(yamlServerConfig.getProps());
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(rules);
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterProperties(yamlServerConfig.getProps());
     }
     
     private void importDatabase(final ExportedMetaData exportedMetaData) {
