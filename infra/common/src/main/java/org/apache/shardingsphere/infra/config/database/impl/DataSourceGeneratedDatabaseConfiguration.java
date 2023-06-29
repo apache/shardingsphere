@@ -27,10 +27,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Data source generated database configuration.
@@ -44,14 +41,9 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     
     private final Map<String, DataSourceProperties> dataSourceProperties;
     
-    public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSources, final Collection<RuleConfiguration> ruleConfigs) {
-        this.dataSources = DataSourcePoolCreator.create(createDataSourcePropertiesMap(dataSources));
+    public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs) {
+        dataSourceProperties = DataSourcePropertiesCreator.create(dataSourceConfigs);
+        this.dataSources = DataSourcePoolCreator.create(dataSourceProperties);
         ruleConfigurations = ruleConfigs;
-        dataSourceProperties = createDataSourcePropertiesMap(dataSources);
-    }
-    
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSourceConfiguration> dataSources) {
-        return dataSources.entrySet().stream().collect(Collectors
-                .toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create("com.zaxxer.hikari.HikariDataSource", entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }
