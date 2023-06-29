@@ -49,7 +49,6 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
                     + "`t_year` year DEFAULT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;";
             containerComposer.sourceExecuteWithLog(sql);
             insertOneRecordWithZeroValue(containerComposer, 1);
-            loadAllSingleTables(containerComposer);
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
             startMigration(containerComposer, "time_e2e", "time_e2e");
@@ -57,6 +56,7 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
             containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
             insertOneRecordWithZeroValue(containerComposer, 2);
             containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+            loadAllSingleTables(containerComposer);
             assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
         }
     }
