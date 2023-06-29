@@ -32,7 +32,6 @@ import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -61,7 +60,7 @@ public final class SingleTableDataNodeLoader {
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);
         Collection<String> featureRequiredSingleTables = SingleTableLoadUtils.getFeatureRequiredSingleTables(builtRules);
         if (expectedSingleTables.isEmpty() && featureRequiredSingleTables.isEmpty()) {
-            return Collections.emptyMap();
+            return new LinkedHashMap<>();
         }
         Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, databaseType, dataSourceMap, excludedTables);
         Collection<String> splitTables = SingleTableLoadUtils.splitTableLines(expectedSingleTables);

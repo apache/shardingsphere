@@ -72,8 +72,8 @@ class SingleRuleTest {
         dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("foo_ds", mockDataSource("foo_ds", Arrays.asList("employee", "t_order_0")));
         dataSourceMap.put("bar_ds", mockDataSource("bar_ds", Arrays.asList("student", "t_order_1")));
-        Collection<String> configuredTables = new LinkedList<>(Arrays.asList("foo_ds.employee", "foo_ds.t_order_0", "bar_ds.student", "bar_ds.t_order_1"));
-        ruleConfig = new SingleRuleConfiguration(configuredTables, null);
+        ruleConfig = mock(SingleRuleConfiguration.class);
+        when(ruleConfig.getTables()).thenReturn(new LinkedList<>(Arrays.asList("foo_ds.employee", "bar_ds.student")));
     }
     
     private DataSource mockDataSource(final String dataSourceName, final List<String> tableNames) throws SQLException {
@@ -185,6 +185,7 @@ class SingleRuleTest {
     
     @Test
     void assertPut() {
+        when(ruleConfig.getTables()).thenReturn(new LinkedList<>(Arrays.asList("foo_ds.employee", "bar_ds.student", "foo_ds.t_order_0", "bar_ds.t_order_1")));
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         String tableName = "teacher";
@@ -203,6 +204,7 @@ class SingleRuleTest {
     
     @Test
     void assertRemove() {
+        when(ruleConfig.getTables()).thenReturn(new LinkedList<>(Arrays.asList("foo_ds.employee", "bar_ds.student", "foo_ds.t_order_0", "bar_ds.t_order_1")));
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         String tableName = "employee";
@@ -217,6 +219,7 @@ class SingleRuleTest {
     
     @Test
     void assertGetAllDataNodes() {
+        when(ruleConfig.getTables()).thenReturn(new LinkedList<>(Arrays.asList("foo_ds.employee", "bar_ds.student", "foo_ds.t_order_0", "bar_ds.t_order_1")));
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         assertTrue(singleRule.getAllDataNodes().containsKey("employee"));
