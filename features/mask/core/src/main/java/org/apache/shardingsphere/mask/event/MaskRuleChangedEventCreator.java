@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mask.event;
 
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.mask.event.algorithm.MaskEventCreator;
-import org.apache.shardingsphere.mask.event.table.MaskTableCreator;
+import org.apache.shardingsphere.mask.event.algorithm.creator.MaskEventCreator;
+import org.apache.shardingsphere.mask.event.table.creator.MaskTableCreator;
 import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
