@@ -130,8 +130,9 @@ public abstract class SQLRewriterIT {
         ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resourceMetaData, databaseRuleMetaData, mockSchemas(schemaName));
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1F);
         databases.put(schemaName, database);
+        
         ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(createGlobalRules());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalRuleMetaData, mock(ConfigurationProperties.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ShardingSphereResourceMetaData.class), globalRuleMetaData, mock(ConfigurationProperties.class));
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, sqlStatement, schemaName);
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(testParams.getInputParameters());

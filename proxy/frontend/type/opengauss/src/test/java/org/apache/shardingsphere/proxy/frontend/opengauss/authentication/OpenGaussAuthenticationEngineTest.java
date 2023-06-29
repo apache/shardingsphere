@@ -36,6 +36,7 @@ import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolV
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -136,7 +137,8 @@ class OpenGaussAuthenticationEngineTest {
     
     private ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(Collections.emptyMap(), buildGlobalRuleMetaData(new ShardingSphereUser("root", "sharding", "")), mock(ConfigurationProperties.class)));
+                new ShardingSphereMetaData(Collections.emptyMap(), mock(ShardingSphereResourceMetaData.class),
+                        buildGlobalRuleMetaData(new ShardingSphereUser("root", "sharding", "")), mock(ConfigurationProperties.class)));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;

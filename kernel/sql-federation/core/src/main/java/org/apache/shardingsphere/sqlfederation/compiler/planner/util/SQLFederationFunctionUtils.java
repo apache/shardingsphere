@@ -40,13 +40,17 @@ public final class SQLFederationFunctionUtils {
      * @param schemaPlus schema plus
      */
     public static void registryUserDefinedFunction(final String schemaName, final SchemaPlus schemaPlus) {
-        schemaPlus.add("version", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "version"));
-        schemaPlus.add("gs_password_deadline", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "gsPasswordDeadline"));
-        schemaPlus.add("intervaltonum", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "intervalToNum"));
-        schemaPlus.add("gs_password_notifyTime", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "gsPasswordNotifyTime"));
-        if ("pg_catalog".equalsIgnoreCase(schemaName)) {
-            schemaPlus.add("pg_catalog.pg_table_is_visible", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "pgTableIsVisible"));
-            schemaPlus.add("pg_catalog.pg_get_userbyid", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "pgGetUserById"));
+        if (!"pg_catalog".equalsIgnoreCase(schemaName)) {
+            return;
+        }
+        schemaPlus.add("pg_catalog.pg_table_is_visible", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "pgTableIsVisible"));
+        schemaPlus.add("pg_catalog.pg_get_userbyid", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "pgGetUserById"));
+        SchemaPlus subSchema = schemaPlus.getSubSchema(schemaName);
+        if (null != subSchema) {
+            subSchema.add("version", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "version"));
+            subSchema.add("gs_password_deadline", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "gsPasswordDeadline"));
+            subSchema.add("intervaltonum", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "intervalToNum"));
+            subSchema.add("gs_password_notifyTime", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "gsPasswordNotifyTime"));
         }
     }
     
