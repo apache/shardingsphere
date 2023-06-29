@@ -52,6 +52,9 @@ public final class SingleConfigurationSubscriber implements RuleChangedSubscribe
      */
     @Subscribe
     public synchronized void renew(final AddSingleTableEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         SingleRuleConfiguration needToAddedConfig = swapSingleTableRuleConfig(
                 instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
@@ -74,6 +77,9 @@ public final class SingleConfigurationSubscriber implements RuleChangedSubscribe
      */
     @Subscribe
     public synchronized void renew(final AlterSingleTableEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         SingleRuleConfiguration needToAlteredConfig = swapSingleTableRuleConfig(
                 instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
@@ -90,6 +96,9 @@ public final class SingleConfigurationSubscriber implements RuleChangedSubscribe
      */
     @Subscribe
     public synchronized void renew(final DeleteSingleTableEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         SingleRuleConfiguration config = database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration();
         config.getTables().clear();
