@@ -143,7 +143,7 @@ public abstract class BaseDMLE2EIT {
             }
         } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
                 && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType())
-                || "Oracle".equals(testParam.getDatabaseType().getType()))) {
+                        || "Oracle".equals(testParam.getDatabaseType().getType()))) {
             assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
         } else if (isPostgreSQLOrOpenGaussMoney(testParam, actual.getMetaData().getColumnTypeName(columnIndex))) {
             assertThat(actual.getString(columnIndex), is(expected));

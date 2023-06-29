@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -124,7 +125,9 @@ public final class DataSetEnvironmentManager {
     
     private String generateProperPlaceholderExpression(final String databaseTypeName, final DataSetColumn dataSetColumn) {
         String type = dataSetColumn.getType();
-        return type.startsWith("enum#") && "PostgreSQL".equals(databaseTypeName) || type.startsWith("cast#") ? generateTypeCastPlaceholder(type) : "?";
+        return type.startsWith("enum#") && "PostgreSQL".equals(databaseTypeName) || type.startsWith("cast#") && Arrays.asList("PostgreSQL", "openGauss").contains(databaseTypeName)
+                ? generateTypeCastPlaceholder(type)
+                : "?";
     }
     
     private String generateTypeCastPlaceholder(final String type) {
