@@ -103,6 +103,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryEx
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionParensContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryPrimaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QuerySpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableValueConstructorContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceSelectClauseContext;
@@ -769,6 +770,11 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setWindow((WindowSegment) visit(ctx.windowClause()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitTableValueConstructor(final TableValueConstructorContext ctx) {
+        return new MySQLSelectStatement();
     }
     
     @Override

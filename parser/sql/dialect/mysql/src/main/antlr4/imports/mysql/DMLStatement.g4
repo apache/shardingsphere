@@ -231,7 +231,7 @@ tableStatement
     ;
 
 tableValueConstructor
-    : VALUES rowConstructorList
+    : VALUES rowConstructorList orderByClause? limitClause?
     ;
 
 rowConstructorList
