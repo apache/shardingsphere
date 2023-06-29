@@ -55,7 +55,6 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertNoRuleMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
-            loadAllSingleTables(containerComposer);
             assertMigrationSuccess(containerComposer, null);
         }
     }
@@ -82,6 +81,7 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
         if (null != addRuleFn) {
             addRuleFn.call();
         }
+        loadAllSingleTables(containerComposer);
         startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
         String jobId = listJobId(containerComposer).get(0);
         containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));

@@ -90,7 +90,10 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     }
     
     private Collection<String> getRequiredTables(final SingleRuleConfiguration currentRuleConfig, final LoadSingleTableStatement sqlStatement) {
-        return sqlStatement.getTables().stream().map(SingleTableSegment::toString).filter(each -> !currentRuleConfig.getTables().contains(each)).collect(Collectors.toSet());
+        if (null != currentRuleConfig) {
+            return sqlStatement.getTables().stream().map(SingleTableSegment::toString).filter(each -> !currentRuleConfig.getTables().contains(each)).collect(Collectors.toSet());
+        }
+        return sqlStatement.getTables().stream().map(SingleTableSegment::toString).collect(Collectors.toSet());
     }
     
     private Collection<String> getRequiredDataSources(final LoadSingleTableStatement sqlStatement) {
