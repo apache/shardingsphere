@@ -119,10 +119,14 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         if (columnPositionSegment.isPresent()) {
             String columnName = columnPositionSegment.get().getColumnName().getIdentifier().getValue();
             if (encryptTable.isEncryptColumn(columnName)) {
-                return Optional.of(getPositionColumnToken(encryptTable, addColumnDefinitionSegment.getColumnPosition().get()));
+                return Optional.of(getPositionColumnToken(encryptTable.getEncryptColumn(columnName), addColumnDefinitionSegment.getColumnPosition().get()));
             }
         }
         return Optional.empty();
+    }
+    
+    private EncryptAlterTableToken getPositionColumnToken(final EncryptColumn encryptColumn, final ColumnPositionSegment positionSegment) {
+        return new EncryptAlterTableToken(positionSegment.getColumnName().getStartIndex(), positionSegment.getStopIndex(), encryptColumn.getCipher().getName(), null);
     }
     
     private Collection<SQLToken> getModifyColumnTokens(final EncryptTable encryptTable, final Collection<ModifyColumnDefinitionSegment> columnDefinitionSegments) {
@@ -150,15 +154,12 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         return result;
     }
     
-    private EncryptAlterTableToken getPositionColumnToken(final EncryptTable encryptTable, final ColumnPositionSegment positionSegment) {
-        return new EncryptAlterTableToken(positionSegment.getColumnName().getStartIndex(), positionSegment.getStopIndex(),
-                encryptTable.getEncryptColumn(positionSegment.getColumnName().getIdentifier().getValue()).getCipher().getName(), null);
-    }
-    
     private Optional<SQLToken> getColumnPositionToken(final EncryptTable encryptTable, final ColumnPositionSegment columnPositionSegment) {
-        return null != columnPositionSegment.getColumnName() && encryptTable.isEncryptColumn(columnPositionSegment.getColumnName().getIdentifier().getValue())
-                ? Optional.of(getPositionColumnToken(encryptTable, columnPositionSegment))
-                : Optional.empty();
+        if (null == columnPositionSegment.getColumnName()) {
+            return Optional.empty();
+        }
+        String columnName = columnPositionSegment.getColumnName().getIdentifier().getValue();
+        return encryptTable.isEncryptColumn(columnName) ? Optional.of(getPositionColumnToken(encryptTable.getEncryptColumn(columnName), columnPositionSegment)) : Optional.empty();
     }
     
     private Collection<SQLToken> getChangeColumnTokens(final EncryptTable encryptTable, final Collection<ChangeColumnDefinitionSegment> changeColumnDefinitions) {
