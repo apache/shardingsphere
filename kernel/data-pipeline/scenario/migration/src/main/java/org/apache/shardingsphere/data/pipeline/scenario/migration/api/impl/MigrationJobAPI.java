@@ -421,8 +421,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     public void commit(final String jobId) {
         log.info("Commit job {}", jobId);
         final long startTimeMillis = System.currentTimeMillis();
-        dropCheckJobs(jobId);
         stop(jobId);
+        dropCheckJobs(jobId);
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
         refreshTableMetadata(jobId, jobConfig.getTargetDatabaseName());
         dropJob(jobId);
