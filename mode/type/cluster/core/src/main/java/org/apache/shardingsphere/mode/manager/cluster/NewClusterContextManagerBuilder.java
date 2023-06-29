@@ -96,7 +96,6 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
     private void registerRuleConfigurationSubscribers(final ContextManager contextManager, final InstanceContext instanceContext) {
         for (RuleChangedSubscriber each : ShardingSphereServiceLoader.getServiceInstances(RuleChangedSubscriber.class)) {
             each.setContextManager(contextManager);
-            each.setInstanceContext(instanceContext);
             instanceContext.getEventBusContext().register(each);
         }
     }

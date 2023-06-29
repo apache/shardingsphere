@@ -27,7 +27,6 @@ import org.apache.shardingsphere.encrypt.event.compatible.table.DeleteCompatible
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
@@ -49,8 +48,6 @@ public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscr
     
     private ContextManager contextManager;
     
-    private InstanceContext instanceContext;
-    
     /**
      * Renew with add encrypt configuration.
      *
@@ -58,13 +55,14 @@ public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscr
      */
     @Subscribe
     public synchronized void renew(final AddCompatibleEncryptTableEvent event) {
-        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         EncryptTableRuleConfiguration needToAddedConfig = swapEncryptTableRuleConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getCompatibleEncryptRuleConfiguration(database, needToAddedConfig)));
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+        contextManager.getInstanceContext().getEventBusContext().post(
+                new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getCompatibleEncryptRuleConfiguration(database, needToAddedConfig)));
     }
     
     /**
@@ -74,16 +72,16 @@ public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscr
      */
     @Subscribe
     public synchronized void renew(final AlterCompatibleEncryptTableEvent event) {
-        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         EncryptTableRuleConfiguration needToAlteredConfig = swapEncryptTableRuleConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         CompatibleEncryptRuleConfiguration config = (CompatibleEncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
         config.getTables().add(needToAlteredConfig);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -99,7 +97,7 @@ public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscr
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         CompatibleEncryptRuleConfiguration config = (CompatibleEncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     private EncryptTableRuleConfiguration swapEncryptTableRuleConfig(final String yamlContext) {

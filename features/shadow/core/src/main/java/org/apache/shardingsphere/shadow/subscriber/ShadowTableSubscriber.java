@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
@@ -45,8 +44,6 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
     
     private ContextManager contextManager;
     
-    private InstanceContext instanceContext;
-    
     /**
      * Renew with add table.
      *
@@ -54,8 +51,11 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AddShadowTableEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
         renew(event.getDatabaseName(), event.getTableName(), swapToTableConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
     }
     
     /**
@@ -65,8 +65,11 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterShadowTableEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
         renew(event.getDatabaseName(), event.getTableName(), swapToTableConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
     }
     
     private void renew(final String databaseName, final String tableName, final ShadowTableConfiguration needToAlteredConfig) {
@@ -78,7 +81,7 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
             config = new ShadowRuleConfiguration();
         }
         config.getTables().put(tableName, needToAlteredConfig);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
     }
     
     /**
@@ -94,7 +97,7 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getTables().remove(event.getTableName());
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     private ShadowTableConfiguration swapToTableConfig(final String yamlContext) {
