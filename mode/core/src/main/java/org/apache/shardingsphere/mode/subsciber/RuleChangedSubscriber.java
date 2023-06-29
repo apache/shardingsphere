@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.subsciber;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
@@ -31,11 +30,4 @@ public interface RuleChangedSubscriber {
      * @param contextManager context manager
      */
     void setContextManager(ContextManager contextManager);
-    
-    /**
-     * Set instance context.
-     * 
-     * @param instanceContext instance context to be set
-     */
-    void setInstanceContext(InstanceContext instanceContext);
 }
