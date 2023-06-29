@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.encrypt.event;
 
-import org.apache.shardingsphere.encrypt.event.compatible.encryptor.AlterCompatibleEncryptorEvent;
-import org.apache.shardingsphere.encrypt.event.compatible.encryptor.DeleteCompatibleEncryptorEvent;
-import org.apache.shardingsphere.encrypt.event.compatible.table.AddCompatibleEncryptTableEvent;
-import org.apache.shardingsphere.encrypt.event.compatible.table.AlterCompatibleEncryptTableEvent;
-import org.apache.shardingsphere.encrypt.event.compatible.table.DeleteCompatibleEncryptTableEvent;
+import org.apache.shardingsphere.encrypt.event.compatible.encryptor.CompatibleEncryptorEventCreator;
+import org.apache.shardingsphere.encrypt.event.compatible.table.CompatibleEncryptTableEventCreator;
 import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 
 /**
@@ -37,31 +34,18 @@ public final class CompatibleEncryptRuleChangedEventCreator implements RuleChang
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
+        return getNamedRuleItemChangedEventCreator(itemType).create(databaseName, itemName, event);
+    }
+    
+    private NamedRuleItemChangedEventCreator getNamedRuleItemChangedEventCreator(final String itemType) {
         switch (itemType) {
             case EncryptRuleNodePathProvider.TABLES:
-                return createTableEvent(databaseName, itemName, event);
+                return new CompatibleEncryptTableEventCreator();
             case EncryptRuleNodePathProvider.ENCRYPTORS:
-                return createEncryptorEvent(databaseName, itemName, event);
+                return new CompatibleEncryptorEventCreator();
             default:
                 throw new UnsupportedOperationException(itemType);
         }
-    }
-    
-    private GovernanceEvent createTableEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new AddCompatibleEncryptTableEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
-            return new AlterCompatibleEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue());
-        }
-        return new DeleteCompatibleEncryptTableEvent(databaseName, groupName);
-    }
-    
-    private GovernanceEvent createEncryptorEvent(final String databaseName, final String encryptorName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return new AlterCompatibleEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue());
-        }
-        return new DeleteCompatibleEncryptorEvent(databaseName, encryptorName);
     }
     
     @Override

@@ -53,16 +53,15 @@ public final class NewYamlSQLParserRuleConfigurationSwapper implements NewYamlGl
     }
     
     @Override
-    public SQLParserRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+    public Optional<SQLParserRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
             Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }
-            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLParserRuleConfiguration.class));
+            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLParserRuleConfiguration.class)));
         }
-        return new SQLParserRuleConfiguration(false, DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION,
-                DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION);
+        return Optional.empty();
     }
     
     private SQLParserRuleConfiguration swapToObject(final YamlSQLParserRuleConfiguration yamlConfig) {

@@ -28,6 +28,9 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfi
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * TODO Rename to YamlBroadcastRuleConfigurationSwapper when metadata structure adjustment completed.
@@ -48,18 +51,15 @@ public final class NewYamlBroadcastRuleConfigurationSwapper implements NewYamlRu
     }
     
     @Override
-    public BroadcastRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        if (dataNodes.stream().noneMatch(each -> broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey()))) {
-            // TODO refactor this use Optional
-            return null;
-        }
-        for (YamlDataNode each : dataNodes) {
+    public Optional<BroadcastRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
+        List<YamlDataNode> validDataNodes = dataNodes.stream().filter(each -> broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        for (YamlDataNode each : validDataNodes) {
             if (broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())) {
                 YamlBroadcastRuleConfiguration yamlBroadcastRuleConfiguration = YamlEngine.unmarshal(each.getValue(), YamlBroadcastRuleConfiguration.class);
-                return new BroadcastRuleConfiguration(yamlBroadcastRuleConfiguration.getTables());
+                return Optional.of(new BroadcastRuleConfiguration(yamlBroadcastRuleConfiguration.getTables()));
             }
         }
-        return new BroadcastRuleConfiguration(Collections.emptyList());
+        return Optional.empty();
     }
     
     @Override

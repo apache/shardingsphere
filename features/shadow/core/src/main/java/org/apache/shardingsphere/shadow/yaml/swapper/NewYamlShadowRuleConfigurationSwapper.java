@@ -36,7 +36,10 @@ import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfig
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * TODO Rename YamlShadowRuleConfigurationSwapper when metadata structure adjustment completed.
@@ -79,13 +82,13 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
     }
     
     @Override
-    public ShadowRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        if (dataNodes.stream().noneMatch(each -> shadowRuleNodePath.getRoot().isValidatedPath(each.getKey()))) {
-            // TODO refactor this use Optional
-            return null;
+    public Optional<ShadowRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
+        List<YamlDataNode> validDataNodes = dataNodes.stream().filter(each -> shadowRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        if (validDataNodes.isEmpty()) {
+            return Optional.empty();
         }
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        for (YamlDataNode each : dataNodes) {
+        for (YamlDataNode each : validDataNodes) {
             shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.DATA_SOURCES).getName(each.getKey())
                     .ifPresent(optional -> result.getDataSources().add(swapDataSource(optional, YamlEngine.unmarshal(each.getValue(), YamlShadowDataSourceConfiguration.class))));
             shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.TABLES).getName(each.getKey())
@@ -96,7 +99,7 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
                 result.setDefaultShadowAlgorithmName(each.getValue());
             }
         }
-        return result;
+        return Optional.of(result);
     }
     
     private ShadowDataSourceConfiguration swapDataSource(final String name, final YamlShadowDataSourceConfiguration yamlConfig) {

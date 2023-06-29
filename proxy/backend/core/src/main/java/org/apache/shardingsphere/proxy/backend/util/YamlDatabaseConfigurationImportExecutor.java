@@ -143,7 +143,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         contextManager.getInstanceContext().getModeContextManager().createDatabase(databaseName);
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), contextManager.getMetaDataContexts().getMetaData().getProps());
-        contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType);
+        contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
     
     private void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {

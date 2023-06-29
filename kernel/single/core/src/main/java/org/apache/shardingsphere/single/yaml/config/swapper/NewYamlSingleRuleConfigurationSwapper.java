@@ -28,6 +28,9 @@ import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfigura
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * TODO Rename YamlSingleRuleConfigurationSwapper when metadata structure adjustment completed. #25485
@@ -50,17 +53,14 @@ public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleC
     }
     
     @Override
-    public SingleRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        if (dataNodes.stream().noneMatch(each -> singleRuleNodePath.getRoot().isValidatedPath(each.getKey()))) {
-            // TODO refactor this use Optional
-            return null;
-        }
-        for (YamlDataNode each : dataNodes) {
+    public Optional<SingleRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
+        List<YamlDataNode> validDataNodes = dataNodes.stream().filter(each -> singleRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        for (YamlDataNode each : validDataNodes) {
             if (singleRuleNodePath.getUniqueItem(SingleRuleNodePathProvider.TABLES).isValidatedPath(each.getKey())) {
-                return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class));
+                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class)));
             }
         }
-        return new SingleRuleConfiguration();
+        return Optional.empty();
     }
     
     private SingleRuleConfiguration swapToObject(final YamlSingleRuleConfiguration yamlConfig) {

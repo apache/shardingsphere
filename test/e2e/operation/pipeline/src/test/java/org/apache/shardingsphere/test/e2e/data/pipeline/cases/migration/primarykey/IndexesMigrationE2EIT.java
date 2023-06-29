@@ -91,13 +91,12 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
             // TODO PostgreSQL update delete events not support if table without unique keys at increment task.
             final Consumer<DataSource> incrementalTaskFn = dataSource -> {
+                if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
+                    doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
+                }
                 Object orderId = keyGenerateAlgorithm.generateKey();
                 insertOneOrder(containerComposer, orderId);
-                if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
-                    updateOneOrder(containerComposer, orderId, "updated");
-                    deleteOneOrder(containerComposer, orderId, "updated");
-                    insertOneOrder(containerComposer, keyGenerateAlgorithm.generateKey());
-                }
+                containerComposer.assertOrderRecordExist(dataSource, "t_order", orderId);
             };
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, incrementalTaskFn);
         }

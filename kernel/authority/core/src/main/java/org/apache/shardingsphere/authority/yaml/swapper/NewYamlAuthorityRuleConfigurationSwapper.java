@@ -59,15 +59,15 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlGl
     }
     
     @Override
-    public AuthorityRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+    public Optional<AuthorityRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
             Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }
-            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAuthorityRuleConfiguration.class));
+            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAuthorityRuleConfiguration.class)));
         }
-        return new AuthorityRuleConfiguration(Collections.emptyList(), new DefaultAuthorityRuleConfigurationBuilder().build().getAuthorityProvider(), "");
+        return Optional.empty();
     }
     
     private AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {

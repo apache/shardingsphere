@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.event.loadbalance;
+package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Alter load-balance event.
+ * System table which maintains databases in openGauss system catalog schema.
  */
 @RequiredArgsConstructor
-@Getter
-public final class AlterLoadBalanceEvent implements GovernanceEvent {
+public final class OpenGaussDatabase {
     
-    private final String databaseName;
+    // CHECKSTYLE:OFF
+    public final String datname;
     
-    private final String loadBalanceName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public final String datcompatibility;
+    // CHECKSTYLE:ON
 }

@@ -19,13 +19,10 @@ package org.apache.shardingsphere.readwritesplitting.event;
 
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.AddReadwriteSplittingDataSourceEvent;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwriteSplittingDataSourceEvent;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.DeleteReadwriteSplittingDataSourceEvent;
-import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterLoadBalanceEvent;
-import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteLoadBalanceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.ReadwriteSplittingDataSourceEventCreator;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.ReadwriteSplittingLoadBalancerEventCreator;
 import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
 
 /**
@@ -35,31 +32,18 @@ public final class ReadwriteSplittingRuleChangedEventCreator implements RuleChan
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
+        return getNamedRuleItemChangedEventCreator(itemType).create(databaseName, itemName, event);
+    }
+    
+    private NamedRuleItemChangedEventCreator getNamedRuleItemChangedEventCreator(final String itemType) {
         switch (itemType) {
             case ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES:
-                return createDataSourceEvent(databaseName, itemName, event);
+                return new ReadwriteSplittingDataSourceEventCreator();
             case ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS:
-                return createLoadBalanceEvent(databaseName, itemName, event);
+                return new ReadwriteSplittingLoadBalancerEventCreator();
             default:
                 throw new UnsupportedOperationException(itemType);
         }
-    }
-    
-    private GovernanceEvent createDataSourceEvent(final String databaseName, final String groupName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new AddReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
-            return new AlterReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue());
-        }
-        return new DeleteReadwriteSplittingDataSourceEvent(databaseName, groupName);
-    }
-    
-    private GovernanceEvent createLoadBalanceEvent(final String databaseName, final String loadBalancerName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return new AlterLoadBalanceEvent(databaseName, loadBalancerName, event.getKey(), event.getValue());
-        }
-        return new DeleteLoadBalanceEvent(databaseName, loadBalancerName);
     }
     
     @Override

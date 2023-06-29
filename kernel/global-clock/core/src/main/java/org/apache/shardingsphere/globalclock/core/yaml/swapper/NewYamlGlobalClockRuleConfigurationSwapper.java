@@ -51,15 +51,15 @@ public final class NewYamlGlobalClockRuleConfigurationSwapper implements NewYaml
     }
     
     @Override
-    public GlobalClockRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+    public Optional<GlobalClockRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
             Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }
-            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class));
+            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class)));
         }
-        return new GlobalClockRuleConfiguration("", "", false, new Properties());
+        return Optional.empty();
     }
     
     private GlobalClockRuleConfiguration swapToObject(final YamlGlobalClockRuleConfiguration yamlConfig) {

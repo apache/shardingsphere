@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * TODO Rename YamlRuleConfigurationSwapper when metadata structure adjustment completed. #25485
@@ -53,9 +52,8 @@ public final class NewYamlRuleConfigurationSwapperEngine {
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlDataNode> dataNodes) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (NewYamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(NewYamlRuleConfigurationSwapper.class)) {
-            result.add((RuleConfiguration) each.swapToObject(dataNodes));
+            each.swapToObject(dataNodes).ifPresent(optional -> result.add((RuleConfiguration) optional));
         }
-        result.removeIf(Objects::isNull);
         return result;
     }
 }
