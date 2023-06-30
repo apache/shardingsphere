@@ -17,52 +17,19 @@
 
 package org.apache.shardingsphere.metadata.persist.service.version;
 
-import java.util.Optional;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
+
+import java.util.Collection;
 
 /**
- * TODO replace the old implementation after meta data refactor completed
  * Meta data version based registry service.
  */
 public interface MetaDataVersionBasedPersistService {
     
     /**
-     * Get active version.
+     * Switch active version.
      *
-     * @param databaseName database name
-     * @return active database version
+     * @param metaDataVersions meta data versions
      */
-    Optional<String> getActiveVersion(String databaseName);
-    
-    /**
-     * Judge whether active version.
-     *
-     * @param databaseName database name
-     * @param version version
-     * @return is active version or not
-     */
-    boolean isActiveVersion(String databaseName, String version);
-    
-    /**
-     * Create new schema version.
-     *
-     * @param databaseName database name
-     * @return new version
-     */
-    Optional<String> createNewVersion(String databaseName);
-    
-    /**
-     * Persist active database version.
-     *
-     * @param databaseName database name
-     * @param version version
-     */
-    void persistActiveVersion(String databaseName, String version);
-    
-    /**
-     * Delete database version.
-     *
-     * @param databaseName database name
-     * @param version version
-     */
-    void deleteVersion(String databaseName, String version);
+    void switchActiveVersion(Collection<MetaDataVersion> metaDataVersions);
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 
 import java.util.Collection;

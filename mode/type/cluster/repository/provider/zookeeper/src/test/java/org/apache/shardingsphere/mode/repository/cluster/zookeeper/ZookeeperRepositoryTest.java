@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper;
 
-import com.google.common.util.concurrent.SettableFuture;
 import lombok.SneakyThrows;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -30,13 +29,7 @@ import org.apache.curator.framework.api.ExistsBuilder;
 import org.apache.curator.framework.api.GetChildrenBuilder;
 import org.apache.curator.framework.api.ProtectACLCreateModeStatPathAndBytesable;
 import org.apache.curator.framework.api.SetDataBuilder;
-import org.apache.curator.framework.listen.Listenable;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.CuratorCache;
-import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
@@ -48,22 +41,17 @@ import org.apache.zookeeper.data.Stat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.mockito.stubbing.VoidAnswer1;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -74,7 +62,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -89,13 +76,7 @@ class ZookeeperRepositoryTest {
     private static final String SERVER_LISTS = "127.0.0.1:2181";
     
     @Mock
-    private CuratorCache curatorCache;
-    
-    @Mock
     private CuratorFramework client;
-    
-    @Mock
-    private Listenable<CuratorCacheListener> listenable;
     
     @Mock
     private ExistsBuilder existsBuilder;
@@ -198,59 +179,6 @@ class ZookeeperRepositoryTest {
         when(getChildrenBuilder.forPath("/test/children/keys")).thenReturn(keys);
         List<String> childrenKeys = REPOSITORY.getChildrenKeys("/test/children/keys");
         assertThat(childrenKeys.size(), is(2));
-    }
-    
-    @Test
-    void assertWatchUpdatedChangedType() throws ExecutionException, InterruptedException {
-        mockCache("/test/children_updated/1");
-        ChildData oldData = new ChildData("/test/children_updated/1", null, "value1".getBytes());
-        ChildData data = new ChildData("/test/children_updated/1", null, "value2".getBytes());
-        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_CHANGED, oldData, data))).when(listenable).addListener(any(CuratorCacheListener.class));
-        SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
-        REPOSITORY.watch("/test/children_updated/1", settableFuture::set);
-        DataChangedEvent dataChangedEvent = settableFuture.get();
-        assertThat(dataChangedEvent.getType(), is(Type.UPDATED));
-        assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
-        assertThat(dataChangedEvent.getValue(), is("value2"));
-    }
-    
-    @Test
-    void assertWatchDeletedChangedType() throws ExecutionException, InterruptedException {
-        mockCache("/test/children_deleted/5");
-        ChildData oldData = new ChildData("/test/children_deleted/5", null, "value5".getBytes());
-        ChildData data = new ChildData("/test/children_deleted/5", null, "value5".getBytes());
-        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_DELETED, oldData, data))).when(listenable).addListener(any(CuratorCacheListener.class));
-        SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
-        REPOSITORY.watch("/test/children_deleted/5", settableFuture::set);
-        DataChangedEvent dataChangedEvent = settableFuture.get();
-        assertThat(dataChangedEvent.getType(), is(Type.DELETED));
-        assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
-        assertThat(dataChangedEvent.getValue(), is("value5"));
-    }
-    
-    @Test
-    void assertWatchAddedChangedType() throws ExecutionException, InterruptedException {
-        mockCache("/test/children_added/4");
-        ChildData data = new ChildData("/test/children_added/4", null, "value4".getBytes());
-        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_CREATED, null, data))).when(listenable).addListener(any(CuratorCacheListener.class));
-        SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
-        REPOSITORY.watch("/test/children_added/4", settableFuture::set);
-        DataChangedEvent dataChangedEvent = settableFuture.get();
-        assertThat(dataChangedEvent.getType(), is(Type.ADDED));
-        assertThat(dataChangedEvent.getKey(), is("/test/children_added/4"));
-        assertThat(dataChangedEvent.getValue(), is("value4"));
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void mockCache(final String key) {
-        Map<String, CuratorCache> caches = new HashMap<>();
-        caches.put(key, curatorCache);
-        Plugins.getMemberAccessor().set(ZookeeperRepository.class.getDeclaredField("caches"), REPOSITORY, caches);
-        when(curatorCache.listenable()).thenReturn(listenable);
-    }
-    
-    private VoidAnswer1<CuratorCacheListener> getListenerAnswer(final CuratorCacheListener.Type type, final ChildData oldData, final ChildData data) {
-        return listener -> listener.event(type, oldData, data);
     }
     
     @Test

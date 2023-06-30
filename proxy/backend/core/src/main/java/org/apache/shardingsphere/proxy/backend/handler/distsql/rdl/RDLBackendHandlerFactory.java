@@ -52,7 +52,7 @@ public final class RDLBackendHandlerFactory {
             return getStorageUnitBackendHandler((StorageUnitDefinitionStatement) sqlStatement, connectionSession);
         }
         // TODO Remove when metadata structure adjustment completed. #25485
-        if ("New_Cluster".equals(ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType())) {
+        if ("Cluster".equals(ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType())) {
             return new NewRuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
         }
         return new RuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);

@@ -331,7 +331,7 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/zjcnb" target="_blank">
+            <a href="https://github.com/zhaojinchao95" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/33742097?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
@@ -386,7 +386,7 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/mabaiwan" target="_blank">
+            <a href="https://github.com/magestacks" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/77398366?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>

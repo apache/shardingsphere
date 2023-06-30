@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
@@ -62,17 +63,25 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
+        EncryptColumn encryptColumn = mockEncryptColumn();
         EncryptTable encryptTable = mockEncryptTable();
+        when(encryptTable.getEncryptColumn("mobile")).thenReturn(encryptColumn);
         when(result.getEncryptTable("t_user")).thenReturn(encryptTable);
-        when(result.encrypt(null, "db_test", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));
+        return result;
+    }
+    
+    private EncryptColumn mockEncryptColumn() {
+        EncryptColumn result = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
+        when(result.getCipher().getName()).thenReturn("cipher_mobile");
+        when(result.getCipher().encrypt(null, "db_test", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));
         return result;
     }
     
     private static EncryptTable mockEncryptTable() {
-        EncryptTable result = mock(EncryptTable.class);
+        EncryptTable result = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
         when(result.getTable()).thenReturn("t_user");
         when(result.isEncryptColumn("mobile")).thenReturn(true);
-        when(result.getCipherColumn("mobile")).thenReturn("cipher_mobile");
+        when(result.getEncryptColumn("mobile").getCipher().getName()).thenReturn("cipher_mobile");
         return result;
     }
     

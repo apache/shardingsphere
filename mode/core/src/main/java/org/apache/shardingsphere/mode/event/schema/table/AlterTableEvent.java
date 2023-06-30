@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.event.schema.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
@@ -33,9 +32,9 @@ public final class AlterTableEvent implements GovernanceEvent {
     
     private final String schemaName;
     
-    private final ShardingSphereTable table;
+    private final String tableName;
     
-    private final int version;
+    private final String activeVersionKey;
     
-    private final String versionKey;
+    private final String activeVersion;
 }

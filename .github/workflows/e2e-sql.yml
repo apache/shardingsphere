@@ -176,7 +176,7 @@ jobs:
     name: mixture rule
     needs: e2e-single-rule
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     strategy:
       matrix:
         adapter: [ proxy, jdbc ]

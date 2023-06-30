@@ -44,9 +44,6 @@ rules:
   bindingTables (+): # Binding tables
     - <logic_table_name_1, logic_table_name_2, ...> 
     - <logic_table_name_1, logic_table_name_2, ...> 
-  broadcastTables (+): # Broadcast tables
-    - <table_name>
-    - <table_name>
   defaultDatabaseStrategy: # Default strategy for database sharding
   defaultTableStrategy: # Default strategy for table sharding
   defaultKeyGenerateStrategy: # Default Key generator strategy
@@ -72,6 +69,11 @@ rules:
       type: # Sharding audit algorithm type
       props: # Sharding audit algorithm properties
       # ...
+
+- !BROADCAST
+  tables: # Broadcast tables
+    - <table_name>
+    - <table_name>
 ```
 
 ## Procedure
@@ -134,8 +136,6 @@ rules:
   defaultShardingColumn: account_id
   bindingTables:
     - t_order,t_order_item
-  broadcastTables:
-    - t_address
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
@@ -166,6 +166,10 @@ rules:
   auditors:
     sharding_key_required_auditor:
       type: DML_SHARDING_CONDITIONS
+
+- !BROADCAST
+  tables: # Broadcast tables
+    - t_address
 
 props:
   sql-show: false

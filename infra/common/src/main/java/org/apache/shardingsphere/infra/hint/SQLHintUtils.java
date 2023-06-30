@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -45,16 +46,6 @@ public final class SQLHintUtils {
     private static final String SQL_HINT_VALUE_COLLECTION_SPLIT = " ";
     
     private static final int SQL_HINT_VALUE_SIZE = 2;
-    
-    /**
-     * Whether the SQL statement starts with the hint prefix.
-     *
-     * @param sql SQL statement
-     * @return whether starts with hint prefix
-     */
-    public static boolean startWithHint(final String sql) {
-        return sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getKey()) || sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getAlias());
-    }
     
     /**
      * Get SQL hint props.
@@ -107,11 +98,11 @@ public final class SQLHintUtils {
      * @param sql SQL
      * @return Hint value context
      */
-    public static HintValueContext extractHint(final String sql) {
-        HintValueContext result = new HintValueContext();
-        if (null == sql || !startWithHint(sql)) {
-            return result;
+    public static Optional<HintValueContext> extractHint(final String sql) {
+        if (!startWithHint(sql)) {
+            return Optional.empty();
         }
+        HintValueContext result = new HintValueContext();
         String hintText = sql.substring(0, sql.indexOf(SQL_COMMENT_SUFFIX) + 2);
         Properties hintProperties = SQLHintUtils.getSQLHintProps(hintText);
         if (containsPropertyKey(hintProperties, SQLHintPropertiesKey.DATASOURCE_NAME_KEY)) {
@@ -141,7 +132,11 @@ public final class SQLHintUtils {
                 result.getShardingTableValues().put(Objects.toString(entry.getKey()).toUpperCase(), value);
             }
         }
-        return result;
+        return Optional.of(result);
+    }
+    
+    private static boolean startWithHint(final String sql) {
+        return null != sql && (sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getKey()) || sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getAlias()));
     }
     
     private static boolean containsPropertyKey(final Properties hintProperties, final SQLHintPropertiesKey sqlHintPropertiesKey) {

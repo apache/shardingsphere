@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mask.event.algorithm;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
@@ -33,5 +32,7 @@ public final class AlterMaskAlgorithmEvent implements GovernanceEvent {
     
     private final String algorithmName;
     
-    private final AlgorithmConfiguration config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

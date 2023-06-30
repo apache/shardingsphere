@@ -36,6 +36,16 @@ public final class NewGlobalNode {
     private static final String VERSIONS = "versions";
     
     /**
+     * Get global rule node.
+     *
+     * @param rulePath rule path
+     * @return global rule node
+     */
+    public static String getGlobalRuleNode(final String rulePath) {
+        return String.join("/", getGlobalRuleRootNode(), rulePath);
+    }
+    
+    /**
      * Get global rule active version node.
      *
      * @param rulePath rule path
@@ -91,10 +101,24 @@ public final class NewGlobalNode {
      * @return properties version node
      */
     public static String getPropsVersionNode(final String version) {
-        return String.join("/", getPropsRootNode(), VERSIONS, version);
+        return String.join("/", getPropsVersionsNode(), version);
     }
     
-    private static String getPropsRootNode() {
+    /**
+     * Get properties versions node.
+     *
+     * @return properties versions node
+     */
+    public static String getPropsVersionsNode() {
+        return String.join("/", getPropsRootNode(), VERSIONS);
+    }
+    
+    /**
+     * Get properties node.
+     *
+     * @return properties node
+     */
+    public static String getPropsRootNode() {
         return String.join("/", "", PROPS_NODE);
     }
 }

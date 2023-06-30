@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: seqrelid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   seqtypid:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: seqtypid
     primaryKey: false
+    unsigned: false
     visible: true
   seqstart:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: seqstart
     primaryKey: false
+    unsigned: false
     visible: true
   seqincrement:
     caseSensitive: true
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: seqincrement
     primaryKey: false
+    unsigned: false
     visible: true
   seqmax:
     caseSensitive: true
@@ -51,6 +55,7 @@ columns:
     generated: false
     name: seqmax
     primaryKey: false
+    unsigned: false
     visible: true
   seqmin:
     caseSensitive: true
@@ -58,6 +63,7 @@ columns:
     generated: false
     name: seqmin
     primaryKey: false
+    unsigned: false
     visible: true
   seqcache:
     caseSensitive: true
@@ -65,13 +71,15 @@ columns:
     generated: false
     name: seqcache
     primaryKey: false
+    unsigned: false
     visible: true
   seqcycle:
     caseSensitive: true
-    dataType: 16
+    dataType: -7
     generated: false
     name: seqcycle
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
   pg_sequence_seqrelid_index:

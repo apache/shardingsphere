@@ -17,6 +17,14 @@
   -->
 
 <sql-parser-test-cases>
+    <cache-index sql-case-id="cache_index_with_in" name="default">
+        <table-index start-index="12" stop-index="13">
+            <table name="t1" start-index="12" stop-index="13" />
+        </table-index>
+        <table-index start-index="15" stop-index="16">
+            <table name="t2" start-index="15" stop-index="16" />
+        </table-index>
+    </cache-index>
     <cache-index sql-case-id="cache_index_single_table" name="hot_cache_index">
         <table-index start-index="12" stop-index="18">
             <table name="t_order" start-index="12" stop-index="18" />

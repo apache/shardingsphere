@@ -54,7 +54,7 @@ public final class Bootstrap {
         List<String> addresses = bootstrapArgs.getAddresses();
         new BootstrapInitializer().init(yamlConfig, port, bootstrapArgs.isForce());
         Optional.ofNullable((Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
-                .ifPresent(cdcPort -> new CDCServer(addresses, cdcPort).start());
+                .ifPresent(optional -> new CDCServer(addresses, optional).start());
         ProxySSLContext.init();
         ShardingSphereProxy shardingSphereProxy = new ShardingSphereProxy();
         bootstrapArgs.getSocketPath().ifPresent(shardingSphereProxy::start);

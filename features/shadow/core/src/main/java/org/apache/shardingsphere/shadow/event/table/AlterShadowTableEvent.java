@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shadow.event.table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 
 /**
  * Alter shadow table event.
@@ -33,5 +32,7 @@ public final class AlterShadowTableEvent implements GovernanceEvent {
     
     private final String tableName;
     
-    private final ShadowTableConfiguration config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.Ad
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,9 +46,16 @@ public final class ProxyStandaloneContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType) {
-        Map<String, String> result = new HashMap<>(2, 1F);
-        result.put("/env/common/standalone/proxy/conf/", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
+        Map<String, String> result = new HashMap<>(3, 1F);
+        result.put("/env/common/standalone/proxy/conf/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
         result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
+        result.put(serverYamlExists(scenario) ? "/env/scenario/" + scenario + "/standalone/server.yaml"
+                : "/env/common/standalone/proxy/conf/server.yaml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "server.yaml");
         return result;
+    }
+    
+    private static boolean serverYamlExists(final String scenario) {
+        URL url = Thread.currentThread().getContextClassLoader().getResource("env/scenario/" + scenario + "/standalone/server.yaml");
+        return null != url;
     }
 }

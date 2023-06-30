@@ -69,7 +69,7 @@ public final class ExternalMetaDataFactory {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
         Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size() + protocolType.getSystemDatabaseSchemaMap().size(), 1F);
         result.putAll(createGenericDatabases(databaseConfigMap, protocolType, props, instanceContext));
-        result.putAll(createSystemDatabases(databaseConfigMap, protocolType));
+        result.putAll(createSystemDatabases(databaseConfigMap, protocolType, props));
         return result;
     }
     
@@ -87,11 +87,12 @@ public final class ExternalMetaDataFactory {
         return result;
     }
     
-    private static Map<String, ShardingSphereDatabase> createSystemDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType) {
+    private static Map<String, ShardingSphereDatabase> createSystemDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType,
+                                                                             final ConfigurationProperties props) {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(protocolType.getSystemDatabaseSchemaMap().size(), 1F);
         for (String each : protocolType.getSystemDatabaseSchemaMap().keySet()) {
             if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getDataSources().isEmpty()) {
-                result.put(each.toLowerCase(), ShardingSphereDatabase.create(each, protocolType));
+                result.put(each.toLowerCase(), ShardingSphereDatabase.create(each, protocolType, props));
             }
         }
         return result;

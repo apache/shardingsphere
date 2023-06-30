@@ -42,11 +42,11 @@ class OpenGaussCommandPacketFactoryTest {
     @Test
     void assertNewOpenGaussComBatchBindPacket() {
         when(payload.getByteBuf()).thenReturn(mock(ByteBuf.class));
-        assertThat(OpenGaussCommandPacketFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, payload), instanceOf(PostgreSQLAggregatedCommandPacket.class));
+        assertThat(OpenGaussCommandPacketFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, payload, false), instanceOf(PostgreSQLAggregatedCommandPacket.class));
     }
     
     @Test
     void assertNewPostgreSQLPacket() {
-        assertThat(OpenGaussCommandPacketFactory.newInstance(mock(PostgreSQLCommandPacketType.class), payload), instanceOf(PostgreSQLCommandPacket.class));
+        assertThat(OpenGaussCommandPacketFactory.newInstance(mock(PostgreSQLCommandPacketType.class), payload, false), instanceOf(PostgreSQLCommandPacket.class));
     }
 }

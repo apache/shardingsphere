@@ -108,6 +108,7 @@ execute
     | checkTable
     | checksumTable
     | clone
+    | changeReplicationSourceTo
     | startSlave
     | stopSlave
     | analyzeTable

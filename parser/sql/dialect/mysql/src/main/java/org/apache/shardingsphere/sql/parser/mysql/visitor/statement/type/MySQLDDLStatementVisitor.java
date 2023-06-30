@@ -21,9 +21,10 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddTableConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterAlgorithmOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterCheckContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterCommandsModifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterConvertContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDatabaseContext;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterFu
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterInstanceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterListItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterLockOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterLogfileGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterRenameTableContext;
@@ -85,11 +87,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PlaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrepareContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReferenceDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterAlgorithmOptionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterLockOptionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterCommandsModifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RepeatStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RoutineBodyContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleStatementContext;
@@ -111,8 +111,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.RenameColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnAfterPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnFirstPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnPositionSegment;
@@ -128,8 +126,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.RenameI
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
@@ -944,7 +945,26 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
-        return new MySQLAlterTablespaceStatement();
+        MySQLAlterTablespaceStatement result = new MySQLAlterTablespaceStatement();
+        if (null != ctx.alterTablespaceInnodb().tablespace) {
+            result.setTablespaceSegment(new TablespaceSegment(ctx.alterTablespaceInnodb().tablespace.getStart().getStartIndex(),
+                    ctx.alterTablespaceInnodb().tablespace.getStop().getStopIndex(),
+                    (IdentifierValue) visit(ctx.alterTablespaceInnodb().tablespace)));
+        } else if (null != ctx.alterTablespaceNdb().tablespace) {
+            result.setTablespaceSegment(new TablespaceSegment(ctx.alterTablespaceNdb().tablespace.getStart().getStartIndex(),
+                    ctx.alterTablespaceNdb().tablespace.getStop().getStopIndex(),
+                    (IdentifierValue) visit(ctx.alterTablespaceNdb().tablespace)));
+        }
+        if (null != ctx.alterTablespaceInnodb().renameTablespace) {
+            result.setRenameTablespaceSegment(new TablespaceSegment(ctx.alterTablespaceInnodb().renameTablespace.getStart().getStartIndex(),
+                    ctx.alterTablespaceInnodb().renameTablespace.getStop().getStopIndex(),
+                    (IdentifierValue) visit(ctx.alterTablespaceInnodb().renameTablespace)));
+        } else if (null != ctx.alterTablespaceNdb().renameTableSpace) {
+            result.setRenameTablespaceSegment(new TablespaceSegment(ctx.alterTablespaceNdb().renameTableSpace.getStart().getStartIndex(),
+                    ctx.alterTablespaceNdb().renameTableSpace.getStop().getStopIndex(),
+                    (IdentifierValue) visit(ctx.alterTablespaceInnodb().renameTablespace)));
+        }
+        return result;
     }
     
     @Override

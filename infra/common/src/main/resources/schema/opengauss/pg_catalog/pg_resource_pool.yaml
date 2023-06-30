@@ -1,0 +1,128 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_resource_pool
+columns:
+  respool_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: respool_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  mem_percent:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: mem_percent
+    primaryKey: false
+    unsigned: false
+    visible: true
+  cpu_affinity:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: cpu_affinity
+    primaryKey: false
+    unsigned: false
+    visible: true
+  control_group:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: control_group
+    primaryKey: false
+    unsigned: false
+    visible: true
+  active_statements:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: active_statements
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_dop:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: max_dop
+    primaryKey: false
+    unsigned: false
+    visible: true
+  memory_limit:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: memory_limit
+    primaryKey: false
+    unsigned: false
+    visible: true
+  parentid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: parentid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  io_limits:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: io_limits
+    primaryKey: false
+    unsigned: false
+    visible: true
+  io_priority:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: io_priority
+    primaryKey: false
+    unsigned: false
+    visible: true
+  nodegroup:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: nodegroup
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_foreign:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: is_foreign
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_worker:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: max_worker
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_resource_pool_name_index:
+    name: pg_resource_pool_name_index
+  pg_resource_pool_oid_index:
+    name: pg_resource_pool_oid_index

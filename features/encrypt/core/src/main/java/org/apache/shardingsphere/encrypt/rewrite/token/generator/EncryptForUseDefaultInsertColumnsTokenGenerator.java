@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
@@ -88,30 +89,32 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
         Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            if (encryptTable.findEncryptorName(columnName).isPresent()) {
-                int columnIndex = result.indexOf(columnName);
-                setCipherColumn(result, encryptTable, columnName, columnIndex);
-                if (encryptTable.findAssistedQueryColumn(columnName).isPresent()) {
-                    addAssistedQueryColumn(result, encryptTable, columnName, columnIndex);
-                    columnIndex++;
-                }
-                if (encryptTable.findLikeQueryEncryptorName(columnName).isPresent()) {
-                    addLikeQueryColumn(result, encryptTable, columnName, columnIndex);
-                }
+            if (!encryptTable.isEncryptColumn(columnName)) {
+                continue;
+            }
+            EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
+            int columnIndex = result.indexOf(columnName);
+            setCipherColumn(result, encryptColumn, columnIndex);
+            if (encryptColumn.getAssistedQuery().isPresent()) {
+                addAssistedQueryColumn(result, encryptColumn, columnIndex);
+                columnIndex++;
+            }
+            if (encryptColumn.getLikeQuery().isPresent()) {
+                addLikeQueryColumn(result, encryptColumn, columnIndex);
             }
         }
         return result;
     }
     
-    private void addAssistedQueryColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
-        encryptTable.findAssistedQueryColumn(columnName).ifPresent(optional -> columnNames.add(columnIndex + 1, optional));
+    private void setCipherColumn(final List<String> columnNames, final EncryptColumn encryptColumn, final int columnIndex) {
+        columnNames.set(columnIndex, encryptColumn.getCipher().getName());
     }
     
-    private void addLikeQueryColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
-        encryptTable.findLikeQueryColumn(columnName).ifPresent(optional -> columnNames.add(columnIndex + 1, optional));
+    private void addAssistedQueryColumn(final List<String> columnNames, final EncryptColumn encryptColumn, final int columnIndex) {
+        encryptColumn.getAssistedQuery().ifPresent(optional -> columnNames.add(columnIndex + 1, optional.getName()));
     }
     
-    private void setCipherColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
-        columnNames.set(columnIndex, encryptTable.getCipherColumn(columnName));
+    private void addLikeQueryColumn(final List<String> columnNames, final EncryptColumn encryptColumn, final int columnIndex) {
+        encryptColumn.getLikeQuery().ifPresent(optional -> columnNames.add(columnIndex + 1, optional.getName()));
     }
 }

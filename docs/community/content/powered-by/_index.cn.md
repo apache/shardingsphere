@@ -60,7 +60,6 @@ chapter = true
     <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
     <li><a href="http://www.tuandai.com/" rel="nofollow">团贷网</a></li>
-    <li><a href="https://www.cypfintech.com/" rel="nofollow">策赢平台</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
     <li><a href="https://www.airstar.com/" rel="nofollow">天星金融</a></li>
@@ -74,7 +73,6 @@ chapter = true
     <li><a href="http://game.163.com/" rel="nofollow">网易游戏</a></li>
     <li><a href="https://www.vip.com/" rel="nofollow">唯品会</a></li>
     <li><a href="https://www.joybuy.com/" rel="nofollow">京东商城海外站</a></li>
-    <li><a href="https://www.jd.ru/" rel="nofollow">京东商城俄文站</a></li>
     <li><a href="https://www.wandougongzhu.cn" rel="nofollow">豌豆公主</a></li>
     <li><a href="https://www.missfresh.cn/" rel="nofollow">每日优鲜</a></li>
     <li><a href="http://www.ucreater.com/" rel="nofollow">由创科技</a></li>
@@ -87,7 +85,6 @@ chapter = true
     <li><a href="http://www.heilan.com.cn/" rel="nofollow">海澜集团</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">百果园</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">大易有塑</a></li>
-    <li><a href="https://www.xiaohongchun.com/" rel="nofollow">小红唇</a></li>
     <li><a href="https://www.yiwugou.com/" rel="nofollow">义乌购</a></li>
     <li><a href="http://www.eeka.cn/" rel="nofollow">赢家服饰</a></li>
     <li><a href="http://cs.maifang.com/" rel="nofollow">秒卖房</a></li>
@@ -112,11 +109,9 @@ chapter = true
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">百度爱番番</a></li>
     <li><a href="https://www.tuya.com/cn" rel="nofollow">涂鸦</a></li>
     <li><a href="https://www.advancegroup.com.cn/" rel="nofollow">领创集团</a>：<a href="https://mp.weixin.qq.com/s/4iSewGT6-bOmDH56ukyBsQ" rel="nofollow">用户案例</a></li>
-    <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">真信认知科技</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">云庐科技</a></li>
     <li><a href="http://www.compasshz.com/" rel="nofollow">康帕斯科技</a></li>
     <li><a href="http://www.cyberplus.com.cn/" rel="nofollow">新脉远望</a></li>
-    <li><a href="http://caas.com.cn/" rel="nofollow">千丁</a></li>
     <li><a href="https://www.shebaotong.com/" rel="nofollow">社宝通</a></li>
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">公交云</a></li>
     <li><a href="http://www.ushareit.com/" rel="nofollow">茄子快传</a></li>
@@ -174,7 +169,6 @@ chapter = true
     <li><a href="https://www.mafengwo.cn/" rel="nofollow">马蜂窝</a></li>
     <li><a href="https://www.tujia.com/" rel="nofollow">途家民宿</a></li>
     <li><a href="https://www.fotoplace.cc/" rel="nofollow">足记</a></li>
-    <li><a href="https://travelingpin.com" rel="nofollow">travelingpin</a></li>
     <li><a href="http://www.yaduo.com/" rel="nofollow">亚朵</a></li>
 </ul>
 
@@ -203,8 +197,6 @@ chapter = true
 <ul>
     <li><a href="http://www.100tal.com/" rel="nofollow">好未来</a></li>
     <li><a href="http://www.hqwx.com/" rel="nofollow">环球网校</a></li>
-    <li><a href="https://www.kaike.la/" rel="nofollow">开课啦</a></li>
-    <li><a href="https://www.okayzhihui.com/" rel="nofollow">点石经纬</a></li>
     <li><a href="http://edu.dongao.com/" rel="nofollow">东奥教育集团</a></li>
     <li><a href="https://magicears.com.cn/" rel="nofollow">魔力耳朵</a></li>
     <li><a href="https://www.duia.com/" rel="nofollow">对啊网</a></li>
@@ -226,8 +218,7 @@ chapter = true
 ### 新闻资讯
 <ul>
     <li><a href="http://www.people.com.cn/" rel="nofollow">人民网</a></li>
-    <li><a href="https://ss.sohu.com/" rel="nofollow">搜狐新闻</a></li>
-    <li><a href="https://www.tianya.cn/" rel="nofollow">天涯社区</a></li>
+    <li><a href="http://news.sohu.com/" rel="nofollow">搜狐新闻</a></li>
     <li><a href="https://www.autohome.com.cn/" rel="nofollow">汽车之家</a></li>
     <li><a href="https://auto.ifeng.com/" rel="nofollow">凤凰汽车</a></li>
     <li><a href="https://500px.me/" rel="nofollow">视觉中国</a></li>
@@ -270,7 +261,6 @@ chapter = true
 <ul>
     <li><a href="https://www.hikvision.com/" rel="nofollow">海康威视</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">思创理德</a></li>
-    <li><a href="http://tcslwxwl.cn.b2b168.com/" rel="nofollow">神州商龙科技股份有限公司</a></li>
     <li><a href="https://sunwuu.com/" rel="nofollow">商物云</a></li>
 </ul>
 
@@ -311,7 +301,6 @@ chapter = true
     <li><a href="https://www.ywwl.com/" rel="nofollow">遥望网络</a></li>
     <li><a href="http://www.le7soft.com/" rel="nofollow">乐奇软件</a></li>
     <li><a href="http://www.hylink.net.cn/" rel="nofollow">深圳市海邻科信息技术有限公司</a></li>
-    <li><a href="https://www.data4truth.com" rel="nofollow">杭州数理大数据有限公司</a></li>
 </ul>
 
 ### 医疗与健康

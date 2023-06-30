@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ParameterMarkerProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -321,6 +322,27 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
      */
     public boolean isSameGroupByAndOrderByItems() {
         return !groupByContext.getItems().isEmpty() && groupByContext.getItems().equals(orderByContext.getItems());
+    }
+    
+    /**
+     * Find column projection.
+     * 
+     * @param columnIndex column index
+     * @return find column projection
+     */
+    public Optional<ColumnProjection> findColumnProjection(final int columnIndex) {
+        List<Projection> expandProjections = projectionsContext.getExpandProjections();
+        if (expandProjections.size() < columnIndex) {
+            return Optional.empty();
+        }
+        Projection projection = expandProjections.get(columnIndex - 1);
+        if (projection instanceof ColumnProjection) {
+            return Optional.of((ColumnProjection) projection);
+        }
+        if (projection instanceof SubqueryProjection && ((SubqueryProjection) projection).getProjection() instanceof ColumnProjection) {
+            return Optional.of((ColumnProjection) ((SubqueryProjection) projection).getProjection());
+        }
+        return Optional.empty();
     }
     
     @Override

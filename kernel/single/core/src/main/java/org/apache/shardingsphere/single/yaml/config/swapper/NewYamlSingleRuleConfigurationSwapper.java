@@ -17,16 +17,20 @@
 
 package org.apache.shardingsphere.single.yaml.config.swapper;
 
-import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
+import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * TODO Rename YamlSingleRuleConfigurationSwapper when metadata structure adjustment completed. #25485
@@ -34,12 +38,11 @@ import java.util.Collections;
  */
 public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<SingleRuleConfiguration> {
     
-    private static final String ROOT_NODE = "tables";
+    private final RuleNodePath singleRuleNodePath = new SingleRuleNodePathProvider().getRuleNodePath();
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final SingleRuleConfiguration data) {
-        // TODO Consider whether to split tables and defaultDataSource
-        return Collections.singletonList(new YamlDataNode(ROOT_NODE, YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(SingleRuleNodePathProvider.TABLES, YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlSingleRuleConfiguration swapToYamlConfiguration(final SingleRuleConfiguration data) {
@@ -50,14 +53,14 @@ public final class NewYamlSingleRuleConfigurationSwapper implements NewYamlRuleC
     }
     
     @Override
-    public SingleRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        for (YamlDataNode each : dataNodes) {
-            if (Strings.isNullOrEmpty(each.getValue())) {
-                continue;
+    public Optional<SingleRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
+        List<YamlDataNode> validDataNodes = dataNodes.stream().filter(each -> singleRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        for (YamlDataNode each : validDataNodes) {
+            if (singleRuleNodePath.getUniqueItem(SingleRuleNodePathProvider.TABLES).isValidatedPath(each.getKey())) {
+                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class)));
             }
-            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class));
         }
-        return new SingleRuleConfiguration();
+        return Optional.empty();
     }
     
     private SingleRuleConfiguration swapToObject(final YamlSingleRuleConfiguration yamlConfig) {

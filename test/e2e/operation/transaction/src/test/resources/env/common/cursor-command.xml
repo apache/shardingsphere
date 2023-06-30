@@ -16,18 +16,18 @@
   -->
 
 <command>
-    <single-table-cursor>
+    <single-table-cursor cursor-name="test">
         cursor test for
         select * from t_product;
     </single-table-cursor>
     
-    <single-table-cursor-order-by>
+    <single-table-cursor-order-by cursor-name="test">
         cursor test for
         select * from t_product
         order by product_id desc;
     </single-table-cursor-order-by>
     
-    <broadcast-tables-cursor>
+    <broadcast-tables-cursor cursor-name="test">
         cursor test for
         select t_province.province_id, t_province.province_name, t_city.city_id as id, t_city.city_name
         from t_city, t_province
@@ -35,7 +35,7 @@
         order by id;
     </broadcast-tables-cursor>
     
-    <broadcast-tables-cursor2>
+    <broadcast-tables-cursor2 cursor-name="test">
         cursor test for
         select b.province_id, b.province_name, a.city_id as id, a.city_name, c.country_id
         from t_city a, t_province b, t_country c
@@ -44,7 +44,7 @@
         order by id;
     </broadcast-tables-cursor2>
     
-    <broadcast-and-sharding-tables-cursor>
+    <broadcast-and-sharding-tables-cursor cursor-name="test">
         cursor test for
         select a.address_id as id, a.address, b.city_name
         from t_address a, t_city b
@@ -53,8 +53,8 @@
         order by id;
     </broadcast-and-sharding-tables-cursor>
     
-    <broadcast-and-single-tables-cursor>
-        cursor test for
+    <broadcast-and-single-tables-cursor cursor-name="test_broadcast">
+        cursor test_broadcast for
         select a.address_id as id, a.address, b.city_name
         from t_address a, t_city b
         where b.city_id = a.city_id
@@ -62,8 +62,8 @@
         order by id;
     </broadcast-and-single-tables-cursor>
     
-    <broadcast-and-single-tables-cursor2>
-        cursor test for
+    <broadcast-and-single-tables-cursor2 cursor-name="test_broadcast_2">
+        cursor test_broadcast_2 for
         select a.city_id as id, a.city_name, b.province_id, b.province_name
         from t_city a, t_province b
         where a.province_id = b.province_id
@@ -71,7 +71,7 @@
         order by id;
     </broadcast-and-single-tables-cursor2>
     
-    <view-cursor>
+    <view-cursor cursor-name="test">
         cursor test for select * from t_order_view order by id;
     </view-cursor>
 </command>

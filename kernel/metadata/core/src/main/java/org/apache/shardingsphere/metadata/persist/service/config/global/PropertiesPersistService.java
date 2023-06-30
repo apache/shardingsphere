@@ -19,10 +19,13 @@ package org.apache.shardingsphere.metadata.persist.service.config.global;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 /**
@@ -36,6 +39,11 @@ public final class PropertiesPersistService implements GlobalPersistService<Prop
     @Override
     public void persist(final Properties props) {
         repository.persist(GlobalNode.getPropsPath(), YamlEngine.marshal(props));
+    }
+    
+    @Override
+    public Collection<MetaDataVersion> persistConfig(final Properties props) {
+        return Collections.emptyList();
     }
     
     @Override

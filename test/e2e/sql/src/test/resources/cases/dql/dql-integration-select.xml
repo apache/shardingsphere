@@ -17,9 +17,13 @@
   -->
 
 <integration-test-cases>
-    <test-case sql="SELECT 1 FROM dual" />
+    <test-case sql="SELECT 1 FROM dual" db-types="MySQL,SQLServer,Oracle,H2" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,empty_rules,encrypt,encrypt_and_readwrite_splitting,encrypt_shadow,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding,passthrough,rdl_empty_rules,readwrite_splitting,readwrite_splitting_and_shadow,shadow,sharding_and_encrypt,sharding_and_shadow,sharding_encrypt_shadow,tbl" >
+        <assertion />
+    </test-case>
 
-    <test-case sql="SELECT 1 as a" />
+    <test-case sql="SELECT 1 as a" db-types="PostgreSQL,openGauss" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,empty_rules,encrypt,encrypt_and_readwrite_splitting,encrypt_shadow,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding,passthrough,rdl_empty_rules,readwrite_splitting,readwrite_splitting_and_shadow,shadow,sharding_and_encrypt,sharding_and_shadow,sharding_encrypt_shadow,tbl" >
+        <assertion />
+    </test-case>
     
     <test-case sql="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />

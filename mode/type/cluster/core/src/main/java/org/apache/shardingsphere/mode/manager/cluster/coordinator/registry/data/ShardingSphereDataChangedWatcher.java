@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.metadata.persist.node.ShardingSphereDataNode;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.NewGovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.DatabaseDataAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.DatabaseDataDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.SchemaDataAddedEvent;
@@ -42,7 +43,7 @@ import java.util.Optional;
 /**
  * ShardingSphere data changed watcher.
  */
-public final class ShardingSphereDataChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class ShardingSphereDataChangedWatcher implements GovernanceWatcher<GovernanceEvent>, NewGovernanceWatcher<GovernanceEvent> {
     
     @Override
     public Collection<String> getWatchingKeys(final String databaseName) {

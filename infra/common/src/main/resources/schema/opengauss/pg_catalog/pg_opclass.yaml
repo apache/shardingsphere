@@ -1,0 +1,88 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_opclass
+columns:
+  opcmethod:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: opcmethod
+    primaryKey: false
+    unsigned: false
+    visible: true
+  opcname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: opcname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  opcnamespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: opcnamespace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  opcowner:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: opcowner
+    primaryKey: false
+    unsigned: false
+    visible: true
+  opcfamily:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: opcfamily
+    primaryKey: false
+    unsigned: false
+    visible: true
+  opcintype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: opcintype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  opcdefault:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: opcdefault
+    primaryKey: false
+    unsigned: false
+    visible: true
+  opckeytype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: opckeytype
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_opclass_am_name_nsp_index:
+    name: pg_opclass_am_name_nsp_index
+  pg_opclass_oid_index:
+    name: pg_opclass_oid_index
