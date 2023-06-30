@@ -52,13 +52,7 @@ import java.util.Optional;
  * Predicate right value token generator for encrypt.
  */
 @Setter
-public final class EncryptPredicateRightValueTokenGenerator
-        implements
-            CollectionSQLTokenGenerator<SQLStatementContext>,
-            ParametersAware,
-            EncryptConditionsAware,
-            EncryptRuleAware,
-            DatabaseNameAware {
+public final class EncryptPredicateRightValueTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ParametersAware, EncryptConditionsAware, EncryptRuleAware, DatabaseNameAware {
     
     private List<Object> parameters;
     
