@@ -73,7 +73,8 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
         QuoteCharacter quoteCharacter = columnSegment.getIdentifier().getQuoteCharacter();
         int startIndex = columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
-        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnSegment.getIdentifier().getValue());
+        String columnName = columnSegment.getIdentifier().getValue();
+        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
         String queryColumnName = encryptColumn.getAssistedQuery().isPresent() ? encryptColumn.getAssistedQuery().get().getName() : encryptColumn.getCipher().getName();
         return getQueryColumnToken(startIndex, stopIndex, queryColumnName, quoteCharacter);
     }
