@@ -106,18 +106,18 @@ public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscr
     
     private CompatibleEncryptRuleConfiguration getCompatibleEncryptRuleConfiguration(final ShardingSphereDatabase database, final EncryptTableRuleConfiguration needToAddedConfig) {
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        CompatibleEncryptRuleConfiguration config = rule.map(encryptRule -> getCompatibleEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) encryptRule.getConfiguration()))
+        CompatibleEncryptRuleConfiguration result = rule.map(encryptRule -> getCompatibleEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) encryptRule.getConfiguration()))
                 .orElseGet(() -> new CompatibleEncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
         // TODO refactor DistSQL to only persist config
-        config.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
-        config.getTables().add(needToAddedConfig);
-        return config;
+        result.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
+        result.getTables().add(needToAddedConfig);
+        return result;
     }
     
-    private CompatibleEncryptRuleConfiguration getCompatibleEncryptRuleConfiguration(final CompatibleEncryptRuleConfiguration config) {
-        if (null == config.getTables()) {
-            return new CompatibleEncryptRuleConfiguration(new LinkedList<>(), config.getEncryptors());
+    private CompatibleEncryptRuleConfiguration getCompatibleEncryptRuleConfiguration(final CompatibleEncryptRuleConfiguration result) {
+        if (null == result.getTables()) {
+            return new CompatibleEncryptRuleConfiguration(new LinkedList<>(), result.getEncryptors());
         }
-        return config;
+        return result;
     }
 }

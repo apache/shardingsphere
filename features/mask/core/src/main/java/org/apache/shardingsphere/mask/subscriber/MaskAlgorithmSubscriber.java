@@ -77,18 +77,18 @@ public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
     
     private MaskRuleConfiguration getMaskRuleConfiguration(final ShardingSphereDatabase database, final AlterMaskAlgorithmEvent event) {
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
-        MaskRuleConfiguration config = rule.map(maskRule -> getMaskRuleConfiguration((MaskRuleConfiguration) maskRule.getConfiguration()))
+        MaskRuleConfiguration result = rule.map(maskRule -> getMaskRuleConfiguration((MaskRuleConfiguration) maskRule.getConfiguration()))
                 .orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-        config.getMaskAlgorithms().put(event.getAlgorithmName(), swapToAlgorithmConfig(
+        result.getMaskAlgorithms().put(event.getAlgorithmName(), swapToAlgorithmConfig(
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
-        return config;
+        return result;
     }
     
-    private MaskRuleConfiguration getMaskRuleConfiguration(final MaskRuleConfiguration config) {
-        if (null == config.getMaskAlgorithms()) {
-            return new MaskRuleConfiguration(config.getTables(), new LinkedHashMap<>());
+    private MaskRuleConfiguration getMaskRuleConfiguration(final MaskRuleConfiguration result) {
+        if (null == result.getMaskAlgorithms()) {
+            return new MaskRuleConfiguration(result.getTables(), new LinkedHashMap<>());
         }
-        return config;
+        return result;
     }
     
     private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {

@@ -222,13 +222,13 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
     
     private ShardingRuleConfiguration getShardingRuleConfiguration(final ShardingSphereDatabase database) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        ShardingRuleConfiguration config;
+        ShardingRuleConfiguration result;
         if (rule.isPresent()) {
-            config = (ShardingRuleConfiguration) rule.get().getConfiguration();
+            result = (ShardingRuleConfiguration) rule.get().getConfiguration();
         } else {
-            config = new ShardingRuleConfiguration();
+            result = new ShardingRuleConfiguration();
         }
-        return config;
+        return result;
     }
     
     private ShardingTableRuleConfiguration swapShardingTableRuleConfig(final String yamlContext) {
