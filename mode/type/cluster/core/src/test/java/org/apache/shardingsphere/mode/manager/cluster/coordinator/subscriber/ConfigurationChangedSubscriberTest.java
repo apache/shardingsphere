@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -62,7 +61,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -96,7 +94,8 @@ class ConfigurationChangedSubscriberTest {
     void setUp() throws SQLException {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
-                contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
+                contextManager.getMetaDataContexts().getMetaData().getGlobalResourceMetaData(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
+                new ConfigurationProperties(new Properties()))));
         subscriber = new ConfigurationChangedSubscriber(new RegistryCenter(mock(ClusterPersistRepository.class),
                 new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
     }
@@ -104,7 +103,8 @@ class ConfigurationChangedSubscriberTest {
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
         ModeConfiguration modeConfig = new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()));
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
-        return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceMetaData, false);
+        return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(),
+                new Properties(), Collections.emptyList(), instanceMetaData, false);
     }
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
@@ -169,36 +169,5 @@ class ConfigurationChangedSubscriberTest {
     void assertRenewProperties() {
         subscriber.renew(new PropertiesChangedEvent(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString()))));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.TRUE.toString()));
-    }
-    
-    private Map<String, DataSource> initContextManager() {
-        Map<String, DataSource> result = getDataSourceMap();
-        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", result);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("db", new MySQLDatabaseType(), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().put("db", database);
-        return result;
-    }
-    
-    private Map<String, DataSource> getDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(3, 1F);
-        result.put("ds_0", new MockedDataSource());
-        result.put("ds_1", new MockedDataSource());
-        result.put("db", new MockedDataSource());
-        return result;
-    }
-    
-    private Map<String, DataSourceProperties> getVersionChangedDataSourcePropertiesMap() {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1F);
-        result.put("primary_ds", DataSourcePropertiesCreator.create(new MockedDataSource()));
-        result.put("ds_0", DataSourcePropertiesCreator.create(new MockedDataSource()));
-        result.put("ds_1", DataSourcePropertiesCreator.create(getChangedDataSource()));
-        return result;
-    }
-    
-    private MockedDataSource getChangedDataSource() {
-        MockedDataSource result = new MockedDataSource();
-        result.setMaxPoolSize(5);
-        result.setUsername("username");
-        return result;
     }
 }

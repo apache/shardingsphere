@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.listener;
 
-import org.apache.shardingsphere.data.pipeline.core.listener.ShardingSphereDataScheduleCollector.ShardingSphereDataCollectorRunnable;
+import org.apache.shardingsphere.data.pipeline.core.listener.ShardingSphereStatisticsScheduleCollector.ShardingSphereDataCollectorRunnable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -47,8 +47,8 @@ class ShardingSphereDataCollectorTest {
     @Test
     void assertCollect() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereData shardingSphereData = mockShardingSphereData();
-        when(contextManager.getMetaDataContexts().getShardingSphereData()).thenReturn(shardingSphereData);
+        ShardingSphereStatistics statistics = mockStatistics();
+        when(contextManager.getMetaDataContexts().getStatistics()).thenReturn(statistics);
         ShardingSphereMetaData metaData = mockMetaData();
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
@@ -56,8 +56,8 @@ class ShardingSphereDataCollectorTest {
         verify(contextManager).getInstanceContext();
     }
     
-    private ShardingSphereData mockShardingSphereData() {
-        ShardingSphereData result = new ShardingSphereData();
+    private ShardingSphereStatistics mockStatistics() {
+        ShardingSphereStatistics result = new ShardingSphereStatistics();
         ShardingSphereDatabaseData shardingSphereDatabaseData = new ShardingSphereDatabaseData();
         result.getDatabaseData().put("logic_db", shardingSphereDatabaseData);
         ShardingSphereSchemaData shardingSphereSchemaData = new ShardingSphereSchemaData();

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.metadata.persist.data;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.metadata.persist.service.schema.TableRowDataBasedPersistService;
 
@@ -45,7 +45,7 @@ public interface ShardingSphereDataBasedPersistService {
      * @param metaData meta data
      * @return ShardingSphere data
      */
-    Optional<ShardingSphereData> load(ShardingSphereMetaData metaData);
+    Optional<ShardingSphereStatistics> load(ShardingSphereMetaData metaData);
     
     /**
      * Persist table.

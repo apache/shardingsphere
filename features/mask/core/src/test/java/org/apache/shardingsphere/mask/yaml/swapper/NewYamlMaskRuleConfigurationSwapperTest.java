@@ -32,7 +32,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NewYamlMaskRuleConfigurationSwapperTest {
     
@@ -64,8 +64,7 @@ class NewYamlMaskRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        MaskRuleConfiguration result = swapper.swapToObject(config);
-        assertTrue(result == null);
+        assertFalse(swapper.swapToObject(config).isPresent());
     }
     
     @Test
@@ -77,7 +76,7 @@ class NewYamlMaskRuleConfigurationSwapperTest {
                 + "    maskAlgorithm: FIXTURE\n"
                 + "name: foo\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/mask/algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
-        MaskRuleConfiguration result = swapper.swapToObject(config);
+        MaskRuleConfiguration result = swapper.swapToObject(config).get();
         assertThat(result.getTables().size(), is(1));
         assertThat(result.getTables().iterator().next().getName(), is("foo"));
         assertThat(result.getTables().iterator().next().getColumns().size(), is(1));

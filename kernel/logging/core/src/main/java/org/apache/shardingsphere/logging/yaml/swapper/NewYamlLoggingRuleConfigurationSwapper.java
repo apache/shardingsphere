@@ -51,15 +51,15 @@ public final class NewYamlLoggingRuleConfigurationSwapper implements NewYamlGlob
     }
     
     @Override
-    public LoggingRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+    public Optional<LoggingRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
             Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }
-            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlLoggingRuleConfiguration.class));
+            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlLoggingRuleConfiguration.class)));
         }
-        return getDefaultLoggingRuleConfiguration();
+        return Optional.empty();
     }
     
     private LoggingRuleConfiguration swapToObject(final YamlLoggingRuleConfiguration yamlConfig) {

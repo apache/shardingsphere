@@ -226,7 +226,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
                 .replace("${user}", getUsername())
                 .replace("${password}", getPassword())
                 .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, true));
-        proxyExecuteWithLog(registerStorageUnitTemplate, 2);
+        proxyExecuteWithLog(registerStorageUnitTemplate, 1);
     }
     
     /**
@@ -235,9 +235,18 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @param distSQL dist SQL
      * @throws SQLException SQL exception
      */
-    // TODO Use registerStorageUnit instead, and remove the method
+    // TODO Use registerStorageUnit instead, and remove the method, keep it now
     public void addResource(final String distSQL) throws SQLException {
         proxyExecuteWithLog(distSQL, 2);
+    }
+    
+    /**
+     * Show storage units names.
+     *
+     * @return storage units names
+     */
+    public List<String> showStorageUnitsName() {
+        return queryForListWithLog(proxyDataSource, "SHOW STORAGE UNITS").stream().map(each -> String.valueOf(each.get("name"))).collect(Collectors.toList());
     }
     
     /**
@@ -395,20 +404,12 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public List<Map<String, Object>> queryForListWithLog(final DataSource dataSource, final String sql) {
         log.info("Query SQL: {}", sql);
-        int retryNumber = 0;
-        while (retryNumber <= 3) {
-            try (Connection connection = dataSource.getConnection()) {
-                ResultSet resultSet = connection.createStatement().executeQuery(sql);
-                return transformResultSetToList(resultSet);
-                // CHECKSTYLE:OFF
-            } catch (final SQLException | RuntimeException ex) {
-                // CHECKSTYLE:ON
-                log.error("Data access error, sql: {}.", sql, ex);
-            }
-            Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
-            retryNumber++;
+        try (Connection connection = dataSource.getConnection()) {
+            ResultSet resultSet = connection.createStatement().executeQuery(sql);
+            return transformResultSetToList(resultSet);
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
         }
-        throw new RuntimeException("Can not get result from proxy.");
     }
     
     /**
@@ -538,10 +539,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * Generate ShardingSphere data source from proxy.
      *
      * @return ShardingSphere data source
-     * @throws SQLException SQL exception
      */
     // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
-    public DataSource generateShardingSphereDataSourceFromProxy() throws SQLException {
+    public DataSource generateShardingSphereDataSourceFromProxy() {
         Awaitility.await().atMost(5L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> null != getYamlRootConfig().getRules());
         YamlRootConfiguration rootConfig = getYamlRootConfig();
         ShardingSpherePreconditions.checkNotNull(rootConfig.getDataSources(), () -> new IllegalStateException("dataSources is null"));

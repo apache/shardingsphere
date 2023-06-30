@@ -44,7 +44,7 @@ dataSources:
 rules:
   - !SINGLE
     tables:
-      - "*.*"
+      - "*.*.*"
   - !SHARDING
     tables:
       t_order:

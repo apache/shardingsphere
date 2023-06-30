@@ -64,15 +64,15 @@ public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlGlob
     }
     
     @Override
-    public TrafficRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+    public Optional<TrafficRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
             Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }
-            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class));
+            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class)));
         }
-        return new TrafficRuleConfiguration();
+        return Optional.empty();
     }
     
     private TrafficRuleConfiguration swapToObject(final YamlTrafficRuleConfiguration yamlConfig) {

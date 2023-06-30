@@ -76,7 +76,7 @@ public final class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDe
     }
     
     private void checkAlgorithmCompleteness(final AlgorithmSegment algorithmSegment) {
-        boolean isCompleteAlgorithm = !Strings.isNullOrEmpty(algorithmSegment.getName()) && !algorithmSegment.getProps().isEmpty();
+        boolean isCompleteAlgorithm = !Strings.isNullOrEmpty(algorithmSegment.getName());
         ShardingSpherePreconditions.checkState(isCompleteAlgorithm, () -> new InvalidAlgorithmConfigurationException("shadow"));
     }
     

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.encrypt.event.encryptor.AlterEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.encryptor.DeleteEncryptorEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
@@ -46,8 +45,6 @@ public final class EncryptorSubscriber implements RuleChangedSubscriber {
     
     private ContextManager contextManager;
     
-    private InstanceContext instanceContext;
-    
     /**
      * Renew with alter encryptor.
      *
@@ -55,11 +52,11 @@ public final class EncryptorSubscriber implements RuleChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterEncryptorEvent event) {
-        if (!event.getActiveVersion().equals(instanceContext.getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getEncryptRuleConfiguration(database, event)));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getEncryptRuleConfiguration(database, event)));
     }
     
     /**
@@ -75,23 +72,23 @@ public final class EncryptorSubscriber implements RuleChangedSubscriber {
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
         config.getEncryptors().remove(event.getEncryptorName());
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration(final ShardingSphereDatabase database, final AlterEncryptorEvent event) {
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        EncryptRuleConfiguration config = rule.map(encryptRule -> getEncryptRuleConfiguration((EncryptRuleConfiguration) encryptRule.getConfiguration()))
+        EncryptRuleConfiguration result = rule.map(encryptRule -> getEncryptRuleConfiguration((EncryptRuleConfiguration) encryptRule.getConfiguration()))
                 .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-        config.getEncryptors().put(event.getEncryptorName(), swapToAlgorithmConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
-        return config;
+        result.getEncryptors().put(event.getEncryptorName(), swapToAlgorithmConfig(
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
+        return result;
     }
     
-    private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration config) {
-        if (null == config.getEncryptors()) {
-            return new EncryptRuleConfiguration(config.getTables(), new LinkedHashMap<>());
+    private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration result) {
+        if (null == result.getEncryptors()) {
+            return new EncryptRuleConfiguration(result.getTables(), new LinkedHashMap<>());
         }
-        return config;
+        return result;
     }
     
     private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {

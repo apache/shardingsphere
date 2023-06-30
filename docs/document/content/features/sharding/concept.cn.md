@@ -45,6 +45,18 @@ SELECT i.* FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE
 
 其中 `t_order` 表由于指定了分片条件，ShardingSphere 将会以它作为整个绑定表的主表。 所有路由计算将会只使用主表的策略，那么 `t_order_item` 表的分片计算将会使用 `t_order` 的条件。
 
+注意：绑定表中的多个分片规则，需要按照逻辑表前缀组合分片后缀的方式进行配置，例如：
+
+```yaml
+rules:
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+```
+
 ### 广播表
 
 指所有的数据源中都存在的表，表结构及其数据在每个数据库中均完全一致。 适用于数据量不大且需要与海量数据的表进行关联查询的场景，例如：字典表。

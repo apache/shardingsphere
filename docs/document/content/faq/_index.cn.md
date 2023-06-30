@@ -5,6 +5,14 @@ weight = 8
 chapter = true
 +++
 
+## MODE
+
+### [MODE] 集群模式 `Cluster` 和 `Compatible_Cluster` 区别?
+
+回答:
+
+在 5.4.0 版本中调整了元数据存储结构，`Cluster` 代表新版本的元数据结构，`Compatible_Cluster` 则代表 5.4.0 之前版本的元数据结构。
+
 ## JDBC
 
 ### [JDBC] 引入 `shardingsphere-transaction-xa-core` 后，如何避免 spring-boot 自动加载默认的 JtaTransactionManager？

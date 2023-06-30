@@ -29,9 +29,9 @@ import java.util.Map;
 /**
  * Rule node path.
  */
+@Getter
 public final class RuleNodePath {
     
-    @Getter
     private final RuleRootNodePath root;
     
     private final Map<String, NamedRuleItemNodePath> namedItems;
