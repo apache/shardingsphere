@@ -18,60 +18,50 @@
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.calcite.adapter.java.ReflectiveSchema;
+import org.apache.calcite.jdbc.CalciteConnection;
+import org.apache.calcite.schema.impl.ScalarFunctionImpl;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema.OpenGaussDatabase;
+import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema.OpenGaussRoles;
+import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema.OpenGaussSystemCatalog;
+import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema.OpenGaussTables;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
-import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Select database executor for openGauss.
  */
-@RequiredArgsConstructor
+@SuppressWarnings("unused")
 public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseAdminQueryExecutor {
     
     private static final String PG_CATALOG = "pg_catalog";
     
-    private final SQLStatementContext sqlStatementContext;
+    private static final String DAT_COMPATIBILITY = "PG";
     
     private final String sql;
-    
-    private final String databaseName;
-    
-    private final List<Object> parameters;
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -79,43 +69,89 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
     @Getter
     private MergedResult mergedResult;
     
+    public OpenGaussSystemCatalogAdminQueryExecutor(final String sql) {
+        this.sql = SQLUtils.trimSemicolon(sql);
+    }
+    
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
-        try (SQLFederationEngine sqlFederationEngine = new SQLFederationEngine(databaseName, PG_CATALOG, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor)) {
-            DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(metaDataContexts, connectionSession);
-            SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, new QueryContext(sqlStatementContext, sql, parameters), metaDataContexts.getMetaData());
-            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-            ResultSet resultSet = sqlFederationEngine.executeQuery(prepareEngine,
-                    createOpenGaussSystemCatalogAdminQueryCallback(database.getProtocolType(), database.getResourceMetaData().getStorageTypes(), sqlStatementContext.getSqlStatement()), context);
-            queryResultMetaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
-            mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCMemoryQueryResult(resultSet, connectionSession.getProtocolType())));
+        try (Connection connection = DriverManager.getConnection("jdbc:calcite:caseSensitive=false")) {
+            prepareCalciteConnection(connection);
+            connection.setSchema(PG_CATALOG);
+            try (PreparedStatement statement = connection.prepareStatement(sql); ResultSet resultSet = statement.executeQuery()) {
+                queryResultMetaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
+                mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCMemoryQueryResult(resultSet, connectionSession.getProtocolType())));
+            }
         }
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final MetaDataContexts metaDataContexts, final ConnectionSession connectionSession) {
-        int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionSession.getDatabaseConnectionManager(),
-                connectionSession.getStatementManager(), new StatementOption(false),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageTypes());
+    private void prepareCalciteConnection(final Connection connection) throws SQLException {
+        CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+        calciteConnection.getRootSchema().add(PG_CATALOG, new ReflectiveSchema(constructOgCatalog()));
+        calciteConnection.getRootSchema().add("version", ScalarFunctionImpl.create(getClass(), "version"));
+        calciteConnection.getRootSchema().add("gs_password_deadline", ScalarFunctionImpl.create(getClass(), "gsPasswordDeadline"));
+        calciteConnection.getRootSchema().add("intervaltonum", ScalarFunctionImpl.create(getClass(), "intervalToNum"));
+        calciteConnection.getRootSchema().add("gs_password_notifyTime", ScalarFunctionImpl.create(getClass(), "gsPasswordNotifyTime"));
     }
     
-    private JDBCExecutorCallback<ExecuteResult> createOpenGaussSystemCatalogAdminQueryCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes,
-                                                                                               final SQLStatement sqlStatement) {
-        return new JDBCExecutorCallback<ExecuteResult>(protocolType, storageTypes, sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()) {
-            
-            @Override
-            protected ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
-                return new JDBCStreamQueryResult(statement.executeQuery(sql));
+    private OpenGaussSystemCatalog constructOgCatalog() {
+        Collection<String> allDatabaseNames = ProxyContext.getInstance().getAllDatabaseNames();
+        OpenGaussDatabase[] openGaussDatabases = new OpenGaussDatabase[allDatabaseNames.size()];
+        List<OpenGaussTables> openGaussTables = new LinkedList<>();
+        List<OpenGaussRoles> openGaussRoles = new LinkedList<>();
+        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class)
+                .getConfiguration().getUsers().stream().map(user -> user.getGrantee().getUsername())
+                .forEach(userName -> openGaussRoles.add(new OpenGaussRoles(userName)));
+        int index = 0;
+        for (String each : allDatabaseNames) {
+            for (Entry<String, ShardingSphereSchema> entry : ProxyContext.getInstance().getDatabase(each).getSchemas().entrySet()) {
+                for (String tableName : entry.getValue().getAllTableNames()) {
+                    openGaussTables.add(new OpenGaussTables(entry.getKey(), tableName));
+                }
             }
-            
-            @Override
-            protected Optional<ExecuteResult> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
-                return Optional.empty();
-            }
-        };
+            openGaussDatabases[index++] = new OpenGaussDatabase(each, DAT_COMPATIBILITY);
+        }
+        openGaussTables.addAll(SystemSchemaBuilderRule.OPEN_GAUSS_PG_CATALOG.getTables().stream().map(tableName -> new OpenGaussTables(PG_CATALOG, tableName)).collect(Collectors.toSet()));
+        openGaussTables.addAll(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG.getTables().stream().map(tableName -> new OpenGaussTables(PG_CATALOG, tableName)).collect(Collectors.toSet()));
+        return new OpenGaussSystemCatalog(openGaussDatabases, openGaussTables.toArray(new OpenGaussTables[0]), openGaussRoles.toArray(new OpenGaussRoles[0]));
+    }
+    
+    /**
+     * Get version of ShardingSphere-Proxy.
+     *
+     * @return version message
+     */
+    public static String version() {
+        return "ShardingSphere-Proxy " + ShardingSphereVersion.VERSION + ("-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV) + (ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "");
+    }
+    
+    /**
+     * The type interval is not supported in standard JDBC.
+     * Indicates the number of remaining days before the password of the current user expires.
+     *
+     * @return 90 days
+     */
+    public static int gsPasswordDeadline() {
+        return 90;
+    }
+    
+    /**
+     * The type interval is not supported in standard JDBC.
+     * Convert interval to num.
+     *
+     * @param result result
+     * @return result
+     */
+    public static int intervalToNum(final int result) {
+        return result;
+    }
+    
+    /**
+     * Specifies the number of days prior to password expiration that a user will receive a reminder.
+     *
+     * @return 7 days
+     */
+    public static int gsPasswordNotifyTime() {
+        return 7;
     }
 }

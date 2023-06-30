@@ -22,10 +22,10 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
-import org.apache.shardingsphere.shadow.event.algorithm.DefaultShadowAlgorithmEventCreator;
-import org.apache.shardingsphere.shadow.event.algorithm.ShadowAlgorithmEventCreator;
-import org.apache.shardingsphere.shadow.event.datasource.ShadowDataSourceEventCreator;
-import org.apache.shardingsphere.shadow.event.table.ShadowTableEventCreator;
+import org.apache.shardingsphere.shadow.event.algorithm.creator.DefaultShadowAlgorithmEventCreator;
+import org.apache.shardingsphere.shadow.event.algorithm.creator.ShadowAlgorithmEventCreator;
+import org.apache.shardingsphere.shadow.event.datasource.creator.ShadowDataSourceEventCreator;
+import org.apache.shardingsphere.shadow.event.table.creator.ShadowTableEventCreator;
 import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 
 /**
@@ -56,14 +56,11 @@ public final class ShadowRuleChangedEventCreator implements RuleChangedEventCrea
         }
     }
     
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     private UniqueRuleItemChangedEventCreator getUniqueRuleItemChangedEventCreator(final String itemType) {
-        switch (itemType) {
-            case ShadowRuleNodePathProvider.DATA_SOURCES:
-                return new DefaultShadowAlgorithmEventCreator();
-            default:
-                throw new UnsupportedOperationException(itemType);
+        if (itemType.equals(ShadowRuleNodePathProvider.DATA_SOURCES)) {
+            return new DefaultShadowAlgorithmEventCreator();
         }
+        throw new UnsupportedOperationException(itemType);
     }
     
     @Override

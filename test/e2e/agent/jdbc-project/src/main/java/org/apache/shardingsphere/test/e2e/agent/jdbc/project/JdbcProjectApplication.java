@@ -25,27 +25,30 @@ import org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.impl.OrderS
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Jdbc project application.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class JdbcProjectApplication {
+public final class JdbcProjectApplication {
     
     /**
      * Main.
      *
      * @param args args
-     * @throws Exception Exception
+     * @throws ClassNotFoundException Class not found exception
+     * @throws SQLException SQL exception
+     * @throws InterruptedException interrupted exception
      */
     // CHECKSTYLE:OFF
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) throws ClassNotFoundException, SQLException, InterruptedException {
         run();
     }
     // CHECKSTYLE:ON
     
-    private static void run() throws Exception {
+    private static void run() throws ClassNotFoundException, SQLException, InterruptedException {
         Connection connection = getConnection();
         OrderService orderService = new OrderServiceImpl(connection);
         OrderController orderController = new OrderController(orderService);
@@ -63,7 +66,7 @@ public class JdbcProjectApplication {
         }
     }
     
-    private static Connection getConnection() throws Exception {
+    private static Connection getConnection() throws ClassNotFoundException, SQLException {
         Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         String url = "jdbc:shardingsphere:classpath:config.yaml";
         return DriverManager.getConnection(url, "root", "root");

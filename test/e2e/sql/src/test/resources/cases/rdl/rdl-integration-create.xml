@@ -64,6 +64,7 @@
             <destroy-sql sql="DROP SHARDING TABLE RULE t_order" />
         </assertion>
         <assertion expected-data-file="create_sharding_rules_show_tables.xml">
+            <initial-sql sql="LOAD SINGLE TABLE *.*;" />
             <assertion-sql sql="SHOW TABLES;" />
             <destroy-sql sql="DROP SHARDING TABLE RULE t_order" />
         </assertion>

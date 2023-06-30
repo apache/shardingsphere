@@ -44,8 +44,8 @@ public final class GlobalClockRule implements GlobalRule {
         configuration = ruleConfig;
         if (ruleConfig.isEnabled()) {
             TypedSPILoader.getService(GlobalClockProvider.class, getGlobalClockProviderType(), configuration.getProps());
+            TypedSPILoader.getService(TransactionHook.class, "GLOBAL_CLOCK", getProps(databases));
         }
-        TypedSPILoader.getService(TransactionHook.class, "GLOBAL_CLOCK", getProps(databases));
     }
     
     private Properties getProps(final Map<String, ShardingSphereDatabase> databases) {

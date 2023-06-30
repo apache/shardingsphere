@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.event;
 
-import org.apache.shardingsphere.broadcast.event.config.BroadcastTableEventCreator;
+import org.apache.shardingsphere.broadcast.event.table.creator.BroadcastTableEventCreator;
 import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -34,14 +34,11 @@ public final class BroadcastRuleChangedEventCreator implements RuleChangedEventC
         return getUniqueRuleItemChangedEventCreator(itemType).create(databaseName, event);
     }
     
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     private UniqueRuleItemChangedEventCreator getUniqueRuleItemChangedEventCreator(final String itemType) {
-        switch (itemType) {
-            case BroadcastRuleNodePathProvider.TABLES:
-                return new BroadcastTableEventCreator();
-            default:
-                throw new UnsupportedOperationException(itemType);
+        if (itemType.equals(BroadcastRuleNodePathProvider.TABLES)) {
+            return new BroadcastTableEventCreator();
         }
+        throw new UnsupportedOperationException(itemType);
     }
     
     @Override
