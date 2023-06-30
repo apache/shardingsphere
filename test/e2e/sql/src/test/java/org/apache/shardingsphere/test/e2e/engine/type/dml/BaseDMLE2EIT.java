@@ -55,7 +55,11 @@ public abstract class BaseDMLE2EIT {
     
     private static final String DATA_COLUMN_DELIMITER = ", ";
     
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    
+    private final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
@@ -137,10 +141,15 @@ public abstract class BaseDMLE2EIT {
     }
     
     private void assertValue(final AssertionTestParameter testParam, final ResultSet actual, final int columnIndex, final String expected) throws SQLException {
-        if (Arrays.asList(Types.DATE, Types.TIME, Types.TIMESTAMP, Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP_WITH_TIMEZONE).contains(actual.getMetaData().getColumnType(columnIndex))) {
-            if (!E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
-                assertThat(dateTimeFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
-            }
+        if (E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
+            return;
+        }
+        if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
+            assertThat(dateFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
+        } else if (Arrays.asList(Types.TIME, Types.TIME_WITH_TIMEZONE).contains(actual.getMetaData().getColumnType(columnIndex))) {
+            assertThat(timeFormatter.format(actual.getTime(columnIndex).toLocalTime()), is(expected));
+        } else if (Arrays.asList(Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE).contains(actual.getMetaData().getColumnType(columnIndex))) {
+            assertThat(timestampFormatter.format(actual.getTimestamp(columnIndex).toLocalDateTime()), is(expected));
         } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
                 && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType())
                         || "Oracle".equals(testParam.getDatabaseType().getType()))) {
