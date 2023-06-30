@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
@@ -40,7 +42,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -116,18 +117,18 @@ public final class DataSetEnvironmentManager {
         List<String> columnNames = new LinkedList<>();
         List<String> placeholders = new LinkedList<>();
         for (DataSetColumn each : columnMetaData) {
-            columnNames.add(databaseType.getQuoteCharacter().wrap(each.getName()));
-            placeholders.add(generateProperPlaceholderExpression(databaseType.getType(), each));
+            columnNames.add(each.getName());
+            placeholders.add(generateProperPlaceholderExpression(databaseType, each));
         }
-        return String.format("INSERT INTO %s (%s) VALUES (%s)", databaseType.getQuoteCharacter().wrap(tableName.toUpperCase()), String.join(",", columnNames).toUpperCase(),
-                String.join(",", placeholders));
+        return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, String.join(",", columnNames), String.join(",", placeholders));
     }
     
-    private String generateProperPlaceholderExpression(final String databaseTypeName, final DataSetColumn dataSetColumn) {
+    private String generateProperPlaceholderExpression(final DatabaseType databaseType, final DataSetColumn dataSetColumn) {
         String type = dataSetColumn.getType();
-        return type.startsWith("enum#") && "PostgreSQL".equals(databaseTypeName) || type.startsWith("cast#") && Arrays.asList("PostgreSQL", "openGauss").contains(databaseTypeName)
-                ? generateTypeCastPlaceholder(type)
-                : "?";
+        return type.startsWith("enum#") && databaseType instanceof PostgreSQLDatabaseType
+                || type.startsWith("cast#") && (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType)
+                        ? generateTypeCastPlaceholder(type)
+                        : "?";
     }
     
     private String generateTypeCastPlaceholder(final String type) {
@@ -217,7 +218,7 @@ public final class DataSetEnvironmentManager {
             try (Connection connection = dataSource.getConnection()) {
                 for (String each : tableNames) {
                     DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(connection.getMetaData().getURL());
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", databaseType.getQuoteCharacter().wrap(each.toUpperCase())))) {
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", databaseType.getQuoteCharacter().wrap(each)))) {
                         preparedStatement.execute();
                     }
                 }

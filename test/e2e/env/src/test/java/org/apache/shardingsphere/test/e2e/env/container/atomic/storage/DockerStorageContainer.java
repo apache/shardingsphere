@@ -48,6 +48,10 @@ import java.util.Optional;
 @Slf4j
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
+    private static final String READY_USER = "ready_user";
+    
+    private static final String READY_USER_PASSWORD = "Ready@123";
+    
     private final DatabaseType databaseType;
     
     @Getter(AccessLevel.NONE)
@@ -67,7 +71,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        withClasspathResourceMapping("/container/init-sql/" + databaseType.getType().toLowerCase() + "/99-init-authority.sql", "/docker-entrypoint-initdb.d/99-init-authority.sql", BindMode.READ_ONLY);
+        withClasspathResourceMapping("/container/init-sql/" + databaseType.getType().toLowerCase() + "/00-init-authority.sql", "/docker-entrypoint-initdb.d/00-init-authority.sql", BindMode.READ_ONLY);
         if (Strings.isNullOrEmpty(scenario)) {
             withClasspathResourceMapping("/env/" + databaseType.getType().toLowerCase() + "/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql", BindMode.READ_ONLY);
         } else {
@@ -76,11 +80,12 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
             withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql",
                     "/docker-entrypoint-initdb.d/01-expected-init.sql", BindMode.READ_ONLY);
         }
+        withClasspathResourceMapping("/container/init-sql/" + databaseType.getType().toLowerCase() + "/99-be-ready.sql", "/docker-entrypoint-initdb.d/99-be-ready.sql", BindMode.READ_ONLY);
         withExposedPorts(getExposedPort());
         setWaitStrategy(new JdbcConnectionWaitStrategy(
                 () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
                         ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
-                        : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), getUsername(), getPassword())));
+                        : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), READY_USER, READY_USER_PASSWORD)));
     }
     
     protected final void setCommands(final String command) {
