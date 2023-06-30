@@ -73,7 +73,7 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             String columnName = each.getColumns().get(0).getIdentifier().getValue();
             if (encryptTable.isEncryptColumn(columnName)) {
-                generateSQLToken(schemaName, encryptTable, encryptTable.getEncryptColumn(columnName), each).ifPresent(result::add);
+                generateSQLToken(schemaName, encryptTable.getTable(), encryptTable.getEncryptColumn(columnName), each).ifPresent(result::add);
             }
         }
         return result;
@@ -88,12 +88,12 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
         return ((UpdateStatement) sqlStatement).getSetAssignment();
     }
     
-    private Optional<EncryptAssignmentToken> generateSQLToken(final String schemaName, final EncryptTable encryptTable, final EncryptColumn encryptColumn, final AssignmentSegment segment) {
+    private Optional<EncryptAssignmentToken> generateSQLToken(final String schemaName, final String tableName, final EncryptColumn encryptColumn, final AssignmentSegment segment) {
         if (segment.getValue() instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(generateParameterSQLToken(encryptColumn, segment));
         }
         if (segment.getValue() instanceof LiteralExpressionSegment) {
-            return Optional.of(generateLiteralSQLToken(schemaName, encryptTable.getTable(), encryptColumn, segment));
+            return Optional.of(generateLiteralSQLToken(schemaName, tableName, encryptColumn, segment));
         }
         return Optional.empty();
     }
