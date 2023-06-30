@@ -43,15 +43,12 @@ class ReadwriteSplittingRuleChangedEventCreatorTest {
     
     @Test
     void assertReadWriteSplittingRuleChangeEventForDataSource() {
-        
         assertThat(readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.DELETED),
                 ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES, "test"), instanceOf(DeleteReadwriteSplittingDataSourceEvent.class));
-        
         assertThat(readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.ADDED),
                 ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES, "test"), instanceOf(AddReadwriteSplittingDataSourceEvent.class));
-        
     }
     
     @Test
@@ -59,7 +56,6 @@ class ReadwriteSplittingRuleChangedEventCreatorTest {
         assertThat(readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.DELETED),
                 ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS, "test"), instanceOf(DeleteReadwriteSplittingLoadBalancerEvent.class));
-        
         assertThat(readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.ADDED),
                 ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS, "test"), instanceOf(AlterReadwriteSplittingLoadBalancerEvent.class));
@@ -67,10 +63,8 @@ class ReadwriteSplittingRuleChangedEventCreatorTest {
     
     @Test
     void assertReadWriteEventsRuleChangeCreatorThrowsUnsupportedException() {
-        
         assertThrows(UnsupportedOperationException.class, () -> readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.DELETED),
                 "Invalid Type", "test"));
-        
     }
 }
