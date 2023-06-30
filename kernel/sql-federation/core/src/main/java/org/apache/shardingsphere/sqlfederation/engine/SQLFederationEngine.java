@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -43,18 +43,18 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchem
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
+import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
+import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
+import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
+import org.apache.shardingsphere.sqlfederation.compiler.statement.SQLStatementCompiler;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationDataContext;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
-import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
-import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
-import org.apache.shardingsphere.sqlfederation.compiler.statement.SQLStatementCompiler;
-import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
-import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
@@ -86,7 +86,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private final ShardingSphereMetaData metaData;
     
-    private final ShardingSphereData statistics;
+    private final ShardingSphereStatistics statistics;
     
     private final JDBCExecutor jdbcExecutor;
     
@@ -94,7 +94,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private ResultSet resultSet;
     
-    public SQLFederationEngine(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData statistics, final JDBCExecutor jdbcExecutor) {
+    public SQLFederationEngine(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics, final JDBCExecutor jdbcExecutor) {
         deciders = OrderedSPILoader.getServices(SQLFederationDecider.class, metaData.getDatabase(databaseName).getRuleMetaData().getRules());
         this.databaseName = databaseName;
         this.schemaName = schemaName;
@@ -121,7 +121,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             return true;
         }
         // TODO END
-        boolean sqlFederationEnabled = globalRuleMetaData.getSingleRule(SQLFederationRule.class).getConfiguration().isSqlFederationEnabled();
+        boolean sqlFederationEnabled = sqlFederationRule.getConfiguration().isSqlFederationEnabled();
         if (!sqlFederationEnabled || !(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }

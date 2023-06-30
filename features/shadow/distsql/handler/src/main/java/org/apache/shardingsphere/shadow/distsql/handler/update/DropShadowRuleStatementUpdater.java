@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +90,7 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
                                               final Map<String, ShadowTableConfiguration> toBeDroppedTables, final Map<String, AlgorithmConfiguration> toBeDroppedShadowAlgorithms,
                                               final String toBeDroppedDataSourceName, final Collection<String> toBeDroppedDataSourceNames) {
         toBeDroppedDataSources.add(new ShadowDataSourceConfiguration(toBeDroppedDataSourceName, null, null));
-        for (Map.Entry<String, ShadowTableConfiguration> each : currentRuleConfig.getTables().entrySet()) {
+        for (Entry<String, ShadowTableConfiguration> each : currentRuleConfig.getTables().entrySet()) {
             if (toBeDroppedDataSourceNames.containsAll(each.getValue().getDataSourceNames())) {
                 toBeDroppedTables.put(each.getKey(), each.getValue());
             }
@@ -110,7 +111,7 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final DropShadowRuleStatement sqlStatement) {
         Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
         Collection<String> toBeDroppedDataSourceNames = sqlStatement.getNames();
-        for (Map.Entry<String, ShadowTableConfiguration> each : currentRuleConfig.getTables().entrySet()) {
+        for (Entry<String, ShadowTableConfiguration> each : currentRuleConfig.getTables().entrySet()) {
             if (!toBeDroppedDataSourceNames.containsAll(each.getValue().getDataSourceNames())) {
                 List<String> currentDataSources = new LinkedList<>(each.getValue().getDataSourceNames());
                 currentDataSources.removeAll(toBeDroppedDataSourceNames);

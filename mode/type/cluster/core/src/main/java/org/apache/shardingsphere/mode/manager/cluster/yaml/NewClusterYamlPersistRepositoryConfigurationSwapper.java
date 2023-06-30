@@ -45,6 +45,6 @@ public final class NewClusterYamlPersistRepositoryConfigurationSwapper implement
     
     @Override
     public String getType() {
-        return "New_Cluster";
+        return "Cluster";
     }
 }

@@ -31,8 +31,4 @@ public final class DeleteEncryptorEvent implements GovernanceEvent {
     private final String databaseName;
     
     private final String encryptorName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
 }

@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.test.e2e.agent.common;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.entity.OrderEntity;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.JDBCAgentTestUtils;
-import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,8 +46,6 @@ public final class AgentTestActionExtension implements BeforeEachCallback {
         checkEnvironment();
         if (E2ETestEnvironment.getInstance().isAdaptedProxy()) {
             requestProxy();
-        } else {
-            requestJdbcProject();
         }
         sleep();
     }
@@ -77,24 +72,6 @@ public final class AgentTestActionExtension implements BeforeEachCallback {
             JDBCAgentTestUtils.deleteOrderByOrderId(each, dataSource);
         }
         JDBCAgentTestUtils.createExecuteError(dataSource);
-    }
-    
-    @SneakyThrows(IOException.class)
-    private void requestJdbcProject() {
-        String baseUrl = E2ETestEnvironment.getInstance().getProps().getProperty("jdbc.base.url");
-        String createTableUrl = E2ETestEnvironment.getInstance().getProps().getProperty("jdbc.path.create.table");
-        String dropTableUrl = E2ETestEnvironment.getInstance().getProps().getProperty("jdbc.path.drop.table");
-        String insertUrl = E2ETestEnvironment.getInstance().getProps().getProperty("jdbc.path.insert");
-        String updateUrl = E2ETestEnvironment.getInstance().getProps().getProperty("jdbc.path.update");
-        String selectAllUrl = E2ETestEnvironment.getInstance().getProps().getProperty("jdbc.path.select.all");
-        String deleteUrl = E2ETestEnvironment.getInstance().getProps().getProperty("jdbc.path.delete");
-        OkHttpUtils.getInstance().get(String.join("", baseUrl, dropTableUrl));
-        OkHttpUtils.getInstance().get(String.join("", baseUrl, createTableUrl));
-        OkHttpUtils.getInstance().get(String.join("", baseUrl, insertUrl));
-        OkHttpUtils.getInstance().get(String.join("", baseUrl, updateUrl));
-        OkHttpUtils.getInstance().get(String.join("", baseUrl, selectAllUrl));
-        OkHttpUtils.getInstance().get(String.join("", baseUrl, deleteUrl));
-        OkHttpUtils.getInstance().get(String.join("", baseUrl, dropTableUrl));
     }
     
     private void sleep() {

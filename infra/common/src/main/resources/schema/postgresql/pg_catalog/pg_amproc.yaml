@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: oid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   amprocfamily:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: amprocfamily
     primaryKey: false
+    unsigned: false
     visible: true
   amproclefttype:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: amproclefttype
     primaryKey: false
+    unsigned: false
     visible: true
   amprocrighttype:
     caseSensitive: true
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: amprocrighttype
     primaryKey: false
+    unsigned: false
     visible: true
   amprocnum:
     caseSensitive: true
@@ -51,6 +55,7 @@ columns:
     generated: false
     name: amprocnum
     primaryKey: false
+    unsigned: false
     visible: true
   amproc:
     caseSensitive: true
@@ -58,6 +63,7 @@ columns:
     generated: false
     name: amproc
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
   pg_amproc_fam_proc_index:

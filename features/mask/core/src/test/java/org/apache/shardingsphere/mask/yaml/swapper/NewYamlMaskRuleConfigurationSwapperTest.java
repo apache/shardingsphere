@@ -32,6 +32,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NewYamlMaskRuleConfigurationSwapperTest {
     
@@ -50,8 +51,8 @@ class NewYamlMaskRuleConfigurationSwapperTest {
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(2));
         Iterator<YamlDataNode> iterator = result.iterator();
-        assertThat(iterator.next().getKey(), is("tables/foo"));
         assertThat(iterator.next().getKey(), is("algorithms/FIXTURE"));
+        assertThat(iterator.next().getKey(), is("tables/foo"));
     }
     
     private MaskRuleConfiguration createMaximumMaskRule() {
@@ -63,21 +64,19 @@ class NewYamlMaskRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        MaskRuleConfiguration result = swapper.swapToObject(config);
-        assertThat(result.getTables().size(), is(0));
-        assertThat(result.getMaskAlgorithms().size(), is(0));
+        assertFalse(swapper.swapToObject(config).isPresent());
     }
     
     @Test
     void assertSwapToObject() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/mask/tables/foo", "columns:\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/mask/tables/foo/versions/0", "columns:\n"
                 + "  foo_column:\n"
                 + "    logicColumn: foo_column\n"
                 + "    maskAlgorithm: FIXTURE\n"
                 + "name: foo\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/mask/algorithms/FIXTURE", "type: FIXTURE\n"));
-        MaskRuleConfiguration result = swapper.swapToObject(config);
+        config.add(new YamlDataNode("/metadata/foo_db/rules/mask/algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
+        MaskRuleConfiguration result = swapper.swapToObject(config).get();
         assertThat(result.getTables().size(), is(1));
         assertThat(result.getTables().iterator().next().getName(), is("foo"));
         assertThat(result.getTables().iterator().next().getColumns().size(), is(1));

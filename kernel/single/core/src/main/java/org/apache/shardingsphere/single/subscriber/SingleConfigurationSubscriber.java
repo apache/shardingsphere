@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.single.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.event.config.AddSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
@@ -31,26 +31,16 @@ import org.apache.shardingsphere.single.event.config.DeleteSingleTableEvent;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * Single configuration subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
-public final class SingleConfigurationSubscriber implements RuleConfigurationSubscribeCoordinator {
+@Setter
+public final class SingleConfigurationSubscriber implements RuleChangedSubscriber {
     
-    private Map<String, ShardingSphereDatabase> databases;
-    
-    private InstanceContext instanceContext;
-    
-    @Override
-    public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        this.databases = databases;
-        this.instanceContext = instanceContext;
-        instanceContext.getEventBusContext().register(this);
-    }
+    private ContextManager contextManager;
     
     /**
      * Renew with add single configuration.
@@ -59,9 +49,12 @@ public final class SingleConfigurationSubscriber implements RuleConfigurationSub
      */
     @Subscribe
     public synchronized void renew(final AddSingleTableEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         SingleRuleConfiguration needToAddedConfig = swapSingleTableRuleConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         Optional<SingleRule> rule = database.getRuleMetaData().findSingleRule(SingleRule.class);
         SingleRuleConfiguration config;
         if (rule.isPresent()) {
@@ -71,7 +64,7 @@ public final class SingleConfigurationSubscriber implements RuleConfigurationSub
         } else {
             config = new SingleRuleConfiguration(needToAddedConfig.getTables(), needToAddedConfig.getDefaultDataSource().orElse(null));
         }
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -81,13 +74,16 @@ public final class SingleConfigurationSubscriber implements RuleConfigurationSub
      */
     @Subscribe
     public synchronized void renew(final AlterSingleTableEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         SingleRuleConfiguration needToAlteredConfig = swapSingleTableRuleConfig(
-                instanceContext.getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         SingleRuleConfiguration config = database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration();
         config.setTables(needToAlteredConfig.getTables());
         config.setDefaultDataSource(needToAlteredConfig.getDefaultDataSource().orElse(null));
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -97,11 +93,14 @@ public final class SingleConfigurationSubscriber implements RuleConfigurationSub
      */
     @Subscribe
     public synchronized void renew(final DeleteSingleTableEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         SingleRuleConfiguration config = database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration();
         config.getTables().clear();
         config.setDefaultDataSource(null);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     private SingleRuleConfiguration swapSingleTableRuleConfig(final String yamlContext) {

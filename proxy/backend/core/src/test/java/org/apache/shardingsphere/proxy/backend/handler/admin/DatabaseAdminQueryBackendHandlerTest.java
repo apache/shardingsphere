@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedRe
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -105,7 +106,8 @@ class DatabaseAdminQueryBackendHandlerTest {
     
     private ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(
-                Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class)), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+                Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class)), mock(ShardingSphereResourceMetaData.class),
+                mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         return new ContextManager(metaDataContexts, mock(InstanceContext.class));
     }
 }

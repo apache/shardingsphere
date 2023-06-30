@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watcher;
 
-import org.apache.shardingsphere.infra.config.converter.GlobalNodeConverter;
+import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -47,7 +47,7 @@ public final class NewPropertiesChangedWatcher implements NewGovernanceWatcher<A
     
     @Override
     public Optional<AlterPropertiesEvent> createGovernanceEvent(final DataChangedEvent event) {
-        if (GlobalNodeConverter.isPropsActiveVersionPath(event.getKey())) {
+        if (GlobalNodePath.isPropsActiveVersionPath(event.getKey())) {
             return Optional.of(new AlterPropertiesEvent(event.getKey(), event.getValue()));
         }
         return Optional.empty();

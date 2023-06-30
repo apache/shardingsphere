@@ -5,6 +5,15 @@ weight = 8
 chapter = true
 +++
 
+## MODE
+
+### [MODE] What is the difference between cluster mode `Cluster` and `Compatible_Cluster`?
+
+Answer:
+
+The metadata structure was adjusted in version 5.4.0, `Cluster` represents the metadata structure of the new version, 
+and `Compatible_Cluster` represents the metadata structure of versions before 5.4.0.
+
 ## JDBC
 
 ### [JDBC] Found a JtaTransactionManager in spring boot project when integrating with XAtransaction.

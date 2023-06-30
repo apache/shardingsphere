@@ -65,7 +65,6 @@ class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
                 KeyGenerateAlgorithm generateAlgorithm = new UUIDKeyGenerateAlgorithm();
                 PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, generateAlgorithm, SOURCE_TABLE_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             }
-            loadAllSingleTables(containerComposer);
             addMigrationProcessConfig(containerComposer);
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watcher;
 
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.converter.GlobalNodeConverter;
+import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -53,8 +53,8 @@ public final class NewGlobalRuleChangedWatcher implements NewGovernanceWatcher<G
     }
     
     private Optional<GovernanceEvent> createGlobalRuleEvent(final DataChangedEvent event) {
-        if (GlobalNodeConverter.isRuleActiveVersionPath(event.getKey())) {
-            Optional<String> ruleName = GlobalNodeConverter.getRuleName(event.getKey());
+        if (GlobalNodePath.isRuleActiveVersionPath(event.getKey())) {
+            Optional<String> ruleName = GlobalNodePath.getRuleName(event.getKey());
             if (!ruleName.isPresent()) {
                 return Optional.empty();
             }

@@ -1,0 +1,438 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: statement_history
+columns:
+  db_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: db_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  schema_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: schema_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  origin_node:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: origin_node
+    primaryKey: false
+    unsigned: false
+    visible: true
+  user_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: user_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  application_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: application_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  client_addr:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: client_addr
+    primaryKey: false
+    unsigned: false
+    visible: true
+  client_port:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: client_port
+    primaryKey: false
+    unsigned: false
+    visible: true
+  unique_query_id:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: unique_query_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  debug_query_id:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: debug_query_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  query:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: query
+    primaryKey: false
+    unsigned: false
+    visible: true
+  start_time:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: start_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  finish_time:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: finish_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  slow_sql_threshold:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: slow_sql_threshold
+    primaryKey: false
+    unsigned: false
+    visible: true
+  transaction_id:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: transaction_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  thread_id:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: thread_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  session_id:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: session_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_soft_parse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_soft_parse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_hard_parse:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_hard_parse
+    primaryKey: false
+    unsigned: false
+    visible: true
+  query_plan:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: query_plan
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_returned_rows:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_returned_rows
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_tuples_fetched:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_tuples_fetched
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_tuples_returned:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_tuples_returned
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_tuples_inserted:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_tuples_inserted
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_tuples_updated:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_tuples_updated
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_tuples_deleted:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_tuples_deleted
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_blocks_fetched:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_blocks_fetched
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_blocks_hit:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_blocks_hit
+    primaryKey: false
+    unsigned: false
+    visible: true
+  db_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: db_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  cpu_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: cpu_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  execution_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: execution_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  parse_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: parse_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  plan_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: plan_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rewrite_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: rewrite_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pl_execution_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: pl_execution_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pl_compilation_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: pl_compilation_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  data_io_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: data_io_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  net_send_info:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: net_send_info
+    primaryKey: false
+    unsigned: false
+    visible: true
+  net_recv_info:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: net_recv_info
+    primaryKey: false
+    unsigned: false
+    visible: true
+  net_stream_send_info:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: net_stream_send_info
+    primaryKey: false
+    unsigned: false
+    visible: true
+  net_stream_recv_info:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: net_stream_recv_info
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lock_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lock_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lock_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lock_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lock_wait_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lock_wait_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lock_wait_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lock_wait_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lock_max_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lock_max_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lwlock_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lwlock_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lwlock_wait_count:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lwlock_wait_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lwlock_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lwlock_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lwlock_wait_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: lwlock_wait_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  details:
+    caseSensitive: true
+    dataType: -2
+    generated: false
+    name: details
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_slow_sql:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: is_slow_sql
+    primaryKey: false
+    unsigned: false
+    visible: true
+  trace_id:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: trace_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  statement_history_time_idx:
+    name: statement_history_time_idx

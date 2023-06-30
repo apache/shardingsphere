@@ -22,8 +22,8 @@
         <tag-assertion key="span.kind" value="internal" need-assert-value="true" />
         <tag-assertion key="db.statement" />
         <tag-assertion key="db.statement" value="SELECT * FROM t_order" need-assert-value="true" />
-        <tag-assertion key="db.statement" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'OK')" need-assert-value="true" />
+        <tag-assertion key="db.statement" value="INSERT INTO t_order (order_id, user_id, status) VALUES (2, 2, 'OK')" need-assert-value="true" />
         <tag-assertion key="db.statement" value="UPDATE t_order SET status = 'Fail' WHERE order_id = 1" need-assert-value="true" />
-        <tag-assertion key="db.statement" value="DELETE FROM t_order WHERE order_id = 1" need-assert-value="true" />
+        <tag-assertion key="db.statement" value="DELETE FROM t_order WHERE order_id = 2" need-assert-value="true" />
     </test-case>
 </integration-test-cases>

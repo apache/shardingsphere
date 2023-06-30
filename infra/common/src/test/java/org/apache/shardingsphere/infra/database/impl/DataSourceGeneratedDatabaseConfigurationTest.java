@@ -32,6 +32,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class DataSourceGeneratedDatabaseConfigurationTest {
     
@@ -62,7 +63,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
         assertThat(poolStandardProps.get("maxLifetimeMilliseconds"), is(1000L));
         assertThat(poolStandardProps.get("maxPoolSize"), is(2));
         assertThat(poolStandardProps.get("minPoolSize"), is(1));
-        assertThat(poolStandardProps.get("readOnly"), is(false));
+        assertFalse((Boolean) poolStandardProps.get("readOnly"));
         Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();
         assertThat(connStandardProps.size(), is(3));
         assertThat(connStandardProps.get("url"), is("jdbc:mock://127.0.0.1/normal_db"));

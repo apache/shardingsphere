@@ -49,6 +49,25 @@ public final class OptimizerContext {
     }
     
     /**
+     * Put parser context.
+     *
+     * @param databaseName database name
+     * @param parserContext parser context
+     */
+    public void putParserContext(final String databaseName, final OptimizerParserContext parserContext) {
+        parserContexts.put(databaseName.toLowerCase(), parserContext);
+    }
+    
+    /**
+     * Remove parser context.
+     *
+     * @param databaseName database name
+     */
+    public void removeParserContext(final String databaseName) {
+        parserContexts.remove(databaseName.toLowerCase());
+    }
+    
+    /**
      * Get planner context.
      *
      * @param databaseName database name

@@ -29,12 +29,24 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Data source properties creator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePropertiesCreator {
+    
+    /**
+     * Create data source properties.
+     *
+     * @param dataSourceConfigs data source configurations
+     * @return created data source properties
+     */
+    public static Map<String, DataSourceProperties> create(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
+        return dataSourceConfigs.entrySet().stream().collect(Collectors
+                .toMap(Entry::getKey, entry -> create("com.zaxxer.hikari.HikariDataSource", entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
     
     /**
      * Create data source properties.

@@ -41,6 +41,8 @@ public final class DataNode {
     
     private static final String DELIMITER = ".";
     
+    private static final String ASTERISK = "*";
+    
     private final String dataSourceName;
     
     private final String tableName;
@@ -78,18 +80,17 @@ public final class DataNode {
         ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER),
                 () -> new InvalidDataNodesFormatException(dataNode, String.format("Invalid format for data node `%s`", dataNode)));
         boolean containsSchema = isValidDataNode(dataNode, 3);
-        if (containsSchema) {
-            ShardingSpherePreconditions.checkState(databaseType instanceof SchemaSupportedDatabaseType,
-                    () -> new InvalidDataNodesFormatException(dataNode,
-                            String.format("Current database type `%s` does not support schema, please use format `db.table`", databaseType.getType())));
-        } else {
-            ShardingSpherePreconditions.checkState(!(databaseType instanceof SchemaSupportedDatabaseType),
-                    () -> new InvalidDataNodesFormatException(dataNode, String.format("Current database type `%s` is schema required, please use format `db.schema.table`", databaseType.getType())));
-        }
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
         dataSourceName = segments.get(0);
-        schemaName = containsSchema ? segments.get(1) : databaseName;
+        schemaName = getSchemaName(databaseName, databaseType, containsSchema, segments);
         tableName = containsSchema ? segments.get(2).toLowerCase() : segments.get(1).toLowerCase();
+    }
+    
+    private String getSchemaName(final String databaseName, final DatabaseType databaseType, final boolean containsSchema, final List<String> segments) {
+        if (databaseType instanceof SchemaSupportedDatabaseType) {
+            return containsSchema ? segments.get(1) : ASTERISK;
+        }
+        return databaseName;
     }
     
     private boolean isValidDataNode(final String dataNodeStr, final Integer tier) {

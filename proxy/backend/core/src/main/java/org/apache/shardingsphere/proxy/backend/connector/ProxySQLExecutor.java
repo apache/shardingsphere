@@ -104,7 +104,7 @@ public final class ProxySQLExecutor {
         String databaseName = databaseConnectionManager.getConnectionSession().getDatabaseName();
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName()
                 .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(queryContext.getSqlStatementContext().getDatabaseType(), databaseName));
-        sqlFederationEngine = new SQLFederationEngine(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(), jdbcExecutor);
+        sqlFederationEngine = new SQLFederationEngine(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
     }
     
     /**

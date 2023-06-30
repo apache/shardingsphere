@@ -105,3 +105,6 @@ sqlFederation:
 sqlParser:
   sqlCommentParseEnabled: true
 
+props:
+  sql-show: true
+
