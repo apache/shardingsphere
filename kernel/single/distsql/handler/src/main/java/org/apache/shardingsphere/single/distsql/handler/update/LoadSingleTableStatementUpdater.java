@@ -54,12 +54,12 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(database.getProtocolType(), database.getName());
-        checkTables(database, sqlStatement, currentRuleConfig, defaultSchemaName);
+        checkTables(database, sqlStatement, defaultSchemaName);
         checkStorageUnits(database, sqlStatement);
         checkActualTableExist(database, sqlStatement, defaultSchemaName);
     }
     
-    private void checkTables(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig, final String defaultSchemaName) {
+    private void checkTables(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final String defaultSchemaName) {
         Optional<SingleRule> currentSingleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
         Collection<String> currentSingleTables = currentSingleRule.isPresent() ? currentSingleRule.get().getSingleTableDataNodes().keySet() : Collections.emptyList();
         Collection<SingleTableSegment> tableSegments = sqlStatement.getTables();
