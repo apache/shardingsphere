@@ -17,5 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <do sql-case-id="handler_table_name_with_close" />
+    <handler sql-case-id="handler_table_name_with_close" />
+    <handler sql-case-id="handler_table_name_read_limit" />
 </sql-parser-test-cases>
