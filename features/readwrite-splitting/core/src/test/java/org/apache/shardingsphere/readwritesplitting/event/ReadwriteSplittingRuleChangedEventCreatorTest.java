@@ -33,44 +33,44 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class ReadwriteSplittingRuleChangedEventCreatorTest {
-
+    
     private ReadwriteSplittingRuleChangedEventCreator readwriteSplittingRuleChangedEventCreator;
-
+    
     @BeforeEach
     void setUp() {
         readwriteSplittingRuleChangedEventCreator = new ReadwriteSplittingRuleChangedEventCreator();
     }
-
+    
     @Test
     void assertReadWriteSplittingRuleChangeEventForDataSource() {
-
+        
         assertThat(readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.DELETED),
                 ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES, "test"), instanceOf(DeleteReadwriteSplittingDataSourceEvent.class));
-
+        
         assertThat(readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.ADDED),
                 ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES, "test"), instanceOf(AddReadwriteSplittingDataSourceEvent.class));
-
+        
     }
-
+    
     @Test
     void assertReadWriteEventsRuleChangeCreatorForLoadBalancers() {
         assertThat(readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.DELETED),
                 ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS, "test"), instanceOf(DeleteReadwriteSplittingLoadBalancerEvent.class));
-
+        
         assertThat(readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.ADDED),
                 ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS, "test"), instanceOf(AlterReadwriteSplittingLoadBalancerEvent.class));
     }
-
+    
     @Test
     void assertReadWriteEventsRuleChangeCreatorThrowsUnsupportedException() {
-
+        
         assertThrows(UnsupportedOperationException.class, () -> readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.DELETED),
                 "Invalid Type", "test"));
-
+        
     }
 }
