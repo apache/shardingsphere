@@ -125,10 +125,9 @@ public final class DataSetEnvironmentManager {
     
     private String generateProperPlaceholderExpression(final DatabaseType databaseType, final DataSetColumn dataSetColumn) {
         String type = dataSetColumn.getType();
-        return type.startsWith("enum#") && databaseType instanceof PostgreSQLDatabaseType
-                || type.startsWith("cast#") && (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType)
-                        ? generateTypeCastPlaceholder(type)
-                        : "?";
+        return (type.startsWith("enum#") || type.startsWith("cast#")) && (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType)
+                ? generateTypeCastPlaceholder(type)
+                : "?";
     }
     
     private String generateTypeCastPlaceholder(final String type) {
