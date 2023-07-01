@@ -19,16 +19,18 @@ package org.apache.shardingsphere.sharding.event.strategy.shardingcolumn;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
 
 /**
  * Alter default sharding column event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterDefaultShardingColumnEvent implements GovernanceEvent {
+public final class AlterDefaultShardingColumnEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     
-    private final String config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

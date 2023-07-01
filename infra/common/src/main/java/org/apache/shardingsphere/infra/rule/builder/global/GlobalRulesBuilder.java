@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -79,5 +80,23 @@ public final class GlobalRulesBuilder {
     private static Collection<GlobalRuleBuilder> getMissedDefaultRuleBuilders(final Collection<GlobalRuleBuilder> configuredBuilders) {
         Collection<Class<GlobalRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<GlobalRuleBuilder>) each.getClass()).collect(Collectors.toSet());
         return OrderedSPILoader.getServices(GlobalRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
+    }
+    
+    /**
+     * Build single rule.
+     *
+     * @param globalRuleConfig global rule configuration
+     * @param databases databases
+     * @param props props
+     * @return built rule
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static Collection<ShardingSphereRule> buildSingleRules(final RuleConfiguration globalRuleConfig,
+                                                                  final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        for (Entry<RuleConfiguration, GlobalRuleBuilder> each : OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(globalRuleConfig)).entrySet()) {
+            result.add(each.getValue().build(each.getKey(), databases, props));
+        }
+        return result;
     }
 }

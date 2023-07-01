@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.route.qualified.QualifiedReadwriteSplittingDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter;
@@ -35,7 +36,7 @@ public final class QualifiedReadwriteSplittingTransactionalDataSourceRouter impl
     private final StandardReadwriteSplittingDataSourceRouter standardRouter = new StandardReadwriteSplittingDataSourceRouter();
     
     @Override
-    public boolean isQualified(final SQLStatementContext sqlStatementContext, final ReadwriteSplittingDataSourceRule rule) {
+    public boolean isQualified(final SQLStatementContext sqlStatementContext, final ReadwriteSplittingDataSourceRule rule, final HintValueContext hintValueContext) {
         return connectionContext.getTransactionContext().isInTransaction();
     }
     

@@ -16,6 +16,9 @@
 #
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*"
 - !ENCRYPT
   encryptors:
     aes_encryptor:
@@ -77,3 +80,7 @@ rules:
           likeQuery:
             name: telephone_like
             encryptorName: like_encryptor
+            
+props:
+  sql-show: true
+

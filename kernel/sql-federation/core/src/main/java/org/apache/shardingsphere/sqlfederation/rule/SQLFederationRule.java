@@ -23,10 +23,12 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
+import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContextFactory;
+import org.apache.shardingsphere.sqlfederation.compiler.context.parser.OptimizerParserContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.parser.OptimizerParserContextFactory;
+import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContextFactory;
 
 import java.util.Map;
 
@@ -47,12 +49,15 @@ public final class SQLFederationRule implements GlobalRule, MetaDataHeldRule {
     
     @Override
     public void alterDatabase(final ShardingSphereDatabase database) {
-        OptimizerPlannerContext plannerContext = OptimizerPlannerContextFactory.create(database, optimizerContext.getParserContext(database.getName()), optimizerContext.getSqlParserRule());
+        OptimizerParserContext parserContext = OptimizerParserContextFactory.create(database.getProtocolType());
+        optimizerContext.putParserContext(database.getName(), parserContext);
+        OptimizerPlannerContext plannerContext = OptimizerPlannerContextFactory.create(database, parserContext, optimizerContext.getSqlParserRule());
         optimizerContext.putPlannerContext(database.getName(), plannerContext);
     }
     
     @Override
     public void dropDatabase(final String databaseName) {
+        optimizerContext.removeParserContext(databaseName);
         optimizerContext.removePlannerContext(databaseName);
     }
     

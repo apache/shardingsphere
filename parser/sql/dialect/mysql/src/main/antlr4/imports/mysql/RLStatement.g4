@@ -31,6 +31,10 @@ changeReplicationFilter
     : CHANGE REPLICATION FILTER filterDefs channelOption?
     ;
 
+changeReplicationSourceTo
+    : CHANGE REPLICATION SOURCE TO changeReplicationSourceOptionDefs channelOption?
+    ;
+
 startSlave
     : START SLAVE threadTypes? utilOption? connectionOptions channelOption?
     ;
@@ -141,4 +145,56 @@ wildTables
 
 wildTable
     : string_
+    ;
+
+changeReplicationSourceOptionDefs
+    : changeReplicationSourceOption (COMMA_ changeReplicationSourceOption)*
+    ;
+
+changeReplicationSourceOption
+    : SOURCE_BIND EQ_ string_
+    | SOURCE_HOST EQ_ string_
+    | SOURCE_USER EQ_ string_
+    | SOURCE_PASSWORD EQ_ string_
+    | SOURCE_PORT EQ_ NUMBER_
+    | PRIVILEGE_CHECKS_USER EQ_ (NULL | ACCOUNT)
+    | REQUIRE_ROW_FORMAT EQ_ NUMBER_
+    | REQUIRE_TABLE_PRIMARY_KEY_CHECK EQ_ tablePrimaryKeyCheckDef
+    | ASSIGN_GTIDS_TO_ANONYMOUS_TRANSACTIONS EQ_ assignGtidsToAnonymousTransactionsDef
+    | SOURCE_LOG_FILE EQ_ string_
+    | SOURCE_LOG_POS EQ_ NUMBER_
+    | SOURCE_AUTO_POSITION EQ_ NUMBER_
+    | RELAY_LOG_FILE EQ_ string_
+    | RELAY_LOG_POS EQ_ NUMBER_
+    | SOURCE_HEARTBEAT_PERIOD EQ_ NUMBER_
+    | SOURCE_CONNECT_RETRY EQ_ NUMBER_
+    | SOURCE_RETRY_COUNT EQ_ NUMBER_
+    | SOURCE_CONNECTION_AUTO_FAILOVER EQ_ NUMBER_
+    | SOURCE_DELAY EQ_ NUMBER_
+    | SOURCE_COMPRESSION_ALGORITHMS EQ_ string_
+    | SOURCE_ZSTD_COMPRESSION_LEVEL EQ_ NUMBER_
+    | SOURCE_SSL EQ_ NUMBER_
+    | SOURCE_SSL_CA EQ_ string_
+    | SOURCE_SSL_CAPATH EQ_ string_
+    | SOURCE_SSL_CERT EQ_ string_
+    | SOURCE_SSL_CRL EQ_ string_
+    | SOURCE_SSL_CRLPATH EQ_ string_
+    | SOURCE_SSL_KEY EQ_ string_
+    | SOURCE_SSL_CIPHER EQ_ string_
+    | SOURCE_SSL_VERIFY_SERVER_CERT EQ_ NUMBER_
+    | SOURCE_TLS_VERSION EQ_ string_
+    | SOURCE_TLS_CIPHERSUITES EQ_ string_
+    | SOURCE_PUBLIC_KEY_PATH EQ_ string_
+    | GET_SOURCE_PUBLIC_KEY EQ_ NUMBER_
+    | NETWORK_NAMESPACE EQ_ string_
+    | IGNORE_SERVER_IDS EQ_ ignoreServerIds
+    | GTID_ONLY EQ_ NUMBER_
+    ;
+
+tablePrimaryKeyCheckDef
+    : (STREAM | ON | OFF | GENERATE)
+    ;
+
+assignGtidsToAnonymousTransactionsDef
+    : (OFF | LOCAL | string_)
     ;

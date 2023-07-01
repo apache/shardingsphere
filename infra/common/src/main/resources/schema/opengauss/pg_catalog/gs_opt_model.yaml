@@ -1,0 +1,158 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: gs_opt_model
+columns:
+  template_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: template_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  model_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: model_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  datname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: datname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ip:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: ip
+    primaryKey: false
+    unsigned: false
+    visible: true
+  port:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: port
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_epoch:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: max_epoch
+    primaryKey: false
+    unsigned: false
+    visible: true
+  learning_rate:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: learning_rate
+    primaryKey: false
+    unsigned: false
+    visible: true
+  dim_red:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: dim_red
+    primaryKey: false
+    unsigned: false
+    visible: true
+  hidden_units:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: hidden_units
+    primaryKey: false
+    unsigned: false
+    visible: true
+  batch_size:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: batch_size
+    primaryKey: false
+    unsigned: false
+    visible: true
+  feature_size:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: feature_size
+    primaryKey: false
+    unsigned: false
+    visible: true
+  available:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: available
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_training:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: is_training
+    primaryKey: false
+    unsigned: false
+    visible: true
+  label:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: label
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: max
+    primaryKey: false
+    unsigned: false
+    visible: true
+  acc:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: acc
+    primaryKey: false
+    unsigned: false
+    visible: true
+  description:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: description
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  gs_opt_model_name_index:
+    name: gs_opt_model_name_index

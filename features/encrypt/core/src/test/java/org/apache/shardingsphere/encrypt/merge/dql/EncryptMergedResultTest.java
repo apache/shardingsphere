@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.merge.dql;
 
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -28,7 +31,6 @@ import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,46 +42,45 @@ import static org.mockito.Mockito.when;
 class EncryptMergedResultTest {
     
     @Mock
-    private EncryptAlgorithmMetaData metaData;
+    private ShardingSphereDatabase database;
+    
+    @Mock
+    private EncryptRule encryptRule;
+    
+    @Mock
+    private SelectStatementContext selectStatementContext;
     
     @Mock
     private MergedResult mergedResult;
     
     @Test
     void assertNext() throws SQLException {
-        assertFalse(new EncryptMergedResult(metaData, mergedResult).next());
-    }
-    
-    @Test
-    void assertGetValueWithoutEncryptContext() throws SQLException {
-        when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
-        when(metaData.findEncryptContext(1)).thenReturn(Optional.empty());
-        assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("VALUE"));
+        assertFalse(new EncryptMergedResult(database, encryptRule, selectStatementContext, mergedResult).next());
     }
     
     @Test
     void assertGetCalendarValue() throws SQLException {
         Calendar calendar = Calendar.getInstance();
         when(mergedResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
-        assertThat(new EncryptMergedResult(metaData, mergedResult).getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
+        assertThat(new EncryptMergedResult(database, encryptRule, selectStatementContext, mergedResult).getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
     }
     
     @Test
     void assertGetInputStream() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergedResult.getInputStream(1, "asc")).thenReturn(inputStream);
-        assertThat(new EncryptMergedResult(metaData, mergedResult).getInputStream(1, "asc"), is(inputStream));
+        assertThat(new EncryptMergedResult(database, encryptRule, selectStatementContext, mergedResult).getInputStream(1, "asc"), is(inputStream));
     }
     
     @Test
     void assertGetCharacterStream() throws SQLException {
         Reader reader = mock(Reader.class);
         when(mergedResult.getCharacterStream(1)).thenReturn(reader);
-        assertThat(new EncryptMergedResult(metaData, mergedResult).getCharacterStream(1), is(reader));
+        assertThat(new EncryptMergedResult(database, encryptRule, selectStatementContext, mergedResult).getCharacterStream(1), is(reader));
     }
     
     @Test
     void assertWasNull() throws SQLException {
-        assertFalse(new EncryptMergedResult(metaData, mergedResult).wasNull());
+        assertFalse(new EncryptMergedResult(database, encryptRule, selectStatementContext, mergedResult).wasNull());
     }
 }

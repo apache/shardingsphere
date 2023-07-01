@@ -23,6 +23,9 @@
 
 databaseName: sharding_db
 rules:
+  - !SINGLE
+    tables:
+      - "*.*"
   - !SHARDING
     tables:
       t_order:
@@ -54,11 +57,6 @@ rules:
           keyGeneratorName: snowflake
     bindingTables:
       - t_order,t_order_item,t_order_view
-    broadcastTables:
-      - t_address
-      - t_city
-      - t_province
-      - t_country
     defaultDatabaseStrategy:
       standard:
         shardingColumn: user_id
@@ -83,3 +81,10 @@ rules:
     keyGenerators:
       snowflake:
         type: SNOWFLAKE
+        
+  - !BROADCAST
+    tables:
+      - t_address
+      - t_city
+      - t_province
+      - t_country

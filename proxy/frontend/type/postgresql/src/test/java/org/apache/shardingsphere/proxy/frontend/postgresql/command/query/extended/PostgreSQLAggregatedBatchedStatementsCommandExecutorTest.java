@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
@@ -112,12 +113,12 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         when(result.getConnectionContext()).thenReturn(new ConnectionContext());
         when(result.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         result.getServerPreparedStatementRegistry().addPreparedStatement(STATEMENT_ID,
-                new PostgreSQLServerPreparedStatement(SQL, sqlStatementContext, Collections.singletonList(PostgreSQLColumnType.INT4), Collections.singletonList(0)));
+                new PostgreSQLServerPreparedStatement(SQL, sqlStatementContext, new HintValueContext(), Collections.singletonList(PostgreSQLColumnType.INT4), Collections.singletonList(0)));
         when(result.getConnectionId()).thenReturn(CONNECTION_ID);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:postgresql://127.0.0.1/db");
-        when(databaseConnectionManager.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(databaseConnectionManager.getConnections(nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.getConnection()).thenReturn(connection);
         JDBCBackendStatement backendStatement = mock(JDBCBackendStatement.class);

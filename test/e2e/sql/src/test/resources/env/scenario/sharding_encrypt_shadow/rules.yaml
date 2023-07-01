@@ -16,6 +16,9 @@
 #
 
 rules:
+  - !SINGLE
+    tables:
+      - "*.*"
   - !SHARDING
     tables:
       t_shadow:
@@ -127,3 +130,7 @@ rules:
             cipher:
               name: order_name_cipher
               encryptorName: aes_encryptor
+              
+props:
+  sql-show: true
+

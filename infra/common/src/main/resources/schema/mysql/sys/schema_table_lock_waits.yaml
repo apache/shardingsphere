@@ -1,0 +1,163 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: schema_table_lock_waits
+columns:
+  object_schema:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: object_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  object_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: object_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  waiting_thread_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: waiting_thread_id
+    primaryKey: false
+    unsigned: true
+    visible: true
+  waiting_pid:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: waiting_pid
+    primaryKey: false
+    unsigned: true
+    visible: true
+  waiting_account:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: waiting_account
+    primaryKey: false
+    unsigned: false
+    visible: true
+  waiting_lock_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: waiting_lock_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  waiting_lock_duration:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: waiting_lock_duration
+    primaryKey: false
+    unsigned: false
+    visible: true
+  waiting_query:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: waiting_query
+    primaryKey: false
+    unsigned: false
+    visible: true
+  waiting_query_secs:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: waiting_query_secs
+    primaryKey: false
+    unsigned: false
+    visible: true
+  waiting_query_rows_affected:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: waiting_query_rows_affected
+    primaryKey: false
+    unsigned: true
+    visible: true
+  waiting_query_rows_examined:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: waiting_query_rows_examined
+    primaryKey: false
+    unsigned: true
+    visible: true
+  blocking_thread_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: blocking_thread_id
+    primaryKey: false
+    unsigned: true
+    visible: true
+  blocking_pid:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: blocking_pid
+    primaryKey: false
+    unsigned: true
+    visible: true
+  blocking_account:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: blocking_account
+    primaryKey: false
+    unsigned: false
+    visible: true
+  blocking_lock_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: blocking_lock_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  blocking_lock_duration:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: blocking_lock_duration
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sql_kill_blocking_query:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: sql_kill_blocking_query
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sql_kill_blocking_connection:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: sql_kill_blocking_connection
+    primaryKey: false
+    unsigned: false
+    visible: true

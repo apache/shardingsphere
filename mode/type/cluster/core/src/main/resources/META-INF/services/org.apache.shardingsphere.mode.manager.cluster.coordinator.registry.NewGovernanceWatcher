@@ -15,4 +15,10 @@
 # limitations under the License.
 #
 
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.watcher.StorageNodeStateChangedWatcher
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher.ComputeNodeStateChangedWatcher
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.watcher.ClusterStateChangedWatcher
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.ShardingSphereDataChangedWatcher
 org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher.NewMetaDataChangedWatcher
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watcher.NewGlobalRuleChangedWatcher
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watcher.NewPropertiesChangedWatcher

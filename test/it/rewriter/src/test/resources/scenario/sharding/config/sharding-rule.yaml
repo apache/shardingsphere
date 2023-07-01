@@ -78,10 +78,6 @@ rules:
     - t_order, t_order_new, t_order_item
     - t_user, t_user_extend
     - T_ROLE, T_ROLE_ADMIN
-  broadcastTables:
-    - t_config
-    - t_config_new
-    - t_order_type
   shardingAlgorithms:
     t_account_inline:
       type: INLINE
@@ -111,3 +107,9 @@ rules:
   keyGenerators:
     rewrite_keygen_fixture:
       type: REWRITE.FIXTURE
+
+- !BROADCAST
+  tables:
+    - t_config
+    - t_config_new
+    - t_order_type

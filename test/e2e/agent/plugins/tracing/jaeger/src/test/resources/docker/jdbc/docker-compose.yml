@@ -41,8 +41,6 @@ services:
   shardingsphere-jdbc-agent-tracing:
     image: apache/shardingsphere-jdbc-agent-tracing-jaeger-test
     container_name: shardingsphere-jdbc-agent-tracing-jaeger-test
-    ports:
-      - "18080:80"
     links:
       - "mysql:mysql.agent.jdbc.jaeger.host"
       - "jaeger:jaeger.agent.host"

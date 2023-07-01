@@ -65,7 +65,7 @@ public final class MySQLCommandPacketFactory {
             case COM_QUERY:
                 return new MySQLComQueryPacket(payload, sqlCommentParseEnabled);
             case COM_STMT_PREPARE:
-                return new MySQLComStmtPreparePacket(payload);
+                return new MySQLComStmtPreparePacket(payload, sqlCommentParseEnabled);
             case COM_STMT_EXECUTE:
                 MySQLServerPreparedStatement serverPreparedStatement =
                         connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(payload.getByteBuf().getIntLE(payload.getByteBuf().readerIndex()));

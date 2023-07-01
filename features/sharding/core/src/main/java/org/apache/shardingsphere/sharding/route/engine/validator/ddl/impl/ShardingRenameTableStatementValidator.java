@@ -48,13 +48,9 @@ public final class ShardingRenameTableStatementValidator extends ShardingDDLStat
                 : sqlStatementContext.getTablesContext().getTableNames();
         RenameTableStatement renameTableStatement = (RenameTableStatement) sqlStatementContext.getSqlStatement();
         List<SimpleTableSegment> renameTables = renameTableStatement.getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList());
-        if (!renameTables.isEmpty() && containsShardingBroadcastTable(shardingRule, tableNames)) {
+        if (!renameTables.isEmpty() && shardingRule.containsShardingTable(tableNames)) {
             throw new UnsupportedShardingOperationException("RENAME TABLE", renameTables.get(0).getTableName().getIdentifier().getValue());
         }
-    }
-    
-    private boolean containsShardingBroadcastTable(final ShardingRule shardingRule, final Collection<String> tableNames) {
-        return shardingRule.tableRuleExists(tableNames) || tableNames.stream().anyMatch(shardingRule::isBroadcastTable);
     }
     
     @Override

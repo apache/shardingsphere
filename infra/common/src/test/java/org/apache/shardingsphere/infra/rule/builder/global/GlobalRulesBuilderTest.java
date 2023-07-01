@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,6 +51,6 @@ class GlobalRulesBuilderTest {
     }
     
     private ShardingSphereDatabase buildDatabase() {
-        return ShardingSphereDatabase.create("logic_db", new MySQLDatabaseType());
+        return ShardingSphereDatabase.create("logic_db", new MySQLDatabaseType(), new ConfigurationProperties(new Properties()));
     }
 }

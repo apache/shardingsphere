@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple;
 
+import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 
 /**
  * Command query packet for PostgreSQL.
@@ -30,9 +33,14 @@ public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket impl
     
     private final String sql;
     
-    public PostgreSQLComQueryPacket(final PostgreSQLPacketPayload payload) {
+    @Getter
+    private final HintValueContext hintValueContext;
+    
+    public PostgreSQLComQueryPacket(final PostgreSQLPacketPayload payload, final boolean sqlCommentParseEnabled) {
         payload.readInt4();
-        sql = payload.readStringNul();
+        String originSQL = payload.readStringNul();
+        hintValueContext = sqlCommentParseEnabled ? new HintValueContext() : SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
+        sql = sqlCommentParseEnabled ? originSQL : SQLHintUtils.removeHint(originSQL);
     }
     
     @Override

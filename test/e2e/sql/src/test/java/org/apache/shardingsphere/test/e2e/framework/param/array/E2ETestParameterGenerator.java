@@ -105,7 +105,7 @@ public final class E2ETestParameterGenerator {
                                                                          final IntegrationTestCaseAssertion assertion, final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
         for (String each : getEnvAdapters(testCaseContext.getTestCase().getAdapters())) {
-            if (sqlCommandType.getRunningAdaptors().contains(each)) {
+            if (sqlCommandType.getRunningAdaptors().contains(each) && envAdapters.contains(each)) {
                 result.addAll(getAssertionTestParameter(testCaseContext, assertion, each, databaseType, sqlExecuteType, sqlCommandType));
             }
         }
@@ -128,8 +128,8 @@ public final class E2ETestParameterGenerator {
         if (sqlStatementClass == RALStatement.class) {
             return "empty_rules".equals(scenario);
         }
-        if (sqlStatementClass == RDLStatement.class) {
-            return "rdl_empty_rules".equals(scenario);
+        if (sqlStatementClass == RDLStatement.class || "rdl_empty_rules".equals(scenario)) {
+            return sqlStatementClass == RDLStatement.class && "rdl_empty_rules".equals(scenario);
         }
         if ("empty_rules".equals(scenario)) {
             return false;

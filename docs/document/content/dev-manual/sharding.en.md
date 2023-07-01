@@ -73,7 +73,7 @@ Sharding audit algorithm definition
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.infra.datetime.DatetimeService`](https://github.com/apache/shardingsphere/blob/master/infra/datetime/spi/src/main/java/org/apache/shardingsphere/infra/datetime/DatetimeService.java)
+[`org.apache.shardingsphere.timeservice.spi.TimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/api/src/main/java/org/apache/shardingsphere/timeservice/spi/TimestampService.java)
 
 ### Definition
 
@@ -81,7 +81,7 @@ Obtain the current date for routing definition
 
 ### Implementation classes
 
-| *Configuration Type*    | *Description*                                                | *Fully-qualified class name*                                                                                                                                                                                                                      |
-|-------------------------|--------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DatabaseDatetimeService | Get the current time from the database for routing           | [`org.apache.shardingsphere.datetime.database.DatabaseDatetimeService`](https://github.com/apache/shardingsphere/blob/master/infra/datetime/type/database/src/main/java/org/apache/shardingsphere/datetime/database/DatabaseDatetimeService.java) |
-| SystemDatetime          | Get the current time from the application system for routing | [`org.apache.shardingsphere.datetime.system.SystemDatetimeService`](https://github.com/apache/shardingsphere/blob/master/infra/datetime/type/system/src/main/java/org/apache/shardingsphere/datetime/system/SystemDatetimeService.java)           |
+| *Configuration Type*     | *Description*                                                | *Fully-qualified class name*                                                                                                                                                                                                                                             |
+|--------------------------|--------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DatabaseTimestampService | Get the current time from the database for routing           | [`org.apache.shardingsphere.timeservice.type.database.DatabaseTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/database/src/main/java/org/apache/shardingsphere/timeservice/type/database/DatabaseTimestampService.java) |
+| SystemTimestampService   | Get the current time from the application system for routing | [`org.apache.shardingsphere.timeservice.type.system.SystemTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/system/src/main/java/org/apache/shardingsphere/timeservice/type/system/SystemTimestampService.java)           |

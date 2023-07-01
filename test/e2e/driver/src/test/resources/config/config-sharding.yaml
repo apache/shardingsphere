@@ -18,6 +18,9 @@
 databaseName: logic_db
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*"
 - !SHARDING
   tables:
     t_order:
@@ -27,8 +30,6 @@ rules:
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: jdbc_increment_fixture
-    t_config:
-      actualDataNodes: jdbc_${0..1}.t_config
     t_user:
       actualDataNodes: jdbc_0.t_user_${0..1}
       tableStrategy:
@@ -52,8 +53,6 @@ rules:
           shardingAlgorithmName: mod
   bindingTables:
     - t_order,t_order_item
-  broadcastTables:
-    - t_config
   defaultTableStrategy:
     standard:
       shardingColumn: order_id
@@ -80,3 +79,7 @@ rules:
       type: JDBC.INCREMENT.FIXTURE
     jdbc_reset_increment_fixture:
       type: JDBC.RESET_INCREMENT.FIXTURE
+
+- !BROADCAST
+  tables:
+    - t_config

@@ -30,6 +30,6 @@ class NewYamlLoggingRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new DefaultLoggingRuleConfigurationBuilder().build()).iterator().next().getKey(), is("/rules/logging"));
+        assertThat(swapper.swapToDataNodes(new DefaultLoggingRuleConfigurationBuilder().build()).iterator().next().getKey(), is("logging"));
     }
 }

@@ -22,7 +22,7 @@ weight = 1
 ShardingSphere-Proxy 运行模式在 `server.yaml` 中配置，配置格式与 ShardingSphere-JDBC 一致，请参考[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
 
 其他配置项请参考：
-* [权限配置](/cn/user-manual/shardingsphere-proxy/yaml-config/authentication/)
+* [权限配置](/cn/user-manual/shardingsphere-proxy/yaml-config/authority/)
 * [属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/)
 
 3. 配置 `conf/config-*.yaml`

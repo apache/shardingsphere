@@ -19,20 +19,20 @@ package org.apache.shardingsphere.encrypt.event.encryptor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
 
 /**
  * Alter encryptor event.
- *
- * @param <T> encryptor configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterEncryptorEvent<T> implements GovernanceEvent {
+public final class AlterEncryptorEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     
     private final String encryptorName;
     
-    private final T config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

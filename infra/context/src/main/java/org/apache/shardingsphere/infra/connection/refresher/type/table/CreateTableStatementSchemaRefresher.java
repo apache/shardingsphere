@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.connection.refresher.type.table;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -48,7 +49,8 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
                         final String schemaName, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
-        if (isSingleTable(tableName, database)) {
+        boolean isSingleTable = isSingleTable(tableName, database);
+        if (isSingleTable) {
             ruleMetaData.findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
@@ -59,6 +61,9 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
             AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
             alterSchemaMetaDataPOJO.getAlteredTables().add(actualTableMetaData.get());
             modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
+            if (isSingleTable && TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, tableName)) {
+                modeContextManager.alterRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
+            }
         }
     }
     

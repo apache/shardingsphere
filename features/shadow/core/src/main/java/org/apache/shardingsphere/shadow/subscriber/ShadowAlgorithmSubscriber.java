@@ -18,50 +18,30 @@
 package org.apache.shardingsphere.shadow.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.event.algorithm.AddShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.event.algorithm.AlterShadowAlgorithmEvent;
-import org.apache.shardingsphere.shadow.event.algorithm.DeleteShadowAlgorithmEvent;
+import org.apache.shardingsphere.shadow.event.algorithm.DropShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * Shadow algorithm subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
-public final class ShadowAlgorithmSubscriber implements RuleConfigurationSubscribeCoordinator {
+@Setter
+public final class ShadowAlgorithmSubscriber implements RuleChangedSubscriber {
     
-    private Map<String, ShardingSphereDatabase> databases;
-    
-    private InstanceContext instanceContext;
-    
-    @Override
-    public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        this.databases = databases;
-        this.instanceContext = instanceContext;
-        instanceContext.getEventBusContext().register(this);
-    }
-    
-    /**
-     * Renew with add algorithm.
-     *
-     * @param event add algorithm event
-     */
-    @Subscribe
-    public synchronized void renew(final AddShadowAlgorithmEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getAlgorithmName(), event.getConfig());
-    }
+    private ContextManager contextManager;
     
     /**
      * Renew with alter algorithm.
@@ -69,18 +49,21 @@ public final class ShadowAlgorithmSubscriber implements RuleConfigurationSubscri
      * @param event alter algorithm event
      */
     @Subscribe
-    public synchronized void renew(final AlterShadowAlgorithmEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getAlgorithmName(), event.getConfig());
-    }
-    
-    private void renew(final String databaseName, final String algorithmName, final AlgorithmConfiguration algorithmConfig) {
-        ShardingSphereDatabase database = databases.get(databaseName);
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getShadowAlgorithms().put(algorithmName, algorithmConfig);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
+    public synchronized void renew(final AlterShadowAlgorithmEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        AlgorithmConfiguration needToAlteredConfig = swapToAlgorithmConfig(
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+        Optional<ShadowRule> rule = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName()).getRuleMetaData().findSingleRule(ShadowRule.class);
+        ShadowRuleConfiguration config;
+        if (rule.isPresent()) {
+            config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+        } else {
+            config = new ShadowRuleConfiguration();
+        }
+        config.getShadowAlgorithms().put(event.getAlgorithmName(), needToAlteredConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -89,13 +72,17 @@ public final class ShadowAlgorithmSubscriber implements RuleConfigurationSubscri
      * @param event delete algorithm event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShadowAlgorithmEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
+    public synchronized void renew(final DropShadowAlgorithmEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getShadowAlgorithms().remove(event.getAlgorithmName());
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
+        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAlgorithmConfiguration.class));
     }
 }

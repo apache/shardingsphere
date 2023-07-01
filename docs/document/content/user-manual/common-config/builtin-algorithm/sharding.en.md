@@ -9,6 +9,8 @@ ShardingSphere built-in algorithms provide a variety of sharding algorithms, whi
 
 Additionally, considering the complexity of business scenarios, the built-in algorithm also provides a way to customize the sharding algorithm. Users can complete complex sharding logic by writing java code.
 
+It should be noted that the sharding logic of the automatic sharding algorithm is automatically managed by ShardingSphere and needs to be used by configuring the autoTables sharding rules.
+
 ## Parameters
 
 ### Auto Sharding Algorithm
@@ -241,8 +243,6 @@ rules:
   defaultShardingColumn: account_id
   bindingTables:
     - t_order,t_order_item
-  broadcastTables:
-    - t_address
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
@@ -270,6 +270,10 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
+
+- !BROADCAST
+  tables:
+    - t_address
 ```
 
 ## Related References

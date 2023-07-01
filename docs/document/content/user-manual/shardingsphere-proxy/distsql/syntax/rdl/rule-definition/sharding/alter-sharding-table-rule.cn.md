@@ -118,4 +118,4 @@ AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 ### 相关链接
 
 - [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
-- [ALTER DEFAULT_SHARDING STRATEGY](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/alter-default-sharding-strategy/)
+- [ALTER DEFAULT_SHARDING STRATEGY](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/alter-default-sharding-strategy/)

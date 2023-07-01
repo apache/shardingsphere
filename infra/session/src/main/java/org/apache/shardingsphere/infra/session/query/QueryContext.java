@@ -22,6 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.hint.SQLHintUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +60,9 @@ public final class QueryContext {
         this.sql = sql;
         parameters = params;
         databaseName = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(null) : null;
-        this.hintValueContext = hintValueContext;
+        this.hintValueContext = sqlStatementContext.getSqlStatement() instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getCommentSegments().isEmpty()
+                ? SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getCommentSegments().iterator().next().getText()).orElse(hintValueContext)
+                : hintValueContext;
         this.useCache = useCache;
     }
     

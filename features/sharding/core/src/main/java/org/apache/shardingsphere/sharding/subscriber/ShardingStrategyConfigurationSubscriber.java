@@ -18,55 +18,49 @@
 package org.apache.shardingsphere.sharding.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.event.strategy.audit.AddShardingAuditorStrategyConfigurationEvent;
+import org.apache.shardingsphere.sharding.event.strategy.audit.CreateShardingAuditorStrategyConfigurationEvent;
 import org.apache.shardingsphere.sharding.event.strategy.audit.AlterShardingAuditorStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.audit.DeleteShardingAuditorStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.database.AddDatabaseShardingStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.database.AlterDatabaseShardingStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.database.DeleteDatabaseShardingStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.keygenerate.AddKeyGenerateStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.keygenerate.AlterKeyGenerateStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.keygenerate.DeleteKeyGenerateStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.AddDefaultShardingColumnEvent;
+import org.apache.shardingsphere.sharding.event.strategy.audit.DropShardingAuditorStrategyConfigurationEvent;
+import org.apache.shardingsphere.sharding.event.strategy.database.CreateDefaultDatabaseShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.database.AlterDefaultDatabaseShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.database.DropDefaultDatabaseShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.keygenerate.CreateDefaultKeyGenerateStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.keygenerate.AlterDefaultKeyGenerateStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.keygenerate.DropDefaultKeyGenerateStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.CreateDefaultShardingColumnEvent;
 import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.AlterDefaultShardingColumnEvent;
-import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.DeleteDefaultShardingColumnEvent;
-import org.apache.shardingsphere.sharding.event.strategy.table.AddTableShardingStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.table.AlterTableShardingStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.table.DeleteTableShardingStrategyConfigurationEvent;
+import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.DropDefaultShardingColumnEvent;
+import org.apache.shardingsphere.sharding.event.strategy.table.CreateDefaultTableShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.table.AlterDefaultTableShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.table.DropDefaultTableShardingStrategyEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyConfigurationSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingAuditStrategyConfigurationSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStrategyConfigurationSwapper;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * Sharding strategy configuration subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
-public final class ShardingStrategyConfigurationSubscriber implements RuleConfigurationSubscribeCoordinator {
+@Setter
+public final class ShardingStrategyConfigurationSubscriber implements RuleChangedSubscriber {
     
-    private Map<String, ShardingSphereDatabase> databases;
-    
-    private InstanceContext instanceContext;
-    
-    @Override
-    public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        this.databases = databases;
-        this.instanceContext = instanceContext;
-        instanceContext.getEventBusContext().register(this);
-    }
+    private ContextManager contextManager;
     
     /**
      * Renew with add default database sharding strategy configuration.
@@ -74,22 +68,16 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event add default database sharding strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddDatabaseShardingStrategyConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ShardingStrategyConfiguration needToAddedConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        ShardingRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = (ShardingRuleConfiguration) rule.get().getConfiguration();
-            config.setDefaultDatabaseShardingStrategy(needToAddedConfig);
-        } else {
-            config = new ShardingRuleConfiguration();
-            config.setDefaultDatabaseShardingStrategy(needToAddedConfig);
+    public synchronized void renew(final CreateDefaultDatabaseShardingStrategyEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
         }
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingStrategyConfiguration needToAddedConfig = swapShardingStrategyConfig(
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+        ShardingRuleConfiguration config = getShardingRuleConfiguration(database);
+        config.setDefaultDatabaseShardingStrategy(needToAddedConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -98,22 +86,16 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event add default table sharding strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddTableShardingStrategyConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ShardingStrategyConfiguration needToAddedConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        ShardingRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = (ShardingRuleConfiguration) rule.get().getConfiguration();
-            config.setDefaultTableShardingStrategy(needToAddedConfig);
-        } else {
-            config = new ShardingRuleConfiguration();
-            config.setDefaultTableShardingStrategy(needToAddedConfig);
+    public synchronized void renew(final CreateDefaultTableShardingStrategyEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
         }
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingStrategyConfiguration needToAddedConfig = swapShardingStrategyConfig(
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+        ShardingRuleConfiguration config = getShardingRuleConfiguration(database);
+        config.setDefaultTableShardingStrategy(needToAddedConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -122,22 +104,16 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event add default key generate strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddKeyGenerateStrategyConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        KeyGenerateStrategyConfiguration needToAddedConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        ShardingRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = (ShardingRuleConfiguration) rule.get().getConfiguration();
-            config.setDefaultKeyGenerateStrategy(needToAddedConfig);
-        } else {
-            config = new ShardingRuleConfiguration();
-            config.setDefaultKeyGenerateStrategy(needToAddedConfig);
+    public synchronized void renew(final CreateDefaultKeyGenerateStrategyEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
         }
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        KeyGenerateStrategyConfiguration needToAddedConfig = swapKeyGenerateStrategyConfig(
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+        ShardingRuleConfiguration config = getShardingRuleConfiguration(database);
+        config.setDefaultKeyGenerateStrategy(needToAddedConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -146,22 +122,16 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event add default sharding auditor strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddShardingAuditorStrategyConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ShardingAuditStrategyConfiguration needToAddedConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        ShardingRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = (ShardingRuleConfiguration) rule.get().getConfiguration();
-            config.setDefaultAuditStrategy(needToAddedConfig);
-        } else {
-            config = new ShardingRuleConfiguration();
-            config.setDefaultAuditStrategy(needToAddedConfig);
+    public synchronized void renew(final CreateShardingAuditorStrategyConfigurationEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
         }
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingAuditStrategyConfiguration needToAddedConfig = swapShardingAuditorStrategyConfig(
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
+        ShardingRuleConfiguration config = getShardingRuleConfiguration(database);
+        config.setDefaultAuditStrategy(needToAddedConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -170,22 +140,15 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event add default sharding column configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddDefaultShardingColumnEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        String needToAddedConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        ShardingRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = (ShardingRuleConfiguration) rule.get().getConfiguration();
-            config.setDefaultShardingColumn(needToAddedConfig);
-        } else {
-            config = new ShardingRuleConfiguration();
-            config.setDefaultShardingColumn(needToAddedConfig);
+    public synchronized void renew(final CreateDefaultShardingColumnEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
         }
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        String needToAddedConfig = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        ShardingRuleConfiguration config = getShardingRuleConfiguration(database);
+        config.setDefaultShardingColumn(needToAddedConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -194,15 +157,16 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event alter default database sharding strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterDatabaseShardingStrategyConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ShardingStrategyConfiguration needToAlteredConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
+    public synchronized void renew(final AlterDefaultDatabaseShardingStrategyEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingStrategyConfiguration needToAlteredConfig = swapShardingStrategyConfig(
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultDatabaseShardingStrategy(needToAlteredConfig);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -211,15 +175,16 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event alter default table sharding strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterTableShardingStrategyConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ShardingStrategyConfiguration needToAlteredConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
+    public synchronized void renew(final AlterDefaultTableShardingStrategyEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingStrategyConfiguration needToAlteredConfig = swapShardingStrategyConfig(
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultTableShardingStrategy(needToAlteredConfig);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -228,15 +193,16 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event alter default key generate strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterKeyGenerateStrategyConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        KeyGenerateStrategyConfiguration needToAlteredConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
+    public synchronized void renew(final AlterDefaultKeyGenerateStrategyEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        KeyGenerateStrategyConfiguration needToAlteredConfig = swapKeyGenerateStrategyConfig(
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultKeyGenerateStrategy(needToAlteredConfig);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -246,14 +212,15 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      */
     @Subscribe
     public synchronized void renew(final AlterShardingAuditorStrategyConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        ShardingAuditStrategyConfiguration needToAlteredConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingAuditStrategyConfiguration needToAlteredConfig = swapShardingAuditorStrategyConfig(
+                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultAuditStrategy(needToAlteredConfig);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -263,14 +230,14 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      */
     @Subscribe
     public synchronized void renew(final AlterDefaultShardingColumnEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        String needToAlteredConfig = event.getConfig();
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        String needToAlteredConfig = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultShardingColumn(needToAlteredConfig);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -279,14 +246,14 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event delete default database sharding strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteDatabaseShardingStrategyConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
+    public synchronized void renew(final DropDefaultDatabaseShardingStrategyEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultDatabaseShardingStrategy(null);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -295,14 +262,14 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event delete default table sharding strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteTableShardingStrategyConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
+    public synchronized void renew(final DropDefaultTableShardingStrategyEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultTableShardingStrategy(null);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -311,14 +278,14 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event delete default key generate strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteKeyGenerateStrategyConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
+    public synchronized void renew(final DropDefaultKeyGenerateStrategyEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultKeyGenerateStrategy(null);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -327,14 +294,14 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event delete default sharding auditor strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShardingAuditorStrategyConfigurationEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
+    public synchronized void renew(final DropShardingAuditorStrategyConfigurationEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultAuditStrategy(null);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
@@ -343,13 +310,36 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleConfig
      * @param event delete default sharding column configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteDefaultShardingColumnEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
+    public synchronized void renew(final DropDefaultShardingColumnEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
         config.setDefaultAuditStrategy(null);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    private ShardingRuleConfiguration getShardingRuleConfiguration(final ShardingSphereDatabase database) {
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        ShardingRuleConfiguration result;
+        if (rule.isPresent()) {
+            result = (ShardingRuleConfiguration) rule.get().getConfiguration();
+        } else {
+            result = new ShardingRuleConfiguration();
+        }
+        return result;
+    }
+    
+    private ShardingStrategyConfiguration swapShardingStrategyConfig(final String yamlContext) {
+        return new YamlShardingStrategyConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlShardingStrategyConfiguration.class));
+    }
+    
+    private KeyGenerateStrategyConfiguration swapKeyGenerateStrategyConfig(final String yamlContext) {
+        return new YamlKeyGenerateStrategyConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlKeyGenerateStrategyConfiguration.class));
+    }
+    
+    private ShardingAuditStrategyConfiguration swapShardingAuditorStrategyConfig(final String yamlContext) {
+        return new YamlShardingAuditStrategyConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlShardingAuditStrategyConfiguration.class));
     }
 }

@@ -24,11 +24,11 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.util.InstanceTypeUtils;
-import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
-import org.apache.shardingsphere.data.pipeline.spi.job.JobTypeFactory;
+import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
+import org.apache.shardingsphere.data.pipeline.common.job.type.JobTypeFactory;
+import org.apache.shardingsphere.data.pipeline.common.util.InstanceTypeUtils;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 import java.nio.charset.StandardCharsets;

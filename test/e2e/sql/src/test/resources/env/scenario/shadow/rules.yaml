@@ -16,6 +16,9 @@
 #
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*"
 - !SHADOW
   dataSources:
     shadowDataSource:
@@ -93,3 +96,7 @@ rules:
         operation: select
         column: merchant_id
         value: 0
+        
+props:
+  sql-show: true
+

@@ -19,20 +19,20 @@ package org.apache.shardingsphere.sharding.event.algorithm.keygenerator;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
 
 /**
  * Alter key generate event.
- *
- * @param <T> algorithm configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterKeyGeneratorEvent<T> implements GovernanceEvent {
+public final class AlterKeyGeneratorEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     
     private final String keyGeneratorName;
     
-    private final T config;
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

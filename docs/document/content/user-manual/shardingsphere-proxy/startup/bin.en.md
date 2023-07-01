@@ -22,7 +22,7 @@ Obtain the binary release package of ShardingSphere-Proxy on the [download page]
 ShardingSphere-Proxy's operational mode is configured on `server.yaml`, and its configuration mode is the same with that of ShardingSphere-JDBC. Refer to [mode of configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/).
 
 Please refer to the following links for other configuration items:
-* [Permission configuration](/en/user-manual/shardingsphere-proxy/yaml-config/authentication/)
+* [Permission configuration](/en/user-manual/shardingsphere-proxy/yaml-config/authority/)
 * [Property configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/)
 
 3. Configure `conf/config-*.yaml`

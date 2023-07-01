@@ -36,7 +36,6 @@
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
         <docker.proxy.distribution.name>apache-shardingsphere-${project.version}-shardingsphere-proxy-bin</docker.proxy.distribution.name>
-        <docker.jdbc.distribution.name>shardingsphere-jdbc-agent-test-${project.version}</docker.jdbc.distribution.name>
     </properties>
     
     <dependencies>

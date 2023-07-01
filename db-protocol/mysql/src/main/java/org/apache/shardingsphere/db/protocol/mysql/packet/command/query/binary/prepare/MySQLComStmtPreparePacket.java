@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare;
 
+import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.packet.sql.SQLReceivedPacket;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 
 /**
  * COM_STMT_PREPARE command packet for MySQL.
@@ -31,9 +34,14 @@ public final class MySQLComStmtPreparePacket extends MySQLCommandPacket implemen
     
     private final String sql;
     
-    public MySQLComStmtPreparePacket(final MySQLPacketPayload payload) {
+    @Getter
+    private final HintValueContext hintValueContext;
+    
+    public MySQLComStmtPreparePacket(final MySQLPacketPayload payload, final boolean sqlCommentParseEnabled) {
         super(MySQLCommandPacketType.COM_STMT_PREPARE);
-        sql = payload.readStringEOF();
+        String originSQL = payload.readStringEOF();
+        hintValueContext = sqlCommentParseEnabled ? new HintValueContext() : SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
+        sql = sqlCommentParseEnabled ? originSQL : SQLHintUtils.removeHint(originSQL);
     }
     
     @Override
