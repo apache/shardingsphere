@@ -17,6 +17,7 @@
   -->
 
 <sql-parser-test-cases>
+    <create-event-trigger sql-case-id="create_event_trigger_drop_database" />
     <create-event-trigger sql-case-id="create_event_trigger" />
     <create-event-trigger sql-case-id="create_event_trigger_with_when" />
     <create-event-trigger sql-case-id="create_event_trigger_with_when_and" />
