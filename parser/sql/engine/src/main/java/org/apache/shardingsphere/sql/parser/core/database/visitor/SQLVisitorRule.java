@@ -45,6 +45,8 @@ public enum SQLVisitorRule {
     
     COPY("Copy", SQLStatementType.DML),
     
+    HANDLER_STATEMENT("HandlerStatement", SQLStatementType.DML),
+    
     LOCKTABLE("LockTable", SQLStatementType.DML),
     
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),

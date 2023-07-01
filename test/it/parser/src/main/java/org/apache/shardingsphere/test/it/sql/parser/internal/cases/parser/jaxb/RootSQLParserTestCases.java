@@ -282,6 +282,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.CopyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.DoStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.HandlerStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.LoadDataStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.LoadXMLStatementTestCase;
@@ -828,6 +829,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "do")
     private final List<DoStatementTestCase> doTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "handler")
+    private final List<HandlerStatementTestCase> handlerStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "copy")
     private final List<CopyStatementTestCase> copyTestCases = new LinkedList<>();
