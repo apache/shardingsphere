@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.event.encryptor.creator;
 
 import org.apache.shardingsphere.encrypt.event.encryptor.AlterEncryptorEvent;
-import org.apache.shardingsphere.encrypt.event.encryptor.DeleteEncryptorEvent;
+import org.apache.shardingsphere.encrypt.event.encryptor.DropEncryptorEvent;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -34,6 +34,6 @@ public final class EncryptorEventCreator implements NamedRuleItemChangedEventCre
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue());
         }
-        return new DeleteEncryptorEvent(databaseName, encryptorName);
+        return new DropEncryptorEvent(databaseName, encryptorName);
     }
 }

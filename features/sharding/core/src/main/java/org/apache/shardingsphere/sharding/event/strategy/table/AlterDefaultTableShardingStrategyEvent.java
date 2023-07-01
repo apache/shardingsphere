@@ -19,14 +19,14 @@ package org.apache.shardingsphere.sharding.event.strategy.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
 
 /**
  * Alter default database sharding strategy event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterDefaultTableShardingStrategyEvent implements GovernanceEvent {
+public final class AlterDefaultTableShardingStrategyEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     

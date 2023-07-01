@@ -29,11 +29,11 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.event.algorithm.auditor.AlterShardingAuditorEvent;
-import org.apache.shardingsphere.sharding.event.algorithm.auditor.DeleteShardingAuditorEvent;
+import org.apache.shardingsphere.sharding.event.algorithm.auditor.DropShardingAuditorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.AlterKeyGeneratorEvent;
-import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.DeleteKeyGeneratorEvent;
+import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.DropKeyGeneratorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.sharding.AlterShardingAlgorithmEvent;
-import org.apache.shardingsphere.sharding.event.algorithm.sharding.DeleteShardingAlgorithmEvent;
+import org.apache.shardingsphere.sharding.event.algorithm.sharding.DropShardingAlgorithmEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Optional;
@@ -104,7 +104,7 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
      * @param event delete sharding algorithm event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShardingAlgorithmEvent event) {
+    public synchronized void renew(final DropShardingAlgorithmEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
@@ -120,7 +120,7 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
      * @param event delete key generator event
      */
     @Subscribe
-    public synchronized void renew(final DeleteKeyGeneratorEvent event) {
+    public synchronized void renew(final DropKeyGeneratorEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
@@ -136,7 +136,7 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
      * @param event delete key generator event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShardingAuditorEvent event) {
+    public synchronized void renew(final DropShardingAuditorEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

@@ -28,9 +28,9 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.AddReadwriteSplittingDataSourceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.CreateReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwriteSplittingDataSourceEvent;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.DeleteReadwriteSplittingDataSourceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.DropReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
@@ -54,7 +54,7 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
      * @param event add readwrite-splitting configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddReadwriteSplittingDataSourceEvent event) {
+    public synchronized void renew(final CreateReadwriteSplittingDataSourceEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -89,7 +89,7 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
      * @param event delete readwrite-splitting configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteReadwriteSplittingDataSourceEvent event) {
+    public synchronized void renew(final DropReadwriteSplittingDataSourceEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

@@ -19,14 +19,14 @@ package org.apache.shardingsphere.sharding.event.table.auto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
 
 /**
  * Alter sharding auto table event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterShardingAutoTableEvent implements GovernanceEvent {
+public final class AlterShardingAutoTableEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
-import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
+import org.apache.shardingsphere.mask.event.algorithm.DropMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -65,7 +65,7 @@ public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
      * @param event delete algorithm event
      */
     @Subscribe
-    public synchronized void renew(final DeleteMaskAlgorithmEvent event) {
+    public synchronized void renew(final DropMaskAlgorithmEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

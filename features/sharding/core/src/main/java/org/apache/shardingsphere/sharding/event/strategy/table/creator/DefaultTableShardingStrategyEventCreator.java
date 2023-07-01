@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
-import org.apache.shardingsphere.sharding.event.strategy.table.AddDefaultTableShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.table.CreateDefaultTableShardingStrategyEvent;
 import org.apache.shardingsphere.sharding.event.strategy.table.AlterDefaultTableShardingStrategyEvent;
-import org.apache.shardingsphere.sharding.event.strategy.table.DeleteDefaultTableShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.table.DropDefaultTableShardingStrategyEvent;
 
 /**
  * Default table sharding strategy event creator.
@@ -33,11 +33,11 @@ public final class DefaultTableShardingStrategyEventCreator implements UniqueRul
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return new AddDefaultTableShardingStrategyEvent(databaseName, event.getKey(), event.getValue());
+            return new CreateDefaultTableShardingStrategyEvent(databaseName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
             return new AlterDefaultTableShardingStrategyEvent(databaseName, event.getKey(), event.getValue());
         }
-        return new DeleteDefaultTableShardingStrategyEvent(databaseName);
+        return new DropDefaultTableShardingStrategyEvent(databaseName);
     }
 }

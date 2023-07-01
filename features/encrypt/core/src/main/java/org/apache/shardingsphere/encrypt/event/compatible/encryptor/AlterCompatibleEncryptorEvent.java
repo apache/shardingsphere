@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.event.compatible.encryptor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
 
 /**
  * Alter compatible encryptor event.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 @Deprecated
 @RequiredArgsConstructor
 @Getter
-public final class AlterCompatibleEncryptorEvent implements GovernanceEvent {
+public final class AlterCompatibleEncryptorEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     

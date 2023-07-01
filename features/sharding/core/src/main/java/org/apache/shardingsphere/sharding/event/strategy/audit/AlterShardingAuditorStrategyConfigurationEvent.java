@@ -19,14 +19,14 @@ package org.apache.shardingsphere.sharding.event.strategy.audit;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
 
 /**
  * Alter default sharding auditor strategy configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterShardingAuditorStrategyConfigurationEvent implements GovernanceEvent {
+public final class AlterShardingAuditorStrategyConfigurationEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     

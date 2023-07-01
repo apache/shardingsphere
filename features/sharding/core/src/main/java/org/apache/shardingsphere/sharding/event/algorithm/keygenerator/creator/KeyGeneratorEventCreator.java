@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.AlterKeyGeneratorEvent;
-import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.DeleteKeyGeneratorEvent;
+import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.DropKeyGeneratorEvent;
 
 /**
  * Key generator event creator.
@@ -34,6 +34,6 @@ public final class KeyGeneratorEventCreator implements NamedRuleItemChangedEvent
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterKeyGeneratorEvent(databaseName, algorithmName, event.getKey(), event.getValue());
         }
-        return new DeleteKeyGeneratorEvent(databaseName, algorithmName);
+        return new DropKeyGeneratorEvent(databaseName, algorithmName);
     }
 }

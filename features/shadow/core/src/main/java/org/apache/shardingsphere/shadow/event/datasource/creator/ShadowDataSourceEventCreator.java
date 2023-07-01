@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
-import org.apache.shardingsphere.shadow.event.datasource.AddShadowDataSourceEvent;
+import org.apache.shardingsphere.shadow.event.datasource.CreateShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.event.datasource.AlterShadowDataSourceEvent;
-import org.apache.shardingsphere.shadow.event.datasource.DeleteShadowDataSourceEvent;
+import org.apache.shardingsphere.shadow.event.datasource.DropShadowDataSourceEvent;
 
 /**
  * Shadow data source event creator.
@@ -33,11 +33,11 @@ public final class ShadowDataSourceEventCreator implements NamedRuleItemChangedE
     @Override
     public GovernanceEvent create(final String databaseName, final String dataSourceName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return new AddShadowDataSourceEvent(databaseName, dataSourceName, event.getKey(), event.getValue());
+            return new CreateShadowDataSourceEvent(databaseName, dataSourceName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
             return new AlterShadowDataSourceEvent(databaseName, dataSourceName, event.getKey(), event.getValue());
         }
-        return new DeleteShadowDataSourceEvent(databaseName, dataSourceName);
+        return new DropShadowDataSourceEvent(databaseName, dataSourceName);
     }
 }

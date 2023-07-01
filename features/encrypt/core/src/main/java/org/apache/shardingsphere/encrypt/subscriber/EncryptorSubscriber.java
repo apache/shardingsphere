@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.event.encryptor.AlterEncryptorEvent;
-import org.apache.shardingsphere.encrypt.event.encryptor.DeleteEncryptorEvent;
+import org.apache.shardingsphere.encrypt.event.encryptor.DropEncryptorEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -65,7 +65,7 @@ public final class EncryptorSubscriber implements RuleChangedSubscriber {
      * @param event delete encryptor event
      */
     @Subscribe
-    public synchronized void renew(final DeleteEncryptorEvent event) {
+    public synchronized void renew(final DropEncryptorEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

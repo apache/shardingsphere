@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.event.table.AddMaskTableEvent;
+import org.apache.shardingsphere.mask.event.table.CreateMaskTableEvent;
 import org.apache.shardingsphere.mask.event.table.AlterMaskTableEvent;
-import org.apache.shardingsphere.mask.event.table.DeleteMaskTableEvent;
+import org.apache.shardingsphere.mask.event.table.DropMaskTableEvent;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigurationSwapper;
@@ -52,7 +52,7 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
      * @param event add mask configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddMaskTableEvent event) {
+    public synchronized void renew(final CreateMaskTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -87,7 +87,7 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
      * @param event delete mask configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteMaskTableEvent event) {
+    public synchronized void renew(final DropMaskTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
