@@ -221,9 +221,9 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         result.add(new EncryptAlterTableToken(segment.getColumnDefinition().getColumnName().getStopIndex() + 1, segment.getColumnDefinition().getColumnName().getStopIndex(),
                 encryptColumn.getCipher().getName(), null));
         previousEncryptColumn.getAssistedQuery().map(optional -> new EncryptAlterTableToken(segment.getStopIndex() + 1, segment.getColumnDefinition().getColumnName().getStopIndex(),
-                        encryptColumn.getAssistedQuery().map(AssistedQueryColumnItem::getName).orElse(""), ", CHANGE COLUMN " + optional.getName())).ifPresent(result::add);
+                encryptColumn.getAssistedQuery().map(AssistedQueryColumnItem::getName).orElse(""), ", CHANGE COLUMN " + optional.getName())).ifPresent(result::add);
         previousEncryptColumn.getLikeQuery().map(optional -> new EncryptAlterTableToken(segment.getStopIndex() + 1, segment.getColumnDefinition().getColumnName().getStopIndex(),
-                        encryptColumn.getLikeQuery().map(LikeQueryColumnItem::getName).orElse(""), ", CHANGE COLUMN " + optional.getName())).ifPresent(result::add);
+                encryptColumn.getLikeQuery().map(LikeQueryColumnItem::getName).orElse(""), ", CHANGE COLUMN " + optional.getName())).ifPresent(result::add);
         return result;
     }
     
