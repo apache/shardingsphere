@@ -15,10 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.rule;
+package org.apache.shardingsphere.infra.rule.event.rule.alter;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Alter rule item event.
+ * Alter named rule item event.
  */
-public interface AlterRuleItemEvent extends RuleItemChangedEvent {
+@RequiredArgsConstructor
+@Getter
+public class AlterNamedRuleItemEvent implements AlterRuleItemEvent {
+    
+    private final String databaseName;
+    
+    private final String itemName;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

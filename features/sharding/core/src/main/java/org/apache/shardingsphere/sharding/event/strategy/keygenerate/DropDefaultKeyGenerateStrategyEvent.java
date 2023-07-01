@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.sharding.event.strategy.keygenerate;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropUniqueRuleItemEvent;
 
 /**
  * Drop default key generate strategy event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropDefaultKeyGenerateStrategyEvent implements DropRuleItemEvent {
+public final class DropDefaultKeyGenerateStrategyEvent extends DropUniqueRuleItemEvent {
     
-    private final String databaseName;
+    public DropDefaultKeyGenerateStrategyEvent(final String databaseName) {
+        super(databaseName);
+    }
 }

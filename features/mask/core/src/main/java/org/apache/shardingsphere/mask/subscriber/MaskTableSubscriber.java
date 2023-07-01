@@ -76,7 +76,7 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
         MaskTableRuleConfiguration needToAlteredConfig = swapMaskTableRuleConfig(
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
-        config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
+        config.getTables().removeIf(each -> each.getName().equals(event.getItemName()));
         config.getTables().add(needToAlteredConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -93,7 +93,7 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
-        config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
+        config.getTables().removeIf(each -> each.getName().equals(event.getItemName()));
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     

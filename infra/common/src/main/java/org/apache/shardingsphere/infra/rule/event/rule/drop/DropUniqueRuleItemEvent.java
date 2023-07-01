@@ -15,10 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.rule;
+package org.apache.shardingsphere.infra.rule.event.rule.drop;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Create rule item event.
+ * Drop unique rule item event.
  */
-public interface CreateRuleItemEvent extends RuleItemChangedEvent {
+@RequiredArgsConstructor
+@Getter
+public class DropUniqueRuleItemEvent implements DropRuleItemEvent {
+    
+    private final String databaseName;
 }

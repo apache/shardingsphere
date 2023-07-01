@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.single.event.config;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropUniqueRuleItemEvent;
 
 /**
  * Drop single table event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropSingleTableEvent implements DropRuleItemEvent {
+public final class DropSingleTableEvent extends DropUniqueRuleItemEvent {
     
-    private final String databaseName;
+    public DropSingleTableEvent(final String databaseName) {
+        super(databaseName);
+    }
 }

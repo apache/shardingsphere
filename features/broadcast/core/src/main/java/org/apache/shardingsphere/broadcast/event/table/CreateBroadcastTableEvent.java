@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.broadcast.event.table;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.CreateRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.create.CreateUniqueRuleItemEvent;
 
 /**
  * Create broadcast table event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateBroadcastTableEvent implements CreateRuleItemEvent {
+public final class CreateBroadcastTableEvent extends CreateUniqueRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public CreateBroadcastTableEvent(final String databaseName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, activeVersionKey, activeVersion);
+    }
 }

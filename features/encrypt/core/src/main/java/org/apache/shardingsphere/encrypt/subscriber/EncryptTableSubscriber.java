@@ -76,7 +76,7 @@ public final class EncryptTableSubscriber implements RuleChangedSubscriber {
         EncryptTableRuleConfiguration needToAlteredConfig = swapEncryptTableRuleConfig(
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
-        config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
+        config.getTables().removeIf(each -> each.getName().equals(event.getItemName()));
         config.getTables().add(needToAlteredConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -93,7 +93,7 @@ public final class EncryptTableSubscriber implements RuleChangedSubscriber {
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
-        config.getTables().removeIf(each -> each.getName().equals(event.getTableName()));
+        config.getTables().removeIf(each -> each.getName().equals(event.getItemName()));
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     

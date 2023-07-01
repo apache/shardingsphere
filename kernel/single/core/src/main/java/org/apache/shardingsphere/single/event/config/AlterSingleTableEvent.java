@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.single.event.config;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterUniqueRuleItemEvent;
 
 /**
  * Alter single table event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterSingleTableEvent implements AlterRuleItemEvent {
+public final class AlterSingleTableEvent extends AlterUniqueRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterSingleTableEvent(final String databaseName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, activeVersionKey, activeVersion);
+    }
 }

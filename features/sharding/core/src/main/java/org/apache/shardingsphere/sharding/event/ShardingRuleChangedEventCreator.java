@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.event.algorithm.auditor.creator.AuditS
 import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.creator.KeyGeneratorEventCreator;
 import org.apache.shardingsphere.sharding.event.algorithm.sharding.creator.ShardingAlgorithmEventCreator;
 import org.apache.shardingsphere.sharding.event.cache.creator.ShardingCacheEventCreator;
-import org.apache.shardingsphere.sharding.event.strategy.audit.creator.ShardingAuditorStrategyEventCreator;
+import org.apache.shardingsphere.sharding.event.strategy.audit.creator.DefaultShardingAuditorStrategyEventCreator;
 import org.apache.shardingsphere.sharding.event.strategy.database.creator.DefaultDatabaseShardingStrategyEventCreator;
 import org.apache.shardingsphere.sharding.event.strategy.keygenerate.creator.DefaultKeyGenerateStrategyEventCreator;
 import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.creator.DefaultShardingColumnEventCreator;
@@ -79,7 +79,7 @@ public final class ShardingRuleChangedEventCreator implements RuleChangedEventCr
             case ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY:
                 return new DefaultKeyGenerateStrategyEventCreator();
             case ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY:
-                return new ShardingAuditorStrategyEventCreator();
+                return new DefaultShardingAuditorStrategyEventCreator();
             case ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN:
                 return new DefaultShardingColumnEventCreator();
             case ShardingRuleNodePathProvider.SHARDING_CACHE:

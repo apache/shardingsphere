@@ -17,22 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.event.compatible.table;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.CreateRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.create.CreateNamedRuleItemEvent;
 
 /**
  * Create compatible encrypt table event.
  * @deprecated compatible support will remove in next version.
  */
 @Deprecated
-@RequiredArgsConstructor
-@Getter
-public final class CreateCompatibleEncryptTableEvent implements CreateRuleItemEvent {
+public final class CreateCompatibleEncryptTableEvent extends CreateNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public CreateCompatibleEncryptTableEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

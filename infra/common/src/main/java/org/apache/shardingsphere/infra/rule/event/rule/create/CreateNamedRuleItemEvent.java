@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.event.strategy.audit;
+package org.apache.shardingsphere.infra.rule.event.rule.create;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
 
 /**
- * Drop default sharding auditor strategy configuration event.
+ * Create named rule item event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropShardingAuditorStrategyConfigurationEvent implements DropRuleItemEvent {
+public class CreateNamedRuleItemEvent implements CreateRuleItemEvent {
     
     private final String databaseName;
+    
+    private final String itemName;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }

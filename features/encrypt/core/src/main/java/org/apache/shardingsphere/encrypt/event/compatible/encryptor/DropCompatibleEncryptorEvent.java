@@ -17,20 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.event.compatible.encryptor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 
 /**
  * Drop compatible encryptor event.
  * @deprecated compatible support will remove in next version.
  */
 @Deprecated
-@RequiredArgsConstructor
-@Getter
-public final class DropCompatibleEncryptorEvent implements DropRuleItemEvent {
+public final class DropCompatibleEncryptorEvent extends DropNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String encryptorName;
+    public DropCompatibleEncryptorEvent(final String databaseName, final String itemName) {
+        super(databaseName, itemName);
+    }
 }

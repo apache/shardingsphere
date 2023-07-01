@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.sharding.event.cache;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropUniqueRuleItemEvent;
 
 /**
  * Drop sharding cache event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropShardingCacheEvent implements DropRuleItemEvent {
+public final class DropShardingCacheEvent extends DropUniqueRuleItemEvent {
     
-    private final String databaseName;
+    public DropShardingCacheEvent(final String databaseName) {
+        super(databaseName);
+    }
 }

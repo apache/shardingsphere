@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.sharding.event.table.binding;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.CreateRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.create.CreateNamedRuleItemEvent;
 
 /**
  * Create sharding table reference event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateShardingTableReferenceEvent implements CreateRuleItemEvent {
+public final class CreateShardingTableReferenceEvent extends CreateNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public CreateShardingTableReferenceEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

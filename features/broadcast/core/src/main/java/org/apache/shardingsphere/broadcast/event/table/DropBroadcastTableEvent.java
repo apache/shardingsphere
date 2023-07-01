@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.broadcast.event.table;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropUniqueRuleItemEvent;
 
 /**
  * Drop broadcast table event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropBroadcastTableEvent implements DropRuleItemEvent {
+public final class DropBroadcastTableEvent extends DropUniqueRuleItemEvent {
     
-    private final String databaseName;
+    public DropBroadcastTableEvent(final String databaseName) {
+        super(databaseName);
+    }
 }

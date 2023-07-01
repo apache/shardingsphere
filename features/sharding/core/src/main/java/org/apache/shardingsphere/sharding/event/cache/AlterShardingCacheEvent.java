@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.sharding.event.cache;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterUniqueRuleItemEvent;
 
 /**
  * Alter sharding cache event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterShardingCacheEvent implements AlterRuleItemEvent {
+public final class AlterShardingCacheEvent extends AlterUniqueRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterShardingCacheEvent(final String databaseName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, activeVersionKey, activeVersion);
+    }
 }

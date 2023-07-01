@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.mask.event.table;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 
 /**
  * Drop mask configuration event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropMaskTableEvent implements DropRuleItemEvent {
+public final class DropMaskTableEvent extends DropNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String tableName;
+    public DropMaskTableEvent(final String databaseName, final String itemName) {
+        super(databaseName, itemName);
+    }
 }

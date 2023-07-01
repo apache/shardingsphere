@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.event.strategy.audit;
+package org.apache.shardingsphere.infra.rule.event.rule.alter;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 
 /**
- * Alter default sharding auditor strategy configuration event.
+ * Alter rule item event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterShardingAuditorStrategyConfigurationEvent implements AlterRuleItemEvent {
-    
-    private final String databaseName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+public interface AlterRuleItemEvent extends RuleItemChangedEvent {
 }
