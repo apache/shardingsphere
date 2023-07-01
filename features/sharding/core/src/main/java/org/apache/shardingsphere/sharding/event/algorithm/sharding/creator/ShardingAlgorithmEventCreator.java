@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.sharding.event.algorithm.sharding.AlterShardingAlgorithmEvent;
-import org.apache.shardingsphere.sharding.event.algorithm.sharding.DeleteShardingAlgorithmEvent;
+import org.apache.shardingsphere.sharding.event.algorithm.sharding.DropShardingAlgorithmEvent;
 
 /**
  * Sharding algorithm event creator.
@@ -34,6 +34,6 @@ public final class ShardingAlgorithmEventCreator implements NamedRuleItemChanged
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterShardingAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue());
         }
-        return new DeleteShardingAlgorithmEvent(databaseName, algorithmName);
+        return new DropShardingAlgorithmEvent(databaseName, algorithmName);
     }
 }

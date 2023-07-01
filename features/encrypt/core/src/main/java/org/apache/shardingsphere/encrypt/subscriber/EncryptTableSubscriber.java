@@ -21,9 +21,9 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.event.table.AddEncryptTableEvent;
+import org.apache.shardingsphere.encrypt.event.table.CreateEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.table.AlterEncryptTableEvent;
-import org.apache.shardingsphere.encrypt.event.table.DeleteEncryptTableEvent;
+import org.apache.shardingsphere.encrypt.event.table.DropEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
@@ -52,7 +52,7 @@ public final class EncryptTableSubscriber implements RuleChangedSubscriber {
      * @param event add encrypt configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddEncryptTableEvent event) {
+    public synchronized void renew(final CreateEncryptTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -87,7 +87,7 @@ public final class EncryptTableSubscriber implements RuleChangedSubscriber {
      * @param event delete encrypt configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteEncryptTableEvent event) {
+    public synchronized void renew(final DropEncryptTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.shadow.event.algorithm.AlterShadowAlgorithmEvent;
-import org.apache.shardingsphere.shadow.event.algorithm.DeleteShadowAlgorithmEvent;
+import org.apache.shardingsphere.shadow.event.algorithm.DropShadowAlgorithmEvent;
 
 /**
  * Shadow algorithm event creator.
@@ -34,6 +34,6 @@ public final class ShadowAlgorithmEventCreator implements NamedRuleItemChangedEv
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterShadowAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue());
         }
-        return new DeleteShadowAlgorithmEvent(databaseName, algorithmName);
+        return new DropShadowAlgorithmEvent(databaseName, algorithmName);
     }
 }

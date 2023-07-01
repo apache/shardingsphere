@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.event.table.creator;
 
-import org.apache.shardingsphere.encrypt.event.table.AddEncryptTableEvent;
+import org.apache.shardingsphere.encrypt.event.table.CreateEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.table.AlterEncryptTableEvent;
-import org.apache.shardingsphere.encrypt.event.table.DeleteEncryptTableEvent;
+import org.apache.shardingsphere.encrypt.event.table.DropEncryptTableEvent;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -33,11 +33,11 @@ public final class EncryptTableEventCreator implements NamedRuleItemChangedEvent
     @Override
     public GovernanceEvent create(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return new AddEncryptTableEvent(databaseName, event.getKey(), event.getValue());
+            return new CreateEncryptTableEvent(databaseName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
             return new AlterEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue());
         }
-        return new DeleteEncryptTableEvent(databaseName, groupName);
+        return new DropEncryptTableEvent(databaseName, groupName);
     }
 }

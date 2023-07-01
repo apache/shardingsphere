@@ -26,9 +26,9 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.event.datasource.AddShadowDataSourceEvent;
+import org.apache.shardingsphere.shadow.event.datasource.CreateShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.event.datasource.AlterShadowDataSourceEvent;
-import org.apache.shardingsphere.shadow.event.datasource.DeleteShadowDataSourceEvent;
+import org.apache.shardingsphere.shadow.event.datasource.DropShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 
@@ -49,7 +49,7 @@ public final class ShadowDataSourceSubscriber implements RuleChangedSubscriber {
      * @param event add shadow configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddShadowDataSourceEvent event) {
+    public synchronized void renew(final CreateShadowDataSourceEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -93,7 +93,7 @@ public final class ShadowDataSourceSubscriber implements RuleChangedSubscriber {
      * @param event delete shadow configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShadowDataSourceEvent event) {
+    public synchronized void renew(final DropShadowDataSourceEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

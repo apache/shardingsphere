@@ -19,14 +19,14 @@ package org.apache.shardingsphere.sharding.event.cache;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
 
 /**
  * Alter sharding cache event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterShardingCacheEvent implements GovernanceEvent {
+public final class AlterShardingCacheEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     

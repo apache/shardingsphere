@@ -19,14 +19,14 @@ package org.apache.shardingsphere.broadcast.event.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
 
 /**
  * Alter broadcast table event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterBroadcastTableEvent implements GovernanceEvent {
+public final class AlterBroadcastTableEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     

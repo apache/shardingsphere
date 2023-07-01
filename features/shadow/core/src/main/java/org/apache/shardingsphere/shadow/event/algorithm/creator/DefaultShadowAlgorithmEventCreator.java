@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
-import org.apache.shardingsphere.shadow.event.algorithm.AlterDefaultShadowAlgorithmNameEvent;
-import org.apache.shardingsphere.shadow.event.algorithm.DeleteDefaultShadowAlgorithmNameEvent;
+import org.apache.shardingsphere.shadow.event.algorithm.AlterDefaultShadowAlgorithmEvent;
+import org.apache.shardingsphere.shadow.event.algorithm.DropDefaultShadowAlgorithmEvent;
 
 /**
  * Default shadow algorithm event creator.
@@ -32,8 +32,8 @@ public final class DefaultShadowAlgorithmEventCreator implements UniqueRuleItemC
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return new AlterDefaultShadowAlgorithmNameEvent(databaseName, event.getKey(), event.getValue());
+            return new AlterDefaultShadowAlgorithmEvent(databaseName, event.getKey(), event.getValue());
         }
-        return new DeleteDefaultShadowAlgorithmNameEvent(databaseName);
+        return new DropDefaultShadowAlgorithmEvent(databaseName);
     }
 }

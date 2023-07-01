@@ -24,8 +24,8 @@ import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChan
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.event.algorithm.AlterDefaultShadowAlgorithmNameEvent;
-import org.apache.shardingsphere.shadow.event.algorithm.DeleteDefaultShadowAlgorithmNameEvent;
+import org.apache.shardingsphere.shadow.event.algorithm.AlterDefaultShadowAlgorithmEvent;
+import org.apache.shardingsphere.shadow.event.algorithm.DropDefaultShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Optional;
@@ -45,7 +45,7 @@ public final class DefaultShadowAlgorithmNameSubscriber implements RuleChangedSu
      * @param event alter default algorithm name event
      */
     @Subscribe
-    public synchronized void renew(final AlterDefaultShadowAlgorithmNameEvent event) {
+    public synchronized void renew(final AlterDefaultShadowAlgorithmEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -66,7 +66,7 @@ public final class DefaultShadowAlgorithmNameSubscriber implements RuleChangedSu
      * @param event delete default algorithm name event
      */
     @Subscribe
-    public synchronized void renew(final DeleteDefaultShadowAlgorithmNameEvent event) {
+    public synchronized void renew(final DropDefaultShadowAlgorithmEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

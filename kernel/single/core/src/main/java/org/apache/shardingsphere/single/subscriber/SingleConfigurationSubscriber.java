@@ -25,9 +25,9 @@ import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChan
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.event.config.AddSingleTableEvent;
+import org.apache.shardingsphere.single.event.config.CreateSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
-import org.apache.shardingsphere.single.event.config.DeleteSingleTableEvent;
+import org.apache.shardingsphere.single.event.config.DropSingleTableEvent;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 
@@ -48,7 +48,7 @@ public final class SingleConfigurationSubscriber implements RuleChangedSubscribe
      * @param event add single configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddSingleTableEvent event) {
+    public synchronized void renew(final CreateSingleTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -92,7 +92,7 @@ public final class SingleConfigurationSubscriber implements RuleChangedSubscribe
      * @param event delete single configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteSingleTableEvent event) {
+    public synchronized void renew(final DropSingleTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

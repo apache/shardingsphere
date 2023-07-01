@@ -26,9 +26,9 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.event.table.AddShadowTableEvent;
+import org.apache.shardingsphere.shadow.event.table.CreateShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
-import org.apache.shardingsphere.shadow.event.table.DeleteShadowTableEvent;
+import org.apache.shardingsphere.shadow.event.table.DropShadowTableEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
@@ -50,7 +50,7 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
      * @param event add table event
      */
     @Subscribe
-    public synchronized void renew(final AddShadowTableEvent event) {
+    public synchronized void renew(final CreateShadowTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -90,7 +90,7 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
      * @param event delete table event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShadowTableEvent event) {
+    public synchronized void renew(final DropShadowTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

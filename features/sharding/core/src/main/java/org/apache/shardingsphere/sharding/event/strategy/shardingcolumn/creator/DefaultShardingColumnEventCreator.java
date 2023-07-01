@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
-import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.AddDefaultShardingColumnEvent;
+import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.CreateDefaultShardingColumnEvent;
 import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.AlterDefaultShardingColumnEvent;
-import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.DeleteDefaultShardingColumnEvent;
+import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.DropDefaultShardingColumnEvent;
 
 /**
  * Default sharding column event creator.
@@ -33,11 +33,11 @@ public final class DefaultShardingColumnEventCreator implements UniqueRuleItemCh
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return new AddDefaultShardingColumnEvent(databaseName, event.getKey(), event.getValue());
+            return new CreateDefaultShardingColumnEvent(databaseName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
             return new AlterDefaultShardingColumnEvent(databaseName, event.getKey(), event.getValue());
         }
-        return new DeleteDefaultShardingColumnEvent(databaseName);
+        return new DropDefaultShardingColumnEvent(databaseName);
     }
 }

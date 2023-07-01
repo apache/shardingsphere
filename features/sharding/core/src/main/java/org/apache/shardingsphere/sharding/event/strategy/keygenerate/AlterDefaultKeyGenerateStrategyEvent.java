@@ -19,14 +19,14 @@ package org.apache.shardingsphere.sharding.event.strategy.keygenerate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
 
 /**
  * Alter default key generate strategy event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterDefaultKeyGenerateStrategyEvent implements GovernanceEvent {
+public final class AlterDefaultKeyGenerateStrategyEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     

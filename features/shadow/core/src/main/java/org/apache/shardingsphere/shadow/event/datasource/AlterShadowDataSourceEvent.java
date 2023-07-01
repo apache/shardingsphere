@@ -19,14 +19,14 @@ package org.apache.shardingsphere.shadow.event.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
 
 /**
  * Alter shadow configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterShadowDataSourceEvent implements GovernanceEvent {
+public final class AlterShadowDataSourceEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     

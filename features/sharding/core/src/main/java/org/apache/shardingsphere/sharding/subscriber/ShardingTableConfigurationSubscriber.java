@@ -28,15 +28,15 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.event.table.auto.AddShardingAutoTableEvent;
+import org.apache.shardingsphere.sharding.event.table.auto.CreateShardingAutoTableEvent;
 import org.apache.shardingsphere.sharding.event.table.auto.AlterShardingAutoTableEvent;
-import org.apache.shardingsphere.sharding.event.table.auto.DeleteShardingAutoTableEvent;
-import org.apache.shardingsphere.sharding.event.table.binding.AddShardingTableReferenceEvent;
+import org.apache.shardingsphere.sharding.event.table.auto.DropShardingAutoTableEvent;
+import org.apache.shardingsphere.sharding.event.table.binding.CreateShardingTableReferenceEvent;
 import org.apache.shardingsphere.sharding.event.table.binding.AlterShardingTableReferenceEvent;
-import org.apache.shardingsphere.sharding.event.table.binding.DeleteShardingTableReferenceEvent;
-import org.apache.shardingsphere.sharding.event.table.sharding.AddShardingTableEvent;
+import org.apache.shardingsphere.sharding.event.table.binding.DropShardingTableReferenceEvent;
+import org.apache.shardingsphere.sharding.event.table.sharding.CreateShardingTableEvent;
 import org.apache.shardingsphere.sharding.event.table.sharding.AlterShardingTableEvent;
-import org.apache.shardingsphere.sharding.event.table.sharding.DeleteShardingTableEvent;
+import org.apache.shardingsphere.sharding.event.table.sharding.DropShardingTableEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
@@ -61,7 +61,7 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      * @param event add sharding table configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddShardingTableEvent event) {
+    public synchronized void renew(final CreateShardingTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -81,7 +81,7 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      * @param event add sharding auto table configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddShardingAutoTableEvent event) {
+    public synchronized void renew(final CreateShardingAutoTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -101,7 +101,7 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      * @param event add sharding auto table configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddShardingTableReferenceEvent event) {
+    public synchronized void renew(final CreateShardingTableReferenceEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -178,7 +178,7 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      * @param event delete sharding table configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShardingTableEvent event) {
+    public synchronized void renew(final DropShardingTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
@@ -194,7 +194,7 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      * @param event delete sharding auto table configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShardingAutoTableEvent event) {
+    public synchronized void renew(final DropShardingAutoTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
@@ -210,7 +210,7 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
      * @param event delete sharding table reference configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShardingTableReferenceEvent event) {
+    public synchronized void renew(final DropShardingTableReferenceEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
