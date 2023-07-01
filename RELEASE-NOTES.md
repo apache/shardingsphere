@@ -1,3 +1,79 @@
+## Release 5.4.0
+
+### API Change
+1. Change sharding broadcast tables to global broadcast tables
+2. JDBC: Remove exclamation mark (!) for global rules
+3. DistSQL: Simplify keywords ASSISTED_QUERY, LIKE_QUERY in Encrypt DistSQL
+4. DistSQL: Optimize SQL_PARSER rule syntax
+5. Adjust encryption yaml API to distinguish between encrypt, like, and assisted query configurations
+6. Refactor read/write splitting api
+7. Remove the global props proxy-instance-type configuration item
+8. Remove plain column and queryWithCipherColumn configuration in encrypt feature
+9. Proxy: Remove property proxy-backend-executor-suitable
+10. Proxy: Remove property proxy-mysql-default-version
+11. Sharding: Merge ShardingCacheRule into ShardingRule
+
+### New Feature
+1. Scaling: CDC supports MySQL and PostgreSQL
+2. Scaling: CDC supports pure incremental mode
+3. Proxy: Support for registering global data sources
+4. DistSQL: New syntax to manage SQL_FEDERATION rule
+5. Proxy: Support Unix Domain Socket
+
+### Enhancement
+1. Scaling: CDC supports exporting data by transaction
+2. Scaling: CDC supports all openGauss data types
+3. Scaling: CDC supports replication reconnection
+4. Scaling: Remove DataConsistencyCalculateAlgorithmChooser
+5. Scaling: Improve performance of integer unique key table inventory data splitting
+6. Scaling: Optimize pipeline process configuration default value
+7. Scaling: Optimize memory usage of table metadata
+8. Scaling: Auto refresh table metadata for migration
+9. Scaling: Compatible with openGauss existing replication slot reuse when database not existing
+10. Scaling: Show data consistency check status result should be empty when it's not completed
+11. Scaling: Enable concurrent CRC32 match on source and target
+12. DistSQL: New syntax REGISTER STORAGE NODE, support for DB instance (MySQL)
+13. DistSQL: Enhanced algorithm properties check
+14. Metadata: Refactor metadata persistence structure
+15. Metadata: Optimize the process of loading single table metadata
+16. Support non-comparable sharding keys such as varbinary to support migration
+17. DistSQL: Add support for transactionalReadQueryStrategy for read/write splitting rule
+18. Support MySQL/PostgreSQL/openGauss system tables empty query
+19. Sharding SQL enhancements
+20. Refactor ShardingSphere Metdata structure
+21. Add transaction privilege check
+22. Support MySQL LOAD DATA and LOAD XML statement with single table or broadcast table
+23. Improve the parsing support of high-priority SQL statements in the test results of the MySQL test program
+24. Remove the TransactionTypeHolder and only create the current transaction manager
+25. Adds table existence metadata check for INSERT, DELETE, UPDATE and SELECT statements
+26. Oracle dialect parser now supports Chinese comma
+27. Support query of encrypt column in projection subquery when use encrypt feature
+28. Proxy: Frontend supports SSL/TLS
+29. Driver: Implement batch execution for ShardingSphereStatement
+30. Proxy: Support Flush message for PostgreSQL/openGauss Proxy
+31. Proxy: Support data type bit, bool for PostgreSQL Proxy
+
+### Bug Fix
+1. Scaling: Fix pipeline job failure status persistence and usage
+2. Scaling: Fix CDC DELETE event Record.beforeList is null
+3. Scaling: Fix openGauss mppdb decoding plugin single quote issue
+4. Support union statement single route SQL execution in Sharding scenario
+5. Table data duplication when broadcast table left join sharding table
+6. Fix case sensitive issue when loading schema meta data with H2 database
+7. Fix "object not found" exception when config PostgreSQL/openGauss schema name as database name
+8. Fix SQL rewrite exception when use PostgreSQL/openGauss encrypt like feature
+9. Support null sharding condition pass to sharding algorithm to allow user control null value route
+10. Fix wrong result of check_table_metadata_enabled when execute SHOW DIST VARIABLE
+11. Support BETWEEN AND expression parsing in MySQL Projection
+12. Fix wrong mask result when config same value of from-x and to-y with KEEP_FROM_X_TO_Y
+13. Infra: Fix ClassNotFoundException may occur when missing pgjdbc
+14. Proxy: Fix MySQL packet out of order when client sending pipelining requests
+
+### Change Log
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/25)
+
+
 ## 5.3.2
 
 ### API Changes
