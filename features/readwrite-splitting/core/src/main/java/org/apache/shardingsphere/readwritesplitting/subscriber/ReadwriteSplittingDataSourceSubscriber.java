@@ -57,8 +57,8 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        String yamlContext = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        ReadwriteSplittingDataSourceRuleConfiguration toBeChangedConfig = swapDataSource(event.getItemName(), yamlContext);
+        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        ReadwriteSplittingDataSourceRuleConfiguration toBeChangedConfig = swapDataSource(event.getItemName(), yamlContent);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ReadwriteSplittingRuleConfiguration config = getConfiguration(database, toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
@@ -102,8 +102,8 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
         return result;
     }
     
-    private ReadwriteSplittingDataSourceRuleConfiguration swapDataSource(final String name, final String yamlContext) {
-        YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig = YamlEngine.unmarshal(yamlContext, YamlReadwriteSplittingDataSourceRuleConfiguration.class);
+    private ReadwriteSplittingDataSourceRuleConfiguration swapDataSource(final String name, final String yamlContent) {
+        YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig = YamlEngine.unmarshal(yamlContent, YamlReadwriteSplittingDataSourceRuleConfiguration.class);
         return new ReadwriteSplittingDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getWriteDataSourceName(), yamlDataSourceRuleConfig.getReadDataSourceNames(),
                 getTransactionalReadQueryStrategy(yamlDataSourceRuleConfig), yamlDataSourceRuleConfig.getLoadBalancerName());
     }

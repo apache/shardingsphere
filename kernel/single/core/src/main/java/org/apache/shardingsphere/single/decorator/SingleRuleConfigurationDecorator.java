@@ -49,10 +49,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
     @Override
     public SingleRuleConfiguration decorate(final String databaseName, final Map<String, DataSource> dataSources,
                                             final Collection<ShardingSphereRule> builtRules, final SingleRuleConfiguration ruleConfig) {
-        SingleRuleConfiguration result = new SingleRuleConfiguration();
-        result.getTables().addAll(decorateTables(databaseName, dataSources, new LinkedList<>(builtRules), ruleConfig.getTables()));
-        ruleConfig.getDefaultDataSource().ifPresent(result::setDefaultDataSource);
-        return result;
+        return new SingleRuleConfiguration(decorateTables(databaseName, dataSources, new LinkedList<>(builtRules), ruleConfig.getTables()), ruleConfig.getDefaultDataSource().orElse(null));
     }
     
     private Collection<String> decorateTables(final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final Collection<String> tables) {

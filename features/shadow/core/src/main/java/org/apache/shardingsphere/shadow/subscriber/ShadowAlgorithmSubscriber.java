@@ -82,7 +82,7 @@ public final class ShadowAlgorithmSubscriber implements RuleChangedSubscriber {
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
-        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAlgorithmConfiguration.class));
+    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContent) {
+        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
     }
 }
