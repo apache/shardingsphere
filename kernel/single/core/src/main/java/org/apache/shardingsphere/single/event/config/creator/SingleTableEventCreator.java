@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
-import org.apache.shardingsphere.single.event.config.CreateSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.DropSingleTableEvent;
 
 /**
@@ -32,10 +31,7 @@ public final class SingleTableEventCreator implements UniqueRuleItemChangedEvent
     
     @Override
     public RuleItemChangedEvent create(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new CreateSingleTableEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterSingleTableEvent(databaseName, event.getKey(), event.getValue());
         }
         return new DropSingleTableEvent(databaseName);
