@@ -31,8 +31,6 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
 
-import java.util.Optional;
-
 /**
  * Single table subscriber.
  */
@@ -55,16 +53,9 @@ public final class SingleTableSubscriber implements RuleChangedSubscriber {
         String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         SingleRuleConfiguration toBeChangedConfig = new YamlSingleRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlSingleRuleConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        Optional<SingleRule> rule = database.getRuleMetaData().findSingleRule(SingleRule.class);
-        SingleRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = rule.get().getConfiguration();
-            config.getTables().clear();
-            config.getTables().addAll(toBeChangedConfig.getTables());
-        } else {
-            config = new SingleRuleConfiguration(toBeChangedConfig.getTables(), toBeChangedConfig.getDefaultDataSource().orElse(null));
-        }
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        SingleRuleConfiguration currentConfig = database.getRuleMetaData().findSingleRule(SingleRule.class).map(SingleRule::getConfiguration).orElseGet(SingleRuleConfiguration::new);
+        updateCurrentConfiguration(currentConfig, toBeChangedConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentConfig));
     }
     
     /**
@@ -78,9 +69,19 @@ public final class SingleTableSubscriber implements RuleChangedSubscriber {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        SingleRuleConfiguration config = database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration();
-        config.getTables().clear();
-        config.setDefaultDataSource(null);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        SingleRuleConfiguration currentConfig = database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration();
+        removeCurrentConfiguration(currentConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentConfig));
+    }
+    
+    private void updateCurrentConfiguration(final SingleRuleConfiguration currentConfig, final SingleRuleConfiguration toBeChangedConfig) {
+        currentConfig.getTables().clear();
+        currentConfig.getTables().addAll(toBeChangedConfig.getTables());
+        toBeChangedConfig.getDefaultDataSource().ifPresent(optional -> currentConfig.setDefaultDataSource(toBeChangedConfig.getDefaultDataSource().get()));
+    }
+    
+    private void removeCurrentConfiguration(final SingleRuleConfiguration currentConfig) {
+        currentConfig.getTables().clear();
+        currentConfig.setDefaultDataSource(null);
     }
 }
