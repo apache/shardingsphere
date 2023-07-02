@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterReadwriteSplittingLoadBalancerEvent;
-import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteReadwriteSplittingLoadBalancerEvent;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DropReadwriteSplittingLoadBalancerEvent;
 
 /**
  * Readwrite-splitting load-balancer event creator.
@@ -34,6 +34,6 @@ public final class ReadwriteSplittingLoadBalancerEventCreator implements NamedRu
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterReadwriteSplittingLoadBalancerEvent(databaseName, loadBalancerName, event.getKey(), event.getValue());
         }
-        return new DeleteReadwriteSplittingLoadBalancerEvent(databaseName, loadBalancerName);
+        return new DropReadwriteSplittingLoadBalancerEvent(databaseName, loadBalancerName);
     }
 }

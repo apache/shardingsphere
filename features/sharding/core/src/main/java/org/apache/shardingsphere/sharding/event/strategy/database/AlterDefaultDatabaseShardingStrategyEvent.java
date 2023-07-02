@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.sharding.event.strategy.database;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterUniqueRuleItemEvent;
 
 /**
  * Alter default database sharding strategy event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterDefaultDatabaseShardingStrategyEvent implements GovernanceEvent {
+public final class AlterDefaultDatabaseShardingStrategyEvent extends AlterUniqueRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterDefaultDatabaseShardingStrategyEvent(final String databaseName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, activeVersionKey, activeVersion);
+    }
 }

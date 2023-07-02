@@ -26,9 +26,9 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.event.datasource.AddShadowDataSourceEvent;
+import org.apache.shardingsphere.shadow.event.datasource.CreateShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.event.datasource.AlterShadowDataSourceEvent;
-import org.apache.shardingsphere.shadow.event.datasource.DeleteShadowDataSourceEvent;
+import org.apache.shardingsphere.shadow.event.datasource.DropShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 
@@ -49,11 +49,11 @@ public final class ShadowDataSourceSubscriber implements RuleChangedSubscriber {
      * @param event add shadow configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddShadowDataSourceEvent event) {
+    public synchronized void renew(final CreateShadowDataSourceEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        ShadowDataSourceConfiguration needToAddedConfig = swapShadowDataSourceRuleConfig(event.getDataSourceName(),
+        ShadowDataSourceConfiguration needToAddedConfig = swapShadowDataSourceRuleConfig(event.getItemName(),
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         Optional<ShadowRule> rule = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName()).getRuleMetaData().findSingleRule(ShadowRule.class);
         ShadowRuleConfiguration config;
@@ -79,10 +79,10 @@ public final class ShadowDataSourceSubscriber implements RuleChangedSubscriber {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShadowDataSourceConfiguration needToAlteredConfig = swapShadowDataSourceRuleConfig(event.getDataSourceName(),
+        ShadowDataSourceConfiguration needToAlteredConfig = swapShadowDataSourceRuleConfig(event.getItemName(),
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getDataSources().removeIf(each -> each.getName().equals(event.getDataSourceName()));
+        config.getDataSources().removeIf(each -> each.getName().equals(event.getItemName()));
         config.getDataSources().add(needToAlteredConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -93,13 +93,13 @@ public final class ShadowDataSourceSubscriber implements RuleChangedSubscriber {
      * @param event delete shadow configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShadowDataSourceEvent event) {
+    public synchronized void renew(final DropShadowDataSourceEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getDataSources().removeIf(each -> each.getName().equals(event.getDataSourceName()));
+        config.getDataSources().removeIf(each -> each.getName().equals(event.getItemName()));
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     

@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.sharding.event.algorithm.auditor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
 
 /**
  * Alter sharding auditor event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterShardingAuditorEvent implements GovernanceEvent {
+public final class AlterShardingAuditorEvent extends AlterNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String auditorName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterShardingAuditorEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

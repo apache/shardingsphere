@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.event.algorithm.AlterShadowAlgorithmEvent;
-import org.apache.shardingsphere.shadow.event.algorithm.DeleteShadowAlgorithmEvent;
+import org.apache.shardingsphere.shadow.event.algorithm.DropShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Optional;
@@ -62,7 +62,7 @@ public final class ShadowAlgorithmSubscriber implements RuleChangedSubscriber {
         } else {
             config = new ShadowRuleConfiguration();
         }
-        config.getShadowAlgorithms().put(event.getAlgorithmName(), needToAlteredConfig);
+        config.getShadowAlgorithms().put(event.getItemName(), needToAlteredConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -72,13 +72,13 @@ public final class ShadowAlgorithmSubscriber implements RuleChangedSubscriber {
      * @param event delete algorithm event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShadowAlgorithmEvent event) {
+    public synchronized void renew(final DropShadowAlgorithmEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getShadowAlgorithms().remove(event.getAlgorithmName());
+        config.getShadowAlgorithms().remove(event.getItemName());
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     

@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.encrypt.event.table;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
 
 /**
  * Alter encrypt table event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterEncryptTableEvent implements GovernanceEvent {
+public final class AlterEncryptTableEvent extends AlterNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String tableName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterEncryptTableEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

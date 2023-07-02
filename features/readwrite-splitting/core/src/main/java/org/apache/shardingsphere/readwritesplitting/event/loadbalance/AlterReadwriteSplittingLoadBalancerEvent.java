@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.readwritesplitting.event.loadbalance;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
 
 /**
  * Alter readwrite-splitting load-balancer event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterReadwriteSplittingLoadBalancerEvent implements GovernanceEvent {
+public final class AlterReadwriteSplittingLoadBalancerEvent extends AlterNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String loadBalanceName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterReadwriteSplittingLoadBalancerEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

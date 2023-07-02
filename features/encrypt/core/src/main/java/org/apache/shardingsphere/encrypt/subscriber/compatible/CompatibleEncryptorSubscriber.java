@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.event.compatible.encryptor.AlterCompatibleEncryptorEvent;
-import org.apache.shardingsphere.encrypt.event.compatible.encryptor.DeleteCompatibleEncryptorEvent;
+import org.apache.shardingsphere.encrypt.event.compatible.encryptor.DropCompatibleEncryptorEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -67,13 +67,13 @@ public final class CompatibleEncryptorSubscriber implements RuleChangedSubscribe
      * @param event delete encryptor event
      */
     @Subscribe
-    public synchronized void renew(final DeleteCompatibleEncryptorEvent event) {
+    public synchronized void renew(final DropCompatibleEncryptorEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         CompatibleEncryptRuleConfiguration config = (CompatibleEncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
-        config.getEncryptors().remove(event.getEncryptorName());
+        config.getEncryptors().remove(event.getItemName());
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -81,7 +81,7 @@ public final class CompatibleEncryptorSubscriber implements RuleChangedSubscribe
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
         CompatibleEncryptRuleConfiguration result = rule.map(encryptRule -> getEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) encryptRule.getConfiguration()))
                 .orElseGet(() -> new CompatibleEncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-        result.getEncryptors().put(event.getEncryptorName(), swapToAlgorithmConfig(
+        result.getEncryptors().put(event.getItemName(), swapToAlgorithmConfig(
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
         return result;
     }

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
-import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
+import org.apache.shardingsphere.mask.event.algorithm.DropMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -65,13 +65,13 @@ public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
      * @param event delete algorithm event
      */
     @Subscribe
-    public synchronized void renew(final DeleteMaskAlgorithmEvent event) {
+    public synchronized void renew(final DropMaskAlgorithmEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
-        config.getMaskAlgorithms().remove(event.getAlgorithmName());
+        config.getMaskAlgorithms().remove(event.getItemName());
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -79,7 +79,7 @@ public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
         MaskRuleConfiguration result = rule.map(maskRule -> getMaskRuleConfiguration((MaskRuleConfiguration) maskRule.getConfiguration()))
                 .orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-        result.getMaskAlgorithms().put(event.getAlgorithmName(), swapToAlgorithmConfig(
+        result.getMaskAlgorithms().put(event.getItemName(), swapToAlgorithmConfig(
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
         return result;
     }

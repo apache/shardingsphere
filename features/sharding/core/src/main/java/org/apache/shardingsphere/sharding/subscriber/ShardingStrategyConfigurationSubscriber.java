@@ -28,21 +28,21 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.event.strategy.audit.AddShardingAuditorStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.audit.AlterShardingAuditorStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.audit.DeleteShardingAuditorStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.database.AddDefaultDatabaseShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.audit.CreateDefaultShardingAuditorStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.audit.AlterDefaultShardingAuditorStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.audit.DropDefaultShardingAuditorStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.database.CreateDefaultDatabaseShardingStrategyEvent;
 import org.apache.shardingsphere.sharding.event.strategy.database.AlterDefaultDatabaseShardingStrategyEvent;
-import org.apache.shardingsphere.sharding.event.strategy.database.DeleteDefaultDatabaseShardingStrategyEvent;
-import org.apache.shardingsphere.sharding.event.strategy.keygenerate.AddDefaultKeyGenerateStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.database.DropDefaultDatabaseShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.keygenerate.CreateDefaultKeyGenerateStrategyEvent;
 import org.apache.shardingsphere.sharding.event.strategy.keygenerate.AlterDefaultKeyGenerateStrategyEvent;
-import org.apache.shardingsphere.sharding.event.strategy.keygenerate.DeleteDefaultKeyGenerateStrategyEvent;
-import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.AddDefaultShardingColumnEvent;
+import org.apache.shardingsphere.sharding.event.strategy.keygenerate.DropDefaultKeyGenerateStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.CreateDefaultShardingColumnEvent;
 import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.AlterDefaultShardingColumnEvent;
-import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.DeleteDefaultShardingColumnEvent;
-import org.apache.shardingsphere.sharding.event.strategy.table.AddDefaultTableShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.DropDefaultShardingColumnEvent;
+import org.apache.shardingsphere.sharding.event.strategy.table.CreateDefaultTableShardingStrategyEvent;
 import org.apache.shardingsphere.sharding.event.strategy.table.AlterDefaultTableShardingStrategyEvent;
-import org.apache.shardingsphere.sharding.event.strategy.table.DeleteDefaultTableShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.table.DropDefaultTableShardingStrategyEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
@@ -68,7 +68,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event add default database sharding strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddDefaultDatabaseShardingStrategyEvent event) {
+    public synchronized void renew(final CreateDefaultDatabaseShardingStrategyEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -86,7 +86,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event add default table sharding strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddDefaultTableShardingStrategyEvent event) {
+    public synchronized void renew(final CreateDefaultTableShardingStrategyEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -104,7 +104,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event add default key generate strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddDefaultKeyGenerateStrategyEvent event) {
+    public synchronized void renew(final CreateDefaultKeyGenerateStrategyEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -122,7 +122,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event add default sharding auditor strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddShardingAuditorStrategyConfigurationEvent event) {
+    public synchronized void renew(final CreateDefaultShardingAuditorStrategyEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -140,7 +140,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event add default sharding column configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddDefaultShardingColumnEvent event) {
+    public synchronized void renew(final CreateDefaultShardingColumnEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -211,7 +211,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event alter default sharding auditor strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterShardingAuditorStrategyConfigurationEvent event) {
+    public synchronized void renew(final AlterDefaultShardingAuditorStrategyEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -246,7 +246,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event delete default database sharding strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteDefaultDatabaseShardingStrategyEvent event) {
+    public synchronized void renew(final DropDefaultDatabaseShardingStrategyEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
@@ -262,7 +262,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event delete default table sharding strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteDefaultTableShardingStrategyEvent event) {
+    public synchronized void renew(final DropDefaultTableShardingStrategyEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
@@ -278,7 +278,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event delete default key generate strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteDefaultKeyGenerateStrategyEvent event) {
+    public synchronized void renew(final DropDefaultKeyGenerateStrategyEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
@@ -294,7 +294,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event delete default sharding auditor strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteShardingAuditorStrategyConfigurationEvent event) {
+    public synchronized void renew(final DropDefaultShardingAuditorStrategyEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
@@ -310,7 +310,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event delete default sharding column configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteDefaultShardingColumnEvent event) {
+    public synchronized void renew(final DropDefaultShardingColumnEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

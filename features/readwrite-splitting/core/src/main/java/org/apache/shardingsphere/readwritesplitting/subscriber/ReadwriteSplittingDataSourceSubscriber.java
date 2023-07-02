@@ -28,9 +28,9 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.AddReadwriteSplittingDataSourceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.CreateReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwriteSplittingDataSourceEvent;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.DeleteReadwriteSplittingDataSourceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.DropReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
@@ -54,11 +54,11 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
      * @param event add readwrite-splitting configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddReadwriteSplittingDataSourceEvent event) {
+    public synchronized void renew(final CreateReadwriteSplittingDataSourceEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        ReadwriteSplittingDataSourceRuleConfiguration needToAddedConfig = swapDataSource(event.getGroupName(),
+        ReadwriteSplittingDataSourceRuleConfiguration needToAddedConfig = swapDataSource(event.getItemName(),
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(),
                 getConfig(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName()), needToAddedConfig)));
@@ -75,7 +75,7 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ReadwriteSplittingDataSourceRuleConfiguration needToAlteredConfig = swapDataSource(event.getGroupName(),
+        ReadwriteSplittingDataSourceRuleConfiguration needToAlteredConfig = swapDataSource(event.getItemName(),
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(needToAlteredConfig.getName()));
@@ -89,13 +89,13 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
      * @param event delete readwrite-splitting configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteReadwriteSplittingDataSourceEvent event) {
+    public synchronized void renew(final DropReadwriteSplittingDataSourceEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
-        config.getDataSources().removeIf(each -> each.getName().equals(event.getGroupName()));
+        config.getDataSources().removeIf(each -> each.getName().equals(event.getItemName()));
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     

@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
-import org.apache.shardingsphere.sharding.event.cache.AddShardingCacheEvent;
+import org.apache.shardingsphere.sharding.event.cache.CreateShardingCacheEvent;
 import org.apache.shardingsphere.sharding.event.cache.AlterShardingCacheEvent;
-import org.apache.shardingsphere.sharding.event.cache.DeleteShardingCacheEvent;
+import org.apache.shardingsphere.sharding.event.cache.DropShardingCacheEvent;
 
 /**
  * Sharding cache event creator.
@@ -33,11 +33,11 @@ public final class ShardingCacheEventCreator implements UniqueRuleItemChangedEve
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return new AddShardingCacheEvent(databaseName, event.getKey(), event.getValue());
+            return new CreateShardingCacheEvent(databaseName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
             return new AlterShardingCacheEvent(databaseName, event.getKey(), event.getValue());
         }
-        return new DeleteShardingCacheEvent(databaseName);
+        return new DropShardingCacheEvent(databaseName);
     }
 }

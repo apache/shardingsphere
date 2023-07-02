@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.sharding.event.algorithm.auditor.AlterShardingAuditorEvent;
-import org.apache.shardingsphere.sharding.event.algorithm.auditor.DeleteShardingAuditorEvent;
+import org.apache.shardingsphere.sharding.event.algorithm.auditor.DropShardingAuditorEvent;
 
 /**
  * Audit sharding event creator.
@@ -34,6 +34,6 @@ public final class AuditShardingEventCreator implements NamedRuleItemChangedEven
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterShardingAuditorEvent(databaseName, algorithmName, event.getKey(), event.getValue());
         }
-        return new DeleteShardingAuditorEvent(databaseName, algorithmName);
+        return new DropShardingAuditorEvent(databaseName, algorithmName);
     }
 }

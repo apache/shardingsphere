@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
-import org.apache.shardingsphere.sharding.event.table.binding.AddShardingTableReferenceEvent;
+import org.apache.shardingsphere.sharding.event.table.binding.CreateShardingTableReferenceEvent;
 import org.apache.shardingsphere.sharding.event.table.binding.AlterShardingTableReferenceEvent;
-import org.apache.shardingsphere.sharding.event.table.binding.DeleteShardingTableReferenceEvent;
+import org.apache.shardingsphere.sharding.event.table.binding.DropShardingTableReferenceEvent;
 
 /**
  * Sharding table reference creator.
@@ -33,11 +33,11 @@ public final class ShardingTableReferenceEventCreator implements NamedRuleItemCh
     @Override
     public GovernanceEvent create(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return new AddShardingTableReferenceEvent(databaseName, event.getKey(), event.getValue());
+            return new CreateShardingTableReferenceEvent(databaseName, tableName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
             return new AlterShardingTableReferenceEvent(databaseName, tableName, event.getKey(), event.getValue());
         }
-        return new DeleteShardingTableReferenceEvent(databaseName, tableName);
+        return new DropShardingTableReferenceEvent(databaseName, tableName);
     }
 }

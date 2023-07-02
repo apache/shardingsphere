@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.sharding.event.table.auto;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
 
 /**
  * Alter sharding auto table event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterShardingAutoTableEvent implements GovernanceEvent {
+public final class AlterShardingAutoTableEvent extends AlterNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String tableName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterShardingAutoTableEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

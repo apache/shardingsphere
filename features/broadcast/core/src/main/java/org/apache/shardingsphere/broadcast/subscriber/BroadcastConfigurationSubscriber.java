@@ -20,9 +20,9 @@ package org.apache.shardingsphere.broadcast.subscriber;
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.broadcast.event.table.AddBroadcastTableEvent;
+import org.apache.shardingsphere.broadcast.event.table.CreateBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.table.AlterBroadcastTableEvent;
-import org.apache.shardingsphere.broadcast.event.table.DeleteBroadcastTableEvent;
+import org.apache.shardingsphere.broadcast.event.table.DropBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -48,7 +48,7 @@ public final class BroadcastConfigurationSubscriber implements RuleChangedSubscr
      * @param event add broadcast configuration event
      */
     @Subscribe
-    public synchronized void renew(final AddBroadcastTableEvent event) {
+    public synchronized void renew(final CreateBroadcastTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -92,7 +92,7 @@ public final class BroadcastConfigurationSubscriber implements RuleChangedSubscr
      * @param event delete broadcast configuration event
      */
     @Subscribe
-    public synchronized void renew(final DeleteBroadcastTableEvent event) {
+    public synchronized void renew(final DropBroadcastTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

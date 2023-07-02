@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.readwritesplitting.event.datasource;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
 
 /**
  * Alter readwrite-splitting configuration event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterReadwriteSplittingDataSourceEvent implements GovernanceEvent {
+public final class AlterReadwriteSplittingDataSourceEvent extends AlterNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String groupName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterReadwriteSplittingDataSourceEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
-import org.apache.shardingsphere.single.event.config.SingleTableEventCreator;
+import org.apache.shardingsphere.single.event.config.creator.SingleTableEventCreator;
 import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
 
 /**

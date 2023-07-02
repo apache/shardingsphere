@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mask.event.algorithm.creator;
 
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
-import org.apache.shardingsphere.mask.event.algorithm.DeleteMaskAlgorithmEvent;
+import org.apache.shardingsphere.mask.event.algorithm.DropMaskAlgorithmEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
@@ -34,6 +34,6 @@ public final class MaskEventCreator implements NamedRuleItemChangedEventCreator 
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterMaskAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue());
         }
-        return new DeleteMaskAlgorithmEvent(databaseName, algorithmName);
+        return new DropMaskAlgorithmEvent(databaseName, algorithmName);
     }
 }

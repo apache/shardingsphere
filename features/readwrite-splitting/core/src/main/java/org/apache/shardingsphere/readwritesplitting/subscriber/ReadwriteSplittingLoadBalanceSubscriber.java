@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterReadwriteSplittingLoadBalancerEvent;
-import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteReadwriteSplittingLoadBalancerEvent;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DropReadwriteSplittingLoadBalancerEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.LinkedHashMap;
@@ -59,7 +59,7 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChange
         AlgorithmConfiguration needToAltered =
                 swapToAlgorithmConfig(contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(),
-                getConfig(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName()), event.getLoadBalanceName(), needToAltered)));
+                getConfig(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName()), event.getItemName(), needToAltered)));
     }
     
     /**
@@ -68,13 +68,13 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChange
      * @param event delete load-balance event
      */
     @Subscribe
-    public synchronized void renew(final DeleteReadwriteSplittingLoadBalancerEvent event) {
+    public synchronized void renew(final DropReadwriteSplittingLoadBalancerEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
-        config.getLoadBalancers().remove(event.getLoadBalanceName());
+        config.getLoadBalancers().remove(event.getItemName());
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     

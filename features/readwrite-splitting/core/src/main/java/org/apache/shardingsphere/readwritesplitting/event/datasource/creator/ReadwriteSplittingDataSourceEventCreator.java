@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.AddReadwriteSplittingDataSourceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.CreateReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwriteSplittingDataSourceEvent;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.DeleteReadwriteSplittingDataSourceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.DropReadwriteSplittingDataSourceEvent;
 
 /**
  * Readwrite-splitting data source event creator.
@@ -33,11 +33,11 @@ public final class ReadwriteSplittingDataSourceEventCreator implements NamedRule
     @Override
     public GovernanceEvent create(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return new AddReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue());
+            return new CreateReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
             return new AlterReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue());
         }
-        return new DeleteReadwriteSplittingDataSourceEvent(databaseName, groupName);
+        return new DropReadwriteSplittingDataSourceEvent(databaseName, groupName);
     }
 }
