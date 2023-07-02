@@ -60,14 +60,14 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
         String yamlContext = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         ReadwriteSplittingDataSourceRuleConfiguration toBeChangedConfig = swapDataSource(event.getItemName(), yamlContext);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ReadwriteSplittingRuleConfiguration config = getConfig(database, toBeChangedConfig);
+        ReadwriteSplittingRuleConfiguration config = getConfiguration(database, toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
-     * Renew with delete readwrite-splitting configuration.
+     * Renew with drop readwrite-splitting configuration.
      *
-     * @param event delete readwrite-splitting configuration event
+     * @param event drop readwrite-splitting configuration event
      */
     @Subscribe
     public synchronized void renew(final DropReadwriteSplittingDataSourceEvent event) {
@@ -80,17 +80,17 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    private ReadwriteSplittingRuleConfiguration getConfig(final ShardingSphereDatabase database, final ReadwriteSplittingDataSourceRuleConfiguration needToAddedConfig) {
+    private ReadwriteSplittingRuleConfiguration getConfiguration(final ShardingSphereDatabase database, final ReadwriteSplittingDataSourceRuleConfiguration needToAddedConfig) {
         Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
         if (rule.isPresent()) {
-            return getConfig((ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration(), needToAddedConfig);
+            return getConfiguration((ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration(), needToAddedConfig);
         }
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSourceConfigs = new LinkedList<>();
         dataSourceConfigs.add(needToAddedConfig);
         return new ReadwriteSplittingRuleConfiguration(dataSourceConfigs, new LinkedHashMap<>());
     }
     
-    private ReadwriteSplittingRuleConfiguration getConfig(final ReadwriteSplittingRuleConfiguration result, final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
+    private ReadwriteSplittingRuleConfiguration getConfiguration(final ReadwriteSplittingRuleConfiguration result, final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
         if (null == result.getDataSources()) {
             Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
             dataSources.add(dataSourceRuleConfig);
