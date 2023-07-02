@@ -47,18 +47,18 @@ import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableRul
 import java.util.Optional;
 
 /**
- * Sharding table configuration subscriber.
+ * Sharding table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class ShardingTableConfigurationSubscriber implements RuleChangedSubscriber {
+public final class ShardingTableSubscriber implements RuleChangedSubscriber {
     
     private ContextManager contextManager;
     
     /**
-     * Renew with add sharding table configuration.
+     * Renew with add sharding table.
      *
-     * @param event add sharding table configuration event
+     * @param event add sharding table event
      */
     @Subscribe
     public synchronized void renew(final CreateShardingTableEvent event) {
@@ -76,9 +76,9 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
     }
     
     /**
-     * Renew with add sharding auto table configuration.
+     * Renew with add sharding auto table.
      *
-     * @param event add sharding auto table configuration event
+     * @param event add sharding auto table event
      */
     @Subscribe
     public synchronized void renew(final CreateShardingAutoTableEvent event) {
@@ -96,9 +96,9 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
     }
     
     /**
-     * Renew with add sharding auto table configuration.
+     * Renew with add sharding auto table.
      *
-     * @param event add sharding auto table configuration event
+     * @param event add sharding auto table event
      */
     @Subscribe
     public synchronized void renew(final CreateShardingTableReferenceEvent event) {
@@ -117,9 +117,9 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
     
     
     /**
-     * Renew with alter sharding table reference configuration.
+     * Renew with alter sharding table reference.
      *
-     * @param event alter sharding table reference configuration event
+     * @param event alter sharding table reference event
      */
     @Subscribe
     public synchronized void renew(final AlterShardingTableReferenceEvent event) {
@@ -136,9 +136,9 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
     }
     
     /**
-     * Renew with alter sharding table configuration.
+     * Renew with alter sharding table.
      *
-     * @param event alter sharding table configuration event
+     * @param event alter sharding table event
      */
     @Subscribe
     public synchronized void renew(final AlterShardingTableEvent event) {
@@ -155,9 +155,9 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
     }
     
     /**
-     * Renew with alter sharding auto table configuration.
+     * Renew with alter sharding auto table.
      *
-     * @param event alter sharding auto table configuration event
+     * @param event alter sharding auto table event
      */
     @Subscribe
     public synchronized void renew(final AlterShardingAutoTableEvent event) {
@@ -174,9 +174,9 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
     }
     
     /**
-     * Renew with delete sharding table configuration.
+     * Renew with delete sharding table.
      *
-     * @param event delete sharding table configuration event
+     * @param event delete sharding table event
      */
     @Subscribe
     public synchronized void renew(final DropShardingTableEvent event) {
@@ -190,9 +190,9 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
     }
     
     /**
-     * Renew with delete sharding auto table configuration.
+     * Renew with delete sharding auto table.
      *
-     * @param event delete sharding auto table configuration event
+     * @param event delete sharding auto table event
      */
     @Subscribe
     public synchronized void renew(final DropShardingAutoTableEvent event) {
@@ -206,9 +206,9 @@ public final class ShardingTableConfigurationSubscriber implements RuleChangedSu
     }
     
     /**
-     * Renew with delete sharding table reference configuration.
+     * Renew with delete sharding table reference.
      *
-     * @param event delete sharding table reference configuration event
+     * @param event delete sharding table reference event
      */
     @Subscribe
     public synchronized void renew(final DropShardingTableReferenceEvent event) {
