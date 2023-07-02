@@ -20,7 +20,6 @@ package org.apache.shardingsphere.broadcast.subscriber;
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.broadcast.event.table.CreateBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.table.AlterBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.table.DropBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
@@ -43,31 +42,6 @@ public final class BroadcastConfigurationSubscriber implements RuleChangedSubscr
     private ContextManager contextManager;
     
     /**
-     * Renew with add broadcast configuration.
-     *
-     * @param event add broadcast configuration event
-     */
-    @Subscribe
-    public synchronized void renew(final CreateBroadcastTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        BroadcastRuleConfiguration needToAddedConfig = swapBroadcastTableRuleConfig(
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        Optional<BroadcastRule> rule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
-        BroadcastRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = rule.get().getConfiguration();
-            config.getTables().clear();
-            config.getTables().addAll(needToAddedConfig.getTables());
-        } else {
-            config = new BroadcastRuleConfiguration(needToAddedConfig.getTables());
-        }
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
-    }
-    
-    /**
      * Renew with alter broadcast configuration.
      *
      * @param event alter broadcast configuration event
@@ -78,11 +52,17 @@ public final class BroadcastConfigurationSubscriber implements RuleChangedSubscr
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        BroadcastRuleConfiguration needToAlteredConfig = swapBroadcastTableRuleConfig(
+        BroadcastRuleConfiguration needToChangedConfig = swapBroadcastTableRuleConfig(
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        BroadcastRuleConfiguration config = database.getRuleMetaData().getSingleRule(BroadcastRule.class).getConfiguration();
-        config.getTables().clear();
-        config.getTables().addAll(needToAlteredConfig.getTables());
+        Optional<BroadcastRule> rule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
+        BroadcastRuleConfiguration config;
+        if (rule.isPresent()) {
+            config = rule.get().getConfiguration();
+            config.getTables().clear();
+            config.getTables().addAll(needToChangedConfig.getTables());
+        } else {
+            config = new BroadcastRuleConfiguration(needToChangedConfig.getTables());
+        }
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
