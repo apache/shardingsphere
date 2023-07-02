@@ -34,10 +34,9 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
- * Compatible encrypt encryptor subscriber.
+ * Compatible encryptor subscriber.
  * @deprecated compatible support will remove in next version.
  */
 @Deprecated
@@ -57,14 +56,20 @@ public final class CompatibleEncryptorSubscriber implements RuleChangedSubscribe
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
+        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        AlgorithmConfiguration toBeChangedConfig = new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getCompatibleEncryptRuleConfiguration(database, event)));
+        CompatibleEncryptRuleConfiguration config = database.getRuleMetaData().findSingleRule(EncryptRule.class)
+                .map(encryptRule -> getEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) encryptRule.getConfiguration()))
+                .orElseGet(() -> new CompatibleEncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+        config.getEncryptors().put(event.getItemName(), toBeChangedConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
-     * Renew with delete encryptor.
+     * Renew with drop encryptor.
      *
-     * @param event delete encryptor event
+     * @param event drop encryptor event
      */
     @Subscribe
     public synchronized void renew(final DropCompatibleEncryptorEvent event) {
@@ -77,23 +82,7 @@ public final class CompatibleEncryptorSubscriber implements RuleChangedSubscribe
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    private CompatibleEncryptRuleConfiguration getCompatibleEncryptRuleConfiguration(final ShardingSphereDatabase database, final AlterCompatibleEncryptorEvent event) {
-        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        CompatibleEncryptRuleConfiguration result = rule.map(encryptRule -> getEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) encryptRule.getConfiguration()))
-                .orElseGet(() -> new CompatibleEncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-        result.getEncryptors().put(event.getItemName(), swapToAlgorithmConfig(
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
-        return result;
-    }
-    
-    private CompatibleEncryptRuleConfiguration getEncryptRuleConfiguration(final CompatibleEncryptRuleConfiguration result) {
-        if (null == result.getEncryptors()) {
-            return new CompatibleEncryptRuleConfiguration(result.getTables(), new LinkedHashMap<>());
-        }
-        return result;
-    }
-    
-    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
-        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAlgorithmConfiguration.class));
+    private CompatibleEncryptRuleConfiguration getEncryptRuleConfiguration(final CompatibleEncryptRuleConfiguration config) {
+        return null == config.getEncryptors() ? new CompatibleEncryptRuleConfiguration(config.getTables(), new LinkedHashMap<>()) : config;
     }
 }
