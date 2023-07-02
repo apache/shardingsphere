@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shadow.event.table.creator;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
-import org.apache.shardingsphere.shadow.event.table.CreateShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
+import org.apache.shardingsphere.shadow.event.table.CreateShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.DropShadowTableEvent;
 
 /**
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shadow.event.table.DropShadowTableEvent;
 public final class ShadowTableEventCreator implements NamedRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final String tableName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new CreateShadowTableEvent(databaseName, tableName, event.getKey(), event.getValue());
         }

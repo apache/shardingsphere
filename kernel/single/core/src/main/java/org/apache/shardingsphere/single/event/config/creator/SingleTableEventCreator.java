@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.single.event.config.creator;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
-import org.apache.shardingsphere.single.event.config.CreateSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
+import org.apache.shardingsphere.single.event.config.CreateSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.DropSingleTableEvent;
 
 /**
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.single.event.config.DropSingleTableEvent;
 public final class SingleTableEventCreator implements UniqueRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new CreateSingleTableEvent(databaseName, event.getKey(), event.getValue());
         }

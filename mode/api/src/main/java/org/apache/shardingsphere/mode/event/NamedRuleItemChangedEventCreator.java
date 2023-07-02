@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.event;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 
 /**
  * Named rule item changed event creator.
@@ -32,5 +32,5 @@ public interface NamedRuleItemChangedEventCreator {
      * @param event data changed event
      * @return named rule item changed event
      */
-    GovernanceEvent create(String databaseName, String itemName, DataChangedEvent event);
+    RuleItemChangedEvent create(String databaseName, String itemName, DataChangedEvent event);
 }

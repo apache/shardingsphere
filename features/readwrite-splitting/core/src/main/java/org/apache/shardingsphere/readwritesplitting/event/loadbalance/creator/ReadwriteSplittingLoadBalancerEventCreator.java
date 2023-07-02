@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.event.loadbalance.creator;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DropReadwr
 public final class ReadwriteSplittingLoadBalancerEventCreator implements NamedRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final String loadBalancerName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final String loadBalancerName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterReadwriteSplittingLoadBalancerEvent(databaseName, loadBalancerName, event.getKey(), event.getValue());
         }

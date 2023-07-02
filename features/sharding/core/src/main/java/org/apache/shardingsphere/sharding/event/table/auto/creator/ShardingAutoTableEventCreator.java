@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sharding.event.table.auto.creator;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
-import org.apache.shardingsphere.sharding.event.table.auto.CreateShardingAutoTableEvent;
 import org.apache.shardingsphere.sharding.event.table.auto.AlterShardingAutoTableEvent;
+import org.apache.shardingsphere.sharding.event.table.auto.CreateShardingAutoTableEvent;
 import org.apache.shardingsphere.sharding.event.table.auto.DropShardingAutoTableEvent;
 
 /**
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sharding.event.table.auto.DropShardingAutoTable
 public final class ShardingAutoTableEventCreator implements NamedRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final String tableName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new CreateShardingAutoTableEvent(databaseName, tableName, event.getKey(), event.getValue());
         }

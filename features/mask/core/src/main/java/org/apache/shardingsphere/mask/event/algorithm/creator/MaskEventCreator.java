@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.event.algorithm.creator;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.DropMaskAlgorithmEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 public final class MaskEventCreator implements NamedRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final String algorithmName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final String algorithmName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterMaskAlgorithmEvent(databaseName, algorithmName, event.getKey(), event.getValue());
         }
