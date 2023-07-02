@@ -51,9 +51,9 @@ public final class SingleTableSubscriber implements RuleChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         String yamlContext = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         SingleRuleConfiguration toBeChangedConfig = swapSingleTableRuleConfig(yamlContext);
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         Optional<SingleRule> rule = database.getRuleMetaData().findSingleRule(SingleRule.class);
         SingleRuleConfiguration config;
         if (rule.isPresent()) {

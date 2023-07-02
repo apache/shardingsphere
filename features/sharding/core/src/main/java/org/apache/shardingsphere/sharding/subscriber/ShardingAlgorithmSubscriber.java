@@ -56,7 +56,7 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
         String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         config.getShardingAlgorithms().put(event.getItemName(), new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class)));
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
@@ -90,7 +90,7 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
         String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         config.getKeyGenerators().put(event.getItemName(), new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class)));
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
@@ -124,7 +124,7 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
         String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         config.getAuditors().put(event.getItemName(), new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class)));
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));

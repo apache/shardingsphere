@@ -69,7 +69,7 @@ public final class ShardingDefaultStrategySubscriber implements RuleChangedSubsc
         ShardingStrategyConfiguration toBeChangedConfig = new YamlShardingStrategyConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlShardingStrategyConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
         config.setDefaultDatabaseShardingStrategy(toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -104,7 +104,7 @@ public final class ShardingDefaultStrategySubscriber implements RuleChangedSubsc
         ShardingStrategyConfiguration toBeChangedConfig = new YamlShardingStrategyConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlShardingStrategyConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
         config.setDefaultTableShardingStrategy(toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -140,7 +140,7 @@ public final class ShardingDefaultStrategySubscriber implements RuleChangedSubsc
                 YamlEngine.unmarshal(yamlContext, YamlKeyGenerateStrategyConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
         config.setDefaultKeyGenerateStrategy(toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -176,7 +176,7 @@ public final class ShardingDefaultStrategySubscriber implements RuleChangedSubsc
                 YamlEngine.unmarshal(yamlContext, YamlShardingAuditStrategyConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
         config.setDefaultAuditStrategy(toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
@@ -210,7 +210,7 @@ public final class ShardingDefaultStrategySubscriber implements RuleChangedSubsc
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         String toBeChangedConfig = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
         config.setDefaultShardingColumn(toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }

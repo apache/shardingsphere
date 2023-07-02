@@ -26,14 +26,11 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.event.table.CreateShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.DropShadowTableEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
-
-import java.util.Optional;
 
 /**
  * Shadow table subscriber.
@@ -45,49 +42,28 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
     private ContextManager contextManager;
     
     /**
-     * Renew with add table.
+     * Renew with alter shadow table.
      *
-     * @param event add table event
-     */
-    @Subscribe
-    public synchronized void renew(final CreateShadowTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        renew(event.getDatabaseName(), event.getItemName(), swapToTableConfig(
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
-    }
-    
-    /**
-     * Renew with alter table.
-     *
-     * @param event alter table event
+     * @param event alter shadow table event
      */
     @Subscribe
     public synchronized void renew(final AlterShadowTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        renew(event.getDatabaseName(), event.getItemName(), swapToTableConfig(
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
-    }
-    
-    private void renew(final String databaseName, final String tableName, final ShadowTableConfiguration needToAlteredConfig) {
-        Optional<ShadowRule> rule = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().findSingleRule(ShadowRule.class);
-        ShadowRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = (ShadowRuleConfiguration) rule.get().getConfiguration();
-        } else {
-            config = new ShadowRuleConfiguration();
-        }
-        config.getTables().put(tableName, needToAlteredConfig);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
+        String yamlContext = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        ShadowTableConfiguration toBeChangedConfig = new YamlShadowTableConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlShadowTableConfiguration.class));
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShadowRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShadowRule.class)
+                .map(optional -> (ShadowRuleConfiguration) optional.getConfiguration()).orElseGet(ShadowRuleConfiguration::new);
+        config.getTables().put(event.getItemName(), toBeChangedConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
-     * Renew with delete table.
+     * Renew with drop shadow table.
      *
-     * @param event delete table event
+     * @param event drop shadow table event
      */
     @Subscribe
     public synchronized void renew(final DropShadowTableEvent event) {
@@ -98,9 +74,5 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
         config.getTables().remove(event.getItemName());
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
-    }
-    
-    private ShadowTableConfiguration swapToTableConfig(final String yamlContext) {
-        return new YamlShadowTableConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlShadowTableConfiguration.class));
     }
 }

@@ -64,7 +64,7 @@ public final class ShardingTableSubscriber implements RuleChangedSubscriber {
         ShardingTableRuleConfiguration toBeChangedConfig = new YamlShardingTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlTableRuleConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
         config.getTables().removeIf(each -> each.getLogicTable().equals(event.getItemName()));
         config.getTables().add(toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
@@ -101,7 +101,7 @@ public final class ShardingTableSubscriber implements RuleChangedSubscriber {
                 YamlEngine.unmarshal(yamlContent, YamlShardingAutoTableRuleConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
         config.getAutoTables().removeIf(each -> each.getLogicTable().equals(event.getItemName()));
         config.getAutoTables().add(toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
@@ -137,7 +137,7 @@ public final class ShardingTableSubscriber implements RuleChangedSubscriber {
         ShardingTableReferenceRuleConfiguration toBeChangedConfig = YamlShardingTableReferenceRuleConfigurationConverter.convertToObject(yamlContent);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
         config.getBindingTableGroups().removeIf(each -> each.getName().equals(event.getItemName()));
         config.getBindingTableGroups().add(toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
