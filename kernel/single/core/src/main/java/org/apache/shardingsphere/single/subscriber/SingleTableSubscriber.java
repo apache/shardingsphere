@@ -51,11 +51,10 @@ public final class SingleTableSubscriber implements RuleChangedSubscriber {
             return;
         }
         String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        SingleRuleConfiguration toBeChangedConfig = new YamlSingleRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlSingleRuleConfiguration.class));
+        SingleRuleConfiguration toBeChangedConfig = getToBeChangedConfiguration(yamlContent);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        SingleRuleConfiguration currentConfig = database.getRuleMetaData().findSingleRule(SingleRule.class).map(SingleRule::getConfiguration).orElseGet(SingleRuleConfiguration::new);
-        updateCurrentConfiguration(currentConfig, toBeChangedConfig);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentConfig));
+        SingleRuleConfiguration changedConfig = getChangedConfiguration(toBeChangedConfig, database);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), changedConfig));
     }
     
     /**
@@ -69,19 +68,26 @@ public final class SingleTableSubscriber implements RuleChangedSubscriber {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        SingleRuleConfiguration currentConfig = database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration();
-        removeCurrentConfiguration(currentConfig);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentConfig));
+        SingleRuleConfiguration droppedConfig = getDroppedConfiguration(database);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), droppedConfig));
     }
     
-    private void updateCurrentConfiguration(final SingleRuleConfiguration currentConfig, final SingleRuleConfiguration toBeChangedConfig) {
-        currentConfig.getTables().clear();
-        currentConfig.getTables().addAll(toBeChangedConfig.getTables());
-        toBeChangedConfig.getDefaultDataSource().ifPresent(optional -> currentConfig.setDefaultDataSource(toBeChangedConfig.getDefaultDataSource().get()));
+    private SingleRuleConfiguration getToBeChangedConfiguration(final String yamlContent) {
+        return new YamlSingleRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlSingleRuleConfiguration.class));
     }
     
-    private void removeCurrentConfiguration(final SingleRuleConfiguration currentConfig) {
-        currentConfig.getTables().clear();
-        currentConfig.setDefaultDataSource(null);
+    private SingleRuleConfiguration getChangedConfiguration(final SingleRuleConfiguration toBeChangedConfig, final ShardingSphereDatabase database) {
+        SingleRuleConfiguration result = database.getRuleMetaData().findSingleRule(SingleRule.class).map(SingleRule::getConfiguration).orElseGet(SingleRuleConfiguration::new);
+        result.getTables().clear();
+        result.getTables().addAll(toBeChangedConfig.getTables());
+        toBeChangedConfig.getDefaultDataSource().ifPresent(optional -> result.setDefaultDataSource(toBeChangedConfig.getDefaultDataSource().get()));
+        return result;
+    }
+    
+    private SingleRuleConfiguration getDroppedConfiguration(final ShardingSphereDatabase database) {
+        SingleRuleConfiguration result = database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration();
+        result.getTables().clear();
+        result.setDefaultDataSource(null);
+        return result;
     }
 }
