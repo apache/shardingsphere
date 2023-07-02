@@ -508,6 +508,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.REGEXP()) {
             return createBinaryOperationExpressionFromRegexp(ctx);
         }
+        if (null != ctx.RLIKE()) {
+            return createBinaryOperationExpressionFromRlike(ctx);
+        }
         return visit(ctx.bitExpr(0));
     }
     
@@ -549,6 +552,14 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right = (ExpressionSegment) visit(ctx.bitExpr(1));
         String operator = null != ctx.NOT() ? "NOT REGEXP" : "REGEXP";
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+    }
+
+    private BinaryOperationExpression createBinaryOperationExpressionFromRlike(final PredicateContext ctx) {
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
+        ExpressionSegment right = (ExpressionSegment) visit(ctx.bitExpr(1));
+        String operator = null != ctx.NOT() ? "NOT RLIKE" : "RLIKE";
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
