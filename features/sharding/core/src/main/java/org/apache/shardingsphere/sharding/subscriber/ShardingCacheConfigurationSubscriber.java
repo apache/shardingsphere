@@ -26,14 +26,12 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
-import org.apache.shardingsphere.sharding.event.cache.CreateShardingCacheEvent;
 import org.apache.shardingsphere.sharding.event.cache.AlterShardingCacheEvent;
+import org.apache.shardingsphere.sharding.event.cache.CreateShardingCacheEvent;
 import org.apache.shardingsphere.sharding.event.cache.DropShardingCacheEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.cache.YamlShardingCacheConfigurationSwapper;
-
-import java.util.Optional;
 
 /**
  * Sharding cache configuration subscriber.
@@ -57,13 +55,8 @@ public final class ShardingCacheConfigurationSubscriber implements RuleChangedSu
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShardingCacheConfiguration needToAddedConfig = swapToShardingCacheConfig(
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        ShardingRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = (ShardingRuleConfiguration) rule.get().getConfiguration();
-        } else {
-            config = new ShardingRuleConfiguration();
-        }
+        ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
         config.setShardingCache(needToAddedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
