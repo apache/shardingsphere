@@ -51,8 +51,8 @@ public final class BroadcastTableSubscriber implements RuleChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        String yamlContext = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        BroadcastRuleConfiguration toBeChangedConfig = new BroadcastRuleConfiguration(YamlEngine.unmarshal(yamlContext, YamlBroadcastRuleConfiguration.class).getTables());
+        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        BroadcastRuleConfiguration toBeChangedConfig = new BroadcastRuleConfiguration(YamlEngine.unmarshal(yamlContent, YamlBroadcastRuleConfiguration.class).getTables());
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         Optional<BroadcastRule> rule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
         BroadcastRuleConfiguration config;

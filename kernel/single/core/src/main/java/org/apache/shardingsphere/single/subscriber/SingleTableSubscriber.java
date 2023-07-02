@@ -29,6 +29,7 @@ import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.DropSingleTableEvent;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
+import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
 
 import java.util.Optional;
 
@@ -51,8 +52,8 @@ public final class SingleTableSubscriber implements RuleChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        String yamlContext = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        SingleRuleConfiguration toBeChangedConfig = swapSingleTableRuleConfig(yamlContext);
+        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        SingleRuleConfiguration toBeChangedConfig = new YamlSingleRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlSingleRuleConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         Optional<SingleRule> rule = database.getRuleMetaData().findSingleRule(SingleRule.class);
         SingleRuleConfiguration config;
@@ -81,15 +82,5 @@ public final class SingleTableSubscriber implements RuleChangedSubscriber {
         config.getTables().clear();
         config.setDefaultDataSource(null);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
-    }
-    
-    private SingleRuleConfiguration swapSingleTableRuleConfig(final String yamlContent) {
-        SingleRuleConfiguration result = new SingleRuleConfiguration();
-        YamlSingleRuleConfiguration yamlSingleRuleConfig = YamlEngine.unmarshal(yamlContent, YamlSingleRuleConfiguration.class);
-        if (null != yamlSingleRuleConfig.getTables()) {
-            result.getTables().addAll(yamlSingleRuleConfig.getTables());
-        }
-        result.setDefaultDataSource(yamlSingleRuleConfig.getDefaultDataSource());
-        return result;
     }
 }

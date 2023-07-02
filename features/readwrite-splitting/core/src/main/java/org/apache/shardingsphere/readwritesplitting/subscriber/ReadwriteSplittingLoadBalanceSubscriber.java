@@ -98,7 +98,7 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChange
         return result;
     }
     
-    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
-        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAlgorithmConfiguration.class));
+    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContent) {
+        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
     }
 }
