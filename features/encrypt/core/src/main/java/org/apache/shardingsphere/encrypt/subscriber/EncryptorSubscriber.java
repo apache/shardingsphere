@@ -36,7 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 /**
- * Encrypt encryptor subscriber.
+ * Encryptor subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
