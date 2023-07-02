@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 import org.apache.shardingsphere.sharding.event.strategy.database.AlterDefaultDatabaseShardingStrategyEvent;
-import org.apache.shardingsphere.sharding.event.strategy.database.CreateDefaultDatabaseShardingStrategyEvent;
 import org.apache.shardingsphere.sharding.event.strategy.database.DropDefaultDatabaseShardingStrategyEvent;
 
 /**
@@ -32,10 +31,7 @@ public final class DefaultDatabaseShardingStrategyEventCreator implements Unique
     
     @Override
     public RuleItemChangedEvent create(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new CreateDefaultDatabaseShardingStrategyEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterDefaultDatabaseShardingStrategyEvent(databaseName, event.getKey(), event.getValue());
         }
         return new DropDefaultDatabaseShardingStrategyEvent(databaseName);

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 import org.apache.shardingsphere.sharding.event.strategy.keygenerate.AlterDefaultKeyGenerateStrategyEvent;
-import org.apache.shardingsphere.sharding.event.strategy.keygenerate.CreateDefaultKeyGenerateStrategyEvent;
 import org.apache.shardingsphere.sharding.event.strategy.keygenerate.DropDefaultKeyGenerateStrategyEvent;
 
 /**
@@ -32,10 +31,7 @@ public final class DefaultKeyGenerateStrategyEventCreator implements UniqueRuleI
     
     @Override
     public RuleItemChangedEvent create(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new CreateDefaultKeyGenerateStrategyEvent(databaseName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterDefaultKeyGenerateStrategyEvent(databaseName, event.getKey(), event.getValue());
         }
         return new DropDefaultKeyGenerateStrategyEvent(databaseName);
