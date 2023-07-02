@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Encrypt encryptor subscriber.
@@ -55,14 +54,20 @@ public final class EncryptorSubscriber implements RuleChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
+        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        AlgorithmConfiguration beBeChangedConfig = new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getEncryptRuleConfiguration(database, event)));
+        EncryptRuleConfiguration config = database.getRuleMetaData().findSingleRule(EncryptRule.class)
+                .map(optional -> getEncryptRuleConfiguration((EncryptRuleConfiguration) optional.getConfiguration()))
+                .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+        config.getEncryptors().put(event.getItemName(), beBeChangedConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
-     * Renew with delete encryptor.
+     * Renew with drop encryptor.
      *
-     * @param event delete encryptor event
+     * @param event drop encryptor event
      */
     @Subscribe
     public synchronized void renew(final DropEncryptorEvent event) {
@@ -75,23 +80,7 @@ public final class EncryptorSubscriber implements RuleChangedSubscriber {
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    private EncryptRuleConfiguration getEncryptRuleConfiguration(final ShardingSphereDatabase database, final AlterEncryptorEvent event) {
-        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        EncryptRuleConfiguration result = rule.map(encryptRule -> getEncryptRuleConfiguration((EncryptRuleConfiguration) encryptRule.getConfiguration()))
-                .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-        result.getEncryptors().put(event.getItemName(), swapToAlgorithmConfig(
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
-        return result;
-    }
-    
     private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration result) {
-        if (null == result.getEncryptors()) {
-            return new EncryptRuleConfiguration(result.getTables(), new LinkedHashMap<>());
-        }
-        return result;
-    }
-    
-    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
-        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAlgorithmConfiguration.class));
+        return null == result.getEncryptors() ? new EncryptRuleConfiguration(result.getTables(), new LinkedHashMap<>()) : result;
     }
 }
