@@ -26,16 +26,13 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.event.datasource.CreateShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.event.datasource.AlterShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.event.datasource.DropShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 
-import java.util.Optional;
-
 /**
- * Shadow configuration subscriber.
+ * Shadow data source subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
@@ -44,53 +41,30 @@ public final class ShadowDataSourceSubscriber implements RuleChangedSubscriber {
     private ContextManager contextManager;
     
     /**
-     * Renew with add shadow configuration.
+     * Renew with alter shadow data source.
      *
-     * @param event add shadow configuration event
-     */
-    @Subscribe
-    public synchronized void renew(final CreateShadowDataSourceEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        ShadowDataSourceConfiguration needToAddedConfig = swapShadowDataSourceRuleConfig(event.getItemName(),
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        Optional<ShadowRule> rule = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName()).getRuleMetaData().findSingleRule(ShadowRule.class);
-        ShadowRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = (ShadowRuleConfiguration) rule.get().getConfiguration();
-        } else {
-            config = new ShadowRuleConfiguration();
-        }
-        // TODO refactor DistSQL to only persist config
-        config.getDataSources().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
-        config.getDataSources().add(needToAddedConfig);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
-    }
-    
-    /**
-     * Renew with alter shadow configuration.
-     *
-     * @param event alter shadow configuration event
+     * @param event alter shadow data source event
      */
     @Subscribe
     public synchronized void renew(final AlterShadowDataSourceEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
+        String yamlContext = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        ShadowDataSourceConfiguration toBeChangedConfig = swapShadowDataSourceRuleConfig(event.getItemName(), yamlContext);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShadowDataSourceConfiguration needToAlteredConfig = swapShadowDataSourceRuleConfig(event.getItemName(),
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getDataSources().removeIf(each -> each.getName().equals(event.getItemName()));
-        config.getDataSources().add(needToAlteredConfig);
+        ShadowRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShadowRule.class)
+                .map(optional -> (ShadowRuleConfiguration) optional.getConfiguration()).orElseGet(ShadowRuleConfiguration::new);
+        // TODO refactor DistSQL to only persist config
+        config.getDataSources().removeIf(each -> each.getName().equals(toBeChangedConfig.getName()));
+        config.getDataSources().add(toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
-     * Renew with delete shadow configuration.
+     * Renew with delete shadow data source.
      *
-     * @param event delete shadow configuration event
+     * @param event delete shadow data source event
      */
     @Subscribe
     public synchronized void renew(final DropShadowDataSourceEvent event) {
