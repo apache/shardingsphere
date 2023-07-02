@@ -33,18 +33,18 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import java.util.Optional;
 
 /**
- * Broadcast configuration subscriber.
+ * Broadcast table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class BroadcastConfigurationSubscriber implements RuleChangedSubscriber {
+public final class BroadcastTableSubscriber implements RuleChangedSubscriber {
     
     private ContextManager contextManager;
     
     /**
-     * Renew with alter broadcast configuration.
+     * Renew with alter broadcast table.
      *
-     * @param event alter broadcast configuration event
+     * @param event alter broadcast table event
      */
     @Subscribe
     public synchronized void renew(final AlterBroadcastTableEvent event) {
@@ -67,9 +67,9 @@ public final class BroadcastConfigurationSubscriber implements RuleChangedSubscr
     }
     
     /**
-     * Renew with delete broadcast configuration.
+     * Renew with delete broadcast table.
      *
-     * @param event delete broadcast configuration event
+     * @param event delete broadcast table event
      */
     @Subscribe
     public synchronized void renew(final DropBroadcastTableEvent event) {
