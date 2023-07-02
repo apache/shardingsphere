@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.event.table.CreateMaskTableEvent;
 import org.apache.shardingsphere.mask.event.table.AlterMaskTableEvent;
 import org.apache.shardingsphere.mask.event.table.DropMaskTableEvent;
 import org.apache.shardingsphere.mask.rule.MaskRule;
@@ -35,10 +34,9 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
- * Mask configuration subscriber.
+ * Mask table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
@@ -47,44 +45,26 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
     private ContextManager contextManager;
     
     /**
-     * Renew with add mask configuration.
+     * Renew with alter mask table.
      *
-     * @param event add mask configuration event
-     */
-    @Subscribe
-    public synchronized void renew(final CreateMaskTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        MaskTableRuleConfiguration needToAddedConfig = swapMaskTableRuleConfig(
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getMaskRuleConfiguration(database, needToAddedConfig)));
-    }
-    
-    /**
-     * Renew with alter mask configuration.
-     *
-     * @param event alter mask configuration event
+     * @param event alter mask table event
      */
     @Subscribe
     public synchronized void renew(final AlterMaskTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
+        String yamlContext = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        MaskTableRuleConfiguration toBeChangedConfig = new YamlMaskTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlMaskTableRuleConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        MaskTableRuleConfiguration needToAlteredConfig = swapMaskTableRuleConfig(
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        MaskRuleConfiguration config = (MaskRuleConfiguration) database.getRuleMetaData().getSingleRule(MaskRule.class).getConfiguration();
-        config.getTables().removeIf(each -> each.getName().equals(event.getItemName()));
-        config.getTables().add(needToAlteredConfig);
+        MaskRuleConfiguration config = getConfiguration(database, toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
-     * Renew with delete mask configuration.
+     * Renew with drop mask table.
      *
-     * @param event delete mask configuration event
+     * @param event drop mask table event
      */
     @Subscribe
     public synchronized void renew(final DropMaskTableEvent event) {
@@ -97,24 +77,16 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    private MaskTableRuleConfiguration swapMaskTableRuleConfig(final String yamlContext) {
-        return new YamlMaskTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlMaskTableRuleConfiguration.class));
-    }
-    
-    private MaskRuleConfiguration getMaskRuleConfiguration(final ShardingSphereDatabase database, final MaskTableRuleConfiguration needToAddedConfig) {
-        Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
-        MaskRuleConfiguration result = rule.map(maskRule -> getMaskRuleConfiguration((MaskRuleConfiguration) maskRule.getConfiguration()))
-                .orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+    private MaskRuleConfiguration getConfiguration(final ShardingSphereDatabase database, final MaskTableRuleConfiguration toBeChangedConfig) {
+        MaskRuleConfiguration result = database.getRuleMetaData().findSingleRule(MaskRule.class)
+                .map(optional -> getConfiguration((MaskRuleConfiguration) optional.getConfiguration())).orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
         // TODO refactor DistSQL to only persist config
-        result.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
-        result.getTables().add(needToAddedConfig);
+        result.getTables().removeIf(each -> each.getName().equals(toBeChangedConfig.getName()));
+        result.getTables().add(toBeChangedConfig);
         return result;
     }
     
-    private MaskRuleConfiguration getMaskRuleConfiguration(final MaskRuleConfiguration result) {
-        if (null == result.getTables()) {
-            return new MaskRuleConfiguration(new LinkedList<>(), result.getMaskAlgorithms());
-        }
-        return result;
+    private MaskRuleConfiguration getConfiguration(final MaskRuleConfiguration config) {
+        return null == config.getTables() ? new MaskRuleConfiguration(new LinkedList<>(), config.getMaskAlgorithms()) : config;
     }
 }
