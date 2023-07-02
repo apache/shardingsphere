@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChan
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.event.config.CreateSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.DropSingleTableEvent;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -34,62 +33,43 @@ import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfigura
 import java.util.Optional;
 
 /**
- * Single configuration subscriber.
+ * Single table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class SingleConfigurationSubscriber implements RuleChangedSubscriber {
+public final class SingleTableSubscriber implements RuleChangedSubscriber {
     
     private ContextManager contextManager;
     
     /**
-     * Renew with add single configuration.
+     * Renew with alter single table.
      *
-     * @param event add single configuration event
-     */
-    @Subscribe
-    public synchronized void renew(final CreateSingleTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        SingleRuleConfiguration needToAddedConfig = swapSingleTableRuleConfig(
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        Optional<SingleRule> rule = database.getRuleMetaData().findSingleRule(SingleRule.class);
-        SingleRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = rule.get().getConfiguration();
-            config.getTables().clear();
-            config.getTables().addAll(needToAddedConfig.getTables());
-        } else {
-            config = new SingleRuleConfiguration(needToAddedConfig.getTables(), needToAddedConfig.getDefaultDataSource().orElse(null));
-        }
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
-    }
-    
-    /**
-     * Renew with alter single configuration.
-     *
-     * @param event alter single configuration event
+     * @param event alter single table event
      */
     @Subscribe
     public synchronized void renew(final AlterSingleTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
+        String yamlContext = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        SingleRuleConfiguration toBeChangedConfig = swapSingleTableRuleConfig(yamlContext);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        SingleRuleConfiguration needToAlteredConfig = swapSingleTableRuleConfig(
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        SingleRuleConfiguration config = database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration();
-        config.setTables(needToAlteredConfig.getTables());
-        config.setDefaultDataSource(needToAlteredConfig.getDefaultDataSource().orElse(null));
+        Optional<SingleRule> rule = database.getRuleMetaData().findSingleRule(SingleRule.class);
+        SingleRuleConfiguration config;
+        if (rule.isPresent()) {
+            config = rule.get().getConfiguration();
+            config.getTables().clear();
+            config.getTables().addAll(toBeChangedConfig.getTables());
+        } else {
+            config = new SingleRuleConfiguration(toBeChangedConfig.getTables(), toBeChangedConfig.getDefaultDataSource().orElse(null));
+        }
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
-     * Renew with delete single configuration.
+     * Renew with drop single table.
      *
-     * @param event delete single configuration event
+     * @param event drop single table event
      */
     @Subscribe
     public synchronized void renew(final DropSingleTableEvent event) {
@@ -103,13 +83,13 @@ public final class SingleConfigurationSubscriber implements RuleChangedSubscribe
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    private SingleRuleConfiguration swapSingleTableRuleConfig(final String yamlContext) {
+    private SingleRuleConfiguration swapSingleTableRuleConfig(final String yamlContent) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
-        YamlSingleRuleConfiguration yamlSingleRuleConfiguration = YamlEngine.unmarshal(yamlContext, YamlSingleRuleConfiguration.class);
-        if (null != yamlSingleRuleConfiguration.getTables()) {
-            result.getTables().addAll(yamlSingleRuleConfiguration.getTables());
+        YamlSingleRuleConfiguration yamlSingleRuleConfig = YamlEngine.unmarshal(yamlContent, YamlSingleRuleConfiguration.class);
+        if (null != yamlSingleRuleConfig.getTables()) {
+            result.getTables().addAll(yamlSingleRuleConfig.getTables());
         }
-        result.setDefaultDataSource(yamlSingleRuleConfiguration.getDefaultDataSource());
+        result.setDefaultDataSource(yamlSingleRuleConfig.getDefaultDataSource());
         return result;
     }
 }

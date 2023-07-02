@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
-import org.apache.shardingsphere.shadow.event.table.CreateShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.DropShadowTableEvent;
 
 /**
@@ -32,10 +31,7 @@ public final class ShadowTableEventCreator implements NamedRuleItemChangedEventC
     
     @Override
     public RuleItemChangedEvent create(final String databaseName, final String tableName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new CreateShadowTableEvent(databaseName, tableName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterShadowTableEvent(databaseName, tableName, event.getKey(), event.getValue());
         }
         return new DropShadowTableEvent(databaseName, tableName);

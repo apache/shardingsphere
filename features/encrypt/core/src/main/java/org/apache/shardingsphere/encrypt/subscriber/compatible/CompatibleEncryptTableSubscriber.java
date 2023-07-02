@@ -21,7 +21,6 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.event.compatible.table.CreateCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.AlterCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.DropCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Compatible encrypt table subscriber.
@@ -49,45 +47,31 @@ public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscr
     private ContextManager contextManager;
     
     /**
-     * Renew with add encrypt configuration.
+     * Renew with alter encrypt table.
      *
-     * @param event add encrypt configuration event
-     */
-    @Subscribe
-    public synchronized void renew(final CreateCompatibleEncryptTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        EncryptTableRuleConfiguration needToAddedConfig = swapEncryptTableRuleConfig(
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        contextManager.getInstanceContext().getEventBusContext().post(
-                new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getCompatibleEncryptRuleConfiguration(database, needToAddedConfig)));
-    }
-    
-    /**
-     * Renew with alter encrypt configuration.
-     *
-     * @param event alter encrypt configuration event
+     * @param event alter encrypt table event
      */
     @Subscribe
     public synchronized void renew(final AlterCompatibleEncryptTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
+        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        EncryptTableRuleConfiguration toBeChangedConfig = new YamlEncryptTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlEncryptTableRuleConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        EncryptTableRuleConfiguration needToAlteredConfig = swapEncryptTableRuleConfig(
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
-        CompatibleEncryptRuleConfiguration config = (CompatibleEncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
-        config.getTables().removeIf(each -> each.getName().equals(event.getItemName()));
-        config.getTables().add(needToAlteredConfig);
+        CompatibleEncryptRuleConfiguration config = database.getRuleMetaData().findSingleRule(EncryptRule.class)
+                .map(optional -> getCompatibleEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) optional.getConfiguration()))
+                .orElseGet(() -> new CompatibleEncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+        // TODO refactor DistSQL to only persist config
+        config.getTables().removeIf(each -> each.getName().equals(toBeChangedConfig.getName()));
+        config.getTables().add(toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
-     * Renew with delete encrypt configuration.
+     * Renew with drop encrypt table.
      *
-     * @param event delete encrypt configuration event
+     * @param event drop encrypt table event
      */
     @Subscribe
     public synchronized void renew(final DropCompatibleEncryptTableEvent event) {
@@ -100,24 +84,7 @@ public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscr
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    private EncryptTableRuleConfiguration swapEncryptTableRuleConfig(final String yamlContext) {
-        return new YamlEncryptTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlEncryptTableRuleConfiguration.class));
-    }
-    
-    private CompatibleEncryptRuleConfiguration getCompatibleEncryptRuleConfiguration(final ShardingSphereDatabase database, final EncryptTableRuleConfiguration needToAddedConfig) {
-        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        CompatibleEncryptRuleConfiguration result = rule.map(encryptRule -> getCompatibleEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) encryptRule.getConfiguration()))
-                .orElseGet(() -> new CompatibleEncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-        // TODO refactor DistSQL to only persist config
-        result.getTables().removeIf(each -> each.getName().equals(needToAddedConfig.getName()));
-        result.getTables().add(needToAddedConfig);
-        return result;
-    }
-    
-    private CompatibleEncryptRuleConfiguration getCompatibleEncryptRuleConfiguration(final CompatibleEncryptRuleConfiguration result) {
-        if (null == result.getTables()) {
-            return new CompatibleEncryptRuleConfiguration(new LinkedList<>(), result.getEncryptors());
-        }
-        return result;
+    private CompatibleEncryptRuleConfiguration getCompatibleEncryptRuleConfiguration(final CompatibleEncryptRuleConfiguration config) {
+        return null == config.getTables() ? new CompatibleEncryptRuleConfiguration(new LinkedList<>(), config.getEncryptors()) : config;
     }
 }

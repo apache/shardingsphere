@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwriteSplittingDataSourceEvent;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.CreateReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.datasource.DropReadwriteSplittingDataSourceEvent;
 
 /**
@@ -32,10 +31,7 @@ public final class ReadwriteSplittingDataSourceEventCreator implements NamedRule
     
     @Override
     public RuleItemChangedEvent create(final String databaseName, final String groupName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new CreateReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue());
         }
         return new DropReadwriteSplittingDataSourceEvent(databaseName, groupName);
