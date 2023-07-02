@@ -43,9 +43,9 @@ public final class ShardingCacheSubscriber implements RuleChangedSubscriber {
     private ContextManager contextManager;
     
     /**
-     * Renew with add sharding cache configuration.
+     * Renew with create sharding cache.
      *
-     * @param event add sharding cache configuration event
+     * @param event create sharding cache event
      */
     @Subscribe
     public synchronized void renew(final CreateShardingCacheEvent event) {
@@ -62,9 +62,9 @@ public final class ShardingCacheSubscriber implements RuleChangedSubscriber {
     }
     
     /**
-     * Renew with alter sharding cache configuration.
+     * Renew with alter sharding cache.
      *
-     * @param event alter sharding cache configuration event
+     * @param event alter sharding cache event
      */
     @Subscribe
     public synchronized void renew(final AlterShardingCacheEvent event) {
@@ -80,9 +80,9 @@ public final class ShardingCacheSubscriber implements RuleChangedSubscriber {
     }
     
     /**
-     * Renew with delete sharding cache configuration.
+     * Renew with drop sharding cache.
      *
-     * @param event delete sharding cache configuration event
+     * @param event drop sharding cache event
      */
     @Subscribe
     public synchronized void renew(final DropShardingCacheEvent event) {

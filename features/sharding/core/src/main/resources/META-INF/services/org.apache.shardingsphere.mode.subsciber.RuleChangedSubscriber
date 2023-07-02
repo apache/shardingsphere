@@ -16,6 +16,6 @@
 #
 
 org.apache.shardingsphere.sharding.subscriber.ShardingTableConfigurationSubscriber
-org.apache.shardingsphere.sharding.subscriber.ShardingStrategyConfigurationSubscriber
+org.apache.shardingsphere.sharding.subscriber.ShardingDefaultStrategySubscriber
 org.apache.shardingsphere.sharding.subscriber.ShardingAlgorithmSubscriber
 org.apache.shardingsphere.sharding.subscriber.ShardingCacheSubscriber
