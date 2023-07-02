@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.sharding.event.table.auto.AlterShardingAutoTableEvent;
-import org.apache.shardingsphere.sharding.event.table.auto.CreateShardingAutoTableEvent;
 import org.apache.shardingsphere.sharding.event.table.auto.DropShardingAutoTableEvent;
 
 /**
@@ -32,10 +31,7 @@ public final class ShardingAutoTableEventCreator implements NamedRuleItemChanged
     
     @Override
     public RuleItemChangedEvent create(final String databaseName, final String tableName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType()) {
-            return new CreateShardingAutoTableEvent(databaseName, tableName, event.getKey(), event.getValue());
-        }
-        if (Type.UPDATED == event.getType()) {
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterShardingAutoTableEvent(databaseName, tableName, event.getKey(), event.getValue());
         }
         return new DropShardingAutoTableEvent(databaseName, tableName);
