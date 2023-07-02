@@ -34,11 +34,11 @@ import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheCon
 import org.apache.shardingsphere.sharding.yaml.swapper.cache.YamlShardingCacheConfigurationSwapper;
 
 /**
- * Sharding cache configuration subscriber.
+ * Sharding cache subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class ShardingCacheConfigurationSubscriber implements RuleChangedSubscriber {
+public final class ShardingCacheSubscriber implements RuleChangedSubscriber {
     
     private ContextManager contextManager;
     
