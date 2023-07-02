@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Mask algorithm subscriber.
@@ -46,23 +45,28 @@ public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
     private ContextManager contextManager;
     
     /**
-     * Renew with alter algorithm.
+     * Renew with alter mask algorithm.
      *
-     * @param event alter algorithm event
+     * @param event alter mask algorithm event
      */
     @Subscribe
     public synchronized void renew(final AlterMaskAlgorithmEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
+        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        AlgorithmConfiguration toBeChangedConfig = new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), getMaskRuleConfiguration(database, event)));
+        MaskRuleConfiguration config = database.getRuleMetaData().findSingleRule(MaskRule.class)
+                .map(maskRule -> getConfiguration((MaskRuleConfiguration) maskRule.getConfiguration())).orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+        config.getMaskAlgorithms().put(event.getItemName(), toBeChangedConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
     /**
-     * Renew with delete algorithm.
+     * Renew with drop mask algorithm.
      *
-     * @param event delete algorithm event
+     * @param event drop mask algorithm event
      */
     @Subscribe
     public synchronized void renew(final DropMaskAlgorithmEvent event) {
@@ -75,23 +79,7 @@ public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    private MaskRuleConfiguration getMaskRuleConfiguration(final ShardingSphereDatabase database, final AlterMaskAlgorithmEvent event) {
-        Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
-        MaskRuleConfiguration result = rule.map(maskRule -> getMaskRuleConfiguration((MaskRuleConfiguration) maskRule.getConfiguration()))
-                .orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-        result.getMaskAlgorithms().put(event.getItemName(), swapToAlgorithmConfig(
-                contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
-        return result;
-    }
-    
-    private MaskRuleConfiguration getMaskRuleConfiguration(final MaskRuleConfiguration result) {
-        if (null == result.getMaskAlgorithms()) {
-            return new MaskRuleConfiguration(result.getTables(), new LinkedHashMap<>());
-        }
-        return result;
-    }
-    
-    private AlgorithmConfiguration swapToAlgorithmConfig(final String yamlContext) {
-        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContext, YamlAlgorithmConfiguration.class));
+    private MaskRuleConfiguration getConfiguration(final MaskRuleConfiguration config) {
+        return null == config.getMaskAlgorithms() ? new MaskRuleConfiguration(config.getTables(), new LinkedHashMap<>()) : config;
     }
 }
