@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.sharding.event.algorithm.keygenerator;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
 
 /**
  * Alter key generate event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterKeyGeneratorEvent implements AlterRuleItemEvent {
+public final class AlterKeyGeneratorEvent extends AlterNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String keyGeneratorName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterKeyGeneratorEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

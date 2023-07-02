@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.sharding.event.table.sharding;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 
 /**
  * Drop sharding table event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropShardingTableEvent implements DropRuleItemEvent {
+public final class DropShardingTableEvent extends DropNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String tableName;
+    public DropShardingTableEvent(final String databaseName, final String itemName) {
+        super(databaseName, itemName);
+    }
 }

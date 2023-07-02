@@ -33,7 +33,7 @@ public final class MaskTableCreator implements NamedRuleItemChangedEventCreator 
     @Override
     public GovernanceEvent create(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return new CreateMaskTableEvent(databaseName, event.getKey(), event.getValue());
+            return new CreateMaskTableEvent(databaseName, tableName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
             return new AlterMaskTableEvent(databaseName, tableName, event.getKey(), event.getValue());

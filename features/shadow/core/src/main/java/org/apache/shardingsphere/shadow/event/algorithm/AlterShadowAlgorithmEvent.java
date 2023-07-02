@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.shadow.event.algorithm;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
 
 /**
  * Alter shadow algorithm event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterShadowAlgorithmEvent implements AlterRuleItemEvent {
+public final class AlterShadowAlgorithmEvent extends AlterNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String algorithmName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterShadowAlgorithmEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

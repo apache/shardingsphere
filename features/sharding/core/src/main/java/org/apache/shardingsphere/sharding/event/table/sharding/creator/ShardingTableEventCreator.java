@@ -33,7 +33,7 @@ public final class ShardingTableEventCreator implements NamedRuleItemChangedEven
     @Override
     public GovernanceEvent create(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return new CreateShardingTableEvent(databaseName, event.getKey(), event.getValue());
+            return new CreateShardingTableEvent(databaseName, tableName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
             return new AlterShardingTableEvent(databaseName, tableName, event.getKey(), event.getValue());

@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.event.table.auto;
+package org.apache.shardingsphere.sharding.event.strategy.audit;
 
-import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropUniqueRuleItemEvent;
 
 /**
- * Alter sharding auto table event.
+ * Drop default sharding auditor strategy event.
  */
-public final class AlterShardingAutoTableEvent extends AlterNamedRuleItemEvent {
+public final class DropDefaultShardingAuditorStrategyEvent extends DropUniqueRuleItemEvent {
     
-    public AlterShardingAutoTableEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
-        super(databaseName, itemName, activeVersionKey, activeVersion);
+    public DropDefaultShardingAuditorStrategyEvent(final String databaseName) {
+        super(databaseName);
     }
 }

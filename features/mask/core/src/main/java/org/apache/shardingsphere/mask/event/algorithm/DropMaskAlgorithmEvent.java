@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.mask.event.algorithm;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 
 /**
  * Drop mask algorithm event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropMaskAlgorithmEvent implements DropRuleItemEvent {
+public final class DropMaskAlgorithmEvent extends DropNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String algorithmName;
+    public DropMaskAlgorithmEvent(final String databaseName, final String itemName) {
+        super(databaseName, itemName);
+    }
 }

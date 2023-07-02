@@ -73,7 +73,7 @@ public final class CompatibleEncryptorSubscriber implements RuleChangedSubscribe
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         CompatibleEncryptRuleConfiguration config = (CompatibleEncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
-        config.getEncryptors().remove(event.getEncryptorName());
+        config.getEncryptors().remove(event.getItemName());
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -81,7 +81,7 @@ public final class CompatibleEncryptorSubscriber implements RuleChangedSubscribe
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
         CompatibleEncryptRuleConfiguration result = rule.map(encryptRule -> getEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) encryptRule.getConfiguration()))
                 .orElseGet(() -> new CompatibleEncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-        result.getEncryptors().put(event.getEncryptorName(), swapToAlgorithmConfig(
+        result.getEncryptors().put(event.getItemName(), swapToAlgorithmConfig(
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion())));
         return result;
     }

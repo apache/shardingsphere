@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.shadow.event.table;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 
 /**
  * Drop shadow table event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropShadowTableEvent implements DropRuleItemEvent {
+public final class DropShadowTableEvent extends DropNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String tableName;
+    public DropShadowTableEvent(final String databaseName, final String itemName) {
+        super(databaseName, itemName);
+    }
 }

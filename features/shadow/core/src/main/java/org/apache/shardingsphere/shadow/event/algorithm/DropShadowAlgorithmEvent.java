@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.shadow.event.algorithm;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 
 /**
  * Drop shadow algorithm event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropShadowAlgorithmEvent implements DropRuleItemEvent {
+public final class DropShadowAlgorithmEvent extends DropNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String algorithmName;
+    public DropShadowAlgorithmEvent(final String databaseName, final String itemName) {
+        super(databaseName, itemName);
+    }
 }

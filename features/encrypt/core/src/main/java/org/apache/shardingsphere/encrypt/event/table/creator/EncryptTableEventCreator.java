@@ -33,7 +33,7 @@ public final class EncryptTableEventCreator implements NamedRuleItemChangedEvent
     @Override
     public GovernanceEvent create(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return new CreateEncryptTableEvent(databaseName, event.getKey(), event.getValue());
+            return new CreateEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
             return new AlterEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue());

@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.shadow.event.algorithm;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterUniqueRuleItemEvent;
 
 /**
  * Alter default shadow algorithm event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterDefaultShadowAlgorithmEvent implements AlterRuleItemEvent {
+public final class AlterDefaultShadowAlgorithmEvent extends AlterUniqueRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterDefaultShadowAlgorithmEvent(final String databaseName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, activeVersionKey, activeVersion);
+    }
 }

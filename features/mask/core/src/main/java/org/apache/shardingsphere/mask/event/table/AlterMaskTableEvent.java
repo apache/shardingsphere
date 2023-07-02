@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.mask.event.table;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
 
 /**
  * Alter mask configuration event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterMaskTableEvent implements AlterRuleItemEvent {
+public final class AlterMaskTableEvent extends AlterNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String tableName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterMaskTableEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

@@ -17,24 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.event.compatible.encryptor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.AlterRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
 
 /**
  * Alter compatible encryptor event.
  * @deprecated compatible support will remove in next version.
  */
 @Deprecated
-@RequiredArgsConstructor
-@Getter
-public final class AlterCompatibleEncryptorEvent implements AlterRuleItemEvent {
+public final class AlterCompatibleEncryptorEvent extends AlterNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String encryptorName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterCompatibleEncryptorEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.readwritesplitting.event.datasource;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 
 /**
  * Drop readwrite-splitting configuration event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropReadwriteSplittingDataSourceEvent implements DropRuleItemEvent {
+public final class DropReadwriteSplittingDataSourceEvent extends DropNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String groupName;
+    public DropReadwriteSplittingDataSourceEvent(final String databaseName, final String itemName) {
+        super(databaseName, itemName);
+    }
 }

@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.single.event.config;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.CreateRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.create.CreateUniqueRuleItemEvent;
 
 /**
  * Create single table event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateSingleTableEvent implements CreateRuleItemEvent {
+public final class CreateSingleTableEvent extends CreateUniqueRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public CreateSingleTableEvent(final String databaseName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, activeVersionKey, activeVersion);
+    }
 }

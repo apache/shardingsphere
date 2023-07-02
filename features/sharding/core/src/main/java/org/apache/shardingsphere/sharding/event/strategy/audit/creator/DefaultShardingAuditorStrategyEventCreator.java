@@ -21,23 +21,23 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
-import org.apache.shardingsphere.sharding.event.strategy.audit.CreateShardingAuditorStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.audit.AlterShardingAuditorStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.audit.DropShardingAuditorStrategyConfigurationEvent;
+import org.apache.shardingsphere.sharding.event.strategy.audit.CreateDefaultShardingAuditorStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.audit.AlterDefaultShardingAuditorStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.audit.DropDefaultShardingAuditorStrategyEvent;
 
 /**
- * Sharding auditor strategy event creator.
+ * Default sharding auditor strategy event creator.
  */
-public final class ShardingAuditorStrategyEventCreator implements UniqueRuleItemChangedEventCreator {
+public final class DefaultShardingAuditorStrategyEventCreator implements UniqueRuleItemChangedEventCreator {
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return new CreateShardingAuditorStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
+            return new CreateDefaultShardingAuditorStrategyEvent(databaseName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
-            return new AlterShardingAuditorStrategyConfigurationEvent(databaseName, event.getKey(), event.getValue());
+            return new AlterDefaultShardingAuditorStrategyEvent(databaseName, event.getKey(), event.getValue());
         }
-        return new DropShardingAuditorStrategyConfigurationEvent(databaseName);
+        return new DropDefaultShardingAuditorStrategyEvent(databaseName);
     }
 }

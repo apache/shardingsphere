@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.encrypt.event.table;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 
 /**
  * Drop encrypt table event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropEncryptTableEvent implements DropRuleItemEvent {
+public final class DropEncryptTableEvent extends DropNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String tableName;
+    public DropEncryptTableEvent(final String databaseName, final String itemName) {
+        super(databaseName, itemName);
+    }
 }

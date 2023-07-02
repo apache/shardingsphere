@@ -58,7 +58,7 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        ReadwriteSplittingDataSourceRuleConfiguration needToAddedConfig = swapDataSource(event.getGroupName(),
+        ReadwriteSplittingDataSourceRuleConfiguration needToAddedConfig = swapDataSource(event.getItemName(),
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(),
                 getConfig(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName()), needToAddedConfig)));
@@ -75,7 +75,7 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ReadwriteSplittingDataSourceRuleConfiguration needToAlteredConfig = swapDataSource(event.getGroupName(),
+        ReadwriteSplittingDataSourceRuleConfiguration needToAlteredConfig = swapDataSource(event.getItemName(),
                 contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion()));
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
         config.getDataSources().removeIf(each -> each.getName().equals(needToAlteredConfig.getName()));
@@ -95,7 +95,7 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) database.getRuleMetaData().getSingleRule(ReadwriteSplittingRule.class).getConfiguration();
-        config.getDataSources().removeIf(each -> each.getName().equals(event.getGroupName()));
+        config.getDataSources().removeIf(each -> each.getName().equals(event.getItemName()));
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     

@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.sharding.event.strategy.shardingcolumn;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.CreateRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.create.CreateUniqueRuleItemEvent;
 
 /**
  * Create default sharding column event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateDefaultShardingColumnEvent implements CreateRuleItemEvent {
+public final class CreateDefaultShardingColumnEvent extends CreateUniqueRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public CreateDefaultShardingColumnEvent(final String databaseName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, activeVersionKey, activeVersion);
+    }
 }

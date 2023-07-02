@@ -62,7 +62,7 @@ public final class ShadowAlgorithmSubscriber implements RuleChangedSubscriber {
         } else {
             config = new ShadowRuleConfiguration();
         }
-        config.getShadowAlgorithms().put(event.getAlgorithmName(), needToAlteredConfig);
+        config.getShadowAlgorithms().put(event.getItemName(), needToAlteredConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
@@ -78,7 +78,7 @@ public final class ShadowAlgorithmSubscriber implements RuleChangedSubscriber {
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getShadowAlgorithms().remove(event.getAlgorithmName());
+        config.getShadowAlgorithms().remove(event.getItemName());
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     

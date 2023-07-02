@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.event.strategy.audit.CreateShardingAuditorStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.audit.AlterShardingAuditorStrategyConfigurationEvent;
-import org.apache.shardingsphere.sharding.event.strategy.audit.DropShardingAuditorStrategyConfigurationEvent;
+import org.apache.shardingsphere.sharding.event.strategy.audit.CreateDefaultShardingAuditorStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.audit.AlterDefaultShardingAuditorStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.audit.DropDefaultShardingAuditorStrategyEvent;
 import org.apache.shardingsphere.sharding.event.strategy.database.CreateDefaultDatabaseShardingStrategyEvent;
 import org.apache.shardingsphere.sharding.event.strategy.database.AlterDefaultDatabaseShardingStrategyEvent;
 import org.apache.shardingsphere.sharding.event.strategy.database.DropDefaultDatabaseShardingStrategyEvent;
@@ -122,7 +122,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event add default sharding auditor strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final CreateShardingAuditorStrategyConfigurationEvent event) {
+    public synchronized void renew(final CreateDefaultShardingAuditorStrategyEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -211,7 +211,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event alter default sharding auditor strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final AlterShardingAuditorStrategyConfigurationEvent event) {
+    public synchronized void renew(final AlterDefaultShardingAuditorStrategyEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -294,7 +294,7 @@ public final class ShardingStrategyConfigurationSubscriber implements RuleChange
      * @param event delete default sharding auditor strategy configuration event
      */
     @Subscribe
-    public synchronized void renew(final DropShardingAuditorStrategyConfigurationEvent event) {
+    public synchronized void renew(final DropDefaultShardingAuditorStrategyEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

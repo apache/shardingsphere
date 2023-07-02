@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.rule;
+package org.apache.shardingsphere.infra.rule.event.rule.drop;
+
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 
 /**
  * Drop rule item event.

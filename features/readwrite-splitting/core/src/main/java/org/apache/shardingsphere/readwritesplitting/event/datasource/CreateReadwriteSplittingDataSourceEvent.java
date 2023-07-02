@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.readwritesplitting.event.datasource;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.CreateRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.create.CreateNamedRuleItemEvent;
 
 /**
  * Create readwrite-splitting configuration event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateReadwriteSplittingDataSourceEvent implements CreateRuleItemEvent {
+public final class CreateReadwriteSplittingDataSourceEvent extends CreateNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String groupName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public CreateReadwriteSplittingDataSourceEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

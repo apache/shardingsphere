@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.readwritesplitting.event.loadbalance;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 
 /**
  * Drop readwrite-splitting load-balancer event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropReadwriteSplittingLoadBalancerEvent implements DropRuleItemEvent {
+public final class DropReadwriteSplittingLoadBalancerEvent extends DropNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String loadBalanceName;
+    public DropReadwriteSplittingLoadBalancerEvent(final String databaseName, final String itemName) {
+        super(databaseName, itemName);
+    }
 }

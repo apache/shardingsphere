@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.sharding.event.table.auto;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 
 /**
  * Drop sharding auto table event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropShardingAutoTableEvent implements DropRuleItemEvent {
+public final class DropShardingAutoTableEvent extends DropNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String tableName;
+    public DropShardingAutoTableEvent(final String databaseName, final String itemName) {
+        super(databaseName, itemName);
+    }
 }

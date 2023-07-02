@@ -33,7 +33,7 @@ public final class ShardingAutoTableEventCreator implements NamedRuleItemChanged
     @Override
     public GovernanceEvent create(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
-            return new CreateShardingAutoTableEvent(databaseName, event.getKey(), event.getValue());
+            return new CreateShardingAutoTableEvent(databaseName, tableName, event.getKey(), event.getValue());
         }
         if (Type.UPDATED == event.getType()) {
             return new AlterShardingAutoTableEvent(databaseName, tableName, event.getKey(), event.getValue());
