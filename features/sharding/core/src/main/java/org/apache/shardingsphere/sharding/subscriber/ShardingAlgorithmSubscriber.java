@@ -63,6 +63,22 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
     }
     
     /**
+     * Renew with delete sharding algorithm.
+     *
+     * @param event delete sharding algorithm event
+     */
+    @Subscribe
+    public synchronized void renew(final DropShardingAlgorithmEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
+        config.getShardingAlgorithms().remove(event.getItemName());
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    /**
      * Renew with alter sharding algorithm.
      *
      * @param event alter sharding algorithm event
@@ -81,6 +97,22 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
     }
     
     /**
+     * Renew with delete key generator.
+     *
+     * @param event delete key generator event
+     */
+    @Subscribe
+    public synchronized void renew(final DropKeyGeneratorEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
+        config.getKeyGenerators().remove(event.getItemName());
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    }
+    
+    /**
      * Renew with alter sharding algorithm.
      *
      * @param event alter sharding algorithm event
@@ -95,38 +127,6 @@ public final class ShardingAlgorithmSubscriber implements RuleChangedSubscriber 
                 .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElse(new ShardingRuleConfiguration());
         String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         config.getAuditors().put(event.getItemName(), new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class)));
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
-    }
-    
-    /**
-     * Renew with delete sharding algorithm.
-     *
-     * @param event delete sharding algorithm event
-     */
-    @Subscribe
-    public synchronized void renew(final DropShardingAlgorithmEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
-        config.getShardingAlgorithms().remove(event.getItemName());
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
-    }
-    
-    /**
-     * Renew with delete key generator.
-     *
-     * @param event delete key generator event
-     */
-    @Subscribe
-    public synchronized void renew(final DropKeyGeneratorEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
-        config.getKeyGenerators().remove(event.getItemName());
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
