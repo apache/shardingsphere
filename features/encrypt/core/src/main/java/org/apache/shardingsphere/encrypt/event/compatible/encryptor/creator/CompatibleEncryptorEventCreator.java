@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.event.compatible.encryptor.creator;
 
 import org.apache.shardingsphere.encrypt.event.compatible.encryptor.AlterCompatibleEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.encryptor.DropCompatibleEncryptorEvent;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 public final class CompatibleEncryptorEventCreator implements NamedRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final String encryptorName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final String encryptorName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterCompatibleEncryptorEvent(databaseName, encryptorName, event.getKey(), event.getValue());
         }

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sharding.event.strategy.database.creator;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
-import org.apache.shardingsphere.sharding.event.strategy.database.CreateDefaultDatabaseShardingStrategyEvent;
 import org.apache.shardingsphere.sharding.event.strategy.database.AlterDefaultDatabaseShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.database.CreateDefaultDatabaseShardingStrategyEvent;
 import org.apache.shardingsphere.sharding.event.strategy.database.DropDefaultDatabaseShardingStrategyEvent;
 
 /**
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sharding.event.strategy.database.DropDefaultDat
 public final class DefaultDatabaseShardingStrategyEventCreator implements UniqueRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new CreateDefaultDatabaseShardingStrategyEvent(databaseName, event.getKey(), event.getValue());
         }

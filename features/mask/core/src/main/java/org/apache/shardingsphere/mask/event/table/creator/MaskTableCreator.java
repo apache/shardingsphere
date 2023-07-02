@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mask.event.table.creator;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.mask.event.table.CreateMaskTableEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mask.event.table.AlterMaskTableEvent;
+import org.apache.shardingsphere.mask.event.table.CreateMaskTableEvent;
 import org.apache.shardingsphere.mask.event.table.DropMaskTableEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 public final class MaskTableCreator implements NamedRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final String tableName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final String tableName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new CreateMaskTableEvent(databaseName, tableName, event.getKey(), event.getValue());
         }

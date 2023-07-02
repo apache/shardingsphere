@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.readwritesplitting.event.datasource.creator;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.CreateReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwriteSplittingDataSourceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.CreateReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.datasource.DropReadwriteSplittingDataSourceEvent;
 
 /**
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.readwritesplitting.event.datasource.DropReadwri
 public final class ReadwriteSplittingDataSourceEventCreator implements NamedRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final String groupName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new CreateReadwriteSplittingDataSourceEvent(databaseName, groupName, event.getKey(), event.getValue());
         }

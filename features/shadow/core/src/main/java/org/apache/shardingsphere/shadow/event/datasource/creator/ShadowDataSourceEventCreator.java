@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shadow.event.datasource.creator;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
-import org.apache.shardingsphere.shadow.event.datasource.CreateShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.event.datasource.AlterShadowDataSourceEvent;
+import org.apache.shardingsphere.shadow.event.datasource.CreateShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.event.datasource.DropShadowDataSourceEvent;
 
 /**
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shadow.event.datasource.DropShadowDataSourceEve
 public final class ShadowDataSourceEventCreator implements NamedRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final String dataSourceName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final String dataSourceName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new CreateShadowDataSourceEvent(databaseName, dataSourceName, event.getKey(), event.getValue());
         }

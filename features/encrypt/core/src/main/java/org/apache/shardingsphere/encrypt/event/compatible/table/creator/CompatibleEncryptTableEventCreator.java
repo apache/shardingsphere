@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.event.compatible.table.creator;
 
-import org.apache.shardingsphere.encrypt.event.compatible.table.CreateCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.AlterCompatibleEncryptTableEvent;
+import org.apache.shardingsphere.encrypt.event.compatible.table.CreateCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.DropCompatibleEncryptTableEvent;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 public final class CompatibleEncryptTableEventCreator implements NamedRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final String groupName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final String groupName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new CreateCompatibleEncryptTableEvent(databaseName, groupName, event.getKey(), event.getValue());
         }

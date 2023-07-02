@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.broadcast.event.table.creator;
 
-import org.apache.shardingsphere.broadcast.event.table.CreateBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.table.AlterBroadcastTableEvent;
+import org.apache.shardingsphere.broadcast.event.table.CreateBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.table.DropBroadcastTableEvent;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 public final class BroadcastTableEventCreator implements UniqueRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new CreateBroadcastTableEvent(databaseName, event.getKey(), event.getValue());
         }

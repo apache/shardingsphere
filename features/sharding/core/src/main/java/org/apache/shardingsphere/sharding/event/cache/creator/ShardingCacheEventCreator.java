@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sharding.event.cache.creator;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
-import org.apache.shardingsphere.sharding.event.cache.CreateShardingCacheEvent;
 import org.apache.shardingsphere.sharding.event.cache.AlterShardingCacheEvent;
+import org.apache.shardingsphere.sharding.event.cache.CreateShardingCacheEvent;
 import org.apache.shardingsphere.sharding.event.cache.DropShardingCacheEvent;
 
 /**
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sharding.event.cache.DropShardingCacheEvent;
 public final class ShardingCacheEventCreator implements UniqueRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType()) {
             return new CreateShardingCacheEvent(databaseName, event.getKey(), event.getValue());
         }

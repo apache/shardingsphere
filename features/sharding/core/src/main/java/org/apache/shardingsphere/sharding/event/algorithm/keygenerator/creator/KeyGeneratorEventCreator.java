@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.event.algorithm.keygenerator.creator;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.DropKeyGe
 public final class KeyGeneratorEventCreator implements NamedRuleItemChangedEventCreator {
     
     @Override
-    public GovernanceEvent create(final String databaseName, final String algorithmName, final DataChangedEvent event) {
+    public RuleItemChangedEvent create(final String databaseName, final String algorithmName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return new AlterKeyGeneratorEvent(databaseName, algorithmName, event.getKey(), event.getValue());
         }
