@@ -144,7 +144,6 @@ public final class SQLFederationPlannerUtils {
         result.add(CoreRules.PROJECT_JOIN_TRANSPOSE);
         result.add(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
         result.add(ProjectRemoveRule.Config.DEFAULT.toRule());
-        result.add(PushProjectIntoScanRule.Config.DEFAULT.toRule());
         return result;
     }
     
