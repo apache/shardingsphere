@@ -18,18 +18,10 @@
 package org.apache.shardingsphere.single.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
-import org.apache.shardingsphere.mode.subsciber.unique.callback.UniqueRuleItemAlteredSubscribeCallback;
-import org.apache.shardingsphere.mode.subsciber.unique.UniqueRuleItemChangedSubscribeEngine;
-import org.apache.shardingsphere.mode.subsciber.unique.callback.UniqueRuleItemDroppedSubscribeCallback;
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.DropSingleTableEvent;
-import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
-import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
 
 /**
  * Single table subscriber.
@@ -37,36 +29,22 @@ import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfig
 @SuppressWarnings("UnstableApiUsage")
 public final class SingleTableSubscriber implements RuleChangedSubscriber<AlterSingleTableEvent, DropSingleTableEvent> {
     
-    private UniqueRuleItemChangedSubscribeEngine<SingleRuleConfiguration> engine;
+    private SingleTableSubscribeEngine engine;
     
     @Override
     public void setContextManager(final ContextManager contextManager) {
-        engine = new UniqueRuleItemChangedSubscribeEngine<>(contextManager);
+        engine = new SingleTableSubscribeEngine(contextManager);
     }
     
     @Subscribe
     @Override
     public synchronized void renew(final AlterSingleTableEvent event) {
-        UniqueRuleItemAlteredSubscribeCallback<SingleRuleConfiguration> callback = (yamlContent, database) -> {
-            SingleRuleConfiguration result = database.getRuleMetaData().findSingleRule(SingleRule.class).map(SingleRule::getConfiguration).orElseGet(SingleRuleConfiguration::new);
-            SingleRuleConfiguration configFromEvent = new YamlSingleRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlSingleRuleConfiguration.class));
-            result.getTables().clear();
-            result.getTables().addAll(configFromEvent.getTables());
-            configFromEvent.getDefaultDataSource().ifPresent(optional -> result.setDefaultDataSource(configFromEvent.getDefaultDataSource().get()));
-            return result;
-        };
-        engine.renew(event, callback);
+        engine.renew(event);
     }
     
     @Subscribe
     @Override
     public synchronized void renew(final DropSingleTableEvent event) {
-        UniqueRuleItemDroppedSubscribeCallback<SingleRuleConfiguration> callback = database -> {
-            SingleRuleConfiguration result = database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration();
-            result.getTables().clear();
-            result.setDefaultDataSource(null);
-            return result;
-        };
-        engine.renew(event, callback);
+        engine.renew(event);
     }
 }

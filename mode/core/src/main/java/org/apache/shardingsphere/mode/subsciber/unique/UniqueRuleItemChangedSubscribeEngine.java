@@ -24,16 +24,15 @@ import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterUniqueRuleItem
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropUniqueRuleItemEvent;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.subsciber.unique.callback.UniqueRuleItemAlteredSubscribeCallback;
-import org.apache.shardingsphere.mode.subsciber.unique.callback.UniqueRuleItemDroppedSubscribeCallback;
 
 /**
  * Unique rule item changed subscribe engine.
  * 
  * @param <T> type of rule configuration
+ * @param <I> type of rule item configuration
  */
 @RequiredArgsConstructor
-public final class UniqueRuleItemChangedSubscribeEngine<T extends RuleConfiguration> {
+public abstract class UniqueRuleItemChangedSubscribeEngine<T extends RuleConfiguration, I> {
     
     private final ContextManager contextManager;
     
@@ -41,30 +40,38 @@ public final class UniqueRuleItemChangedSubscribeEngine<T extends RuleConfigurat
      * Renew with alter rule item.
      *
      * @param event alter rule item event
-     * @param callback rule item altered subscribe callback
      */
-    public void renew(final AlterUniqueRuleItemEvent event, final UniqueRuleItemAlteredSubscribeCallback<T> callback) {
+    public final void renew(final AlterUniqueRuleItemEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        T toBeChangedConfig = callback.getToBeChangedConfiguration(yamlContent, database);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), toBeChangedConfig));
+        T currentRuleConfig = findRuleConfiguration(database);
+        changeRuleItemConfiguration(currentRuleConfig, swapRuleItemConfigurationFromEvent(yamlContent));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
     }
     
     /**
      * Renew with drop rule item.
      *
      * @param event drop rule item event
-     * @param callback rule item dropped subscribe callback
      */
-    public void renew(final DropUniqueRuleItemEvent event, final UniqueRuleItemDroppedSubscribeCallback<T> callback) {
+    public final void renew(final DropUniqueRuleItemEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        T toBeDroppedConfig = callback.getToBeDroppedConfiguration(database);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), toBeDroppedConfig));
+        T currentRuleConfig = findRuleConfiguration(database);
+        dropRuleItemConfiguration(currentRuleConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
     }
+    
+    protected abstract I swapRuleItemConfigurationFromEvent(String yamlContent);
+    
+    protected abstract T findRuleConfiguration(ShardingSphereDatabase database);
+    
+    protected abstract void changeRuleItemConfiguration(T currentRuleConfig, I toBeChangedItemConfig);
+    
+    protected abstract void dropRuleItemConfiguration(T currentRuleConfig);
 }
