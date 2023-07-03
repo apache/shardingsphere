@@ -21,6 +21,8 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.rules.TransformationRule;
+import org.apache.calcite.rex.RexCall;
+import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.sqlfederation.compiler.operator.logical.LogicalScan;
 import org.immutables.value.Value;
 
@@ -30,8 +32,26 @@ import org.immutables.value.Value;
 @Value.Enclosing
 public final class PushFilterIntoScanRule extends RelRule<PushFilterIntoScanRule.Config> implements TransformationRule {
     
+    private static final String CORRELATE_REFERENCE = "$cor";
+    
     private PushFilterIntoScanRule(final Config config) {
         super(config);
+    }
+    
+    @Override
+    public boolean matches(final RelOptRuleCall call) {
+        LogicalFilter filter = call.rel(0);
+        RexCall condition = (RexCall) filter.getCondition();
+        for (RexNode each : condition.getOperands()) {
+            if (containsCorrelate(each)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean containsCorrelate(final RexNode rexNode) {
+        return rexNode.toString().contains(CORRELATE_REFERENCE);
     }
     
     @Override

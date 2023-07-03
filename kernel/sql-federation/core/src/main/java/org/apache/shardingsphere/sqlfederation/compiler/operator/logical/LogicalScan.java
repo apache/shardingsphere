@@ -25,6 +25,7 @@ import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.shardingsphere.sqlfederation.compiler.operator.util.LogicalScanPushDownRelBuilder;
 
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * Logical scan.
@@ -75,5 +76,23 @@ public final class LogicalScan extends TableScan {
      */
     public RelNode peek() {
         return relBuilder.peek();
+    }
+    
+    @Override
+    public boolean deepEquals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (null == other || getClass() != other.getClass()) {
+            return false;
+        }
+        LogicalScan otherLogicalScan = (LogicalScan) other;
+        return traitSet.equals(otherLogicalScan.getTraitSet()) && relBuilder.peek().deepEquals(otherLogicalScan.relBuilder.peek())
+                && hints.equals(otherLogicalScan.hints) && getRowType().equalsSansFieldNames(otherLogicalScan.getRowType());
+    }
+    
+    @Override
+    public int deepHashCode() {
+        return Objects.hash(traitSet, relBuilder.peek().deepHashCode(), hints);
     }
 }
