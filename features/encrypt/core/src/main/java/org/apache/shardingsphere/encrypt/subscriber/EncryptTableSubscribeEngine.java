@@ -23,9 +23,11 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.subsciber.named.NamedRuleItemChangedSubscribeEngine;
+import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -33,7 +35,7 @@ import java.util.LinkedList;
 /**
  * Encrypt table subscribe engine.
  */
-public final class EncryptTableSubscribeEngine extends NamedRuleItemChangedSubscribeEngine<EncryptRuleConfiguration, EncryptTableRuleConfiguration> {
+public final class EncryptTableSubscribeEngine extends RuleItemChangedSubscribeEngine<EncryptRuleConfiguration, EncryptTableRuleConfiguration> {
     
     public EncryptTableSubscribeEngine(final ContextManager contextManager) {
         super(contextManager);
@@ -63,7 +65,7 @@ public final class EncryptTableSubscribeEngine extends NamedRuleItemChangedSubsc
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final String itemName, final EncryptRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getTables().removeIf(each -> each.getName().equals(itemName));
+    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getTables().removeIf(each -> each.getName().equals(((DropNamedRuleItemEvent) event).getItemName()));
     }
 }

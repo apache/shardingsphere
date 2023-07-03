@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.single.subscriber;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.subsciber.unique.UniqueRuleItemChangedSubscribeEngine;
+import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfig
 /**
  * Single table subscribe engine.
  */
-public final class SingleTableSubscribeEngine extends UniqueRuleItemChangedSubscribeEngine<SingleRuleConfiguration, SingleRuleConfiguration> {
+public final class SingleTableSubscribeEngine extends RuleItemChangedSubscribeEngine<SingleRuleConfiguration, SingleRuleConfiguration> {
     
     public SingleTableSubscribeEngine(final ContextManager contextManager) {
         super(contextManager);
@@ -53,7 +54,7 @@ public final class SingleTableSubscribeEngine extends UniqueRuleItemChangedSubsc
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final SingleRuleConfiguration currentRuleConfig) {
+    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getTables().clear();
         currentRuleConfig.setDefaultDataSource(null);
     }
