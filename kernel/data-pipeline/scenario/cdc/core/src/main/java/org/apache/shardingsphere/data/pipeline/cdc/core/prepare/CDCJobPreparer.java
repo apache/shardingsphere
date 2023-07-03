@@ -92,14 +92,14 @@ public final class CDCJobPreparer {
             PipelineJobCenter.stop(jobItemContext.getJobId());
             return;
         }
-        prepareIncremental(jobItemContext);
+        initIncrementalPosition(jobItemContext);
         if (jobItemContext.getJobConfig().isFull()) {
             initInventoryTasks(jobItemContext, inventoryImporterUsed, inventoryChannelProgressPairs);
         }
         initIncrementalTask(jobItemContext, incrementalImporterUsed, incrementalChannelProgressPairs);
     }
     
-    private void prepareIncremental(final CDCJobItemContext jobItemContext) {
+    private void initIncrementalPosition(final CDCJobItemContext jobItemContext) {
         CDCTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         JobItemIncrementalTasksProgress initIncremental = null == jobItemContext.getInitProgress() ? null : jobItemContext.getInitProgress().getIncremental();
         try {
