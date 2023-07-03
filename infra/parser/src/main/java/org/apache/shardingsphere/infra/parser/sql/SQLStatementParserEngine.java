@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.parser.sql;
 
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -31,9 +32,21 @@ public final class SQLStatementParserEngine {
     
     private final LoadingCache<String, SQLStatement> sqlStatementCache;
     
+    @Getter
+    private final CacheOption sqlStatementCacheOption;
+    
+    @Getter
+    private final CacheOption parseTreeCacheOption;
+    
+    @Getter
+    private final boolean isParseComment;
+    
     public SQLStatementParserEngine(final String databaseType, final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
         sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption, isParseComment);
         sqlStatementCache = SQLStatementCacheBuilder.build(databaseType, sqlStatementCacheOption, parseTreeCacheOption, isParseComment);
+        this.sqlStatementCacheOption = sqlStatementCacheOption;
+        this.parseTreeCacheOption = parseTreeCacheOption;
+        this.isParseComment = isParseComment;
     }
     
     /**
