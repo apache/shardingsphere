@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.single.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
+import org.apache.shardingsphere.mode.subsciber.unique.callback.UniqueRuleItemAlteredSubscribeCallback;
+import org.apache.shardingsphere.mode.subsciber.unique.UniqueRuleItemChangedSubscribeEngine;
+import org.apache.shardingsphere.mode.subsciber.unique.callback.UniqueRuleItemDroppedSubscribeCallback;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
 import org.apache.shardingsphere.single.event.config.DropSingleTableEvent;
@@ -35,51 +35,38 @@ import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfig
  * Single table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class SingleTableSubscriber implements RuleChangedSubscriber<AlterSingleTableEvent, DropSingleTableEvent> {
     
-    private ContextManager contextManager;
+    private UniqueRuleItemChangedSubscribeEngine<SingleRuleConfiguration> engine;
+    
+    @Override
+    public void setContextManager(final ContextManager contextManager) {
+        engine = new UniqueRuleItemChangedSubscribeEngine<>(contextManager);
+    }
     
     @Subscribe
     @Override
     public synchronized void renew(final AlterSingleTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        SingleRuleConfiguration toBeChangedConfig = getToBeChangedConfiguration(yamlContent);
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        SingleRuleConfiguration changedConfig = getChangedConfiguration(toBeChangedConfig, database);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), changedConfig));
+        UniqueRuleItemAlteredSubscribeCallback<SingleRuleConfiguration> callback = (yamlContent, database) -> {
+            SingleRuleConfiguration result = database.getRuleMetaData().findSingleRule(SingleRule.class).map(SingleRule::getConfiguration).orElseGet(SingleRuleConfiguration::new);
+            SingleRuleConfiguration configFromEvent = new YamlSingleRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlSingleRuleConfiguration.class));
+            result.getTables().clear();
+            result.getTables().addAll(configFromEvent.getTables());
+            configFromEvent.getDefaultDataSource().ifPresent(optional -> result.setDefaultDataSource(configFromEvent.getDefaultDataSource().get()));
+            return result;
+        };
+        engine.renew(event, callback);
     }
     
     @Subscribe
     @Override
     public synchronized void renew(final DropSingleTableEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        SingleRuleConfiguration droppedConfig = getDroppedConfiguration(database);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), droppedConfig));
-    }
-    
-    private SingleRuleConfiguration getToBeChangedConfiguration(final String yamlContent) {
-        return new YamlSingleRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlSingleRuleConfiguration.class));
-    }
-    
-    private SingleRuleConfiguration getChangedConfiguration(final SingleRuleConfiguration toBeChangedConfig, final ShardingSphereDatabase database) {
-        SingleRuleConfiguration result = database.getRuleMetaData().findSingleRule(SingleRule.class).map(SingleRule::getConfiguration).orElseGet(SingleRuleConfiguration::new);
-        result.getTables().clear();
-        result.getTables().addAll(toBeChangedConfig.getTables());
-        toBeChangedConfig.getDefaultDataSource().ifPresent(optional -> result.setDefaultDataSource(toBeChangedConfig.getDefaultDataSource().get()));
-        return result;
-    }
-    
-    private SingleRuleConfiguration getDroppedConfiguration(final ShardingSphereDatabase database) {
-        SingleRuleConfiguration result = database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration();
-        result.getTables().clear();
-        result.setDefaultDataSource(null);
-        return result;
+        UniqueRuleItemDroppedSubscribeCallback<SingleRuleConfiguration> callback = database -> {
+            SingleRuleConfiguration result = database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration();
+            result.getTables().clear();
+            result.setDefaultDataSource(null);
+            return result;
+        };
+        engine.renew(event, callback);
     }
 }
