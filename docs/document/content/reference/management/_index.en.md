@@ -6,8 +6,8 @@ weight = 3
 
 ## Data Structure in Registry Center
 
-Under defined namespace, `rules`, `props` and `metadata` nodes persist in YAML. Modifying nodes can dynamically refresh configurations.
-`nodes` persist the runtime node of database access object, to distinguish different database access instances.
+Under a defined namespace, `rules`, `props` and `metadata` nodes persist in YAML. Modifying nodes can dynamically refresh configurations.
+`nodes` persist the runtime node of the database access object, to distinguish different database access instances.
 `statistics` persist data records in system tables.
 
 ```
@@ -109,7 +109,7 @@ transaction:
 
 ### /props
 
-These are the properties configuration. Please refer to the [Configuration Manual](/en/user-manual/common-config/props/) for more details.
+These are the properties' configurations. Please refer to the [Configuration Manual](/en/user-manual/common-config/props/) for more details.
 
 ```yaml
 kernel-executor-size: 20
@@ -118,7 +118,7 @@ sql-show: true
 
 ### /metadata/${databaseName}/data_sources/ds_0/versions/0
 
-Database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by the users.
+Database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are to be configured by the user.
 
 ```yaml
 ds_0:
@@ -193,4 +193,4 @@ The identifiers are temporary nodes, which are registered when instances are onl
 
 ### /nodes/storage_nodes
 
-It can orchestrate replica database, and delete or disable data dynamically.
+It can orchestrate a replica database, and delete or disable data dynamically.
