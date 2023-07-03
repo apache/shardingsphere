@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.event.table.AlterEncryptTableEvent;
@@ -26,11 +25,12 @@ import org.apache.shardingsphere.encrypt.event.table.DropEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
+import org.apache.shardingsphere.mode.subsciber.named.NamedRuleItemChangedSubscribeEngine;
+import org.apache.shardingsphere.mode.subsciber.named.callback.NamedRuleItemAlteredSubscribeCallback;
+import org.apache.shardingsphere.mode.subsciber.named.callback.NamedRuleItemDroppedSubscribeCallback;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -39,56 +39,43 @@ import java.util.LinkedList;
  * Encrypt table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class EncryptTableSubscriber implements RuleChangedSubscriber<AlterEncryptTableEvent, DropEncryptTableEvent> {
     
-    private ContextManager contextManager;
+    private NamedRuleItemChangedSubscribeEngine<EncryptRuleConfiguration> engine;
+    
+    @Override
+    public void setContextManager(final ContextManager contextManager) {
+        engine = new NamedRuleItemChangedSubscribeEngine<>(contextManager);
+    }
     
     @Subscribe
     @Override
     public synchronized void renew(final AlterEncryptTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        EncryptTableRuleConfiguration toBeChangedConfig = getToBeChangedConfiguration(yamlContent);
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        EncryptRuleConfiguration changedConfig = getChangedConfiguration(toBeChangedConfig, database);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), changedConfig));
+        NamedRuleItemAlteredSubscribeCallback<EncryptRuleConfiguration> callback = (yamlContent, database) -> {
+            EncryptRuleConfiguration result = database.getRuleMetaData().findSingleRule(EncryptRule.class)
+                    .map(optional -> getEncryptRuleConfiguration((EncryptRuleConfiguration) optional.getConfiguration()))
+                    .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+            EncryptTableRuleConfiguration configFromEvent = new YamlEncryptTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlEncryptTableRuleConfiguration.class));
+            // TODO refactor DistSQL to only persist config
+            result.getTables().removeIf(each -> each.getName().equals(configFromEvent.getName()));
+            result.getTables().add(configFromEvent);
+            return result;
+        };
+        engine.renew(event, callback);
     }
     
     @Subscribe
     @Override
     public synchronized void renew(final DropEncryptTableEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        EncryptRuleConfiguration droppedConfig = getDroppedConfiguration(database, event.getItemName());
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), droppedConfig));
-    }
-    
-    private EncryptTableRuleConfiguration getToBeChangedConfiguration(final String yamlContent) {
-        return new YamlEncryptTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlEncryptTableRuleConfiguration.class));
-    }
-    
-    private EncryptRuleConfiguration getChangedConfiguration(final EncryptTableRuleConfiguration toBeChangedConfig, final ShardingSphereDatabase database) {
-        EncryptRuleConfiguration config = database.getRuleMetaData().findSingleRule(EncryptRule.class)
-                .map(optional -> getEncryptRuleConfiguration((EncryptRuleConfiguration) optional.getConfiguration()))
-                .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-        // TODO refactor DistSQL to only persist config
-        config.getTables().removeIf(each -> each.getName().equals(toBeChangedConfig.getName()));
-        config.getTables().add(toBeChangedConfig);
-        return config;
+        NamedRuleItemDroppedSubscribeCallback<EncryptRuleConfiguration> callback = (itemName, database) -> {
+            EncryptRuleConfiguration result = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
+            result.getTables().removeIf(each -> each.getName().equals(itemName));
+            return result;
+        };
+        engine.renew(event, callback);
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration config) {
         return null == config.getTables() ? new EncryptRuleConfiguration(new LinkedList<>(), config.getEncryptors()) : config;
-    }
-    
-    private EncryptRuleConfiguration getDroppedConfiguration(final ShardingSphereDatabase database, final String itemName) {
-        EncryptRuleConfiguration result = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
-        result.getTables().removeIf(each -> each.getName().equals(itemName));
-        return result;
     }
 }
