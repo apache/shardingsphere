@@ -1,0 +1,88 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: gs_package
+columns:
+  pkgnamespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: pkgnamespace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pkgowner:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: pkgowner
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pkgname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: pkgname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pkgspecsrc:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: pkgspecsrc
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pkgbodydeclsrc:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: pkgbodydeclsrc
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pkgbodyinitsrc:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: pkgbodyinitsrc
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pkgacl:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: pkgacl
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pkgsecdef:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: pkgsecdef
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  gs_package_oid_index:
+    name: gs_package_oid_index
+  gs_package_name_index:
+    name: gs_package_name_index

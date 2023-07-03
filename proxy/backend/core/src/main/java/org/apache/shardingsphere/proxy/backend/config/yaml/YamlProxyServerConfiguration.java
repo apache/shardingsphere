@@ -32,7 +32,9 @@ import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguratio
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -59,6 +61,8 @@ public final class YamlProxyServerConfiguration implements YamlConfiguration {
     private YamlGlobalClockRuleConfiguration globalClock;
     
     private YamlSQLFederationRuleConfiguration sqlFederation;
+    
+    private Map<String, YamlProxyDataSourceConfiguration> dataSources = new HashMap<>();
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     

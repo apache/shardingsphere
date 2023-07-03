@@ -1,0 +1,155 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: triggers
+columns:
+  trigger_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: trigger_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  trigger_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: trigger_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  trigger_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: trigger_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_manipulation:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: event_manipulation
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_object_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: event_object_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_object_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: event_object_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_object_table:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: event_object_table
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_order:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: action_order
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_condition:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: action_condition
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_statement:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: action_statement
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_orientation:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: action_orientation
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_timing:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: action_timing
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_reference_old_table:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: action_reference_old_table
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_reference_new_table:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: action_reference_new_table
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_reference_old_row:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: action_reference_old_row
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_reference_new_row:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: action_reference_new_row
+    primaryKey: false
+    unsigned: false
+    visible: true
+  created:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: created
+    primaryKey: false
+    unsigned: false
+    visible: true

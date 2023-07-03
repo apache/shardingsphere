@@ -5,7 +5,7 @@ weight = 2
 
 ## Background
 
-Broadcast table YAML configuration is highly readable. The broadcast rules can be quickly understood through the YAML format. ShardingSphere automatically creates the ShardingSphereDataSource object according to YAML configuration, which can reduce unnecessary coding for users.
+Broadcast table YAML configuration is highly readable. The broadcast rules can be quickly understood thanks to the YAML format. ShardingSphere automatically creates the `ShardingSphereDataSource` object according to the YAML configuration, which reduces unnecessary coding for users.
 
 ## Parameters
 
@@ -19,12 +19,12 @@ rules:
 
 ## Procedure
 
-1. Configure broadcast table list in YAML file.
-2. Call createDataSource method of the object YamlShardingSphereDataSourceFactory. Create ShardingSphereDataSource according to the configuration information in YAML files.
+1. Configure broadcast table list in the YAML file.
+2. Call the `createDataSource` method of the object `YamlShardingSphereDataSourceFactory`. Create ShardingSphereDataSource according to the configuration information in YAML files.
 
 ## Sample
 
-The YAML configuration sample of broadcast table is as follows:
+The YAML configuration sample of the broadcast table is as follows:
 
 ```yaml
 dataSources:
@@ -47,7 +47,7 @@ rules:
     - t_address
 ```
 
-Read the YAML configuration to create a data source according to the createDataSource method of YamlShardingSphereDataSourceFactory.
+Read the YAML configuration to create a data source according to the `createDataSource` method of `YamlShardingSphereDataSourceFactory`.
 
 ```java
 YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/broadcast-databases-tables.yaml"));

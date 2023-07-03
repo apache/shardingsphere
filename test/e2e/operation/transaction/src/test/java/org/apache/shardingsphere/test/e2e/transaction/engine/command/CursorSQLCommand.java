@@ -32,26 +32,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 public final class CursorSQLCommand {
     
     @XmlElement(name = "single-table-cursor")
-    private String singleTableCursor;
+    private CursorSQL singleTableCursor;
     
     @XmlElement(name = "single-table-cursor-order-by")
-    private String singleTableCursorOrderBy;
+    private CursorSQL singleTableCursorOrderBy;
     
     @XmlElement(name = "broadcast-tables-cursor")
-    private String broadcastTablesCursor;
+    private CursorSQL broadcastTablesCursor;
     
     @XmlElement(name = "broadcast-tables-cursor2")
-    private String broadcastTablesCursor2;
+    private CursorSQL broadcastTablesCursor2;
     
     @XmlElement(name = "broadcast-and-sharding-tables-cursor")
-    private String broadcastAndShardingTablesCursor;
+    private CursorSQL broadcastAndShardingTablesCursor;
     
     @XmlElement(name = "broadcast-and-single-tables-cursor")
-    private String broadcastAndSingleTablesCursor;
+    private CursorSQL broadcastAndSingleTablesCursor;
     
     @XmlElement(name = "broadcast-and-single-tables-cursor2")
     private String broadcastAndSingleTablesCursor2;
     
     @XmlElement(name = "view-cursor")
-    private String viewCursor;
+    private CursorSQL viewCursor;
 }

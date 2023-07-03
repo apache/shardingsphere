@@ -57,6 +57,16 @@ public interface SchemaMetaDataPersistService<T> {
     T load(String databaseName, String schemaName);
     
     /**
+     * Load schema meta data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param name name
+     * @return schema meta data
+     */
+    T load(String databaseName, String schemaName, String name);
+    
+    /**
      * Delete table or view.
      *
      * @param databaseName database name

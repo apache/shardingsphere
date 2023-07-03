@@ -43,11 +43,13 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.algorithm.keygen.GenerateKeyStrategyNotFoundException;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -106,6 +108,52 @@ class ShardingRuleTest {
         assertTrue(actual.getBindingTableRules().isEmpty());
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(SnowflakeKeyGenerateAlgorithm.class));
         assertNull(actual.getDefaultShardingColumn());
+    }
+    
+    @Test
+    void assertNewShardingRuleWithWrongShardingAlgorithmInDefaultDatabaseShardingStrategy() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
+        ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
+        assertThrows(ShardingAlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyList(), mock(InstanceContext.class)));
+    }
+    
+    @Test
+    void assertNewShardingRuleWithWrongShardingAlgorithmInDefaultTableShardingStrategy() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
+        ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
+        assertThrows(ShardingAlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyList(), mock(InstanceContext.class)));
+    }
+    
+    @Test
+    void assertNewShardingRuleWithWrongShardingAlgorithmInDatabaseShardingStrategy() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order", "");
+        tableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
+        ruleConfig.getTables().add(tableRuleConfig);
+        ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
+        assertThrows(ShardingAlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyList(), mock(InstanceContext.class)));
+    }
+    
+    @Test
+    void assertNewShardingRuleWithWrongShardingAlgorithmInTableShardingStrategy() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order", "");
+        tableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
+        ruleConfig.getTables().add(tableRuleConfig);
+        ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
+        assertThrows(ShardingAlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyList(), mock(InstanceContext.class)));
+    }
+    
+    @Test
+    void assertNewShardingRuleWithWrongShardingAlgorithmInAutoTableShardingStrategy() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order", "ds_0,ds_1");
+        autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "INLINE"));
+        ruleConfig.getAutoTables().add(autoTableRuleConfig);
+        ruleConfig.getShardingAlgorithms().put("INLINE", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_%{order_id % 2}"))));
+        assertThrows(ShardingAlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyList(), mock(InstanceContext.class)));
     }
     
     @Test
@@ -365,18 +413,18 @@ class ShardingRuleTest {
     }
     
     @Test
-    void assertTableRuleExists() {
-        assertTrue(createMaximumShardingRule().tableRuleExists(Collections.singleton("logic_table")));
+    void assertContainsShardingTable() {
+        assertTrue(createMaximumShardingRule().containsShardingTable(Collections.singleton("logic_table")));
     }
     
     @Test
-    void assertTableRuleExistsForMultipleTables() {
-        assertTrue(createMaximumShardingRule().tableRuleExists(Arrays.asList("logic_table", "table_0")));
+    void assertContainsShardingTableForMultipleTables() {
+        assertTrue(createMaximumShardingRule().containsShardingTable(Arrays.asList("logic_table", "table_0")));
     }
     
     @Test
-    void assertTableRuleNotExists() {
-        assertFalse(createMinimumShardingRule().tableRuleExists(Collections.singleton("table_0")));
+    void assertNotContainsShardingTable() {
+        assertFalse(createMinimumShardingRule().containsShardingTable(Collections.singleton("table_0")));
     }
     
     @Test
@@ -586,6 +634,7 @@ class ShardingRuleTest {
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singletonList(new WhereSegment(0, 0, condition)));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftDatabaseJoin, rightDatabaseJoin), schema)).thenReturn(createColumnTableNameMap());
         when(sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftTableJoin, rightTableJoin), schema)).thenReturn(createColumnTableNameMap());

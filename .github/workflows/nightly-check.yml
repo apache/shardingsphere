@@ -108,7 +108,7 @@ jobs:
     if: (github.repository == 'apache/shardingsphere')
     name: Checkstyle - SonarCloud
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -139,7 +139,7 @@ jobs:
     if: (github.repository == 'apache/shardingsphere')
     name: Check - Dead Links
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
       - run: sudo npm install -g markdown-link-check@3.10.0
@@ -195,3 +195,19 @@ jobs:
         uses: github/codeql-action/analyze@v2
         with:
           category: "/language:java"
+  
+  check-stale:
+    if: (github.repository == 'apache/shardingsphere')
+    name: Check - Stale Issues
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/stale@v8
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          days-before-issue-stale: 30
+          days-before-pr-stale: 30
+          days-before-close: -1
+          stale-issue-label: "stale"

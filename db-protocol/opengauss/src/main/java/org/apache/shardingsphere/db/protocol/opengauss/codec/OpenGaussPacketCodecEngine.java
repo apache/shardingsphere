@@ -115,7 +115,7 @@ public final class OpenGaussPacketCodecEngine implements DatabasePacketCodecEngi
         try {
             message.write(payload);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             payload.getByteBuf().resetWriterIndex();
             // TODO consider what severity to use

@@ -1,11 +1,11 @@
 +++
-title = "ALTER SQL_PARSER RULE"
+title = "Alter SQL_PARSER Rule"
 weight = 5
 +++
 
 ### Description
 
-The `ALTER SQL_PARSER RULE` syntax is used to alter SQL parser rule configuration.
+The `ALTER SQL_PARSER RULE` syntax is used to alter the SQL parser rule configuration.
 
 ### Syntax
 
@@ -45,13 +45,13 @@ maximumSize ::=
 {{% /tab %}}
 {{< /tabs >}}
 
-### Supplement
+### Note
 
-- `SQL_COMMENT_PARSE_ENABLE`: whether to parse the SQL comment
+- `SQL_COMMENT_PARSE_ENABLE`: specifies whether to parse the SQL comment.
 
-- `PARSE_TREE_CACHE`: local cache configuration of syntax tree
+- `PARSE_TREE_CACHE`: local cache configuration of the syntax tree.
 
-- `SQL_STATEMENT_CACHE`: local cache of SQL statement
+- `SQL_STATEMENT_CACHE`: the local cache of SQL statement.
 
 ### Example
 

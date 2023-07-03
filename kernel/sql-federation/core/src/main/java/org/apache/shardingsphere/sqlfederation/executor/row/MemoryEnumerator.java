@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.executor.row;
 
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 
 import java.util.Collection;
 import java.util.Iterator;

@@ -17,18 +17,58 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.test.e2e.agent.jdbc.project.controller.OrderController;
+import org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.OrderService;
+import org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.impl.OrderServiceImpl;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Jdbc project application.
  */
-@SpringBootApplication
-public class JdbcProjectApplication {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JdbcProjectApplication {
     
+    /**
+     * Main.
+     *
+     * @param args args
+     * @throws ClassNotFoundException Class not found exception
+     * @throws SQLException SQL exception
+     * @throws InterruptedException interrupted exception
+     */
     // CHECKSTYLE:OFF
-    public static void main(final String[] args) {
-        SpringApplication.run(JdbcProjectApplication.class, args);
+    public static void main(final String[] args) throws ClassNotFoundException, SQLException, InterruptedException {
+        run();
     }
     // CHECKSTYLE:ON
+    
+    private static void run() throws ClassNotFoundException, SQLException, InterruptedException {
+        Connection connection = getConnection();
+        OrderService orderService = new OrderServiceImpl(connection);
+        OrderController orderController = new OrderController(orderService);
+        long endTime = System.currentTimeMillis() + (5 * 60 * 1000);
+        while (System.currentTimeMillis() < endTime) {
+            orderController.dropTable();
+            orderController.createTable();
+            orderController.insert();
+            orderController.selectAll();
+            orderController.update();
+            orderController.createErrorRequest();
+            orderController.delete();
+            orderController.dropTable();
+            TimeUnit.MILLISECONDS.sleep(1000L);
+        }
+    }
+    
+    private static Connection getConnection() throws ClassNotFoundException, SQLException {
+        Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        String url = "jdbc:shardingsphere:classpath:config.yaml";
+        return DriverManager.getConnection(url, "root", "root");
+    }
 }

@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereDataNode {
     
-    private static final String ROOT_NODE = "sys_data";
+    private static final String ROOT_NODE = "statistics";
     
     private static final String SCHEMAS_NODE = "schemas";
     

@@ -29,7 +29,6 @@ public final class NewContextManagerSubscriberFacade {
     
     public NewContextManagerSubscriberFacade(final NewRegistryCenter registryCenter, final ContextManager contextManager) {
         new NewConfigurationChangedSubscriber(contextManager);
-        new NewDataSourceChangedSubscriber(contextManager);
         new NewResourceMetaDataChangedSubscriber(contextManager);
         new DatabaseChangedSubscriber(contextManager);
         new NewStateChangedSubscriber(registryCenter, contextManager);

@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerable;
 
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
@@ -48,9 +48,9 @@ class EnumerableScanExecutorTest {
         TableScanExecutorContext executorContext = Mockito.mock(TableScanExecutorContext.class);
         when(executorContext.getDatabaseName()).thenReturn("db");
         when(executorContext.getSchemaName()).thenReturn("pg_catalog");
-        ShardingSphereData shardingSphereData = mock(ShardingSphereData.class, RETURNS_DEEP_STUBS);
+        ShardingSphereStatistics statistics = mock(ShardingSphereStatistics.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabaseData databaseData = mock(ShardingSphereDatabaseData.class, RETURNS_DEEP_STUBS);
-        when(shardingSphereData.getDatabaseData().get("db")).thenReturn(databaseData);
+        when(statistics.getDatabaseData().get("db")).thenReturn(databaseData);
         ShardingSphereSchemaData schemaData = mock(ShardingSphereSchemaData.class, RETURNS_DEEP_STUBS);
         when(databaseData.getSchemaData().get("pg_catalog")).thenReturn(schemaData);
         ShardingSphereTableData tableData = mock(ShardingSphereTableData.class);
@@ -58,8 +58,8 @@ class EnumerableScanExecutorTest {
         when(schemaData.getTableData().get("test")).thenReturn(tableData);
         ShardingSphereTable shardingSphereTable = mock(ShardingSphereTable.class);
         when(shardingSphereTable.getName()).thenReturn("test");
-        Enumerable<Object[]> enumerable = new EnumerableScanExecutor(null, null, null, optimizerContext, null, executorContext, shardingSphereData)
-                .execute(shardingSphereTable, mock(EnumerableScanExecutorContext.class));
+        Enumerable<Object[]> enumerable = new EnumerableScanExecutor(null, null, null, optimizerContext, null, executorContext, statistics)
+                .execute(shardingSphereTable, mock(EnumerableScanExecutor.class));
         try (Enumerator<Object[]> actual = enumerable.enumerator()) {
             actual.moveNext();
             Object[] row = actual.current();

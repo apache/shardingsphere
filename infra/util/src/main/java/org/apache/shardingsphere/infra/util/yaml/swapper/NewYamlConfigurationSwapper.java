@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.util.yaml.swapper;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * TODO Rename YamlConfigurationSwapper when metadata structure adjustment completed. #25485
@@ -43,5 +44,5 @@ public interface NewYamlConfigurationSwapper<T> {
      * @param dataNodes data nodes
      * @return swapped object
      */
-    T swapToObject(Collection<YamlDataNode> dataNodes);
+    Optional<T> swapToObject(Collection<YamlDataNode> dataNodes);
 }

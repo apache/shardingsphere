@@ -52,13 +52,7 @@ import java.util.Optional;
  * Predicate right value token generator for encrypt.
  */
 @Setter
-public final class EncryptPredicateRightValueTokenGenerator
-        implements
-            CollectionSQLTokenGenerator<SQLStatementContext>,
-            ParametersAware,
-            EncryptConditionsAware,
-            EncryptRuleAware,
-            DatabaseNameAware {
+public final class EncryptPredicateRightValueTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ParametersAware, EncryptConditionsAware, EncryptRuleAware, DatabaseNameAware {
     
     private List<Object> parameters;
     
@@ -78,8 +72,7 @@ public final class EncryptPredicateRightValueTokenGenerator
         Collection<SQLToken> result = new LinkedHashSet<>();
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (EncryptCondition each : encryptConditions) {
-            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(each.getTableName());
-            encryptTable.ifPresent(table -> result.add(generateSQLToken(schemaName, table, each)));
+            encryptRule.findEncryptTable(each.getTableName()).ifPresent(optional -> result.add(generateSQLToken(schemaName, optional, each)));
         }
         return result;
     }

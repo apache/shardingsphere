@@ -19,11 +19,10 @@ package org.apache.shardingsphere.traffic.rule;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -143,16 +142,12 @@ public final class TrafficRule implements GlobalRule {
         return result;
     }
     
-    @SuppressWarnings("rawtypes")
     private boolean match(final TrafficAlgorithm trafficAlgorithm, final QueryContext queryContext, final boolean inTransaction) {
         if (trafficAlgorithm instanceof TransactionTrafficAlgorithm) {
             return matchTransactionTraffic((TransactionTrafficAlgorithm) trafficAlgorithm, inTransaction);
         }
         if (trafficAlgorithm instanceof HintTrafficAlgorithm) {
-            HintValueContext hintValueContext = queryContext.getSqlStatementContext() instanceof CommonSQLStatementContext
-                    ? ((CommonSQLStatementContext) queryContext.getSqlStatementContext()).getSqlHintExtractor().getHintValueContext()
-                    : new HintValueContext();
-            return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, hintValueContext);
+            return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, queryContext.getHintValueContext());
         }
         if (trafficAlgorithm instanceof SegmentTrafficAlgorithm) {
             SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();

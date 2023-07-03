@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.mask.event.algorithm;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
 
 /**
  * Alter mask algorithm event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterMaskAlgorithmEvent implements GovernanceEvent {
+public final class AlterMaskAlgorithmEvent extends AlterNamedRuleItemEvent {
     
-    private final String databaseName;
-    
-    private final String algorithmName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    public AlterMaskAlgorithmEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
+        super(databaseName, itemName, activeVersionKey, activeVersion);
+    }
 }

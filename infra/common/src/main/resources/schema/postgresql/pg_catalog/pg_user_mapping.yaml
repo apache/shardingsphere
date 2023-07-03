@@ -22,7 +22,8 @@ columns:
     dataType: -5
     generated: false
     name: oid
-    primaryKey: false
+    primaryKey: true
+    unsigned: false
     visible: true
   umuser:
     caseSensitive: true
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: umuser
     primaryKey: false
+    unsigned: false
     visible: true
   umserver:
     caseSensitive: true
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: umserver
     primaryKey: false
+    unsigned: false
     visible: true
   umoptions:
     caseSensitive: true
@@ -44,9 +47,10 @@ columns:
     generated: false
     name: umoptions
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
-  pg_user_mapping_oid_index:
-    name: pg_user_mapping_oid_index
   pg_user_mapping_user_server_index:
     name: pg_user_mapping_user_server_index
+  pg_user_mapping_oid_index:
+    name: pg_user_mapping_oid_index
