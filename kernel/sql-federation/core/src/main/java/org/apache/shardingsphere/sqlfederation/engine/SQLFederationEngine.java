@@ -161,6 +161,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             executionPlan = compileQuery(prepareEngine, callback, federationContext);
         } catch (Exception ex) {
             ex.printStackTrace();
+            log.error("sql:{}, isUseCache:{}", federationContext.getQueryContext().getSql(), federationContext.getQueryContext().isUseCache(), ex);
             throw ex;
         }
         // CHECKSTYLE:ON
