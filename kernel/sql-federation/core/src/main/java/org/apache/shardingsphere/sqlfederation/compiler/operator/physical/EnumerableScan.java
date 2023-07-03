@@ -49,41 +49,42 @@ import java.util.Objects;
 @Getter
 public final class EnumerableScan extends TableScan implements EnumerableRel {
     
-    private final RelNode pushDownRelNode;
+    private final SqlString sqlString;
     
-    private final String databaseType;
+    private final RelDataType pushDownRowType;
     
-    public EnumerableScan(final RelOptCluster cluster, final RelTraitSet traitSet, final RelNode pushDownRelNode, final RelOptTable table, final String databaseType) {
+    public EnumerableScan(final RelOptCluster cluster, final RelTraitSet traitSet, final RelOptTable table, final RelNode pushDownRelNode, final String databaseType) {
         super(cluster, traitSet, Collections.emptyList(), table);
         this.traitSet = this.traitSet.replace(EnumerableConvention.INSTANCE);
-        this.pushDownRelNode = pushDownRelNode;
-        this.databaseType = databaseType;
+        sqlString = createSQLString(pushDownRelNode, databaseType);
+        pushDownRowType = pushDownRelNode.getRowType();
+    }
+    
+    public EnumerableScan(final RelOptCluster cluster, final RelTraitSet traitSet, final RelOptTable table, final SqlString sqlString, final RelDataType pushDownRowType) {
+        super(cluster, traitSet, Collections.emptyList(), table);
+        this.traitSet = this.traitSet.replace(EnumerableConvention.INSTANCE);
+        this.sqlString = sqlString;
+        this.pushDownRowType = pushDownRowType;
     }
     
     @Override
     public RelNode copy(final RelTraitSet traitSet, final List<RelNode> inputs) {
-        return new EnumerableScan(getCluster(), traitSet, pushDownRelNode, table, databaseType);
-    }
-    
-    @Override
-    public String toString() {
-        return "EnumerableScan{sqlFederationTable=" + table + "}";
+        return new EnumerableScan(getCluster(), traitSet, table, sqlString, pushDownRowType);
     }
     
     @Override
     public RelWriter explainTerms(final RelWriter relWriter) {
-        return super.explainTerms(relWriter).item("pushDownRelNode", pushDownRelNode);
+        return super.explainTerms(relWriter).item("sql", sqlString.getSql());
     }
     
     @Override
     public RelDataType deriveRowType() {
-        return pushDownRelNode.getRowType();
+        return pushDownRowType;
     }
     
     @Override
     public Result implement(final EnumerableRelImplementor implementor, final Prefer pref) {
-        PhysType physType = PhysTypeImpl.of(implementor.getTypeFactory(), getRowType(), pref.preferArray());
-        SqlString sqlString = createSQLString(pushDownRelNode, databaseType);
+        PhysType physType = PhysTypeImpl.of(implementor.getTypeFactory(), getPushDownRowType(), pref.preferArray());
         int[] paramIndexes = null == sqlString.getDynamicParameters() ? new int[]{} : getParamIndexes(sqlString.getDynamicParameters());
         return implementor.result(physType, Blocks.toBlock(Expressions.call(Objects.requireNonNull(table.getExpression(SQLFederationTable.class)),
                 "execute", implementor.getRootExpression(), Expressions.constant(sqlString.getSql()), Expressions.constant(paramIndexes))));

@@ -40,6 +40,6 @@ public final class EnumerableScanConverterRule extends ConverterRule {
     public RelNode convert(final RelNode rel) {
         LogicalScan logicalScan = (LogicalScan) rel;
         RelNode input = logicalScan.peek();
-        return new EnumerableScan(logicalScan.getCluster(), logicalScan.getTraitSet(), input, logicalScan.getTable(), logicalScan.getDatabaseType());
+        return new EnumerableScan(logicalScan.getCluster(), logicalScan.getTraitSet(), logicalScan.getTable(), input, logicalScan.getDatabaseType());
     }
 }
