@@ -37,16 +37,12 @@ import org.apache.shardingsphere.sharding.yaml.swapper.cache.YamlShardingCacheCo
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class ShardingCacheSubscriber implements RuleChangedSubscriber {
+public final class ShardingCacheSubscriber implements RuleChangedSubscriber<AlterShardingCacheEvent, DropShardingCacheEvent> {
     
     private ContextManager contextManager;
     
-    /**
-     * Renew with alter sharding cache.
-     *
-     * @param event alter sharding cache event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final AlterShardingCacheEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
@@ -60,12 +56,8 @@ public final class ShardingCacheSubscriber implements RuleChangedSubscriber {
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    /**
-     * Renew with drop sharding cache.
-     *
-     * @param event drop sharding cache event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final DropShardingCacheEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;

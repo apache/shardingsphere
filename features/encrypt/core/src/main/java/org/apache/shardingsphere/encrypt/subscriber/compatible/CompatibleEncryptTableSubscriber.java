@@ -42,16 +42,12 @@ import java.util.LinkedList;
 @Deprecated
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscriber {
+public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscriber<AlterCompatibleEncryptTableEvent, DropCompatibleEncryptTableEvent> {
     
     private ContextManager contextManager;
     
-    /**
-     * Renew with alter encrypt table.
-     *
-     * @param event alter encrypt table event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final AlterCompatibleEncryptTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
@@ -68,12 +64,8 @@ public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscr
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    /**
-     * Renew with drop encrypt table.
-     *
-     * @param event drop encrypt table event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final DropCompatibleEncryptTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
