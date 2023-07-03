@@ -48,7 +48,7 @@ public abstract class RuleItemChangedSubscribeEngine<T extends RuleConfiguration
         String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         T currentRuleConfig = findRuleConfiguration(database);
-        changeRuleItemConfiguration(currentRuleConfig, swapRuleItemConfigurationFromEvent(yamlContent));
+        changeRuleItemConfiguration(event, currentRuleConfig, swapRuleItemConfigurationFromEvent(yamlContent));
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
     }
     
@@ -71,7 +71,7 @@ public abstract class RuleItemChangedSubscribeEngine<T extends RuleConfiguration
     
     protected abstract T findRuleConfiguration(ShardingSphereDatabase database);
     
-    protected abstract void changeRuleItemConfiguration(T currentRuleConfig, I toBeChangedItemConfig);
+    protected abstract void changeRuleItemConfiguration(AlterRuleItemEvent event, T currentRuleConfig, I toBeChangedItemConfig);
     
     protected abstract void dropRuleItemConfiguration(DropRuleItemEvent event, T currentRuleConfig);
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.subscriber;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -47,7 +48,7 @@ public final class SingleTableSubscribeEngine extends RuleItemChangedSubscribeEn
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeChangedItemConfig) {
+    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getTables().clear();
         currentRuleConfig.getTables().addAll(toBeChangedItemConfig.getTables());
         toBeChangedItemConfig.getDefaultDataSource().ifPresent(optional -> currentRuleConfig.setDefaultDataSource(toBeChangedItemConfig.getDefaultDataSource().get()));

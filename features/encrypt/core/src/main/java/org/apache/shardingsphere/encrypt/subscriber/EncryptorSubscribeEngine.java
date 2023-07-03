@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.encrypt.subscriber;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 
@@ -34,17 +35,17 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 /**
- * Encrypt table subscribe engine.
+ * Encryptor subscribe engine.
  */
-public final class EncryptTableSubscribeEngine extends RuleItemChangedSubscribeEngine<EncryptRuleConfiguration, EncryptTableRuleConfiguration> {
+public final class EncryptorSubscribeEngine extends RuleItemChangedSubscribeEngine<EncryptRuleConfiguration, AlgorithmConfiguration> {
     
-    public EncryptTableSubscribeEngine(final ContextManager contextManager) {
+    public EncryptorSubscribeEngine(final ContextManager contextManager) {
         super(contextManager);
     }
     
     @Override
-    protected EncryptTableRuleConfiguration swapRuleItemConfigurationFromEvent(final String yamlContent) {
-        return new YamlEncryptTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlEncryptTableRuleConfiguration.class));
+    protected AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final String yamlContent) {
+        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
     }
     
     @Override
@@ -59,14 +60,12 @@ public final class EncryptTableSubscribeEngine extends RuleItemChangedSubscribeE
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig, final EncryptTableRuleConfiguration toBeChangedItemConfig) {
-        // TODO refactor DistSQL to only persist config
-        currentRuleConfig.getTables().removeIf(each -> each.getName().equals(toBeChangedItemConfig.getName()));
-        currentRuleConfig.getTables().add(toBeChangedItemConfig);
+    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
+        currentRuleConfig.getEncryptors().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
     }
     
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getTables().removeIf(each -> each.getName().equals(((DropNamedRuleItemEvent) event).getItemName()));
+        currentRuleConfig.getEncryptors().remove(((DropNamedRuleItemEvent) event).getItemName());
     }
 }
