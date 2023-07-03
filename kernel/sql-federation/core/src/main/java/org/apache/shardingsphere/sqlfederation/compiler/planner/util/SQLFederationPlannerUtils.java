@@ -55,7 +55,6 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.view.ShardingSphereViewExpander;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.converter.EnumerableScanConverterRule;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.transformation.PushFilterIntoScanRule;
-import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.transformation.PushProjectIntoScanRule;
 
 import java.util.Arrays;
 import java.util.Collection;
