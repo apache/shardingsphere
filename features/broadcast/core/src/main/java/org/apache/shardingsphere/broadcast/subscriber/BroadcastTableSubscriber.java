@@ -37,16 +37,12 @@ import java.util.Optional;
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class BroadcastTableSubscriber implements RuleChangedSubscriber {
+public final class BroadcastTableSubscriber implements RuleChangedSubscriber<AlterBroadcastTableEvent, DropBroadcastTableEvent> {
     
     private ContextManager contextManager;
     
-    /**
-     * Renew with alter broadcast table.
-     *
-     * @param event alter broadcast table event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final AlterBroadcastTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
@@ -66,12 +62,8 @@ public final class BroadcastTableSubscriber implements RuleChangedSubscriber {
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    /**
-     * Renew with delete broadcast table.
-     *
-     * @param event delete broadcast table event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final DropBroadcastTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;

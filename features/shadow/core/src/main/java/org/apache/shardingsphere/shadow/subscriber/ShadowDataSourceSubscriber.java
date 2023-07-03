@@ -36,16 +36,12 @@ import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSou
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class ShadowDataSourceSubscriber implements RuleChangedSubscriber {
+public final class ShadowDataSourceSubscriber implements RuleChangedSubscriber<AlterShadowDataSourceEvent, DropShadowDataSourceEvent> {
     
     private ContextManager contextManager;
     
-    /**
-     * Renew with alter shadow data source.
-     *
-     * @param event alter shadow data source event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final AlterShadowDataSourceEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
@@ -61,12 +57,8 @@ public final class ShadowDataSourceSubscriber implements RuleChangedSubscriber {
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    /**
-     * Renew with delete shadow data source.
-     *
-     * @param event delete shadow data source event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final DropShadowDataSourceEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;

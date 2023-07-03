@@ -36,16 +36,12 @@ import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfig
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class SingleTableSubscriber implements RuleChangedSubscriber {
+public final class SingleTableSubscriber implements RuleChangedSubscriber<AlterSingleTableEvent, DropSingleTableEvent> {
     
     private ContextManager contextManager;
     
-    /**
-     * Renew with alter single table.
-     *
-     * @param event alter single table event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final AlterSingleTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
@@ -57,12 +53,8 @@ public final class SingleTableSubscriber implements RuleChangedSubscriber {
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), changedConfig));
     }
     
-    /**
-     * Renew with drop single table.
-     *
-     * @param event drop single table event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final DropSingleTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;

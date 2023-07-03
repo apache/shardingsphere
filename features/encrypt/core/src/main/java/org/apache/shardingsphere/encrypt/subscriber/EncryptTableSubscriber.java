@@ -40,16 +40,12 @@ import java.util.LinkedList;
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class EncryptTableSubscriber implements RuleChangedSubscriber {
+public final class EncryptTableSubscriber implements RuleChangedSubscriber<AlterEncryptTableEvent, DropEncryptTableEvent> {
     
     private ContextManager contextManager;
     
-    /**
-     * Renew with alter encrypt table.
-     *
-     * @param event alter encrypt table event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final AlterEncryptTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
@@ -61,12 +57,8 @@ public final class EncryptTableSubscriber implements RuleChangedSubscriber {
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), changedConfig));
     }
     
-    /**
-     * Renew with drop encrypt table.
-     *
-     * @param event drop encrypt table event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final DropEncryptTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;

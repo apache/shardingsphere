@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.subscriber;
+package org.apache.shardingsphere.sharding.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
@@ -24,47 +24,55 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
-import org.apache.shardingsphere.shadow.event.table.DropShadowTableEvent;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.event.strategy.table.AlterDefaultTableShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.table.DropDefaultTableShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStrategyConfigurationSwapper;
 
 /**
- * Shadow table subscriber.
+ * Default table sharding strategy subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class ShadowTableSubscriber implements RuleChangedSubscriber<AlterShadowTableEvent, DropShadowTableEvent> {
+public final class DefaultTableShardingStrategySubscriber implements RuleChangedSubscriber<AlterDefaultTableShardingStrategyEvent, DropDefaultTableShardingStrategyEvent> {
     
     private ContextManager contextManager;
     
+    /**
+     * Renew with alter default table sharding strategy.
+     *
+     * @param event alter default table sharding strategy event
+     */
     @Subscribe
-    @Override
-    public synchronized void renew(final AlterShadowTableEvent event) {
+    public synchronized void renew(final AlterDefaultTableShardingStrategyEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        ShadowTableConfiguration toBeChangedConfig = new YamlShadowTableConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlShadowTableConfiguration.class));
+        ShardingStrategyConfiguration toBeChangedConfig = new YamlShardingStrategyConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlShardingStrategyConfiguration.class));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShadowRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShadowRule.class)
-                .map(optional -> (ShadowRuleConfiguration) optional.getConfiguration()).orElseGet(ShadowRuleConfiguration::new);
-        config.getTables().put(event.getItemName(), toBeChangedConfig);
+        ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
+                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
+        config.setDefaultTableShardingStrategy(toBeChangedConfig);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
+    /**
+     * Renew with drop default table sharding strategy.
+     *
+     * @param event drop default table sharding strategy event
+     */
     @Subscribe
-    @Override
-    public synchronized void renew(final DropShadowTableEvent event) {
+    public synchronized void renew(final DropDefaultTableShardingStrategyEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getTables().remove(event.getItemName());
+        ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
+        config.setDefaultTableShardingStrategy(null);
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
 }
