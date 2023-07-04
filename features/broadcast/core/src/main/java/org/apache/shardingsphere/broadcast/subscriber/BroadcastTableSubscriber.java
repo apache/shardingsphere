@@ -19,18 +19,10 @@ package org.apache.shardingsphere.broadcast.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
-import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.event.table.AlterBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.table.DropBroadcastTableEvent;
-import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
-
-import java.util.Optional;
 
 /**
  * Broadcast table subscriber.
@@ -39,38 +31,22 @@ import java.util.Optional;
 @Setter
 public final class BroadcastTableSubscriber implements RuleChangedSubscriber<AlterBroadcastTableEvent, DropBroadcastTableEvent> {
     
-    private ContextManager contextManager;
+    private BroadcastTableSubscribeEngine engine;
+    
+    @Override
+    public void setContextManager(final ContextManager contextManager) {
+        engine = new BroadcastTableSubscribeEngine(contextManager);
+    }
     
     @Subscribe
     @Override
     public synchronized void renew(final AlterBroadcastTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        BroadcastRuleConfiguration toBeChangedConfig = new BroadcastRuleConfiguration(YamlEngine.unmarshal(yamlContent, YamlBroadcastRuleConfiguration.class).getTables());
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        Optional<BroadcastRule> rule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
-        BroadcastRuleConfiguration config;
-        if (rule.isPresent()) {
-            config = rule.get().getConfiguration();
-            config.getTables().clear();
-            config.getTables().addAll(toBeChangedConfig.getTables());
-        } else {
-            config = new BroadcastRuleConfiguration(toBeChangedConfig.getTables());
-        }
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        engine.renew(event);
     }
     
     @Subscribe
     @Override
     public synchronized void renew(final DropBroadcastTableEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        BroadcastRuleConfiguration config = database.getRuleMetaData().getSingleRule(BroadcastRule.class).getConfiguration();
-        config.getTables().clear();
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        engine.renew(event);
     }
 }
