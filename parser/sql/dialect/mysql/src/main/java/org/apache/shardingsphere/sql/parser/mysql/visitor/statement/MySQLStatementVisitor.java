@@ -1697,6 +1697,11 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setAlias(alias);
             return result;
         }
+        if (projection instanceof InExpression) {
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx.expr()), (InExpression) projection);
+            result.setAlias(alias);
+            return result;
+        }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias
                 ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
