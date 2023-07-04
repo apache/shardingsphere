@@ -26,6 +26,8 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.sqlfederation.compiler.operator.logical.LogicalScan;
 import org.immutables.value.Value;
 
+import java.util.Collection;
+
 /**
  * Push filter into scan rule.
  */
@@ -40,18 +42,18 @@ public final class PushFilterIntoScanRule extends RelRule<PushFilterIntoScanRule
     
     @Override
     public boolean matches(final RelOptRuleCall call) {
-        LogicalFilter filter = call.rel(0);
-        RexCall condition = (RexCall) filter.getCondition();
-        for (RexNode each : condition.getOperands()) {
-            if (containsCorrelate(each)) {
-                return false;
-            }
-        }
-        return true;
+        LogicalFilter logicalFilter = call.rel(0);
+        RexNode condition = logicalFilter.getCondition();
+        return !(condition instanceof RexCall) || !containsCorrelate(((RexCall) condition).getOperands());
     }
     
-    private boolean containsCorrelate(final RexNode rexNode) {
-        return rexNode.toString().contains(CORRELATE_REFERENCE);
+    private boolean containsCorrelate(final Collection<RexNode> operands) {
+        for (RexNode each : operands) {
+            if (each.toString().contains(CORRELATE_REFERENCE)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @Override

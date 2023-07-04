@@ -34,12 +34,20 @@ public final class PushProjectIntoScanRule extends RelRule<PushProjectIntoScanRu
     
     private static final String CASE_FUNCTION_NAME = "CAST";
     
+    private static final String PG_CATALOG = "pg_catalog";
+    
     private PushProjectIntoScanRule(final Config config) {
         super(config);
     }
     
     @Override
     public boolean matches(final RelOptRuleCall call) {
+        LogicalScan logicalScan = call.rel(1);
+        for (String each : logicalScan.getTable().getQualifiedName()) {
+            if (PG_CATALOG.equalsIgnoreCase(each)) {
+                return false;
+            }
+        }
         LogicalProject logicalProject = call.rel(0);
         for (RexNode each : logicalProject.getProjects()) {
             if (containsCastFunction(each)) {
