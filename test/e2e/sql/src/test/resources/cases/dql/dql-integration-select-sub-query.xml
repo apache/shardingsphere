@@ -66,8 +66,7 @@
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>
     
-    <!-- TODO support sql federation with mask_sharding,mask_encrypt_sharding -->
-    <test-case sql="SELECT * FROM (SELECT u1.* FROM t_user u1 INNER JOIN t_user u2 ON u1.user_id = u2.user_id) temp ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="mask,mask_encrypt">
+    <test-case sql="SELECT * FROM (SELECT u1.* FROM t_user u1 INNER JOIN t_user u2 ON u1.user_id = u2.user_id) temp ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="mask,mask_encrypt,mask_sharding,mask_encrypt_sharding">
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>
     
