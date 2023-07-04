@@ -18,63 +18,33 @@
 package org.apache.shardingsphere.sharding.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.event.table.auto.AlterShardingAutoTableEvent;
 import org.apache.shardingsphere.sharding.event.table.auto.DropShardingAutoTableEvent;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingAutoTableRuleConfigurationSwapper;
 
 /**
  * Sharding auto table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class ShardingAutoTableSubscriber implements RuleChangedSubscriber<AlterShardingAutoTableEvent, DropShardingAutoTableEvent> {
     
-    private ContextManager contextManager;
+    private ShardingAutoTableSubscribeEngine engine;
     
-    /**
-     * Renew with alter sharding auto table.
-     *
-     * @param event alter sharding auto table event
-     */
-    @Subscribe
-    public synchronized void renew(final AlterShardingAutoTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        ShardingAutoTableRuleConfiguration toBeChangedConfig = new YamlShardingAutoTableRuleConfigurationSwapper().swapToObject(
-                YamlEngine.unmarshal(yamlContent, YamlShardingAutoTableRuleConfiguration.class));
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
-        config.getAutoTables().removeIf(each -> each.getLogicTable().equals(event.getItemName()));
-        config.getAutoTables().add(toBeChangedConfig);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    @Override
+    public void setContextManager(final ContextManager contextManager) {
+        engine = new ShardingAutoTableSubscribeEngine(contextManager);
     }
     
-    /**
-     * Renew with delete sharding auto table.
-     *
-     * @param event delete sharding auto table event
-     */
     @Subscribe
+    @Override
+    public synchronized void renew(final AlterShardingAutoTableEvent event) {
+        engine.renew(event);
+    }
+    
+    @Subscribe
+    @Override
     public synchronized void renew(final DropShardingAutoTableEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
-        config.getAutoTables().removeIf(each -> each.getLogicTable().equals(event.getItemName()));
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        engine.renew(event);
     }
 }
