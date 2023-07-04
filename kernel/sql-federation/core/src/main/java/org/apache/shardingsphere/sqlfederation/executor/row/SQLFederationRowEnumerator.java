@@ -71,7 +71,6 @@ public final class SQLFederationRowEnumerator implements Enumerator<Object> {
     
     @Override
     public void reset() {
-        System.out.println("reset");
     }
     
     @Override
