@@ -43,16 +43,12 @@ import java.util.Optional;
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class ReadwriteSplittingDataSourceSubscriber implements RuleChangedSubscriber {
+public final class ReadwriteSplittingDataSourceSubscriber implements RuleChangedSubscriber<AlterReadwriteSplittingDataSourceEvent, DropReadwriteSplittingDataSourceEvent> {
     
     private ContextManager contextManager;
     
-    /**
-     * Renew with alter readwrite-splitting configuration.
-     *
-     * @param event alter readwrite-splitting configuration event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final AlterReadwriteSplittingDataSourceEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
@@ -64,12 +60,8 @@ public final class ReadwriteSplittingDataSourceSubscriber implements RuleChanged
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    /**
-     * Renew with drop readwrite-splitting configuration.
-     *
-     * @param event drop readwrite-splitting configuration event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final DropReadwriteSplittingDataSourceEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;

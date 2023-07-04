@@ -35,16 +35,12 @@ import java.util.Optional;
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class DefaultShadowAlgorithmNameSubscriber implements RuleChangedSubscriber {
+public final class DefaultShadowAlgorithmNameSubscriber implements RuleChangedSubscriber<AlterDefaultShadowAlgorithmEvent, DropDefaultShadowAlgorithmEvent> {
     
     private ContextManager contextManager;
     
-    /**
-     * Renew with alter default algorithm name.
-     *
-     * @param event alter default algorithm name event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final AlterDefaultShadowAlgorithmEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
@@ -60,12 +56,8 @@ public final class DefaultShadowAlgorithmNameSubscriber implements RuleChangedSu
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    /**
-     * Renew with delete default algorithm name.
-     *
-     * @param event delete default algorithm name event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final DropDefaultShadowAlgorithmEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;

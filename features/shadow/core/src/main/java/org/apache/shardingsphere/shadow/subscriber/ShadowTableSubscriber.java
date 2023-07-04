@@ -37,16 +37,12 @@ import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfig
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class ShadowTableSubscriber implements RuleChangedSubscriber {
+public final class ShadowTableSubscriber implements RuleChangedSubscriber<AlterShadowTableEvent, DropShadowTableEvent> {
     
     private ContextManager contextManager;
     
-    /**
-     * Renew with alter shadow table.
-     *
-     * @param event alter shadow table event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final AlterShadowTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
@@ -60,12 +56,8 @@ public final class ShadowTableSubscriber implements RuleChangedSubscriber {
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    /**
-     * Renew with drop shadow table.
-     *
-     * @param event drop shadow table event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final DropShadowTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;

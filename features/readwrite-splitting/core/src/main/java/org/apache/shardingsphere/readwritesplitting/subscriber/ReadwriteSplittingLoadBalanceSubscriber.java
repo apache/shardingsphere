@@ -42,16 +42,12 @@ import java.util.Optional;
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChangedSubscriber {
+public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChangedSubscriber<AlterReadwriteSplittingLoadBalancerEvent, DropReadwriteSplittingLoadBalancerEvent> {
     
     private ContextManager contextManager;
     
-    /**
-     * Renew with alter load-balancer.
-     *
-     * @param event alter load-balancer event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final AlterReadwriteSplittingLoadBalancerEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
@@ -62,12 +58,8 @@ public final class ReadwriteSplittingLoadBalanceSubscriber implements RuleChange
                 getConfiguration(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName()), event.getItemName(), toBeChangedConfig)));
     }
     
-    /**
-     * Renew with drop load-balancer.
-     *
-     * @param event drop load-balancer event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final DropReadwriteSplittingLoadBalancerEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;

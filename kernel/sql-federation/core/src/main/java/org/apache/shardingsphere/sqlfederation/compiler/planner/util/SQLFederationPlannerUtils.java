@@ -51,6 +51,7 @@ import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.view.ShardingSphereViewExpander;
+import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.converter.EnumerableScanConverterRule;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.transformation.PushFilterIntoScanRule;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.transformation.PushProjectIntoScanRule;
 
@@ -108,7 +109,29 @@ public final class SQLFederationPlannerUtils {
     private static void setUpRules(final RelOptPlanner planner) {
         planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
         planner.addRelTraitDef(RelCollationTraitDef.INSTANCE);
-        EnumerableRules.rules().forEach(planner::addRule);
+        planner.addRule(EnumerableRules.ENUMERABLE_JOIN_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_MERGE_JOIN_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_CORRELATE_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_PROJECT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_FILTER_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_CALC_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_AGGREGATE_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_SORT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_LIMIT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_COLLECT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_UNCOLLECT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_UNION_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_REPEAT_UNION_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_TABLE_SPOOL_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_INTERSECT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_MINUS_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_TABLE_MODIFICATION_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_VALUES_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_WINDOW_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_TABLE_FUNCTION_SCAN_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_MATCH_RULE);
+        planner.addRule(EnumerableScanConverterRule.DEFAULT_CONFIG.toRule());
     }
     
     private static Collection<RelOptRule> getSubQueryRules() {
@@ -140,7 +163,7 @@ public final class SQLFederationPlannerUtils {
         result.add(CoreRules.PROJECT_JOIN_TRANSPOSE);
         result.add(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
         result.add(ProjectRemoveRule.Config.DEFAULT.toRule());
-        result.add(PushProjectIntoScanRule.INSTANCE);
+        result.add(PushProjectIntoScanRule.Config.DEFAULT.toRule());
         return result;
     }
     
@@ -156,7 +179,7 @@ public final class SQLFederationPlannerUtils {
         result.add(CoreRules.FILTER_MERGE);
         result.add(CoreRules.JOIN_PUSH_EXPRESSIONS);
         result.add(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES);
-        result.add(PushFilterIntoScanRule.INSTANCE);
+        result.add(PushFilterIntoScanRule.Config.DEFAULT.toRule());
         return result;
     }
     
@@ -210,7 +233,7 @@ public final class SQLFederationPlannerUtils {
     
     /**
      * Create sql to rel converter.
-     *
+     * 
      * @param catalogReader catalog reader
      * @param validator validator
      * @param cluster cluster

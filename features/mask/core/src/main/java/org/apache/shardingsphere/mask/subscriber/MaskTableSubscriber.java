@@ -40,16 +40,12 @@ import java.util.LinkedList;
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class MaskTableSubscriber implements RuleChangedSubscriber {
+public final class MaskTableSubscriber implements RuleChangedSubscriber<AlterMaskTableEvent, DropMaskTableEvent> {
     
     private ContextManager contextManager;
     
-    /**
-     * Renew with alter mask table.
-     *
-     * @param event alter mask table event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final AlterMaskTableEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
@@ -61,12 +57,8 @@ public final class MaskTableSubscriber implements RuleChangedSubscriber {
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    /**
-     * Renew with drop mask table.
-     *
-     * @param event drop mask table event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final DropMaskTableEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;

@@ -17,12 +17,17 @@
 
 package org.apache.shardingsphere.mode.subsciber;
 
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Rule changed subscriber.
+ * 
+ * @param <A> type of alter rule item event
+ * @param <D> type of drop rule item event
  */
-public interface RuleChangedSubscriber {
+public interface RuleChangedSubscriber<A extends AlterRuleItemEvent, D extends DropRuleItemEvent> {
     
     /**
      * Set context manager.
@@ -30,4 +35,18 @@ public interface RuleChangedSubscriber {
      * @param contextManager context manager
      */
     void setContextManager(ContextManager contextManager);
+    
+    /**
+     * Renew with alter rule item.
+     *
+     * @param event alter rule item event
+     */
+    void renew(A event);
+    
+    /**
+     * Renew with drop rule item.
+     *
+     * @param event drop rule item event
+     */
+    void renew(D event);
 }

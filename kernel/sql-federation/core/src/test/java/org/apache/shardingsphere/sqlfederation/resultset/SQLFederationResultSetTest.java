@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFeder
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -84,7 +83,7 @@ class SQLFederationResultSetTest {
     
     @SuppressWarnings("unchecked")
     private Enumerator<Object> createEnumerator() {
-        Enumerator<Object> result = Mockito.mock(Enumerator.class);
+        Enumerator<Object> result = mock(Enumerator.class);
         when(result.moveNext()).thenReturn(true, false);
         when(result.current()).thenReturn(new Object[]{1, 1, "OK", 1});
         return result;

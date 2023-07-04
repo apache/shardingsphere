@@ -40,16 +40,12 @@ import java.util.LinkedList;
  */
 @SuppressWarnings("UnstableApiUsage")
 @Setter
-public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
+public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber<AlterMaskAlgorithmEvent, DropMaskAlgorithmEvent> {
     
     private ContextManager contextManager;
     
-    /**
-     * Renew with alter mask algorithm.
-     *
-     * @param event alter mask algorithm event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final AlterMaskAlgorithmEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
@@ -63,12 +59,8 @@ public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber {
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
     }
     
-    /**
-     * Renew with drop mask algorithm.
-     *
-     * @param event drop mask algorithm event
-     */
     @Subscribe
+    @Override
     public synchronized void renew(final DropMaskAlgorithmEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;

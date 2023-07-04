@@ -43,6 +43,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -91,9 +93,11 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
         ShardingSphereRuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
         SQLParserRule sqlParserRule = globalRuleMetaData.getSingleRule(SQLParserRule.class);
-        SQLStatement previewedStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(sqlStatement.getSql(), false);
+        String sql = sqlParserRule.isSqlCommentParseEnabled() ? sqlStatement.getSql() : SQLHintUtils.removeHint(sqlStatement.getSql());
+        SQLStatement previewedStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(sql, false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), previewedStatement, databaseName);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, sqlStatement.getSql(), Collections.emptyList());
+        HintValueContext hintValueContext = sqlParserRule.isSqlCommentParseEnabled() ? new HintValueContext() : SQLHintUtils.extractHint(sqlStatement.getSql()).orElseGet(HintValueContext::new);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
         connectionSession.setQueryContext(queryContext);
         if (sqlStatementContext instanceof CursorAvailable && sqlStatementContext instanceof CursorDefinitionAware) {
             setUpCursorDefinition(sqlStatementContext, connectionSession);
