@@ -18,53 +18,33 @@
 package org.apache.shardingsphere.shadow.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.DropShadowTableEvent;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
 /**
  * Shadow table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class ShadowTableSubscriber implements RuleChangedSubscriber<AlterShadowTableEvent, DropShadowTableEvent> {
     
-    private ContextManager contextManager;
+    private ShadowTableSubscribeEngine engine;
+    
+    @Override
+    public void setContextManager(final ContextManager contextManager) {
+        engine = new ShadowTableSubscribeEngine(contextManager);
+    }
     
     @Subscribe
     @Override
     public synchronized void renew(final AlterShadowTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        ShadowTableConfiguration toBeChangedConfig = new YamlShadowTableConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlShadowTableConfiguration.class));
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShadowRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShadowRule.class)
-                .map(optional -> (ShadowRuleConfiguration) optional.getConfiguration()).orElseGet(ShadowRuleConfiguration::new);
-        config.getTables().put(event.getItemName(), toBeChangedConfig);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        engine.renew(event);
     }
     
     @Subscribe
     @Override
     public synchronized void renew(final DropShadowTableEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getTables().remove(event.getItemName());
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        engine.renew(event);
     }
 }
