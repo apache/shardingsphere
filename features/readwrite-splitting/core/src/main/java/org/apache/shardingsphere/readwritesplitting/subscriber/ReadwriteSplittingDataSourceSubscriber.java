@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwriteSplittingDataSourceEvent;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.readwritesplitting.event.datasource.DropReadwri
  * Readwrite-splitting configuration subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class ReadwriteSplittingDataSourceSubscriber implements RuleChangedSubscriber<AlterReadwriteSplittingDataSourceEvent, DropReadwriteSplittingDataSourceEvent> {
     
     private ReadwriteSplittingDataSourceSubscribeEngine engine;

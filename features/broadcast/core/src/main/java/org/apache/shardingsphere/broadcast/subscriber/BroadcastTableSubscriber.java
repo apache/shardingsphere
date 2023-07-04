@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.broadcast.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
 import org.apache.shardingsphere.broadcast.event.table.AlterBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.event.table.DropBroadcastTableEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
  * Broadcast table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class BroadcastTableSubscriber implements RuleChangedSubscriber<AlterBroadcastTableEvent, DropBroadcastTableEvent> {
     
     private BroadcastTableSubscribeEngine engine;
