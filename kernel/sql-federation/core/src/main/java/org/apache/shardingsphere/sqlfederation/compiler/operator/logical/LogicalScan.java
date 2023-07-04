@@ -19,9 +19,11 @@ package org.apache.shardingsphere.sqlfederation.compiler.operator.logical;
 
 import lombok.Getter;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalProject;
+import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.shardingsphere.sqlfederation.compiler.operator.util.LogicalScanPushDownRelBuilder;
 
 import java.util.Collections;
@@ -33,15 +35,15 @@ import java.util.Objects;
 @Getter
 public final class LogicalScan extends TableScan {
     
-    private final LogicalScanPushDownRelBuilder relBuilder;
+    private final LogicalScanPushDownRelBuilder pushDownRelBuilder;
     
     private final String databaseType;
     
     public LogicalScan(final TableScan tableScan, final String databaseType) {
         super(tableScan.getCluster(), tableScan.getTraitSet(), Collections.emptyList(), tableScan.getTable());
         this.databaseType = databaseType;
-        relBuilder = LogicalScanPushDownRelBuilder.create(tableScan);
-        relBuilder.scan(tableScan.getTable().getQualifiedName());
+        pushDownRelBuilder = LogicalScanPushDownRelBuilder.create(tableScan);
+        pushDownRelBuilder.scan(tableScan.getTable().getQualifiedName());
         resetRowType(tableScan);
     }
     
@@ -55,7 +57,7 @@ public final class LogicalScan extends TableScan {
      * @param logicalFilter logical filter
      */
     public void pushDown(final LogicalFilter logicalFilter) {
-        relBuilder.filter(logicalFilter.getVariablesSet(), logicalFilter.getCondition());
+        pushDownRelBuilder.filter(logicalFilter.getVariablesSet(), logicalFilter.getCondition());
         resetRowType(logicalFilter);
     }
     
@@ -65,7 +67,7 @@ public final class LogicalScan extends TableScan {
      * @param logicalProject logical project
      */
     public void pushDown(final LogicalProject logicalProject) {
-        relBuilder.project(logicalProject.getProjects(), logicalProject.getRowType().getFieldNames());
+        pushDownRelBuilder.project(logicalProject.getProjects(), logicalProject.getRowType().getFieldNames());
         resetRowType(logicalProject);
     }
     
@@ -75,11 +77,14 @@ public final class LogicalScan extends TableScan {
      * @return rel node
      */
     public RelNode peek() {
-        return relBuilder.peek();
+        return pushDownRelBuilder.peek();
     }
     
     @Override
     public boolean deepEquals(final Object other) {
+        if (pushDownRelBuilder.peek() instanceof LogicalTableScan) {
+            return super.deepEquals(other);
+        }
         if (this == other) {
             return true;
         }
@@ -87,12 +92,20 @@ public final class LogicalScan extends TableScan {
             return false;
         }
         LogicalScan otherLogicalScan = (LogicalScan) other;
-        return traitSet.equals(otherLogicalScan.getTraitSet()) && relBuilder.peek().deepEquals(otherLogicalScan.relBuilder.peek())
+        return traitSet.equals(otherLogicalScan.getTraitSet()) && pushDownRelBuilder.peek().deepEquals(otherLogicalScan.pushDownRelBuilder.peek())
                 && hints.equals(otherLogicalScan.hints) && getRowType().equalsSansFieldNames(otherLogicalScan.getRowType());
     }
     
     @Override
     public int deepHashCode() {
-        return Objects.hash(traitSet, relBuilder.peek().deepHashCode(), hints);
+        if (pushDownRelBuilder.peek() instanceof LogicalTableScan) {
+            return super.deepHashCode();
+        }
+        return Objects.hash(traitSet, pushDownRelBuilder.peek().deepHashCode(), hints);
+    }
+    
+    @Override
+    public RelWriter explainTerms(final RelWriter relWriter) {
+        return super.explainTerms(relWriter).item("pushDownRelBuilder", pushDownRelBuilder);
     }
 }

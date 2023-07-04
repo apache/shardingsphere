@@ -26,13 +26,13 @@ import java.util.Iterator;
 /**
  * Memory enumerator.
  */
-public final class MemoryEnumerator implements Enumerator<Object[]> {
+public final class MemoryEnumerator implements Enumerator<Object> {
     
     private final Collection<ShardingSphereRowData> rows;
     
     private Iterator<ShardingSphereRowData> rowDataIterator;
     
-    private Object[] current;
+    private Object current;
     
     public MemoryEnumerator(final Collection<ShardingSphereRowData> rows) {
         this.rows = rows;
@@ -40,7 +40,7 @@ public final class MemoryEnumerator implements Enumerator<Object[]> {
     }
     
     @Override
-    public Object[] current() {
+    public Object current() {
         return current;
     }
     

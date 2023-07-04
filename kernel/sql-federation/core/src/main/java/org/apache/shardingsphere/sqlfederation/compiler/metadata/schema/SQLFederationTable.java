@@ -95,7 +95,7 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
      * @param paramIndexes param indexes
      * @return enumerable result
      */
-    public Enumerable<Object[]> execute(final DataContext root, final String sql, final int[] paramIndexes) {
+    public Enumerable<Object> execute(final DataContext root, final String sql, final int[] paramIndexes) {
         return scanExecutor.execute(table, new EnumerableScanExecutorContext(root, sql, paramIndexes));
     }
     

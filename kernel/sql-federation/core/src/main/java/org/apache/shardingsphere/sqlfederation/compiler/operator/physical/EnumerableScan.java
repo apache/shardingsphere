@@ -86,8 +86,8 @@ public final class EnumerableScan extends TableScan implements EnumerableRel {
     public Result implement(final EnumerableRelImplementor implementor, final Prefer pref) {
         PhysType physType = PhysTypeImpl.of(implementor.getTypeFactory(), getPushDownRowType(), pref.preferArray());
         int[] paramIndexes = null == sqlString.getDynamicParameters() ? new int[]{} : getParamIndexes(sqlString.getDynamicParameters());
-        return implementor.result(physType, Blocks.toBlock(Expressions.call(Objects.requireNonNull(table.getExpression(SQLFederationTable.class)),
-                "execute", implementor.getRootExpression(), Expressions.constant(sqlString.getSql()), Expressions.constant(paramIndexes))));
+        return implementor.result(physType, Blocks.toBlock(Expressions.call(Objects.requireNonNull(table.getExpression(SQLFederationTable.class)), "execute", implementor.getRootExpression(),
+                Expressions.constant(sqlString.getSql().replace("u&'\\", "'\\u")), Expressions.constant(paramIndexes))));
     }
     
     private SqlString createSQLString(final RelNode scanContext, final String databaseType) {

@@ -32,7 +32,7 @@ import java.util.Collection;
  * SQL federation row enumerator.
  */
 @RequiredArgsConstructor
-public final class SQLFederationRowEnumerator implements Enumerator<Object[]> {
+public final class SQLFederationRowEnumerator implements Enumerator<Object> {
     
     private final MergedResult queryResult;
     
@@ -40,10 +40,10 @@ public final class SQLFederationRowEnumerator implements Enumerator<Object[]> {
     
     private final Collection<Statement> statements;
     
-    private Object[] currentRow;
+    private Object currentRow;
     
     @Override
-    public Object[] current() {
+    public Object current() {
         return currentRow;
     }
     
@@ -62,14 +62,16 @@ public final class SQLFederationRowEnumerator implements Enumerator<Object[]> {
     }
     
     private void setCurrentRow() throws SQLException {
-        currentRow = new Object[metaData.getColumnCount()];
+        Object[] rowValues = new Object[metaData.getColumnCount()];
         for (int i = 0; i < metaData.getColumnCount(); i++) {
-            currentRow[i] = queryResult.getValue(i + 1, Object.class);
+            rowValues[i] = queryResult.getValue(i + 1, Object.class);
         }
+        this.currentRow = 1 == metaData.getColumnCount() ? rowValues[0] : rowValues;
     }
     
     @Override
     public void reset() {
+        System.out.println("reset");
     }
     
     @Override

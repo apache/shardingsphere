@@ -21,6 +21,8 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.rules.TransformationRule;
+import org.apache.calcite.rex.RexCall;
+import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.sqlfederation.compiler.operator.logical.LogicalScan;
 import org.immutables.value.Value;
 
@@ -30,8 +32,25 @@ import org.immutables.value.Value;
 @Value.Enclosing
 public final class PushProjectIntoScanRule extends RelRule<PushProjectIntoScanRule.Config> implements TransformationRule {
     
+    private static final String CASE_FUNCTION_NAME = "CAST";
+    
     private PushProjectIntoScanRule(final Config config) {
         super(config);
+    }
+    
+    @Override
+    public boolean matches(final RelOptRuleCall call) {
+        LogicalProject logicalProject = call.rel(0);
+        for (RexNode each : logicalProject.getProjects()) {
+            if (containsCastFunction(each)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean containsCastFunction(final RexNode rexNode) {
+        return rexNode instanceof RexCall && CASE_FUNCTION_NAME.equalsIgnoreCase(((RexCall) rexNode).getOperator().getName());
     }
     
     @Override

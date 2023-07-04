@@ -45,7 +45,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.mockito.Mockito;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -59,8 +58,9 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 
-class SQLStatementCompilerEngineIT {
+class SQLStatementCompilerIT {
     
     private static final String SCHEMA_NAME = "federate_jdbc";
     
@@ -240,7 +240,7 @@ class SQLStatementCompilerEngineIT {
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtils.createCatalogReader(SCHEMA_NAME, sqlFederationSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = SQLFederationPlannerUtils.createSqlValidator(catalogReader, relDataTypeFactory, databaseType, connectionConfig);
         RelOptCluster cluster = RelOptCluster.create(SQLFederationPlannerUtils.createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
-        return SQLFederationPlannerUtils.createSqlToRelConverter(catalogReader, validator, cluster, Mockito.mock(SQLParserRule.class), databaseType, false);
+        return SQLFederationPlannerUtils.createSqlToRelConverter(catalogReader, validator, cluster, mock(SQLParserRule.class), databaseType, false);
     }
     
     @ParameterizedTest(name = "{0}")

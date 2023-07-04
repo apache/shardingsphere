@@ -111,7 +111,28 @@ public final class SQLFederationPlannerUtils {
     private static void setUpRules(final RelOptPlanner planner) {
         planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
         planner.addRelTraitDef(RelCollationTraitDef.INSTANCE);
-        EnumerableRules.rules().forEach(planner::addRule);
+        planner.addRule(EnumerableRules.ENUMERABLE_JOIN_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_MERGE_JOIN_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_CORRELATE_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_PROJECT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_FILTER_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_CALC_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_AGGREGATE_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_SORT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_LIMIT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_COLLECT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_UNCOLLECT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_UNION_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_REPEAT_UNION_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_TABLE_SPOOL_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_INTERSECT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_MINUS_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_TABLE_MODIFICATION_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_VALUES_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_WINDOW_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_TABLE_FUNCTION_SCAN_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_MATCH_RULE);
         planner.addRule(EnumerableScanConverterRule.DEFAULT_CONFIG.toRule());
     }
     
