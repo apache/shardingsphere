@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DataSourceAggregatableDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 
@@ -30,7 +31,7 @@ import java.util.Map;
 /**
  * Database type of MySQL.
  */
-public final class MySQLDatabaseType implements DatabaseType {
+public final class MySQLDatabaseType implements DatabaseType, DataSourceAggregatableDatabaseType {
     
     private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
     
@@ -55,6 +56,11 @@ public final class MySQLDatabaseType implements DatabaseType {
     @Override
     public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new MySQLDataSourceMetaData(url);
+    }
+    
+    @Override
+    public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username, final String catalog) {
+        return new MySQLDataSourceMetaData(url, catalog);
     }
     
     @Override

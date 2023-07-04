@@ -25,7 +25,6 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUn
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -100,16 +98,14 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         Optional<Integer> usageCountOptional = sqlStatement.getUsageCount();
         if (usageCountOptional.isPresent()) {
             Multimap<String, String> inUsedMultiMap = getInUsedResources(database.getRuleMetaData());
-            for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
+            for (Entry<String, DataSourceProperties> entry : database.getResourceMetaData().getDataSourcePropsMap().entrySet()) {
                 Integer currentUsageCount = inUsedMultiMap.containsKey(entry.getKey()) ? inUsedMultiMap.get(entry.getKey()).size() : 0;
                 if (usageCountOptional.get().equals(currentUsageCount)) {
-                    result.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
+                    result.put(entry.getKey(), entry.getValue());
                 }
             }
         } else {
-            for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
-                result.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
-            }
+            result.putAll(database.getResourceMetaData().getDataSourcePropsMap());
         }
         return result;
     }

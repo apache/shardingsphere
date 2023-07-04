@@ -15,46 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.database;
+package org.apache.shardingsphere.infra.datasource.storage;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.Map;
 
 /**
- * Database configuration.
+ * Storage resource with data source properties.
  */
-public interface DatabaseConfiguration {
+@Getter
+public final class StorageResourceWithProperties extends StorageResource {
     
-    /**
-     * Get data sources.
-     * 
-     * @return data sources
-     */
-    Map<String, DataSource> getDataSources();
+    private final Map<String, DataSourceProperties> dataSourcePropertiesMap;
     
-    /**
-     * Get rule configurations.
-     * 
-     * @return rule configurations
-     */
-    Collection<RuleConfiguration> getRuleConfigurations();
-    
-    /**
-     * Get storage resource.
-     *
-     * @return storage resource
-     */
-    StorageResource getStorageResource();
-    
-    /**
-     * Get data source props map.
-     *
-     * @return data source props map
-     */
-    Map<String, DataSourceProperties> getDataSourcePropsMap();
+    public StorageResourceWithProperties(final Map<String, DataSource> storageNodes, final Map<String, StorageUnit> storageUnits, final Map<String, DataSourceProperties> dataSourcePropertiesMap) {
+        super(storageNodes, storageUnits);
+        this.dataSourcePropertiesMap = dataSourcePropertiesMap;
+    }
 }

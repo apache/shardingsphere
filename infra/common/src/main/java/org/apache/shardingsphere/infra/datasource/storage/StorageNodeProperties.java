@@ -15,46 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.database;
+package org.apache.shardingsphere.infra.datasource.storage;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import com.google.common.base.Objects;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
-
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Map;
 
 /**
- * Database configuration.
+ * Storage node properties.
  */
-public interface DatabaseConfiguration {
+@RequiredArgsConstructor
+@Getter
+public final class StorageNodeProperties {
     
-    /**
-     * Get data sources.
-     * 
-     * @return data sources
-     */
-    Map<String, DataSource> getDataSources();
+    private final String name;
     
-    /**
-     * Get rule configurations.
-     * 
-     * @return rule configurations
-     */
-    Collection<RuleConfiguration> getRuleConfigurations();
+    private final DatabaseType databaseType;
     
-    /**
-     * Get storage resource.
-     *
-     * @return storage resource
-     */
-    StorageResource getStorageResource();
+    private final DataSourceProperties dataSourceProperties;
     
-    /**
-     * Get data source props map.
-     *
-     * @return data source props map
-     */
-    Map<String, DataSourceProperties> getDataSourcePropsMap();
+    private final String database;
+    
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof StorageNodeProperties) {
+            StorageNodeProperties storageNodeProperties = (StorageNodeProperties) obj;
+            return storageNodeProperties.name.equals(name);
+        }
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name.toUpperCase());
+    }
 }

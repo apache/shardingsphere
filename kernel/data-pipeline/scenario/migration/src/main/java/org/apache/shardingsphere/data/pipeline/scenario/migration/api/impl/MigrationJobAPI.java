@@ -83,7 +83,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
@@ -96,7 +95,6 @@ import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStateme
 import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -192,8 +190,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     private PipelineDataSourceConfiguration buildTargetPipelineDataSourceConfiguration(final ShardingSphereDatabase targetDatabase) {
         Map<String, Map<String, Object>> targetDataSourceProps = new HashMap<>();
         YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
-        for (Entry<String, DataSource> entry : targetDatabase.getResourceMetaData().getDataSources().entrySet()) {
-            Map<String, Object> dataSourceProps = dataSourceConfigSwapper.swapToMap(DataSourcePropertiesCreator.create(entry.getValue()));
+        for (Entry<String, DataSourceProperties> entry : targetDatabase.getResourceMetaData().getDataSourcePropsMap().entrySet()) {
+            Map<String, Object> dataSourceProps = dataSourceConfigSwapper.swapToMap(entry.getValue());
             targetDataSourceProps.put(entry.getKey(), dataSourceProps);
         }
         YamlRootConfiguration targetRootConfig = buildYamlRootConfiguration(targetDatabase.getName(), targetDataSourceProps, targetDatabase.getRuleMetaData().getConfigurations());
