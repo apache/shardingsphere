@@ -26,11 +26,11 @@ import org.apache.calcite.DataContext;
  */
 @RequiredArgsConstructor
 @Getter
-public final class EnumerablePushDownTableScanExecutorContext {
+public final class EnumerableScanExecutorContext {
     
     private final DataContext root;
     
-    private final String[] filterValues;
+    private final String sql;
     
-    private final int[] projects;
+    private final int[] paramIndexes;
 }
