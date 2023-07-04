@@ -118,13 +118,13 @@
         <assertion expected-data-file="select_sys_data_for_og.xml" />
     </test-case>
 
-    <!-- MySQL version 8.0.19 or higher is required -->
-    <test-case sql="VALUES ROW(1,1)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion />
-    </test-case>
+    <!-- // TODO Until test cases support enabling for specific database version. -->
+    <!--    <test-case sql="VALUES ROW(1,1)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
+    <!--        <assertion />-->
+    <!--    </test-case>-->
 
-    <!-- MySQL version 8.0.19 or higher is required -->
-    <test-case sql="VALUES ROW(1,-2,3), ROW(5,7,9), ROW(4,6,8) ORDER BY column_1 desc, column_0 desc limit ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion parameters="10:int" />
-    </test-case>
+    <!-- // TODO Until test cases support enabling for specific database version. -->
+    <!--    <test-case sql="VALUES ROW(1,-2,3), ROW(5,7,9), ROW(4,6,8) ORDER BY column_1 desc, column_0 desc limit ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
+    <!--        <assertion parameters="10:int" />-->
+    <!--    </test-case>-->
 </integration-test-cases>
