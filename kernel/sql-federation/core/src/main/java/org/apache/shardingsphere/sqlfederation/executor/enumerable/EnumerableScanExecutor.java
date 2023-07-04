@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerable;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.calcite.adapter.java.JavaTypeFactory;
-import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
@@ -74,7 +72,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -82,10 +79,6 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public final class EnumerableScanExecutor {
-    
-    private static final JavaTypeFactory JAVA_TYPE_FACTORY = new JavaTypeFactoryImpl();
-    
-    private static final Pattern COLUMN_INFORMATION_PATTERN = Pattern.compile("\\{.*}");
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
