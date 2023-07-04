@@ -23,4 +23,11 @@ import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
  * Drop rule item event.
  */
 public interface DropRuleItemEvent extends RuleItemChangedEvent {
+    
+    /**
+     * Get database name.
+     * 
+     * @return database name
+     */
+    String getDatabaseName();
 }
