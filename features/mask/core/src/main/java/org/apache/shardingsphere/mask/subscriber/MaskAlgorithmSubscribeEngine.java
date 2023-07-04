@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.subscriber;
+package org.apache.shardingsphere.mask.subscriber;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
@@ -28,6 +26,8 @@ import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
+import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 
@@ -35,11 +35,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 /**
- * Encryptor subscribe engine.
+ * Mask algorithm subscribe engine.
  */
-public final class EncryptorSubscribeEngine extends RuleItemChangedSubscribeEngine<EncryptRuleConfiguration, AlgorithmConfiguration> {
+public final class MaskAlgorithmSubscribeEngine extends RuleItemChangedSubscribeEngine<MaskRuleConfiguration, AlgorithmConfiguration> {
     
-    public EncryptorSubscribeEngine(final ContextManager contextManager) {
+    public MaskAlgorithmSubscribeEngine(final ContextManager contextManager) {
         super(contextManager);
     }
     
@@ -49,23 +49,22 @@ public final class EncryptorSubscribeEngine extends RuleItemChangedSubscribeEngi
     }
     
     @Override
-    protected EncryptRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findSingleRule(EncryptRule.class)
-                .map(optional -> getEncryptRuleConfiguration((EncryptRuleConfiguration) optional.getConfiguration()))
-                .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+    protected MaskRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().findSingleRule(MaskRule.class)
+                .map(maskRule -> getConfiguration((MaskRuleConfiguration) maskRule.getConfiguration())).orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
     }
     
-    private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration config) {
-        return null == config.getTables() ? new EncryptRuleConfiguration(new LinkedList<>(), config.getEncryptors()) : config;
-    }
-    
-    @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
-        currentRuleConfig.getEncryptors().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
+    private MaskRuleConfiguration getConfiguration(final MaskRuleConfiguration config) {
+        return null == config.getMaskAlgorithms() ? new MaskRuleConfiguration(config.getTables(), new LinkedHashMap<>()) : config;
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getEncryptors().remove(((DropNamedRuleItemEvent) event).getItemName());
+    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
+        currentRuleConfig.getMaskAlgorithms().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
+    }
+    
+    @Override
+    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getMaskAlgorithms().remove(((DropNamedRuleItemEvent) event).getItemName());
     }
 }

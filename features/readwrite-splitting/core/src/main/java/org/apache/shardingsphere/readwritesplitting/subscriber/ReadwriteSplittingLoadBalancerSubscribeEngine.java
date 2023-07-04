@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.subscriber;
+package org.apache.shardingsphere.readwritesplitting.subscriber;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
@@ -30,16 +28,18 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 /**
- * Encryptor subscribe engine.
+ * Readwrite-splitting load-balancer subscribe engine.
  */
-public final class EncryptorSubscribeEngine extends RuleItemChangedSubscribeEngine<EncryptRuleConfiguration, AlgorithmConfiguration> {
+public final class ReadwriteSplittingLoadBalancerSubscribeEngine extends RuleItemChangedSubscribeEngine<ReadwriteSplittingRuleConfiguration, AlgorithmConfiguration> {
     
-    public EncryptorSubscribeEngine(final ContextManager contextManager) {
+    public ReadwriteSplittingLoadBalancerSubscribeEngine(final ContextManager contextManager) {
         super(contextManager);
     }
     
@@ -49,23 +49,18 @@ public final class EncryptorSubscribeEngine extends RuleItemChangedSubscribeEngi
     }
     
     @Override
-    protected EncryptRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findSingleRule(EncryptRule.class)
-                .map(optional -> getEncryptRuleConfiguration((EncryptRuleConfiguration) optional.getConfiguration()))
-                .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-    }
-    
-    private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration config) {
-        return null == config.getTables() ? new EncryptRuleConfiguration(new LinkedList<>(), config.getEncryptors()) : config;
+    protected ReadwriteSplittingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class).map(optional -> (ReadwriteSplittingRuleConfiguration) optional.getConfiguration())
+                .orElseGet(() -> new ReadwriteSplittingRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
-        currentRuleConfig.getEncryptors().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
+    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ReadwriteSplittingRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
+        currentRuleConfig.getLoadBalancers().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getEncryptors().remove(((DropNamedRuleItemEvent) event).getItemName());
+    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getLoadBalancers().remove(((DropNamedRuleItemEvent) event).getItemName());
     }
 }

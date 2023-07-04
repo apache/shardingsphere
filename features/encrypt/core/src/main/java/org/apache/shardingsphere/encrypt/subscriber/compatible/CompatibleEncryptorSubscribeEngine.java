@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.subscriber;
+package org.apache.shardingsphere.encrypt.subscriber.compatible;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -35,11 +35,13 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 /**
- * Encryptor subscribe engine.
+ * Compatible encryptor subscribe engine.
+ * @deprecated compatible support will remove in next version.
  */
-public final class EncryptorSubscribeEngine extends RuleItemChangedSubscribeEngine<EncryptRuleConfiguration, AlgorithmConfiguration> {
+@Deprecated
+public final class CompatibleEncryptorSubscribeEngine extends RuleItemChangedSubscribeEngine<CompatibleEncryptRuleConfiguration, AlgorithmConfiguration> {
     
-    public EncryptorSubscribeEngine(final ContextManager contextManager) {
+    public CompatibleEncryptorSubscribeEngine(final ContextManager contextManager) {
         super(contextManager);
     }
     
@@ -49,23 +51,23 @@ public final class EncryptorSubscribeEngine extends RuleItemChangedSubscribeEngi
     }
     
     @Override
-    protected EncryptRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    protected CompatibleEncryptRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(EncryptRule.class)
-                .map(optional -> getEncryptRuleConfiguration((EncryptRuleConfiguration) optional.getConfiguration()))
-                .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
+                .map(optional -> getEncryptRuleConfiguration((CompatibleEncryptRuleConfiguration) optional.getConfiguration()))
+                .orElseGet(() -> new CompatibleEncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
     }
     
-    private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration config) {
-        return null == config.getTables() ? new EncryptRuleConfiguration(new LinkedList<>(), config.getEncryptors()) : config;
+    private CompatibleEncryptRuleConfiguration getEncryptRuleConfiguration(final CompatibleEncryptRuleConfiguration config) {
+        return null == config.getTables() ? new CompatibleEncryptRuleConfiguration(new LinkedList<>(), config.getEncryptors()) : config;
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
+    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final CompatibleEncryptRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getEncryptors().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig) {
+    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final CompatibleEncryptRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getEncryptors().remove(((DropNamedRuleItemEvent) event).getItemName());
     }
 }

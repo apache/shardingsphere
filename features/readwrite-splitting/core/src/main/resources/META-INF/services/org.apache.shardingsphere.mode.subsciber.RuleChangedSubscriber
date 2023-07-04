@@ -16,4 +16,4 @@
 #
 
 org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingDataSourceSubscriber
-org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingLoadBalanceSubscriber
+org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingLoadBalancerSubscriber

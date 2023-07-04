@@ -40,8 +40,7 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     
     private final String loadBalancerName;
     
-    public ReadwriteSplittingDataSourceRuleConfiguration(final String name, final String writeDataSourceName,
-                                                         final List<String> readDataSourceNames, final String loadBalancerName) {
+    public ReadwriteSplittingDataSourceRuleConfiguration(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final String loadBalancerName) {
         this(name, writeDataSourceName, readDataSourceNames, TransactionalReadQueryStrategy.DYNAMIC, loadBalancerName);
     }
 }

@@ -15,38 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.subscriber.compatible;
+package org.apache.shardingsphere.readwritesplitting.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.encrypt.event.compatible.encryptor.AlterCompatibleEncryptorEvent;
-import org.apache.shardingsphere.encrypt.event.compatible.encryptor.DropCompatibleEncryptorEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterReadwriteSplittingLoadBalancerEvent;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DropReadwriteSplittingLoadBalancerEvent;
 
 /**
- * Compatible encryptor subscriber.
- * @deprecated compatible support will remove in next version.
+ * Readwrite-splitting load-balancer subscriber.
  */
-@Deprecated
 @SuppressWarnings("UnstableApiUsage")
-public final class CompatibleEncryptorSubscriber implements RuleChangedSubscriber<AlterCompatibleEncryptorEvent, DropCompatibleEncryptorEvent> {
+public final class ReadwriteSplittingLoadBalancerSubscriber implements RuleChangedSubscriber<AlterReadwriteSplittingLoadBalancerEvent, DropReadwriteSplittingLoadBalancerEvent> {
     
-    private CompatibleEncryptorSubscribeEngine engine;
+    private ReadwriteSplittingLoadBalancerSubscribeEngine engine;
     
     @Override
     public void setContextManager(final ContextManager contextManager) {
-        engine = new CompatibleEncryptorSubscribeEngine(contextManager);
+        engine = new ReadwriteSplittingLoadBalancerSubscribeEngine(contextManager);
     }
     
     @Subscribe
     @Override
-    public synchronized void renew(final AlterCompatibleEncryptorEvent event) {
+    public synchronized void renew(final AlterReadwriteSplittingLoadBalancerEvent event) {
         engine.renew(event);
     }
     
     @Subscribe
     @Override
-    public synchronized void renew(final DropCompatibleEncryptorEvent event) {
+    public synchronized void renew(final DropReadwriteSplittingLoadBalancerEvent event) {
         engine.renew(event);
     }
 }
