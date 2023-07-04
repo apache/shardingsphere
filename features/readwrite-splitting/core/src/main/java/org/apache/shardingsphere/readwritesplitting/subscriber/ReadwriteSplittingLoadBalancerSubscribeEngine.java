@@ -44,7 +44,7 @@ public final class ReadwriteSplittingLoadBalancerSubscribeEngine extends RuleIte
     }
     
     @Override
-    protected AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final String yamlContent) {
+    protected AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
     }
     

@@ -43,7 +43,7 @@ public final class MaskTableSubscribeEngine extends RuleItemChangedSubscribeEngi
     }
     
     @Override
-    protected MaskTableRuleConfiguration swapRuleItemConfigurationFromEvent(final String yamlContent) {
+    protected MaskTableRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlMaskTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlMaskTableRuleConfiguration.class));
     }
     

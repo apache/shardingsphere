@@ -43,7 +43,7 @@ public final class EncryptTableSubscribeEngine extends RuleItemChangedSubscribeE
     }
     
     @Override
-    protected EncryptTableRuleConfiguration swapRuleItemConfigurationFromEvent(final String yamlContent) {
+    protected EncryptTableRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlEncryptTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlEncryptTableRuleConfiguration.class));
     }
     
