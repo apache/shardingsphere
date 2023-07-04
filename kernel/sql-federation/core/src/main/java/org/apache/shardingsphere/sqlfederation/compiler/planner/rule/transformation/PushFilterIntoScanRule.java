@@ -34,6 +34,8 @@ import java.util.Collection;
 @Value.Enclosing
 public final class PushFilterIntoScanRule extends RelRule<PushFilterIntoScanRule.Config> implements TransformationRule {
     
+    private static final String PG_CATALOG = "pg_catalog";
+    
     private static final String CORRELATE_REFERENCE = "$cor";
     
     private PushFilterIntoScanRule(final Config config) {
@@ -42,6 +44,12 @@ public final class PushFilterIntoScanRule extends RelRule<PushFilterIntoScanRule
     
     @Override
     public boolean matches(final RelOptRuleCall call) {
+        LogicalScan logicalScan = call.rel(1);
+        for (String each : logicalScan.getTable().getQualifiedName()) {
+            if (PG_CATALOG.equalsIgnoreCase(each)) {
+                return false;
+            }
+        }
         LogicalFilter logicalFilter = call.rel(0);
         RexNode condition = logicalFilter.getCondition();
         return !(condition instanceof RexCall) || !containsCorrelate(((RexCall) condition).getOperands());

@@ -32,9 +32,9 @@ import org.immutables.value.Value;
 @Value.Enclosing
 public final class PushProjectIntoScanRule extends RelRule<PushProjectIntoScanRule.Config> implements TransformationRule {
     
-    private static final String CASE_FUNCTION_NAME = "CAST";
-    
     private static final String PG_CATALOG = "pg_catalog";
+    
+    private static final String CASE_FUNCTION_NAME = "CAST";
     
     private PushProjectIntoScanRule(final Config config) {
         super(config);
