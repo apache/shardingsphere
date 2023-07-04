@@ -37,4 +37,9 @@ public final class MaskRuleConfiguration implements DatabaseRuleConfiguration, E
     private final Collection<MaskTableRuleConfiguration> tables;
     
     private final Map<String, AlgorithmConfiguration> maskAlgorithms;
+    
+    @Override
+    public boolean isEmpty() {
+        return tables.isEmpty();
+    }
 }

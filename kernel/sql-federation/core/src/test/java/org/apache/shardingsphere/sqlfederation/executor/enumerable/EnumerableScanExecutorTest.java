@@ -19,19 +19,19 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerable;
 
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,13 +39,13 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class EnumerablePushDownTableScanExecutorTest {
+class EnumerableScanExecutorTest {
     
     @Test
-    void assertExecuteWithShardingSphereData() {
+    void assertExecuteWithStatistics() {
         OptimizerContext optimizerContext = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
         when(optimizerContext.getParserContext(any()).getDatabaseType().getType()).thenReturn("PostgreSQL");
-        TableScanExecutorContext executorContext = Mockito.mock(TableScanExecutorContext.class);
+        TableScanExecutorContext executorContext = mock(TableScanExecutorContext.class);
         when(executorContext.getDatabaseName()).thenReturn("db");
         when(executorContext.getSchemaName()).thenReturn("pg_catalog");
         ShardingSphereStatistics statistics = mock(ShardingSphereStatistics.class, RETURNS_DEEP_STUBS);
@@ -58,12 +58,13 @@ class EnumerablePushDownTableScanExecutorTest {
         when(schemaData.getTableData().get("test")).thenReturn(tableData);
         ShardingSphereTable shardingSphereTable = mock(ShardingSphereTable.class);
         when(shardingSphereTable.getName()).thenReturn("test");
-        Enumerable<Object[]> enumerable = new EnumerablePushDownTableScanExecutor(null, null, null, optimizerContext, null, executorContext, statistics)
-                .execute(shardingSphereTable, mock(EnumerablePushDownTableScanExecutorContext.class));
-        try (Enumerator<Object[]> actual = enumerable.enumerator()) {
+        Enumerable<Object> enumerable = new EnumerableScanExecutor(null, null, null, optimizerContext, null, executorContext, statistics)
+                .execute(shardingSphereTable, mock(EnumerableScanExecutorContext.class));
+        try (Enumerator<Object> actual = enumerable.enumerator()) {
             actual.moveNext();
-            Object[] row = actual.current();
-            assertThat(row[0], is(1));
+            Object row = actual.current();
+            assertThat(row, instanceOf(Object[].class));
+            assertThat(((Object[]) row)[0], is(1));
         }
     }
 }

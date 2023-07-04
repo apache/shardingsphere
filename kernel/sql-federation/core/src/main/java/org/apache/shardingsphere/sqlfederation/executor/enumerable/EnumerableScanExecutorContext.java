@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-lexer grammar Symbol;
+package org.apache.shardingsphere.sqlfederation.executor.enumerable;
 
-EQ_:                 '=';
-NEQ_:                '<>' | '!=' | '^=';
-GT_:                 '>';
-GTE_:                '>=';
-LT_:                 '<';
-LTE_:                '<=';
-LP_:                 '(';
-RP_:                 ')';
-LBE_:                '{';
-RBE_:                '}';
-LBT_:                '[';
-RBT_:                ']';
-COMMA_:              ',';
-DQ_:                 '"';
-SQ_ :                '\'';
-DOLLAR_:             '$';
-COLON_:              ':';
-RANGE_:              '..';
-NEGETIVE_INFINITY_:  '-∞';
-POSITIVE_INFINITY_:  '+∞';
-QUESTION_:           '?';
-MINUS_:              '-';
-DOT_:              '.';
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.calcite.DataContext;
+
+/**
+ * Enumerable push down table scan executor context.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class EnumerableScanExecutorContext {
+    
+    private final DataContext root;
+    
+    private final String sql;
+    
+    private final int[] paramIndexes;
+}

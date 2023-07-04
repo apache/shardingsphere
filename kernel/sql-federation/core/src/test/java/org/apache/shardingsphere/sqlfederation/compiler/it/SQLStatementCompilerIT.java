@@ -27,7 +27,6 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -37,19 +36,15 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
-import org.apache.shardingsphere.sqlfederation.compiler.statement.SQLStatementCompiler;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
-import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.util.SQLFederationPlannerUtils;
-import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederationRuleConfigurationBuilder;
+import org.apache.shardingsphere.sqlfederation.compiler.statement.SQLStatementCompiler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.mockito.Mockito;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -61,16 +56,17 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 
-class SQLFederationCompilerEngineIT {
+class SQLStatementCompilerIT {
     
     private static final String SCHEMA_NAME = "federate_jdbc";
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
-    private SQLFederationCompilerEngine sqlFederationCompilerEngine;
+    private SQLStatementCompiler sqlStatementCompiler;
     
     @BeforeEach
     void init() {
@@ -87,9 +83,7 @@ class SQLFederationCompilerEngineIT {
         tables.put("t_product_detail", createTProductDetailMetaData());
         tables.put("multi_types_first", createMultiTypesFirstTableMetaData());
         tables.put("multi_types_second", createMultiTypesSecondTableMetaData());
-        sqlFederationCompilerEngine = new SQLFederationCompilerEngine(DefaultDatabase.LOGIC_NAME,
-                new SQLStatementCompiler(createSqlToRelConverter(new ShardingSphereSchema(tables, Collections.emptyMap())), SQLFederationPlannerUtils.createHepPlanner()),
-                DefaultSQLFederationRuleConfigurationBuilder.DEFAULT_EXECUTION_PLAN_CACHE_OPTION);
+        sqlStatementCompiler = new SQLStatementCompiler(createSqlToRelConverter(new ShardingSphereSchema(tables, Collections.emptyMap())), SQLFederationPlannerUtils.createHepPlanner());
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {
@@ -246,14 +240,15 @@ class SQLFederationCompilerEngineIT {
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtils.createCatalogReader(SCHEMA_NAME, sqlFederationSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = SQLFederationPlannerUtils.createSqlValidator(catalogReader, relDataTypeFactory, databaseType, connectionConfig);
         RelOptCluster cluster = RelOptCluster.create(SQLFederationPlannerUtils.createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
-        return SQLFederationPlannerUtils.createSqlToRelConverter(catalogReader, validator, cluster, Mockito.mock(SQLParserRule.class), databaseType, false);
+        return SQLFederationPlannerUtils.createSqlToRelConverter(catalogReader, validator, cluster, mock(SQLParserRule.class), databaseType, false);
     }
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertCompile(final TestCase testcase) {
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType())).parse(testcase.getSql(), false);
-        String actual = sqlFederationCompilerEngine.compile(new ExecutionPlanCacheKey(testcase.getSql(), sqlStatement), false).getPhysicalPlan().explain().replaceAll("[\r\n]", "");
+        String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType());
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(testcase.getSql(), false);
+        String actual = sqlStatementCompiler.compile(sqlStatement, databaseType).getPhysicalPlan().explain().replaceAll("[\r\n]", " ");
         assertThat(actual, is(testcase.getAssertion().getExpectedResult()));
     }
     
