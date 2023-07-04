@@ -68,6 +68,6 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     
     @Override
     public boolean isEmpty() {
-        return tables.isEmpty() && autoTables.isEmpty() && bindingTableGroups.isEmpty() && null == defaultDatabaseShardingStrategy && null == defaultTableShardingStrategy;
+        return tables.isEmpty() && autoTables.isEmpty() && null == defaultDatabaseShardingStrategy && null == defaultTableShardingStrategy;
     }
 }

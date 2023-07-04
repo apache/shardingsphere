@@ -27,7 +27,7 @@ public interface DatabaseRuleConfiguration extends RuleConfiguration {
     /**
      * Is this configuration is empty.
      *
-     * @return true of false
+     * @return true or false
      */
     boolean isEmpty();
 }
