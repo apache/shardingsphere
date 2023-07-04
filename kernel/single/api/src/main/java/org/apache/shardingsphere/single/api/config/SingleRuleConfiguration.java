@@ -49,4 +49,9 @@ public final class SingleRuleConfiguration implements DatabaseRuleConfiguration,
     public Optional<String> getDefaultDataSource() {
         return Optional.ofNullable(defaultDataSource);
     }
+    
+    @Override
+    public boolean isEmpty() {
+        return tables.isEmpty() && null == defaultDataSource;
+    }
 }
