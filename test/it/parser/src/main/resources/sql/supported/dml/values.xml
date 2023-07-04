@@ -19,4 +19,5 @@
 <sql-cases>
     <sql-case id="values_with_row" value="values ROW(1,2)" db-types="MySQL" />
     <sql-case id="values_with_order_limit" value="VALUES ROW(1,-2,3), ROW(5,7,9), ROW(4,6,8) ORDER BY column_1 desc , column_0 desc limit 10" db-types="MySQL" />
+    <sql-case id="values_with_select" value="values row((select 1), 2)" db-types="MySQL" />
 </sql-cases>
