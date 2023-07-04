@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sqlfederation.engine;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
 import org.apache.calcite.adapter.enumerable.EnumerableRel;
 import org.apache.calcite.linq4j.Enumerator;
@@ -73,7 +72,6 @@ import java.util.Map.Entry;
 /**
  * SQL federation engine.
  */
-@Slf4j
 @Getter
 public final class SQLFederationEngine implements AutoCloseable {
     
@@ -155,16 +153,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     @SuppressWarnings("unchecked")
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
-        SQLFederationExecutionPlan executionPlan;
-        // CHECKSTYLE:OFF
-        try {
-            executionPlan = compileQuery(prepareEngine, callback, federationContext);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            log.error("sql:{}, isUseCache:{}", federationContext.getQueryContext().getSql(), federationContext.getQueryContext().isUseCache(), ex);
-            throw ex;
-        }
-        // CHECKSTYLE:ON
+        SQLFederationExecutionPlan executionPlan = compileQuery(prepareEngine, callback, federationContext);
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) executionPlan.getPhysicalPlan(), EnumerableRel.Prefer.ARRAY);
         Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());
         OptimizerPlannerContext plannerContext = sqlFederationRule.getOptimizerContext().getPlannerContext(databaseName);
@@ -181,14 +170,12 @@ public final class SQLFederationEngine implements AutoCloseable {
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof SelectStatementContext, () -> new IllegalArgumentException("SQL statement context must be select statement context."));
         OptimizerPlannerContext plannerContext = sqlFederationRule.getOptimizerContext().getPlannerContext(databaseName);
-        log.info("converter:{}", plannerContext.getConverter(schemaName));
-        log.info("hepPlanner:{}", plannerContext.getHepPlanner());
         Schema sqlFederationSchema = plannerContext.getValidator(schemaName).getCatalogReader().getRootSchema().plus().getSubSchema(schemaName);
         registerTableScanExecutor(sqlFederationSchema, prepareEngine, callback, federationContext, sqlFederationRule.getOptimizerContext());
         SQLStatementCompiler sqlStatementCompiler = new SQLStatementCompiler(plannerContext.getConverter(schemaName), plannerContext.getHepPlanner());
         SQLFederationCompilerEngine compilerEngine = new SQLFederationCompilerEngine(databaseName, schemaName, sqlFederationRule.getConfiguration().getExecutionPlanCache());
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-        return compilerEngine.compile(buildCacheKey(federationContext, selectStatementContext, sqlStatementCompiler), false);
+        return compilerEngine.compile(buildCacheKey(federationContext, selectStatementContext, sqlStatementCompiler), federationContext.getQueryContext().isUseCache());
     }
     
     private ExecutionPlanCacheKey buildCacheKey(final SQLFederationExecutorContext federationContext, final SelectStatementContext selectStatementContext,
