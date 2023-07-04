@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.sharding.event.table.sharding.AlterShardingTableEvent;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.sharding.event.table.sharding.DropShardingTable
  * Sharding table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class ShardingTableSubscriber implements RuleChangedSubscriber<AlterShardingTableEvent, DropShardingTableEvent> {
     
     private ShardingTableSubscribeEngine engine;
