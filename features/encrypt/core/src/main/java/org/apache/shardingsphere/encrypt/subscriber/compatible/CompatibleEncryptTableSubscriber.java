@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.subscriber.compatible;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
 import org.apache.shardingsphere.encrypt.event.compatible.table.AlterCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.event.compatible.table.DropCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
  */
 @Deprecated
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class CompatibleEncryptTableSubscriber implements RuleChangedSubscriber<AlterCompatibleEncryptTableEvent, DropCompatibleEncryptTableEvent> {
     
     private CompatibleEncryptTableSubscribeEngine engine;

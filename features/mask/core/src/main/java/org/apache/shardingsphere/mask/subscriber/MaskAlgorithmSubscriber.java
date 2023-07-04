@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mask.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
 import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.event.algorithm.DropMaskAlgorithmEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
  * Mask algorithm subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class MaskAlgorithmSubscriber implements RuleChangedSubscriber<AlterMaskAlgorithmEvent, DropMaskAlgorithmEvent> {
     
     private MaskAlgorithmSubscribeEngine engine;

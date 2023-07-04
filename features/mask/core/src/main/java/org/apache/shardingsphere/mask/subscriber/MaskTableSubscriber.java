@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mask.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
 import org.apache.shardingsphere.mask.event.table.AlterMaskTableEvent;
 import org.apache.shardingsphere.mask.event.table.DropMaskTableEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
  * Mask table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class MaskTableSubscriber implements RuleChangedSubscriber<AlterMaskTableEvent, DropMaskTableEvent> {
     
     private MaskTableSubscribeEngine engine;
