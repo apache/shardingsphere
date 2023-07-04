@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e-agent</artifactId>
-        <version>5.4.0</version>
+        <version>5.4.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-jdbc-project</artifactId>
     <name>${project.artifactId}</name>
