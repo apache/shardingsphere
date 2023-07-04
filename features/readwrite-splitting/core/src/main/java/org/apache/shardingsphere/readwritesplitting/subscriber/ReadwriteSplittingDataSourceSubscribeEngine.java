@@ -48,9 +48,8 @@ public final class ReadwriteSplittingDataSourceSubscribeEngine extends RuleItemC
     @Override
     protected ReadwriteSplittingDataSourceRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig = YamlEngine.unmarshal(yamlContent, YamlReadwriteSplittingDataSourceRuleConfiguration.class);
-        return new ReadwriteSplittingDataSourceRuleConfiguration(((AlterNamedRuleItemEvent) event).getItemName(),
-                yamlDataSourceRuleConfig.getWriteDataSourceName(), yamlDataSourceRuleConfig.getReadDataSourceNames(),
-                getTransactionalReadQueryStrategy(yamlDataSourceRuleConfig), yamlDataSourceRuleConfig.getLoadBalancerName());
+        return new ReadwriteSplittingDataSourceRuleConfiguration(((AlterNamedRuleItemEvent) event).getItemName(), yamlDataSourceRuleConfig.getWriteDataSourceName(),
+                yamlDataSourceRuleConfig.getReadDataSourceNames(), getTransactionalReadQueryStrategy(yamlDataSourceRuleConfig), yamlDataSourceRuleConfig.getLoadBalancerName());
     }
     
     private TransactionalReadQueryStrategy getTransactionalReadQueryStrategy(final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
