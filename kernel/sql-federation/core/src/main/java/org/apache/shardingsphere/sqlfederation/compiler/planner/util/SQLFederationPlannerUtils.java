@@ -55,6 +55,7 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.view.ShardingSphereViewExpander;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.converter.EnumerableScanConverterRule;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.transformation.PushFilterIntoScanRule;
+import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.transformation.PushProjectIntoScanRule;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -143,6 +144,7 @@ public final class SQLFederationPlannerUtils {
         result.add(CoreRules.PROJECT_JOIN_TRANSPOSE);
         result.add(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
         result.add(ProjectRemoveRule.Config.DEFAULT.toRule());
+        result.add(PushProjectIntoScanRule.Config.DEFAULT.toRule());
         return result;
     }
     
