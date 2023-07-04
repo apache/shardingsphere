@@ -18,51 +18,33 @@
 package org.apache.shardingsphere.sharding.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.event.algorithm.auditor.AlterShardingAuditorEvent;
 import org.apache.shardingsphere.sharding.event.algorithm.auditor.DropShardingAuditorEvent;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 /**
  * Sharding auditor subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class ShardingAuditorSubscriber implements RuleChangedSubscriber<AlterShardingAuditorEvent, DropShardingAuditorEvent> {
     
-    private ContextManager contextManager;
+    private ShardingAuditorSubscribeEngine engine;
+    
+    @Override
+    public void setContextManager(final ContextManager contextManager) {
+        engine = new ShardingAuditorSubscribeEngine(contextManager);
+    }
     
     @Subscribe
     @Override
     public synchronized void renew(final AlterShardingAuditorEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
-        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        config.getAuditors().put(event.getItemName(), new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class)));
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        engine.renew(event);
     }
     
     @Subscribe
     @Override
     public synchronized void renew(final DropShardingAuditorEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
-        config.getAuditors().remove(event.getItemName());
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        engine.renew(event);
     }
 }
