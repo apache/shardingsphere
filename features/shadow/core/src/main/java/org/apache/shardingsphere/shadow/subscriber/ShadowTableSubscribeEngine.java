@@ -38,25 +38,25 @@ import java.util.Collections;
 /**
  * Shadow table subscribe engine.
  */
-public final class ShadowTableSubscribeEngine extends RuleItemChangedSubscribeEngine<ShadowRuleConfiguration, ShadowTableConfiguration> {
+public final class ShadowTableSubscribeEngine implements RuleItemChangedSubscribeEngine<ShadowRuleConfiguration, ShadowTableConfiguration> {
     
     @Override
-    protected ShadowTableConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public ShadowTableConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlShadowTableConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlShadowTableConfiguration.class));
     }
     
     @Override
-    protected ShadowRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public ShadowRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(ShadowRule.class).map(optional -> (ShadowRuleConfiguration) optional.getConfiguration()).orElseGet(ShadowRuleConfiguration::new);
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig, final ShadowTableConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig, final ShadowTableConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getTables().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getTables().remove(((DropNamedRuleItemEvent) event).getItemName());
     }
     

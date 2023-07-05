@@ -19,9 +19,12 @@ package org.apache.shardingsphere.mode.subsciber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
@@ -37,12 +40,18 @@ public final class RuleItemChangedSubscriber {
      *
      * @param event alter rule item event
      */
-    @SuppressWarnings("UnstableApiUsage")
+    @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
     @Subscribe
     public synchronized void renew(final AlterRuleItemEvent event) {
-        IRuleItemChangedSubscribeEngine engine = TypedSPILoader.getService(IRuleItemChangedSubscribeEngine.class, event.getClass().getName());
-        engine.setContextManager(contextManager);
-        engine.renew(event);
+        RuleItemChangedSubscribeEngine engine = TypedSPILoader.getService(RuleItemChangedSubscribeEngine.class, event.getClass().getName());
+        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+            return;
+        }
+        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        RuleConfiguration currentRuleConfig = engine.findRuleConfiguration(database);
+        engine.changeRuleItemConfiguration(event, currentRuleConfig, engine.swapRuleItemConfigurationFromEvent(event, yamlContent));
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
     }
     
     /**
@@ -50,11 +59,16 @@ public final class RuleItemChangedSubscriber {
      *
      * @param event drop rule item event
      */
-    @SuppressWarnings("UnstableApiUsage")
+    @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
     @Subscribe
     public synchronized void renew(final DropRuleItemEvent event) {
-        IRuleItemChangedSubscribeEngine engine = TypedSPILoader.getService(IRuleItemChangedSubscribeEngine.class, event.getClass().getName());
-        engine.setContextManager(contextManager);
-        engine.renew(event);
+        RuleItemChangedSubscribeEngine engine = TypedSPILoader.getService(RuleItemChangedSubscribeEngine.class, event.getClass().getName());
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        RuleConfiguration currentRuleConfig = engine.findRuleConfiguration(database);
+        engine.dropRuleItemConfiguration(event, currentRuleConfig);
+        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
     }
 }

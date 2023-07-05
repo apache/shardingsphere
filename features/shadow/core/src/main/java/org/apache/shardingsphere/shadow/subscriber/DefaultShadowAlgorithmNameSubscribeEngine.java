@@ -32,25 +32,25 @@ import java.util.Collections;
 /**
  * Default shadow algorithm name subscribe engine.
  */
-public final class DefaultShadowAlgorithmNameSubscribeEngine extends RuleItemChangedSubscribeEngine<ShadowRuleConfiguration, String> {
+public final class DefaultShadowAlgorithmNameSubscribeEngine implements RuleItemChangedSubscribeEngine<ShadowRuleConfiguration, String> {
     
     @Override
-    protected String swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public String swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return yamlContent;
     }
     
     @Override
-    protected ShadowRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public ShadowRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(ShadowRule.class).map(optional -> (ShadowRuleConfiguration) optional.getConfiguration()).orElseGet(ShadowRuleConfiguration::new);
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
         currentRuleConfig.setDefaultShadowAlgorithmName(toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultShadowAlgorithmName(null);
     }
     

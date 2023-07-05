@@ -39,15 +39,15 @@ import java.util.LinkedList;
 /**
  * Mask table subscribe engine.
  */
-public final class MaskTableSubscribeEngine extends RuleItemChangedSubscribeEngine<MaskRuleConfiguration, MaskTableRuleConfiguration> {
+public final class MaskTableSubscribeEngine implements RuleItemChangedSubscribeEngine<MaskRuleConfiguration, MaskTableRuleConfiguration> {
     
     @Override
-    protected MaskTableRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public MaskTableRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlMaskTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlMaskTableRuleConfiguration.class));
     }
     
     @Override
-    protected MaskRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public MaskRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(MaskRule.class)
                 .map(optional -> getConfiguration((MaskRuleConfiguration) optional.getConfiguration())).orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
     }
@@ -57,14 +57,14 @@ public final class MaskTableSubscribeEngine extends RuleItemChangedSubscribeEngi
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig, final MaskTableRuleConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig, final MaskTableRuleConfiguration toBeChangedItemConfig) {
         // TODO refactor DistSQL to only persist config
         currentRuleConfig.getTables().removeIf(each -> each.getName().equals(toBeChangedItemConfig.getName()));
         currentRuleConfig.getTables().add(toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getTables().removeIf(each -> each.getName().equals(((DropNamedRuleItemEvent) event).getItemName()));
     }
     

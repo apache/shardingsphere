@@ -17,53 +17,51 @@
 
 package org.apache.shardingsphere.mode.subsciber;
 
-import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Rule item changed subscribe engine.
- * 
+ *
  * @param <T> type of rule configuration
  * @param <I> type of rule item configuration
  */
-@Setter
-public abstract class RuleItemChangedSubscribeEngine<T extends RuleConfiguration, I> implements IRuleItemChangedSubscribeEngine {
+public interface RuleItemChangedSubscribeEngine<T extends RuleConfiguration, I> extends TypedSPI {
     
-    private ContextManager contextManager;
+    /**
+     * Swap rule item configuration from event.
+     * 
+     * @param event alter rule item event
+     * @param yamlContent YAML content
+     * @return rule item configuration
+     */
+    I swapRuleItemConfigurationFromEvent(AlterRuleItemEvent event, String yamlContent);
     
-    @Override
-    public final synchronized void renew(final AlterRuleItemEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        T currentRuleConfig = findRuleConfiguration(database);
-        changeRuleItemConfiguration(event, currentRuleConfig, swapRuleItemConfigurationFromEvent(event, yamlContent));
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
-    }
+    /**
+     * Find rule configuration.
+     * 
+     * @param database database
+     * @return found rule configuration
+     */
+    T findRuleConfiguration(ShardingSphereDatabase database);
     
-    @Override
-    public final synchronized void renew(final DropRuleItemEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        T currentRuleConfig = findRuleConfiguration(database);
-        dropRuleItemConfiguration(event, currentRuleConfig);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
-    }
+    /**
+     * Change rule item configuration.
+     * 
+     * @param event alter rule item event
+     * @param currentRuleConfig current rule configuration
+     * @param toBeChangedItemConfig to be changed item configuration
+     */
+    void changeRuleItemConfiguration(AlterRuleItemEvent event, T currentRuleConfig, I toBeChangedItemConfig);
     
-    protected abstract I swapRuleItemConfigurationFromEvent(AlterRuleItemEvent event, String yamlContent);
-    
-    protected abstract T findRuleConfiguration(ShardingSphereDatabase database);
-    
-    protected abstract void changeRuleItemConfiguration(AlterRuleItemEvent event, T currentRuleConfig, I toBeChangedItemConfig);
-    
-    protected abstract void dropRuleItemConfiguration(DropRuleItemEvent event, T currentRuleConfig);
+    /**
+     * Drop rule item configuration.
+     * 
+     * @param event drop rule item event
+     * @param currentRuleConfig current rule configuration
+     */
+    void dropRuleItemConfiguration(DropRuleItemEvent event, T currentRuleConfig);
 }

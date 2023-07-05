@@ -40,26 +40,26 @@ import java.util.LinkedList;
 /**
  * Readwrite-splitting load-balancer subscribe engine.
  */
-public final class ReadwriteSplittingLoadBalancerSubscribeEngine extends RuleItemChangedSubscribeEngine<ReadwriteSplittingRuleConfiguration, AlgorithmConfiguration> {
+public final class ReadwriteSplittingLoadBalancerSubscribeEngine implements RuleItemChangedSubscribeEngine<ReadwriteSplittingRuleConfiguration, AlgorithmConfiguration> {
     
     @Override
-    protected AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
     }
     
     @Override
-    protected ReadwriteSplittingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public ReadwriteSplittingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class).map(optional -> (ReadwriteSplittingRuleConfiguration) optional.getConfiguration())
                 .orElseGet(() -> new ReadwriteSplittingRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ReadwriteSplittingRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ReadwriteSplittingRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getLoadBalancers().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getLoadBalancers().remove(((DropNamedRuleItemEvent) event).getItemName());
     }
     

@@ -40,15 +40,15 @@ import java.util.LinkedList;
 /**
  * Encryptor subscribe engine.
  */
-public final class EncryptorSubscribeEngine extends RuleItemChangedSubscribeEngine<EncryptRuleConfiguration, AlgorithmConfiguration> {
+public final class EncryptorSubscribeEngine implements RuleItemChangedSubscribeEngine<EncryptRuleConfiguration, AlgorithmConfiguration> {
     
     @Override
-    protected AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
     }
     
     @Override
-    protected EncryptRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public EncryptRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(EncryptRule.class)
                 .map(optional -> getEncryptRuleConfiguration((EncryptRuleConfiguration) optional.getConfiguration()))
                 .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
@@ -59,12 +59,12 @@ public final class EncryptorSubscribeEngine extends RuleItemChangedSubscribeEngi
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getEncryptors().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getEncryptors().remove(((DropNamedRuleItemEvent) event).getItemName());
     }
     

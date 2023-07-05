@@ -36,26 +36,26 @@ import java.util.Collections;
 /**
  * Sharding table reference subscribe engine.
  */
-public final class ShardingTableReferenceSubscribeEngine extends RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingTableReferenceRuleConfiguration> {
+public final class ShardingTableReferenceSubscribeEngine implements RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingTableReferenceRuleConfiguration> {
     
     @Override
-    protected ShardingTableReferenceRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public ShardingTableReferenceRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return YamlShardingTableReferenceRuleConfigurationConverter.convertToObject(yamlContent);
     }
     
     @Override
-    protected ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(ShardingRule.class).map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final ShardingTableReferenceRuleConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final ShardingTableReferenceRuleConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getBindingTableGroups().removeIf(each -> each.getName().equals(((AlterNamedRuleItemEvent) event).getItemName()));
         currentRuleConfig.getBindingTableGroups().add(toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getBindingTableGroups().removeIf(each -> each.getName().equals(((DropNamedRuleItemEvent) event).getItemName()));
     }
     

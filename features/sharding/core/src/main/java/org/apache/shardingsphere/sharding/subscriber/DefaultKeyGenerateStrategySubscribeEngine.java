@@ -36,25 +36,25 @@ import java.util.Collections;
 /**
  * Default key generate strategy subscribe engine.
  */
-public final class DefaultKeyGenerateStrategySubscribeEngine extends RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, KeyGenerateStrategyConfiguration> {
+public final class DefaultKeyGenerateStrategySubscribeEngine implements RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, KeyGenerateStrategyConfiguration> {
     
     @Override
-    protected KeyGenerateStrategyConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public KeyGenerateStrategyConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlKeyGenerateStrategyConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlKeyGenerateStrategyConfiguration.class));
     }
     
     @Override
-    protected ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(ShardingRule.class).map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final KeyGenerateStrategyConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final KeyGenerateStrategyConfiguration toBeChangedItemConfig) {
         currentRuleConfig.setDefaultKeyGenerateStrategy(toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultKeyGenerateStrategy(null);
     }
     

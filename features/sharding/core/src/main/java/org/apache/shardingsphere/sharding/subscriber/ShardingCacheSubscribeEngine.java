@@ -36,25 +36,25 @@ import java.util.Collections;
 /**
  * Sharding cache subscribe engine.
  */
-public final class ShardingCacheSubscribeEngine extends RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingCacheConfiguration> {
+public final class ShardingCacheSubscribeEngine implements RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingCacheConfiguration> {
     
     @Override
-    protected ShardingCacheConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public ShardingCacheConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlShardingCacheConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlShardingCacheConfiguration.class));
     }
     
     @Override
-    protected ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(ShardingRule.class).map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final ShardingCacheConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final ShardingCacheConfiguration toBeChangedItemConfig) {
         currentRuleConfig.setShardingCache(toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setShardingCache(null);
     }
     
