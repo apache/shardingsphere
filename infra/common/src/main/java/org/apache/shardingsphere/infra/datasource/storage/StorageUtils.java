@@ -19,10 +19,12 @@ package org.apache.shardingsphere.infra.datasource.storage;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Storage utility class.
@@ -38,8 +40,8 @@ public final class StorageUtils {
      */
     public static Map<String, StorageUnit> getStorageUnits(final Map<String, DataSource> dataSources) {
         Map<String, StorageUnit> result = new LinkedHashMap<>(dataSources.size(), 1F);
-        for (String each : dataSources.keySet()) {
-            result.put(each, new StorageUnit(each, each));
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            result.put(entry.getKey(), new StorageUnit(entry.getKey(), entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue())));
         }
         return result;
     }

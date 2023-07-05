@@ -54,11 +54,12 @@ public final class ShardingSphereResourceMetaData {
     }
     
     public ShardingSphereResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
-        this(databaseName, new StorageResource(dataSources, StorageUtils.getStorageUnits(dataSources)));
-    }
-    
-    public ShardingSphereResourceMetaData(final String databaseName, final StorageResource storageResource) {
-        this(databaseName, storageResource, DataSourcePropertiesCreator.create(storageResource.getStorageNodes()));
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources);
+        Map<String, DatabaseType> storageTypes = createStorageTypes(dataSources, enabledDataSources);
+        this.dataSourcePropsMap = DataSourcePropertiesCreator.create(dataSources);
+        storageNodeMetaData = new ShardingSphereStorageNodeMetaData(dataSources, storageTypes);
+        storageUnitMetaData = new ShardingSphereStorageUnitMetaData(dataSources, storageTypes, StorageUtils.getStorageUnits(dataSources), enabledDataSources);
+        
     }
     
     public ShardingSphereResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourceProperties> dataSourcePropsMap) {

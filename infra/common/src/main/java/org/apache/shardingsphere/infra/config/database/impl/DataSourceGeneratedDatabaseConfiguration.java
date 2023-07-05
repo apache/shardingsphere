@@ -50,6 +50,6 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     
     @Override
     public Map<String, DataSource> getDataSources() {
-        return storageResource.getDataSources();
+        return storageResource.getWrappedDataSources();
     }
 }

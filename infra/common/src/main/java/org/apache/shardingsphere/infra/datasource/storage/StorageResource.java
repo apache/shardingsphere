@@ -35,19 +35,19 @@ public class StorageResource {
     
     private final Map<String, StorageUnit> storageUnits;
     
-    private final Map<String, DataSource> dataSources;
+    private final Map<String, DataSource> wrappedDataSources;
     
     public StorageResource(final Map<String, DataSource> storageNodes, final Map<String, StorageUnit> storageUnits) {
         this.storageNodes = storageNodes;
         this.storageUnits = storageUnits;
-        dataSources = getStorageUnitDataSources();
+        wrappedDataSources = getWrappedDataSources(storageUnits);
     }
     
-    private Map<String, DataSource> getStorageUnitDataSources() {
+    private Map<String, DataSource> getWrappedDataSources(final Map<String, StorageUnit> storageUnits) {
         Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
         for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
             DataSource dataSource = storageNodes.get(entry.getValue().getNodeName());
-            result.put(entry.getKey(), new ShardingSphereStorageDataSourceWrapper(dataSource, entry.getValue().getCatalog()));
+            result.put(entry.getKey(), new ShardingSphereStorageDataSourceWrapper(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
         }
         return result;
     }

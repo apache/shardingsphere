@@ -37,12 +37,16 @@ public final class StorageUnit {
     
     private final DataSourceProperties dataSourceProps;
     
-    public StorageUnit(final String name, final String nodeName) {
-        this(name, nodeName, null);
-    }
-    
     public StorageUnit(final String name, final String nodeName, final DataSourceProperties dataSourceProps) {
         this(name, nodeName, null, dataSourceProps);
+    }
+    
+    private boolean isSameCatalog(final StorageUnit storageUnit) {
+        return null == catalog ? null == storageUnit : catalog.equalsIgnoreCase(storageUnit.getCatalog());
+    }
+    
+    public String getUrl() {
+        return dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
     }
     
     @Override
@@ -52,10 +56,6 @@ public final class StorageUnit {
             return storageUnit.name.equalsIgnoreCase(name) && storageUnit.nodeName.equalsIgnoreCase(nodeName) && isSameCatalog(storageUnit);
         }
         return false;
-    }
-    
-    private boolean isSameCatalog(final StorageUnit storageUnit) {
-        return null == catalog ? null == storageUnit : catalog.equalsIgnoreCase(storageUnit.getCatalog());
     }
     
     @Override

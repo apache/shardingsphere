@@ -39,6 +39,8 @@ public final class ShardingSphereStorageDataSourceWrapper implements DataSource,
     
     private final String catalog;
     
+    private final String url;
+    
     @Override
     public Connection getConnection() throws SQLException {
         Connection result = dataSource.getConnection();
