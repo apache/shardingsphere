@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
  */
 @SingletonSPI
 public interface RuleItemConfigurationChangedGenerator<T extends RuleConfiguration, I> extends TypedSPI {
-    
+     
     /**
      * Swap rule item configuration from event.
      * 
