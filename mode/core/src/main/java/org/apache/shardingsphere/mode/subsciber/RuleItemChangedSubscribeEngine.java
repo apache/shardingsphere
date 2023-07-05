@@ -22,7 +22,8 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.event.config.AlterDatabaseRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.event.config.DeleteDatabaseRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
@@ -49,7 +50,7 @@ public abstract class RuleItemChangedSubscribeEngine<T extends RuleConfiguration
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         T currentRuleConfig = findRuleConfiguration(database);
         changeRuleItemConfiguration(event, currentRuleConfig, swapRuleItemConfigurationFromEvent(event, yamlContent));
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
+        contextManager.getInstanceContext().getEventBusContext().post(new AlterDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
     }
     
     /**
@@ -64,7 +65,7 @@ public abstract class RuleItemChangedSubscribeEngine<T extends RuleConfiguration
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         T currentRuleConfig = findRuleConfiguration(database);
         dropRuleItemConfiguration(event, currentRuleConfig);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
+        contextManager.getInstanceContext().getEventBusContext().post(new DeleteDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
     }
     
     protected abstract I swapRuleItemConfigurationFromEvent(AlterRuleItemEvent event, String yamlContent);

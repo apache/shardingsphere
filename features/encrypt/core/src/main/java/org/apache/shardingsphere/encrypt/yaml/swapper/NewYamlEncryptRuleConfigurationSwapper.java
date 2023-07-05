@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfi
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,7 @@ public final class NewYamlEncryptRuleConfigurationSwapper implements NewYamlRule
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final EncryptRuleConfiguration data) {
-        Collection<YamlDataNode> result = new LinkedHashSet<>();
+        Collection<YamlDataNode> result = new LinkedList<>();
         for (Entry<String, AlgorithmConfiguration> entry : data.getEncryptors().entrySet()) {
             result.add(new YamlDataNode(encryptRuleNodePath.getNamedItem(EncryptRuleNodePathProvider.ENCRYPTORS).getPath(entry.getKey()),
                     YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));

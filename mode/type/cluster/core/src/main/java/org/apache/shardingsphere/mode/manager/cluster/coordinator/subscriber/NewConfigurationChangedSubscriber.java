@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
+import org.apache.shardingsphere.mode.event.config.AlterDatabaseRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.event.config.DeleteDatabaseRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.global.AlterPropertiesEvent;
 import org.apache.shardingsphere.mode.event.config.global.DeleteGlobalRuleConfigurationEvent;
@@ -88,11 +89,24 @@ public final class NewConfigurationChangedSubscriber {
      * @param event database rule changed event
      */
     @Subscribe
-    public synchronized void renew(final DatabaseRuleConfigurationChangedEvent event) {
+    public synchronized void renew(final AlterDatabaseRuleConfigurationEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
+    }
+    
+    /**
+     * Renew for database rule configuration.
+     *
+     * @param event database rule changed event
+     */
+    @Subscribe
+    public synchronized void renew(final DeleteDatabaseRuleConfigurationEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        contextManager.dropRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
     }
     
     /**
