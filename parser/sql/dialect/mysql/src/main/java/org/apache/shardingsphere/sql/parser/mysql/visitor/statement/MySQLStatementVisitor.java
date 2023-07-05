@@ -150,7 +150,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.EngineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.engine.EngineSegment;
@@ -1902,29 +1901,28 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitEngineRef(final EngineRefContext ctx) {
-        EngineType engineType = null;
-        if (null != ctx.INNODB()) {
-            engineType = EngineType.INNODB;
-        } else if (null != ctx.FEDERATED()) {
-            engineType = EngineType.FEDERATED;
-        } else if (null != ctx.MEMORY()) {
-            engineType = EngineType.MEMORY;
-        } else if (null != ctx.PERFORMANCE_SCHEMA()) {
-            engineType = EngineType.PERFORMANCE_SCHEMA;
-        } else if (null != ctx.MYISAM()) {
-            engineType = EngineType.MYISAM;
-        } else if (null != ctx.MRG_MYISAM()) {
-            engineType = EngineType.MRG_MYISAM;
-        } else if (null != ctx.BLACKHOLE()) {
-            engineType = EngineType.BLACKHOLE;
-        } else if (null != ctx.CSV()) {
-            engineType = EngineType.CSV;
-        } else if (null != ctx.ARCHIVE()) {
-            engineType = EngineType.ARCHIVE;
-        } else if (null != ctx.string_()) {
-            engineType = EngineType.getEngineType(SQLUtils.getExactlyValue(ctx.string_().getText()));
+        if (null != ctx.textOrIdentifier()) {
+            return new EngineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), SQLUtils.getExactlyValue(ctx.textOrIdentifier().getText()));
         }
-        return new EngineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), engineType);
+        String engineName = null;
+        if (null != ctx.INNODB()) {
+            engineName = ctx.INNODB().getText();
+        } else if (null != ctx.FEDERATED()) {
+            engineName = ctx.FEDERATED().getText();
+        } else if (null != ctx.MEMORY()) {
+            engineName = ctx.MEMORY().getText();
+        } else if (null != ctx.MYISAM()) {
+            engineName = ctx.MYISAM().getText();
+        } else if (null != ctx.MRG_MYISAM()) {
+            engineName = ctx.MRG_MYISAM().getText();
+        } else if (null != ctx.BLACKHOLE()) {
+            engineName = ctx.BLACKHOLE().getText();
+        } else if (null != ctx.CSV()) {
+            engineName = ctx.CSV().getText();
+        } else if (null != ctx.ARCHIVE()) {
+            engineName = ctx.ARCHIVE().getText();
+        }
+        return new EngineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), engineName);
     }
     
     /**

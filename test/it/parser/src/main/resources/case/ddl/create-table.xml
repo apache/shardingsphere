@@ -22,14 +22,7 @@
         <column-definition type="int" start-index="20" stop-index="24">
             <column name="a" />
         </column-definition>
-        <engine name="INNODB" start-index="34" stop-index="41" />
-    </create-table>
-    <create-table sql-case-id="create_table_with_backtick_engine_performance_schema">
-        <table name="t`1" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="18" />
-        <column-definition type="int" start-index="20" stop-index="24">
-            <column name="a" />
-        </column-definition>
-        <engine name="PERFORMANCE_SCHEMA" start-index="34" stop-index="51" />
+        <engine name="Innodb" start-index="34" stop-index="41" />
     </create-table>
     <create-table sql-case-id="create_table_with_backtick_engine_innodb">
         <table name="t`1" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="18" />

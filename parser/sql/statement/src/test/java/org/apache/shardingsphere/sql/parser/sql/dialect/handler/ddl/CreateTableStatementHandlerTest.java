@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.enums.EngineType;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.engine.EngineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -79,15 +77,5 @@ class CreateTableStatementHandlerTest {
         assertTrue(CreateTableStatementHandler.getColumns(new OracleCreateTableStatement()).isEmpty());
         assertTrue(CreateTableStatementHandler.getColumns(new PostgreSQLCreateTableStatement(false)).isEmpty());
         assertTrue(CreateTableStatementHandler.getColumns(new SQL92CreateTableStatement()).isEmpty());
-    }
-    
-    @Test
-    void assertEngine() {
-        MySQLCreateTableStatement mySQLCreateTableStatement = new MySQLCreateTableStatement(true);
-        mySQLCreateTableStatement.setEngine(new EngineSegment(0, 1, EngineType.INNODB));
-        Optional<EngineSegment> actual = CreateTableStatementHandler.getEngine(mySQLCreateTableStatement);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(mySQLCreateTableStatement.getEngine().get()));
-        assertFalse(CreateTableStatementHandler.getEngine(new MySQLCreateTableStatement(false)).isPresent());
     }
 }

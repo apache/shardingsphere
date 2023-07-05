@@ -124,8 +124,8 @@ public final class CreateTableStatementAssert {
             assertFalse(engine.isPresent(), assertContext.getText("Actual engine segments should not exist."));
         } else {
             assertTrue(engine.isPresent(), assertContext.getText("Actual engine segments should exist."));
-            assertThat(assertContext.getText(String.format("`%s`'s engine assertion error: ", actual.getClass().getSimpleName())), engine.get().getEngine().name().toLowerCase(),
-                    is(expected.getEngine().getName().toLowerCase()));
+            assertThat(assertContext.getText(String.format("`%s`'s engine assertion error: ", actual.getClass().getSimpleName())), engine.get().getEngine(),
+                    is(expected.getEngine().getName()));
         }
     }
 }

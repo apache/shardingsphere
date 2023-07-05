@@ -128,10 +128,6 @@ MEMORY
     : M E M O R Y
     ;
 
-PERFORMANCE_SCHEMA
-    : P E R F O R M A N C E UL_ S C H E M A
-    ;
-
 MYISAM
     : M Y I S A M
     ;

@@ -792,13 +792,12 @@ engineRef
     : INNODB
     | FEDERATED
     | MEMORY
-    | PERFORMANCE_SCHEMA
     | MYISAM
     | MRG_MYISAM
     | BLACKHOLE
     | CSV
     | ARCHIVE
-    | string_
+    | textOrIdentifier
     ;
     
 triggerName

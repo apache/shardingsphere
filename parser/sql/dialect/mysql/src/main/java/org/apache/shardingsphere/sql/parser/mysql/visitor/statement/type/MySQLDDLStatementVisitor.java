@@ -133,9 +133,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.RenameI
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -965,7 +963,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
             return visit(ctx.alterTablespaceNdb());
         }
     }
-
+    
     @Override
     public ASTNode visitAlterTablespaceInnodb(final AlterTablespaceInnodbContext ctx) {
         MySQLAlterTablespaceStatement result = new MySQLAlterTablespaceStatement();
@@ -977,7 +975,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitAlterTablespaceNdb(final AlterTablespaceNdbContext ctx) {
         MySQLAlterTablespaceStatement result = new MySQLAlterTablespaceStatement();
@@ -989,7 +987,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         }
         return result;
     }
-
+    
     private TablespaceSegment createTablespaceSegment(final IdentifierContext ctx) {
         return new TablespaceSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx));
     }

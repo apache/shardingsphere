@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.engine;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.EngineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
@@ -33,5 +32,5 @@ public final class EngineSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final EngineType engine;
+    private final String engine;
 }
