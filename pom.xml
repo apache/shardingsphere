@@ -124,6 +124,8 @@
         <!-- 3rd party library plugin versions -->
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
+        <jnr-unixsocket.version>0.38.20</jnr-unixsocket.version>
+        <docker-client.version>8.14.5</docker-client.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
         <os-maven-plugin.version>1.6.2</os-maven-plugin.version>
         <native-maven-plugin.version>0.9.22</native-maven-plugin.version>
@@ -696,6 +698,19 @@
                     <groupId>com.spotify</groupId>
                     <artifactId>dockerfile-maven-plugin</artifactId>
                     <version>${dockerfile-maven.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.github.jnr</groupId>
+                            <artifactId>jnr-unixsocket</artifactId>
+                            <version>${jnr-unixsocket.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>com.spotify</groupId>
+                            <artifactId>docker-client</artifactId>
+                            <classifier>shaded</classifier>
+                            <version>${docker-client.version}</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <!-- TODO nianjun should remove after test container is used in agent e2e -->
                 <plugin>
