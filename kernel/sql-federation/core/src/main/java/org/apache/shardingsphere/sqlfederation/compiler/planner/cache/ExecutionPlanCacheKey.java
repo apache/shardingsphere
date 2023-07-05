@@ -38,5 +38,7 @@ public final class ExecutionPlanCacheKey {
     
     private final SQLStatement sqlStatement;
     
+    private final String databaseType;
+    
     private final Map<String, Integer> tableMetaDataVersions = new LinkedHashMap<>();
 }

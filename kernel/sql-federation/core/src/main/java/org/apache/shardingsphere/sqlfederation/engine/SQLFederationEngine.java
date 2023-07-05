@@ -34,12 +34,12 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
@@ -53,7 +53,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.statement.SQLStatementCo
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationDataContext;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
-import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutor;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
@@ -178,7 +178,8 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private ExecutionPlanCacheKey buildCacheKey(final SQLFederationExecutorContext federationContext, final SelectStatementContext selectStatementContext) {
         ShardingSphereSchema schema = federationContext.getMetaData().getDatabase(databaseName).getSchema(schemaName);
-        ExecutionPlanCacheKey result = new ExecutionPlanCacheKey(federationContext.getQueryContext().getSql(), selectStatementContext.getSqlStatement());
+        ExecutionPlanCacheKey result =
+                new ExecutionPlanCacheKey(federationContext.getQueryContext().getSql(), selectStatementContext.getSqlStatement(), selectStatementContext.getDatabaseType().getType());
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
             ShardingSphereTable table = schema.getTable(each);
             ShardingSpherePreconditions.checkState(null != table, () -> new NoSuchTableException(each));
@@ -195,13 +196,12 @@ public final class SQLFederationEngine implements AutoCloseable {
             return;
         }
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, metaData.getProps(), federationContext);
-        EnumerablePushDownTableScanExecutor pushDownTableScanExecutor =
-                new EnumerablePushDownTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, metaData.getGlobalRuleMetaData(), executorContext, statistics);
+        EnumerableScanExecutor scanExecutor = new EnumerableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, metaData.getGlobalRuleMetaData(), executorContext, statistics);
         // TODO register only the required tables
         for (String each : metaData.getDatabase(databaseName).getSchema(schemaName).getAllTableNames()) {
             Table table = sqlFederationSchema.getTable(each);
             if (table instanceof SQLFederationTable) {
-                ((SQLFederationTable) table).setPushDownTableScanExecutor(pushDownTableScanExecutor);
+                ((SQLFederationTable) table).setScanExecutor(scanExecutor);
             }
         }
     }

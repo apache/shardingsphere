@@ -15,7 +15,15 @@
 # limitations under the License.
 #
 
+org.apache.shardingsphere.sharding.subscriber.ShardingAutoTableSubscriber
 org.apache.shardingsphere.sharding.subscriber.ShardingTableSubscriber
-org.apache.shardingsphere.sharding.subscriber.ShardingDefaultStrategySubscriber
+org.apache.shardingsphere.sharding.subscriber.ShardingTableReferenceSubscriber
 org.apache.shardingsphere.sharding.subscriber.ShardingAlgorithmSubscriber
+org.apache.shardingsphere.sharding.subscriber.KeyGeneratorSubscriber
+org.apache.shardingsphere.sharding.subscriber.ShardingAuditorSubscriber
+org.apache.shardingsphere.sharding.subscriber.DefaultDatabaseShardingStrategySubscriber
+org.apache.shardingsphere.sharding.subscriber.DefaultTableShardingStrategySubscriber
+org.apache.shardingsphere.sharding.subscriber.DefaultKeyGenerateStrategySubscriber
+org.apache.shardingsphere.sharding.subscriber.DefaultShardingAuditorStrategySubscriber
+org.apache.shardingsphere.sharding.subscriber.DefaultShardingColumnSubscriber
 org.apache.shardingsphere.sharding.subscriber.ShardingCacheSubscriber

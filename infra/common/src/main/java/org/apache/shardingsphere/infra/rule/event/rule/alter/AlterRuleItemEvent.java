@@ -23,4 +23,25 @@ import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
  * Alter rule item event.
  */
 public interface AlterRuleItemEvent extends RuleItemChangedEvent {
+    
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    String getDatabaseName();
+    
+    /**
+     * Get active version key.
+     *
+     * @return active version key
+     */
+    String getActiveVersionKey();
+    
+    /**
+     * Get active version.
+     *
+     * @return active version
+     */
+    String getActiveVersion();
 }

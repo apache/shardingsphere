@@ -30,11 +30,9 @@ import java.util.Collection;
 
 /**
  * SQL federation row enumerator.
- * 
- * @param <T> type of row
  */
 @RequiredArgsConstructor
-public final class SQLFederationRowEnumerator<T> implements Enumerator<T> {
+public final class SQLFederationRowEnumerator implements Enumerator<Object> {
     
     private final MergedResult queryResult;
     
@@ -42,10 +40,10 @@ public final class SQLFederationRowEnumerator<T> implements Enumerator<T> {
     
     private final Collection<Statement> statements;
     
-    private T currentRow;
+    private Object currentRow;
     
     @Override
-    public T current() {
+    public Object current() {
         return currentRow;
     }
     
@@ -63,17 +61,12 @@ public final class SQLFederationRowEnumerator<T> implements Enumerator<T> {
         return false;
     }
     
-    @SuppressWarnings("unchecked")
     private void setCurrentRow() throws SQLException {
-        if (1 == metaData.getColumnCount()) {
-            this.currentRow = (T) queryResult.getValue(1, Object.class);
-        } else {
-            Object[] rowValues = new Object[metaData.getColumnCount()];
-            for (int i = 0; i < metaData.getColumnCount(); i++) {
-                rowValues[i] = queryResult.getValue(i + 1, Object.class);
-            }
-            this.currentRow = (T) rowValues;
+        Object[] rowValues = new Object[metaData.getColumnCount()];
+        for (int i = 0; i < metaData.getColumnCount(); i++) {
+            rowValues[i] = queryResult.getValue(i + 1, Object.class);
         }
+        this.currentRow = 1 == metaData.getColumnCount() ? rowValues[0] : rowValues;
     }
     
     @Override
