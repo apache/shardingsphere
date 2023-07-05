@@ -38,26 +38,26 @@ import java.util.Collections;
 /**
  * Sharding auto table subscribe engine.
  */
-public final class ShardingAutoTableSubscribeEngine extends RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingAutoTableRuleConfiguration> {
+public final class ShardingAutoTableSubscribeEngine implements RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingAutoTableRuleConfiguration> {
     
     @Override
-    protected ShardingAutoTableRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public ShardingAutoTableRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlShardingAutoTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlShardingAutoTableRuleConfiguration.class));
     }
     
     @Override
-    protected ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(ShardingRule.class).map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final ShardingAutoTableRuleConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final ShardingAutoTableRuleConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getAutoTables().removeIf(each -> each.getLogicTable().equals(((AlterNamedRuleItemEvent) event).getItemName()));
         currentRuleConfig.getAutoTables().add(toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getAutoTables().removeIf(each -> each.getLogicTable().equals(((DropNamedRuleItemEvent) event).getItemName()));
     }
     

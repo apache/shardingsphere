@@ -32,25 +32,25 @@ import java.util.Collections;
 /**
  * Default sharding column subscribe engine.
  */
-public final class DefaultShardingColumnSubscribeEngine extends RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, String> {
+public final class DefaultShardingColumnSubscribeEngine implements RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, String> {
     
     @Override
-    protected String swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public String swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return yamlContent;
     }
     
     @Override
-    protected ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(ShardingRule.class).map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
         currentRuleConfig.setDefaultShardingColumn(toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultShardingColumn(null);
     }
     

@@ -38,25 +38,25 @@ import java.util.Collections;
 /**
  * Shadow algorithm subscribe engine.
  */
-public final class ShadowAlgorithmSubscribeEngine extends RuleItemChangedSubscribeEngine<ShadowRuleConfiguration, AlgorithmConfiguration> {
+public final class ShadowAlgorithmSubscribeEngine implements RuleItemChangedSubscribeEngine<ShadowRuleConfiguration, AlgorithmConfiguration> {
     
     @Override
-    protected AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
     }
     
     @Override
-    protected ShadowRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public ShadowRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(ShadowRule.class).map(optional -> (ShadowRuleConfiguration) optional.getConfiguration()).orElseGet(ShadowRuleConfiguration::new);
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getShadowAlgorithms().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getShadowAlgorithms().remove(((DropNamedRuleItemEvent) event).getItemName());
     }
     

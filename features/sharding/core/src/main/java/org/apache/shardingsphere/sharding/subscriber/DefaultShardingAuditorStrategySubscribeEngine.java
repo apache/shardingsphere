@@ -36,25 +36,25 @@ import java.util.Collections;
 /**
  * Default sharding auditor strategy subscribe engine.
  */
-public final class DefaultShardingAuditorStrategySubscribeEngine extends RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingAuditStrategyConfiguration> {
+public final class DefaultShardingAuditorStrategySubscribeEngine implements RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingAuditStrategyConfiguration> {
     
     @Override
-    protected ShardingAuditStrategyConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public ShardingAuditStrategyConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlShardingAuditStrategyConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlShardingAuditStrategyConfiguration.class));
     }
     
     @Override
-    protected ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(ShardingRule.class).map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final ShardingAuditStrategyConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final ShardingAuditStrategyConfiguration toBeChangedItemConfig) {
         currentRuleConfig.setDefaultAuditStrategy(toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultAuditStrategy(null);
     }
     

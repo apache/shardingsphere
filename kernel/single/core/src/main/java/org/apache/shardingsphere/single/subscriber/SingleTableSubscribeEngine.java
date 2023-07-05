@@ -35,27 +35,27 @@ import java.util.Collections;
 /**
  * Single table subscribe engine.
  */
-public final class SingleTableSubscribeEngine extends RuleItemChangedSubscribeEngine<SingleRuleConfiguration, SingleRuleConfiguration> {
+public final class SingleTableSubscribeEngine implements RuleItemChangedSubscribeEngine<SingleRuleConfiguration, SingleRuleConfiguration> {
     
     @Override
-    protected SingleRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public SingleRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlSingleRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlSingleRuleConfiguration.class));
     }
     
     @Override
-    protected SingleRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public SingleRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(SingleRule.class).map(SingleRule::getConfiguration).orElseGet(SingleRuleConfiguration::new);
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getTables().clear();
         currentRuleConfig.getTables().addAll(toBeChangedItemConfig.getTables());
         toBeChangedItemConfig.getDefaultDataSource().ifPresent(optional -> currentRuleConfig.setDefaultDataSource(toBeChangedItemConfig.getDefaultDataSource().get()));
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getTables().clear();
         currentRuleConfig.setDefaultDataSource(null);
     }

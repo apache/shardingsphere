@@ -35,26 +35,26 @@ import java.util.LinkedList;
 /**
  * Broadcast table subscribe engine.
  */
-public final class BroadcastTableSubscribeEngine extends RuleItemChangedSubscribeEngine<BroadcastRuleConfiguration, BroadcastRuleConfiguration> {
+public final class BroadcastTableSubscribeEngine implements RuleItemChangedSubscribeEngine<BroadcastRuleConfiguration, BroadcastRuleConfiguration> {
     
     @Override
-    protected BroadcastRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public BroadcastRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new BroadcastRuleConfiguration(YamlEngine.unmarshal(yamlContent, YamlBroadcastRuleConfiguration.class).getTables());
     }
     
     @Override
-    protected BroadcastRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public BroadcastRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(BroadcastRule.class).map(BroadcastRule::getConfiguration).orElseGet(() -> new BroadcastRuleConfiguration(new LinkedList<>()));
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final BroadcastRuleConfiguration currentRuleConfig, final BroadcastRuleConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final BroadcastRuleConfiguration currentRuleConfig, final BroadcastRuleConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getTables().clear();
         currentRuleConfig.getTables().addAll(toBeChangedItemConfig.getTables());
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final BroadcastRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final BroadcastRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getTables().clear();
     }
     

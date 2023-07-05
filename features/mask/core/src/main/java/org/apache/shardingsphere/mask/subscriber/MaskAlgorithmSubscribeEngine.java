@@ -40,15 +40,15 @@ import java.util.LinkedList;
 /**
  * Mask algorithm subscribe engine.
  */
-public final class MaskAlgorithmSubscribeEngine extends RuleItemChangedSubscribeEngine<MaskRuleConfiguration, AlgorithmConfiguration> {
+public final class MaskAlgorithmSubscribeEngine implements RuleItemChangedSubscribeEngine<MaskRuleConfiguration, AlgorithmConfiguration> {
     
     @Override
-    protected AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
     }
     
     @Override
-    protected MaskRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public MaskRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(MaskRule.class)
                 .map(maskRule -> getConfiguration((MaskRuleConfiguration) maskRule.getConfiguration())).orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
     }
@@ -58,12 +58,12 @@ public final class MaskAlgorithmSubscribeEngine extends RuleItemChangedSubscribe
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getMaskAlgorithms().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getMaskAlgorithms().remove(((DropNamedRuleItemEvent) event).getItemName());
     }
     

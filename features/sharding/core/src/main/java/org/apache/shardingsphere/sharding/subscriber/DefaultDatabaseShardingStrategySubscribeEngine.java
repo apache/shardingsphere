@@ -36,25 +36,25 @@ import java.util.Collections;
 /**
  * Default database sharding strategy subscribe engine.
  */
-public final class DefaultDatabaseShardingStrategySubscribeEngine extends RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingStrategyConfiguration> {
+public final class DefaultDatabaseShardingStrategySubscribeEngine implements RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingStrategyConfiguration> {
     
     @Override
-    protected ShardingStrategyConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
+    public ShardingStrategyConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlShardingStrategyConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlShardingStrategyConfiguration.class));
     }
     
     @Override
-    protected ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+    public ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(ShardingRule.class).map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
     }
     
     @Override
-    protected void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final ShardingStrategyConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final ShardingStrategyConfiguration toBeChangedItemConfig) {
         currentRuleConfig.setDefaultDatabaseShardingStrategy(toBeChangedItemConfig);
     }
     
     @Override
-    protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
     }
     
