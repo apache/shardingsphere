@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqlfederation.compiler.statement.SQLStatementCompiler;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,6 +40,8 @@ public final class ExecutionPlanCacheKey {
     private final SQLStatement sqlStatement;
     
     private final String databaseType;
+    
+    private final SQLStatementCompiler sqlStatementCompiler;
     
     private final Map<String, Integer> tableMetaDataVersions = new LinkedHashMap<>();
 }

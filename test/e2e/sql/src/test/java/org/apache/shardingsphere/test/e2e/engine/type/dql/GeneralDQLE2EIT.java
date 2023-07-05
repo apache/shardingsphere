@@ -58,7 +58,6 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
                 assertExecuteQueryWithExpectedDataSource(containerComposer);
             }
         }
-        
     }
     
     private void assertExecuteQueryWithXmlExpected(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException {

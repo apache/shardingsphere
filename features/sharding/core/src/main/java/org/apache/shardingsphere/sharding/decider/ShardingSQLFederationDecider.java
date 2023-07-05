@@ -57,7 +57,7 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         if (!selectStatementContext.isContainsJoinQuery() || rule.isAllTablesInSameDataSource(tableNames)) {
             return false;
         }
-        return tableNames.size() <= 1 || !rule.isAllBindingTables(database, selectStatementContext, tableNames);
+        return tableNames.size() > 1 && !rule.isAllBindingTables(database, selectStatementContext, tableNames);
     }
     
     private Collection<DataNode> getTableDataNodes(final ShardingRule rule, final Collection<String> tableNames) {
