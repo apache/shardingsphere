@@ -42,16 +42,18 @@ public final class RuleItemChangedSubscriber {
      */
     @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
     @Subscribe
-    public synchronized void renew(final AlterRuleItemEvent event) {
-        RuleItemChangedSubscribeEngine engine = TypedSPILoader.getService(RuleItemChangedSubscribeEngine.class, event.getClass().getName());
+    public void renew(final AlterRuleItemEvent event) {
+        RuleItemConfigurationChangedGenerator generator = TypedSPILoader.getService(RuleItemConfigurationChangedGenerator.class, event.getClass().getName());
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
         String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        RuleConfiguration currentRuleConfig = engine.findRuleConfiguration(database);
-        engine.changeRuleItemConfiguration(event, currentRuleConfig, engine.swapRuleItemConfigurationFromEvent(event, yamlContent));
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
+        RuleConfiguration currentRuleConfig = generator.findRuleConfiguration(database);
+        synchronized (this) {
+            generator.changeRuleItemConfiguration(event, currentRuleConfig, generator.swapRuleItemConfigurationFromEvent(event, yamlContent));
+            contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
+        }
     }
     
     /**
@@ -61,14 +63,16 @@ public final class RuleItemChangedSubscriber {
      */
     @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
     @Subscribe
-    public synchronized void renew(final DropRuleItemEvent event) {
-        RuleItemChangedSubscribeEngine engine = TypedSPILoader.getService(RuleItemChangedSubscribeEngine.class, event.getClass().getName());
+    public void renew(final DropRuleItemEvent event) {
+        RuleItemConfigurationChangedGenerator generator = TypedSPILoader.getService(RuleItemConfigurationChangedGenerator.class, event.getClass().getName());
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        RuleConfiguration currentRuleConfig = engine.findRuleConfiguration(database);
-        engine.dropRuleItemConfiguration(event, currentRuleConfig);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
+        RuleConfiguration currentRuleConfig = generator.findRuleConfiguration(database);
+        synchronized (this) {
+            generator.dropRuleItemConfiguration(event, currentRuleConfig);
+            contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
+        }
     }
 }
