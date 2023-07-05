@@ -22,7 +22,7 @@ columns:
     dataType: -5
     generated: false
     name: oid
-    primaryKey: false
+    primaryKey: true
     visible: false
   rolname:
     caseSensitive: true
