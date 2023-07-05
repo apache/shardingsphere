@@ -15,45 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.statistics.collector.tables;
+package org.apache.shardingsphere.infra.metadata.statistics.collector.opengauss.pgcatalog;
 
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereTableDataCollectorUtils;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.pgcatalog.PostgreSQLPgNamespaceTableCollector;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
- * Table pg_namespace data collector.
+ * Table pg_catalog.pg_namespace data collector for openGauss.
  */
-public final class PgNamespaceTableCollector implements ShardingSphereStatisticsCollector {
+public final class OpenGaussPgNamespaceTableCollector implements ShardingSphereStatisticsCollector {
     
-    private static final String PG_NAMESPACE = "pg_namespace";
-    
-    private static final String COLUMN_NAMES = "oid, nspname, nspowner, nspacl";
-    
-    private static final String SELECT_SQL = "SELECT " + COLUMN_NAMES + " FROM pg_catalog.pg_namespace";
+    private final PostgreSQLPgNamespaceTableCollector delegated = new PostgreSQLPgNamespaceTableCollector();
     
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
-        Collection<ShardingSphereRowData> rows = ShardingSphereTableDataCollectorUtils.collectRowData(shardingSphereDatabases.get(databaseName),
-                SELECT_SQL, table, Arrays.stream(COLUMN_NAMES.split(",")).map(String::trim).collect(Collectors.toList()));
-        ShardingSphereTableData result = new ShardingSphereTableData(PG_NAMESPACE);
-        result.getRows().addAll(rows);
-        return Optional.of(result);
+        return delegated.collect(databaseName, table, shardingSphereDatabases);
     }
     
     @Override
     public String getType() {
-        return PG_NAMESPACE;
+        return String.join(".", new OpenGaussDatabaseType().getType(), "pg_catalog", "pg_namespace");
     }
 }

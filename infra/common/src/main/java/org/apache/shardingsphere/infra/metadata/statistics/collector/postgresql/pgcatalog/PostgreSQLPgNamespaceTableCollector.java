@@ -15,35 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.listener;
+package org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.pgcatalog;
 
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereTableDataCollectorUtils;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
- * ShardingSphere data collector fixture.
+ * Table pg_catalog.pg_namespace data collector for PostgreSQL.
  */
-public final class ShardingSphereDataCollectorFixture implements ShardingSphereStatisticsCollector {
+public final class PostgreSQLPgNamespaceTableCollector implements ShardingSphereStatisticsCollector {
+    
+    private static final String PG_NAMESPACE = "pg_namespace";
+    
+    private static final String COLUMN_NAMES = "oid, nspname, nspowner, nspacl";
+    
+    private static final String SELECT_SQL = "SELECT " + COLUMN_NAMES + " FROM pg_catalog.pg_namespace";
     
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
-        ShardingSphereTableData shardingSphereTableData = new ShardingSphereTableData("test_table");
-        shardingSphereTableData.getRows().add(new ShardingSphereRowData(Arrays.asList("1", "2")));
-        return Optional.of(shardingSphereTableData);
+        Collection<ShardingSphereRowData> rows = ShardingSphereTableDataCollectorUtils.collectRowData(shardingSphereDatabases.get(databaseName),
+                SELECT_SQL, table, Arrays.stream(COLUMN_NAMES.split(",")).map(String::trim).collect(Collectors.toList()));
+        ShardingSphereTableData result = new ShardingSphereTableData(PG_NAMESPACE);
+        result.getRows().addAll(rows);
+        return Optional.of(result);
     }
     
     @Override
     public String getType() {
-        return String.join(".", new MySQLDatabaseType().getType(), "logic_schema", "test_table");
+        return String.join(".", new PostgreSQLDatabaseType().getType(), "pg_catalog", "pg_namespace");
     }
 }
