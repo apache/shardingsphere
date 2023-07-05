@@ -20,19 +20,19 @@ package org.apache.shardingsphere.shadow.subscriber;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.event.algorithm.AlterDefaultShadowAlgorithmEvent;
+import org.apache.shardingsphere.shadow.event.algorithm.DropDefaultShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Default shadow algorithm name subscribe engine.
  */
 public final class DefaultShadowAlgorithmNameSubscribeEngine extends RuleItemChangedSubscribeEngine<ShadowRuleConfiguration, String> {
-    
-    public DefaultShadowAlgorithmNameSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected String swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -52,5 +52,15 @@ public final class DefaultShadowAlgorithmNameSubscribeEngine extends RuleItemCha
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultShadowAlgorithmName(null);
+    }
+    
+    @Override
+    public String getType() {
+        return AlterDefaultShadowAlgorithmEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropDefaultShadowAlgorithmEvent.class.getName());
     }
 }

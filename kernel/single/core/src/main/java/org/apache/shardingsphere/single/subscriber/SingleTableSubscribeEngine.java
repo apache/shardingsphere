@@ -21,21 +21,21 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
+import org.apache.shardingsphere.single.event.config.DropSingleTableEvent;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Single table subscribe engine.
  */
 public final class SingleTableSubscribeEngine extends RuleItemChangedSubscribeEngine<SingleRuleConfiguration, SingleRuleConfiguration> {
-    
-    public SingleTableSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected SingleRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -58,5 +58,15 @@ public final class SingleTableSubscribeEngine extends RuleItemChangedSubscribeEn
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getTables().clear();
         currentRuleConfig.setDefaultDataSource(null);
+    }
+    
+    @Override
+    public String getType() {
+        return AlterSingleTableEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropSingleTableEvent.class.getName());
     }
 }

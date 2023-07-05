@@ -26,19 +26,19 @@ import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.event.algorithm.sharding.AlterShardingAlgorithmEvent;
+import org.apache.shardingsphere.sharding.event.algorithm.sharding.DropShardingAlgorithmEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Sharding algorithm subscribe engine.
  */
 public final class ShardingAlgorithmSubscribeEngine extends RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, AlgorithmConfiguration> {
-    
-    public ShardingAlgorithmSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -58,5 +58,15 @@ public final class ShardingAlgorithmSubscribeEngine extends RuleItemChangedSubsc
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getShardingAlgorithms().remove(((DropNamedRuleItemEvent) event).getItemName());
+    }
+    
+    @Override
+    public String getType() {
+        return AlterShardingAlgorithmEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropShardingAlgorithmEvent.class.getName());
     }
 }

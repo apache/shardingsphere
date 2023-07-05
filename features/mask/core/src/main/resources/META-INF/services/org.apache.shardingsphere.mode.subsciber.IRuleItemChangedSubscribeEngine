@@ -15,7 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.subscriber.EncryptTableSubscriber
-org.apache.shardingsphere.encrypt.subscriber.EncryptorSubscriber
-org.apache.shardingsphere.encrypt.subscriber.compatible.CompatibleEncryptTableSubscriber
-org.apache.shardingsphere.encrypt.subscriber.compatible.CompatibleEncryptorSubscriber
+org.apache.shardingsphere.mask.subscriber.MaskTableSubscribeEngine
+org.apache.shardingsphere.mask.subscriber.MaskAlgorithmSubscribeEngine

@@ -18,25 +18,24 @@
 package org.apache.shardingsphere.broadcast.subscriber;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.event.table.AlterBroadcastTableEvent;
+import org.apache.shardingsphere.broadcast.event.table.DropBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
  * Broadcast table subscribe engine.
  */
 public final class BroadcastTableSubscribeEngine extends RuleItemChangedSubscribeEngine<BroadcastRuleConfiguration, BroadcastRuleConfiguration> {
-    
-    public BroadcastTableSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected BroadcastRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -57,5 +56,15 @@ public final class BroadcastTableSubscribeEngine extends RuleItemChangedSubscrib
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final BroadcastRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getTables().clear();
+    }
+    
+    @Override
+    public String getType() {
+        return AlterBroadcastTableEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropBroadcastTableEvent.class.getName());
     }
 }

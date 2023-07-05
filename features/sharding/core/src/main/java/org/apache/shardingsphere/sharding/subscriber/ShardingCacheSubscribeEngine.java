@@ -21,22 +21,22 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
+import org.apache.shardingsphere.sharding.event.cache.AlterShardingCacheEvent;
+import org.apache.shardingsphere.sharding.event.cache.DropShardingCacheEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.cache.YamlShardingCacheConfigurationSwapper;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Sharding cache subscribe engine.
  */
 public final class ShardingCacheSubscribeEngine extends RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingCacheConfiguration> {
-    
-    public ShardingCacheSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected ShardingCacheConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -56,5 +56,15 @@ public final class ShardingCacheSubscribeEngine extends RuleItemChangedSubscribe
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setShardingCache(null);
+    }
+    
+    @Override
+    public String getType() {
+        return AlterShardingCacheEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropShardingCacheEvent.class.getName());
     }
 }

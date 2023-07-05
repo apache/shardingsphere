@@ -15,4 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.broadcast.subscriber.BroadcastTableSubscriber
+org.apache.shardingsphere.shadow.subscriber.ShadowDataSourceSubscribeEngine
+org.apache.shardingsphere.shadow.subscriber.ShadowTableSubscribeEngine
+org.apache.shardingsphere.shadow.subscriber.ShadowAlgorithmSubscribeEngine
+org.apache.shardingsphere.shadow.subscriber.DefaultShadowAlgorithmNameSubscribeEngine
