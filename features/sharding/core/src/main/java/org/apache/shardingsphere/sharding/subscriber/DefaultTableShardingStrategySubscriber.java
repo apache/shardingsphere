@@ -18,61 +18,33 @@
 package org.apache.shardingsphere.sharding.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.event.strategy.table.AlterDefaultTableShardingStrategyEvent;
 import org.apache.shardingsphere.sharding.event.strategy.table.DropDefaultTableShardingStrategyEvent;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStrategyConfigurationSwapper;
 
 /**
  * Default table sharding strategy subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class DefaultTableShardingStrategySubscriber implements RuleChangedSubscriber<AlterDefaultTableShardingStrategyEvent, DropDefaultTableShardingStrategyEvent> {
     
-    private ContextManager contextManager;
+    private DefaultTableShardingStrategySubscribeEngine engine;
     
-    /**
-     * Renew with alter default table sharding strategy.
-     *
-     * @param event alter default table sharding strategy event
-     */
-    @Subscribe
-    public synchronized void renew(final AlterDefaultTableShardingStrategyEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
-        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
-        ShardingStrategyConfiguration toBeChangedConfig = new YamlShardingStrategyConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlShardingStrategyConfiguration.class));
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShardingRuleConfiguration config = database.getRuleMetaData().findSingleRule(ShardingRule.class)
-                .map(optional -> (ShardingRuleConfiguration) optional.getConfiguration()).orElseGet(ShardingRuleConfiguration::new);
-        config.setDefaultTableShardingStrategy(toBeChangedConfig);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    @Override
+    public void setContextManager(final ContextManager contextManager) {
+        engine = new DefaultTableShardingStrategySubscribeEngine(contextManager);
     }
     
-    /**
-     * Renew with drop default table sharding strategy.
-     *
-     * @param event drop default table sharding strategy event
-     */
     @Subscribe
+    @Override
+    public synchronized void renew(final AlterDefaultTableShardingStrategyEvent event) {
+        engine.renew(event);
+    }
+    
+    @Subscribe
+    @Override
     public synchronized void renew(final DropDefaultTableShardingStrategyEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        ShardingRuleConfiguration config = (ShardingRuleConfiguration) database.getRuleMetaData().getSingleRule(ShardingRule.class).getConfiguration();
-        config.setDefaultTableShardingStrategy(null);
-        contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+        engine.renew(event);
     }
 }

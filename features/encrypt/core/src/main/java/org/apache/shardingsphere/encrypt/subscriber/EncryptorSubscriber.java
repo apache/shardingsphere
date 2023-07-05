@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Setter;
 import org.apache.shardingsphere.encrypt.event.encryptor.AlterEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.encryptor.DropEncryptorEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
  * Encryptor subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Setter
 public final class EncryptorSubscriber implements RuleChangedSubscriber<AlterEncryptorEvent, DropEncryptorEvent> {
     
     private EncryptorSubscribeEngine engine;

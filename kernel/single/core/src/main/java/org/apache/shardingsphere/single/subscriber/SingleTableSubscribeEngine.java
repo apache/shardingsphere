@@ -38,7 +38,7 @@ public final class SingleTableSubscribeEngine extends RuleItemChangedSubscribeEn
     }
     
     @Override
-    protected SingleRuleConfiguration swapRuleItemConfigurationFromEvent(final String yamlContent) {
+    protected SingleRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlSingleRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlSingleRuleConfiguration.class));
     }
     

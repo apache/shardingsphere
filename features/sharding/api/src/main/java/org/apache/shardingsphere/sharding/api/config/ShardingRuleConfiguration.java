@@ -65,4 +65,9 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     private Map<String, AlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
     private ShardingCacheConfiguration shardingCache;
+    
+    @Override
+    public boolean isEmpty() {
+        return tables.isEmpty() && autoTables.isEmpty() && null == defaultDatabaseShardingStrategy && null == defaultTableShardingStrategy;
+    }
 }
