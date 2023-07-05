@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sqlfederation.compiler.operator.util.LogicalScanRelShuttle;
+import org.apache.shardingsphere.sqlfederation.compiler.planner.util.SQLFederationPlannerUtils;
 
 import java.util.Objects;
 
@@ -40,8 +41,6 @@ import java.util.Objects;
 public final class SQLStatementCompiler {
     
     private final SqlToRelConverter converter;
-    
-    private final RelOptPlanner hepPlanner;
     
     /**
      * Compile sql statement to execution plan.
@@ -56,8 +55,9 @@ public final class SQLStatementCompiler {
         RelNode logicalPlan = converter.convertQuery(sqlNode, true, true).rel;
         RelDataType resultColumnType = Objects.requireNonNull(converter.validator).getValidatedNodeType(sqlNode);
         RelNode replacePlan = LogicalScanRelShuttle.replace(logicalPlan, databaseType);
-        RelNode rewritePlan = rewrite(replacePlan, hepPlanner);
+        RelNode rewritePlan = rewrite(replacePlan, SQLFederationPlannerUtils.createHepPlanner());
         RelNode physicalPlan = optimize(rewritePlan, converter);
+        RelMetadataQueryBase.THREAD_PROVIDERS.remove();
         return new SQLFederationExecutionPlan(physicalPlan, resultColumnType);
     }
     
