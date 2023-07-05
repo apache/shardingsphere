@@ -22,21 +22,21 @@ import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemE
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
+import org.apache.shardingsphere.sharding.event.table.binding.AlterShardingTableReferenceEvent;
+import org.apache.shardingsphere.sharding.event.table.binding.DropShardingTableReferenceEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Sharding table reference subscribe engine.
  */
 public final class ShardingTableReferenceSubscribeEngine extends RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingTableReferenceRuleConfiguration> {
-    
-    public ShardingTableReferenceSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected ShardingTableReferenceRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -57,5 +57,15 @@ public final class ShardingTableReferenceSubscribeEngine extends RuleItemChanged
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getBindingTableGroups().removeIf(each -> each.getName().equals(((DropNamedRuleItemEvent) event).getItemName()));
+    }
+    
+    @Override
+    public String getType() {
+        return AlterShardingTableReferenceEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropShardingTableReferenceEvent.class.getName());
     }
 }

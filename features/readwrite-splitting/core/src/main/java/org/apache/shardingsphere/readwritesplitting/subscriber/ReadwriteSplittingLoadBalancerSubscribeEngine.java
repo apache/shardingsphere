@@ -26,11 +26,14 @@ import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterReadwriteSplittingLoadBalancerEvent;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DropReadwriteSplittingLoadBalancerEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
@@ -38,10 +41,6 @@ import java.util.LinkedList;
  * Readwrite-splitting load-balancer subscribe engine.
  */
 public final class ReadwriteSplittingLoadBalancerSubscribeEngine extends RuleItemChangedSubscribeEngine<ReadwriteSplittingRuleConfiguration, AlgorithmConfiguration> {
-    
-    public ReadwriteSplittingLoadBalancerSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -62,5 +61,15 @@ public final class ReadwriteSplittingLoadBalancerSubscribeEngine extends RuleIte
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getLoadBalancers().remove(((DropNamedRuleItemEvent) event).getItemName());
+    }
+    
+    @Override
+    public String getType() {
+        return AlterReadwriteSplittingLoadBalancerEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropReadwriteSplittingLoadBalancerEvent.class.getName());
     }
 }

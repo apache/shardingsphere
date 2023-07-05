@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.subsciber;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
@@ -31,17 +31,13 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
  * @param <T> type of rule configuration
  * @param <I> type of rule item configuration
  */
-@RequiredArgsConstructor
-public abstract class RuleItemChangedSubscribeEngine<T extends RuleConfiguration, I> {
+@Setter
+public abstract class RuleItemChangedSubscribeEngine<T extends RuleConfiguration, I> implements IRuleItemChangedSubscribeEngine {
     
-    private final ContextManager contextManager;
+    private ContextManager contextManager;
     
-    /**
-     * Renew with alter rule item.
-     *
-     * @param event alter rule item event
-     */
-    public final void renew(final AlterRuleItemEvent event) {
+    @Override
+    public final synchronized void renew(final AlterRuleItemEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -52,12 +48,8 @@ public abstract class RuleItemChangedSubscribeEngine<T extends RuleConfiguration
         contextManager.getInstanceContext().getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), currentRuleConfig));
     }
     
-    /**
-     * Renew with drop rule item.
-     *
-     * @param event drop rule item event
-     */
-    public final void renew(final DropRuleItemEvent event) {
+    @Override
+    public final synchronized void renew(final DropRuleItemEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

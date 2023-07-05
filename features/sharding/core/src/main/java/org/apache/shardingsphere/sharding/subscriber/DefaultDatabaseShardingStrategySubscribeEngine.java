@@ -21,22 +21,22 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.event.strategy.database.AlterDefaultDatabaseShardingStrategyEvent;
+import org.apache.shardingsphere.sharding.event.strategy.database.DropDefaultDatabaseShardingStrategyEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStrategyConfigurationSwapper;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Default database sharding strategy subscribe engine.
  */
 public final class DefaultDatabaseShardingStrategySubscribeEngine extends RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, ShardingStrategyConfiguration> {
-    
-    public DefaultDatabaseShardingStrategySubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected ShardingStrategyConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -56,5 +56,15 @@ public final class DefaultDatabaseShardingStrategySubscribeEngine extends RuleIt
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
+    }
+    
+    @Override
+    public String getType() {
+        return AlterDefaultDatabaseShardingStrategyEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropDefaultDatabaseShardingStrategyEvent.class.getName());
     }
 }

@@ -23,21 +23,21 @@ import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.event.datasource.AlterShadowDataSourceEvent;
+import org.apache.shardingsphere.shadow.event.datasource.DropShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Shadow data source subscribe engine.
  */
 public final class ShadowDataSourceSubscribeEngine extends RuleItemChangedSubscribeEngine<ShadowRuleConfiguration, ShadowDataSourceConfiguration> {
-    
-    public ShadowDataSourceSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected ShadowDataSourceConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -60,5 +60,15 @@ public final class ShadowDataSourceSubscribeEngine extends RuleItemChangedSubscr
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getDataSources().removeIf(each -> each.getName().equals(((DropNamedRuleItemEvent) event).getItemName()));
+    }
+    
+    @Override
+    public String getType() {
+        return AlterShadowDataSourceEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropShadowDataSourceEvent.class.getName());
     }
 }

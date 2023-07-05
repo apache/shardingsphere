@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mask.subscriber.MaskTableSubscriber
-org.apache.shardingsphere.mask.subscriber.MaskAlgorithmSubscriber
+org.apache.shardingsphere.broadcast.subscriber.BroadcastTableSubscribeEngine

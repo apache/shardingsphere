@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingDataSourceSubscriber
-org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingLoadBalancerSubscriber
+org.apache.shardingsphere.single.subscriber.SingleTableSubscribeEngine

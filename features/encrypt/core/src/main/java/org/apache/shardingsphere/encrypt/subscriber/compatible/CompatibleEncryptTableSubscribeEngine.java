@@ -19,6 +19,8 @@ package org.apache.shardingsphere.encrypt.subscriber.compatible;
 
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.event.compatible.table.AlterCompatibleEncryptTableEvent;
+import org.apache.shardingsphere.encrypt.event.compatible.table.DropCompatibleEncryptTableEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
@@ -27,9 +29,10 @@ import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
@@ -39,10 +42,6 @@ import java.util.LinkedList;
  */
 @Deprecated
 public final class CompatibleEncryptTableSubscribeEngine extends RuleItemChangedSubscribeEngine<CompatibleEncryptRuleConfiguration, EncryptTableRuleConfiguration> {
-    
-    public CompatibleEncryptTableSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected EncryptTableRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -70,5 +69,15 @@ public final class CompatibleEncryptTableSubscribeEngine extends RuleItemChanged
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final CompatibleEncryptRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getTables().removeIf(each -> each.getName().equals(((DropNamedRuleItemEvent) event).getItemName()));
+    }
+    
+    @Override
+    public String getType() {
+        return AlterCompatibleEncryptTableEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropCompatibleEncryptTableEvent.class.getName());
     }
 }

@@ -20,19 +20,19 @@ package org.apache.shardingsphere.sharding.subscriber;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.AlterDefaultShardingColumnEvent;
+import org.apache.shardingsphere.sharding.event.strategy.shardingcolumn.DropDefaultShardingColumnEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Default sharding column subscribe engine.
  */
 public final class DefaultShardingColumnSubscribeEngine extends RuleItemChangedSubscribeEngine<ShardingRuleConfiguration, String> {
-    
-    public DefaultShardingColumnSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected String swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -52,5 +52,15 @@ public final class DefaultShardingColumnSubscribeEngine extends RuleItemChangedS
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultShardingColumn(null);
+    }
+    
+    @Override
+    public String getType() {
+        return AlterDefaultShardingColumnEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropDefaultShardingColumnEvent.class.getName());
     }
 }

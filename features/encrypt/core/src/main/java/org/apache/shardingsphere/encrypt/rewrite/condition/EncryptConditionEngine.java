@@ -26,7 +26,6 @@ import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -159,11 +158,13 @@ public final class EncryptConditionEngine {
     
     private Optional<EncryptCondition> createBinaryEncryptCondition(final BinaryOperationExpression expression, final String tableName) {
         String operator = expression.getOperator();
-        if (LOGICAL_OPERATOR.contains(operator)) {
-            return Optional.empty();
+        if (!LOGICAL_OPERATOR.contains(operator)) {
+            if (SUPPORTED_COMPARE_OPERATOR.contains(operator)) {
+                return createCompareEncryptCondition(tableName, expression, expression.getRight());
+            }
+            throw new UnsupportedEncryptSQLException(operator);
         }
-        ShardingSpherePreconditions.checkState(SUPPORTED_COMPARE_OPERATOR.contains(operator), () -> new UnsupportedEncryptSQLException(operator));
-        return createCompareEncryptCondition(tableName, expression, expression.getRight());
+        return Optional.empty();
     }
     
     private Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {

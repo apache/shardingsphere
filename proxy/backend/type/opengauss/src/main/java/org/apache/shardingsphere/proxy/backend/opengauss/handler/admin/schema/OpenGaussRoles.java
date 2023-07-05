@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.planner.cache;
+package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
- * Execution plan cache key.
+ * System table which maintains tables in openGauss system catalog schema.
  */
+@EqualsAndHashCode
 @RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode(of = {"sql", "tableMetaDataVersions"})
-public final class ExecutionPlanCacheKey {
+public final class OpenGaussRoles {
     
-    // TODO replace sql with parameterized sql
-    private final String sql;
-    
-    private final SQLStatement sqlStatement;
-    
-    private final String databaseType;
-    
-    private final Map<String, Integer> tableMetaDataVersions = new LinkedHashMap<>();
+    // CHECKSTYLE:OFF
+    public final String rolname;
+    // CHECKSTYLE:ON
 }

@@ -15,7 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shadow.subscriber.ShadowDataSourceSubscriber
-org.apache.shardingsphere.shadow.subscriber.ShadowTableSubscriber
-org.apache.shardingsphere.shadow.subscriber.ShadowAlgorithmSubscriber
-org.apache.shardingsphere.shadow.subscriber.DefaultShadowAlgorithmNameSubscriber
+org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingDataSourceSubscribeEngine
+org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingLoadBalancerSubscribeEngine

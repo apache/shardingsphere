@@ -24,14 +24,17 @@ import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwriteSplittingDataSourceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.DropReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -41,16 +44,11 @@ import java.util.Optional;
  */
 public final class ReadwriteSplittingDataSourceSubscribeEngine extends RuleItemChangedSubscribeEngine<ReadwriteSplittingRuleConfiguration, ReadwriteSplittingDataSourceRuleConfiguration> {
     
-    public ReadwriteSplittingDataSourceSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
-    
     @Override
     protected ReadwriteSplittingDataSourceRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
         YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig = YamlEngine.unmarshal(yamlContent, YamlReadwriteSplittingDataSourceRuleConfiguration.class);
-        return new ReadwriteSplittingDataSourceRuleConfiguration(((AlterNamedRuleItemEvent) event).getItemName(),
-                yamlDataSourceRuleConfig.getWriteDataSourceName(), yamlDataSourceRuleConfig.getReadDataSourceNames(),
-                getTransactionalReadQueryStrategy(yamlDataSourceRuleConfig), yamlDataSourceRuleConfig.getLoadBalancerName());
+        return new ReadwriteSplittingDataSourceRuleConfiguration(((AlterNamedRuleItemEvent) event).getItemName(), yamlDataSourceRuleConfig.getWriteDataSourceName(),
+                yamlDataSourceRuleConfig.getReadDataSourceNames(), getTransactionalReadQueryStrategy(yamlDataSourceRuleConfig), yamlDataSourceRuleConfig.getLoadBalancerName());
     }
     
     private TransactionalReadQueryStrategy getTransactionalReadQueryStrategy(final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
@@ -77,5 +75,15 @@ public final class ReadwriteSplittingDataSourceSubscribeEngine extends RuleItemC
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getDataSources().removeIf(each -> each.getName().equals(((DropNamedRuleItemEvent) event).getItemName()));
+    }
+    
+    @Override
+    public String getType() {
+        return AlterReadwriteSplittingDataSourceEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropReadwriteSplittingDataSourceEvent.class.getName());
     }
 }

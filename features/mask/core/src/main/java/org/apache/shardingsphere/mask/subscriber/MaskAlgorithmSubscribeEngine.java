@@ -27,10 +27,13 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
+import org.apache.shardingsphere.mask.event.algorithm.DropMaskAlgorithmEvent;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
@@ -38,10 +41,6 @@ import java.util.LinkedList;
  * Mask algorithm subscribe engine.
  */
 public final class MaskAlgorithmSubscribeEngine extends RuleItemChangedSubscribeEngine<MaskRuleConfiguration, AlgorithmConfiguration> {
-    
-    public MaskAlgorithmSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -66,5 +65,15 @@ public final class MaskAlgorithmSubscribeEngine extends RuleItemChangedSubscribe
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getMaskAlgorithms().remove(((DropNamedRuleItemEvent) event).getItemName());
+    }
+    
+    @Override
+    public String getType() {
+        return AlterMaskAlgorithmEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropMaskAlgorithmEvent.class.getName());
     }
 }

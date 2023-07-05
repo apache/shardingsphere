@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.encrypt.subscriber;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.event.encryptor.AlterEncryptorEvent;
+import org.apache.shardingsphere.encrypt.event.encryptor.DropEncryptorEvent;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -28,9 +30,10 @@ import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscribeEngine;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
@@ -38,10 +41,6 @@ import java.util.LinkedList;
  * Encryptor subscribe engine.
  */
 public final class EncryptorSubscribeEngine extends RuleItemChangedSubscribeEngine<EncryptRuleConfiguration, AlgorithmConfiguration> {
-    
-    public EncryptorSubscribeEngine(final ContextManager contextManager) {
-        super(contextManager);
-    }
     
     @Override
     protected AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -67,5 +66,15 @@ public final class EncryptorSubscribeEngine extends RuleItemChangedSubscribeEngi
     @Override
     protected void dropRuleItemConfiguration(final DropRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getEncryptors().remove(((DropNamedRuleItemEvent) event).getItemName());
+    }
+    
+    @Override
+    public String getType() {
+        return AlterEncryptorEvent.class.getName();
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton(DropEncryptorEvent.class.getName());
     }
 }

@@ -17,36 +17,44 @@
 
 package org.apache.shardingsphere.mode.subsciber;
 
+import com.google.common.eventbus.Subscribe;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
- * Rule changed subscriber.
- * 
- * @param <A> type of alter rule item event
- * @param <D> type of drop rule item event
+ * Rule item changed subscriber.
  */
-public interface RuleChangedSubscriber<A extends AlterRuleItemEvent, D extends DropRuleItemEvent> {
+@RequiredArgsConstructor
+public final class RuleItemChangedSubscriber {
     
-    /**
-     * Set context manager.
-     * 
-     * @param contextManager context manager
-     */
-    void setContextManager(ContextManager contextManager);
+    private final ContextManager contextManager;
     
     /**
      * Renew with alter rule item.
      *
      * @param event alter rule item event
      */
-    void renew(A event);
+    @SuppressWarnings("UnstableApiUsage")
+    @Subscribe
+    public synchronized void renew(final AlterRuleItemEvent event) {
+        IRuleItemChangedSubscribeEngine engine = TypedSPILoader.getService(IRuleItemChangedSubscribeEngine.class, event.getClass().getName());
+        engine.setContextManager(contextManager);
+        engine.renew(event);
+    }
     
     /**
      * Renew with drop rule item.
      *
      * @param event drop rule item event
      */
-    void renew(D event);
+    @SuppressWarnings("UnstableApiUsage")
+    @Subscribe
+    public synchronized void renew(final DropRuleItemEvent event) {
+        IRuleItemChangedSubscribeEngine engine = TypedSPILoader.getService(IRuleItemChangedSubscribeEngine.class, event.getClass().getName());
+        engine.setContextManager(contextManager);
+        engine.renew(event);
+    }
 }
