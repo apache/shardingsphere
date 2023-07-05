@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReadQueryLoadBalanceAlgorithm;
@@ -24,6 +25,9 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 
@@ -34,7 +38,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest {
+    
+    @Mock
+    private HintValueContext hintValueContext;
     
     @Test
     void assertWriteRouteTransaction() {
@@ -42,9 +50,9 @@ class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest {
         TransactionConnectionContext transactionConnectionContext = mock(TransactionConnectionContext.class);
         when(connectionContext.getTransactionContext()).thenReturn(transactionConnectionContext);
         when(connectionContext.getTransactionContext().isInTransaction()).thenReturn(Boolean.TRUE);
-        assertTrue(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null));
+        assertTrue(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null, hintValueContext));
         when(connectionContext.getTransactionContext().isInTransaction()).thenReturn(Boolean.FALSE);
-        assertFalse(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null));
+        assertFalse(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null, hintValueContext));
     }
     
     @Test

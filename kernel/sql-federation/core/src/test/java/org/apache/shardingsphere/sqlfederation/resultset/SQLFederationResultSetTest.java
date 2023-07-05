@@ -24,11 +24,10 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -84,7 +83,7 @@ class SQLFederationResultSetTest {
     
     @SuppressWarnings("unchecked")
     private Enumerator<Object> createEnumerator() {
-        Enumerator<Object> result = Mockito.mock(Enumerator.class);
+        Enumerator<Object> result = mock(Enumerator.class);
         when(result.moveNext()).thenReturn(true, false);
         when(result.current()).thenReturn(new Object[]{1, 1, "OK", 1});
         return result;

@@ -184,7 +184,7 @@ services:
 - The following sections use the `Apache SkyWalking Java Agent` as an example, which can be used to track corresponding
   issues from the GraalVM community.
 
-1. Download https://dlcdn.apache.org/skywalking/java-agent/8.12.0/apache-skywalking-java-agent-8.12.0.tgz and `untar` it
+1. Download https://archive.apache.org/dist/skywalking/java-agent/8.12.0/apache-skywalking-java-agent-8.12.0.tgz and `untar` it
    to `distribution/proxy-native` in ShardingSphere Git Source.
 
 2. Modify the `native profile` of `distribution/proxy-native/pom.xml`,

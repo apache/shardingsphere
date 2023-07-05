@@ -67,6 +67,15 @@ public final class DropShardingTableReferenceRuleStatementUpdater implements Rul
     }
     
     @Override
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropShardingTableReferenceRuleStatement sqlStatement) {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        for (String each : sqlStatement.getNames()) {
+            result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration(each, ""));
+        }
+        return result;
+    }
+    
+    @Override
     public boolean updateCurrentRuleConfiguration(final DropShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getBindingTableGroups().removeIf(each -> sqlStatement.getNames().stream().anyMatch(each.getName()::equalsIgnoreCase));
         return false;

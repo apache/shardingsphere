@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
+import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseTimestampUtils;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingException;

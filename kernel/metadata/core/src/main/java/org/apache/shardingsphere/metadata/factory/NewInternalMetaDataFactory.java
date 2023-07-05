@@ -75,7 +75,7 @@ public final class NewInternalMetaDataFactory {
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (entry.getValue().getDataSources().isEmpty()) {
-                result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType));
+                result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType, props));
             } else {
                 result.put(databaseName.toLowerCase(), create(databaseName, persistService, entry.getValue(), props, instanceContext));
             }

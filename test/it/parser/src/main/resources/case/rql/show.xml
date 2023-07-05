@@ -157,6 +157,10 @@
     <count-mask-rule sql-case-id="count-mask-rule">
         <database name="db1" start-index="21" stop-index="23" />
     </count-mask-rule>
+
+    <count-broadcast-rule sql-case-id="count-broadcast-rule">
+        <database name="db1" start-index="26" stop-index="28" />
+    </count-broadcast-rule>
     
     <show-storage-units sql-case-id="show-storage-units" />
     

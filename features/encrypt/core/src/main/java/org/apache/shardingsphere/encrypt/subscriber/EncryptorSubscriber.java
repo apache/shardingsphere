@@ -18,84 +18,33 @@
 package org.apache.shardingsphere.encrypt.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.event.encryptor.AddEncryptorEvent;
 import org.apache.shardingsphere.encrypt.event.encryptor.AlterEncryptorEvent;
-import org.apache.shardingsphere.encrypt.event.encryptor.DeleteEncryptorEvent;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
-import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import org.apache.shardingsphere.encrypt.event.encryptor.DropEncryptorEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 
 /**
- * Encrypt encryptor subscriber.
+ * Encryptor subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
-public final class EncryptorSubscriber implements RuleConfigurationSubscribeCoordinator {
+public final class EncryptorSubscriber implements RuleChangedSubscriber<AlterEncryptorEvent, DropEncryptorEvent> {
     
-    private Map<String, ShardingSphereDatabase> databases;
-    
-    private InstanceContext instanceContext;
+    private EncryptorSubscribeEngine engine;
     
     @Override
-    public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        this.databases = databases;
-        this.instanceContext = instanceContext;
-        instanceContext.getEventBusContext().register(this);
+    public void setContextManager(final ContextManager contextManager) {
+        engine = new EncryptorSubscribeEngine(contextManager);
     }
     
-    /**
-     * Renew with add encryptor.
-     *
-     * @param event add encryptor event
-     */
     @Subscribe
-    public synchronized void renew(final AddEncryptorEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getEncryptorName(), event.getConfig());
+    @Override
+    public synchronized void renew(final AlterEncryptorEvent event) {
+        engine.renew(event);
     }
     
-    /**
-     * Renew with alter encryptor.
-     *
-     * @param event alter encryptor event
-     */
     @Subscribe
-    public synchronized void renew(final AlterEncryptorEvent<AlgorithmConfiguration> event) {
-        renew(event.getDatabaseName(), event.getEncryptorName(), event.getConfig());
-    }
-    
-    private void renew(final String databaseName, final String encryptorName, final AlgorithmConfiguration encryptorConfig) {
-        ShardingSphereDatabase database = databases.get(databaseName);
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
-        config.getEncryptors().put(encryptorName, encryptorConfig);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
-    }
-    
-    /**
-     * Renew with delete encryptor.
-     *
-     * @param event delete encryptor event
-     */
-    @Subscribe
-    public synchronized void renew(final DeleteEncryptorEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        EncryptRuleConfiguration config = (EncryptRuleConfiguration) database.getRuleMetaData().getSingleRule(EncryptRule.class).getConfiguration();
-        config.getEncryptors().remove(event.getEncryptorName());
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    @Override
+    public synchronized void renew(final DropEncryptorEvent event) {
+        engine.renew(event);
     }
 }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
@@ -31,10 +32,8 @@ import java.io.Reader;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Encrypt show create table merged result.
@@ -45,6 +44,8 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     
     private static final int CREATE_TABLE_DEFINITION_INDEX = 2;
     
+    private final DatabaseType databaseType;
+    
     private final String tableName;
     
     private final EncryptRule encryptRule;
@@ -52,6 +53,7 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     protected EncryptShowCreateTableMergedResult(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getAllTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLE"));
+        databaseType = sqlStatementContext.getDatabaseType();
         tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         this.encryptRule = encryptRule;
     }
@@ -81,19 +83,18 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     }
     
     private Optional<String> findLogicColumnDefinition(final String columnDefinition, final EncryptTable encryptTable) {
-        Collection<String> cipherColumns = encryptTable.getLogicColumns().stream().map(encryptTable::getCipherColumn).collect(Collectors.toList());
-        for (String each : cipherColumns) {
-            if (columnDefinition.contains(each)) {
-                return Optional.of(columnDefinition.replace(each, encryptTable.getLogicColumnByCipherColumn(each)));
-            }
+        String columnName = databaseType.getQuoteCharacter().unwrap(columnDefinition.trim().split("\\s+")[0]);
+        if (encryptTable.isCipherColumn(columnName)) {
+            return Optional.of(columnDefinition.replace(columnName, encryptTable.getLogicColumnByCipherColumn(columnName)));
         }
-        if (encryptTable.getAssistedQueryColumns().stream().anyMatch(columnDefinition::contains)) {
-            return Optional.empty();
-        }
-        if (encryptTable.getLikeQueryColumns().stream().anyMatch(columnDefinition::contains)) {
+        if (isDerivedColumn(encryptTable, columnName)) {
             return Optional.empty();
         }
         return Optional.of(columnDefinition);
+    }
+    
+    private boolean isDerivedColumn(final EncryptTable encryptTable, final String columnName) {
+        return encryptTable.isAssistedQueryColumn(columnName) || encryptTable.isLikeQueryColumn(columnName);
     }
     
     @Override

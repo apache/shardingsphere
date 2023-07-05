@@ -180,7 +180,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         for (ProjectionSegment each : returningSegment.getProjections().getProjections()) {
             if (each instanceof ShorthandProjectionSegment) {
-                table.getColumns().stream().map(column -> new PostgreSQLColumnDescription(column.getName(), 0, column.getDataType(), estimateColumnLength(column.getDataType()), ""))
+                table.getColumnValues().stream().map(column -> new PostgreSQLColumnDescription(column.getName(), 0, column.getDataType(), estimateColumnLength(column.getDataType()), ""))
                         .forEach(result::add);
             }
             if (each instanceof ColumnProjectionSegment) {
@@ -240,13 +240,13 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         String databaseName = connectionSession.getDatabaseName();
         SQLStatementContext sqlStatementContext =
                 SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), logicPreparedStatement.getSqlStatementContext().getSqlStatement(), databaseName);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, logicPreparedStatement.getSql(), Collections.emptyList());
+        QueryContext queryContext = new QueryContext(sqlStatementContext, logicPreparedStatement.getSql(), Collections.emptyList(), logicPreparedStatement.getHintValueContext());
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
                 queryContext, database, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
         ExecutionUnit executionUnitSample = executionContext.getExecutionUnits().iterator().next();
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
-        Connection connection = databaseConnectionManager.getConnections(executionUnitSample.getDataSourceName(), 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();
+        Connection connection = databaseConnectionManager.getConnections(executionUnitSample.getDataSourceName(), 0, 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();
         try (PreparedStatement actualPreparedStatement = connection.prepareStatement(executionUnitSample.getSqlUnit().getSql())) {
             populateParameterTypes(logicPreparedStatement, actualPreparedStatement);
             populateColumnTypes(logicPreparedStatement, actualPreparedStatement);

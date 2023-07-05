@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.datasource.creator.StandardPipelineDataSourceCreator
+org.apache.shardingsphere.data.pipeline.common.datasource.creator.StandardPipelineDataSourceCreator

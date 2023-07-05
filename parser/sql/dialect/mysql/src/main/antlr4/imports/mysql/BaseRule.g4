@@ -456,6 +456,8 @@ identifierKeywordsUnambiguous
     | SUSPEND
     | SWAPS
     | SWITCHES
+    | SYSTEM
+    | TABLE
     | TABLES
     | TABLESPACE
     | TABLE_CHECKSUM
@@ -879,7 +881,7 @@ predicate
     | bitExpr NOT? BETWEEN bitExpr AND predicate
     | bitExpr SOUNDS LIKE bitExpr
     | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)?
-    | bitExpr NOT? REGEXP bitExpr
+    | bitExpr NOT? (REGEXP | RLIKE) bitExpr
     | bitExpr
     ;
     
@@ -937,9 +939,13 @@ columnRefList
     ;
     
 functionCall
-    : aggregationFunction | specialFunction | regularFunction | jsonFunction
+    : aggregationFunction | specialFunction | regularFunction | jsonFunction | udfFunction
     ;
-    
+
+udfFunction
+    : functionName LP_ (expr? | expr (COMMA_ expr)*) RP_
+    ;
+
 aggregationFunction
     : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
     ;

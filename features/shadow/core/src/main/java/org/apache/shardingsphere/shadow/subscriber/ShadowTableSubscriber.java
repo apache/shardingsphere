@@ -18,84 +18,33 @@
 package org.apache.shardingsphere.shadow.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
-import org.apache.shardingsphere.mode.event.config.DatabaseRuleConfigurationChangedEvent;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.event.table.AddShadowTableEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
-import org.apache.shardingsphere.shadow.event.table.DeleteShadowTableEvent;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import org.apache.shardingsphere.shadow.event.table.DropShadowTableEvent;
 
 /**
  * Shadow table subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-@RequiredArgsConstructor
-public final class ShadowTableSubscriber implements RuleConfigurationSubscribeCoordinator {
+public final class ShadowTableSubscriber implements RuleChangedSubscriber<AlterShadowTableEvent, DropShadowTableEvent> {
     
-    private Map<String, ShardingSphereDatabase> databases;
-    
-    private InstanceContext instanceContext;
+    private ShadowTableSubscribeEngine engine;
     
     @Override
-    public void registerRuleConfigurationSubscriber(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        this.databases = databases;
-        this.instanceContext = instanceContext;
-        instanceContext.getEventBusContext().register(this);
+    public void setContextManager(final ContextManager contextManager) {
+        engine = new ShadowTableSubscribeEngine(contextManager);
     }
     
-    /**
-     * Renew with add table.
-     *
-     * @param event add table event
-     */
     @Subscribe
-    public synchronized void renew(final AddShadowTableEvent<ShadowTableConfiguration> event) {
-        renew(event.getDatabaseName(), event.getTableName(), event.getConfig());
+    @Override
+    public synchronized void renew(final AlterShadowTableEvent event) {
+        engine.renew(event);
     }
     
-    /**
-     * Renew with alter table.
-     *
-     * @param event alter table event
-     */
     @Subscribe
-    public synchronized void renew(final AlterShadowTableEvent<ShadowTableConfiguration> event) {
-        renew(event.getDatabaseName(), event.getTableName(), event.getConfig());
-    }
-    
-    private void renew(final String databaseName, final String tableName, final ShadowTableConfiguration tableConfig) {
-        ShardingSphereDatabase database = databases.get(databaseName);
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getTables().put(tableName, tableConfig);
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(databaseName, config));
-    }
-    
-    /**
-     * Renew with delete table.
-     *
-     * @param event delete table event
-     */
-    @Subscribe
-    public synchronized void renew(final DeleteShadowTableEvent event) {
-        ShardingSphereDatabase database = databases.get(event.getDatabaseName());
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        ShadowRuleConfiguration config = (ShadowRuleConfiguration) database.getRuleMetaData().getSingleRule(ShadowRule.class).getConfiguration();
-        config.getTables().remove(event.getTableName());
-        ruleConfigs.add(config);
-        database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        instanceContext.getEventBusContext().post(new DatabaseRuleConfigurationChangedEvent(event.getDatabaseName(), config));
+    @Override
+    public synchronized void renew(final DropShadowTableEvent event) {
+        engine.renew(event);
     }
 }

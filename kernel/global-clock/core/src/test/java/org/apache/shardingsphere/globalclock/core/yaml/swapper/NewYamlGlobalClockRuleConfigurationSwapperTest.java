@@ -35,6 +35,6 @@ class NewYamlGlobalClockRuleConfigurationSwapperTest {
     @Test
     void assertSwapToDataNodes() {
         Collection<YamlDataNode> actual = swapper.swapToDataNodes(new GlobalClockRuleConfiguration("", "", false, new Properties()));
-        assertThat(actual.iterator().next().getKey(), is("/rules/global_clock"));
+        assertThat(actual.iterator().next().getKey(), is("global_clock"));
     }
 }

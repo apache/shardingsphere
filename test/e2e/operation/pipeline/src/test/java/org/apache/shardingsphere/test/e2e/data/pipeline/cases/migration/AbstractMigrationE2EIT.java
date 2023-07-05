@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerC
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.MigrationDistSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.data.pipeline.util.AwaitTimeoutUtil;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtils;
 import org.awaitility.Awaitility;
 import org.opengauss.util.PSQLException;
@@ -61,10 +62,10 @@ public abstract class AbstractMigrationE2EIT {
                 log.warn("Drop sharding_db failed, maybe it's not exist. error msg={}", ex.getMessage());
             }
         }
-        String addSourceResource = migrationDistSQL.getRegisterMigrationSourceStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
+        String registerMigrationSource = migrationDistSQL.getRegisterMigrationSourceStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
                 .replace("${password}", containerComposer.getPassword())
                 .replace("${ds0}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_0, true));
-        containerComposer.addResource(addSourceResource);
+        containerComposer.proxyExecuteWithLog(registerMigrationSource, 0);
     }
     
     protected void addMigrationTargetResource(final PipelineContainerComposer containerComposer) throws SQLException {
@@ -73,9 +74,9 @@ public abstract class AbstractMigrationE2EIT {
                 .replace("${ds2}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_2, true))
                 .replace("${ds3}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_3, true))
                 .replace("${ds4}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, true));
-        containerComposer.addResource(addTargetResource);
-        List<Map<String, Object>> resources = containerComposer.queryForListWithLog("SHOW STORAGE UNITS from sharding_db");
-        assertThat(resources.size(), is(3));
+        containerComposer.proxyExecuteWithLog(addTargetResource, 0);
+        Awaitility.await().ignoreExceptions().atMost(AwaitTimeoutUtil.getTimeout(containerComposer.getDatabaseType()), TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS)
+                .until(() -> 3 == containerComposer.showStorageUnitsName().size());
     }
     
     protected void createSourceSchema(final PipelineContainerComposer containerComposer, final String schemaName) throws SQLException {
@@ -97,9 +98,14 @@ public abstract class AbstractMigrationE2EIT {
         }
     }
     
+    protected void loadAllSingleTables(final PipelineContainerComposer containerComposer) throws SQLException {
+        containerComposer.proxyExecuteWithLog("LOAD SINGLE TABLE *.*", 5);
+    }
+    
     protected void createTargetOrderTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderTableRule(), 0);
-        Awaitility.await().atMost(4L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
+        Awaitility.await().atMost(AwaitTimeoutUtil.getTimeout(containerComposer.getDatabaseType()), TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS)
+                .until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
     }
     
     protected void createTargetOrderTableEncryptRule(final PipelineContainerComposer containerComposer) throws SQLException {
@@ -108,7 +114,7 @@ public abstract class AbstractMigrationE2EIT {
     
     protected void createTargetOrderItemTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderItemTableRule(), 0);
-        Awaitility.await().atMost(4L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS)
+        Awaitility.await().atMost(AwaitTimeoutUtil.getTimeout(containerComposer.getDatabaseType()), TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS)
                 .until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order_item").isEmpty());
     }
     

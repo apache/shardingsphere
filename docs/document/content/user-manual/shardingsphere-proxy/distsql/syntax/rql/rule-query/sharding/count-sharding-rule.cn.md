@@ -52,9 +52,8 @@ mysql> COUNT SHARDING RULE FROM sharding_db;
 +--------------------------+----------------+-------+
 | sharding_table           | sharding_db    | 2     |
 | sharding_table_reference | sharding_db    | 2     |
-| broadcast_table          | sharding_db    | 0     |
 +--------------------------+----------------+-------+
-3 rows in set (0.00 sec)
+2 rows in set (0.00 sec)
 ```
 
 - 查询当前逻辑库中的分片规则数量
@@ -70,9 +69,8 @@ mysql> COUNT SHARDING RULE;
 +--------------------------+----------------+-------+
 | sharding_table           | sharding_db    | 2     |
 | sharding_table_reference | sharding_db    | 2     |
-| broadcast_table          | sharding_db    | 0     |
 +--------------------------+----------------+-------+
-3 rows in set (0.00 sec)
+2 rows in set (0.00 sec)
 ```
 
 ### 保留字

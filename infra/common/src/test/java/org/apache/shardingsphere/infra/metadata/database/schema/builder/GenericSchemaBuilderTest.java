@@ -96,7 +96,7 @@ class GenericSchemaBuilderTest {
     
     private void assertTables(final Map<String, ShardingSphereTable> actual) {
         assertThat(actual.size(), is(2));
-        assertTrue(actual.get("data_node_routed_table1").getColumns().isEmpty());
-        assertTrue(actual.get("data_node_routed_table2").getColumns().isEmpty());
+        assertTrue(actual.get("data_node_routed_table1").getColumnValues().isEmpty());
+        assertTrue(actual.get("data_node_routed_table2").getColumnValues().isEmpty());
     }
 }

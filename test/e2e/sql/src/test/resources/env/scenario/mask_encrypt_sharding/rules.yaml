@@ -16,6 +16,9 @@
 #
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*"
 - !MASK
   maskAlgorithms:
     md5_mask:
@@ -80,3 +83,7 @@ rules:
       type: INLINE
       props:
         algorithm-expression: mask_encrypt_ds_${user_id % 10}
+        
+props:
+  sql-show: true
+

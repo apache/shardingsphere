@@ -19,11 +19,12 @@ package org.apache.shardingsphere.readwritesplitting.route;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.route.qualified.QualifiedReadwriteSplittingDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.route.qualified.type.QualifiedReadwriteSplittingPrimaryDataSourceRouter;
-import org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.route.qualified.type.QualifiedReadwriteSplittingTransactionalDataSourceRouter;
+import org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 
 import java.util.Arrays;
@@ -41,13 +42,14 @@ public final class ReadwriteSplittingDataSourceRouter {
     
     /**
      * Route.
-     * 
+     *
      * @param sqlStatementContext SQL statement context
+     * @param hintValueContext hint value context
      * @return data source name
      */
-    public String route(final SQLStatementContext sqlStatementContext) {
+    public String route(final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
         for (QualifiedReadwriteSplittingDataSourceRouter each : getQualifiedRouters(connectionContext)) {
-            if (each.isQualified(sqlStatementContext, rule)) {
+            if (each.isQualified(sqlStatementContext, rule, hintValueContext)) {
                 return each.route(rule);
             }
         }

@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class BootstrapArguments {
     
-    private static final String DEFAULT_CONFIG_PATH = "/conf/";
+    private static final String DEFAULT_CONFIG_PATH = System.getenv().getOrDefault("PROXY_DEFAULT_CONFIG_PATH", "/conf/");
     
     private static final String DEFAULT_BIND_ADDRESS = "0.0.0.0";
     

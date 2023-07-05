@@ -38,7 +38,7 @@ public final class SQLServerSetUserStatementAssert {
      *
      * @param assertContext assert context
      * @param actual actual SQLServer set user statement
-     * @param expected expected SQLServer set user statement test case
+     * @param expected expected set user statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerSetUserStatement actual, final SetUserStatementTestCase expected) {
         if (null != expected.getUser()) {

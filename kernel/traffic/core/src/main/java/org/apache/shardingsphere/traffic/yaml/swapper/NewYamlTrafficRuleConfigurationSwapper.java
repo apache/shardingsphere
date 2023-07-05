@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
-import org.apache.shardingsphere.infra.config.rule.global.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.constant.TrafficOrder;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
@@ -36,7 +36,7 @@ import java.util.Optional;
  * TODO Rename YamlTrafficRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * New YAML traffic rule configuration swapper.
  */
-public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<TrafficRuleConfiguration> {
+public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlGlobalRuleConfigurationSwapper<TrafficRuleConfiguration> {
     
     private final YamlTrafficStrategyConfigurationSwapper strategySwapper = new YamlTrafficStrategyConfigurationSwapper();
     
@@ -44,7 +44,7 @@ public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlRule
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final TrafficRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlTrafficRuleConfiguration swapToYamlConfiguration(final TrafficRuleConfiguration data) {
@@ -64,15 +64,15 @@ public final class NewYamlTrafficRuleConfigurationSwapper implements NewYamlRule
     }
     
     @Override
-    public TrafficRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+    public Optional<TrafficRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            Optional<String> version = GlobalRuleNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
+            Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }
-            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class));
+            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class)));
         }
-        return new TrafficRuleConfiguration();
+        return Optional.empty();
     }
     
     private TrafficRuleConfiguration swapToObject(final YamlTrafficRuleConfiguration yamlConfig) {

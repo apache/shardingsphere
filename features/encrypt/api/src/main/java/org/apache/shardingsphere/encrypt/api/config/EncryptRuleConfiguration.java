@@ -37,4 +37,9 @@ public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration
     private final Collection<EncryptTableRuleConfiguration> tables;
     
     private final Map<String, AlgorithmConfiguration> encryptors;
+    
+    @Override
+    public boolean isEmpty() {
+        return tables.isEmpty();
+    }
 }

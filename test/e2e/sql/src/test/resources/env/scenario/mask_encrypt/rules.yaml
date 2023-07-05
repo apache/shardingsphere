@@ -16,6 +16,9 @@
 #
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*"
 - !MASK
   maskAlgorithms:
     md5_mask:
@@ -65,3 +68,7 @@ rules:
           cipher:
             name: telephone_cipher
             encryptorName: aes_encryptor
+            
+props:
+  sql-show: true
+

@@ -17,6 +17,43 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_with_exist_in">
+        <projections start-index="7" stop-index="93">
+            <expression-projection text="+0 IN(0b111111111111111111111111111111111111111111111111111,rpad(1.0,2048,1),32767.1)" start-index="7" stop-index="93">
+                <expr>
+                    <in-expression start-index="8" stop-index="92">
+                        <left start-index="8" stop-index="9">
+                            <literal-expression start-index="8" stop-index="9" value="0" />
+                        </left>
+                        <right start-index="13" stop-index="92">
+                            <list-expression start-index="13" stop-index="92">
+                                <items>
+                                    <common-expression start-index="14" stop-index="66" text="0b111111111111111111111111111111111111111111111111111" />
+                                </items>
+                                <items>
+                                    <function start-index="68" stop-index="83" text="rpad(1.0,2048,1)" function-name="rpad">
+                                        <parameter>
+                                            <literal-expression start-index="73" stop-index="75" value="1.0" />
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression start-index="77" stop-index="80" value="2048" />
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression start-index="82" stop-index="82" value="1" />
+                                        </parameter>
+                                    </function>
+                                </items>
+                                <items>
+                                    <literal-expression start-index="85" stop-index="91" value="32767.1" />
+                                </items>
+                            </list-expression>
+                        </right>
+                    </in-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_constant_without_table" >
         <projections start-index="7" stop-index="12">
             <expression-projection text="1" alias="a" start-index="7" stop-index="12">
@@ -4977,5 +5014,28 @@
         <from>
             <simple-table name="DUAL" start-index="19" stop-index="22" />
         </from>
+    </select>
+    
+    <select sql-case-id="select_with_keyword_system" parameters="0">
+        <from>
+            <simple-table name="vtx_project" start-index="14" stop-index="24" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="26" stop-index="41">
+            <expr>
+                <binary-operation-expression start-index="32" stop-index="41">
+                    <left>
+                        <column name="system" start-index="32" stop-index="37"/>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="0" start-index="41" stop-index="41"/>
+                        <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
 </sql-parser-test-cases>

@@ -21,11 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
-import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -118,9 +119,10 @@ public final class EncryptConditionEngine {
         }
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
             String tableName = expressionTableNames.getOrDefault(each.getExpression(), "");
-            Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(each.getIdentifier().getValue()));
-            Optional<EncryptCondition> encryptCondition = encryptColumn.isPresent() ? createEncryptCondition(expression, tableName) : Optional.empty();
-            encryptCondition.ifPresent(encryptConditions::add);
+            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+            if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(each.getIdentifier().getValue())) {
+                createEncryptCondition(expression, tableName).ifPresent(encryptConditions::add);
+            }
         }
     }
     
@@ -157,13 +159,11 @@ public final class EncryptConditionEngine {
     
     private Optional<EncryptCondition> createBinaryEncryptCondition(final BinaryOperationExpression expression, final String tableName) {
         String operator = expression.getOperator();
-        if (!LOGICAL_OPERATOR.contains(operator)) {
-            if (SUPPORTED_COMPARE_OPERATOR.contains(operator)) {
-                return createCompareEncryptCondition(tableName, expression, expression.getRight());
-            }
-            throw new UnsupportedEncryptSQLException(operator);
+        if (LOGICAL_OPERATOR.contains(operator)) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        ShardingSpherePreconditions.checkState(SUPPORTED_COMPARE_OPERATOR.contains(operator), () -> new UnsupportedEncryptSQLException(operator));
+        return createCompareEncryptCondition(tableName, expression, expression.getRight());
     }
     
     private Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {

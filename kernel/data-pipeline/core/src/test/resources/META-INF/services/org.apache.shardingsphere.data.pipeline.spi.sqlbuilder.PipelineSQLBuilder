@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.sqlbuilder.FixturePipelineSQLBuilder
-org.apache.shardingsphere.data.pipeline.core.sqlbuilder.H2PipelineSQLBuilder
+org.apache.shardingsphere.data.pipeline.common.sqlbuilder.FixturePipelineSQLBuilder
+org.apache.shardingsphere.data.pipeline.common.sqlbuilder.H2PipelineSQLBuilder

@@ -55,9 +55,8 @@ public abstract class ShardingDMLStatementValidator implements ShardingStatement
     protected void validateMultipleTable(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         boolean isAllShardingTables = shardingRule.isAllShardingTables(tableNames) && (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames));
-        boolean isAllBroadcastTables = shardingRule.isAllBroadcastTables(tableNames);
-        boolean isAllSingleTables = !shardingRule.tableRuleExists(tableNames);
-        ShardingSpherePreconditions.checkState(isAllShardingTables || isAllBroadcastTables || isAllSingleTables, () -> new DMLWithMultipleShardingTablesException(tableNames));
+        boolean isAllSingleTables = !shardingRule.containsShardingTable(tableNames);
+        ShardingSpherePreconditions.checkState(isAllShardingTables || isAllSingleTables, () -> new DMLWithMultipleShardingTablesException(tableNames));
     }
     
     /**

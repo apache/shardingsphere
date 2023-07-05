@@ -29,4 +29,4 @@ props:
 
 ## 配置示例
 
-ShardingSphere 仓库的示例中包含了多种不同场景的属性配置，请参考：<https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-jdbc-example>
+ShardingSphere 仓库的示例中包含了多种不同场景的属性配置，请参考：<https://github.com/apache/shardingsphere/blob/master/examples/README_ZH.md>

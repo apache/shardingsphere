@@ -85,6 +85,7 @@
         <truffle-api.version>21.2.0</truffle-api.version>
         
         <calcite.version>1.32.0</calcite.version>
+        <immutables.version>2.9.3</immutables.version>
         <netty.version>4.1.90.Final</netty.version>
         <bouncycastle.version>1.70</bouncycastle.version>
         
@@ -273,6 +274,12 @@
                 <groupId>org.apache.calcite</groupId>
                 <artifactId>calcite-core</artifactId>
                 <version>${calcite.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.immutables</groupId>
+                <artifactId>value</artifactId>
+                <version>${immutables.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>

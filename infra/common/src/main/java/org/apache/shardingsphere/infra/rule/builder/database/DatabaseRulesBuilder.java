@@ -73,16 +73,16 @@ public final class DatabaseRulesBuilder {
      * @param databaseName database name
      * @param dataSources data sources
      * @param rules rules
-     * @param ruleConfigs rule configurations
+     * @param ruleConfig rule configuration
      * @param instanceContext instance context
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> build(final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules,
-                                                       final RuleConfiguration ruleConfigs, final InstanceContext instanceContext) {
+                                                       final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, DatabaseRuleBuilder> entry : OrderedSPILoader.getServices(DatabaseRuleBuilder.class,
-                Collections.singletonList(ruleConfigs), Comparator.reverseOrder()).entrySet()) {
+                Collections.singletonList(ruleConfig), Comparator.reverseOrder()).entrySet()) {
             RuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(
                     RuleConfigurationChecker.class, Collections.singleton(entry.getKey().getClass())).get(entry.getKey().getClass());
             if (null != configChecker) {

@@ -204,8 +204,6 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
         String typeName = (String) column.get("typname");
         Integer numdims = (Integer) column.get("attndims");
         String schema = null != namespace ? namespace : "";
-        String array = "";
-        String length = "";
         String name = checkSchemaInName(typeName, schema);
         if (name.startsWith("_")) {
             if (null == numdims || 0 == numdims) {
@@ -222,14 +220,9 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
         if (name.startsWith("\"") && name.endsWith("\"")) {
             name = name.substring(1, name.length() - 1);
         }
-        if (numdims == 1) {
-            array = "[]";
-        }
         Integer typmod = (Integer) column.get("atttypmod");
-        if (-1 != typmod) {
-            length = checkTypmod(typmod, name);
-        }
-        return getFullTypeValue(name, schema, length, array);
+        String length = -1 != typmod ? checkTypmod(typmod, name) : "";
+        return getFullTypeValue(name, schema, length, numdims == 1 ? "[]" : "");
     }
     
     private String checkSchemaInName(final String typname, final String schema) {

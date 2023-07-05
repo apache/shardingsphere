@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mask.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
@@ -29,6 +30,9 @@ import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.parser.statement.AlterMaskRuleStatement;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -60,6 +64,22 @@ public final class AlterMaskRuleStatementUpdater implements RuleDefinitionAlterU
     @Override
     public MaskRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterMaskRuleStatement sqlStatement) {
         return MaskRuleStatementConverter.convert(sqlStatement.getRules());
+    }
+    
+    @Override
+    public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
+        Collection<String> toBeAlteredTableNames = toBeAlteredRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<MaskColumnRuleConfiguration> columns = currentRuleConfig.getTables().stream().filter(each -> !toBeAlteredTableNames.contains(each.getName()))
+                .flatMap(each -> each.getColumns().stream()).collect(Collectors.toList());
+        columns.addAll(toBeAlteredRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).collect(Collectors.toList()));
+        Collection<String> inUsedAlgorithmNames = columns.stream().map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toSet());
+        Map<String, AlgorithmConfiguration> toBeDroppedAlgorithms = new HashMap<>();
+        for (String each : currentRuleConfig.getMaskAlgorithms().keySet()) {
+            if (!inUsedAlgorithmNames.contains(each)) {
+                toBeDroppedAlgorithms.put(each, currentRuleConfig.getMaskAlgorithms().get(each));
+            }
+        }
+        return new MaskRuleConfiguration(Collections.emptyList(), toBeDroppedAlgorithms);
     }
     
     @Override

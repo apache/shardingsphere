@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum GlobalLockNames {
     
-    SYS_DATA("sys_data_%s_%s_%s"),
+    STATISTICS("statistics_%s_%s_%s"),
     
     CLUSTER_LOCK("cluster_lock"),
     

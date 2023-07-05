@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.metadata.persist.service.version;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Collection;
 
 /**
  * Meta data version persist service.
@@ -30,73 +29,21 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 public final class MetaDataVersionPersistService implements MetaDataVersionBasedPersistService {
     
+    private static final String ACTIVE_VERSION = "active_version";
+    
+    private static final String VERSIONS = "versions";
+    
     private final PersistRepository repository;
     
-    /**
-     * Get active version.
-     * 
-     * @param databaseName database name
-     * @return active database version
-     */
+    // TODO Need to use transaction operation
     @Override
-    public Optional<String> getActiveVersion(final String databaseName) {
-        return Optional.ofNullable(repository.getDirectly(DatabaseMetaDataNode.getActiveVersionPath(databaseName)));
-    }
-    
-    /**
-     * Judge whether active version.
-     * 
-     * @param databaseName database name
-     * @param version version
-     * @return is active version or not
-     */
-    @Override
-    public boolean isActiveVersion(final String databaseName, final String version) {
-        Optional<String> actualVersion = getActiveVersion(databaseName);
-        return actualVersion.isPresent() && actualVersion.get().equals(version);
-    }
-    
-    /**
-     * Create new schema version.
-     * 
-     * @param databaseName database name
-     * @return new version
-     */
-    @Override
-    public Optional<String> createNewVersion(final String databaseName) {
-        Optional<String> activeVersion = getActiveVersion(databaseName);
-        if (!activeVersion.isPresent()) {
-            return Optional.empty();
+    public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
+        for (MetaDataVersion each : metaDataVersions) {
+            if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
+                continue;
+            }
+            repository.persist(each.getKey() + "/" + ACTIVE_VERSION, each.getNextActiveVersion());
+            repository.delete(String.join("/", each.getKey(), VERSIONS, each.getCurrentActiveVersion()));
         }
-        String newVersion = String.valueOf(new AtomicLong(Long.parseLong(activeVersion.get())).incrementAndGet());
-        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, newVersion), repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, activeVersion.get())));
-        repository.persist(
-                DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, newVersion), repository.getDirectly(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion.get())));
-        return Optional.of(newVersion);
-    }
-    
-    /**
-     * Persist active database version.
-     * 
-     * @param databaseName database name
-     * @param version version
-     */
-    @Override
-    public void persistActiveVersion(final String databaseName, final String version) {
-        Optional<String> activeVersion = getActiveVersion(databaseName);
-        if (activeVersion.isPresent() && !activeVersion.get().equals(version)) {
-            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), version);
-        }
-    }
-    
-    /**
-     * Delete database version.
-     * 
-     * @param databaseName database name
-     * @param version version
-     */
-    @Override
-    public void deleteVersion(final String databaseName, final String version) {
-        repository.delete(DatabaseMetaDataNode.getDatabaseVersionPath(databaseName, version));
     }
 }

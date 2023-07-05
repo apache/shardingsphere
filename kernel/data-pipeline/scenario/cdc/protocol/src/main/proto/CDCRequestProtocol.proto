@@ -1,0 +1,87 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_outer_classname = "CDCRequestProtocol";
+option java_package = "org.apache.shardingsphere.data.pipeline.cdc.protocol.request";
+
+message CDCRequest {
+  int32 version = 1;
+  string request_id = 2;
+  enum Type {
+    UNKNOWN = 0;
+    LOGIN = 1;
+    STREAM_DATA = 2;
+    ACK_STREAMING = 3;
+    STOP_STREAMING = 4;
+    START_STREAMING = 5;
+    DROP_STREAMING = 6;
+  }
+  Type type = 3;
+  oneof request_body {
+    LoginRequestBody login_request_body = 4;
+    StreamDataRequestBody stream_data_request_body = 5;
+    AckStreamingRequestBody ack_streaming_request_body = 6;
+    StopStreamingRequestBody stop_streaming_request_body = 7;
+    StartStreamingRequestBody start_streaming_request_body = 8;
+    DropStreamingRequestBody drop_streaming_request_body = 9;
+  }
+}
+
+message LoginRequestBody {
+  enum LoginType {
+    UNKNOWN = 0;
+    BASIC = 1;
+  }
+  LoginType type = 1;
+  oneof body {
+    BasicBody basic_body = 2;
+  }
+
+  message BasicBody {
+    string username = 1;
+    string password = 2;
+  }
+}
+
+message StreamDataRequestBody {
+  string database = 1;
+  message SchemaTable {
+    string schema = 1;
+    string table = 2;
+  }
+  repeated SchemaTable source_schema_table = 2;
+  bool full = 3;
+}
+
+message AckStreamingRequestBody {
+  string ack_id = 1;
+}
+
+message StopStreamingRequestBody {
+  string streaming_id = 1;
+}
+
+message StartStreamingRequestBody {
+  string streaming_id = 1;
+}
+
+message DropStreamingRequestBody {
+  string streaming_id = 1;
+}

@@ -16,6 +16,9 @@
 #
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*"
 - !SHARDING
   tables:
     t_order:
@@ -110,9 +113,6 @@ rules:
   bindingTables:
     - ref_0:t_user,t_user_details
     - ref_1:t_order,t_order_item
-  broadcastTables:
-    - t_product_category
-    - t_country
 
   shardingAlgorithms:
     it_standard_fixture:
@@ -138,6 +138,11 @@ rules:
   auditors:
     auditor_constant:
       type: IT.AUDITOR.FIXTURE
+
+- !BROADCAST
+  tables:
+    - t_country
+    - t_product_category
 
 - !ENCRYPT
   encryptors:
@@ -190,3 +195,7 @@ sqlFederation:
   executionPlanCache:
     initialCapacity: 2000
     maximumSize: 65535
+    
+props:
+  sql-show: true
+

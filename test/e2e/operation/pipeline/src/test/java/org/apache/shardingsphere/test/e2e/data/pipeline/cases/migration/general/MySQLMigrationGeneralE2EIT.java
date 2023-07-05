@@ -37,6 +37,7 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -81,8 +82,8 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
                     new E2EIncrementalTask(containerComposer.getSourceDataSource(), SOURCE_TABLE_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 30));
             TimeUnit.SECONDS.timedJoin(containerComposer.getIncreaseTaskThread(), 30);
             containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (10000, 1, 'OK')", SOURCE_TABLE_NAME));
-            containerComposer.proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
-            containerComposer.assertProxyOrderRecordExist("t_order", 10000);
+            DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
+            containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order", 10000);
             assertMigrationSuccessById(containerComposer, orderJobId, "DATA_MATCH");
             String orderItemJobId = getJobIdByTableName(containerComposer, "ds_0.t_order_item");
             assertMigrationSuccessById(containerComposer, orderItemJobId, "DATA_MATCH");
@@ -93,7 +94,7 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             }
             List<String> lastJobIds = listJobId(containerComposer);
             assertTrue(lastJobIds.isEmpty());
-            containerComposer.assertGreaterThanOrderTableInitRows(PipelineContainerComposer.TABLE_INIT_ROW_COUNT, "");
+            containerComposer.assertGreaterThanOrderTableInitRows(jdbcDataSource, PipelineContainerComposer.TABLE_INIT_ROW_COUNT, "");
         }
     }
     

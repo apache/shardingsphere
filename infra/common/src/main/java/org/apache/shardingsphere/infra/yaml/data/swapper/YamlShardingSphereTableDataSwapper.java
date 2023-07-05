@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.data.swapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;

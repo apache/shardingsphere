@@ -19,8 +19,7 @@ package org.apache.shardingsphere.single.distsql.statement.rdl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
-import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 
 import java.util.Collection;
 
@@ -29,7 +28,9 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnloadSingleTableStatement extends DropRuleStatement {
+public final class UnloadSingleTableStatement extends AlterRuleStatement {
     
-    private final Collection<SingleTableSegment> tables;
+    private final boolean isUnloadAllTables;
+    
+    private final Collection<String> tables;
 }

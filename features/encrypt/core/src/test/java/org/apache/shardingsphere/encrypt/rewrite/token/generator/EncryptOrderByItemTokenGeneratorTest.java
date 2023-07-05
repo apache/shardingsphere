@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -48,14 +48,24 @@ import static org.mockito.Mockito.when;
 
 class EncryptOrderByItemTokenGeneratorTest {
     
-    private EncryptOrderByItemTokenGenerator generator;
+    private final EncryptOrderByItemTokenGenerator generator = new EncryptOrderByItemTokenGenerator();
     
     @BeforeEach
     void setup() {
-        generator = new EncryptOrderByItemTokenGenerator();
-        generator.setEncryptRule(buildEncryptRule());
+        generator.setEncryptRule(mockEncryptRule());
         generator.setDatabaseName("db_schema");
         generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+    }
+    
+    private EncryptRule mockEncryptRule() {
+        EncryptRule result = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        when(encryptTable.isEncryptColumn("certificate_number")).thenReturn(true);
+        EncryptColumn encryptColumn = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
+        when(encryptColumn.getAssistedQuery()).thenReturn(Optional.empty());
+        when(encryptTable.getEncryptColumn("certificate_number")).thenReturn(encryptColumn);
+        when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
+        return result;
     }
     
     @Test
@@ -75,17 +85,6 @@ class EncryptOrderByItemTokenGeneratorTest {
         when(result.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(result.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
         when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singletonList(simpleTableSegment), DatabaseTypeEngine.getDatabaseType("MySQL")));
-        return result;
-    }
-    
-    private EncryptRule buildEncryptRule() {
-        EncryptRule result = mock(EncryptRule.class);
-        EncryptTable encryptTable = mock(EncryptTable.class);
-        when(result.getCipherColumn("t_encrypt", "certificate_number")).thenReturn("cipher_certificate_number");
-        when(result.findAssistedQueryColumn("t_encrypt", "certificate_number")).thenReturn(Optional.of("assisted_certificate_number"));
-        when(encryptTable.findEncryptorName("certificate_number")).thenReturn(Optional.of("encryptor_name"));
-        when(result.findStandardEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
-        when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         return result;
     }
 }

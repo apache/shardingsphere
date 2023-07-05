@@ -21,7 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -30,6 +32,8 @@ import java.util.Properties;
 @RequiredArgsConstructor
 @Getter
 public final class ProxyGlobalConfiguration {
+    
+    private final Map<String, DataSource> dataSources;
     
     private final Collection<RuleConfiguration> rules;
     

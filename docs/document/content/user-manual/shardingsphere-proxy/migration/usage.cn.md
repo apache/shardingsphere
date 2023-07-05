@@ -239,12 +239,6 @@ SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 COMMIT MIGRATION 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 ```
 
-8. 刷新元数据。
-
-```sql
-REFRESH TABLE METADATA;
-```
-
 更多 DistSQL 请参见 [RAL #数据迁移](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB)。
 
 ## PostgreSQL 使用手册
@@ -452,12 +446,6 @@ SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 COMMIT MIGRATION 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 ```
 
-8. 刷新元数据。
-
-```sql
-REFRESH TABLE METADATA;
-```
-
 更多 DistSQL 请参见 [RAL #数据迁移](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB)。
 
 ## openGauss 使用手册
@@ -479,7 +467,7 @@ wal_sender_timeout = 0
 max_connections = 600
 ```
 
-详情请参见 [Write Ahead Log](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) 和 [Replication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html)。
+详情请参见 [Write Ahead Log](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) 和 [Replication](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html)。
 
 2. 赋予源端 openGauss 账号 replication 权限。
 
@@ -488,7 +476,7 @@ max_connections = 600
 host replication repl_acct 0.0.0.0/0 md5
 ```
 
-详情请参见 [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) 和 [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html)。
+详情请参见 [Configuring Client Access Authentication](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) 和 [Example: Logic Replication Code](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html)。
 
 3. 赋予 openGauss 账号 DDL DML 权限。
 

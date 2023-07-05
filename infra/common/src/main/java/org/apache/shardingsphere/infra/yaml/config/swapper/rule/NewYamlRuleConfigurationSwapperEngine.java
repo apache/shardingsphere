@@ -52,7 +52,7 @@ public final class NewYamlRuleConfigurationSwapperEngine {
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlDataNode> dataNodes) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (NewYamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(NewYamlRuleConfigurationSwapper.class)) {
-            result.add((RuleConfiguration) each.swapToObject(dataNodes));
+            each.swapToObject(dataNodes).ifPresent(optional -> result.add((RuleConfiguration) optional));
         }
         return result;
     }

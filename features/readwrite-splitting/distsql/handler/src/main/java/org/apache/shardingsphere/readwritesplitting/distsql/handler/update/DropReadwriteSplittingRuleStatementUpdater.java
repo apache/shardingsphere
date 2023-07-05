@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
@@ -30,11 +31,16 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.checker.ReadwriteSplittingRuleStatementChecker;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
+import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -79,11 +85,34 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
             result.addAll(actualDataSources);
         }
         for (DataNodeContainedRule each : database.getRuleMetaData().findRules(DataNodeContainedRule.class)) {
+            if (each instanceof SingleRule) {
+                continue;
+            }
             Collection<DataNode> actualDataNodes = new HashSet<>();
             each.getAllDataNodes().values().forEach(actualDataNodes::addAll);
             result.addAll(actualDataNodes.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()));
         }
         return result;
+    }
+    
+    @Override
+    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final DropReadwriteSplittingRuleStatement sqlStatement) {
+        Collection<ReadwriteSplittingDataSourceRuleConfiguration> toBeDroppedDataSources = new LinkedList<>();
+        Map<String, AlgorithmConfiguration> toBeDroppedLoadBalancers = new HashMap<>();
+        sqlStatement.getNames().forEach(each -> toBeDroppedDataSources.add(new ReadwriteSplittingDataSourceRuleConfiguration(each, null, null, null)));
+        compareAndGetToBeDroppedLoadBalancers(currentRuleConfig, sqlStatement.getNames(), toBeDroppedLoadBalancers);
+        return new ReadwriteSplittingRuleConfiguration(toBeDroppedDataSources, toBeDroppedLoadBalancers);
+    }
+    
+    private void compareAndGetToBeDroppedLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final Collection<String> toBeDroppedDataSourceNames,
+                                                       final Map<String, AlgorithmConfiguration> toBeDroppedLoadBalancers) {
+        Set<String> inUsedLoadBalancers = currentRuleConfig.getDataSources().stream().filter(dataSource -> !toBeDroppedDataSourceNames.contains(dataSource.getName()))
+                .map(ReadwriteSplittingDataSourceRuleConfiguration::getLoadBalancerName).collect(Collectors.toSet());
+        for (String each : currentRuleConfig.getLoadBalancers().keySet()) {
+            if (!inUsedLoadBalancers.contains(each)) {
+                toBeDroppedLoadBalancers.put(each, null);
+            }
+        }
     }
     
     @Override

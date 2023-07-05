@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.infra.executor.sql.prepare.raw;
 
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +40,8 @@ public final class RawExecutionPrepareEngine extends AbstractExecutionPrepareEng
     }
     
     @Override
-    protected List<ExecutionGroup<RawSQLExecutionUnit>> group(final String dataSourceName, final List<List<SQLUnit>> sqlUnitGroups, final ConnectionMode connectionMode) {
+    protected List<ExecutionGroup<RawSQLExecutionUnit>> group(final String dataSourceName, final int connectionOffset, final List<List<SQLUnit>> sqlUnitGroups,
+                                                              final ConnectionMode connectionMode) throws SQLException {
         return sqlUnitGroups.stream().map(each -> createExecutionGroup(dataSourceName, each, connectionMode)).collect(Collectors.toList());
     }
     

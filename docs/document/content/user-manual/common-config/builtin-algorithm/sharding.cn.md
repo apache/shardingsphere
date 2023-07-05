@@ -6,6 +6,7 @@ weight = 2
 ## 背景信息
 
 ShardingSphere 内置提供了多种分片算法，按照类型可以划分为自动分片算法、标准分片算法、复合分片算法和 Hint 分片算法，能够满足用户绝大多数业务场景的需要。此外，考虑到业务场景的复杂性，内置算法也提供了自定义分片算法的方式，用户可以通过编写 Java 代码来完成复杂的分片逻辑。
+需要注意的是，自动分片算法的分片逻辑由 ShardingSphere 自动管理，需要通过配置 autoTables 分片规则进行使用。
 
 ## 参数解释
 
@@ -239,8 +240,6 @@ rules:
   defaultShardingColumn: account_id
   bindingTables:
     - t_order,t_order_item
-  broadcastTables:
-    - t_address
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
@@ -268,6 +267,10 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
+
+- !BROADCAST
+  tables:
+    - t_address
 ```
 
 ## 相关参考
