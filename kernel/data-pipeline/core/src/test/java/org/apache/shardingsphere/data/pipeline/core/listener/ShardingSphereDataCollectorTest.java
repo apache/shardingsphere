@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.listener;
 
 import org.apache.shardingsphere.data.pipeline.core.listener.ShardingSphereStatisticsScheduleCollector.ShardingSphereDataCollectorRunnable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
@@ -71,6 +72,7 @@ class ShardingSphereDataCollectorTest {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("logic_db");
+        when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(result.getDatabases()).thenReturn(Collections.singletonMap("logic_db", database));
         when(result.getDatabase("logic_db")).thenReturn(database);
         when(result.containsDatabase("logic_db")).thenReturn(true);

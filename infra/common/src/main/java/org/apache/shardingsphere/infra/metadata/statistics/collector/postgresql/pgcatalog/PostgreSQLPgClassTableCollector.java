@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.statistics.collector.tables;
+package org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.pgcatalog;
 
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
@@ -37,9 +38,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Table pg_class data collector.
+ * Table pg_catalog.pg_class data collector for PostgreSQL.
  */
-public final class PgClassTableCollector implements ShardingSphereStatisticsCollector {
+public final class PostgreSQLPgClassTableCollector implements ShardingSphereStatisticsCollector {
     
     private static final String PG_CLASS = "pg_class";
     
@@ -87,6 +88,6 @@ public final class PgClassTableCollector implements ShardingSphereStatisticsColl
     
     @Override
     public String getType() {
-        return PG_CLASS;
+        return String.join(".", new PostgreSQLDatabaseType().getType(), "pg_catalog", "pg_class");
     }
 }

@@ -15,35 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.listener;
+package org.apache.shardingsphere.infra.metadata.statistics.collector.opengauss.pgcatalog;
 
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.pgcatalog.PostgreSQLPgClassTableCollector;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * ShardingSphere data collector fixture.
+ * Table pg_catalog.pg_class data collector for openGauss.
  */
-public final class ShardingSphereDataCollectorFixture implements ShardingSphereStatisticsCollector {
+public final class OpenGaussPgClassTableCollector implements ShardingSphereStatisticsCollector {
+    
+    private final PostgreSQLPgClassTableCollector delegated = new PostgreSQLPgClassTableCollector();
     
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
-        ShardingSphereTableData shardingSphereTableData = new ShardingSphereTableData("test_table");
-        shardingSphereTableData.getRows().add(new ShardingSphereRowData(Arrays.asList("1", "2")));
-        return Optional.of(shardingSphereTableData);
+        return delegated.collect(databaseName, table, shardingSphereDatabases);
     }
     
     @Override
     public String getType() {
-        return String.join(".", new MySQLDatabaseType().getType(), "logic_schema", "test_table");
+        return String.join(".", new OpenGaussDatabaseType().getType(), "pg_catalog", "pg_class");
     }
 }
