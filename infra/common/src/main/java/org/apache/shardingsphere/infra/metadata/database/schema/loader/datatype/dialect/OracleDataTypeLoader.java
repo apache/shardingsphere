@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.
 
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,7 +31,26 @@ public final class OracleDataTypeLoader implements DialectDataTypeLoader {
     
     @Override
     public Map<String, Integer> load() throws SQLException {
-        return Collections.singletonMap("NUMBER", Types.NUMERIC);
+        Map<String, Integer> result = new HashMap<>(18, 1F);
+        result.putIfAbsent("NUMBER", Types.NUMERIC);
+        result.putIfAbsent("BINARY_FLOAT", 100);
+        result.putIfAbsent("BINARY_DOUBLE", 101);
+        result.putIfAbsent("INTERVAL YEAR", -103);
+        result.putIfAbsent("INTERVAL DAY", -104);
+        result.putIfAbsent("BFILE", -13);
+        result.putIfAbsent("ROWID", Types.ROWID);
+        result.putIfAbsent("UROWID", Types.ROWID);
+        result.putIfAbsent("ANYDATA", Types.OTHER);
+        result.putIfAbsent("ANYTYPE", Types.OTHER);
+        result.putIfAbsent("ANYDATASET", Types.OTHER);
+        result.putIfAbsent("XMLTYPE", Types.SQLXML);
+        result.putIfAbsent("URITYPE", Types.STRUCT);
+        result.putIfAbsent("SDO_ELEM_INFO_ARRAY", Types.OTHER);
+        result.putIfAbsent("SDO_GEOMETRY", Types.STRUCT);
+        result.putIfAbsent("SDO_ORDINATE_ARRAY", Types.OTHER);
+        result.putIfAbsent("SDO_TOPO_GEOMETRY", Types.STRUCT);
+        result.putIfAbsent("SDO_GEORASTER", Types.STRUCT);
+        return result;
     }
     
     @Override
