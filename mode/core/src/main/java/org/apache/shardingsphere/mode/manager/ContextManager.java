@@ -362,12 +362,7 @@ public final class ContextManager implements AutoCloseable {
             Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
             rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
             rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(), ruleConfig, instanceContext));
-            database.getRuleMetaData().getRules().clear();
-            database.getRuleMetaData().getRules().addAll(rules);
-            MetaDataContexts reloadMetaDataContexts = createMetaDataContextsByAlterRule(databaseName, false, null, database.getRuleMetaData().getConfigurations());
-            alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
-            metaDataContexts.set(reloadMetaDataContexts);
-            metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
+            refreshMetadata(databaseName, database, rules);
         } catch (final SQLException ex) {
             log.error("Alter database: {} rule configurations failed", databaseName, ex);
         }
@@ -387,15 +382,19 @@ public final class ContextManager implements AutoCloseable {
             if (isNotEmptyConfig(ruleConfig)) {
                 rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(), ruleConfig, instanceContext));
             }
-            database.getRuleMetaData().getRules().clear();
-            database.getRuleMetaData().getRules().addAll(rules);
-            MetaDataContexts reloadMetaDataContexts = createMetaDataContextsByAlterRule(databaseName, false, null, database.getRuleMetaData().getConfigurations());
-            alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
-            metaDataContexts.set(reloadMetaDataContexts);
-            metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
+            refreshMetadata(databaseName, database, rules);
         } catch (final SQLException ex) {
-            log.error("Alter database: {} rule configurations failed", databaseName, ex);
+            log.error("Drop database: {} rule configurations failed", databaseName, ex);
         }
+    }
+    
+    private void refreshMetadata(final String databaseName, final ShardingSphereDatabase database, final Collection<ShardingSphereRule> rules) throws SQLException {
+        database.getRuleMetaData().getRules().clear();
+        database.getRuleMetaData().getRules().addAll(rules);
+        MetaDataContexts reloadMetaDataContexts = createMetaDataContextsByAlterRule(databaseName, false, null, database.getRuleMetaData().getConfigurations());
+        alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
+        metaDataContexts.set(reloadMetaDataContexts);
+        metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
     }
     
     private static boolean isNotEmptyConfig(final RuleConfiguration ruleConfig) {
