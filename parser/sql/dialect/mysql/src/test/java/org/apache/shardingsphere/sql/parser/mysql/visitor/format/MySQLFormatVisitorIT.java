@@ -101,10 +101,10 @@ class MySQLFormatVisitorIT {
                             "INSERT  INTO t_order_item (order_id , user_id , status , creation_date)\nVALUES\n\t(?, ?, ?, ?),\n"
                                     + "\t(?, ?, ?, ?)\nON DUPLICATE KEY UPDATE status = ?"),
                     Arguments.of("insert_with_muti_set",
-                            "INSERT INTO t_order SET order_id = 1, user_id = 1, status = convert(to_base64(aes_encrypt(1, 'key')) USING utf8) ON DUPLICATE KEY UPDATE status = VALUES(status)",
-                            "INSERT  INTO t_order SET order_id = 1,\n\tuser_id = 1,\n\tstatus = CONVERT(to_base64(aes_encrypt(1 , 'key')) USING utf8)\n"
+                            "INSERT INTO t_order SET order_id = 1, user_id = 1, status = convert(to_base64(AES_ENCRYPT(1, 'key')) USING utf8) ON DUPLICATE KEY UPDATE status = VALUES(status)",
+                            "INSERT  INTO t_order SET order_id = 1,\n\tuser_id = 1,\n\tstatus = CONVERT(to_base64(AES_ENCRYPT(1 , 'key')) USING utf8)\n"
                                     + "ON DUPLICATE KEY UPDATE status = VALUES(status)",
-                            "INSERT  INTO t_order SET order_id = ?,\n\tuser_id = ?,\n\tstatus = CONVERT(to_base64(aes_encrypt(? , ?)) USING utf8)\n"
+                            "INSERT  INTO t_order SET order_id = ?,\n\tuser_id = ?,\n\tstatus = CONVERT(to_base64(AES_ENCRYPT(? , ?)) USING utf8)\n"
                                     + "ON DUPLICATE KEY UPDATE status = VALUES(status)"),
                     Arguments.of("insert_with_select",
                             "INSERT INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = 1",

@@ -930,7 +930,25 @@ columnRefList
     ;
     
 functionCall
-    : aggregationFunction | specialFunction | regularFunction | jsonFunction | udfFunction
+    : aggregationFunction
+    | specialFunction
+    | regularFunction
+    | jsonFunction
+    | udfFunction
+    | encryptionAndCompressFunction
+    ;
+
+encryptionAndCompressFunction
+    : aesDecryptFunction
+    | aesEncryptFunction
+    ;
+
+aesDecryptFunction
+    : AES_DECRYPT LP_ expr (COMMA_ expr)* RP_
+    ;
+
+aesEncryptFunction
+    : AES_ENCRYPT LP_ expr (COMMA_ expr)* RP_
     ;
 
 udfFunction
@@ -987,10 +1005,20 @@ frameBetween
     ;
     
 specialFunction
-    : groupConcatFunction | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction 
-    | charFunction | trimFunction | weightStringFunction | valuesFunction | currentUserFunction
+    : castFunction
+    | convertFunction
+    | currentUserFunction
+    | charFunction
+    | extractFunction
+    | groupConcatFunction
+    | positionFunction
+    | substringFunction
+    | trimFunction
+    | valuesFunction
+    | weightStringFunction
+    | windowFunction
     ;
-    
+
 currentUserFunction
     : CURRENT_USER (LP_ RP_)?
     ;

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_aes_decrypt_fun1">
+        <projections start-index="7" stop-index="28">
+            <expression-projection text="AES_DECRYPT('1', 1, 1)" start-index="7" stop-index="28">
+                <expr>
+                    <function function-name="AES_DECRYPT" text="AES_DECRYPT('1', 1, 1)" start-index="7" stop-index="28">
+                        <parameter>
+                            <literal-expression value="1" start-index="19" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="24" stop-index="24" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="27" stop-index="27" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_aes_decrypt_fun2">
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="AES_DECRYPT(0000112321321, 0000011231231232)" start-index="7" stop-index="50">
+                <expr>
+                    <function function-name="AES_DECRYPT" text="AES_DECRYPT(0000112321321, 0000011231231232)" start-index="7" stop-index="50">
+                        <parameter>
+                            <literal-expression value="112321321" start-index="19" stop-index="31" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="11231231232" start-index="34" stop-index="49" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_aes_decrypt_fun3">
+        <from>
+            <simple-table name="t1" start-index="84" stop-index="85" />
+        </from>
+        <projections start-index="7" stop-index="77">
+            <expression-projection text="AES_DECRYPT(AES_ENCRYPT(@ENCSTR, @keytest, @Iv), @keytest, @Iv)=@ENCSTR" start-index="7" stop-index="77">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="77">
+                        <left>
+                            <function function-name="AES_DECRYPT" text="AES_DECRYPT(AES_ENCRYPT(@ENCSTR, @keytest, @Iv), @keytest, @Iv)" start-index="7" stop-index="69">
+                                <parameter>
+                                    <function function-name="AES_ENCRYPT" text="AES_ENCRYPT(@ENCSTR, @keytest, @Iv)" start-index="19" stop-index="53">
+                                        <parameter>
+                                            <variable-segment start-index="31" stio-index="37" variable="ENCSTR" />
+                                        </parameter>
+                                        <parameter>
+                                            <variable-segment start-index="40" stio-index="47" variable="keytest" />
+                                        </parameter>
+                                        <parameter>
+                                            <variable-segment start-index="50" stio-index="52" variable="Iv" />
+                                        </parameter>
+                                    </function>
+                                </parameter>
+                                <parameter>
+                                    <variable-segment start-index="56" stio-index="63" variable="keytest" />
+                                </parameter>
+                                <parameter>
+                                    <variable-segment start-index="66" stio-index="68" variable="Iv" />
+                                </parameter>
+                            </function>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <variable-segment start-index="71" stio-index="77" variable="ENCSTR" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_aes_encrypt_fun1">
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="AES_ENCRYPT(123, '@','123')" start-index="7" stop-index="33">
+                <expr>
+                    <function function-name="AES_ENCRYPT" text="AES_ENCRYPT(123, '@','123')" start-index="7" stop-index="33">
+                        <parameter>
+                            <literal-expression value="123" start-index="19" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="@" start-index="24" stop-index="26" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="123" start-index="28" stop-index="32" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_aes_encrypt_fun2">
+        <projections start-index="7" stop-index="38">
+            <expression-projection text="AES_ENCRYPT((((123))), UNHEX(1))" start-index="7" stop-index="38">
+                <expr>
+                    <function function-name="AES_ENCRYPT" text="AES_ENCRYPT((((123))), UNHEX(1))" start-index="7" stop-index="38">
+                        <parameter>
+                            <literal-expression value="123" start-index="22" stop-index="24" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="UNHEX" text="UNHEX(1)" start-index="30" stop-index="37">
+                                <parameter>
+                                    <literal-expression value="1" start-index="36" stop-index="36" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+</sql-parser-test-cases>

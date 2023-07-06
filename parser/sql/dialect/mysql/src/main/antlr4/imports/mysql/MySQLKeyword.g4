@@ -35,6 +35,14 @@ ACTIVE
     : A C T I V E
     ;
 
+AES_DECRYPT
+    : A E S UL_ D E C R Y P T
+    ;
+
+AES_ENCRYPT
+    : A E S UL_ E N C R Y P T
+    ;
+
 ADD
     : A D D
     ;
