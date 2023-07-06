@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.readwritesplitting.event;
 
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.AddReadwriteSplittingDataSourceEvent;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.DeleteReadwriteSplittingDataSourceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwriteSplittingDataSourceEvent;
+import org.apache.shardingsphere.readwritesplitting.event.datasource.DropReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterReadwriteSplittingLoadBalancerEvent;
-import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DeleteReadwriteSplittingLoadBalancerEvent;
+import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DropReadwriteSplittingLoadBalancerEvent;
 import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,17 +45,17 @@ class ReadwriteSplittingRuleChangedEventCreatorTest {
     void assertReadWriteSplittingRuleChangeEventForDataSource() {
         assertThat(readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.DELETED),
-                ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES, "test"), instanceOf(DeleteReadwriteSplittingDataSourceEvent.class));
+                ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES, "test"), instanceOf(DropReadwriteSplittingDataSourceEvent.class));
         assertThat(readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.ADDED),
-                ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES, "test"), instanceOf(AddReadwriteSplittingDataSourceEvent.class));
+                ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES, "test"), instanceOf(AlterReadwriteSplittingDataSourceEvent.class));
     }
     
     @Test
     void assertReadWriteEventsRuleChangeCreatorForLoadBalancers() {
         assertThat(readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.DELETED),
-                ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS, "test"), instanceOf(DeleteReadwriteSplittingLoadBalancerEvent.class));
+                ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS, "test"), instanceOf(DropReadwriteSplittingLoadBalancerEvent.class));
         assertThat(readwriteSplittingRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.ADDED),
                 ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS, "test"), instanceOf(AlterReadwriteSplittingLoadBalancerEvent.class));
