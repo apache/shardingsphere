@@ -22,8 +22,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
-import org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingDataSourceChangedGenerator;
-import org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingLoadBalancerChangedGenerator;
 
 /**
  * Readwrite-splitting rule changed event creator.
@@ -32,18 +30,7 @@ public final class ReadwriteSplittingRuleChangedEventCreator implements RuleChan
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        return new NamedRuleItemChangedEventCreator().create(databaseName, itemName, event, getRuleItemConfigurationChangedGeneratorType(itemType));
-    }
-    
-    private String getRuleItemConfigurationChangedGeneratorType(final String itemType) {
-        switch (itemType) {
-            case ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES:
-                return ReadwriteSplittingDataSourceChangedGenerator.TYPE;
-            case ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS:
-                return ReadwriteSplittingLoadBalancerChangedGenerator.TYPE;
-            default:
-                throw new UnsupportedOperationException(itemType);
-        }
+        return new NamedRuleItemChangedEventCreator().create(databaseName, itemType, event, ReadwriteSplittingRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override
