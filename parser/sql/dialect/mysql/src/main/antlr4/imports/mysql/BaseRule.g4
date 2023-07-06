@@ -45,6 +45,14 @@ customKeyword
     | UL_BINARY
     | AUTOCOMMIT
     | INNODB
+    | FEDERATED
+    | MEMORY
+    | MYISAM
+    | MRG_MYISAM
+    | BLACKHOLE
+    | CSV
+    | ARCHIVE
+    | PERFORMANCE_SCHEMA
     | REDO_LOG
     | LAST_VALUE
     | PRIMARY
@@ -789,15 +797,7 @@ roleIdentifierOrText
     ;
     
 engineRef
-    : INNODB
-    | FEDERATED
-    | MEMORY
-    | MYISAM
-    | MRG_MYISAM
-    | BLACKHOLE
-    | CSV
-    | ARCHIVE
-    | textOrIdentifier
+    : textOrIdentifier
     ;
     
 triggerName

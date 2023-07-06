@@ -1901,28 +1901,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitEngineRef(final EngineRefContext ctx) {
-        if (null != ctx.textOrIdentifier()) {
-            return new EngineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), SQLUtils.getExactlyValue(ctx.textOrIdentifier().getText()));
-        }
-        String engineName = null;
-        if (null != ctx.INNODB()) {
-            engineName = ctx.INNODB().getText();
-        } else if (null != ctx.FEDERATED()) {
-            engineName = ctx.FEDERATED().getText();
-        } else if (null != ctx.MEMORY()) {
-            engineName = ctx.MEMORY().getText();
-        } else if (null != ctx.MYISAM()) {
-            engineName = ctx.MYISAM().getText();
-        } else if (null != ctx.MRG_MYISAM()) {
-            engineName = ctx.MRG_MYISAM().getText();
-        } else if (null != ctx.BLACKHOLE()) {
-            engineName = ctx.BLACKHOLE().getText();
-        } else if (null != ctx.CSV()) {
-            engineName = ctx.CSV().getText();
-        } else if (null != ctx.ARCHIVE()) {
-            engineName = ctx.ARCHIVE().getText();
-        }
-        return new EngineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), engineName);
+        return new EngineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), SQLUtils.getExactlyValue(ctx.textOrIdentifier().getText()));
     }
     
     /**

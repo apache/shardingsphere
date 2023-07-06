@@ -147,3 +147,7 @@ CSV
 ARCHIVE
     : A R C H I V E
     ;
+
+PERFORMANCE_SCHEMA
+    : P E R F O R M A N C E UL_ S C H E M A
+    ;
