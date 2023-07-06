@@ -35,6 +35,6 @@ public final class ReadwriteSplittingRuleChangedEventCreator implements RuleChan
     
     @Override
     public String getType() {
-        return "readwrite_splitting";
+        return ReadwriteSplittingRuleNodePathProvider.RULE_TYPE;
     }
 }

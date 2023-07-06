@@ -35,6 +35,6 @@ public final class MaskRuleChangedEventCreator implements RuleChangedEventCreato
     
     @Override
     public String getType() {
-        return "mask";
+        return MaskRuleNodePathProvider.RULE_TYPE;
     }
 }

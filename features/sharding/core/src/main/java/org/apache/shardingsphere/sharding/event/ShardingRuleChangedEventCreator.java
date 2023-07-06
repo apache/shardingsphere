@@ -41,6 +41,6 @@ public final class ShardingRuleChangedEventCreator implements RuleChangedEventCr
     
     @Override
     public String getType() {
-        return "sharding";
+        return ShardingRuleNodePathProvider.RULE_TYPE;
     }
 }
