@@ -67,8 +67,6 @@ public final class ShardingSphereStatisticsScheduleCollector {
     @RequiredArgsConstructor
     protected static final class ShardingSphereDataCollectorRunnable implements Runnable {
         
-        private static final String SHARDING_SPHERE_SYSTEM_DATABASE_SCHEMA = "shardingsphere";
-        
         private final ContextManager contextManager;
         
         @Override
@@ -104,9 +102,7 @@ public final class ShardingSphereStatisticsScheduleCollector {
         
         private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
                                      final Map<String, ShardingSphereDatabase> databases, final ShardingSphereStatistics statistics) {
-            String collectorType = SHARDING_SPHERE_SYSTEM_DATABASE_SCHEMA.equalsIgnoreCase(schemaName) 
-                    ? table.getName() : String.join(".", databases.get(databaseName).getProtocolType().getType(), schemaName, table.getName());
-            Optional<ShardingSphereStatisticsCollector> dataCollector = TypedSPILoader.findService(ShardingSphereStatisticsCollector.class, collectorType);
+            Optional<ShardingSphereStatisticsCollector> dataCollector = TypedSPILoader.findService(ShardingSphereStatisticsCollector.class, table.getName());
             if (!dataCollector.isPresent()) {
                 return;
             }

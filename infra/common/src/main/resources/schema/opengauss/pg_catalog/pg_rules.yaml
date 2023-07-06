@@ -17,13 +17,6 @@
 
 name: pg_rules
 columns:
-  oid:
-    caseSensitive: true
-    dataType: -5
-    generated: false
-    name: oid
-    primaryKey: true
-    visible: false
   schemaname:
     caseSensitive: true
     dataType: 12
