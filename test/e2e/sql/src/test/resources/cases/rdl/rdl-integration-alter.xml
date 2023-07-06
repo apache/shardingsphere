@@ -46,11 +46,6 @@
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
             <destroy-sql sql="DROP SHARDING TABLE RULE t_order" />
         </assertion>
-        <assertion expected-data-file="alter_sharding_rules_show_tables.xml">
-            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));" />
-            <assertion-sql sql="SHOW TABLES;" />
-            <destroy-sql sql="DROP SHARDING TABLE RULE t_order" />
-        </assertion>
     </test-case>
 
     <!-- TODO Fix me-->
@@ -65,6 +60,14 @@
             <initial-sql sql="CREATE MASK RULE t_mask (COLUMNS((NAME=order_id,TYPE(NAME='MD5'))));" />
             <assertion-sql sql="SHOW MASK RULES;" />
             <destroy-sql sql="DROP MASK RULE t_mask;" />
+        </assertion>
+    </test-case>
+
+    <test-case sql="ALTER SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));" db-types="MySQL">
+        <assertion expected-data-file="alter_sharding_rules_show_tables.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));" />
+            <assertion-sql sql="SHOW TABLES;" />
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_order" />
         </assertion>
     </test-case>
 </integration-test-cases>
