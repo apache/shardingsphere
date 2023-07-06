@@ -178,7 +178,7 @@
     </test-case>
     
     <test-case sql="SELECT * FROM information_schema.partitions limit 10" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-source-name="read_dataset" />
+        <assertion expected-data-file="select_mysql_information_schema_partitions.xml" />
     </test-case>
     
     <test-case sql="SELECT * FROM information_schema.plugins" db-types="MySQL" scenario-types="db">
@@ -205,10 +205,9 @@
         <assertion expected-data-file="select_mysql_information_schema_schema_privileges.xml" />
     </test-case>
     
-    <!-- FIXME issue #25899 -->
-    <!--    <test-case sql="SELECT * FROM information_schema.schemata" db-types="MySQL" scenario-types="db">-->
-    <!--        <assertion expected-data-file="select_mysql_information_schema_schemata.xml" />-->
-    <!--    </test-case>-->
+    <test-case sql="SELECT * FROM information_schema.schemata" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_schemata.xml" />
+    </test-case>
 
     <test-case sql="SELECT * FROM information_schema.session_status" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_session_status.xml" />
@@ -239,7 +238,7 @@
     </test-case>
     
     <test-case sql="SELECT * FROM information_schema.triggers" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-source-name="read_dataset" />
+        <assertion expected-data-file="select_mysql_information_schema_triggers.xml" />
     </test-case>
     
     <test-case sql="SELECT * FROM information_schema.user_privileges" db-types="MySQL" scenario-types="db">

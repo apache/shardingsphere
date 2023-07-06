@@ -60,10 +60,6 @@ import java.util.Optional;
  */
 public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCreator {
     
-    private static final String INFORMATION_SCHEMA = "information_schema";
-    
-    private static final String PERFORMANCE_SCHEMA = "performance_schema";
-    
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
@@ -105,13 +101,6 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             if (null == selectStatement.getFrom()) {
                 return findAdminExecutorForSelectWithoutFrom(sql, databaseName, selectStatement);
             }
-            if (isQueryInformationSchema(databaseName)) {
-                return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
-            }
-            if (isQueryPerformanceSchema(databaseName)) {
-                // TODO
-                return Optional.empty();
-            }
         }
         return Optional.empty();
     }
@@ -143,15 +132,6 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         ProjectionSegment firstProjection = segmentIterator.next();
         return !segmentIterator.hasNext() && firstProjection instanceof ExpressionProjectionSegment
                 && functionName.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText());
-    }
-    
-    private boolean isQueryInformationSchema(final String databaseName) {
-        // TODO remove DefaultDatabaseMetaDataExecutor when sql federation can support all system table query
-        return INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getDatabase(databaseName).isComplete();
-    }
-    
-    private boolean isQueryPerformanceSchema(final String databaseName) {
-        return PERFORMANCE_SCHEMA.equalsIgnoreCase(databaseName);
     }
     
     private Optional<DatabaseAdminExecutor> mockExecutor(final String databaseName, final SelectStatement sqlStatement, final String sql) {
