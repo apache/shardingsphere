@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.ReadwriteSplittingDataSourceEventCreator;
-import org.apache.shardingsphere.readwritesplitting.event.loadbalance.ReadwriteSplittingLoadBalancerEventCreator;
 import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
+import org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingDataSourceChangedGenerator;
+import org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingLoadBalancerChangedGenerator;
 
 /**
  * Readwrite-splitting rule changed event creator.
@@ -32,15 +32,15 @@ public final class ReadwriteSplittingRuleChangedEventCreator implements RuleChan
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        return getNamedRuleItemChangedEventCreator(itemType).create(databaseName, itemName, event);
+        return new NamedRuleItemChangedEventCreator().create(databaseName, itemName, event, getRuleItemConfigurationChangedGeneratorType(itemType));
     }
     
-    private NamedRuleItemChangedEventCreator getNamedRuleItemChangedEventCreator(final String itemType) {
+    private String getRuleItemConfigurationChangedGeneratorType(final String itemType) {
         switch (itemType) {
             case ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES:
-                return new ReadwriteSplittingDataSourceEventCreator();
+                return ReadwriteSplittingDataSourceChangedGenerator.TYPE;
             case ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS:
-                return new ReadwriteSplittingLoadBalancerEventCreator();
+                return ReadwriteSplittingLoadBalancerChangedGenerator.TYPE;
             default:
                 throw new UnsupportedOperationException(itemType);
         }

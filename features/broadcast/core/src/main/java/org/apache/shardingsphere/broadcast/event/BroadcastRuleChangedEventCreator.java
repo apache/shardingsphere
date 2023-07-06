@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.broadcast.event;
 
-import org.apache.shardingsphere.broadcast.event.table.BroadcastTableEventCreator;
 import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider;
+import org.apache.shardingsphere.broadcast.subscriber.BroadcastTableChangedGenerator;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
@@ -31,12 +31,12 @@ public final class BroadcastRuleChangedEventCreator implements RuleChangedEventC
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
-        return getUniqueRuleItemChangedEventCreator(itemType).create(databaseName, event);
+        return new UniqueRuleItemChangedEventCreator().create(databaseName, event, getRuleItemConfigurationChangedGeneratorType(itemType));
     }
     
-    private UniqueRuleItemChangedEventCreator getUniqueRuleItemChangedEventCreator(final String itemType) {
+    private String getRuleItemConfigurationChangedGeneratorType(final String itemType) {
         if (itemType.equals(BroadcastRuleNodePathProvider.TABLES)) {
-            return new BroadcastTableEventCreator();
+            return BroadcastTableChangedGenerator.TYPE;
         }
         throw new UnsupportedOperationException(itemType);
     }
