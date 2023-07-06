@@ -37,6 +37,6 @@ public final class CompatibleEncryptRuleChangedEventCreator implements RuleChang
     
     @Override
     public String getType() {
-        return "compatible_encrypt";
+        return CompatibleEncryptRuleNodePathProvider.RULE_TYPE;
     }
 }

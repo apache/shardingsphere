@@ -35,6 +35,6 @@ public final class EncryptRuleChangedEventCreator implements RuleChangedEventCre
     
     @Override
     public String getType() {
-        return "encrypt";
+        return EncryptRuleNodePathProvider.RULE_TYPE;
     }
 }

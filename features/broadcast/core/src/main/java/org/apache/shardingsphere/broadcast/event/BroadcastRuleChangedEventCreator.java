@@ -35,6 +35,6 @@ public final class BroadcastRuleChangedEventCreator implements RuleChangedEventC
     
     @Override
     public String getType() {
-        return "broadcast";
+        return BroadcastRuleNodePathProvider.RULE_TYPE;
     }
 }

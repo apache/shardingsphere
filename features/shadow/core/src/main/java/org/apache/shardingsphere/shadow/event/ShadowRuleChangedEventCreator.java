@@ -41,6 +41,6 @@ public final class ShadowRuleChangedEventCreator implements RuleChangedEventCrea
     
     @Override
     public String getType() {
-        return "shadow";
+        return ShadowRuleNodePathProvider.RULE_TYPE;
     }
 }

@@ -35,6 +35,6 @@ public final class SingleRuleChangedEventCreator implements RuleChangedEventCrea
     
     @Override
     public String getType() {
-        return "single";
+        return SingleRuleNodePathProvider.RULE_TYPE;
     }
 }
