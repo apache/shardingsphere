@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.datasource.storage;
 import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 
 /**
  * Storage unit.
@@ -35,18 +34,14 @@ public final class StorageUnit {
     
     private final String catalog;
     
-    private final DataSourceProperties dataSourceProps;
+    private final String url;
     
-    public StorageUnit(final String name, final String nodeName, final DataSourceProperties dataSourceProps) {
-        this(name, nodeName, null, dataSourceProps);
+    public StorageUnit(final String name, final String nodeName, final String url) {
+        this(name, nodeName, null, url);
     }
     
     private boolean isSameCatalog(final StorageUnit storageUnit) {
         return null == catalog ? null == storageUnit : catalog.equalsIgnoreCase(storageUnit.getCatalog());
-    }
-    
-    public String getUrl() {
-        return dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
     }
     
     @Override

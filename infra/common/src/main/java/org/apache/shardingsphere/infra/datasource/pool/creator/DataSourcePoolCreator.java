@@ -118,10 +118,11 @@ public final class DataSourcePoolCreator {
     
     private static void appendStorageUnit(final Map<String, StorageUnit> storageUnits, final StorageNodeProperties storageNodeProperties,
                                           final String unitName, final DataSourceProperties dataSourceProps) {
+        String url = dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
         if (storageNodeProperties.getDatabaseType() instanceof DataSourceAggregatableDatabaseType) {
-            storageUnits.put(unitName, new StorageUnit(unitName, storageNodeProperties.getName(), storageNodeProperties.getDatabase(), dataSourceProps));
+            storageUnits.put(unitName, new StorageUnit(unitName, storageNodeProperties.getName(), storageNodeProperties.getDatabase(), url));
         } else {
-            storageUnits.put(unitName, new StorageUnit(unitName, storageNodeProperties.getName(), dataSourceProps));
+            storageUnits.put(unitName, new StorageUnit(unitName, storageNodeProperties.getName(), url));
         }
     }
     
