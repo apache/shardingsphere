@@ -76,8 +76,6 @@ public interface DatabaseBasedPersistService<T> {
         return Collections.emptyList();
     }
     
-    default Collection<MetaDataVersion> persist
-    
     /**
      * TODO remove this after meta data refactor completed
      * Append data source properties map.
