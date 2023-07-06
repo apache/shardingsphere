@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.event;
 
-import org.apache.shardingsphere.encrypt.event.encryptor.creator.EncryptorEventCreator;
-import org.apache.shardingsphere.encrypt.event.table.creator.EncryptTableEventCreator;
+import org.apache.shardingsphere.encrypt.event.encryptor.EncryptorEventCreator;
+import org.apache.shardingsphere.encrypt.event.table.EncryptTableEventCreator;
 import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;

@@ -26,19 +26,16 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.event.table.auto.AlterShardingAutoTableEvent;
-import org.apache.shardingsphere.sharding.event.table.auto.DropShardingAutoTableEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingAutoTableRuleConfigurationSwapper;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Sharding auto table changed generator.
  */
 public final class ShardingAutoTableChangedGenerator implements RuleItemConfigurationChangedGenerator<ShardingRuleConfiguration, ShardingAutoTableRuleConfiguration> {
+    
+    public static final String TYPE = "Sharding.AutoTable";
     
     @Override
     public ShardingAutoTableRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -63,11 +60,6 @@ public final class ShardingAutoTableChangedGenerator implements RuleItemConfigur
     
     @Override
     public String getType() {
-        return AlterShardingAutoTableEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropShardingAutoTableEvent.class.getName());
+        return TYPE;
     }
 }

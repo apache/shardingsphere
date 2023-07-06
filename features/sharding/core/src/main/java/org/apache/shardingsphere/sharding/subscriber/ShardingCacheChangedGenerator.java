@@ -24,19 +24,16 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
-import org.apache.shardingsphere.sharding.event.cache.AlterShardingCacheEvent;
-import org.apache.shardingsphere.sharding.event.cache.DropShardingCacheEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.cache.YamlShardingCacheConfigurationSwapper;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Sharding cache changed generator.
  */
 public final class ShardingCacheChangedGenerator implements RuleItemConfigurationChangedGenerator<ShardingRuleConfiguration, ShardingCacheConfiguration> {
+    
+    public static final String TYPE = "Sharding.Cache";
     
     @Override
     public ShardingCacheConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -60,11 +57,6 @@ public final class ShardingCacheChangedGenerator implements RuleItemConfiguratio
     
     @Override
     public String getType() {
-        return AlterShardingCacheEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropShardingCacheEvent.class.getName());
+        return TYPE;
     }
 }

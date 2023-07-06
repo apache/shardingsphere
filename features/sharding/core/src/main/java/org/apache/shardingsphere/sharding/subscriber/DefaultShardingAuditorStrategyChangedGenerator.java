@@ -24,19 +24,16 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.event.strategy.audit.AlterDefaultShardingAuditorStrategyEvent;
-import org.apache.shardingsphere.sharding.event.strategy.audit.DropDefaultShardingAuditorStrategyEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingAuditStrategyConfigurationSwapper;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Default sharding auditor strategy changed generator.
  */
 public final class DefaultShardingAuditorStrategyChangedGenerator implements RuleItemConfigurationChangedGenerator<ShardingRuleConfiguration, ShardingAuditStrategyConfiguration> {
+    
+    public static final String TYPE = "Sharding.DefaultShardingAuditorStrategy";
     
     @Override
     public ShardingAuditStrategyConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -60,11 +57,6 @@ public final class DefaultShardingAuditorStrategyChangedGenerator implements Rul
     
     @Override
     public String getType() {
-        return AlterDefaultShardingAuditorStrategyEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropDefaultShardingAuditorStrategyEvent.class.getName());
+        return TYPE;
     }
 }
