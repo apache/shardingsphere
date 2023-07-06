@@ -23,7 +23,6 @@ import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
-import org.apache.shardingsphere.mode.event.config.global.DeleteGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.NewGovernanceWatcher;
 
 import java.util.Arrays;
@@ -44,24 +43,13 @@ public final class NewGlobalRuleChangedWatcher implements NewGovernanceWatcher<G
     
     @Override
     public Collection<Type> getWatchingTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return createGlobalRuleEvent(event);
-    }
-    
-    private Optional<GovernanceEvent> createGlobalRuleEvent(final DataChangedEvent event) {
         if (GlobalNodePath.isRuleActiveVersionPath(event.getKey())) {
-            Optional<String> ruleName = GlobalNodePath.getRuleName(event.getKey());
-            if (!ruleName.isPresent()) {
-                return Optional.empty();
-            }
-            if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-                return Optional.of(new AlterGlobalRuleConfigurationEvent(ruleName.get(), event.getKey(), event.getValue()));
-            }
-            return Optional.of(new DeleteGlobalRuleConfigurationEvent(ruleName.get()));
+            return GlobalNodePath.getRuleName(event.getKey()).map(optional -> new AlterGlobalRuleConfigurationEvent(optional, event.getKey(), event.getValue()));
         }
         return Optional.empty();
     }
