@@ -27,19 +27,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class DriverDataSourceCacheTest {
     
+    private static final String DRIVER_URL_PREFIX = "jdbc:shardingsphere:";
+    
     @Test
     void assertGetNewDataSource() {
         DriverDataSourceCache dataSourceCache = new DriverDataSourceCache();
-        DataSource fooDataSource = dataSourceCache.get("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
-        DataSource barDataSource = dataSourceCache.get("jdbc:shardingsphere:classpath:config/driver/bar-driver-fixture.yaml");
+        DataSource fooDataSource = dataSourceCache.get("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", DRIVER_URL_PREFIX);
+        DataSource barDataSource = dataSourceCache.get("jdbc:shardingsphere:classpath:config/driver/bar-driver-fixture.yaml", DRIVER_URL_PREFIX);
         assertThat(fooDataSource, not(barDataSource));
     }
     
     @Test
     void assertGetExistedDataSource() {
         DriverDataSourceCache dataSourceCache = new DriverDataSourceCache();
-        DataSource dataSource1 = dataSourceCache.get("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
-        DataSource dataSource2 = dataSourceCache.get("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
+        DataSource dataSource1 = dataSourceCache.get("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", DRIVER_URL_PREFIX);
+        DataSource dataSource2 = dataSourceCache.get("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", DRIVER_URL_PREFIX);
         assertThat(dataSource1, is(dataSource2));
     }
 }

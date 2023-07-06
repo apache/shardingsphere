@@ -32,6 +32,8 @@ import java.util.logging.Logger;
  */
 public final class ShardingSphereDriver implements Driver {
     
+    private static final String DRIVER_URL_PREFIX = "jdbc:shardingsphere:";
+    
     private static final int MAJOR_DRIVER_VERSION = 5;
     
     private static final int MINOR_DRIVER_VERSION = 1;
@@ -48,12 +50,12 @@ public final class ShardingSphereDriver implements Driver {
     
     @Override
     public Connection connect(final String url, final Properties info) throws SQLException {
-        return acceptsURL(url) ? dataSourceCache.get(url).getConnection() : null;
+        return acceptsURL(url) ? dataSourceCache.get(url, DRIVER_URL_PREFIX).getConnection() : null;
     }
     
     @Override
     public boolean acceptsURL(final String url) {
-        return null != url && url.startsWith("jdbc:shardingsphere:");
+        return null != url && url.startsWith(DRIVER_URL_PREFIX);
     }
     
     @Override
