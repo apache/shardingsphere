@@ -75,8 +75,11 @@ public class AggregationProjection implements Projection {
     }
     
     @Override
-    public Projection cloneWithOwner(final IdentifierValue owner) {
-        // TODO replace column owner when AggregationProjection contains owner
+    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias) {
+        // TODO replace getAlias with aliasIdentifier
+        if (getAlias().isPresent()) {
+            return new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null);
+        }
         AggregationProjection result = new AggregationProjection(type, innerExpression, alias, databaseType);
         result.setIndex(index);
         result.getDerivedAggregationProjections().addAll(derivedAggregationProjections);

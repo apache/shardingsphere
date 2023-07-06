@@ -81,7 +81,7 @@ public final class ColumnProjection implements Projection {
     }
     
     @Override
-    public Projection cloneWithOwner(final IdentifierValue ownerIdentifier) {
-        return new ColumnProjection(ownerIdentifier, nameIdentifier, aliasIdentifier);
+    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias) {
+        return null == aliasIdentifier ? new ColumnProjection(subqueryTableAlias, nameIdentifier, null) : new ColumnProjection(subqueryTableAlias, aliasIdentifier, null);
     }
 }

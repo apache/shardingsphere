@@ -127,7 +127,7 @@ public final class ProjectionEngine {
         IdentifierValue owner = projectionSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null);
         Collection<Projection> projections = new LinkedHashSet<>();
         projections.addAll(getShorthandColumnsFromSimpleTableSegment(table, owner));
-        projections.addAll(getShorthandColumnsFromSubqueryTableSegment(table));
+        projections.addAll(getShorthandColumnsFromSubqueryTableSegment(table, owner));
         projections.addAll(getShorthandColumnsFromJoinTableSegment(table, owner, projectionSegment));
         return new ShorthandProjection(null == owner ? null : owner.getValue(), projections);
     }
@@ -184,14 +184,18 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Collection<Projection> getShorthandColumnsFromSubqueryTableSegment(final TableSegment table) {
-        if (!(table instanceof SubqueryTableSegment)) {
+    private Collection<Projection> getShorthandColumnsFromSubqueryTableSegment(final TableSegment table, final IdentifierValue owner) {
+        if (!(table instanceof SubqueryTableSegment) || isOwnerNotSameWithTableAlias(owner, table)) {
             return Collections.emptyList();
         }
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
         Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
                 .filter(Objects::nonNull).collect(Collectors.toList());
         return getSubqueryTableActualProjections(projections, table.getAlias().map(AliasSegment::getIdentifier).orElse(null));
+    }
+    
+    private boolean isOwnerNotSameWithTableAlias(final IdentifierValue owner, final TableSegment table) {
+        return null != owner && table.getAliasName().isPresent() && !table.getAliasName().get().equals(owner.getValue());
     }
     
     private Collection<Projection> getSubqueryTableActualProjections(final Collection<Projection> projections, final IdentifierValue subqueryTableAlias) {
@@ -203,7 +207,7 @@ public final class ProjectionEngine {
             if (each instanceof ShorthandProjection) {
                 result.addAll(getSubqueryTableActualProjections(((ShorthandProjection) each).getActualColumns(), subqueryTableAlias));
             } else if (!(each instanceof DerivedProjection)) {
-                result.add(each.cloneWithOwner(subqueryTableAlias));
+                result.add(each.transformSubqueryProjection(subqueryTableAlias));
             }
         }
         return result;

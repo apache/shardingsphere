@@ -58,7 +58,9 @@ public final class ParameterMarkerProjection implements Projection {
     }
     
     @Override
-    public Projection cloneWithOwner(final IdentifierValue ownerIdentifier) {
-        return new ParameterMarkerProjection(parameterMarkerIndex, parameterMarkerType, alias);
+    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias) {
+        // TODO replace getAlias with aliasIdentifier
+        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null)
+                : new ParameterMarkerProjection(parameterMarkerIndex, parameterMarkerType, alias);
     }
 }

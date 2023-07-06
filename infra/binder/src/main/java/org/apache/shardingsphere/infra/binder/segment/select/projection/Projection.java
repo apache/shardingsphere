@@ -48,10 +48,10 @@ public interface Projection {
     String getColumnLabel();
     
     /**
-     * Clone with owner.
+     * Transform subquery projection.
      * 
-     * @param ownerIdentifier owner identifier
+     * @param subqueryTableAlias subquery table alias
      * @return new projection
      */
-    Projection cloneWithOwner(IdentifierValue ownerIdentifier);
+    Projection transformSubqueryProjection(IdentifierValue subqueryTableAlias);
 }

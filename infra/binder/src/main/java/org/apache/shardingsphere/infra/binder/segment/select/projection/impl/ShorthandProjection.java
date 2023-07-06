@@ -59,7 +59,7 @@ public final class ShorthandProjection implements Projection {
     
     /**
      * Get owner.
-     *
+     * 
      * @return owner
      */
     public Optional<String> getOwner() {
@@ -82,7 +82,7 @@ public final class ShorthandProjection implements Projection {
     }
     
     @Override
-    public Projection cloneWithOwner(final IdentifierValue ownerIdentifier) {
-        return new ShorthandProjection(ownerIdentifier.getValue(), actualColumns);
+    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias) {
+        return new ShorthandProjection(subqueryTableAlias.getValue(), actualColumns);
     }
 }
