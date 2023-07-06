@@ -19,7 +19,6 @@ package org.apache.shardingsphere.metadata.persist.service.config.database;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
@@ -101,10 +100,6 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     public void delete(final String databaseName, final Collection<RuleConfiguration> configs) {
         Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
         for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
-            if (((DatabaseRuleConfiguration) entry.getKey()).isEmpty()) {
-                deleteRuleNode(databaseName, entry.getValue().getRuleTagName().toLowerCase());
-                continue;
-            }
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
@@ -115,7 +110,8 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
         }
     }
     
-    private void deleteRuleNode(final String databaseName, final String ruleName) {
+    @Override
+    public void delete(final String databaseName, final String ruleName) {
         repository.delete(NewDatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName));
     }
     

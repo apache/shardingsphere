@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 /**
- * Delete database rule configuration changed event.
+ * Drop database rule configuration changed event.
  */
 @Getter
 @RequiredArgsConstructor
-public final class DeleteDatabaseRuleConfigurationEvent {
+public final class DropDatabaseRuleConfigurationEvent {
     
     private final String databaseName;
     

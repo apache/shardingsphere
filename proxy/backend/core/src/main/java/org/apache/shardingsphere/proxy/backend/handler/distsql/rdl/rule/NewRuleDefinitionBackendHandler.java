@@ -25,11 +25,13 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStat
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -120,7 +122,7 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
                     .alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, currentRuleConfig));
         }
         RuleConfiguration toBeDroppedRuleConfig = updater.buildToBeDroppedRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().removeRuleConfiguration(database.getName(), toBeDroppedRuleConfig);
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
         return ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
     }
     
@@ -138,12 +140,14 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
         if (!updater.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig)) {
             return Collections.emptyList();
         }
+        ModeContextManager modeContextManager = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager();
         final RuleConfiguration toBeDroppedRuleConfig = updater.buildToBeDroppedRuleConfiguration(currentRuleConfig, sqlStatement);
         final RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
         // TODO remove updateCurrentRuleConfiguration after update refactor completed.
         if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig) && ((DatabaseRuleConfiguration) currentRuleConfig).isEmpty()) {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().removeRuleConfiguration(database.getName(), toBeDroppedRuleConfig);
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().removeRuleConfiguration(database.getName(), currentRuleConfig);
+            modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
+            new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singleton(currentRuleConfig)).values().stream().findFirst()
+                    .ifPresent(swapper -> modeContextManager.removeRuleConfiguration(database.getName(), swapper.getRuleTagName().toLowerCase()));
             return Collections.emptyList();
         }
         if (updater instanceof DropReadwriteSplittingRuleStatementUpdater) {
@@ -151,8 +155,8 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
                     .ifPresent(optional -> ((DropReadwriteSplittingRuleStatement) sqlStatement).getNames().forEach(optional::cleanStorageNodeDataSource));
             // TODO refactor to new metadata refresh way
         }
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().removeRuleConfiguration(database.getName(), toBeDroppedRuleConfig);
-        return ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
+        modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
+        return modeContextManager.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

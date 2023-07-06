@@ -37,9 +37,9 @@ import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -140,10 +140,15 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     }
     
     @Override
-    public void removeRuleConfiguration(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
+    public void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
         if (null != toBeRemovedRuleConfig) {
             contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
         }
+    }
+    
+    @Override
+    public void removeRuleConfiguration(final String databaseName, final String ruleName) {
+        contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().delete(databaseName, ruleName);
     }
     
     @Override
