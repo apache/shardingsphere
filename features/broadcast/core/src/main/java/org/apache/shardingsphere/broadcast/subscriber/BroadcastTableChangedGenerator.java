@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.broadcast.subscriber;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.broadcast.event.table.AlterBroadcastTableEvent;
-import org.apache.shardingsphere.broadcast.event.table.DropBroadcastTableEvent;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -28,14 +26,14 @@ import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
  * Broadcast table changed generator.
  */
 public final class BroadcastTableChangedGenerator implements RuleItemConfigurationChangedGenerator<BroadcastRuleConfiguration, BroadcastRuleConfiguration> {
+    
+    public static final String TYPE = "Broadcast.Table";
     
     @Override
     public BroadcastRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -60,11 +58,6 @@ public final class BroadcastTableChangedGenerator implements RuleItemConfigurati
     
     @Override
     public String getType() {
-        return AlterBroadcastTableEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropBroadcastTableEvent.class.getName());
+        return TYPE;
     }
 }

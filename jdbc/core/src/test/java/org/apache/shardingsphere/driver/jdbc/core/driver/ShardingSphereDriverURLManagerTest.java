@@ -43,21 +43,23 @@ class ShardingSphereDriverURLManagerTest {
     
     private final int fooDriverConfigLength = 999;
     
+    private final String urlPrefix = "jdbc:shardingsphere:";
+    
     @Test
     void assertNewConstructorWithEmptyURL() {
-        assertThrows(DriverURLProviderNotFoundException.class, () -> ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:"));
+        assertThrows(DriverURLProviderNotFoundException.class, () -> ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:", urlPrefix));
     }
     
     @Test
     void assertToClasspathConfigurationFile() {
-        byte[] actual = ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
+        byte[] actual = ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", urlPrefix);
         assertThat(actual.length, is(fooDriverConfigLength));
     }
     
     @Test
     void assertToAbsolutePathConfigurationFile() {
         String absolutePath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
-        byte[] actual = ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absolutePath);
+        byte[] actual = ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absolutePath, urlPrefix);
         assertThat(actual.length, is(fooDriverConfigLength));
     }
     
@@ -67,7 +69,7 @@ class ShardingSphereDriverURLManagerTest {
         when(configFile.getContent()).thenReturn("config content");
         when(ConfigService.getConfigFile(anyString(), any(ConfigFileFormat.class))).thenReturn(configFile);
         String url = "jdbc:shardingsphere:apollo:namespace";
-        byte[] content = ShardingSphereDriverURLManager.getContent(url);
+        byte[] content = ShardingSphereDriverURLManager.getContent(url, urlPrefix);
         assertThat("config content".getBytes(StandardCharsets.UTF_8), is(content));
     }
 }

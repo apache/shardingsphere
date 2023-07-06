@@ -44,7 +44,7 @@ public final class RuleItemChangedSubscriber {
     @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
     @Subscribe
     public void renew(final AlterRuleItemEvent event) {
-        RuleItemConfigurationChangedGenerator generator = TypedSPILoader.getService(RuleItemConfigurationChangedGenerator.class, event.getClass().getName());
+        RuleItemConfigurationChangedGenerator generator = TypedSPILoader.getService(RuleItemConfigurationChangedGenerator.class, event.getType());
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
@@ -65,7 +65,7 @@ public final class RuleItemChangedSubscriber {
     @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
     @Subscribe
     public void renew(final DropRuleItemEvent event) {
-        RuleItemConfigurationChangedGenerator generator = TypedSPILoader.getService(RuleItemConfigurationChangedGenerator.class, event.getClass().getName());
+        RuleItemConfigurationChangedGenerator generator = TypedSPILoader.getService(RuleItemConfigurationChangedGenerator.class, event.getType());
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

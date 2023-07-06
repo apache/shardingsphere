@@ -25,18 +25,15 @@ import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
-import org.apache.shardingsphere.sharding.event.table.binding.AlterShardingTableReferenceEvent;
-import org.apache.shardingsphere.sharding.event.table.binding.DropShardingTableReferenceEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Sharding table reference changed generator.
  */
 public final class ShardingTableReferenceChangedGenerator implements RuleItemConfigurationChangedGenerator<ShardingRuleConfiguration, ShardingTableReferenceRuleConfiguration> {
+    
+    public static final String TYPE = "Sharding.TableReference";
     
     @Override
     public ShardingTableReferenceRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -61,11 +58,6 @@ public final class ShardingTableReferenceChangedGenerator implements RuleItemCon
     
     @Override
     public String getType() {
-        return AlterShardingTableReferenceEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropShardingTableReferenceEvent.class.getName());
+        return TYPE;
     }
 }

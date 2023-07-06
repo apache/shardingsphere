@@ -25,9 +25,11 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class DropNamedRuleItemEvent implements DropRuleItemEvent {
+public final class DropNamedRuleItemEvent implements DropRuleItemEvent {
     
     private final String databaseName;
     
     private final String itemName;
+    
+    private final String type;
 }
