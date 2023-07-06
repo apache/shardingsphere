@@ -95,9 +95,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     
     @Override
     public PipelineProcessConfiguration showProcessConfiguration(final PipelineContextKey contextKey) {
-        PipelineProcessConfiguration result = processConfigPersistService.load(contextKey, getJobType());
-        result = PipelineProcessConfigurationUtils.convertWithDefaultValue(result);
-        return result;
+        return PipelineProcessConfigurationUtils.convertWithDefaultValue(processConfigPersistService.load(contextKey, getJobType()));
     }
     
     @Override
