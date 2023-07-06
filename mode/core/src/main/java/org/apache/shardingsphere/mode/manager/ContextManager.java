@@ -582,23 +582,6 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
     }
     
-    /**
-     * Drop global rule configuration.
-     *
-     * @param ruleName rule name
-     */
-    @SuppressWarnings("rawtypes")
-    public synchronized void dropGlobalRuleConfiguration(final String ruleName) {
-        Collection<ResourceHeldRule> staleResourceHeldRules = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class);
-        staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
-        Collection<ShardingSphereRule> rules = removeSingleGlobalRule(ruleName);
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().clear();
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
-        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(),
-                new ShardingSphereRuleMetaData(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules()), metaDataContexts.get().getMetaData().getProps());
-        metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
-    }
-    
     private Collection<ShardingSphereRule> removeSingleGlobalRule(final RuleConfiguration ruleConfig) {
         Collection<ShardingSphereRule> result = new LinkedList<>(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules());
         result.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
