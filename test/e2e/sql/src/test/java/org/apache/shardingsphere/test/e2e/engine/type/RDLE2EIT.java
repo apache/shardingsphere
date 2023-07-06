@@ -71,7 +71,7 @@ class RDLE2EIT {
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 executeSQLCase(containerComposer, statement);
-                Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
+                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
                 assertResultSet(containerComposer, statement);
             }
         }
