@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyConfigurationSwapper;
@@ -32,8 +33,6 @@ import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateS
  * Default key generate strategy changed generator.
  */
 public final class DefaultKeyGenerateStrategyChangedGenerator implements RuleItemConfigurationChangedGenerator<ShardingRuleConfiguration, KeyGenerateStrategyConfiguration> {
-    
-    public static final String TYPE = "Sharding.DefaultKeyGenerateStrategy";
     
     @Override
     public KeyGenerateStrategyConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -57,6 +56,6 @@ public final class DefaultKeyGenerateStrategyChangedGenerator implements RuleIte
     
     @Override
     public String getType() {
-        return TYPE;
+        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY;
     }
 }

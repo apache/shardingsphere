@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.subscriber;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
@@ -36,8 +37,6 @@ import java.util.LinkedList;
  * Encrypt table changed generator.
  */
 public final class EncryptTableChangedGenerator implements RuleItemConfigurationChangedGenerator<EncryptRuleConfiguration, EncryptTableRuleConfiguration> {
-    
-    public static final String TYPE = "Encrypt.Table";
     
     @Override
     public EncryptTableRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -69,6 +68,6 @@ public final class EncryptTableChangedGenerator implements RuleItemConfiguration
     
     @Override
     public String getType() {
-        return TYPE;
+        return EncryptRuleNodePathProvider.RULE_TYPE + "." + EncryptRuleNodePathProvider.TABLES;
     }
 }

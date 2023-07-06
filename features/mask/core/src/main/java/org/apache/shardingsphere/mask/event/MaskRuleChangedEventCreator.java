@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mask.event;
 
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
-import org.apache.shardingsphere.mask.subscriber.MaskAlgorithmChangedGenerator;
-import org.apache.shardingsphere.mask.subscriber.MaskTableChangedGenerator;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
@@ -32,18 +30,7 @@ public final class MaskRuleChangedEventCreator implements RuleChangedEventCreato
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        return new NamedRuleItemChangedEventCreator().create(databaseName, itemName, event, getRuleItemConfigurationChangedGeneratorType(itemType));
-    }
-    
-    private String getRuleItemConfigurationChangedGeneratorType(final String itemType) {
-        switch (itemType) {
-            case MaskRuleNodePathProvider.TABLES:
-                return MaskTableChangedGenerator.TYPE;
-            case MaskRuleNodePathProvider.ALGORITHMS:
-                return MaskAlgorithmChangedGenerator.TYPE;
-            default:
-                throw new UnsupportedOperationException(itemType);
-        }
+        return new NamedRuleItemChangedEventCreator().create(databaseName, itemType, event, MaskRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override

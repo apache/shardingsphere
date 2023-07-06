@@ -23,18 +23,6 @@ import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
-import org.apache.shardingsphere.sharding.subscriber.DefaultDatabaseShardingStrategyChangedGenerator;
-import org.apache.shardingsphere.sharding.subscriber.DefaultKeyGenerateStrategyChangedGenerator;
-import org.apache.shardingsphere.sharding.subscriber.DefaultShardingAuditorStrategyChangedGenerator;
-import org.apache.shardingsphere.sharding.subscriber.DefaultShardingColumnChangedGenerator;
-import org.apache.shardingsphere.sharding.subscriber.DefaultTableShardingStrategyChangedGenerator;
-import org.apache.shardingsphere.sharding.subscriber.KeyGeneratorChangedGenerator;
-import org.apache.shardingsphere.sharding.subscriber.ShardingAlgorithmChangedGenerator;
-import org.apache.shardingsphere.sharding.subscriber.ShardingAuditorChangedGenerator;
-import org.apache.shardingsphere.sharding.subscriber.ShardingAutoTableChangedGenerator;
-import org.apache.shardingsphere.sharding.subscriber.ShardingCacheChangedGenerator;
-import org.apache.shardingsphere.sharding.subscriber.ShardingTableChangedGenerator;
-import org.apache.shardingsphere.sharding.subscriber.ShardingTableReferenceChangedGenerator;
 
 /**
  * Sharding rule changed event creator.
@@ -43,50 +31,12 @@ public final class ShardingRuleChangedEventCreator implements RuleChangedEventCr
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        return new NamedRuleItemChangedEventCreator().create(databaseName, itemName, event, getNamedRuleItemConfigurationChangedGeneratorType(itemType));
+        return new NamedRuleItemChangedEventCreator().create(databaseName, itemName, event, ShardingRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
-        return new UniqueRuleItemChangedEventCreator().create(databaseName, event, getUniqueRuleItemConfigurationChangedGeneratorType(itemType));
-    }
-    
-    private String getNamedRuleItemConfigurationChangedGeneratorType(final String itemType) {
-        switch (itemType) {
-            case ShardingRuleNodePathProvider.TABLES:
-                return ShardingTableChangedGenerator.TYPE;
-            case ShardingRuleNodePathProvider.AUTO_TABLES:
-                return ShardingAutoTableChangedGenerator.TYPE;
-            case ShardingRuleNodePathProvider.BINDING_TABLES:
-                return ShardingTableReferenceChangedGenerator.TYPE;
-            case ShardingRuleNodePathProvider.ALGORITHMS:
-                return ShardingAlgorithmChangedGenerator.TYPE;
-            case ShardingRuleNodePathProvider.KEY_GENERATORS:
-                return KeyGeneratorChangedGenerator.TYPE;
-            case ShardingRuleNodePathProvider.AUDITORS:
-                return ShardingAuditorChangedGenerator.TYPE;
-            default:
-                throw new UnsupportedOperationException(itemType);
-        }
-    }
-    
-    private String getUniqueRuleItemConfigurationChangedGeneratorType(final String itemType) {
-        switch (itemType) {
-            case ShardingRuleNodePathProvider.DEFAULT_DATABASE_STRATEGY:
-                return DefaultDatabaseShardingStrategyChangedGenerator.TYPE;
-            case ShardingRuleNodePathProvider.DEFAULT_TABLE_STRATEGY:
-                return DefaultTableShardingStrategyChangedGenerator.TYPE;
-            case ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY:
-                return DefaultKeyGenerateStrategyChangedGenerator.TYPE;
-            case ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY:
-                return DefaultShardingAuditorStrategyChangedGenerator.TYPE;
-            case ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN:
-                return DefaultShardingColumnChangedGenerator.TYPE;
-            case ShardingRuleNodePathProvider.SHARDING_CACHE:
-                return ShardingCacheChangedGenerator.TYPE;
-            default:
-                throw new UnsupportedOperationException(itemType);
-        }
+        return new UniqueRuleItemChangedEventCreator().create(databaseName, event, ShardingRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGene
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
@@ -39,8 +40,6 @@ import java.util.Optional;
  * Readwrite-splitting data source changed generator.
  */
 public final class ReadwriteSplittingDataSourceChangedGenerator implements RuleItemConfigurationChangedGenerator<ReadwriteSplittingRuleConfiguration, ReadwriteSplittingDataSourceRuleConfiguration> {
-    
-    public static final String TYPE = "ReadwriteSplitting.DataSource";
     
     @Override
     public ReadwriteSplittingDataSourceRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -77,6 +76,6 @@ public final class ReadwriteSplittingDataSourceChangedGenerator implements RuleI
     
     @Override
     public String getType() {
-        return TYPE;
+        return ReadwriteSplittingRuleNodePathProvider.RULE_TYPE + "." + ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES;
     }
 }
