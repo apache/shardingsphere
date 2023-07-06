@@ -39,8 +39,8 @@ public final class ApolloDriverURLProvider implements ShardingSphereDriverURLPro
     }
     
     @Override
-    public byte[] getContent(final String url) {
-        String configPath = url.substring("jdbc:shardingsphere:".length(), url.contains("?") ? url.indexOf('?') : url.length());
+    public byte[] getContent(final String url, final String urlPrefix) {
+        String configPath = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
         String namespace = configPath.substring(APOLLO_TYPE.length());
         Preconditions.checkArgument(!namespace.isEmpty(), "Apollo namespace is required in ShardingSphere driver URL.");
         ConfigFile configFile = ConfigService.getConfigFile(namespace, ConfigFileFormat.YAML);

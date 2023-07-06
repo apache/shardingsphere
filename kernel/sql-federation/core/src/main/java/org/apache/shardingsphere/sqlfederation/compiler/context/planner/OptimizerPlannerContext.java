@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.context.planner;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 
@@ -28,6 +30,9 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class OptimizerPlannerContext {
+    
+    @Getter
+    private final RelOptPlanner hepPlanner;
     
     private final Map<String, SqlValidator> validators;
     

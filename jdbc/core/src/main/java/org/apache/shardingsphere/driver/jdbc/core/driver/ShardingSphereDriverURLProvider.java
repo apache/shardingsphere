@@ -32,9 +32,10 @@ public interface ShardingSphereDriverURLProvider {
     
     /**
      * Get config content from url.
-     * 
-     * @param url the driver url 
+     *
+     * @param url the driver url
+     * @param urlPrefix url prefix
      * @return the config content
      */
-    byte[] getContent(String url);
+    byte[] getContent(String url, String urlPrefix);
 }

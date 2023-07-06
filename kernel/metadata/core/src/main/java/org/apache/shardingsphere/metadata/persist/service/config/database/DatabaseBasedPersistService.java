@@ -48,6 +48,15 @@ public interface DatabaseBasedPersistService<T> {
     }
     
     /**
+     * Delete rule.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     */
+    default void delete(String databaseName, String ruleName) {
+    }
+    
+    /**
      * Persist configurations.
      *
      * @param databaseName database name

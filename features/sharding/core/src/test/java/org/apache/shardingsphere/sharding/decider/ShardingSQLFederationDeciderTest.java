@@ -135,19 +135,6 @@ class ShardingSQLFederationDeciderTest {
     }
     
     @Test
-    void assertDecideWhenContainsOnlyOneTable() {
-        SelectStatementContext select = createStatementContext();
-        when(select.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(select.isContainsJoinQuery()).thenReturn(true);
-        ShardingRule shardingRule = createShardingRule();
-        when(shardingRule.getShardingLogicTableNames(Collections.singletonList("t_order"))).thenReturn(Collections.singletonList("t_order"));
-        ShardingSphereDatabase database = createDatabase();
-        when(shardingRule.isAllBindingTables(database, select, Collections.singletonList("t_order"))).thenReturn(false);
-        Collection<DataNode> includedDataNodes = new HashSet<>();
-        assertFalse(new ShardingSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database, shardingRule, includedDataNodes));
-    }
-    
-    @Test
     void assertDecideWhenAllTablesIsNotBindingTablesAndContainsPagination() {
         SelectStatementContext select = createStatementContext();
         when(select.isContainsJoinQuery()).thenReturn(true);

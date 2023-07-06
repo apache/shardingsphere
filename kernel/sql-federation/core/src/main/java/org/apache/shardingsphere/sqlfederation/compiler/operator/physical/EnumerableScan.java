@@ -42,15 +42,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 /**
  * Enumerable scan.
  */
 @Getter
 public final class EnumerableScan extends TableScan implements EnumerableRel {
-    
-    private static final Pattern LINE_SEPARATOR_PATTERN = Pattern.compile("[\r\n]");
     
     private final SqlString sqlString;
     
@@ -77,7 +74,7 @@ public final class EnumerableScan extends TableScan implements EnumerableRel {
     
     @Override
     public RelWriter explainTerms(final RelWriter relWriter) {
-        return super.explainTerms(relWriter).item("sql", LINE_SEPARATOR_PATTERN.matcher(sqlString.getSql()).replaceAll(" "));
+        return super.explainTerms(relWriter).item("sql", sqlString.getSql().replaceAll("[\r\n]", " "));
     }
     
     @Override

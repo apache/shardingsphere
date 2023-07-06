@@ -124,12 +124,21 @@ public interface ModeContextManager {
     }
     
     /**
-     * Remove rule configuration.
+     * Remove rule configuration item.
      *
      * @param databaseName database name
      * @param toBeRemovedRuleConfig to be removed rule config
      */
-    default void removeRuleConfiguration(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
+    default void removeRuleConfigurationItem(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
+    }
+    
+    /**
+     * Remove rule configuration.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     */
+    default void removeRuleConfiguration(String databaseName, String ruleName) {
     }
     
     /**
