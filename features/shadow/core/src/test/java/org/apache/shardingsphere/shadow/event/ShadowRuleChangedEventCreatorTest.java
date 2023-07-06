@@ -24,7 +24,6 @@ import org.apache.shardingsphere.shadow.event.algorithm.DropDefaultShadowAlgorit
 import org.apache.shardingsphere.shadow.event.algorithm.DropShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.event.datasource.AlterShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.event.datasource.DropShadowDataSourceEvent;
-import org.apache.shardingsphere.shadow.event.datasource.creator.ShadowDataSourceEventCreator;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.DropShadowTableEvent;
 import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
