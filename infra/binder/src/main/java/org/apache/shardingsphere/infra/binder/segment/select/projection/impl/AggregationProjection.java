@@ -75,7 +75,8 @@ public class AggregationProjection implements Projection {
     }
     
     @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {        // TODO replace getAlias with aliasIdentifier
+    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
+        // TODO replace getAlias with aliasIdentifier
         if (getAlias().isPresent()) {
             return new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null);
         }
