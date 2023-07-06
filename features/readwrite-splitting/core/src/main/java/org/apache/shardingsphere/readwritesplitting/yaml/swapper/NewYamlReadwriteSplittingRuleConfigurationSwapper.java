@@ -34,7 +34,6 @@ import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwri
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,7 @@ public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements 
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final ReadwriteSplittingRuleConfiguration data) {
-        Collection<YamlDataNode> result = new LinkedHashSet<>();
+        Collection<YamlDataNode> result = new LinkedList<>();
         for (Entry<String, AlgorithmConfiguration> entry : data.getLoadBalancers().entrySet()) {
             result.add(new YamlDataNode(readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS).getPath(entry.getKey()),
                     YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
