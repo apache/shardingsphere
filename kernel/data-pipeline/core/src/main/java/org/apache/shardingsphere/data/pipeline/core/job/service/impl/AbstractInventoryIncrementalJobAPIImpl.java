@@ -143,6 +143,11 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     
     @Override
     public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobItemContext.getJobId()))
+                .persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertJobItemProgress(jobItemContext));
+    }
+    
+    private String convertJobItemProgress(final PipelineJobItemContext jobItemContext) {
         InventoryIncrementalJobItemContext context = (InventoryIncrementalJobItemContext) jobItemContext;
         InventoryIncrementalJobItemProgress jobItemProgress = new InventoryIncrementalJobItemProgress();
         jobItemProgress.setStatus(context.getStatus());
@@ -152,9 +157,13 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         jobItemProgress.setInventory(getInventoryTasksProgress(context.getInventoryTasks()));
         jobItemProgress.setProcessedRecordsCount(context.getProcessedRecordsCount());
         jobItemProgress.setInventoryRecordsCount(context.getInventoryRecordsCount());
-        String value = YamlEngine.marshal(jobItemProgressSwapper.swapToYamlConfiguration(jobItemProgress));
-        String jobId = context.getJobId();
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persistJobItemProgress(jobId, context.getShardingItem(), value);
+        return YamlEngine.marshal(jobItemProgressSwapper.swapToYamlConfiguration(jobItemProgress));
+    }
+    
+    @Override
+    public void updateJobItemProgress(final PipelineJobItemContext jobItemContext) {
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobItemContext.getJobId()))
+                .updateJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertJobItemProgress(jobItemContext));
     }
     
     private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final Collection<PipelineTask> incrementalTasks) {

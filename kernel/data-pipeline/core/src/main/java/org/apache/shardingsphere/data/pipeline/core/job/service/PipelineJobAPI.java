@@ -128,6 +128,13 @@ public interface PipelineJobAPI extends TypedSPI {
     void persistJobItemProgress(PipelineJobItemContext jobItemContext);
     
     /**
+     * Update job item progress.
+     *
+     * @param jobItemContext job item context
+     */
+    void updateJobItemProgress(PipelineJobItemContext jobItemContext);
+    
+    /**
      * Get job item progress.
      *
      * @param jobId job id
