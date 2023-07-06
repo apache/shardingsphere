@@ -53,5 +53,5 @@ public interface Projection {
      * @param subqueryTableAlias subquery table alias
      * @return new projection
      */
-    Projection transformSubqueryProjection(IdentifierValue subqueryTableAlias);
+    Projection transformSubqueryProjection(IdentifierValue subqueryTableAlias, IdentifierValue originalOwner, IdentifierValue originalName);
 }

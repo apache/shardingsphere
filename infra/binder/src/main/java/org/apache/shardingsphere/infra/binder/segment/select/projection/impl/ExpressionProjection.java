@@ -50,7 +50,7 @@ public final class ExpressionProjection implements Projection {
     }
     
     @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias) {
+    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
         // TODO replace getAlias with aliasIdentifier
         return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null) : new ExpressionProjection(expression, alias);
     }

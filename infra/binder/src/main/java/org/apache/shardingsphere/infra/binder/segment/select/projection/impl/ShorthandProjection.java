@@ -82,7 +82,7 @@ public final class ShorthandProjection implements Projection {
     }
     
     @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias) {
+    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
         return new ShorthandProjection(subqueryTableAlias.getValue(), actualColumns);
     }
 }

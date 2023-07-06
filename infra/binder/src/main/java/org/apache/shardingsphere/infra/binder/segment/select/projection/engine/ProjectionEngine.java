@@ -190,7 +190,8 @@ public final class ProjectionEngine {
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
         Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        return getSubqueryTableActualProjections(projections, table.getAlias().map(AliasSegment::getIdentifier).orElse(null));
+        IdentifierValue subqueryTableAlias = table.getAlias().map(AliasSegment::getIdentifier).orElse(null);
+        return getSubqueryTableActualProjections(projections, subqueryTableAlias);
     }
     
     private boolean isOwnerNotSameWithTableAlias(final IdentifierValue owner, final TableSegment table) {
@@ -203,7 +204,9 @@ public final class ProjectionEngine {
             if (each instanceof ShorthandProjection) {
                 result.addAll(getSubqueryTableActualProjections(((ShorthandProjection) each).getActualColumns(), subqueryTableAlias));
             } else if (!(each instanceof DerivedProjection)) {
-                result.add(each.transformSubqueryProjection(subqueryTableAlias));
+                IdentifierValue originalOwner = each instanceof ColumnProjection ? ((ColumnProjection) each).getOriginalOwner() : null;
+                IdentifierValue originalName = each instanceof ColumnProjection ? ((ColumnProjection) each).getOriginalName() : null;
+                result.add(each.transformSubqueryProjection(subqueryTableAlias, originalOwner, originalName));
             }
         }
         return result;

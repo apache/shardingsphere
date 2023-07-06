@@ -34,7 +34,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"originalColumnName"})
+@EqualsAndHashCode(exclude = {"originalOwner", "originalName"})
 @ToString
 public final class ColumnProjection implements Projection {
     
@@ -44,7 +44,9 @@ public final class ColumnProjection implements Projection {
     
     private final IdentifierValue aliasIdentifier;
     
-    private IdentifierValue originalColumnName;
+    private IdentifierValue originalOwner;
+    
+    private IdentifierValue originalName;
     
     public ColumnProjection(final String owner, final String name, final String alias) {
         this(null == owner ? null : new IdentifierValue(owner, QuoteCharacter.NONE), new IdentifierValue(name, QuoteCharacter.NONE),
@@ -85,18 +87,28 @@ public final class ColumnProjection implements Projection {
     }
     
     @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias) {
+    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
         ColumnProjection result = null == aliasIdentifier ? new ColumnProjection(subqueryTableAlias, nameIdentifier, null) : new ColumnProjection(subqueryTableAlias, aliasIdentifier, null);
-        result.setOriginalColumnName(nameIdentifier);
+        result.setOriginalOwner(originalOwner);
+        result.setOriginalName(originalName);
         return result;
     }
     
     /**
-     * Get original column name.
-     * 
-     * @return original column name
+     * Get original owner.
+     *
+     * @return original owner
      */
-    public String getOriginalColumnName() {
-        return null == originalColumnName ? getName() : originalColumnName.getValue();
+    public IdentifierValue getOriginalOwner() {
+        return null == originalOwner ? ownerIdentifier : originalOwner;
+    }
+    
+    /**
+     * Get original name.
+     * 
+     * @return original name
+     */
+    public IdentifierValue getOriginalName() {
+        return null == originalName ? nameIdentifier : originalName;
     }
 }
