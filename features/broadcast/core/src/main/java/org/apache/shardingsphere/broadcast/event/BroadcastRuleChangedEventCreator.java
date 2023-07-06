@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.event;
 
-import org.apache.shardingsphere.broadcast.event.table.creator.BroadcastTableEventCreator;
+import org.apache.shardingsphere.broadcast.event.table.BroadcastTableEventCreator;
 import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;

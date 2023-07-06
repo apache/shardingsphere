@@ -23,4 +23,11 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
  * Rule item changed event.
  */
 public interface RuleItemChangedEvent extends GovernanceEvent {
+    
+    /**
+     * Get rule item type.
+     * 
+     * @return rule item type
+     */
+    String getType();
 }

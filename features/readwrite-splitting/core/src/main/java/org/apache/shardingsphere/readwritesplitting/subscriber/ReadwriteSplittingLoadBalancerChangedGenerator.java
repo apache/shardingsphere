@@ -28,12 +28,8 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.event.loadbalance.AlterReadwriteSplittingLoadBalancerEvent;
-import org.apache.shardingsphere.readwritesplitting.event.loadbalance.DropReadwriteSplittingLoadBalancerEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
@@ -41,6 +37,8 @@ import java.util.LinkedList;
  * Readwrite-splitting load-balancer changed generator.
  */
 public final class ReadwriteSplittingLoadBalancerChangedGenerator implements RuleItemConfigurationChangedGenerator<ReadwriteSplittingRuleConfiguration, AlgorithmConfiguration> {
+    
+    public static final String TYPE = "ReadwriteSplitting.LoadBalancer";
     
     @Override
     public AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -65,11 +63,6 @@ public final class ReadwriteSplittingLoadBalancerChangedGenerator implements Rul
     
     @Override
     public String getType() {
-        return AlterReadwriteSplittingLoadBalancerEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropReadwriteSplittingLoadBalancerEvent.class.getName());
+        return TYPE;
     }
 }

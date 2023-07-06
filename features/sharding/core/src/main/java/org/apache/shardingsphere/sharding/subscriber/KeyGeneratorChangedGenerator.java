@@ -28,17 +28,14 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.AlterKeyGeneratorEvent;
-import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.DropKeyGeneratorEvent;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Key generator changed generator.
  */
 public final class KeyGeneratorChangedGenerator implements RuleItemConfigurationChangedGenerator<ShardingRuleConfiguration, AlgorithmConfiguration> {
+    
+    public static final String TYPE = "Sharding.KeyGenerator";
     
     @Override
     public AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -62,11 +59,6 @@ public final class KeyGeneratorChangedGenerator implements RuleItemConfiguration
     
     @Override
     public String getType() {
-        return AlterKeyGeneratorEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropKeyGeneratorEvent.class.getName());
+        return TYPE;
     }
 }

@@ -28,13 +28,9 @@ import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGene
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.AlterReadwriteSplittingDataSourceEvent;
-import org.apache.shardingsphere.readwritesplitting.event.datasource.DropReadwriteSplittingDataSourceEvent;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -43,6 +39,8 @@ import java.util.Optional;
  * Readwrite-splitting data source changed generator.
  */
 public final class ReadwriteSplittingDataSourceChangedGenerator implements RuleItemConfigurationChangedGenerator<ReadwriteSplittingRuleConfiguration, ReadwriteSplittingDataSourceRuleConfiguration> {
+    
+    public static final String TYPE = "ReadwriteSplitting.DataSource";
     
     @Override
     public ReadwriteSplittingDataSourceRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -79,11 +77,6 @@ public final class ReadwriteSplittingDataSourceChangedGenerator implements RuleI
     
     @Override
     public String getType() {
-        return AlterReadwriteSplittingDataSourceEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropReadwriteSplittingDataSourceEvent.class.getName());
+        return TYPE;
     }
 }
