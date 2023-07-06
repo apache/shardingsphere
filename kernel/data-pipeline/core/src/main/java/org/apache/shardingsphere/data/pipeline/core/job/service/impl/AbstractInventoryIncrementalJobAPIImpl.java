@@ -82,8 +82,6 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     
     private final YamlJobOffsetInfoSwapper jobOffsetInfoSwapper = new YamlJobOffsetInfoSwapper();
     
-    protected abstract String getTargetDatabaseType(PipelineJobConfiguration pipelineJobConfig);
-    
     @Override
     public abstract InventoryIncrementalProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
