@@ -23,10 +23,8 @@ import org.apache.shardingsphere.shadow.event.algorithm.AlterShadowAlgorithmEven
 import org.apache.shardingsphere.shadow.event.algorithm.DropDefaultShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.event.algorithm.DropShadowAlgorithmEvent;
 import org.apache.shardingsphere.shadow.event.datasource.AlterShadowDataSourceEvent;
-import org.apache.shardingsphere.shadow.event.datasource.CreateShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.event.datasource.DropShadowDataSourceEvent;
 import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
-import org.apache.shardingsphere.shadow.event.table.CreateShadowTableEvent;
 import org.apache.shardingsphere.shadow.event.table.DropShadowTableEvent;
 import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +49,7 @@ class ShadowRuleChangedEventCreatorTest {
                 ShadowRuleNodePathProvider.DATA_SOURCES, "test"), instanceOf(DropShadowDataSourceEvent.class));
         assertThat(shadowRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.ADDED),
-                ShadowRuleNodePathProvider.DATA_SOURCES, "test"), instanceOf(CreateShadowDataSourceEvent.class));
+                ShadowRuleNodePathProvider.DATA_SOURCES, "test"), instanceOf(AlterShadowDataSourceEvent.class));
         assertThat(shadowRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.UPDATED),
                 ShadowRuleNodePathProvider.DATA_SOURCES, "test"), instanceOf(AlterShadowDataSourceEvent.class));
@@ -74,7 +72,7 @@ class ShadowRuleChangedEventCreatorTest {
                 ShadowRuleNodePathProvider.TABLES, "test"), instanceOf(DropShadowTableEvent.class));
         assertThat(shadowRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.ADDED),
-                ShadowRuleNodePathProvider.TABLES, "test"), instanceOf(CreateShadowTableEvent.class));
+                ShadowRuleNodePathProvider.TABLES, "test"), instanceOf(AlterShadowTableEvent.class));
         assertThat(shadowRuleChangedEventCreator.create("test",
                 new DataChangedEvent("RANDOM", "RANDOM", DataChangedEvent.Type.UPDATED),
                 ShadowRuleNodePathProvider.TABLES, "test"), instanceOf(AlterShadowTableEvent.class));
