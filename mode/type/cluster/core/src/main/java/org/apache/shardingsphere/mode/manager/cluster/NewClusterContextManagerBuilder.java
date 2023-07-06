@@ -21,9 +21,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
-import org.apache.shardingsphere.mode.subsciber.RuleChangedSubscriber;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.NewMetaDataPersistService;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
@@ -38,6 +36,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.NewMetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
 
 import java.sql.SQLException;
 
@@ -84,20 +83,13 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
         loadClusterStatus(registryCenter, contextManager);
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
-        registerRuleConfigurationSubscribers(contextManager, contextManager.getInstanceContext());
+        contextManager.getInstanceContext().getEventBusContext().register(new RuleItemChangedSubscriber(contextManager));
         new NewContextManagerSubscriberFacade(registryCenter, contextManager);
     }
     
     private void loadClusterStatus(final NewRegistryCenter registryCenter, final ContextManager contextManager) {
         registryCenter.persistClusterState(contextManager);
         contextManager.updateClusterState(registryCenter.getClusterStatusService().loadClusterStatus());
-    }
-    
-    private void registerRuleConfigurationSubscribers(final ContextManager contextManager, final InstanceContext instanceContext) {
-        for (RuleChangedSubscriber each : ShardingSphereServiceLoader.getServiceInstances(RuleChangedSubscriber.class)) {
-            each.setContextManager(contextManager);
-            instanceContext.getEventBusContext().register(each);
-        }
     }
     
     @Override
