@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.subscriber.DefaultKeyGenerateStrategyC
 import org.apache.shardingsphere.sharding.subscriber.DefaultShardingAuditorStrategyChangedGenerator;
 import org.apache.shardingsphere.sharding.subscriber.DefaultShardingColumnChangedGenerator;
 import org.apache.shardingsphere.sharding.subscriber.DefaultTableShardingStrategyChangedGenerator;
+import org.apache.shardingsphere.sharding.subscriber.KeyGeneratorChangedGenerator;
 import org.apache.shardingsphere.sharding.subscriber.ShardingAlgorithmChangedGenerator;
 import org.apache.shardingsphere.sharding.subscriber.ShardingAuditorChangedGenerator;
 import org.apache.shardingsphere.sharding.subscriber.ShardingAutoTableChangedGenerator;
@@ -61,7 +62,7 @@ public final class ShardingRuleChangedEventCreator implements RuleChangedEventCr
             case ShardingRuleNodePathProvider.ALGORITHMS:
                 return ShardingAlgorithmChangedGenerator.TYPE;
             case ShardingRuleNodePathProvider.KEY_GENERATORS:
-                return DefaultKeyGenerateStrategyChangedGenerator.TYPE;
+                return KeyGeneratorChangedGenerator.TYPE;
             case ShardingRuleNodePathProvider.AUDITORS:
                 return ShardingAuditorChangedGenerator.TYPE;
             default:
