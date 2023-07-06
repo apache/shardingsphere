@@ -55,6 +55,16 @@ public final class DerivedProjection implements Projection {
     @Override
     public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias) {
         // TODO replace getAlias with aliasIdentifier
-        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null) : new DerivedProjection(expression, alias, derivedProjectionSegment);
+        if (getAlias().isPresent()) {
+            ColumnProjection result = new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null);
+            result.setOriginalProjection(this);
+            return result;
+        }
+        return new DerivedProjection(expression, alias, derivedProjection);
+    }
+    
+    @Override
+    public Projection getOriginalProjection() {
+        return this;
     }
 }

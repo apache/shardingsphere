@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
@@ -32,7 +33,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "originalProjection")
 @ToString
 public final class ColumnProjection implements Projection {
     
@@ -41,6 +42,9 @@ public final class ColumnProjection implements Projection {
     private final IdentifierValue nameIdentifier;
     
     private final IdentifierValue aliasIdentifier;
+    
+    @Setter
+    private Projection originalProjection;
     
     public ColumnProjection(final String owner, final String name, final String alias) {
         this(null == owner ? null : new IdentifierValue(owner, QuoteCharacter.NONE), new IdentifierValue(name, QuoteCharacter.NONE),
@@ -82,6 +86,17 @@ public final class ColumnProjection implements Projection {
     
     @Override
     public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias) {
-        return null == aliasIdentifier ? new ColumnProjection(subqueryTableAlias, nameIdentifier, null) : new ColumnProjection(subqueryTableAlias, aliasIdentifier, null);
+        ColumnProjection result = null == aliasIdentifier ? new ColumnProjection(subqueryTableAlias, nameIdentifier, null) : new ColumnProjection(subqueryTableAlias, aliasIdentifier, null);
+        result.setOriginalProjection(new ColumnProjection(ownerIdentifier, nameIdentifier, aliasIdentifier));
+        return result;
+    }
+    
+    /**
+     * Get original projection.
+     * 
+     * @return original projection
+     */
+    public Projection getOriginalProjection() {
+        return null == originalProjection ? this : originalProjection;
     }
 }

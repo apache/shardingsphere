@@ -48,6 +48,13 @@ public interface Projection {
     String getColumnLabel();
     
     /**
+     * Get original projection.
+     *
+     * @return original projection
+     */
+    Projection getOriginalProjection();
+    
+    /**
      * Transform subquery projection.
      * 
      * @param subqueryTableAlias subquery table alias
