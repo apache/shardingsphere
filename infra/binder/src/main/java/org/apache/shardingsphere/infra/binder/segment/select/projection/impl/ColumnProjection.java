@@ -33,7 +33,8 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(exclude = "originalProjection")
+@Setter
+@EqualsAndHashCode(exclude = {"originalColumnName"})
 @ToString
 public final class ColumnProjection implements Projection {
     
@@ -43,8 +44,7 @@ public final class ColumnProjection implements Projection {
     
     private final IdentifierValue aliasIdentifier;
     
-    @Setter
-    private Projection originalProjection;
+    private IdentifierValue originalColumnName;
     
     public ColumnProjection(final String owner, final String name, final String alias) {
         this(null == owner ? null : new IdentifierValue(owner, QuoteCharacter.NONE), new IdentifierValue(name, QuoteCharacter.NONE),
@@ -87,16 +87,16 @@ public final class ColumnProjection implements Projection {
     @Override
     public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias) {
         ColumnProjection result = null == aliasIdentifier ? new ColumnProjection(subqueryTableAlias, nameIdentifier, null) : new ColumnProjection(subqueryTableAlias, aliasIdentifier, null);
-        result.setOriginalProjection(new ColumnProjection(ownerIdentifier, nameIdentifier, aliasIdentifier));
+        result.setOriginalColumnName(nameIdentifier);
         return result;
     }
     
     /**
-     * Get original projection.
+     * Get original column name.
      * 
-     * @return original projection
+     * @return original column name
      */
-    public Projection getOriginalProjection() {
-        return null == originalProjection ? this : originalProjection;
+    public String getOriginalColumnName() {
+        return null == originalColumnName ? getName() : originalColumnName.getValue();
     }
 }

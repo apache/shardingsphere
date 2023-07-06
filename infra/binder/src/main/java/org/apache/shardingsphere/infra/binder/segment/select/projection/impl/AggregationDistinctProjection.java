@@ -56,9 +56,7 @@ public final class AggregationDistinctProjection extends AggregationProjection {
     public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias) {
         // TODO replace getAlias with aliasIdentifier
         if (getAlias().isPresent()) {
-            ColumnProjection result = new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null);
-            result.setOriginalProjection(this);
-            return result;
+            return new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null);
         }
         return new AggregationDistinctProjection(startIndex, stopIndex, getType(), getInnerExpression(), null, distinctInnerExpression, getDatabaseType());
     }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
@@ -199,9 +198,6 @@ public final class ProjectionEngine {
     }
     
     private Collection<Projection> getSubqueryTableActualProjections(final Collection<Projection> projections, final IdentifierValue subqueryTableAlias) {
-        if (null == subqueryTableAlias || Strings.isNullOrEmpty(subqueryTableAlias.getValue())) {
-            return getActualProjections(projections);
-        }
         Collection<Projection> result = new LinkedList<>();
         for (Projection each : projections) {
             if (each instanceof ShorthandProjection) {

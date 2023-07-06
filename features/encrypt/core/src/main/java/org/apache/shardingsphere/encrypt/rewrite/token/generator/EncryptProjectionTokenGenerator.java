@@ -95,8 +95,8 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                     continue;
                 }
                 Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-                if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnProjection.getName())) {
-                    sqlTokens.add(generateSQLToken(encryptTable.get().getEncryptColumn(columnProjection.getName()), columnSegment, columnProjection, subqueryType));
+                if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnProjection.getName()) && !containsTableSubquery(selectStatementContext)) {
+                    sqlTokens.add(generateSQLToken(tableName, encryptTable.get().getEncryptColumn(columnProjection.getName()), columnSegment, columnProjection, subqueryType));
                 }
             }
             if (each instanceof ShorthandProjectionSegment) {
@@ -123,7 +123,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         for (Projection each : actualColumns) {
             String tableName = columnTableNames.get(each.getExpression());
             Optional<EncryptTable> encryptTable = null == tableName ? Optional.empty() : encryptRule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(each.getColumnLabel())) {
+            if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(each.getColumnLabel()) || containsTableSubquery(selectStatementContext)) {
                 projections.add(each.getAlias().map(optional -> (Projection) new ColumnProjection(null, optional, null)).orElse(each));
             } else if (each instanceof ColumnProjection) {
                 projections.addAll(generateProjections(encryptTable.get().getEncryptColumn(((ColumnProjection) each).getName()), (ColumnProjection) each, subqueryType, true, segment));
@@ -132,6 +132,16 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         int startIndex = segment.getOwner().isPresent() ? segment.getOwner().get().getStartIndex() : segment.getStartIndex();
         previousSQLTokens.removeIf(each -> each.getStartIndex() == startIndex);
         return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, selectStatementContext.getDatabaseType().getQuoteCharacter());
+    }
+    
+    private boolean containsTableSubquery(final SelectStatementContext selectStatementContext) {
+        if (selectStatementContext.getSqlStatement().getFrom() instanceof SubqueryTableSegment) {
+            return true;
+        } else if (selectStatementContext.getSqlStatement().getFrom() instanceof JoinTableSegment) {
+            JoinTableSegment joinTableSegment = (JoinTableSegment) selectStatementContext.getSqlStatement().getFrom();
+            return joinTableSegment.getLeft() instanceof SubqueryTableSegment || joinTableSegment.getRight() instanceof SubqueryTableSegment;
+        }
+        return false;
     }
     
     private ColumnProjection buildColumnProjection(final ColumnProjectionSegment segment) {
