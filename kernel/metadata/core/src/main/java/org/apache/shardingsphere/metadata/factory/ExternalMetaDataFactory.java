@@ -81,7 +81,8 @@ public final class ExternalMetaDataFactory {
             String databaseName = entry.getKey();
             if (!entry.getValue().getDataSources().isEmpty() || !protocolType.getSystemSchemas().contains(databaseName)) {
                 Map<String, DatabaseType> storageTypes = DatabaseTypeEngine.getStorageTypes(entry.getKey(), entry.getValue());
-                DatabaseTypeChecker.checkSupportedStorageTypes(DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, entry.getValue().getDataSources()), databaseName, storageTypes);
+                DatabaseTypeChecker.checkSupportedStorageTypes(DataSourceStateManager.getInstance()
+                        .getEnabledDataSourceMap(databaseName, entry.getValue().getDataSources()), databaseName, storageTypes);
                 result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType, storageTypes, entry.getValue(), props, instanceContext));
             }
         }
