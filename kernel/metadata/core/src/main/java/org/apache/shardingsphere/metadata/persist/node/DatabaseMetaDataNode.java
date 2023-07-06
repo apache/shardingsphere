@@ -36,6 +36,10 @@ public final class DatabaseMetaDataNode {
     
     private static final String DATA_SOURCE_NODE = "data_sources";
     
+    private static final String DATA_SOURCE_NODES_NODE = "nodes";
+    
+    private static final String DATA_SOURCE_UNITS_NODE = "units";
+    
     private static final String RULE_NODE = "rules";
     
     private static final String TABLES_NODE = "tables";
@@ -47,14 +51,25 @@ public final class DatabaseMetaDataNode {
     private static final String VERSIONS = "versions";
     
     /**
-     * Get meta data data source path.
+     * Get meta data data source nodes path.
      *
      * @param databaseName database name
      * @param version data source version
      * @return data source path
      */
-    public static String getMetaDataDataSourcePath(final String databaseName, final String version) {
-        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE);
+    public static String getMetaDataDataSourceNodesPath(final String databaseName, final String version) {
+        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE, DATA_SOURCE_NODES_NODE);
+    }
+    
+    /**
+     * Get meta data data source units path.
+     *
+     * @param databaseName database name
+     * @param version data source version
+     * @return data source path
+     */
+    public static String getMetaDataDataSourceUnitsPath(final String databaseName, final String version) {
+        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE, DATA_SOURCE_UNITS_NODE);
     }
     
     /**
