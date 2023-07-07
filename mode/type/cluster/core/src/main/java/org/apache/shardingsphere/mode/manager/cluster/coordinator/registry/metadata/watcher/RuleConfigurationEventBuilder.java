@@ -24,7 +24,8 @@ import org.apache.shardingsphere.infra.metadata.nodepath.item.UniqueRuleItemNode
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
+import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
+import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
 import java.util.Map.Entry;
@@ -56,16 +57,15 @@ public final class RuleConfigurationEventBuilder {
         if (!ruleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        RuleChangedEventCreator eventCreator = new RuleChangedEventCreator();
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
             Optional<String> itemName = entry.getValue().getNameByActiveVersion(event.getKey());
             if (itemName.isPresent()) {
-                return Optional.of(eventCreator.create(databaseName, event, ruleNodePath.getRoot().getRuleType(), entry.getKey(), itemName.get()));
+                return Optional.of(new NamedRuleItemChangedEventCreator().create(databaseName, itemName.get(), event, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
             if (entry.getValue().isActiveVersionPath(event.getKey())) {
-                return Optional.of(eventCreator.create(databaseName, event, ruleNodePath.getRoot().getRuleType(), entry.getKey()));
+                return Optional.of(new UniqueRuleItemChangedEventCreator().create(databaseName, event, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         return Optional.empty();
