@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.event.compatible.table;
+package org.apache.shardingsphere.mode.event.config;
 
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 /**
- * Drop compatible encrypt table event.
- * @deprecated compatible support will remove in next version.
+ * Alter database rule configuration changed event.
  */
-@Deprecated
-public final class DropCompatibleEncryptTableEvent extends DropNamedRuleItemEvent {
+@Getter
+@RequiredArgsConstructor
+public final class AlterDatabaseRuleConfigurationEvent {
     
-    public DropCompatibleEncryptTableEvent(final String databaseName, final String itemName) {
-        super(databaseName, itemName);
-    }
+    private final String databaseName;
+    
+    private final RuleConfiguration ruleConfig;
 }

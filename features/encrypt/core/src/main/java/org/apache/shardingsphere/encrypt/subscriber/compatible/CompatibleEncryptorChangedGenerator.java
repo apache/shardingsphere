@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.encrypt.subscriber.compatible;
 
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.event.compatible.encryptor.AlterCompatibleEncryptorEvent;
-import org.apache.shardingsphere.encrypt.event.compatible.encryptor.DropCompatibleEncryptorEvent;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.CompatibleEncryptRuleNodePathProvider;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -32,8 +31,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
@@ -72,11 +69,6 @@ public final class CompatibleEncryptorChangedGenerator implements RuleItemConfig
     
     @Override
     public String getType() {
-        return AlterCompatibleEncryptorEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropCompatibleEncryptorEvent.class.getName());
+        return CompatibleEncryptRuleNodePathProvider.RULE_TYPE + "." + CompatibleEncryptRuleNodePathProvider.ENCRYPTORS;
     }
 }

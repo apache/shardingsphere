@@ -27,13 +27,10 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.event.algorithm.AlterMaskAlgorithmEvent;
-import org.apache.shardingsphere.mask.event.algorithm.DropMaskAlgorithmEvent;
+import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
@@ -69,11 +66,6 @@ public final class MaskAlgorithmChangedGenerator implements RuleItemConfiguratio
     
     @Override
     public String getType() {
-        return AlterMaskAlgorithmEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropMaskAlgorithmEvent.class.getName());
+        return MaskRuleNodePathProvider.RULE_TYPE + "." + MaskRuleNodePathProvider.ALGORITHMS;
     }
 }

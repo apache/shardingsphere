@@ -25,11 +25,13 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class AlterUniqueRuleItemEvent implements AlterRuleItemEvent {
+public final class AlterUniqueRuleItemEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     
     private final String activeVersionKey;
     
     private final String activeVersion;
+    
+    private final String type;
 }

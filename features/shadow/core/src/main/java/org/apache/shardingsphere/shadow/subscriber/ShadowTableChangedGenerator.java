@@ -26,14 +26,10 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.event.table.AlterShadowTableEvent;
-import org.apache.shardingsphere.shadow.event.table.DropShadowTableEvent;
+import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Shadow table changed generator.
@@ -62,11 +58,6 @@ public final class ShadowTableChangedGenerator implements RuleItemConfigurationC
     
     @Override
     public String getType() {
-        return AlterShadowTableEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropShadowTableEvent.class.getName());
+        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.TABLES;
     }
 }

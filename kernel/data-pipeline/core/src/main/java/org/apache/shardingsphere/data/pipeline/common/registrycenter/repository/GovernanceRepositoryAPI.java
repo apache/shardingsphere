@@ -65,6 +65,15 @@ public interface GovernanceRepositoryAPI {
     void persistJobItemProgress(String jobId, int shardingItem, String progressValue);
     
     /**
+     * Update job item progress.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @param progressValue progress value
+     */
+    void updateJobItemProgress(String jobId, int shardingItem, String progressValue);
+    
+    /**
      * Get job item progress.
      *
      * @param jobId job id

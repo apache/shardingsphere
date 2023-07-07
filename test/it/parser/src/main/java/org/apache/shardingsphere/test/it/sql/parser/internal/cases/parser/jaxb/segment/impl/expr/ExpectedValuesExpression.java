@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.event.table.binding;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
 
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertValuesClause;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Drop sharding table reference event.
+ * Expected values expression.
  */
-public final class DropShardingTableReferenceEvent extends DropNamedRuleItemEvent {
+@Getter
+@Setter
+public final class ExpectedValuesExpression extends AbstractExpectedSQLSegment {
     
-    public DropShardingTableReferenceEvent(final String databaseName, final String itemName) {
-        super(databaseName, itemName);
-    }
+    @XmlElement(name = "values")
+    private ExpectedInsertValuesClause insertValuesClause;
 }

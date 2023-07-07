@@ -28,17 +28,15 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.event.algorithm.AlterShadowAlgorithmEvent;
-import org.apache.shardingsphere.shadow.event.algorithm.DropShadowAlgorithmEvent;
+import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Shadow algorithm changed generator.
  */
 public final class ShadowAlgorithmChangedGenerator implements RuleItemConfigurationChangedGenerator<ShadowRuleConfiguration, AlgorithmConfiguration> {
+    
+    public static final String TYPE = "Shadow.Algorithm";
     
     @Override
     public AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -62,11 +60,6 @@ public final class ShadowAlgorithmChangedGenerator implements RuleItemConfigurat
     
     @Override
     public String getType() {
-        return AlterShadowAlgorithmEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropShadowAlgorithmEvent.class.getName());
+        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.ALGORITHMS;
     }
 }

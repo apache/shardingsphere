@@ -28,12 +28,8 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.AlterKeyGeneratorEvent;
-import org.apache.shardingsphere.sharding.event.algorithm.keygenerator.DropKeyGeneratorEvent;
+import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Key generator changed generator.
@@ -62,11 +58,6 @@ public final class KeyGeneratorChangedGenerator implements RuleItemConfiguration
     
     @Override
     public String getType() {
-        return AlterKeyGeneratorEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropKeyGeneratorEvent.class.getName());
+        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.KEY_GENERATORS;
     }
 }

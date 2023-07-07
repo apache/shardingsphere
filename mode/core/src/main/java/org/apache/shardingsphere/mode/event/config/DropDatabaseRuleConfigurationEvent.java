@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.event.table.auto;
+package org.apache.shardingsphere.mode.event.config;
 
-import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 /**
- * Alter sharding auto table event.
+ * Drop database rule configuration changed event.
  */
-public final class AlterShardingAutoTableEvent extends AlterNamedRuleItemEvent {
+@Getter
+@RequiredArgsConstructor
+public final class DropDatabaseRuleConfigurationEvent {
     
-    public AlterShardingAutoTableEvent(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion) {
-        super(databaseName, itemName, activeVersionKey, activeVersion);
-    }
+    private final String databaseName;
+    
+    private final RuleConfiguration ruleConfig;
 }

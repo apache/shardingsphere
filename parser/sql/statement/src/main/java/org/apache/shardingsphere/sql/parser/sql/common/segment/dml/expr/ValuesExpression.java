@@ -15,16 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.event.cache;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropUniqueRuleItemEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Drop sharding cache event.
+ * Values expression.
  */
-public final class DropShardingCacheEvent extends DropUniqueRuleItemEvent {
+@RequiredArgsConstructor
+@Getter
+public final class ValuesExpression implements ExpressionSegment {
     
-    public DropShardingCacheEvent(final String databaseName) {
-        super(databaseName);
-    }
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final Collection<InsertValuesSegment> rowConstructorList = new LinkedList<>();
 }

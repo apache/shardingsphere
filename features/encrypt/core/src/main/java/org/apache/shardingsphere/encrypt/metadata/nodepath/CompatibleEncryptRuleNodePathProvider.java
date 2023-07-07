@@ -30,11 +30,13 @@ import java.util.Collections;
 @Deprecated
 public final class CompatibleEncryptRuleNodePathProvider implements RuleNodePathProvider {
     
+    public static final String RULE_TYPE = "compatible_encrypt";
+    
     public static final String TABLES = "tables";
     
     public static final String ENCRYPTORS = "encryptors";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("compatible_encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
     
     @Override
     public RuleNodePath getRuleNodePath() {
