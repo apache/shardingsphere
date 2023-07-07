@@ -31,7 +31,7 @@ public final class H2JdbcQueryPropertiesExtension implements JdbcQueryProperties
     private final Properties queryProps = new Properties();
     
     @Override
-    public Properties extendQueryProperties() {
+    public Properties extendQueryProperties(final Properties props) {
         return queryProps;
     }
     

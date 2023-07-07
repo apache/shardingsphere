@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -40,6 +41,6 @@ class OpenGaussJdbcQueryPropertiesExtensionTest {
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {
         assertThat(actual, instanceOf(OpenGaussJdbcQueryPropertiesExtension.class));
         assertThat(actual.getType(), equalTo("openGauss"));
-        assertThat(actual.extendQueryProperties().size(), equalTo(2));
+        assertThat(actual.extendQueryProperties(new Properties()).size(), equalTo(2));
     }
 }

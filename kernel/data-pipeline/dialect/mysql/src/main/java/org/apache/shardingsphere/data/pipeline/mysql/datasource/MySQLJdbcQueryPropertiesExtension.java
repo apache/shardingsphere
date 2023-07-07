@@ -64,7 +64,13 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
     }
     
     @Override
-    public Properties extendQueryProperties() {
+    public Properties extendQueryProperties(final Properties props) {
+        if (props.isEmpty()) {
+            return queryProps;
+        }
+        if (props.containsKey("netTimeoutForStreamingResults")) {
+            queryProps.setProperty("netTimeoutForStreamingResults", props.getProperty("netTimeoutForStreamingResults"));
+        }
         return queryProps;
     }
     

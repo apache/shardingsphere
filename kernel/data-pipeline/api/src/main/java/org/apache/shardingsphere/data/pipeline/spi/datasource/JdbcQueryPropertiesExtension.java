@@ -31,7 +31,8 @@ public interface JdbcQueryPropertiesExtension extends TypedSPI {
     /**
      * Extend query properties.
      *
+     * @param props props
      * @return JDBC query properties for extension. Could NOT be null
      */
-    Properties extendQueryProperties();
+    Properties extendQueryProperties(Properties props);
 }

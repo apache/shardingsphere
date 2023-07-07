@@ -23,7 +23,9 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
+import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -99,14 +101,12 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     
     private void appendJdbcQueryProperties(final String databaseType, final Map<String, Object> yamlConfig) {
         Optional<JdbcQueryPropertiesExtension> extension = PipelineTypedSPILoader.findDatabaseTypedService(JdbcQueryPropertiesExtension.class, databaseType);
-        if (!extension.isPresent()) {
+        if (!extension.isPresent() || extension.get().extendQueryProperties(new Properties()).isEmpty()) {
             return;
         }
-        Properties queryProps = extension.get().extendQueryProperties();
-        if (queryProps.isEmpty()) {
-            return;
-        }
-        String url = new JdbcUrlAppender().appendQueryProperties(jdbcConfig.getUrl(), queryProps);
+        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(jdbcConfig.getUrl());
+        Properties extendedQueryProperties = extension.get().extendQueryProperties(jdbcUrl.getQueryProperties());
+        String url = new JdbcUrlAppender().appendQueryProperties(jdbcConfig.getUrl(), extendedQueryProperties);
         jdbcConfig.setUrl(url);
         yamlConfig.put("url", url);
     }

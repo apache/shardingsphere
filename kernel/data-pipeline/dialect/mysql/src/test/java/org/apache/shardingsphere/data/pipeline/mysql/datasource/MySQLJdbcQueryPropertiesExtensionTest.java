@@ -36,7 +36,10 @@ class MySQLJdbcQueryPropertiesExtensionTest {
         Optional<JdbcQueryPropertiesExtension> extension = TypedSPILoader.findService(JdbcQueryPropertiesExtension.class, "MySQL");
         assertTrue(extension.isPresent());
         assertExtension(extension.get());
-        assertQueryProperties(extension.get().extendQueryProperties());
+        Properties props = new Properties();
+        assertQueryProperties(extension.get().extendQueryProperties(props), "600");
+        props.setProperty("netTimeoutForStreamingResults", "3600");
+        assertQueryProperties(extension.get().extendQueryProperties(props), "3600");
     }
     
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {
@@ -44,7 +47,7 @@ class MySQLJdbcQueryPropertiesExtensionTest {
         assertThat(actual.getType(), equalTo("MySQL"));
     }
     
-    private void assertQueryProperties(final Properties actual) {
+    private void assertQueryProperties(final Properties actual, final String expectedNetTimeoutForStreamingResults) {
         assertThat(actual.size(), equalTo(8));
         assertThat(actual.getProperty("useSSL"), equalTo(Boolean.FALSE.toString()));
         assertThat(actual.getProperty("useServerPrepStmts"), equalTo(Boolean.FALSE.toString()));
@@ -53,6 +56,6 @@ class MySQLJdbcQueryPropertiesExtensionTest {
         assertThat(actual.getProperty("zeroDateTimeBehavior"), equalTo("convertToNull"));
         assertThat(actual.getProperty("noDatetimeStringSync"), equalTo(Boolean.TRUE.toString()));
         assertThat(actual.getProperty("jdbcCompliantTruncation"), equalTo(Boolean.FALSE.toString()));
-        assertThat(actual.getProperty("netTimeoutForStreamingResults"), equalTo("600"));
+        assertThat(actual.getProperty("netTimeoutForStreamingResults"), equalTo(expectedNetTimeoutForStreamingResults));
     }
 }
