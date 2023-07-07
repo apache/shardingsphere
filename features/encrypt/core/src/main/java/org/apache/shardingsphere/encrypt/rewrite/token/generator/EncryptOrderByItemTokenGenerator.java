@@ -118,7 +118,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
             return false;
         }
         SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
-        if ((!statementContext.getOrderByContext().getItems().isEmpty() && !statementContext.getOrderByContext().isGenerated()) || !statementContext.getGroupByContext().getItems().isEmpty()) {
+        if (!statementContext.getOrderByContext().getItems().isEmpty() && !statementContext.getOrderByContext().isGenerated() || !statementContext.getGroupByContext().getItems().isEmpty()) {
             return true;
         }
         for (SelectStatementContext each : statementContext.getSubqueryContexts().values()) {
