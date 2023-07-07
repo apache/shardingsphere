@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -361,17 +362,44 @@ public final class ContextManager implements AutoCloseable {
             ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
             Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
             rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
-            rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(),
-                    ruleConfig, instanceContext));
-            database.getRuleMetaData().getRules().clear();
-            database.getRuleMetaData().getRules().addAll(rules);
-            MetaDataContexts reloadMetaDataContexts = createMetaDataContextsByAlterRule(databaseName, false, null, database.getRuleMetaData().getConfigurations());
-            alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
-            metaDataContexts.set(reloadMetaDataContexts);
-            metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
+            rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(), ruleConfig, instanceContext));
+            refreshMetadata(databaseName, database, rules);
         } catch (final SQLException ex) {
             log.error("Alter database: {} rule configurations failed", databaseName, ex);
         }
+    }
+    
+    /**
+     * Drop rule configuration.
+     *
+     * @param databaseName database name
+     * @param ruleConfig rule configurations
+     */
+    public synchronized void dropRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) {
+        try {
+            ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+            Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
+            rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
+            if (isNotEmptyConfig(ruleConfig)) {
+                rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(), ruleConfig, instanceContext));
+            }
+            refreshMetadata(databaseName, database, rules);
+        } catch (final SQLException ex) {
+            log.error("Drop database: {} rule configurations failed", databaseName, ex);
+        }
+    }
+    
+    private void refreshMetadata(final String databaseName, final ShardingSphereDatabase database, final Collection<ShardingSphereRule> rules) throws SQLException {
+        database.getRuleMetaData().getRules().clear();
+        database.getRuleMetaData().getRules().addAll(rules);
+        MetaDataContexts reloadMetaDataContexts = createMetaDataContextsByAlterRule(databaseName, false, null, database.getRuleMetaData().getConfigurations());
+        alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
+        metaDataContexts.set(reloadMetaDataContexts);
+        metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
+    }
+    
+    private static boolean isNotEmptyConfig(final RuleConfiguration ruleConfig) {
+        return !((DatabaseRuleConfiguration) ruleConfig).isEmpty();
     }
     
     /**
@@ -605,23 +633,6 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(),
                 metaDataContexts.get().getMetaData().getGlobalRuleMetaData(), metaDataContexts.get().getMetaData().getProps());
-        metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
-    }
-    
-    /**
-     * Drop global rule configuration.
-     *
-     * @param ruleName rule name
-     */
-    @SuppressWarnings("rawtypes")
-    public synchronized void dropGlobalRuleConfiguration(final String ruleName) {
-        Collection<ResourceHeldRule> staleResourceHeldRules = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class);
-        staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
-        Collection<ShardingSphereRule> rules = removeSingleGlobalRule(ruleName);
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().clear();
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
-        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(),
-                new ShardingSphereRuleMetaData(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules()), metaDataContexts.get().getMetaData().getProps());
         metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
     }
     

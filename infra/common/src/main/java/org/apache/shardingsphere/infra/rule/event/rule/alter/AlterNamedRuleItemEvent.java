@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class AlterNamedRuleItemEvent implements AlterRuleItemEvent {
+public final class AlterNamedRuleItemEvent implements AlterRuleItemEvent {
     
     private final String databaseName;
     
@@ -34,4 +34,6 @@ public class AlterNamedRuleItemEvent implements AlterRuleItemEvent {
     private final String activeVersionKey;
     
     private final String activeVersion;
+    
+    private final String type;
 }

@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.rule;
+package org.apache.shardingsphere.mode.event.config;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 /**
- * Rule item changed event.
+ * Alter database rule configuration changed event.
  */
-public interface RuleItemChangedEvent extends GovernanceEvent {
+@Getter
+@RequiredArgsConstructor
+public final class AlterDatabaseRuleConfigurationEvent {
     
-    /**
-     * Get rule item type.
-     * 
-     * @return rule item type
-     */
-    String getType();
+    private final String databaseName;
+    
+    private final RuleConfiguration ruleConfig;
 }

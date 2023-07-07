@@ -23,14 +23,10 @@ import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.event.config.AlterSingleTableEvent;
-import org.apache.shardingsphere.single.event.config.DropSingleTableEvent;
+import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Single table changed generator.
@@ -62,11 +58,6 @@ public final class SingleTableChangedGenerator implements RuleItemConfigurationC
     
     @Override
     public String getType() {
-        return AlterSingleTableEvent.class.getName();
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singleton(DropSingleTableEvent.class.getName());
+        return SingleRuleNodePathProvider.RULE_TYPE + "." + SingleRuleNodePathProvider.TABLES;
     }
 }

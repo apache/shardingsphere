@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.event;
 
-import org.apache.shardingsphere.encrypt.event.encryptor.creator.EncryptorEventCreator;
-import org.apache.shardingsphere.encrypt.event.table.creator.EncryptTableEventCreator;
 import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -32,22 +30,11 @@ public final class EncryptRuleChangedEventCreator implements RuleChangedEventCre
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        return getNamedRuleItemChangedEventCreator(itemType).create(databaseName, itemName, event);
-    }
-    
-    private NamedRuleItemChangedEventCreator getNamedRuleItemChangedEventCreator(final String itemType) {
-        switch (itemType) {
-            case EncryptRuleNodePathProvider.TABLES:
-                return new EncryptTableEventCreator();
-            case EncryptRuleNodePathProvider.ENCRYPTORS:
-                return new EncryptorEventCreator();
-            default:
-                throw new UnsupportedOperationException(itemType);
-        }
+        return new NamedRuleItemChangedEventCreator().create(databaseName, itemName, event, EncryptRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override
     public String getType() {
-        return "encrypt";
+        return EncryptRuleNodePathProvider.RULE_TYPE;
     }
 }

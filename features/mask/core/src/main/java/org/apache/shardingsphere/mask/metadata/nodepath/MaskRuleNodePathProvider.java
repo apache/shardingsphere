@@ -28,11 +28,13 @@ import java.util.Collections;
  */
 public final class MaskRuleNodePathProvider implements RuleNodePathProvider {
     
+    public static final String RULE_TYPE = "mask";
+    
     public static final String TABLES = "tables";
     
     public static final String ALGORITHMS = "algorithms";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("mask", Arrays.asList(TABLES, ALGORITHMS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(TABLES, ALGORITHMS), Collections.emptyList());
     
     @Override
     public RuleNodePath getRuleNodePath() {

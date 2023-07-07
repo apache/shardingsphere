@@ -45,7 +45,7 @@ import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingAudi
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStrategyConfigurationSwapper;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -75,7 +75,7 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final ShardingRuleConfiguration data) {
-        Collection<YamlDataNode> result = new LinkedHashSet<>();
+        Collection<YamlDataNode> result = new LinkedList<>();
         swapAlgorithms(data, result);
         swapStrategies(data, result);
         if (null != data.getDefaultShardingColumn()) {

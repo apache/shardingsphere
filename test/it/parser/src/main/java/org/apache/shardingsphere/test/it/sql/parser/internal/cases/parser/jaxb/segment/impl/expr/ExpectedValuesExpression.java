@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.rule;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertValuesClause;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Rule item changed event.
+ * Expected values expression.
  */
-public interface RuleItemChangedEvent extends GovernanceEvent {
+@Getter
+@Setter
+public final class ExpectedValuesExpression extends AbstractExpectedSQLSegment {
     
-    /**
-     * Get rule item type.
-     * 
-     * @return rule item type
-     */
-    String getType();
+    @XmlElement(name = "values")
+    private ExpectedInsertValuesClause insertValuesClause;
 }

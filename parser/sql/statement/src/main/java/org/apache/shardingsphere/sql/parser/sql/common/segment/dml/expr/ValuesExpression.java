@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.rule;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Rule item changed event.
+ * Values expression.
  */
-public interface RuleItemChangedEvent extends GovernanceEvent {
+@RequiredArgsConstructor
+@Getter
+public final class ValuesExpression implements ExpressionSegment {
     
-    /**
-     * Get rule item type.
-     * 
-     * @return rule item type
-     */
-    String getType();
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final Collection<InsertValuesSegment> rowConstructorList = new LinkedList<>();
 }
