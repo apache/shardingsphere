@@ -18,28 +18,28 @@
 package org.apache.shardingsphere.mode.spi;
 
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
+import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 
 /**
  * Rule changed event creator.
  */
-@SingletonSPI
-public interface RuleChangedEventCreator extends TypedSPI {
+public final class RuleChangedEventCreator {
     
     /**
      * Create rule changed event.
      * 
      * @param databaseName database name
      * @param event data changed event
+     * @param ruleType rule type
      * @param itemType item type
      * @param itemName item name
      * @return rule configuration changed event
      * @throws UnsupportedOperationException unsupported item type
      */
-    default GovernanceEvent create(String databaseName, DataChangedEvent event, String itemType, String itemName) {
-        throw new UnsupportedOperationException(itemType);
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String ruleType, final String itemType, final String itemName) {
+        return new NamedRuleItemChangedEventCreator().create(databaseName, itemName, event, ruleType + "." + itemType);
     }
     
     /**
@@ -47,11 +47,12 @@ public interface RuleChangedEventCreator extends TypedSPI {
      *
      * @param databaseName database name
      * @param event data changed event
+     * @param ruleType rule type
      * @param itemType item type
      * @return rule configuration changed event
      * @throws UnsupportedOperationException unsupported item type
      */
-    default GovernanceEvent create(String databaseName, DataChangedEvent event, String itemType) {
-        throw new UnsupportedOperationException(itemType);
+    public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String ruleType, final String itemType) {
+        return new UniqueRuleItemChangedEventCreator().create(databaseName, event, ruleType + "." + itemType);
     }
 }

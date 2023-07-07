@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.nodepath.item.NamedRuleItemNodeP
 import org.apache.shardingsphere.infra.metadata.nodepath.item.UniqueRuleItemNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
@@ -57,16 +56,16 @@ public final class RuleConfigurationEventBuilder {
         if (!ruleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        RuleChangedEventCreator eventCreator = TypedSPILoader.getService(RuleChangedEventCreator.class, ruleNodePath.getRoot().getRuleType());
+        RuleChangedEventCreator eventCreator = new RuleChangedEventCreator();
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
             Optional<String> itemName = entry.getValue().getNameByActiveVersion(event.getKey());
             if (itemName.isPresent()) {
-                return Optional.of(eventCreator.create(databaseName, event, entry.getKey(), itemName.get()));
+                return Optional.of(eventCreator.create(databaseName, event, ruleNodePath.getRoot().getRuleType(), entry.getKey(), itemName.get()));
             }
         }
         for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
             if (entry.getValue().isActiveVersionPath(event.getKey())) {
-                return Optional.of(eventCreator.create(databaseName, event, entry.getKey()));
+                return Optional.of(eventCreator.create(databaseName, event, ruleNodePath.getRoot().getRuleType(), entry.getKey()));
             }
         }
         return Optional.empty();
