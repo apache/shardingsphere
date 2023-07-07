@@ -57,8 +57,8 @@ public final class DatabaseMetaDataNode {
      * @param version data source version
      * @return data source path
      */
-    public static String getMetaDataDataSourceNodesPath(final String databaseName, final String version) {
-        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE, DATA_SOURCE_NODES_NODE);
+    public static String getMetaDataDataSourceUnitsPath(final String databaseName, final String version) {
+        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE, DATA_SOURCE_UNITS_NODE);
     }
     
     /**
@@ -68,8 +68,8 @@ public final class DatabaseMetaDataNode {
      * @param version data source version
      * @return data source path
      */
-    public static String getMetaDataDataSourceUnitsPath(final String databaseName, final String version) {
-        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE, DATA_SOURCE_UNITS_NODE);
+    public static String getMetaDataDataSourceNodesPath(final String databaseName, final String version) {
+        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE, DATA_SOURCE_NODES_NODE);
     }
     
     /**

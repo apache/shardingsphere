@@ -35,6 +35,10 @@ public final class NewDatabaseMetaDataNode {
     
     private static final String DATA_SOURCES_NODE = "data_sources";
     
+    private static final String DATA_SOURCE_NODES_NODE = "nodes";
+    
+    private static final String DATA_SOURCE_UNITS_NODE = "units";
+    
     private static final String RULE_NODE = "rules";
     
     private static final String SCHEMAS_NODE = "schemas";
@@ -54,58 +58,58 @@ public final class NewDatabaseMetaDataNode {
     private static final String ACTIVE_VERSION_SUFFIX = "/([\\w\\-]+)/active_version";
     
     /**
-     * Get data sources node.
+     * Get data source units node.
      *
      * @param databaseName database name
      * @return data sources node
      */
-    public static String getDataSourcesNode(final String databaseName) {
-        return String.join("/", getMetaDataNodeNode(), databaseName, DATA_SOURCES_NODE);
+    public static String getDataSourceUnitsNode(final String databaseName) {
+        return String.join("/", getMetaDataNodeNode(), databaseName, DATA_SOURCES_NODE, DATA_SOURCE_UNITS_NODE);
     }
     
     /**
-     * Get data source node.
+     * Get data source unit node.
      *
      * @param databaseName database name
      * @param dataSourceName data source name
      * @return data source node
      */
-    public static String getDataSourceNode(final String databaseName, final String dataSourceName) {
-        return String.join("/", getDataSourcesNode(databaseName), dataSourceName);
+    public static String getDataSourceUnitNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourceUnitsNode(databaseName), dataSourceName);
     }
     
     /**
-     * Get data source node with version.
+     * Get data source unit node with version.
      *
      * @param databaseName database name
      * @param dataSourceName data source name
      * @param version version
      * @return data source node with version
      */
-    public static String getDataSourceNodeWithVersion(final String databaseName, final String dataSourceName, final String version) {
-        return String.join("/", getDataSourceVersionsNode(databaseName, dataSourceName), version);
+    public static String getDataSourceUnitNodeWithVersion(final String databaseName, final String dataSourceName, final String version) {
+        return String.join("/", getDataSourceUnitVersionsNode(databaseName, dataSourceName), version);
     }
     
     /**
-     * Get data source active version node.
+     * Get data source unit active version node.
      *
      * @param databaseName database name
      * @param dataSourceName data source name
      * @return data source active version node
      */
-    public static String getDataSourceActiveVersionNode(final String databaseName, final String dataSourceName) {
-        return String.join("/", getDataSourcesNode(databaseName), dataSourceName, ACTIVE_VERSION);
+    public static String getDataSourceUnitActiveVersionNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourceUnitsNode(databaseName), dataSourceName, ACTIVE_VERSION);
     }
     
     /**
-     * Get data source versions node.
+     * Get data source unit versions node.
      *
      * @param databaseName database name
      * @param dataSourceName data source name
      * @return data source versions node
      */
-    public static String getDataSourceVersionsNode(final String databaseName, final String dataSourceName) {
-        return String.join("/", getDataSourcesNode(databaseName), dataSourceName, VERSIONS);
+    public static String getDataSourceUnitVersionsNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourceUnitsNode(databaseName), dataSourceName, VERSIONS);
     }
     
     /**

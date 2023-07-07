@@ -94,4 +94,15 @@ public interface DatabaseBasedPersistService<T> {
      */
     default void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
     }
+    
+    /**
+     * Persist storage units.
+     *
+     * @param databaseName database name
+     * @param configs configurations
+     * @return meta data versions
+     */
+    default Collection<MetaDataVersion> persistStorageUnits(final String databaseName, T configs) {
+        return Collections.emptyList();
+    }
 }

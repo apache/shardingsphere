@@ -105,22 +105,27 @@ class NewDatabaseMetaDataNodeTest {
     
     @Test
     void assertGetMetaDataDataSourcesNode() {
-        assertThat(NewDatabaseMetaDataNode.getDataSourcesNode("foo_db"), is("/metadata/foo_db/data_sources"));
+        assertThat(NewDatabaseMetaDataNode.getDataSourceUnitsNode("foo_db"), is("/metadata/foo_db/data_sources/units"));
     }
     
     @Test
     void assertGetMetaDataDataSourceNode() {
-        assertThat(NewDatabaseMetaDataNode.getDataSourceNodeWithVersion("foo_db", "foo_ds", "0"), is("/metadata/foo_db/data_sources/foo_ds/versions/0"));
+        assertThat(NewDatabaseMetaDataNode.getDataSourceUnitNode("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds"));
     }
     
     @Test
-    void assertGetDataSourceVersionsNode() {
-        assertThat(NewDatabaseMetaDataNode.getDataSourceVersionsNode("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/foo_ds/versions"));
+    void assertGetDataSourceUnitNodeWithVersion() {
+        assertThat(NewDatabaseMetaDataNode.getDataSourceUnitNodeWithVersion("foo_db", "foo_ds", "0"), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
     }
     
     @Test
-    void assertGetDataSourceActiveVersionNode() {
-        assertThat(NewDatabaseMetaDataNode.getDataSourceActiveVersionNode("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/foo_ds/active_version"));
+    void assertGetDataSourceUnitVersionsNode() {
+        assertThat(NewDatabaseMetaDataNode.getDataSourceUnitVersionsNode("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
+    }
+    
+    @Test
+    void assertGetDataSourceUnitActiveVersionNode() {
+        assertThat(NewDatabaseMetaDataNode.getDataSourceUnitActiveVersionNode("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
     }
     
     @Test
