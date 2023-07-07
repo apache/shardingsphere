@@ -124,7 +124,7 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
         findUnusedAlgorithms(currentRuleConfig).forEach(each -> currentRuleConfig.getShadowAlgorithms().remove(each));
     }
     
-    private static Collection<String> findUnusedAlgorithms(ShadowRuleConfiguration currentRuleConfig) {
+    private static Collection<String> findUnusedAlgorithms(final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().entrySet().stream().flatMap(entry -> entry.getValue().getShadowAlgorithmNames().stream()).collect(Collectors.toSet());
         if (null != currentRuleConfig.getDefaultShadowAlgorithmName()) {
             inUsedAlgorithms.add(currentRuleConfig.getDefaultShadowAlgorithmName());
