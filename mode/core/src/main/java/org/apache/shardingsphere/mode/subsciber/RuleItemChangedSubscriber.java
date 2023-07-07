@@ -48,12 +48,12 @@ public final class RuleItemChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
             return;
         }
-        RuleItemConfigurationChangedProcessor generator = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
+        RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
         String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        RuleConfiguration currentRuleConfig = generator.findRuleConfiguration(database);
+        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
         synchronized (this) {
-            generator.changeRuleItemConfiguration(event, currentRuleConfig, generator.swapRuleItemConfiguration(event, yamlContent));
+            processor.changeRuleItemConfiguration(event, currentRuleConfig, processor.swapRuleItemConfiguration(event, yamlContent));
             contextManager.getInstanceContext().getEventBusContext().post(new AlterDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
         }
     }
@@ -69,11 +69,11 @@ public final class RuleItemChangedSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
-        RuleItemConfigurationChangedProcessor generator = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
+        RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        RuleConfiguration currentRuleConfig = generator.findRuleConfiguration(database);
+        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
         synchronized (this) {
-            generator.dropRuleItemConfiguration(event, currentRuleConfig);
+            processor.dropRuleItemConfiguration(event, currentRuleConfig);
             contextManager.getInstanceContext().getEventBusContext().post(new DropDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
         }
     }
