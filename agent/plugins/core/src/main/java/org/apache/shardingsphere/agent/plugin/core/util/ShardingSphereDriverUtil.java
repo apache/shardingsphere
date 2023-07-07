@@ -15,28 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.planner.cache;
+package org.apache.shardingsphere.agent.plugin.core.util;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
+import org.apache.shardingsphere.driver.ShardingSphereDriver;
+
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.util.Enumeration;
+import java.util.Optional;
 
 /**
- * Execution plan cache builder.
+ * ShardingSphere driver util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutionPlanCacheBuilder {
+public final class ShardingSphereDriverUtil {
     
     /**
-     * Build execution plan cache.
+     * Get sharding sphere driver.
      *
-     * @param executionPlanCache execution plan cache option
-     * @return built execution plan cache
+     * @return ShardingSphereDriver
      */
-    public static LoadingCache<ExecutionPlanCacheKey, SQLFederationExecutionPlan> build(final CacheOption executionPlanCache) {
-        return Caffeine.newBuilder().softValues().initialCapacity(executionPlanCache.getInitialCapacity()).maximumSize(executionPlanCache.getMaximumSize()).build(new ExecutionPlanCacheLoader());
+    public static Optional<ShardingSphereDriver> getShardingSphereDriver() {
+        Enumeration<Driver> driverEnumeration = DriverManager.getDrivers();
+        while (driverEnumeration.hasMoreElements()) {
+            Driver driver = driverEnumeration.nextElement();
+            if (driver instanceof ShardingSphereDriver) {
+                return Optional.of((ShardingSphereDriver) driver);
+            }
+        }
+        return Optional.empty();
     }
 }

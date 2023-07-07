@@ -263,11 +263,6 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     @Override
-    protected String getTargetDatabaseType(final PipelineJobConfiguration pipelineJobConfig) {
-        return ((MigrationJobConfiguration) pipelineJobConfig).getTargetDatabaseType();
-    }
-    
-    @Override
     public MigrationTaskConfiguration buildTaskConfiguration(final PipelineJobConfiguration pipelineJobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
         MigrationJobConfiguration jobConfig = (MigrationJobConfiguration) pipelineJobConfig;
         JobDataNodeLine dataNodeLine = jobConfig.getJobShardingDataNodes().get(jobShardingItem);

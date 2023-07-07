@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.broadcast.subscriber;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -32,8 +33,6 @@ import java.util.LinkedList;
  * Broadcast table changed generator.
  */
 public final class BroadcastTableChangedGenerator implements RuleItemConfigurationChangedGenerator<BroadcastRuleConfiguration, BroadcastRuleConfiguration> {
-    
-    public static final String TYPE = "Broadcast.Table";
     
     @Override
     public BroadcastRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -58,6 +57,6 @@ public final class BroadcastTableChangedGenerator implements RuleItemConfigurati
     
     @Override
     public String getType() {
-        return TYPE;
+        return BroadcastRuleNodePathProvider.RULE_TYPE + "." + BroadcastRuleNodePathProvider.TABLES;
     }
 }

@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema;
-
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.agent.plugin.core.enums;
 
 /**
- * System table which maintains tables in openGauss system catalog schema.
+ * SQL statement type.
  */
-@EqualsAndHashCode
-@RequiredArgsConstructor
-public final class OpenGaussRoles {
-    
-    // CHECKSTYLE:OFF
-    public final String rolname;
-    // CHECKSTYLE:ON
+public enum SQLStatementType {
+    DML,
+    SELECT,
+    INSERT,
+    UPDATE,
+    DELETE,
+    DDL,
+    DCL,
+    DAL,
+    TCL,
+    RQL,
+    RDL,
+    RAL,
+    RUL,
+    OTHER
 }

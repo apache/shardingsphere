@@ -22,14 +22,13 @@ import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 /**
  * Default sharding column changed generator.
  */
 public final class DefaultShardingColumnChangedGenerator implements RuleItemConfigurationChangedGenerator<ShardingRuleConfiguration, String> {
-    
-    public static final String TYPE = "Sharding.DefaultShardingColumn";
     
     @Override
     public String swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -53,6 +52,6 @@ public final class DefaultShardingColumnChangedGenerator implements RuleItemConf
     
     @Override
     public String getType() {
-        return TYPE;
+        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN;
     }
 }

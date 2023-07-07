@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 
@@ -37,8 +38,6 @@ import java.util.LinkedList;
  * Mask algorithm changed generator.
  */
 public final class MaskAlgorithmChangedGenerator implements RuleItemConfigurationChangedGenerator<MaskRuleConfiguration, AlgorithmConfiguration> {
-    
-    public static final String TYPE = "Mask.Algorithm";
     
     @Override
     public AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -67,6 +66,6 @@ public final class MaskAlgorithmChangedGenerator implements RuleItemConfiguratio
     
     @Override
     public String getType() {
-        return TYPE;
+        return MaskRuleNodePathProvider.RULE_TYPE + "." + MaskRuleNodePathProvider.ALGORITHMS;
     }
 }

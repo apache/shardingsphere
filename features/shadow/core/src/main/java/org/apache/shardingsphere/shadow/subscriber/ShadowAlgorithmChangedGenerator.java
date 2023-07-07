@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
@@ -59,6 +60,6 @@ public final class ShadowAlgorithmChangedGenerator implements RuleItemConfigurat
     
     @Override
     public String getType() {
-        return TYPE;
+        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.ALGORITHMS;
     }
 }

@@ -27,6 +27,8 @@ import java.util.Arrays;
  */
 public final class ShardingRuleNodePathProvider implements RuleNodePathProvider {
     
+    public static final String RULE_TYPE = "sharding";
+    
     public static final String TABLES = "tables";
     
     public static final String AUTO_TABLES = "auto_tables";
@@ -53,7 +55,7 @@ public final class ShardingRuleNodePathProvider implements RuleNodePathProvider 
     
     private static final String DEFAULT_STRATEGIES_PREFIX = "default_strategies.";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("sharding",
+    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE,
             Arrays.asList(TABLES, AUTO_TABLES, BINDING_TABLES, ALGORITHMS, KEY_GENERATORS, AUDITORS),
             Arrays.asList(DEFAULT_STRATEGIES_PREFIX + DEFAULT_DATABASE_STRATEGY, DEFAULT_STRATEGIES_PREFIX + DEFAULT_TABLE_STRATEGY,
                     DEFAULT_STRATEGIES_PREFIX + DEFAULT_KEY_GENERATE_STRATEGY, DEFAULT_STRATEGIES_PREFIX + DEFAULT_AUDIT_STRATEGY, DEFAULT_STRATEGIES_PREFIX + DEFAULT_SHARDING_COLUMN,
