@@ -77,10 +77,12 @@ public final class DropDefaultShardingStrategyStatementUpdater implements RuleDe
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
             result.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
+            currentRuleConfig.setDefaultTableShardingStrategy(null);
         } else {
             result.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
+            currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
         }
-        // TODO find unused algorithm
+        UnusedAlgorithmFinder.find(currentRuleConfig).forEach(each -> result.getShardingAlgorithms().put(each, currentRuleConfig.getShardingAlgorithms().get(each)));
         return result;
     }
     
