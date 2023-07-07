@@ -69,10 +69,10 @@ class InsertValueTest {
         String expectedToString = "(?, $1, 'literals', complexExpressionSegment, $2::varchar::jsonb)";
         assertThat(actualToString, is(expectedToString));
     }
-    
+
     @Test
-    void assertSysdate() {
-        List<ExpressionSegment> expressionSegments = new ArrayList<>(4);
+    void assertSysdateToString() {
+        List<ExpressionSegment> expressionSegments = new ArrayList<>(1);
         expressionSegments.add(new ColumnSegment(0, 6, new IdentifierValue("SYSDATE")));
         InsertValue insertValue = new InsertValue(expressionSegments);
         String actualToString = insertValue.toString();
