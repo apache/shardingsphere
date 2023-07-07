@@ -85,6 +85,6 @@ public final class OptimizerPlannerContextFactory {
             validators.put(entry.getKey(), validator);
             converters.put(entry.getKey(), converter);
         }
-        return new OptimizerPlannerContext(SQLFederationPlannerUtils.createHepPlanner(), validators, converters);
+        return new OptimizerPlannerContext(validators, converters);
     }
 }

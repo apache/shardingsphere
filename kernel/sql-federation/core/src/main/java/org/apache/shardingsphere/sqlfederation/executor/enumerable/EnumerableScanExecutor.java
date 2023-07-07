@@ -22,11 +22,13 @@ import lombok.SneakyThrows;
 import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
@@ -46,10 +48,13 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -67,10 +72,14 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -79,6 +88,16 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public final class EnumerableScanExecutor {
+    
+    private static final Collection<String> SYSTEM_CATALOG_TABLES = new HashSet<>(3, 1F);
+    
+    private static final String DAT_COMPATIBILITY = "PG";
+    
+    private static final String PG_DATABASE = "pg_database";
+    
+    private static final String PG_TABLES = "pg_tables";
+    
+    private static final String PG_ROLES = "pg_roles";
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
@@ -96,6 +115,12 @@ public final class EnumerableScanExecutor {
     
     private final ProcessEngine processEngine = new ProcessEngine();
     
+    static {
+        SYSTEM_CATALOG_TABLES.add(PG_DATABASE);
+        SYSTEM_CATALOG_TABLES.add(PG_TABLES);
+        SYSTEM_CATALOG_TABLES.add(PG_ROLES);
+    }
+    
     /**
      * Execute.
      *
@@ -108,7 +133,7 @@ public final class EnumerableScanExecutor {
         String schemaName = executorContext.getSchemaName().toLowerCase();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
         if (databaseType.getSystemSchemas().contains(schemaName)) {
-            return executeByShardingSphereData(databaseName, schemaName, table);
+            return executeByShardingSphereData(databaseName, schemaName, table, databaseType);
         }
         SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
         QueryContext queryContext = createQueryContext(federationContext.getMetaData(), scanContext, databaseType, federationContext.getQueryContext().isUseCache());
@@ -151,10 +176,57 @@ public final class EnumerableScanExecutor {
         }
     }
     
-    private Enumerable<Object> executeByShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table) {
+    private Enumerable<Object> executeByShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table, final DatabaseType databaseType) {
+        // TODO move this logic to ShardingSphere statistics
+        if (databaseType instanceof OpenGaussDatabaseType && SYSTEM_CATALOG_TABLES.contains(table.getName().toLowerCase())) {
+            return createMemoryEnumerator(createSystemCatalogTableData(table));
+        }
         Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
                 .map(ShardingSphereSchemaData::getTableData).map(shardingSphereData -> shardingSphereData.get(table.getName()));
         return tableData.map(this::createMemoryEnumerator).orElseGet(this::createEmptyEnumerable);
+    }
+    
+    private ShardingSphereTableData createSystemCatalogTableData(final ShardingSphereTable table) {
+        ShardingSphereTableData result = new ShardingSphereTableData(table.getName());
+        ShardingSphereMetaData metaData = executorContext.getFederationContext().getMetaData();
+        if (PG_DATABASE.equalsIgnoreCase(table.getName())) {
+            appendOpenGaussDatabaseData(result, metaData.getDatabases().values());
+        } else if (PG_TABLES.equalsIgnoreCase(table.getName())) {
+            for (ShardingSphereDatabase each : metaData.getDatabases().values()) {
+                appendOpenGaussTableData(result, each.getSchemas());
+            }
+        } else if (PG_ROLES.equalsIgnoreCase(table.getName())) {
+            appendOpenGaussRoleData(result, metaData);
+        }
+        return result;
+    }
+    
+    private void appendOpenGaussDatabaseData(final ShardingSphereTableData tableData, final Collection<ShardingSphereDatabase> databases) {
+        for (ShardingSphereDatabase each : databases) {
+            Object[] rows = new Object[15];
+            rows[0] = each.getName();
+            rows[11] = DAT_COMPATIBILITY;
+            tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
+        }
+    }
+    
+    private void appendOpenGaussTableData(final ShardingSphereTableData tableData, final Map<String, ShardingSphereSchema> schemas) {
+        for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
+            for (String each : entry.getValue().getAllTableNames()) {
+                Object[] rows = new Object[10];
+                rows[0] = entry.getKey();
+                rows[1] = each;
+                tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
+            }
+        }
+    }
+    
+    private void appendOpenGaussRoleData(final ShardingSphereTableData tableData, final ShardingSphereMetaData metaData) {
+        for (ShardingSphereUser each : metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers()) {
+            Object[] rows = new Object[27];
+            rows[0] = each.getGrantee().getUsername();
+            tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
+        }
     }
     
     private Enumerable<Object> createMemoryEnumerator(final ShardingSphereTableData tableData) {
