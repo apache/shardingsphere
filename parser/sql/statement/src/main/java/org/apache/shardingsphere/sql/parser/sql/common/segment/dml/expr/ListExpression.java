@@ -34,4 +34,13 @@ public final class ListExpression implements ExpressionSegment {
     private final int stopIndex;
     
     private final List<ExpressionSegment> items = new LinkedList<>();
+    
+    @Override
+    public String getText() {
+        StringBuilder result = new StringBuilder();
+        for (ExpressionSegment each : items) {
+            result.append(each.getText());
+        }
+        return result.toString();
+    }
 }

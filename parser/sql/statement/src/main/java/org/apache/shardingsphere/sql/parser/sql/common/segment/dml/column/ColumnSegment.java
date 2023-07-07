@@ -66,4 +66,9 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);
     }
+    
+    @Override
+    public String getText() {
+        return getExpression();
+    }
 }

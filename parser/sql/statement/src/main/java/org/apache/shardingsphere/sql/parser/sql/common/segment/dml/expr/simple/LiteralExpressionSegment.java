@@ -32,4 +32,9 @@ public class LiteralExpressionSegment implements SimpleExpressionSegment {
     private final int stopIndex;
     
     private final Object literals;
+    
+    @Override
+    public String getText() {
+        return literals.toString();
+    }
 }
