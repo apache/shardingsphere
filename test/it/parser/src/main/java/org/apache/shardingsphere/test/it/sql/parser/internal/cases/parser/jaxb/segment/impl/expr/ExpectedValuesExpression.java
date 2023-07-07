@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertValuesClause;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * TODO we should refactor this with our federation modules.
- * System catalog schema of openGauss.
+ * Expected values expression.
  */
-@RequiredArgsConstructor
-public final class OpenGaussSystemCatalog {
+@Getter
+@Setter
+public final class ExpectedValuesExpression extends AbstractExpectedSQLSegment {
     
-    // CHECKSTYLE:OFF
-    public final OpenGaussDatabase[] pg_database;
-    
-    public final OpenGaussTables[] pg_tables;
-    
-    public final OpenGaussRoles[] pg_roles;
-    // CHECKSTYLE:ON
+    @XmlElement(name = "values")
+    private ExpectedInsertValuesClause insertValuesClause;
 }

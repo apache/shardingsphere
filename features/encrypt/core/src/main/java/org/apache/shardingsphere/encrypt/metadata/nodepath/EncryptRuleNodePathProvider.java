@@ -28,11 +28,13 @@ import java.util.Collections;
  */
 public final class EncryptRuleNodePathProvider implements RuleNodePathProvider {
     
+    public static final String RULE_TYPE = "encrypt";
+    
     public static final String TABLES = "tables";
     
     public static final String ENCRYPTORS = "encryptors";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("encrypt", Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
     
     @Override
     public RuleNodePath getRuleNodePath() {

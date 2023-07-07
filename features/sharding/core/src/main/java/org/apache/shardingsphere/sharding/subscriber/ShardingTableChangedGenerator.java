@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableRuleConfigurationSwapper;
@@ -34,8 +35,6 @@ import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableRul
  * Sharding table changed generator.
  */
 public final class ShardingTableChangedGenerator implements RuleItemConfigurationChangedGenerator<ShardingRuleConfiguration, ShardingTableRuleConfiguration> {
-    
-    public static final String TYPE = "Sharding.Table";
     
     @Override
     public ShardingTableRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -60,6 +59,6 @@ public final class ShardingTableChangedGenerator implements RuleItemConfiguratio
     
     @Override
     public String getType() {
-        return TYPE;
+        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.TABLES;
     }
 }

@@ -27,9 +27,11 @@ import java.util.Collections;
  */
 public final class BroadcastRuleNodePathProvider implements RuleNodePathProvider {
     
+    public static final String RULE_TYPE = "broadcast";
+    
     public static final String TABLES = "tables";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("broadcast", Collections.emptyList(), Collections.singleton(TABLES));
+    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Collections.emptyList(), Collections.singleton(TABLES));
     
     @Override
     public RuleNodePath getRuleNodePath() {

@@ -80,12 +80,18 @@ class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    void assertPersistJobProgress() {
+    void assertPersistJobItemProgress() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
-        governanceRepositoryAPI.persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
+        governanceRepositoryAPI.updateJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");
+        assertFalse(governanceRepositoryAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem()).isPresent());
+        governanceRepositoryAPI.persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");
         Optional<String> actual = governanceRepositoryAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("testValue"));
+        assertThat(actual.get(), is("testValue1"));
+        governanceRepositoryAPI.updateJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue2");
+        actual = governanceRepositoryAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("testValue2"));
     }
     
     @Test

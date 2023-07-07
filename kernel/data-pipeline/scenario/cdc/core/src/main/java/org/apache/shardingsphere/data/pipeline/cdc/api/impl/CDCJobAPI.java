@@ -378,11 +378,6 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     @Override
-    protected String getTargetDatabaseType(final PipelineJobConfiguration pipelineJobConfig) {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
     protected String getJobClassName() {
         return CDCJob.class.getName();
     }

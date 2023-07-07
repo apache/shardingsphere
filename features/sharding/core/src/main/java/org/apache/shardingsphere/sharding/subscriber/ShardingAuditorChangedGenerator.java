@@ -28,14 +28,13 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 /**
  * Sharding auditor changed generator.
  */
 public final class ShardingAuditorChangedGenerator implements RuleItemConfigurationChangedGenerator<ShardingRuleConfiguration, AlgorithmConfiguration> {
-    
-    public static final String TYPE = "Sharding.Auditor";
     
     @Override
     public AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -59,6 +58,6 @@ public final class ShardingAuditorChangedGenerator implements RuleItemConfigurat
     
     @Override
     public String getType() {
-        return TYPE;
+        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.AUDITORS;
     }
 }

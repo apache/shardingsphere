@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * System table which maintains databases in openGauss system catalog schema.
+ * Values expression.
  */
 @RequiredArgsConstructor
-public final class OpenGaussDatabase {
+@Getter
+public final class ValuesExpression implements ExpressionSegment {
     
-    // CHECKSTYLE:OFF
-    public final String datname;
+    private final int startIndex;
     
-    public final String datcompatibility;
-    // CHECKSTYLE:ON
+    private final int stopIndex;
+    
+    private final Collection<InsertValuesSegment> rowConstructorList = new LinkedList<>();
 }

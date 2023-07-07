@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 
@@ -33,8 +34,6 @@ import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSou
  * Shadow data source changed generator.
  */
 public final class ShadowDataSourceChangedGenerator implements RuleItemConfigurationChangedGenerator<ShadowRuleConfiguration, ShadowDataSourceConfiguration> {
-    
-    public static final String TYPE = "Shadow.DataSource";
     
     @Override
     public ShadowDataSourceConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -61,6 +60,6 @@ public final class ShadowDataSourceChangedGenerator implements RuleItemConfigura
     
     @Override
     public String getType() {
-        return TYPE;
+        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.DATA_SOURCES;
     }
 }
