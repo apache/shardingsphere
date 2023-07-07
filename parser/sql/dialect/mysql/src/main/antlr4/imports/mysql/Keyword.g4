@@ -116,24 +116,8 @@ DELIMITER
     : D E L I M I T E R
     ;
 
-INNODB
-    : I N N O D B
-    ;
-
-FEDERATED
-    : F E D E R A T E D
-    ;
-
-MEMORY
-    : M E M O R Y
-    ;
-
-MYISAM
-    : M Y I S A M
-    ;
-
-MRG_MYISAM
-    : M R G UL_ M Y I S A M
+ARCHIVE
+    : A R C H I V E
     ;
 
 BLACKHOLE
@@ -144,10 +128,38 @@ CSV
     : C S V
     ;
 
-ARCHIVE
-    : A R C H I V E
+FEDERATED
+    : F E D E R A T E D
+    ;
+
+INNODB
+    : I N N O D B
+    ;
+
+MEMORY
+    : M E M O R Y
+    ;
+
+MRG_MYISAM
+    : M R G UL_ M Y I S A M
+    ;
+
+MYISAM
+    : M Y I S A M
+    ;
+
+NDB
+    : N D B
+    ;
+
+NDBCLUSTER
+    : N D B C L U S T E R
     ;
 
 PERFORMANCE_SCHEMA
     : P E R F O R M A N C E UL_ S C H E M A
+    ;
+
+TOKUDB
+    : T O K U D B
     ;

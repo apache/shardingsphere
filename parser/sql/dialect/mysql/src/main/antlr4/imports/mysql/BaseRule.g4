@@ -44,15 +44,18 @@ customKeyword
     | COPY
     | UL_BINARY
     | AUTOCOMMIT
-    | INNODB
-    | FEDERATED
-    | MEMORY
-    | MYISAM
-    | MRG_MYISAM
+    | ARCHIVE
     | BLACKHOLE
     | CSV
-    | ARCHIVE
+    | FEDERATED
+    | INNODB
+    | MEMORY
+    | MRG_MYISAM
+    | MYISAM
+    | NDB
+    | NDBCLUSTER
     | PERFORMANCE_SCHEMA
+    | TOKUDB
     | REDO_LOG
     | LAST_VALUE
     | PRIMARY
