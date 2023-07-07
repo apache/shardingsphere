@@ -180,11 +180,11 @@ public final class SQLFederationEngine implements AutoCloseable {
                                                     final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof SelectStatementContext, () -> new IllegalArgumentException("SQL statement context must be select statement context."));
-        OptimizerPlannerContext plannerContext = sqlFederationRule.getOptimizerContext().getPlannerContext(databaseName);
-        Schema sqlFederationSchema = plannerContext.getValidator(schemaName).getCatalogReader().getRootSchema().plus().getSubSchema(schemaName);
+        OptimizerPlannerContext plannerContext = sqlFederationRule.getOptimizerContext().getPlannerContext(getDatabaseName());
+        Schema sqlFederationSchema = plannerContext.getValidator(getSchemaName()).getCatalogReader().getRootSchema().plus().getSubSchema(getSchemaName());
         registerTableScanExecutor(sqlFederationSchema, prepareEngine, callback, federationContext, sqlFederationRule.getOptimizerContext());
-        SQLStatementCompiler sqlStatementCompiler = new SQLStatementCompiler(plannerContext.getConverter(schemaName));
-        SQLFederationCompilerEngine compilerEngine = new SQLFederationCompilerEngine(databaseName, schemaName, sqlFederationRule.getConfiguration().getExecutionPlanCache());
+        SQLStatementCompiler sqlStatementCompiler = new SQLStatementCompiler(plannerContext.getConverter(getSchemaName()));
+        SQLFederationCompilerEngine compilerEngine = new SQLFederationCompilerEngine(getDatabaseName(), getSchemaName(), sqlFederationRule.getConfiguration().getExecutionPlanCache());
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         // TODO open useCache flag when ShardingSphereTable contains version
         return compilerEngine.compile(buildCacheKey(federationContext, selectStatementContext, sqlStatementCompiler), false);
@@ -192,7 +192,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private ExecutionPlanCacheKey buildCacheKey(final SQLFederationExecutorContext federationContext, final SelectStatementContext selectStatementContext,
                                                 final SQLStatementCompiler sqlStatementCompiler) {
-        ShardingSphereSchema schema = federationContext.getMetaData().getDatabase(databaseName).getSchema(schemaName);
+        ShardingSphereSchema schema = federationContext.getMetaData().getDatabase(getDatabaseName()).getSchema(getSchemaName());
         ExecutionPlanCacheKey result =
                 new ExecutionPlanCacheKey(federationContext.getQueryContext().getSql(), selectStatementContext.getSqlStatement(), selectStatementContext.getDatabaseType().getType(),
                         sqlStatementCompiler);
