@@ -72,7 +72,7 @@ class InsertValueTest {
     
     @Test
     void assertSysdate() {
-        List<ExpressionSegment> expressionSegments = new ArrayList<>(4);
+        List<ExpressionSegment> expressionSegments = new ArrayList<>(1);
         expressionSegments.add(new ColumnSegment(0, 6, new IdentifierValue("SYSDATE")));
         InsertValue insertValue = new InsertValue(expressionSegments);
         String actualToString = insertValue.toString();
