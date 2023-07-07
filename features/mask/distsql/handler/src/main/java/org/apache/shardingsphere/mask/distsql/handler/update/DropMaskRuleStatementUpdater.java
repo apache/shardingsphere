@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mask.distsql.parser.statement.DropMaskRuleState
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -64,18 +64,12 @@ public final class DropMaskRuleStatementUpdater implements RuleDefinitionDropUpd
     @Override
     public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final DropMaskRuleStatement sqlStatement) {
         Collection<MaskTableRuleConfiguration> toBeDroppedTables = new LinkedList<>();
+        Map<String, AlgorithmConfiguration> toBeDroppedAlgorithms = new LinkedHashMap<>();
         for (String each : sqlStatement.getTables()) {
             toBeDroppedTables.add(new MaskTableRuleConfiguration(each, Collections.emptyList()));
+            dropRule(currentRuleConfig, each);
         }
-        Collection<MaskColumnRuleConfiguration> columns = currentRuleConfig.getTables().stream().filter(each -> !sqlStatement.getTables().contains(each.getName()))
-                .flatMap(each -> each.getColumns().stream()).collect(Collectors.toList());
-        Collection<String> inUsedAlgorithmNames = columns.stream().map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toSet());
-        Map<String, AlgorithmConfiguration> toBeDroppedAlgorithms = new HashMap<>();
-        for (String each : currentRuleConfig.getMaskAlgorithms().keySet()) {
-            if (!inUsedAlgorithmNames.contains(each)) {
-                toBeDroppedAlgorithms.put(each, currentRuleConfig.getMaskAlgorithms().get(each));
-            }
-        }
+        findUnusedAlgorithms(currentRuleConfig).forEach(each -> toBeDroppedAlgorithms.put(each, currentRuleConfig.getMaskAlgorithms().get(each)));
         return new MaskRuleConfiguration(toBeDroppedTables, toBeDroppedAlgorithms);
     }
     
@@ -92,10 +86,13 @@ public final class DropMaskRuleStatementUpdater implements RuleDefinitionDropUpd
     }
     
     private void dropUnusedAlgorithm(final MaskRuleConfiguration currentRuleConfig) {
+        findUnusedAlgorithms(currentRuleConfig).forEach(each -> currentRuleConfig.getMaskAlgorithms().remove(each));
+    }
+    
+    private static Collection<String> findUnusedAlgorithms(final MaskRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(MaskColumnRuleConfiguration::getMaskAlgorithm)
                 .collect(Collectors.toSet());
-        Collection<String> unusedAlgorithms = currentRuleConfig.getMaskAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
-        unusedAlgorithms.forEach(each -> currentRuleConfig.getMaskAlgorithms().remove(each));
+        return currentRuleConfig.getMaskAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
     }
     
     @Override

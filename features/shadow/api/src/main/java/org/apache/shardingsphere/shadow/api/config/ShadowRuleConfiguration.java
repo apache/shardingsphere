@@ -47,6 +47,6 @@ public final class ShadowRuleConfiguration implements DatabaseRuleConfiguration,
     
     @Override
     public boolean isEmpty() {
-        return dataSources.isEmpty() && tables.isEmpty() && null == defaultShadowAlgorithmName;
+        return dataSources.isEmpty() || tables.isEmpty();
     }
 }
