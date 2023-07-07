@@ -43,6 +43,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -96,7 +98,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 }
                 Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
                 if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnProjection.getName()) && !containsTableSubquery(selectStatementContext)) {
-                    sqlTokens.add(generateSQLToken(tableName, encryptTable.get().getEncryptColumn(columnProjection.getName()), columnSegment, columnProjection, subqueryType));
+                    sqlTokens.add(generateSQLToken(encryptTable.get().getEncryptColumn(columnProjection.getName()), columnSegment, columnProjection, subqueryType));
                 }
             }
             if (each instanceof ShorthandProjectionSegment) {
@@ -170,7 +172,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         if (SubqueryType.PREDICATE_SUBQUERY == subqueryType) {
             result.add(distinctOwner(generatePredicateSubqueryProjection(encryptColumn, column), shorthand));
         } else if (SubqueryType.TABLE_SUBQUERY == subqueryType) {
-            result.addAll(generateTableSubqueryProjections(tableName, encryptColumn, column, shorthand));
+            result.addAll(generateTableSubqueryProjections(encryptColumn, column, shorthand));
         } else if (SubqueryType.EXISTS_SUBQUERY == subqueryType) {
             result.addAll(generateExistsSubqueryProjections(encryptColumn, column, shorthand));
         } else {
@@ -195,19 +197,10 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         return new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(cipherColumn, column.getNameIdentifier().getQuoteCharacter()), null);
     }
     
-    private Collection<ColumnProjection> generateTableSubqueryProjections(final String tableName, final EncryptColumn encryptColumn, final ColumnProjection column, final boolean shorthand) {
+    private Collection<ColumnProjection> generateTableSubqueryProjections(final EncryptColumn encryptColumn, final ColumnProjection column, final boolean shorthand) {
         Collection<ColumnProjection> result = new LinkedList<>();
-        // SPEX ADDED: BEGIN
-        boolean onlyNeedPlainColumn = encryptColumn.getPlain().isPresent() && !encryptRule.isQueryWithCipherColumn(tableName, column.getName());
-        if (onlyNeedPlainColumn) {
-            encryptColumn.getPlain()
-                    .ifPresent(optional -> result.add(new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(optional.getName(), column.getNameIdentifier().getQuoteCharacter()),
-                            Optional.ofNullable(column.getAliasIdentifier()).orElse(column.getNameIdentifier()))));
-        } else {
-            // SPEX ADDED: END
-            result.add(distinctOwner(new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(encryptColumn.getCipher().getName(),
-                    column.getNameIdentifier().getQuoteCharacter()), Optional.ofNullable(column.getAliasIdentifier()).orElse(column.getNameIdentifier())), shorthand));
-        }
+        result.add(distinctOwner(new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(encryptColumn.getCipher().getName(),
+                column.getNameIdentifier().getQuoteCharacter()), Optional.ofNullable(column.getAliasIdentifier()).orElse(column.getNameIdentifier())), shorthand));
         encryptColumn.getAssistedQuery().ifPresent(optional -> result.add(
                 new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(optional.getName(), column.getNameIdentifier().getQuoteCharacter()), null)));
         return result;
