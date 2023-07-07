@@ -67,9 +67,7 @@ public final class NewViewMetaDataPersistService implements SchemaMetaDataPersis
         for (Entry<String, ShardingSphereView> entry : views.entrySet()) {
             String viewName = entry.getKey().toLowerCase();
             List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getViewVersionsNode(databaseName, schemaName, viewName));
-            String nextActiveVersion = NewDatabaseMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName, versions.isEmpty()
-                    ? DEFAULT_VERSION
-                    : String.valueOf(Integer.parseInt(versions.get(0)) + 1));
+            String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(NewDatabaseMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName, nextActiveVersion),
                     YamlEngine.marshal(new YamlViewSwapper().swapToYamlConfiguration(entry.getValue())));
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, viewName))) {
