@@ -62,10 +62,6 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     }
     
     private void assertExecuteQueryWithXmlExpected(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException {
-        // TODO Fix jdbc adapter
-        if ("jdbc".equals(testParam.getAdapter())) {
-            return;
-        }
         try (
                 Connection connection = containerComposer.getTargetDataSource().getConnection();
                 Statement statement = connection.createStatement();

@@ -41,6 +41,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
@@ -154,13 +155,23 @@ public final class SQLFederationEngine implements AutoCloseable {
         SQLFederationExecutionPlan executionPlan = compileQuery(prepareEngine, callback, federationContext);
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) executionPlan.getPhysicalPlan(), EnumerableRel.Prefer.ARRAY);
         Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());
-        OptimizerPlannerContext plannerContext = sqlFederationRule.getOptimizerContext().getPlannerContext(databaseName);
-        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(plannerContext.getValidator(schemaName), plannerContext.getConverter(schemaName), params)).enumerator();
-        ShardingSphereSchema schema = federationContext.getMetaData().getDatabase(databaseName).getSchema(schemaName);
-        Schema sqlFederationSchema = plannerContext.getValidator(schemaName).getCatalogReader().getRootSchema().plus().getSubSchema(schemaName);
+        OptimizerPlannerContext plannerContext = sqlFederationRule.getOptimizerContext().getPlannerContext(getDatabaseName(federationContext.getQueryContext()));
+        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(plannerContext.getValidator(getSchemaName(federationContext.getQueryContext())),
+                plannerContext.getConverter(getSchemaName(federationContext.getQueryContext())), params)).enumerator();
+        ShardingSphereSchema schema = federationContext.getMetaData().getDatabase(getDatabaseName(federationContext.getQueryContext())).getSchema(getSchemaName(federationContext.getQueryContext()));
+        Schema sqlFederationSchema = plannerContext.getValidator(getSchemaName(federationContext.getQueryContext())).getCatalogReader().getRootSchema().plus()
+                .getSubSchema(getSchemaName(federationContext.getQueryContext()));
         resultSet = new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext(),
                 executionPlan.getResultColumnType());
         return resultSet;
+    }
+    
+    private String getDatabaseName(final QueryContext queryContext) {
+        return queryContext.getDatabaseNameFromSQLStatement().orElse(databaseName);
+    }
+    
+    private String getSchemaName(final QueryContext queryContext) {
+        return queryContext.getSchemaNameFromSQLStatement().orElse(schemaName);
     }
     
     private SQLFederationExecutionPlan compileQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
@@ -168,16 +179,18 @@ public final class SQLFederationEngine implements AutoCloseable {
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof SelectStatementContext, () -> new IllegalArgumentException("SQL statement context must be select statement context."));
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-        OptimizerPlannerContext plannerContext = sqlFederationRule.getOptimizerContext().getPlannerContext(databaseName);
-        Schema sqlFederationSchema = plannerContext.getValidator(schemaName).getCatalogReader().getRootSchema().plus().getSubSchema(schemaName);
+        OptimizerPlannerContext plannerContext = sqlFederationRule.getOptimizerContext().getPlannerContext(getDatabaseName(federationContext.getQueryContext()));
+        Schema sqlFederationSchema = plannerContext.getValidator(getSchemaName(federationContext.getQueryContext())).getCatalogReader().getRootSchema().plus()
+                .getSubSchema(getSchemaName(federationContext.getQueryContext()));
         registerTableScanExecutor(sqlFederationSchema, prepareEngine, callback, federationContext, sqlFederationRule.getOptimizerContext());
-        SQLFederationCompilerEngine compilerEngine = new SQLFederationCompilerEngine(schemaName, new SQLStatementCompiler(plannerContext.getConverter(schemaName), plannerContext.getHepPlanner()),
+        SQLFederationCompilerEngine compilerEngine = new SQLFederationCompilerEngine(getSchemaName(federationContext.getQueryContext()),
+                new SQLStatementCompiler(plannerContext.getConverter(getSchemaName(federationContext.getQueryContext())), plannerContext.getHepPlanner()),
                 sqlFederationRule.getConfiguration().getExecutionPlanCache());
         return compilerEngine.compile(buildCacheKey(federationContext, selectStatementContext), federationContext.getQueryContext().isUseCache());
     }
     
     private ExecutionPlanCacheKey buildCacheKey(final SQLFederationExecutorContext federationContext, final SelectStatementContext selectStatementContext) {
-        ShardingSphereSchema schema = federationContext.getMetaData().getDatabase(databaseName).getSchema(schemaName);
+        ShardingSphereSchema schema = federationContext.getMetaData().getDatabase(getDatabaseName(federationContext.getQueryContext())).getSchema(getSchemaName(federationContext.getQueryContext()));
         ExecutionPlanCacheKey result =
                 new ExecutionPlanCacheKey(federationContext.getQueryContext().getSql(), selectStatementContext.getSqlStatement(), selectStatementContext.getDatabaseType().getType());
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
@@ -195,10 +208,11 @@ public final class SQLFederationEngine implements AutoCloseable {
         if (null == sqlFederationSchema) {
             return;
         }
-        TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, metaData.getProps(), federationContext);
+        TableScanExecutorContext executorContext =
+                new TableScanExecutorContext(getDatabaseName(federationContext.getQueryContext()), getSchemaName(federationContext.getQueryContext()), metaData.getProps(), federationContext);
         EnumerableScanExecutor scanExecutor = new EnumerableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, metaData.getGlobalRuleMetaData(), executorContext, statistics);
         // TODO register only the required tables
-        for (String each : metaData.getDatabase(databaseName).getSchema(schemaName).getAllTableNames()) {
+        for (String each : metaData.getDatabase(getDatabaseName(federationContext.getQueryContext())).getSchema(getSchemaName(federationContext.getQueryContext())).getAllTableNames()) {
             Table table = sqlFederationSchema.getTable(each);
             if (table instanceof SQLFederationTable) {
                 ((SQLFederationTable) table).setScanExecutor(scanExecutor);
