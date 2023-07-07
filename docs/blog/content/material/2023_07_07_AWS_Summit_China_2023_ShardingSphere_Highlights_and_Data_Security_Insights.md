@@ -39,7 +39,9 @@ Addressing the challenges in data value mining, Trista highlighted data security
 ## ShardingSphere: Providing Robust Data Security Features
 
 * **Leveraging the Strength of Open Source:** ShardingSphere utilizes the strength and transparency of open source to tackle complex data security scenarios. Its features encompass encrypted data storage, data masking, and global authority control. By leveraging open-source capabilities, ShardingSphere offers seamless data security across diverse platforms and heterogeneous environments without the need for extensive code modifications.
+
 * **Powerful Data Security Features:** ShardingSphere provides a range of powerful features to ensure unparalleled protection in data security scenarios. These features include online data encryption, data masking, customizable algorithms, and robust key management. By employing these features, organizations can fortify their data security infrastructure and protect sensitive information.
+
 * **Seamless Cross-platform Data Security:** Experience seamless data security across diverse platforms and heterogeneous environments without the need for code modifications
 
 ## ShardingSphere Open Source Community Gains Momentum
