@@ -31,7 +31,7 @@ public final class ShadowRuleChangedEventCreator implements RuleChangedEventCrea
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        return new NamedRuleItemChangedEventCreator().create(databaseName, itemType, event, ShadowRuleNodePathProvider.RULE_TYPE + "." + itemType);
+        return new NamedRuleItemChangedEventCreator().create(databaseName, itemName, event, ShadowRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override
