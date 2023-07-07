@@ -28,11 +28,8 @@ import java.util.Properties;
  */
 public final class H2JdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
     
-    private final Properties queryProps = new Properties();
-    
     @Override
-    public Properties extendQueryProperties() {
-        return queryProps;
+    public void extendQueryProperties(final Properties props) {
     }
     
     @Override
