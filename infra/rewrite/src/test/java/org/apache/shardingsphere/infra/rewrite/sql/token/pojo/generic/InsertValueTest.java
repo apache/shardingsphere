@@ -71,7 +71,7 @@ class InsertValueTest {
     }
     
     @Test
-    void assertSysdate() {
+    void assertSysdateToString() {
         List<ExpressionSegment> expressionSegments = new ArrayList<>(1);
         expressionSegments.add(new ColumnSegment(0, 6, new IdentifierValue("SYSDATE")));
         InsertValue insertValue = new InsertValue(expressionSegments);
