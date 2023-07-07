@@ -37,9 +37,12 @@ class MySQLJdbcQueryPropertiesExtensionTest {
         assertTrue(extension.isPresent());
         assertExtension(extension.get());
         Properties props = new Properties();
-        assertQueryProperties(extension.get().extendQueryProperties(props), "600");
+        extension.get().extendQueryProperties(props);
+        assertQueryProperties(props, "600");
+        props = new Properties();
         props.setProperty("netTimeoutForStreamingResults", "3600");
-        assertQueryProperties(extension.get().extendQueryProperties(props), "3600");
+        extension.get().extendQueryProperties(props);
+        assertQueryProperties(props, "3600");
     }
     
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {

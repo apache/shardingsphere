@@ -41,6 +41,8 @@ class OpenGaussJdbcQueryPropertiesExtensionTest {
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {
         assertThat(actual, instanceOf(OpenGaussJdbcQueryPropertiesExtension.class));
         assertThat(actual.getType(), equalTo("openGauss"));
-        assertThat(actual.extendQueryProperties(new Properties()).size(), equalTo(2));
+        Properties props = new Properties();
+        actual.extendQueryProperties(props);
+        assertThat(props.size(), equalTo(2));
     }
 }

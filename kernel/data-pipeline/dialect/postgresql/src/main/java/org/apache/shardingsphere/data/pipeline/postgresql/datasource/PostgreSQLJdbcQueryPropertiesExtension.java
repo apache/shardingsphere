@@ -28,10 +28,13 @@ public final class PostgreSQLJdbcQueryPropertiesExtension implements JdbcQueryPr
     
     private final Properties queryProps = new Properties();
     
-    @Override
-    public Properties extendQueryProperties(final Properties props) {
+    public PostgreSQLJdbcQueryPropertiesExtension() {
         queryProps.setProperty("stringtype", "unspecified");
-        return queryProps;
+    }
+    
+    @Override
+    public void extendQueryProperties(final Properties props) {
+        queryProps.stringPropertyNames().forEach(each -> props.setProperty(each, queryProps.getProperty(each)));
     }
     
     @Override

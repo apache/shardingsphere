@@ -42,6 +42,8 @@ class PostgreSQLJdbcQueryPropertiesExtensionTest {
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {
         assertThat(actual, instanceOf(PostgreSQLJdbcQueryPropertiesExtension.class));
         assertThat(actual.getType(), equalTo("PostgreSQL"));
-        assertFalse(actual.extendQueryProperties(new Properties()).isEmpty());
+        Properties props = new Properties();
+        actual.extendQueryProperties(props);
+        assertFalse(props.isEmpty());
     }
 }
