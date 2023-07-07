@@ -45,7 +45,8 @@ public final class ShardingSphereResultSetUtils {
      * @return column label and index map
      * @throws SQLException SQL exception
      */
-    public static Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext sqlStatementContext, final boolean selectContainsEnhancedTable, final ResultSetMetaData resultSetMetaData) throws SQLException {
+    public static Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext sqlStatementContext, final boolean selectContainsEnhancedTable,
+                                                                    final ResultSetMetaData resultSetMetaData) throws SQLException {
         if (selectContainsEnhancedTable && hasSelectExpandProjections(sqlStatementContext)) {
             return createColumnLabelAndIndexMapWithExpandProjections((SelectStatementContext) sqlStatementContext);
         }
