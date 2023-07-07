@@ -32,7 +32,7 @@ public final class CompatibleEncryptRuleChangedEventCreator implements RuleChang
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        return new NamedRuleItemChangedEventCreator().create(databaseName, itemType, event, CompatibleEncryptRuleNodePathProvider.RULE_TYPE + "." + itemType);
+        return new NamedRuleItemChangedEventCreator().create(databaseName, itemName, event, CompatibleEncryptRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override

@@ -30,7 +30,7 @@ public final class MaskRuleChangedEventCreator implements RuleChangedEventCreato
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        return new NamedRuleItemChangedEventCreator().create(databaseName, itemType, event, MaskRuleNodePathProvider.RULE_TYPE + "." + itemType);
+        return new NamedRuleItemChangedEventCreator().create(databaseName, itemName, event, MaskRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override

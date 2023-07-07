@@ -30,7 +30,7 @@ public final class ReadwriteSplittingRuleChangedEventCreator implements RuleChan
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        return new NamedRuleItemChangedEventCreator().create(databaseName, itemType, event, ReadwriteSplittingRuleNodePathProvider.RULE_TYPE + "." + itemType);
+        return new NamedRuleItemChangedEventCreator().create(databaseName, itemName, event, ReadwriteSplittingRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override
