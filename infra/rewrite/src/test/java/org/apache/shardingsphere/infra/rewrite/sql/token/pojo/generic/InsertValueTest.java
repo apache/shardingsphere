@@ -69,7 +69,7 @@ class InsertValueTest {
         String expectedToString = "(?, $1, 'literals', complexExpressionSegment, $2::varchar::jsonb)";
         assertThat(actualToString, is(expectedToString));
     }
-
+    
     @Test
     void assertSysdateToString() {
         List<ExpressionSegment> expressionSegments = new ArrayList<>(1);

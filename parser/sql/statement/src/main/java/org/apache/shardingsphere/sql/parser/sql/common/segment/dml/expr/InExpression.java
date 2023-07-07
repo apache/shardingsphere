@@ -53,4 +53,9 @@ public final class InExpression implements ExpressionSegment {
         }
         return result;
     }
+    
+    @Override
+    public String getText() {
+        return left.getText() + right.getText();
+    }
 }
