@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingDataSourceChangedProcessor
-org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingLoadBalancerChangedProcessor
+org.apache.shardingsphere.readwritesplitting.rule.changed.ReadwriteSplittingDataSourceChangedProcessor
+org.apache.shardingsphere.readwritesplitting.rule.changed.ReadwriteSplittingLoadBalancerChangedProcessor

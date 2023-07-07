@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.single.subscriber.SingleTableChangedProcessor
+org.apache.shardingsphere.single.rule.changed.SingleTableChangedProcessor

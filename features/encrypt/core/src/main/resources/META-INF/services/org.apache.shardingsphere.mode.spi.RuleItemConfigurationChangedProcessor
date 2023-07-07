@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.subscriber.EncryptTableChangedProcessor
-org.apache.shardingsphere.encrypt.subscriber.EncryptorChangedProcessor
-org.apache.shardingsphere.encrypt.subscriber.compatible.CompatibleEncryptTableChangedProcessor
-org.apache.shardingsphere.encrypt.subscriber.compatible.CompatibleEncryptorChangedProcessor
+org.apache.shardingsphere.encrypt.rule.changed.EncryptTableChangedProcessor
+org.apache.shardingsphere.encrypt.rule.changed.EncryptorChangedProcessor
+org.apache.shardingsphere.encrypt.rule.changed.compatible.CompatibleEncryptTableChangedProcessor
+org.apache.shardingsphere.encrypt.rule.changed.compatible.CompatibleEncryptorChangedProcessor

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shadow.subscriber.ShadowDataSourceChangedProcessor
-org.apache.shardingsphere.shadow.subscriber.ShadowTableChangedProcessor
-org.apache.shardingsphere.shadow.subscriber.ShadowAlgorithmChangedProcessor
-org.apache.shardingsphere.shadow.subscriber.DefaultShadowAlgorithmNameChangedProcessor
+org.apache.shardingsphere.shadow.rule.changed.ShadowDataSourceChangedProcessor
+org.apache.shardingsphere.shadow.rule.changed.ShadowTableChangedProcessor
+org.apache.shardingsphere.shadow.rule.changed.ShadowAlgorithmChangedProcessor
+org.apache.shardingsphere.shadow.rule.changed.DefaultShadowAlgorithmNameChangedProcessor

@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mask.subscriber.MaskTableChangedProcessor
-org.apache.shardingsphere.mask.subscriber.MaskAlgorithmChangedProcessor
+org.apache.shardingsphere.mask.rule.changed.MaskTableChangedProcessor
+org.apache.shardingsphere.mask.rule.changed.MaskAlgorithmChangedProcessor
