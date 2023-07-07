@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.subscriber;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
+import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;

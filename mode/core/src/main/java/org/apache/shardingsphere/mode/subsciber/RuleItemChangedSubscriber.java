@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.event.config.AlterDatabaseRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.DropDatabaseRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedGenerator;
 
 /**
  * Rule item changed subscriber.

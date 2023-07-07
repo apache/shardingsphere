@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorit
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
+import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedGenerator;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
