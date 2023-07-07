@@ -35,7 +35,7 @@ import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfigu
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -55,7 +55,7 @@ public final class NewYamlShadowRuleConfigurationSwapper implements NewYamlRuleC
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final ShadowRuleConfiguration data) {
-        Collection<YamlDataNode> result = new LinkedHashSet<>();
+        Collection<YamlDataNode> result = new LinkedList<>();
         for (Entry<String, AlgorithmConfiguration> entry : data.getShadowAlgorithms().entrySet()) {
             result.add(new YamlDataNode(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.ALGORITHMS).getPath(entry.getKey()),
                     YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));

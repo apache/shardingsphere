@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.subscriber.compatible;
 
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.CompatibleEncryptRuleNodePathProvider;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
@@ -38,8 +39,6 @@ import java.util.LinkedList;
  */
 @Deprecated
 public final class CompatibleEncryptTableChangedGenerator implements RuleItemConfigurationChangedGenerator<CompatibleEncryptRuleConfiguration, EncryptTableRuleConfiguration> {
-    
-    public static final String TYPE = "Encrypt.CompatibleTable";
     
     @Override
     public EncryptTableRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -71,6 +70,6 @@ public final class CompatibleEncryptTableChangedGenerator implements RuleItemCon
     
     @Override
     public String getType() {
-        return TYPE;
+        return CompatibleEncryptRuleNodePathProvider.RULE_TYPE + "." + CompatibleEncryptRuleNodePathProvider.TABLES;
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.subscriber.compatible;
 
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.CompatibleEncryptRuleNodePathProvider;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -39,8 +40,6 @@ import java.util.LinkedList;
  */
 @Deprecated
 public final class CompatibleEncryptorChangedGenerator implements RuleItemConfigurationChangedGenerator<CompatibleEncryptRuleConfiguration, AlgorithmConfiguration> {
-    
-    public static final String TYPE = "Encrypt.CompatibleEncryptor";
     
     @Override
     public AlgorithmConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -70,6 +69,6 @@ public final class CompatibleEncryptorChangedGenerator implements RuleItemConfig
     
     @Override
     public String getType() {
-        return TYPE;
+        return CompatibleEncryptRuleNodePathProvider.RULE_TYPE + "." + CompatibleEncryptRuleNodePathProvider.ENCRYPTORS;
     }
 }

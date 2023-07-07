@@ -28,6 +28,8 @@ import java.util.Collections;
  */
 public final class ShadowRuleNodePathProvider implements RuleNodePathProvider {
     
+    public static final String RULE_TYPE = "shadow";
+    
     public static final String DATA_SOURCES = "data_sources";
     
     public static final String TABLES = "tables";
@@ -36,7 +38,7 @@ public final class ShadowRuleNodePathProvider implements RuleNodePathProvider {
     
     public static final String DEFAULT_ALGORITHM = "default_algorithm_name";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath("shadow", Arrays.asList(DATA_SOURCES, TABLES, ALGORITHMS), Collections.singleton(DEFAULT_ALGORITHM));
+    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCES, TABLES, ALGORITHMS), Collections.singleton(DEFAULT_ALGORITHM));
     
     @Override
     public RuleNodePath getRuleNodePath() {

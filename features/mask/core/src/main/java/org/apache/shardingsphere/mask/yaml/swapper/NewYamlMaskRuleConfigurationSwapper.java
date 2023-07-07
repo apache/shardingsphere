@@ -33,7 +33,6 @@ import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigu
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,7 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final MaskRuleConfiguration data) {
-        Collection<YamlDataNode> result = new LinkedHashSet<>();
+        Collection<YamlDataNode> result = new LinkedList<>();
         for (Entry<String, AlgorithmConfiguration> entry : data.getMaskAlgorithms().entrySet()) {
             result.add(new YamlDataNode(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.ALGORITHMS).getPath(entry.getKey()),
                     YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));

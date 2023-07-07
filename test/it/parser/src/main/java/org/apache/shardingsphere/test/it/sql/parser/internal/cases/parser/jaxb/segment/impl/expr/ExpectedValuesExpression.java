@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.metadata.nodepath;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
 
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
-import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertValuesClause;
 
-import java.util.Collections;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Single rule node path provider.
+ * Expected values expression.
  */
-public final class SingleRuleNodePathProvider implements RuleNodePathProvider {
+@Getter
+@Setter
+public final class ExpectedValuesExpression extends AbstractExpectedSQLSegment {
     
-    public static final String RULE_TYPE = "single";
-    
-    public static final String TABLES = "tables";
-    
-    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Collections.emptyList(), Collections.singleton(TABLES));
-    
-    @Override
-    public RuleNodePath getRuleNodePath() {
-        return INSTANCE;
-    }
+    @XmlElement(name = "values")
+    private ExpectedInsertValuesClause insertValuesClause;
 }

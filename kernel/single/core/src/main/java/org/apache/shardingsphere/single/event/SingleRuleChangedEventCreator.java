@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
-import org.apache.shardingsphere.single.event.config.SingleTableEventCreator;
 import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
 
 /**
@@ -31,18 +30,11 @@ public final class SingleRuleChangedEventCreator implements RuleChangedEventCrea
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
-        return getUniqueRuleItemChangedEventCreator(itemType).create(databaseName, event);
-    }
-    
-    private UniqueRuleItemChangedEventCreator getUniqueRuleItemChangedEventCreator(final String itemType) {
-        if (itemType.equals(SingleRuleNodePathProvider.TABLES)) {
-            return new SingleTableEventCreator();
-        }
-        throw new UnsupportedOperationException(itemType);
+        return new UniqueRuleItemChangedEventCreator().create(databaseName, event, SingleRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override
     public String getType() {
-        return "single";
+        return SingleRuleNodePathProvider.RULE_TYPE;
     }
 }

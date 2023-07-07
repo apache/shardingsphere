@@ -48,13 +48,22 @@ public interface DatabaseBasedPersistService<T> {
     T load(String databaseName);
     
     /**
-     * Load configurations based version.
-     * 
+     * Load configuration.
+     *
      * @param databaseName database name
      * @param name name
      * @return configurations
      */
     T load(String databaseName, String name);
+    
+    /**
+     * Delete rule.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     */
+    default void delete(String databaseName, String ruleName) {
+    }
     
     /**
      * Delete configurations.

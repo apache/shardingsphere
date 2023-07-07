@@ -157,7 +157,14 @@ public final class NewDatabaseMetaDataNode {
         return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key);
     }
     
-    private static String getDatabaseRuleNode(final String databaseName, final String ruleName) {
+    /**
+     * Get database rule root node.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     * @return database rule root node
+     */
+    public static String getDatabaseRuleNode(final String databaseName, final String ruleName) {
         return String.join("/", getRulesNode(databaseName), ruleName);
     }
     

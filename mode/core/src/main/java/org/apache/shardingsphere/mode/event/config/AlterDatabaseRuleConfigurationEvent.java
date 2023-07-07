@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.metadata.nodepath;
+package org.apache.shardingsphere.mode.event.config;
 
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
-import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
-
-import java.util.Collections;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 /**
- * Single rule node path provider.
+ * Alter database rule configuration changed event.
  */
-public final class SingleRuleNodePathProvider implements RuleNodePathProvider {
+@Getter
+@RequiredArgsConstructor
+public final class AlterDatabaseRuleConfigurationEvent {
     
-    public static final String RULE_TYPE = "single";
+    private final String databaseName;
     
-    public static final String TABLES = "tables";
-    
-    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Collections.emptyList(), Collections.singleton(TABLES));
-    
-    @Override
-    public RuleNodePath getRuleNodePath() {
-        return INSTANCE;
-    }
+    private final RuleConfiguration ruleConfig;
 }

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.event;
 
-import org.apache.shardingsphere.encrypt.event.compatible.encryptor.CompatibleEncryptorEventCreator;
-import org.apache.shardingsphere.encrypt.event.compatible.table.CompatibleEncryptTableEventCreator;
-import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.CompatibleEncryptRuleNodePathProvider;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
@@ -34,22 +32,11 @@ public final class CompatibleEncryptRuleChangedEventCreator implements RuleChang
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        return getNamedRuleItemChangedEventCreator(itemType).create(databaseName, itemName, event);
-    }
-    
-    private NamedRuleItemChangedEventCreator getNamedRuleItemChangedEventCreator(final String itemType) {
-        switch (itemType) {
-            case EncryptRuleNodePathProvider.TABLES:
-                return new CompatibleEncryptTableEventCreator();
-            case EncryptRuleNodePathProvider.ENCRYPTORS:
-                return new CompatibleEncryptorEventCreator();
-            default:
-                throw new UnsupportedOperationException(itemType);
-        }
+        return new NamedRuleItemChangedEventCreator().create(databaseName, itemType, event, CompatibleEncryptRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override
     public String getType() {
-        return "compatible_encrypt";
+        return CompatibleEncryptRuleNodePathProvider.RULE_TYPE;
     }
 }

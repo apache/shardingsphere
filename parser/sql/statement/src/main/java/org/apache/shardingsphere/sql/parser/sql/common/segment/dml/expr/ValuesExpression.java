@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.metadata.nodepath;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
-import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 
-import java.util.Collections;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Single rule node path provider.
+ * Values expression.
  */
-public final class SingleRuleNodePathProvider implements RuleNodePathProvider {
+@RequiredArgsConstructor
+@Getter
+public final class ValuesExpression implements ExpressionSegment {
     
-    public static final String RULE_TYPE = "single";
+    private final int startIndex;
     
-    public static final String TABLES = "tables";
+    private final int stopIndex;
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Collections.emptyList(), Collections.singleton(TABLES));
-    
-    @Override
-    public RuleNodePath getRuleNodePath() {
-        return INSTANCE;
-    }
+    private final Collection<InsertValuesSegment> rowConstructorList = new LinkedList<>();
 }

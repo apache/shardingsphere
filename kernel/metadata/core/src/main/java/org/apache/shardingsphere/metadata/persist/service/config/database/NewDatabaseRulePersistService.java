@@ -110,6 +110,11 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
         }
     }
     
+    @Override
+    public void delete(final String databaseName, final String ruleName) {
+        repository.delete(NewDatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName));
+    }
+    
     private void deleteDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
             repository.delete(NewDatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey()));

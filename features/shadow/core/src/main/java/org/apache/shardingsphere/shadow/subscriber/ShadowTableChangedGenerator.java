@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.subsciber.RuleItemConfigurationChangedGenerator;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
@@ -34,8 +35,6 @@ import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfig
  * Shadow table changed generator.
  */
 public final class ShadowTableChangedGenerator implements RuleItemConfigurationChangedGenerator<ShadowRuleConfiguration, ShadowTableConfiguration> {
-    
-    public static final String TYPE = "Shadow.Table";
     
     @Override
     public ShadowTableConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -59,6 +58,6 @@ public final class ShadowTableChangedGenerator implements RuleItemConfigurationC
     
     @Override
     public String getType() {
-        return TYPE;
+        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.TABLES;
     }
 }

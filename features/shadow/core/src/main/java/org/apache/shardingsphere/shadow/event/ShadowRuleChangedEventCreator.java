@@ -22,10 +22,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleChangedEventCreator;
-import org.apache.shardingsphere.shadow.event.algorithm.DefaultShadowAlgorithmEventCreator;
-import org.apache.shardingsphere.shadow.event.algorithm.ShadowAlgorithmEventCreator;
-import org.apache.shardingsphere.shadow.event.datasource.ShadowDataSourceEventCreator;
-import org.apache.shardingsphere.shadow.event.table.ShadowTableEventCreator;
 import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 
 /**
@@ -35,36 +31,16 @@ public final class ShadowRuleChangedEventCreator implements RuleChangedEventCrea
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType, final String itemName) {
-        return getNamedRuleItemChangedEventCreator(itemType).create(databaseName, itemName, event);
+        return new NamedRuleItemChangedEventCreator().create(databaseName, itemType, event, ShadowRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override
     public GovernanceEvent create(final String databaseName, final DataChangedEvent event, final String itemType) {
-        return getUniqueRuleItemChangedEventCreator(itemType).create(databaseName, event);
-    }
-    
-    private NamedRuleItemChangedEventCreator getNamedRuleItemChangedEventCreator(final String itemType) {
-        switch (itemType) {
-            case ShadowRuleNodePathProvider.DATA_SOURCES:
-                return new ShadowDataSourceEventCreator();
-            case ShadowRuleNodePathProvider.TABLES:
-                return new ShadowTableEventCreator();
-            case ShadowRuleNodePathProvider.ALGORITHMS:
-                return new ShadowAlgorithmEventCreator();
-            default:
-                throw new UnsupportedOperationException(itemType);
-        }
-    }
-    
-    private UniqueRuleItemChangedEventCreator getUniqueRuleItemChangedEventCreator(final String itemType) {
-        if (itemType.equals(ShadowRuleNodePathProvider.DATA_SOURCES)) {
-            return new DefaultShadowAlgorithmEventCreator();
-        }
-        throw new UnsupportedOperationException(itemType);
+        return new UniqueRuleItemChangedEventCreator().create(databaseName, event, ShadowRuleNodePathProvider.RULE_TYPE + "." + itemType);
     }
     
     @Override
     public String getType() {
-        return "shadow";
+        return ShadowRuleNodePathProvider.RULE_TYPE;
     }
 }

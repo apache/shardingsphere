@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigurationSwapper;
@@ -36,8 +37,6 @@ import java.util.LinkedList;
  * Mask table changed generator.
  */
 public final class MaskTableChangedGenerator implements RuleItemConfigurationChangedGenerator<MaskRuleConfiguration, MaskTableRuleConfiguration> {
-    
-    public static final String TYPE = "Mask.Table";
     
     @Override
     public MaskTableRuleConfiguration swapRuleItemConfigurationFromEvent(final AlterRuleItemEvent event, final String yamlContent) {
@@ -68,6 +67,6 @@ public final class MaskTableChangedGenerator implements RuleItemConfigurationCha
     
     @Override
     public String getType() {
-        return TYPE;
+        return MaskRuleNodePathProvider.RULE_TYPE + "." + MaskRuleNodePathProvider.TABLES;
     }
 }

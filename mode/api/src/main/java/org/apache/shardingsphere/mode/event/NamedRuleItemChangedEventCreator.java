@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.mode.event;
 
 import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 /**
  * Named rule item changed event creator.
  */
-public interface NamedRuleItemChangedEventCreator {
+public final class NamedRuleItemChangedEventCreator {
     
     /**
      * Create named rule item changed event.
@@ -30,7 +33,12 @@ public interface NamedRuleItemChangedEventCreator {
      * @param databaseName database name
      * @param itemName item name
      * @param event data changed event
+     * @param type rule item type
      * @return named rule item changed event
      */
-    RuleItemChangedEvent create(String databaseName, String itemName, DataChangedEvent event);
+    public RuleItemChangedEvent create(final String databaseName, final String itemName, final DataChangedEvent event, final String type) {
+        return Type.ADDED == event.getType() || Type.UPDATED == event.getType()
+                ? new AlterNamedRuleItemEvent(databaseName, itemName, event.getKey(), event.getValue(), type)
+                : new DropNamedRuleItemEvent(databaseName, itemName, type);
+    }
 }
