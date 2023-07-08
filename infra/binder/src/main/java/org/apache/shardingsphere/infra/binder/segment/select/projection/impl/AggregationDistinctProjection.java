@@ -53,8 +53,11 @@ public final class AggregationDistinctProjection extends AggregationProjection {
     }
     
     @Override
-    public Projection cloneWithOwner(final IdentifierValue ownerIdentifier) {
-        // TODO replace column owner when AggregationDistinctProjection contains owner
-        return new AggregationDistinctProjection(startIndex, stopIndex, getType(), getInnerExpression(), getAlias().orElse(null), distinctInnerExpression, getDatabaseType());
+    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
+        // TODO replace getAlias with aliasIdentifier
+        if (getAlias().isPresent()) {
+            return new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null);
+        }
+        return new AggregationDistinctProjection(startIndex, stopIndex, getType(), getInnerExpression(), null, distinctInnerExpression, getDatabaseType());
     }
 }

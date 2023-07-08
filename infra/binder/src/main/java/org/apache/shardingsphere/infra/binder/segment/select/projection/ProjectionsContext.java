@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
@@ -108,9 +109,10 @@ public final class ProjectionsContext {
     public Optional<String> findAlias(final String projectionName) {
         for (Projection each : projections) {
             if (each instanceof ShorthandProjection) {
-                Optional<Projection> projection = ((ShorthandProjection) each).getActualColumns().stream().filter(optional -> projectionName.equalsIgnoreCase(optional.getExpression())).findFirst();
+                Optional<Projection> projection =
+                        ((ShorthandProjection) each).getActualColumns().stream().filter(optional -> projectionName.equalsIgnoreCase(getOriginalColumnName(optional))).findFirst();
                 if (projection.isPresent()) {
-                    return projection.flatMap(Projection::getAlias);
+                    return projection.map(Projection::getExpression);
                 }
             }
             if (projectionName.equalsIgnoreCase(SQLUtils.getExactlyValue(each.getExpression()))) {
@@ -118,6 +120,10 @@ public final class ProjectionsContext {
             }
         }
         return Optional.empty();
+    }
+    
+    private String getOriginalColumnName(final Projection projection) {
+        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getOriginalName().getValue() : projection.getExpression();
     }
     
     /**
