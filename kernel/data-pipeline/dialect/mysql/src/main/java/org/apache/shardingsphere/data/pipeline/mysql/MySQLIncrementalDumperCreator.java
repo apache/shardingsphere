@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLIncrementalDump
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
 
 /**
- * MySql incremental dumper creator.
+ * MySQL incremental dumper creator.
  */
 public final class MySQLIncrementalDumperCreator implements IncrementalDumperCreator {
     

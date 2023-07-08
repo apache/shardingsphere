@@ -36,7 +36,7 @@ import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.util.CloseUtils;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
@@ -178,7 +178,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     @Override
     protected void doClean() {
         dataSourceManager.close();
-        CloseUtils.closeQuietly(sink);
+        QuietlyCloser.close(sink);
     }
     
     @RequiredArgsConstructor

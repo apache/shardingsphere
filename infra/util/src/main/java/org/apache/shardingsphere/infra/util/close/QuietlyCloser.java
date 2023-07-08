@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.util;
+package org.apache.shardingsphere.infra.util.close;
 
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.junit.jupiter.api.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class DatabaseTypeUtilsTest {
+/**
+ * Quietly closer.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class QuietlyCloser {
     
-    @Test
-    void assertGetBranchDatabaseTypes() {
-        Set<String> trunkDatabaseTypes = Collections.singleton(new MySQLDatabaseType().getType());
-        Collection<String> actual = DatabaseTypeUtils.getTrunkAndBranchDatabaseTypes(trunkDatabaseTypes);
-        assertTrue(actual.contains("MySQL"), "MySQL not present");
-        assertTrue(actual.contains("MariaDB"), "MariaDB not present");
+    /**
+     * Close quietly.
+     *
+     * @param closeable closeable
+     */
+    public static void close(final AutoCloseable closeable) {
+        if (null == closeable) {
+            return;
+        }
+        try {
+            closeable.close();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ignored) {
+            // CHECKSTYLE:ON
+        }
     }
 }

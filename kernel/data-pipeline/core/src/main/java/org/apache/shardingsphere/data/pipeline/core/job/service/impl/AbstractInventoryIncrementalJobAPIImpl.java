@@ -66,7 +66,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -217,10 +216,8 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         return result;
     }
     
-    private Collection<String> getSupportedDatabaseTypes(final Collection<String> supportedDatabaseTypes) {
-        return supportedDatabaseTypes.isEmpty()
-                ? ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().map(DatabaseType::getType).collect(Collectors.toList())
-                : supportedDatabaseTypes;
+    private Collection<DatabaseType> getSupportedDatabaseTypes(final Collection<DatabaseType> supportedDatabaseTypes) {
+        return supportedDatabaseTypes.isEmpty() ? ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class) : supportedDatabaseTypes;
     }
     
     @Override

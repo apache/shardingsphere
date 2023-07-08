@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.util.CloseUtils;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
@@ -64,11 +64,11 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         jobItemContext.setStopping(true);
         for (PipelineTask each : inventoryTasks) {
             each.stop();
-            CloseUtils.closeQuietly(each);
+            QuietlyCloser.close(each);
         }
         for (PipelineTask each : incrementalTasks) {
             each.stop();
-            CloseUtils.closeQuietly(each);
+            QuietlyCloser.close(each);
         }
     }
     
