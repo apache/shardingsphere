@@ -66,10 +66,10 @@ public final class PipelineJobPreparerUtils {
      * @param databaseType database type
      * @return true if supported, otherwise false
      */
-    public static boolean isIncrementalSupported(final String databaseType) {
+    public static boolean isIncrementalSupported(final DatabaseType databaseType) {
         // TODO H2 doesn't support incremental, but H2DatabaseType.getTrunkDatabaseType() is MySQL. Ignore trunk database type for H2 for now.
-        if ("H2".equalsIgnoreCase(databaseType)) {
-            return TypedSPILoader.findService(IncrementalDumperCreator.class, databaseType).isPresent();
+        if ("H2".equalsIgnoreCase(databaseType.getType())) {
+            return TypedSPILoader.findService(IncrementalDumperCreator.class, databaseType.getType()).isPresent();
         }
         return DatabaseTypedSPILoader.findService(IncrementalDumperCreator.class, databaseType).isPresent();
     }
@@ -81,7 +81,7 @@ public final class PipelineJobPreparerUtils {
      * @param prepareTargetSchemasParam prepare target schemas parameter
      * @throws SQLException if prepare target schema fail
      */
-    public static void prepareTargetSchema(final String databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
+    public static void prepareTargetSchema(final DatabaseType databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
         Optional<DataSourcePreparer> dataSourcePreparer = DatabaseTypedSPILoader.findService(DataSourcePreparer.class, databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
@@ -113,7 +113,7 @@ public final class PipelineJobPreparerUtils {
      * @param prepareTargetTablesParam prepare target tables parameter
      * @throws SQLException SQL exception
      */
-    public static void prepareTargetTables(final String databaseType, final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
+    public static void prepareTargetTables(final DatabaseType databaseType, final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
         Optional<DataSourcePreparer> dataSourcePreparer = DatabaseTypedSPILoader.findService(DataSourcePreparer.class, databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
@@ -141,7 +141,7 @@ public final class PipelineJobPreparerUtils {
                 return position.get();
             }
         }
-        String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getType();
+        DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         return DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType).init(dataSource, dumperConfig.getJobId());
     }
@@ -152,11 +152,11 @@ public final class PipelineJobPreparerUtils {
      * @param databaseType database type
      * @param dataSources data source
      */
-    public static void checkSourceDataSource(final String databaseType, final Collection<? extends DataSource> dataSources) {
+    public static void checkSourceDataSource(final DatabaseType databaseType, final Collection<? extends DataSource> dataSources) {
         if (dataSources.isEmpty()) {
             return;
         }
-        DataSourceChecker dataSourceChecker = DatabaseTypedSPILoader.findService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType));
+        DataSourceChecker dataSourceChecker = DatabaseTypedSPILoader.findService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType.getType()));
         dataSourceChecker.checkConnection(dataSources);
         dataSourceChecker.checkPrivilege(dataSources);
         dataSourceChecker.checkVariable(dataSources);
@@ -169,12 +169,12 @@ public final class PipelineJobPreparerUtils {
      * @param importerConfig importer config
      * @param targetDataSources target data sources
      */
-    public static void checkTargetDataSource(final String databaseType, final ImporterConfiguration importerConfig, final Collection<? extends DataSource> targetDataSources) {
+    public static void checkTargetDataSource(final DatabaseType databaseType, final ImporterConfiguration importerConfig, final Collection<? extends DataSource> targetDataSources) {
         if (null == targetDataSources || targetDataSources.isEmpty()) {
             log.info("target data source is empty, skip check");
             return;
         }
-        DataSourceChecker dataSourceChecker = DatabaseTypedSPILoader.findService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType));
+        DataSourceChecker dataSourceChecker = DatabaseTypedSPILoader.findService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType.getType()));
         dataSourceChecker.checkConnection(targetDataSources);
         dataSourceChecker.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
     }
@@ -188,7 +188,7 @@ public final class PipelineJobPreparerUtils {
      */
     public static void destroyPosition(final String jobId, final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         DatabaseType databaseType = pipelineDataSourceConfig.getDatabaseType();
-        PositionInitializer positionInitializer = DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType.getType());
+        PositionInitializer positionInitializer = DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType);
         final long startTimeMillis = System.currentTimeMillis();
         log.info("Cleanup database type:{}, data source type:{}", databaseType.getType(), pipelineDataSourceConfig.getType());
         if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {

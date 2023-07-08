@@ -65,7 +65,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         parameter = YamlEngine.marshal(rootConfig);
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeEngine.getDatabaseType(getJdbcUrl(props));
-        appendJdbcQueryProperties(databaseType.getType());
+        appendJdbcQueryProperties(databaseType);
         adjustDataSourceProperties(rootConfig.getDataSources());
     }
     
@@ -87,7 +87,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         return result.toString();
     }
     
-    private void appendJdbcQueryProperties(final String databaseType) {
+    private void appendJdbcQueryProperties(final DatabaseType databaseType) {
         Optional<JdbcQueryPropertiesExtension> extension = DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;
