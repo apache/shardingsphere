@@ -112,6 +112,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         }
     }
     
+    @SuppressWarnings("MagicConstant")
     private void dump(final PipelineTableMetaData tableMetaData, final Connection connection) throws SQLException {
         int batchSize = dumperConfig.getBatchSize();
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
