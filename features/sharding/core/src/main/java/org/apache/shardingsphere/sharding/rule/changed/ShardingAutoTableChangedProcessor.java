@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTable
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingAutoTableRuleConfigurationSwapper;
 
 /**
- * Sharding auto table changed generator.
+ * Sharding auto table changed processor.
  */
 public final class ShardingAutoTableChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, ShardingAutoTableRuleConfiguration> {
     

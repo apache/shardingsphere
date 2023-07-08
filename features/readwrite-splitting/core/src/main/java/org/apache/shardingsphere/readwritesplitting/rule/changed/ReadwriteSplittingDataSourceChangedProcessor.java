@@ -37,7 +37,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Readwrite-splitting data source changed generator.
+ * Readwrite-splitting data source changed processor.
  */
 public final class ReadwriteSplittingDataSourceChangedProcessor implements RuleItemConfigurationChangedProcessor<ReadwriteSplittingRuleConfiguration, ReadwriteSplittingDataSourceRuleConfiguration> {
     

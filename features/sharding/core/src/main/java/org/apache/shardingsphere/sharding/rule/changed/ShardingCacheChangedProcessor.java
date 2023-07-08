@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheCon
 import org.apache.shardingsphere.sharding.yaml.swapper.cache.YamlShardingCacheConfigurationSwapper;
 
 /**
- * Sharding cache changed generator.
+ * Sharding cache changed processor.
  */
 public final class ShardingCacheChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, ShardingCacheConfiguration> {
     

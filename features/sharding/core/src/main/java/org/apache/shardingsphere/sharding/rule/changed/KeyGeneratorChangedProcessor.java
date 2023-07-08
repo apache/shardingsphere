@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePath
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 /**
- * Key generator changed generator.
+ * Key generator changed processor.
  */
 public final class KeyGeneratorChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, AlgorithmConfiguration> {
     

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProv
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
- * Default shadow algorithm name changed generator.
+ * Default shadow algorithm name changed processor.
  */
 public final class DefaultShadowAlgorithmNameChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, String> {
     

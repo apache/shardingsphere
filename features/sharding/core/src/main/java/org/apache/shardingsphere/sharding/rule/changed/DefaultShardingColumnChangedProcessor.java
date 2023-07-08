@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePath
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 /**
- * Default sharding column changed generator.
+ * Default sharding column changed processor.
  */
 public final class DefaultShardingColumnChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, String> {
     

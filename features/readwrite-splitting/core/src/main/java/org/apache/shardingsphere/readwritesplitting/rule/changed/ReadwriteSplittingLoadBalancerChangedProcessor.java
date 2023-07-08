@@ -35,7 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 /**
- * Readwrite-splitting load-balancer changed generator.
+ * Readwrite-splitting load-balancer changed processor.
  */
 public final class ReadwriteSplittingLoadBalancerChangedProcessor implements RuleItemConfigurationChangedProcessor<ReadwriteSplittingRuleConfiguration, AlgorithmConfiguration> {
     

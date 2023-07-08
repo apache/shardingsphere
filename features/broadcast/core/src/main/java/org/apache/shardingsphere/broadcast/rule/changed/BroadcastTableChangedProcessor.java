@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import java.util.LinkedList;
 
 /**
- * Broadcast table changed generator.
+ * Broadcast table changed processor.
  */
 public final class BroadcastTableChangedProcessor implements RuleItemConfigurationChangedProcessor<BroadcastRuleConfiguration, BroadcastRuleConfiguration> {
     

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfigura
 import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
 
 /**
- * Single table changed generator.
+ * Single table changed processor.
  */
 public final class SingleTableChangedProcessor implements RuleItemConfigurationChangedProcessor<SingleRuleConfiguration, SingleRuleConfiguration> {
     

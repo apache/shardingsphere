@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGen
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyConfigurationSwapper;
 
 /**
- * Default key generate strategy changed generator.
+ * Default key generate strategy changed processor.
  */
 public final class DefaultKeyGenerateStrategyChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, KeyGenerateStrategyConfiguration> {
     
