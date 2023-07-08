@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShar
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStrategyConfigurationSwapper;
 
 /**
- * Default database sharding strategy changed generator.
+ * Default database sharding strategy changed processor.
  */
 public final class DefaultDatabaseShardingStrategyChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, ShardingStrategyConfiguration> {
     

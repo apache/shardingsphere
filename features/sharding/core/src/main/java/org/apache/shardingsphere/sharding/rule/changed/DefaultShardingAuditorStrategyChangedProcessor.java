@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardin
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingAuditStrategyConfigurationSwapper;
 
 /**
- * Default sharding auditor strategy changed generator.
+ * Default sharding auditor strategy changed processor.
  */
 public final class DefaultShardingAuditorStrategyChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, ShardingAuditStrategyConfiguration> {
     

@@ -35,7 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 /**
- * Encryptor changed generator.
+ * Encryptor changed processor.
  */
 public final class EncryptorChangedProcessor implements RuleItemConfigurationChangedProcessor<EncryptRuleConfiguration, AlgorithmConfiguration> {
     

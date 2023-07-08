@@ -32,7 +32,7 @@ import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProv
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
- * Shadow algorithm changed generator.
+ * Shadow algorithm changed processor.
  */
 public final class ShadowAlgorithmChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, AlgorithmConfiguration> {
     

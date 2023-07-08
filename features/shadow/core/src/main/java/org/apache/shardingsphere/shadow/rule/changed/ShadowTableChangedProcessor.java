@@ -32,7 +32,7 @@ import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfigu
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
 /**
- * Shadow table changed generator.
+ * Shadow table changed processor.
  */
 public final class ShadowTableChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, ShadowTableConfiguration> {
     
