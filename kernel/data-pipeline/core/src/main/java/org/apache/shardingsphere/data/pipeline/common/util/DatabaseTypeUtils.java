@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Set;
 
 /**
  * Database type utility class.
@@ -39,7 +38,7 @@ public final class DatabaseTypeUtils {
      * @param trunkDatabaseTypes trunk database types
      * @return database types
      */
-    public static Collection<String> getTrunkAndBranchDatabaseTypes(final Set<String> trunkDatabaseTypes) {
+    public static Collection<String> getTrunkAndBranchDatabaseTypes(final Collection<String> trunkDatabaseTypes) {
         Collection<String> result = new LinkedList<>();
         for (DatabaseType each : ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)) {
             if (trunkDatabaseTypes.contains(each.getType()) || each instanceof BranchDatabaseType && trunkDatabaseTypes.contains(((BranchDatabaseType) each).getTrunkDatabaseType().getType())) {
