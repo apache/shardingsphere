@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.util.spi;
+package org.apache.shardingsphere.infra.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -28,20 +28,20 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import java.util.Optional;
 
 /**
- * Pipeline typed SPI loader.
+ * Database typed SPI loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PipelineTypedSPILoader {
+public final class DatabaseTypedSPILoader {
     
     /**
-     * Find database typed service.
+     * Find service.
      *
      * @param spiClass typed SPI class
      * @param databaseType database type
      * @param <T> SPI class type
-     * @return service
+     * @return found service
      */
-    public static <T extends TypedSPI> Optional<T> findDatabaseTypedService(final Class<T> spiClass, final String databaseType) {
+    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final String databaseType) {
         Optional<T> result = TypedSPILoader.findService(spiClass, databaseType);
         if (result.isPresent()) {
             return result;
@@ -54,14 +54,14 @@ public final class PipelineTypedSPILoader {
     }
     
     /**
-     * Get database typed service.
+     * Get service.
      *
      * @param spiClass typed SPI class
      * @param databaseType database type
      * @param <T> SPI class type
-     * @return service
+     * @return found service
      */
-    public static <T extends TypedSPI> T getDatabaseTypedService(final Class<T> spiClass, final String databaseType) {
-        return findDatabaseTypedService(spiClass, databaseType).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass));
+    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String databaseType) {
+        return findService(spiClass, databaseType).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass));
     }
 }
