@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.util.CloseUtils;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.common.util.JDBCStreamQueryUtils;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
@@ -29,9 +29,9 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLExcepti
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
@@ -47,7 +47,6 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * Data match data consistency calculate algorithm.
@@ -55,9 +54,6 @@ import java.util.stream.Collectors;
 @SPIDescription("Match raw data of records.")
 @Slf4j
 public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
-    
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = ShardingSphereServiceLoader
-            .getServiceInstances(DatabaseType.class).stream().map(DatabaseType::getType).collect(Collectors.toList());
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     
@@ -134,7 +130,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
-            CloseUtils.closeQuietly(result);
+            QuietlyCloser.close(result);
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
         }
         return result;
@@ -180,8 +176,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     @Override
-    public Collection<String> getSupportedDatabaseTypes() {
-        return SUPPORTED_DATABASE_TYPES;
+    public Collection<DatabaseType> getSupportedDatabaseTypes() {
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
     }
     
     @RequiredArgsConstructor
@@ -223,9 +219,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         
         @Override
         public void close() {
-            CloseUtils.closeQuietly(resultSet.get());
-            CloseUtils.closeQuietly(preparedStatement.get());
-            CloseUtils.closeQuietly(connection);
+            QuietlyCloser.close(resultSet.get());
+            QuietlyCloser.close(preparedStatement.get());
+            QuietlyCloser.close(connection);
         }
     }
 }

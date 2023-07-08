@@ -66,11 +66,7 @@ public final class PipelineJobPreparerUtils {
      * @return true if supported, otherwise false
      */
     public static boolean isIncrementalSupported(final DatabaseType databaseType) {
-        // TODO H2 doesn't support incremental, but H2DatabaseType.getTrunkDatabaseType() is MySQL. Ignore trunk database type for H2 for now.
-        if ("H2".equalsIgnoreCase(databaseType.getType())) {
-            return false;
-        }
-        return DatabaseTypedSPILoader.findService(IncrementalDumperCreator.class, databaseType).isPresent();
+        return DatabaseTypedSPILoader.findService(IncrementalDumperCreator.class, databaseType).map(IncrementalDumperCreator::isSupportIncrementalDump).orElse(false);
     }
     
     /**

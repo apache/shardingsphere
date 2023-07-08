@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemCon
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.common.util.CloseUtils;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
@@ -175,7 +175,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     private void innerClean() {
         PipelineJobProgressPersistService.remove(jobId);
         for (PipelineTasksRunner each : tasksRunnerMap.values()) {
-            CloseUtils.closeQuietly(each.getJobItemContext().getJobProcessContext());
+            QuietlyCloser.close(each.getJobItemContext().getJobProcessContext());
         }
     }
     

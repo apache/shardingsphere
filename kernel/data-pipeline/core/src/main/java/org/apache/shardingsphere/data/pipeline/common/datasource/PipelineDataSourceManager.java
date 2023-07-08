@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 /**
  * Pipeline data source manager.
  */
-public interface PipelineDataSourceManager {
+public interface PipelineDataSourceManager extends AutoCloseable {
     
     /**
      * Get cached data source.
@@ -32,8 +32,6 @@ public interface PipelineDataSourceManager {
      */
     PipelineDataSourceWrapper getDataSource(PipelineDataSourceConfiguration dataSourceConfig);
     
-    /**
-     * Close, close cached data source.
-     */
+    @Override
     void close();
 }
