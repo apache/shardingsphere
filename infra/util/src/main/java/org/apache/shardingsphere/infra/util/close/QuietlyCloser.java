@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.util;
+package org.apache.shardingsphere.infra.util.close;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Close utility class.
+ * Quietly closer.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CloseUtils {
+public final class QuietlyCloser {
     
     /**
      * Close quietly.
      *
      * @param closeable closeable
      */
-    public static void closeQuietly(final AutoCloseable closeable) {
+    public static void close(final AutoCloseable closeable) {
         if (null == closeable) {
             return;
         }

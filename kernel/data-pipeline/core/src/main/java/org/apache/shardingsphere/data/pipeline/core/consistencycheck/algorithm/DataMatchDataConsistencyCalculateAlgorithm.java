@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.util.CloseUtils;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.common.util.JDBCStreamQueryUtils;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
@@ -130,7 +130,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
-            CloseUtils.closeQuietly(result);
+            QuietlyCloser.close(result);
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
         }
         return result;
@@ -219,9 +219,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         
         @Override
         public void close() {
-            CloseUtils.closeQuietly(resultSet.get());
-            CloseUtils.closeQuietly(preparedStatement.get());
-            CloseUtils.closeQuietly(connection);
+            QuietlyCloser.close(resultSet.get());
+            QuietlyCloser.close(preparedStatement.get());
+            QuietlyCloser.close(connection);
         }
     }
 }
