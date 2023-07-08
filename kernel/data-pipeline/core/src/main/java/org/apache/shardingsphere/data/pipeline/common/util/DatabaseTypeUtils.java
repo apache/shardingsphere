@@ -42,8 +42,7 @@ public final class DatabaseTypeUtils {
     public static Collection<String> getTrunkAndBranchDatabaseTypes(final Set<String> trunkDatabaseTypes) {
         Collection<String> result = new LinkedList<>();
         for (DatabaseType each : ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)) {
-            if (trunkDatabaseTypes.contains(each.getType())
-                    || each instanceof BranchDatabaseType && trunkDatabaseTypes.contains(((BranchDatabaseType) each).getTrunkDatabaseType().getType())) {
+            if (trunkDatabaseTypes.contains(each.getType()) || each instanceof BranchDatabaseType && trunkDatabaseTypes.contains(((BranchDatabaseType) each).getTrunkDatabaseType().getType())) {
                 result.add(each.getType());
             }
         }

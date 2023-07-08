@@ -91,7 +91,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         try {
             Collection<Collection<Object>> records = new LinkedList<>();
             Object maxUniqueKeyValue = null;
-            ColumnValueReader columnValueReader = DatabaseTypedSPILoader.getService(ColumnValueReader.class, param.getDatabaseType());
+            DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType());
+            ColumnValueReader columnValueReader = DatabaseTypedSPILoader.getService(ColumnValueReader.class, databaseType);
             ResultSet resultSet = calculationContext.getResultSet();
             while (resultSet.next()) {
                 ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName()));
@@ -167,7 +168,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         if (null == param.getUniqueKey()) {
             throw new UnsupportedOperationException("Data consistency of DATA_MATCH type not support table without unique key and primary key now");
         }
-        PipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, param.getDatabaseType());
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType());
+        PipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, databaseType);
         boolean firstQuery = null == param.getTableCheckPosition();
         return sqlBuilder.buildQueryAllOrderingSQL(param.getSchemaName(), param.getLogicTableName(), param.getColumnNames(), param.getUniqueKey().getName(), firstQuery);
     }

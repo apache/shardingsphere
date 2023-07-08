@@ -41,14 +41,13 @@ public final class DatabaseTypedSPILoader {
      * @param <T> SPI class type
      * @return found service
      */
-    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final String databaseType) {
-        Optional<T> result = TypedSPILoader.findService(spiClass, databaseType);
+    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final DatabaseType databaseType) {
+        Optional<T> result = TypedSPILoader.findService(spiClass, databaseType.getType());
         if (result.isPresent()) {
             return result;
         }
-        Optional<DatabaseType> type = TypedSPILoader.findService(DatabaseType.class, databaseType);
-        if (type.isPresent() && type.get() instanceof BranchDatabaseType) {
-            return TypedSPILoader.findService(spiClass, ((BranchDatabaseType) type.get()).getTrunkDatabaseType().getType());
+        if (databaseType instanceof BranchDatabaseType) {
+            return TypedSPILoader.findService(spiClass, ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getType());
         }
         return result;
     }
@@ -61,7 +60,7 @@ public final class DatabaseTypedSPILoader {
      * @param <T> SPI class type
      * @return found service
      */
-    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String databaseType) {
+    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final DatabaseType databaseType) {
         return findService(spiClass, databaseType).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass));
     }
 }

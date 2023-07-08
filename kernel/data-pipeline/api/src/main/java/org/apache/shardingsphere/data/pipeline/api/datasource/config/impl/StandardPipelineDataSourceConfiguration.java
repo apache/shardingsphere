@@ -81,7 +81,7 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         jdbcConfig = YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), YamlJdbcConfiguration.class, true);
         databaseType = DatabaseTypeEngine.getDatabaseType(jdbcConfig.getUrl());
         yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
-        appendJdbcQueryProperties(databaseType.getType(), yamlConfig);
+        appendJdbcQueryProperties(databaseType, yamlConfig);
         dataSourceProperties = new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(yamlConfig);
     }
     
@@ -98,7 +98,7 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         return result;
     }
     
-    private void appendJdbcQueryProperties(final String databaseType, final Map<String, Object> yamlConfig) {
+    private void appendJdbcQueryProperties(final DatabaseType databaseType, final Map<String, Object> yamlConfig) {
         Optional<JdbcQueryPropertiesExtension> extension = DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;
