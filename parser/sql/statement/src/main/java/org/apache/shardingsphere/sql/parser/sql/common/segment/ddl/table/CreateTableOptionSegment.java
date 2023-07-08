@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.engine.EngineSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 
 import java.util.Optional;
 
@@ -32,13 +33,15 @@ import java.util.Optional;
 @Setter
 @RequiredArgsConstructor
 public final class CreateTableOptionSegment implements CreateDefinitionSegment {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
-
+    
     private EngineSegment engine;
-
+    
+    private CommentSegment commentSegment;
+    
     /**
      * Get engine.
      *
@@ -46,5 +49,14 @@ public final class CreateTableOptionSegment implements CreateDefinitionSegment {
      */
     public Optional<EngineSegment> getEngine() {
         return Optional.ofNullable(engine);
+    }
+    
+    /**
+     * Get comment.
+     *
+     * @return comment
+     */
+    public Optional<CommentSegment> getComment() {
+        return Optional.ofNullable(commentSegment);
     }
 }

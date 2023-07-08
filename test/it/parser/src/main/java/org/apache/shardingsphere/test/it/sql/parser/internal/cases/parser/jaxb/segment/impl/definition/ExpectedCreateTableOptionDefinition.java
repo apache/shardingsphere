@@ -18,13 +18,20 @@
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition;
 
 import lombok.Getter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.comments.ExpectedComment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.engine.ExpectedEngineClause;
 
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Expected create table option definition.
+ */
 @Getter
 public final class ExpectedCreateTableOptionDefinition {
-
+    
     @XmlElement(name = "engine")
     private ExpectedEngineClause engine;
+    
+    @XmlElement(name = "comment")
+    private ExpectedComment comment;
 }

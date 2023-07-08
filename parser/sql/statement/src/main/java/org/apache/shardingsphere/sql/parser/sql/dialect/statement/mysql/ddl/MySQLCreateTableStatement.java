@@ -38,9 +38,9 @@ public final class MySQLCreateTableStatement extends CreateTableStatement implem
     private final boolean ifNotExists;
     
     private SimpleTableSegment likeTable;
-
+    
     private CreateTableOptionSegment createTableOptionSegment;
-
+    
     /**
      * Get like table.
      *
@@ -49,7 +49,7 @@ public final class MySQLCreateTableStatement extends CreateTableStatement implem
     public Optional<SimpleTableSegment> getLikeTable() {
         return Optional.ofNullable(likeTable);
     }
-
+    
     /**
      * Get create table option segment.
      * @return create table option segment

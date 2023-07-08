@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Create table option assert.
  */
 public final class CreateTableOptionDefinitionAssert {
-
+    
     /**
      * Assert actual create table option segment is correct with expected create table option.
      *
@@ -45,6 +45,13 @@ public final class CreateTableOptionDefinitionAssert {
             assertTrue(actual.getEngine().isPresent(), assertContext.getText("Actual engine should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s engine assertion error: ", actual.getClass().getSimpleName())), actual.getEngine().get().getEngine(),
                     is(expected.getEngine().getName()));
+        }
+        if (null == expected.getComment()) {
+            assertFalse(actual.getComment().isPresent(), assertContext.getText("Actual comment should not exist."));
+        } else {
+            assertTrue(actual.getComment().isPresent(), assertContext.getText("Actual comment should exist."));
+            assertThat(assertContext.getText(String.format("`%s`'s comment assertion error: ", actual.getClass().getSimpleName())), actual.getComment().get().getText(),
+                    is(expected.getComment().getText()));
         }
     }
 }

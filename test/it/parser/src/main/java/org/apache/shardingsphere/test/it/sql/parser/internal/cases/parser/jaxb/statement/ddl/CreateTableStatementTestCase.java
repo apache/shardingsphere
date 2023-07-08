@@ -59,7 +59,7 @@ public final class CreateTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "engine")
     private ExpectedEngineClause engine;
-
+    
     @XmlElement(name = "create-table-option")
     private ExpectedCreateTableOptionDefinition createTableOption;
 }

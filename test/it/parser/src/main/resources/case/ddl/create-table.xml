@@ -837,6 +837,9 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
+        <create-table-option start-index="132" stop-index="148">
+            <comment text="'t_order'" start-index="140" stop-index="148" />
+        </create-table-option>
     </create-table>
     
     <create-table sql-case-id="create_table_with_partition">

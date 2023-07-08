@@ -118,8 +118,8 @@ public final class CreateTableStatementAssert {
             TableAssert.assertIs(assertContext, likeTableSegment.get(), expected.getLikeTable());
         }
     }
-
-    private static void assertCreateTableOptionStatement(SQLCaseAssertContext assertContext, CreateTableStatement actual, CreateTableStatementTestCase expected) {
+    
+    private static void assertCreateTableOptionStatement(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
         Optional<CreateTableOptionSegment> createTableOption = CreateTableStatementHandler.getCreateTableOption(actual);
         if (null == expected.getCreateTableOption()) {
             assertFalse(createTableOption.isPresent(), assertContext.getText("Actual create table option should not exist."));
