@@ -76,7 +76,7 @@ class MySQLFormatVisitorIT {
                                     + "`runoob_test` NATIONAL CHAR(40),\n"
                                     + "`submission_date` DATE,\n"
                                     + "PRIMARY KEY (`runoob_id`)\n"
-                                    + ")ENGINE=INNODB DEFAULT CHARSET=utf8;",
+                                    + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;",
                             "CREATE TABLE IF NOT EXISTS `runoob_tbl` (\n"
                                     + "\t`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
                                     + "\t`runoob_title` VARCHAR(100) NOT NULL,\n"
@@ -84,7 +84,7 @@ class MySQLFormatVisitorIT {
                                     + "\t`runoob_test` NATIONAL CHAR(40),\n"
                                     + "\t`submission_date` DATE,\n"
                                     + "\tPRIMARY KEY (`runoob_id`)\n"
-                                    + ") ENGINE = INNODB DEFAULT CHARSET = utf8",
+                                    + ") ENGINE = InnoDB DEFAULT CHARSET = utf8",
                             "CREATE TABLE IF NOT EXISTS `runoob_tbl` (\n"
                                     + "\t`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
                                     + "\t`runoob_title` VARCHAR(100) NOT NULL,\n"
@@ -92,7 +92,7 @@ class MySQLFormatVisitorIT {
                                     + "\t`runoob_test` NATIONAL CHAR(40),\n"
                                     + "\t`submission_date` DATE,\n"
                                     + "\tPRIMARY KEY (`runoob_id`)\n"
-                                    + ") ENGINE = INNODB DEFAULT CHARSET = utf8"),
+                                    + ") ENGINE = InnoDB DEFAULT CHARSET = utf8"),
                     Arguments.of("insert_with_muti_value",
                             "INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (1, 1, 'insert', '2017-08-08'), "
                                     + "(2, 2, 'insert', '2017-08-08') ON DUPLICATE KEY UPDATE status = 'init'",

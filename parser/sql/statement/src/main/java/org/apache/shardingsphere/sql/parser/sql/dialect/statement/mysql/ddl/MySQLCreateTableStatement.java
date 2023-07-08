@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.engine.EngineSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.CreateTableOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -38,9 +38,9 @@ public final class MySQLCreateTableStatement extends CreateTableStatement implem
     private final boolean ifNotExists;
     
     private SimpleTableSegment likeTable;
-    
-    private EngineSegment engine;
-    
+
+    private CreateTableOptionSegment createTableOptionSegment;
+
     /**
      * Get like table.
      *
@@ -49,13 +49,12 @@ public final class MySQLCreateTableStatement extends CreateTableStatement implem
     public Optional<SimpleTableSegment> getLikeTable() {
         return Optional.ofNullable(likeTable);
     }
-    
+
     /**
-     * Get engine.
-     *
-     * @return engine
+     * Get create table option segment.
+     * @return create table option segment
      */
-    public Optional<EngineSegment> getEngine() {
-        return Optional.ofNullable(engine);
+    public Optional<CreateTableOptionSegment> getCreateTableOptionSegment() {
+        return Optional.ofNullable(createTableOptionSegment);
     }
 }

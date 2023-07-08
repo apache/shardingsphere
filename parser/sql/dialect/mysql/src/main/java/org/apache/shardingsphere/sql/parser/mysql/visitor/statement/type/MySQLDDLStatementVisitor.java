@@ -62,6 +62,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateS
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTableOptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTableOptionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DeallocateContext;
@@ -135,6 +136,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.Algorit
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.CreateTableOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
@@ -263,15 +265,22 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
             result.setLikeTable((SimpleTableSegment) visit(ctx.createLikeClause()));
         }
         if (null != ctx.createTableOptions()) {
-            for (CreateTableOptionContext each : ctx.createTableOptions().createTableOption()) {
-                if (null != each.engineRef()) {
-                    result.setEngine((EngineSegment) visit(each.engineRef()));
-                }
+            result.setCreateTableOptionSegment((CreateTableOptionSegment) visit(ctx.createTableOptions()));
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitCreateTableOptions(final CreateTableOptionsContext ctx) {
+        CreateTableOptionSegment result = new CreateTableOptionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (CreateTableOptionContext each : ctx.createTableOption()) {
+            if (null != each.engineRef()) {
+                result.setEngine((EngineSegment) visit(each.engineRef()));
             }
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();

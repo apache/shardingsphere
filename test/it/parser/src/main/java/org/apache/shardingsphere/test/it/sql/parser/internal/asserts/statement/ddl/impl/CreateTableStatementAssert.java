@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.engine.EngineSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.CreateTableOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ColumnDefinitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ConstraintDefinitionAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.CreateTableOptionDefinitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateTableStatementTestCase;
@@ -63,7 +64,7 @@ public final class CreateTableStatementAssert {
         assertCreateTableAsSelectStatement(assertContext, actual, expected);
         assertCreateTableAsSelectStatementColumns(assertContext, actual, expected);
         assertLikeTableStatement(assertContext, actual, expected);
-        assertEngine(assertContext, actual, expected);
+        assertCreateTableOptionStatement(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
@@ -117,15 +118,14 @@ public final class CreateTableStatementAssert {
             TableAssert.assertIs(assertContext, likeTableSegment.get(), expected.getLikeTable());
         }
     }
-    
-    private static void assertEngine(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
-        Optional<EngineSegment> engine = CreateTableStatementHandler.getEngine(actual);
-        if (null == expected.getEngine()) {
-            assertFalse(engine.isPresent(), assertContext.getText("Actual engine segments should not exist."));
+
+    private static void assertCreateTableOptionStatement(SQLCaseAssertContext assertContext, CreateTableStatement actual, CreateTableStatementTestCase expected) {
+        Optional<CreateTableOptionSegment> createTableOption = CreateTableStatementHandler.getCreateTableOption(actual);
+        if (null == expected.getCreateTableOption()) {
+            assertFalse(createTableOption.isPresent(), assertContext.getText("Actual create table option should not exist."));
         } else {
-            assertTrue(engine.isPresent(), assertContext.getText("Actual engine segments should exist."));
-            assertThat(assertContext.getText(String.format("`%s`'s engine assertion error: ", actual.getClass().getSimpleName())), engine.get().getEngine(),
-                    is(expected.getEngine().getName()));
+            assertTrue(createTableOption.isPresent(), assertContext.getText("Actual create table option should exist."));
+            CreateTableOptionDefinitionAssert.assertIs(assertContext, createTableOption.get(), expected.getCreateTableOption());
         }
     }
 }
