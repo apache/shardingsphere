@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
 
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
 
 import java.sql.SQLException;
@@ -56,5 +57,5 @@ public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorit
      * 
      * @return supported database types
      */
-    Collection<String> getSupportedDatabaseTypes();
+    Collection<DatabaseType> getSupportedDatabaseTypes();
 }

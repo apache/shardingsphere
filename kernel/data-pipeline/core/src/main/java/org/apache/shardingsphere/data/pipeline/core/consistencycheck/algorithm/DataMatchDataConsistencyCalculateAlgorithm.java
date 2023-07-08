@@ -29,9 +29,9 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLExcepti
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
@@ -47,7 +47,6 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * Data match data consistency calculate algorithm.
@@ -55,9 +54,6 @@ import java.util.stream.Collectors;
 @SPIDescription("Match raw data of records.")
 @Slf4j
 public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
-    
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = ShardingSphereServiceLoader
-            .getServiceInstances(DatabaseType.class).stream().map(DatabaseType::getType).collect(Collectors.toList());
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     
@@ -180,8 +176,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     @Override
-    public Collection<String> getSupportedDatabaseTypes() {
-        return SUPPORTED_DATABASE_TYPES;
+    public Collection<DatabaseType> getSupportedDatabaseTypes() {
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
     }
     
     @RequiredArgsConstructor
