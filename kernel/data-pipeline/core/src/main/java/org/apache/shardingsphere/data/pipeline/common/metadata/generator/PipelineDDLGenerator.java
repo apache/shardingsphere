@@ -76,7 +76,7 @@ public final class PipelineDDLGenerator {
                                    final String schemaName, final String sourceTableName, final String targetTableName, final SQLParserEngine parserEngine) throws SQLException {
         long startTimeMillis = System.currentTimeMillis();
         StringBuilder result = new StringBuilder();
-        for (String each : DatabaseTypedSPILoader.getService(CreateTableSQLGenerator.class, databaseType.getType()).generate(sourceDataSource, schemaName, sourceTableName)) {
+        for (String each : DatabaseTypedSPILoader.getService(CreateTableSQLGenerator.class, databaseType).generate(sourceDataSource, schemaName, sourceTableName)) {
             Optional<String> queryContext = decorate(databaseType, sourceDataSource, schemaName, targetTableName, parserEngine, each);
             queryContext.ifPresent(optional -> result.append(optional).append(DELIMITER).append(System.lineSeparator()));
         }

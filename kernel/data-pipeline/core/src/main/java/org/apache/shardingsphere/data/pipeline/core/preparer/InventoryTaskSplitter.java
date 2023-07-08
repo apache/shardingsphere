@@ -48,7 +48,9 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -203,7 +205,8 @@ public final class InventoryTaskSplitter {
     
     private Range<Long> getUniqueKeyValuesRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
         String uniqueKey = dumperConfig.getUniqueKeyColumns().get(0).getName();
-        String sql = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, jobItemContext.getJobConfig().getSourceDatabaseType())
+        DatabaseType sourceDatabaseType = TypedSPILoader.getService(DatabaseType.class, jobItemContext.getJobConfig().getSourceDatabaseType());
+        String sql = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, sourceDatabaseType)
                 .buildUniqueKeyMinMaxValuesSQL(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName(), uniqueKey);
         try (
                 Connection connection = dataSource.getConnection();

@@ -55,7 +55,7 @@ public final class InventoryRecordsCountCalculator {
     public static long getTableRecordsCount(final InventoryDumperConfiguration dumperConfig, final PipelineDataSourceWrapper dataSource) {
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
-        PipelineSQLBuilder pipelineSQLBuilder = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, dataSource.getDatabaseType().getType());
+        PipelineSQLBuilder pipelineSQLBuilder = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, dataSource.getDatabaseType());
         Optional<String> sql = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);
         try {
             if (sql.isPresent()) {
