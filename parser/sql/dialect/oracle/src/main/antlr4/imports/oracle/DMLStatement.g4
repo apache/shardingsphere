@@ -406,8 +406,7 @@ unqualifiedShorthand
     ;
 
 selectList
-    : unqualifiedShorthand
-    | selectProjection (COMMA_ selectProjection)*
+    : (unqualifiedShorthand | selectProjection) (COMMA_ selectProjection)*
     ;
 
 selectProjection

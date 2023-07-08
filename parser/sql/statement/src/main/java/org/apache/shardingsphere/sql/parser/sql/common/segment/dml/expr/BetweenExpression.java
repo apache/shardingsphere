@@ -37,4 +37,9 @@ public final class BetweenExpression implements ExpressionSegment {
     private final ExpressionSegment andExpr;
     
     private final boolean not;
+    
+    @Override
+    public String getText() {
+        return betweenExpr.getText();
+    }
 }

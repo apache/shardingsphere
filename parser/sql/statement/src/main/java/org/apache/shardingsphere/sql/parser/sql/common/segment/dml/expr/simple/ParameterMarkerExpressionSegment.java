@@ -74,4 +74,9 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     public int getStopIndex() {
         return null != alias ? alias.getStopIndex() : stopIndex;
     }
+    
+    @Override
+    public String getText() {
+        return parameterMarkerType.getMarker();
+    }
 }
