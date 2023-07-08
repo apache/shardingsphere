@@ -15,39 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
+package org.apache.shardingsphere.data.pipeline.h2;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
 
 /**
- * Incremental dumper creator.
+ * H2 incremental dumper creator.
  */
-@SingletonSPI
-public interface IncrementalDumperCreator extends TypedSPI {
+public final class H2IncrementalDumperCreator implements IncrementalDumperCreator {
     
-    /**
-     * Create incremental dumper.
-     *
-     * @param dumperConfig dumper configuration
-     * @param position position
-     * @param channel channel
-     * @param metaDataLoader meta data loader
-     * @return incremental dumper
-     */
-    IncrementalDumper createIncrementalDumper(DumperConfiguration dumperConfig, IngestPosition position, PipelineChannel channel, PipelineTableMetaDataLoader metaDataLoader);
+    @Override
+    public IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
+                                                     final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
+        throw new UnsupportedOperationException("H2 database can not support incremental dump.");
+    }
     
-    /**
-     * Whether support incremental dump.
-     * 
-     * @return support incremental dump or not
-     */
-    default boolean isSupportIncrementalDump() {
-        return true;
+    @Override
+    public boolean isSupportIncrementalDump() {
+        return false;
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
     }
 }
