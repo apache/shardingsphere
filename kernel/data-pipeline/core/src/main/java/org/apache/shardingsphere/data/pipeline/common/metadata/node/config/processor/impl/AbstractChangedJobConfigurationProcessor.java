@@ -93,6 +93,6 @@ public abstract class AbstractChangedJobConfigurationProcessor implements Change
     
     @Override
     public String getType() {
-        return getJobType().getTypeName();
+        return getJobType().getType();
     }
 }

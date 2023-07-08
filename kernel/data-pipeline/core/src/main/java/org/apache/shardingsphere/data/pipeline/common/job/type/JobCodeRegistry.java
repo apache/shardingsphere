@@ -23,37 +23,31 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Job type factory.
+ * Job code registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class JobTypeFactory {
+public final class JobCodeRegistry {
     
-    private static final Map<String, JobType> CODE_JOB_TYPE_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, String> JOB_CODE_AND_TYPE_MAP = new HashMap<>();
     
     static {
-        for (JobType each : ShardingSphereServiceLoader.getServiceInstances(JobType.class)) {
-            String typeCode = each.getTypeCode();
-            JobType replaced = CODE_JOB_TYPE_MAP.put(typeCode, each);
-            if (null != replaced) {
-                log.error("Type code already exists, typeCode={}, replaced={}, current={}", typeCode, replaced, each, new Exception());
-            }
-        }
+        ShardingSphereServiceLoader.getServiceInstances(JobType.class).forEach(each -> JOB_CODE_AND_TYPE_MAP.put(each.getCode(), each.getType()));
     }
     
     /**
-     * Get job type instance.
+     * Get job type.
      *
      * @param jobTypeCode job type code
      * @return job type
      */
-    public static JobType getInstance(final String jobTypeCode) {
-        JobType result = CODE_JOB_TYPE_MAP.get(jobTypeCode);
-        Preconditions.checkNotNull(result, "Can not get job type by `%s`", jobTypeCode);
+    public static String getJobType(final String jobTypeCode) {
+        String result = JOB_CODE_AND_TYPE_MAP.get(jobTypeCode);
+        Preconditions.checkNotNull(result, "Can not get job type by `%s`.", jobTypeCode);
         return result;
     }
 }

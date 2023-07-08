@@ -17,28 +17,19 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.spi.job;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobTypeFactory;
+import org.apache.shardingsphere.data.pipeline.common.job.type.JobCodeRegistry;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class JobTypeFactoryTest {
+class JobCodeRegistryTest {
     
     @Test
-    void assertGetInstance() {
-        Collection<Pair<String, Class<? extends JobType>>> paramResult = Arrays.asList(
-                Pair.of(MigrationJobType.TYPE_CODE, MigrationJobType.class), Pair.of(ConsistencyCheckJobType.TYPE_CODE, ConsistencyCheckJobType.class));
-        for (Pair<String, Class<? extends JobType>> each : paramResult) {
-            JobType actual = JobTypeFactory.getInstance(each.getKey());
-            assertThat(actual, instanceOf(each.getValue()));
-        }
+    void assertGetJobType() {
+        assertThat(JobCodeRegistry.getJobType(MigrationJobType.TYPE_CODE), is("MIGRATION"));
+        assertThat(JobCodeRegistry.getJobType(ConsistencyCheckJobType.TYPE_CODE), is("CONSISTENCY_CHECK"));
     }
 }

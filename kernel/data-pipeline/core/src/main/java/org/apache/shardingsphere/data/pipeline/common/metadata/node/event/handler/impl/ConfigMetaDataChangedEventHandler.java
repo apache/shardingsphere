@@ -53,7 +53,7 @@ public final class ConfigMetaDataChangedEventHandler implements PipelineMetaData
             return;
         }
         log.info("{} job configuration: {}, disabled={}", event.getType(), event.getKey(), jobConfig.isDisabled());
-        TypedSPILoader.findService(ChangedJobConfigurationProcessor.class, PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getTypeName())
+        TypedSPILoader.findService(ChangedJobConfigurationProcessor.class, PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getType())
                 .ifPresent(optional -> optional.process(event.getType(), jobConfig));
     }
 }
