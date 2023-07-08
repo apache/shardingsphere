@@ -98,7 +98,7 @@ cursorDeclaration
     ;
 
 cursorParameterDec
-    : variableName IN? dataType ((COLON_ EQ_ | DEFAULT) expr)?
+    : variableName IN? dataType ((ASSIGNMENT_OPERATOR_ | DEFAULT) expr)?
     ;
 
 rowtype
@@ -113,8 +113,8 @@ itemDeclaration
 collectionVariableDecl
     : variableName
       (
-      typeName (COLON_ EQ_ (qualifiedExpression | functionCall | variableName))?
-      | typeName (COLON_ EQ_  (collectionConstructor | variableName))?
+      typeName (ASSIGNMENT_OPERATOR_ (qualifiedExpression | functionCall | variableName))?
+      | typeName (ASSIGNMENT_OPERATOR_  (collectionConstructor | variableName))?
       | typeName MOD_ TYPE
       )
       SEMI_
@@ -153,7 +153,7 @@ collectionConstructor
     ;
 
 constantDeclaration
-    : variableName CONSTANT dataType (NOT NULL)? (COLON_ EQ_ | DEFAULT) expr SEMI_
+    : variableName CONSTANT dataType (NOT NULL)? (ASSIGNMENT_OPERATOR_ | DEFAULT) expr SEMI_
     ;
 
 cursorVariableDeclaration
@@ -169,7 +169,7 @@ recordVariableDeclaration
     ;
 
 variableDeclaration
-    : variableName dataType ((NOT NULL)? (COLON_ EQ_ | DEFAULT) expr)? SEMI_
+    : variableName dataType ((NOT NULL)? (ASSIGNMENT_OPERATOR_ | DEFAULT) expr)? SEMI_
     ;
 
 typeDefinition
@@ -181,7 +181,7 @@ recordTypeDefinition
     ;
 
 fieldDefinition
-    : typeName dataType ((NOT NULL)? (COLON_ EQ_ | DEFAULT) expr)?
+    : typeName dataType ((NOT NULL)? (ASSIGNMENT_OPERATOR_ | DEFAULT) expr)?
     ;
 
 refCursorTypeDefinition
