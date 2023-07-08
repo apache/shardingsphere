@@ -458,7 +458,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             Set<String> actualStatus = new HashSet<>();
             Collection<Integer> incrementalIdleSecondsList = new LinkedList<>();
             for (Map<String, Object> each : listJobStatus) {
-                assertTrue(Strings.isNullOrEmpty(each.get("error_message").toString()), "error_message is not null");
+                assertTrue(Strings.isNullOrEmpty((String) each.get("error_message")), "error_message: `" + each.get("error_message") + "`");
                 actualStatus.add(each.get("status").toString());
                 String incrementalIdleSeconds = each.get("incremental_idle_seconds").toString();
                 incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
