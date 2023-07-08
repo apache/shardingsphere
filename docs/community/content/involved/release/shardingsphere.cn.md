@@ -525,7 +525,7 @@ I will process to publish the release and send ANNOUNCE.
 
 ### 1. 将源码、二进制包以及 KEYS 从 svn 的 dev 目录移动到 release 目录
 
-需要 PMC 帮忙操作。
+> 注意：该步骤需要 PMC 帮忙操作。
 
 将发布内容移动到发布区：
 ```shell
@@ -582,6 +582,8 @@ docker logout
 编辑版本号及版本说明，选择 `Set as the latest release`，并点击 `Publish release`。
 
 ### 5. 从发布区移除上一版本内容
+
+> 注意：该步骤需要 PMC 帮忙操作。
 
 [**发布区**](https://dist.apache.org/repos/dist/release/shardingsphere/) 中仅保留一个最新的版本。
 确认 [Archive repository](https://archive.apache.org/dist/shardingsphere/) 中存在上一版本后，从 [**发布区**](https://dist.apache.org/repos/dist/release/shardingsphere/) 删除上一版本：

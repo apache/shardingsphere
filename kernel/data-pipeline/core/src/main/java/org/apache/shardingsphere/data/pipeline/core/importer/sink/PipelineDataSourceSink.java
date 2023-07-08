@@ -37,7 +37,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImport
 import org.apache.shardingsphere.data.pipeline.core.importer.DataRecordMerger;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -79,7 +79,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
         this.importerConfig = importerConfig;
         rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
         this.dataSourceManager = dataSourceManager;
-        pipelineSqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, importerConfig.getDataSourceConfig().getDatabaseType().getType());
+        pipelineSqlBuilder = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, importerConfig.getDataSourceConfig().getDatabaseType().getType());
     }
     
     @Override

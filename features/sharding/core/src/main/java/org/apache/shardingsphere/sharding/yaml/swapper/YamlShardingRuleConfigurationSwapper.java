@@ -50,21 +50,21 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
     
     private final YamlShardingAuditStrategyConfigurationSwapper auditStrategySwapper = new YamlShardingAuditStrategyConfigurationSwapper();
     
-    private final YamlShardingAutoTableRuleConfigurationSwapper autoTableYamlSwapper = new YamlShardingAutoTableRuleConfigurationSwapper();
+    private final YamlShardingAutoTableRuleConfigurationSwapper autoTableSwapper = new YamlShardingAutoTableRuleConfigurationSwapper();
     
-    private final YamlShardingCacheConfigurationSwapper shardingCacheYamlSwapper = new YamlShardingCacheConfigurationSwapper();
+    private final YamlShardingCacheConfigurationSwapper shardingCacheSwapper = new YamlShardingCacheConfigurationSwapper();
     
     @Override
     public YamlShardingRuleConfiguration swapToYamlConfiguration(final ShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
         data.getTables().forEach(each -> result.getTables().put(each.getLogicTable(), tableSwapper.swapToYamlConfiguration(each)));
-        data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableYamlSwapper.swapToYamlConfiguration(each)));
+        data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableSwapper.swapToYamlConfiguration(each)));
         result.getBindingTables().addAll(data.getBindingTableGroups().stream().map(YamlShardingTableReferenceRuleConfigurationConverter::convertToYamlString).collect(Collectors.toList()));
         setYamlStrategies(data, result);
         setYamlAlgorithms(data, result);
         result.setDefaultShardingColumn(data.getDefaultShardingColumn());
         if (null != data.getShardingCache()) {
-            result.setShardingCache(shardingCacheYamlSwapper.swapToYamlConfiguration(data.getShardingCache()));
+            result.setShardingCache(shardingCacheSwapper.swapToYamlConfiguration(data.getShardingCache()));
         }
         return result;
     }
@@ -107,14 +107,14 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
         for (Entry<String, YamlShardingAutoTableRuleConfiguration> entry : yamlConfig.getAutoTables().entrySet()) {
             YamlShardingAutoTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
-            result.getAutoTables().add(autoTableYamlSwapper.swapToObject(tableRuleConfig));
+            result.getAutoTables().add(autoTableSwapper.swapToObject(tableRuleConfig));
         }
         result.getBindingTableGroups().addAll(yamlConfig.getBindingTables().stream().map(YamlShardingTableReferenceRuleConfigurationConverter::convertToObject).collect(Collectors.toList()));
         setStrategies(yamlConfig, result);
         setAlgorithms(yamlConfig, result);
         result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());
         if (null != yamlConfig.getShardingCache()) {
-            result.setShardingCache(shardingCacheYamlSwapper.swapToObject(yamlConfig.getShardingCache()));
+            result.setShardingCache(shardingCacheSwapper.swapToObject(yamlConfig.getShardingCache()));
         }
         return result;
     }

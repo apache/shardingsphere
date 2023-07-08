@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 
 /**
- * Shadow data source changed generator.
+ * Shadow data source changed processor.
  */
 public final class ShadowDataSourceChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, ShadowDataSourceConfiguration> {
     

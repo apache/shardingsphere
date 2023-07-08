@@ -34,7 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 /**
- * Encrypt table changed generator.
+ * Encrypt table changed processor.
  */
 public final class EncryptTableChangedProcessor implements RuleItemConfigurationChangedProcessor<EncryptRuleConfiguration, EncryptTableRuleConfiguration> {
     

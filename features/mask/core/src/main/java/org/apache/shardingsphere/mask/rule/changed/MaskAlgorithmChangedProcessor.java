@@ -35,7 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 /**
- * Mask algorithm changed generator.
+ * Mask algorithm changed processor.
  */
 public final class MaskAlgorithmChangedProcessor implements RuleItemConfigurationChangedProcessor<MaskRuleConfiguration, AlgorithmConfiguration> {
     

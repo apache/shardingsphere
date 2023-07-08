@@ -35,7 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 /**
- * Compatible encryptor changed generator.
+ * Compatible encryptor changed processor.
  * @deprecated compatible support will remove in next version.
  */
 @Deprecated

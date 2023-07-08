@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePath
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 /**
- * Sharding algorithm changed generator.
+ * Sharding algorithm changed processor.
  */
 public final class ShardingAlgorithmChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, AlgorithmConfiguration> {
     

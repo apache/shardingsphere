@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.data.pipeline.util;
+package org.apache.shardingsphere.infra.spi.fixture.impl;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.spi.fixture.DatabaseTypedSPIFixture;
 
-public final class AwaitTimeoutUtil {
+public final class FooDatabaseTypedSPIFixture implements DatabaseTypedSPIFixture {
     
-    /**
-     * Get timeout, openGauss metadata reload slowly need special handling.
-     *
-     * @param databaseType database type.
-     * @return timeout
-     */
-    public static long getTimeout(final DatabaseType databaseType) {
-        return databaseType instanceof OpenGaussDatabaseType ? 60 : 10;
+    @Override
+    public String getType() {
+        return "MySQL";
     }
 }

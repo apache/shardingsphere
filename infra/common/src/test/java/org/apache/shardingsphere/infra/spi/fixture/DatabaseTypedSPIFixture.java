@@ -15,21 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.job.type;
+package org.apache.shardingsphere.infra.spi.fixture;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-/**
- * Job type.
- */
-@SingletonSPI
-public interface JobType extends TypedSPI {
-    
-    /**
-     * Get job type code.
-     *
-     * @return job type code
-     */
-    String getCode();
+public interface DatabaseTypedSPIFixture extends TypedSPI {
 }
