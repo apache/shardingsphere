@@ -40,12 +40,11 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
                         final String schemaName, final DropTableStatement sqlStatement, final ConfigurationProperties props) {
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         sqlStatement.getTables().forEach(each -> alterSchemaMetaDataPOJO.getDroppedTables().add(each.getTableName().getIdentifier().getValue()));
-        modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         ShardingSphereRuleMetaData ruleMetaData = database.getRuleMetaData();
+        boolean isRuleRefreshRequired = TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, sqlStatement.getTables());
+        modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         for (SimpleTableSegment each : sqlStatement.getTables()) {
-            String tableName = each.getTableName().getIdentifier().getValue();
-            if (isSingleTable(tableName, ruleMetaData)
-                    && TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, tableName)) {
+            if (isRuleRefreshRequired && isSingleTable(each.getTableName().getIdentifier().getValue(), ruleMetaData)) {
                 modeContextManager.alterRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
                 break;
             }

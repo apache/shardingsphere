@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -35,6 +36,23 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableRefreshUtils {
+    
+    /**
+     * Judge whether the rule need to be refreshed.
+     *
+     * @param ruleMetaData rule meta data
+     * @param schemaName schema name
+     * @param tableSegments table segments
+     * @return whether the rule need to be refreshed
+     */
+    public static boolean isRuleRefreshRequired(final ShardingSphereRuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
+        for (SimpleTableSegment each : tableSegments) {
+            if (isRuleRefreshRequired(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue())) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     /**
      * Judge whether the rule need to be refreshed.

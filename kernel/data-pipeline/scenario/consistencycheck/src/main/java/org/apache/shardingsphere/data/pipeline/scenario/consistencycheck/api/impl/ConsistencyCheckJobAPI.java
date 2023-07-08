@@ -32,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.ConsistencyCh
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlConsistencyCheckJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobTypeFactory;
+import org.apache.shardingsphere.data.pipeline.common.job.type.JobCodeRegistry;
 import org.apache.shardingsphere.data.pipeline.common.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
@@ -328,7 +328,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
             result.setCheckSuccess(null);
         } else {
             InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(
-                    PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(parentJobId).getTypeName());
+                    PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(parentJobId).getType());
             result.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
         }
         result.setCheckFailedTableNames(checkJobResult.entrySet().stream().filter(each -> !each.getValue().isIgnored() && !each.getValue().isMatched())
@@ -377,6 +377,6 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
     
     @Override
     public JobType getJobType() {
-        return JobTypeFactory.getInstance(ConsistencyCheckJobType.TYPE_CODE);
+        return TypedSPILoader.getService(JobType.class, JobCodeRegistry.getJobType(ConsistencyCheckJobType.TYPE_CODE));
     }
 }

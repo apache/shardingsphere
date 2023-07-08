@@ -22,8 +22,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
+import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -98,15 +99,14 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     }
     
     private void appendJdbcQueryProperties(final String databaseType, final Map<String, Object> yamlConfig) {
-        Optional<JdbcQueryPropertiesExtension> extension = PipelineTypedSPILoader.findDatabaseTypedService(JdbcQueryPropertiesExtension.class, databaseType);
+        Optional<JdbcQueryPropertiesExtension> extension = DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;
         }
-        Properties queryProps = extension.get().extendQueryProperties();
-        if (queryProps.isEmpty()) {
-            return;
-        }
-        String url = new JdbcUrlAppender().appendQueryProperties(jdbcConfig.getUrl(), queryProps);
+        String jdbcUrl = jdbcConfig.getUrl();
+        Properties queryProperties = new StandardJdbcUrlParser().parseQueryProperties(jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?") + 1) : "");
+        extension.get().extendQueryProperties(queryProperties);
+        String url = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, queryProperties);
         jdbcConfig.setUrl(url);
         yamlConfig.put("url", url);
     }

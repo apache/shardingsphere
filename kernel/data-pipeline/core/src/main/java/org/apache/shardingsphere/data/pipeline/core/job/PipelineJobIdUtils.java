@@ -26,10 +26,11 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.common.job.type.JobCodeRegistry;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobTypeFactory;
 import org.apache.shardingsphere.data.pipeline.common.util.InstanceTypeUtils;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.nio.charset.StandardCharsets;
 
@@ -51,7 +52,7 @@ public final class PipelineJobIdUtils {
         String databaseNameHex = Hex.encodeHexString(databaseName.getBytes(StandardCharsets.UTF_8), true);
         String databaseNameLengthHex = Hex.encodeHexString(Shorts.toByteArray((short) databaseNameHex.length()), true);
         char encodedInstanceType = InstanceTypeUtils.encode(instanceType);
-        return 'j' + pipelineJobId.getJobType().getTypeCode() + pipelineJobId.getFormatVersion() + encodedInstanceType + databaseNameLengthHex + databaseNameHex;
+        return 'j' + pipelineJobId.getJobType().getCode() + pipelineJobId.getFormatVersion() + encodedInstanceType + databaseNameLengthHex + databaseNameHex;
     }
     
     /**
@@ -62,8 +63,8 @@ public final class PipelineJobIdUtils {
      */
     public static JobType parseJobType(final String jobId) {
         verifyJobId(jobId);
-        String typeCode = jobId.substring(1, 3);
-        return JobTypeFactory.getInstance(typeCode);
+        String jobTypeCode = jobId.substring(1, 3);
+        return TypedSPILoader.getService(JobType.class, JobCodeRegistry.getJobType(jobTypeCode));
     }
     
     private static void verifyJobId(final String jobId) {

@@ -148,7 +148,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         if (PipelineEnvTypeEnum.NATIVE != PipelineE2EEnvironment.getInstance().getItEnvType()) {
             return;
         }
-        String jobTypeName = jobType.getTypeName();
+        String jobTypeName = jobType.getType();
         for (Map<String, Object> each : queryJobs(connection, jobTypeName)) {
             String jobId = each.get("id").toString();
             Map<String, Object> jobInfo = queryForListWithLog(String.format("SHOW %s STATUS '%s'", jobTypeName, jobId)).get(0);
@@ -227,6 +227,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
                 .replace("${password}", getPassword())
                 .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, true));
         proxyExecuteWithLog(registerStorageUnitTemplate, 1);
+        Awaitility.await().ignoreExceptions().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
     }
     
     /**
@@ -457,7 +458,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             Set<String> actualStatus = new HashSet<>();
             Collection<Integer> incrementalIdleSecondsList = new LinkedList<>();
             for (Map<String, Object> each : listJobStatus) {
-                assertTrue(Strings.isNullOrEmpty(each.get("error_message").toString()), "error_message is not null");
+                assertTrue(Strings.isNullOrEmpty((String) each.get("error_message")), "error_message: `" + each.get("error_message") + "`");
                 actualStatus.add(each.get("status").toString());
                 String incrementalIdleSeconds = each.get("incremental_idle_seconds").toString();
                 incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));

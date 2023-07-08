@@ -49,7 +49,7 @@ public final class PipelineMetaDataNode {
     private static String getMetaDataRootPath(final JobType jobType) {
         return null == jobType
                 ? String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, "metadata")
-                : String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobType.getTypeName().toLowerCase(), "metadata");
+                : String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobType.getType().toLowerCase(), "metadata");
     }
     
     /**
