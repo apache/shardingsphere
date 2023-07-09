@@ -149,7 +149,7 @@ public final class TypedSPILoader {
             return false;
         }
         if (instance.getType() instanceof String) {
-            return instance.getType().toString().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type);    
+            return instance.getType().toString().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type);
         }
         return instance.getType().equals(type) || instance.getTypeAliases().contains(type);
     }
