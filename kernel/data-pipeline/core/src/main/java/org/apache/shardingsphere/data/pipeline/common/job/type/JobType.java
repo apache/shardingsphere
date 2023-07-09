@@ -32,4 +32,7 @@ public interface JobType extends TypedSPI {
      * @return job type code
      */
     String getCode();
+    
+    @Override
+    String getType();
 }

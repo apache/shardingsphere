@@ -39,7 +39,7 @@ public interface TypedSPI {
      * 
      * @return type
      */
-    default String getType() {
+    default Object getType() {
         return null;
     }
     

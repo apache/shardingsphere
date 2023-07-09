@@ -23,4 +23,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
  * ShardingSphere algorithm SPI.
  */
 public interface ShardingSphereAlgorithm extends TypedSPI {
+    
+    @Override
+    String getType();
 }
