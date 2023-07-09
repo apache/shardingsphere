@@ -130,7 +130,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     }
     
     private void verifyPipelineDatabaseType(final DataConsistencyCalculateAlgorithm calculateAlgorithm, final PipelineDataSourceConfiguration dataSourceConfig) {
-        ShardingSpherePreconditions.checkState(calculateAlgorithm.getSupportedDatabaseTypes().contains(dataSourceConfig.getDatabaseType().getType()),
+        ShardingSpherePreconditions.checkState(calculateAlgorithm.getSupportedDatabaseTypes().contains(dataSourceConfig.getDatabaseType()),
                 () -> new UnsupportedPipelineDatabaseTypeException(dataSourceConfig.getDatabaseType()));
     }
     

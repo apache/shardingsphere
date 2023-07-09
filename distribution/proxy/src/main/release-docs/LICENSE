@@ -234,10 +234,10 @@ The text of each license is the standard Apache 2.0 license.
     curator-client 5.4.0:  https://github.com/apache/curator, Apache 2.0
     curator-framework 5.4.0:  https://github.com/apache/curator, Apache 2.0
     curator-recipes 5.4.0:  https://github.com/apache/curator, Apache 2.0
-    cosid-core 1.16.0: https://github.com/Ahoo-Wang/CosId, Apache 2.0
-    error_prone_annotations 2.10.0: https://github.com/google/error-prone, Apache 2.0
+    cosid-core 1.18.5: https://github.com/Ahoo-Wang/CosId, Apache 2.0
+    error_prone_annotations 2.11.0: https://github.com/google/error-prone, Apache 2.0
     failsafe 2.4.4: https://github.com/jhalterman/failsafe, Apache 2.0
-    failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0 
+    failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0
     freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
     groovy 4.0.10: https://groovy.apache.org/, Apache 2.0
     grpc-api 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
@@ -258,6 +258,7 @@ The text of each license is the standard Apache 2.0 license.
     jackson-core 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-databind 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-dataformat-yaml 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-datatype-jsr310 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
     jcl-over-slf4j 1.7.36: https://github.com/qos-ch/slf4j, Apache 2.0
     jetcd-api 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-common 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
@@ -265,7 +266,7 @@ The text of each license is the standard Apache 2.0 license.
     jetcd-grpc 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
     json-path 2.7.0: https://github.com/jayway/JsonPath, Apache 2.0
     json-smart 2.4.7: https://www.minidev.net/, Apache 2.0
-    json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0 
+    json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
     memory 0.9.0, Apache 2.0
     netty-buffer 4.1.90.Final: https://github.com/netty, Apache 2.0
@@ -312,7 +313,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     transactions-api 5.0.9: https://www.atomikos.com, Apache 2.0
     transactions-jdbc 5.0.9: https://www.atomikos.com, Apache 2.0
     transactions-jta 5.0.9: https://www.atomikos.com, Apache 2.0
-    
+
 ========================================================================
 BSD licenses
 ========================================================================
@@ -338,8 +339,11 @@ CDDL licenses
 The following components are provided under the CDDL License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    javax.annotation-api 1.3.2: https://github.com/javaee/javax.annotation, CDDL
+    javax.activation-api 1.2.0: https://github.com/javaee/javax.annotation, CDDL
     jta 1.1: http://jta-spec.java.net, CDDL
+    jaxb-api 2.3.0: http://www.oracle.com, CDDL
+    jaxb-core 2.3.0: http://www.oracle.com, CDDL
+    jaxb-impl 2.3.0 http://www.oracle.com, CDDL
 
 ========================================================================
 EPL licenses
@@ -367,7 +371,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
     jul-to-slf4j 1.7.36: https://www.slf4j.org, MIT
     slf4j-api 1.7.36: https://www.slf4j.org, MIT
-    jnanoid 2.0.0: https://github.com/aventrix/jnanoid, MIT 
+    jnanoid 2.0.0: https://github.com/aventrix/jnanoid, MIT
 
 ========================================================================
 UPL licenses

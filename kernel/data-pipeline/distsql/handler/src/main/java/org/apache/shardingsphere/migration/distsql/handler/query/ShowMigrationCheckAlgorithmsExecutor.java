@@ -39,7 +39,8 @@ public final class ShowMigrationCheckAlgorithmsExecutor implements QueryableRALE
         InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION");
         return jobAPI.listDataConsistencyCheckAlgorithms().stream().map(
                 each -> new LocalDataQueryResultRow(each.getType(),
-                        each.getSupportedDatabaseTypes().stream().map(TypedSPI::getType).collect(Collectors.joining(",")), each.getDescription())).collect(Collectors.toList());
+                        each.getSupportedDatabaseTypes().stream().map(TypedSPI::getType).collect(Collectors.joining(",")), each.getDescription()))
+                .collect(Collectors.toList());
     }
     
     @Override
