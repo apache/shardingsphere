@@ -40,7 +40,7 @@ public interface TypedSPI {
      * @return type
      */
     default String getType() {
-        return "";
+        return null;
     }
     
     /**
