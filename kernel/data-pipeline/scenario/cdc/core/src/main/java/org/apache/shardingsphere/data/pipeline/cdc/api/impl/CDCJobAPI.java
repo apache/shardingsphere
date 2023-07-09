@@ -194,7 +194,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
                                                                                               final PipelineDataSourceManager dataSourceManager,
                                                                                               final DumperConfiguration dumperConfig) throws SQLException {
         InventoryIncrementalJobItemProgress result = new InventoryIncrementalJobItemProgress();
-        result.setSourceDatabaseType(jobConfig.getSourceDatabaseType().getType());
+        result.setSourceDatabaseType(jobConfig.getSourceDatabaseType());
         result.setDataSourceName(dumperConfig.getDataSourceName());
         IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(PipelineJobPreparerUtils.getIncrementalPosition(null, dumperConfig, dataSourceManager));
         result.setIncremental(new JobItemIncrementalTasksProgress(incrementalTaskProgress));
