@@ -174,22 +174,19 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     private void initIncrementalPosition(final CDCJobConfiguration jobConfig) {
-        PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         String jobId = jobConfig.getJobId();
-        try {
+        try (PipelineDataSourceManager pipelineDataSourceManager = new DefaultPipelineDataSourceManager()) {
             for (int i = 0; i < jobConfig.getJobShardingCount(); i++) {
                 if (getJobItemProgress(jobId, i).isPresent()) {
                     continue;
                 }
                 DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig, i, getTableNameSchemaNameMapping(jobConfig.getSchemaTableNames()));
-                InventoryIncrementalJobItemProgress jobItemProgress = getInventoryIncrementalJobItemProgress(jobConfig, dataSourceManager, dumperConfig);
+                InventoryIncrementalJobItemProgress jobItemProgress = getInventoryIncrementalJobItemProgress(jobConfig, pipelineDataSourceManager, dumperConfig);
                 PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persistJobItemProgress(
                         jobId, i, YamlEngine.marshal(getJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress)));
             }
         } catch (final SQLException ex) {
-            throw new PrepareJobWithGetBinlogPositionException(jobConfig.getJobId(), ex);
-        } finally {
-            dataSourceManager.close();
+            throw new PrepareJobWithGetBinlogPositionException(jobId, ex);
         }
     }
     

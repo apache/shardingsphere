@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.task;
 
 import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.common.util.CloseUtils;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 
@@ -56,11 +56,11 @@ public final class CDCTasksRunner implements PipelineTasksRunner {
         jobItemContext.setStopping(true);
         for (PipelineTask each : inventoryTasks) {
             each.stop();
-            CloseUtils.closeQuietly(each);
+            QuietlyCloser.close(each);
         }
         for (PipelineTask each : incrementalTasks) {
             each.stop();
-            CloseUtils.closeQuietly(each);
+            QuietlyCloser.close(each);
         }
     }
 }

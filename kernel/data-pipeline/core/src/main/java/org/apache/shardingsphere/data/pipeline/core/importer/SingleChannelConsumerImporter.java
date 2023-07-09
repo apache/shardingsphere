@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderReco
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
-import org.apache.shardingsphere.data.pipeline.common.util.CloseUtils;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 
 import java.util.List;
@@ -68,6 +68,6 @@ public final class SingleChannelConsumerImporter extends AbstractLifecycleExecut
     
     @Override
     protected void doStop() {
-        CloseUtils.closeQuietly(sink);
+        QuietlyCloser.close(sink);
     }
 }
