@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Switching resource.
@@ -46,6 +47,6 @@ public final class SwitchingResource {
      * Close stale data sources.
      */
     public void closeStaleDataSources() {
-        staleStorageResource.getStorageNodes().values().forEach(resourceMetaData::close);
+        staleStorageResource.getStorageNodes().values().stream().filter(Objects::nonNull).forEach(resourceMetaData::close);
     }
 }

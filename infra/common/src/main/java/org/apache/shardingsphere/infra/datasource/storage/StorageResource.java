@@ -47,7 +47,9 @@ public class StorageResource {
         Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
         for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
             DataSource dataSource = storageNodes.get(entry.getValue().getNodeName());
-            result.put(entry.getKey(), new ShardingSphereStorageDataSourceWrapper(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
+            if (null != dataSource) {
+                result.put(entry.getKey(), new ShardingSphereStorageDataSourceWrapper(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
+            } 
         }
         return result;
     }
