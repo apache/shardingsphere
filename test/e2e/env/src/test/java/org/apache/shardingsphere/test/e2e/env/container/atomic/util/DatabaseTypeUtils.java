@@ -20,46 +20,12 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 
 /**
  * Database type utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseTypeUtils {
-    
-    /**
-     * Check MySQL database type.
-     *
-     * @param databaseType database type
-     * @return true if database type is MySQL, false otherwise
-     */
-    public static boolean isMySQL(final DatabaseType databaseType) {
-        return databaseType instanceof MySQLDatabaseType;
-    }
-    
-    /**
-     * Check PostgreSQL database type.
-     *
-     * @param databaseType database type
-     * @return true if database type is PostgreSQL, false otherwise
-     */
-    public static boolean isPostgreSQL(final DatabaseType databaseType) {
-        return databaseType instanceof PostgreSQLDatabaseType;
-    }
-    
-    /**
-     * Check openGauss database type.
-     *
-     * @param databaseType database type
-     * @return true if database type is openGauss, false otherwise
-     */
-    public static boolean isOpenGauss(final DatabaseType databaseType) {
-        return databaseType instanceof OpenGaussDatabaseType;
-    }
     
     /**
      * Get storage container image major version.
