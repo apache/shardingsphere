@@ -146,7 +146,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         InventoryIncrementalJobItemContext context = (InventoryIncrementalJobItemContext) jobItemContext;
         InventoryIncrementalJobItemProgress jobItemProgress = new InventoryIncrementalJobItemProgress();
         jobItemProgress.setStatus(context.getStatus());
-        jobItemProgress.setSourceDatabaseType(context.getJobConfig().getSourceDatabaseType());
+        jobItemProgress.setSourceDatabaseType(context.getJobConfig().getSourceDatabaseType().getType());
         jobItemProgress.setDataSourceName(context.getDataSourceName());
         jobItemProgress.setIncremental(getIncrementalTasksProgress(context.getIncrementalTasks()));
         jobItemProgress.setInventory(getInventoryTasksProgress(context.getInventoryTasks()));
