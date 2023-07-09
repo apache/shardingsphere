@@ -22,22 +22,18 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Database type utility class.
+ * Database version parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseTypeUtils {
+public final class DatabaseVersionParser {
     
     /**
-     * Get storage container image major version.
+     * parse major database version.
      *
      * @param storageContainerImage storage container image
      * @return major version
      */
     public static String parseMajorVersion(final String storageContainerImage) {
-        if (StringUtils.isBlank(storageContainerImage)) {
-            return "";
-        }
-        String version = storageContainerImage.split(":")[1];
-        return version.split("\\.")[0];
+        return StringUtils.isBlank(storageContainerImage) ? "" : storageContainerImage.substring(storageContainerImage.indexOf(':') + 1, storageContainerImage.indexOf('.'));
     }
 }
