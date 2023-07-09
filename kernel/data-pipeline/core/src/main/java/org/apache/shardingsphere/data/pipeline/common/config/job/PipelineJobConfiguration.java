@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.common.config.job;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
 /**
  * Pipeline job configuration.
  */
@@ -41,5 +43,5 @@ public interface PipelineJobConfiguration {
      *
      * @return source database type
      */
-    String getSourceDatabaseType();
+    DatabaseType getSourceDatabaseType();
 }
