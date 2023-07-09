@@ -120,7 +120,7 @@ public final class TypedSPILoader {
      * @return service
      */
     public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type, final Properties props) {
-        return findService(spiClass, type, props).orElseGet(() -> findService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass)));
+        return findService(spiClass, type, props).orElseGet(() -> findService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, type)));
     }
     
     /**
@@ -145,6 +145,12 @@ public final class TypedSPILoader {
     }
     
     private static boolean matchesType(final String type, final TypedSPI instance) {
-        return null != instance.getType() && (instance.getType().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type));
+        if (null == instance.getType()) {
+            return false;
+        }
+        if (instance.getType() instanceof String) {
+            return instance.getType().toString().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type);
+        }
+        return instance.getType().equals(type) || instance.getTypeAliases().contains(type);
     }
 }

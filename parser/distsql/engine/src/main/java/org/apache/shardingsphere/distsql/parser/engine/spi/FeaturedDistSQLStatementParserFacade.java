@@ -34,4 +34,7 @@ public interface FeaturedDistSQLStatementParserFacade extends SQLParserFacade {
      * @return visitor class
      */
     Class<? extends SQLVisitor<ASTNode>> getVisitorClass();
+    
+    @Override
+    String getType();
 }
