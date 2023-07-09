@@ -163,27 +163,4 @@ public interface ModeContextManager {
      * @param props pros
      */
     void alterProperties(Properties props);
-    
-    /**
-     * TODO Remove to MetaDataPersistService
-     * Get active version by key.
-     *
-     * @param key key
-     * @return active version
-     */
-    default String getActiveVersionByKey(String key) {
-        return "";
-    }
-    
-    /**
-     * TODO Remove to MetaDataPersistService
-     * Get version path by active version key.
-     *
-     * @param key key
-     * @param activeVersion active version
-     * @return version path
-     */
-    default String getVersionPathByActiveVersionKey(String key, String activeVersion) {
-        return "";
-    }
 }
