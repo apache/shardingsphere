@@ -20,6 +20,9 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.con
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
@@ -47,13 +50,13 @@ public final class PipelineProxyClusterContainerConfigurationFactory {
     }
     
     private static String getProxyDatasourceName(final DatabaseType databaseType) {
-        return (DatabaseTypeUtils.isPostgreSQL(databaseType) || DatabaseTypeUtils.isOpenGauss(databaseType)) ? "postgres" : "";
+        return (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) ? "postgres" : "";
     }
     
     private static Map<String, String> getMountedResource(final DatabaseType databaseType, final String storageContainerImage) {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.putAll(ProxyClusterContainerConfigurationFactory.newInstance().getMountedResources());
-        if (DatabaseTypeUtils.isMySQL(databaseType)) {
+        if (databaseType instanceof MySQLDatabaseType) {
             String majorVersion = DatabaseTypeUtils.parseMajorVersion(storageContainerImage);
             result.put(String.format("/env/%s/server-%s.yaml", databaseType.getType().toLowerCase(), majorVersion), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "server.yaml");
         } else {
