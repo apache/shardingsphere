@@ -145,6 +145,12 @@ public final class TypedSPILoader {
     }
     
     private static boolean matchesType(final String type, final TypedSPI instance) {
-        return null != instance.getType() && (instance.getType().equals(type) || instance.getTypeAliases().contains(type));
+        if (null == instance.getType()) {
+            return false;
+        }
+        if (instance.getType() instanceof String) {
+            return instance.getType().toString().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type);    
+        }
+        return instance.getType().equals(type) || instance.getTypeAliases().contains(type);
     }
 }
