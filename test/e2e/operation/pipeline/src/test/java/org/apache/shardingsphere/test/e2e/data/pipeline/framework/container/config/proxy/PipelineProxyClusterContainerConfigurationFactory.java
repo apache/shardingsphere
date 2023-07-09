@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.Ad
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtils;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseVersionParser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +57,7 @@ public final class PipelineProxyClusterContainerConfigurationFactory {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.putAll(ProxyClusterContainerConfigurationFactory.newInstance().getMountedResources());
         if (databaseType instanceof MySQLDatabaseType) {
-            String majorVersion = DatabaseTypeUtils.parseMajorVersion(storageContainerImage);
+            String majorVersion = DatabaseVersionParser.parseMajorVersion(storageContainerImage);
             result.put(String.format("/env/%s/server-%s.yaml", databaseType.getType().toLowerCase(), majorVersion), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "server.yaml");
         } else {
             result.put(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "server.yaml");
