@@ -89,10 +89,6 @@ public final class TypedSPILoader {
         return Optional.empty();
     }
     
-    private static boolean matchesType(final String type, final TypedSPI instance) {
-        return instance.getType().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type);
-    }
-    
     private static Properties convertToStringTypedProperties(final Properties props) {
         if (props.isEmpty()) {
             return props;
@@ -134,7 +130,7 @@ public final class TypedSPILoader {
      * @param type type
      * @param props properties
      * @param <T> SPI class type
-     * @return check result
+     * @return is valid service or not
      * @throws ServiceProviderNotFoundServerException service provider not found server exception
      */
     public static <T extends TypedSPI> boolean checkService(final Class<T> spiClass, final String type, final Properties props) {
@@ -146,5 +142,9 @@ public final class TypedSPILoader {
             }
         }
         throw new ServiceProviderNotFoundServerException(spiClass, type);
+    }
+    
+    private static boolean matchesType(final String type, final TypedSPI instance) {
+        return null != instance.getType() && (instance.getType().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type));
     }
 }
