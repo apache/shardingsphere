@@ -49,7 +49,7 @@ public class StorageResource {
             DataSource dataSource = storageNodes.get(entry.getValue().getNodeName());
             if (null != dataSource) {
                 result.put(entry.getKey(), new ShardingSphereStorageDataSourceWrapper(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
-            } 
+            }
         }
         return result;
     }

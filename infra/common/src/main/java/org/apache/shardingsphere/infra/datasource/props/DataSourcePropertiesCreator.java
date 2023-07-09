@@ -143,7 +143,8 @@ public final class DataSourcePropertiesCreator {
     private static PoolConfiguration getPoolConfiguration(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourceProperties customDataSourceProperties) {
         Map<String, Object> standardProperties = poolPropertySynonyms.getStandardProperties();
         Long connectionTimeoutMilliseconds = standardProperties.containsKey("connectionTimeoutMilliseconds")
-                ? Long.valueOf(String.valueOf(standardProperties.get("connectionTimeoutMilliseconds"))) : null;
+                ? Long.valueOf(String.valueOf(standardProperties.get("connectionTimeoutMilliseconds")))
+                : null;
         Long idleTimeoutMilliseconds = standardProperties.containsKey("idleTimeoutMilliseconds") ? Long.valueOf(String.valueOf(standardProperties.get("idleTimeoutMilliseconds"))) : null;
         Long maxLifetimeMilliseconds = standardProperties.containsKey("maxLifetimeMilliseconds") ? Long.valueOf(String.valueOf(standardProperties.get("maxLifetimeMilliseconds"))) : null;
         Integer maxPoolSize = standardProperties.containsKey("maxPoolSize") ? Integer.valueOf(String.valueOf(standardProperties.get("maxPoolSize"))) : null;
