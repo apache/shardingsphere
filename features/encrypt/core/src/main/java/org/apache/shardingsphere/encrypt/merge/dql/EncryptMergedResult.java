@@ -66,10 +66,10 @@ public final class EncryptMergedResult implements MergedResult {
         ColumnProjection originalColumn = new ColumnProjection(columnProjection.get().getOriginalOwner(), columnProjection.get().getOriginalName(), null);
         Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(Collections.singletonList(originalColumn), database.getSchema(schemaName));
         Optional<String> tableName = findTableName(originalColumn, expressionTableNames);
-        String originalColumnName = originalColumn.getName();
         if (!tableName.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
+        String originalColumnName = originalColumn.getName();
         if (!encryptRule.findEncryptTable(tableName.get()).map(optional -> optional.isEncryptColumn(originalColumnName)).orElse(false)) {
             return mergedResult.getValue(columnIndex, type);
         }
