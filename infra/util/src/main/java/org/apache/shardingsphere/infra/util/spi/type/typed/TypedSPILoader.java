@@ -120,7 +120,7 @@ public final class TypedSPILoader {
      * @return service
      */
     public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type, final Properties props) {
-        return findService(spiClass, type, props).orElseGet(() -> findService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass)));
+        return findService(spiClass, type, props).orElseGet(() -> findService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, type)));
     }
     
     /**
