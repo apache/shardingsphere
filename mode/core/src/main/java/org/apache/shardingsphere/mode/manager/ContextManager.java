@@ -616,12 +616,6 @@ public final class ContextManager implements AutoCloseable {
         return result;
     }
     
-    private Collection<ShardingSphereRule> removeSingleGlobalRule(final String ruleSimpleName) {
-        Collection<ShardingSphereRule> result = new LinkedList<>(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules());
-        result.removeIf(each -> each.getType().equals(ruleSimpleName));
-        return result;
-    }
-    
     /**
      * Alter properties.
      * 

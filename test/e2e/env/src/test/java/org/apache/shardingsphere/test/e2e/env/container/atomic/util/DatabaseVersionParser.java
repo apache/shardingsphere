@@ -15,33 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.job.progress;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.util;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 
 /**
- * Inventory incremental job item progress.
+ * Database version parser.
  */
-@Getter
-@Setter
-public final class InventoryIncrementalJobItemProgress implements PipelineJobItemProgress {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseVersionParser {
     
-    private JobStatus status = JobStatus.RUNNING;
-    
-    private DatabaseType sourceDatabaseType;
-    
-    private String dataSourceName;
-    
-    private boolean active;
-    
-    private JobItemInventoryTasksProgress inventory;
-    
-    private JobItemIncrementalTasksProgress incremental;
-    
-    private long processedRecordsCount;
-    
-    private long inventoryRecordsCount;
+    /**
+     * parse major database version.
+     *
+     * @param storageContainerImage storage container image
+     * @return major version
+     */
+    public static String parseMajorVersion(final String storageContainerImage) {
+        return StringUtils.isBlank(storageContainerImage) ? "" : storageContainerImage.substring(storageContainerImage.indexOf(':') + 1, storageContainerImage.indexOf('.'));
+    }
 }

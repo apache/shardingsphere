@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.List;
 import java.util.Properties;
@@ -42,7 +43,7 @@ public final class CDCJobConfiguration implements PipelineJobConfiguration {
     
     private final boolean full;
     
-    private final String sourceDatabaseType;
+    private final DatabaseType sourceDatabaseType;
     
     private final ShardingSpherePipelineDataSourceConfiguration dataSourceConfig;
     
