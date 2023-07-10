@@ -45,11 +45,12 @@ public final class RuleItemChangedSubscriber {
     @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
     @Subscribe
     public void renew(final AlterRuleItemEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
-        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        String yamlContent =
+                contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getVersionPathByActiveVersion(event.getActiveVersionKey(), event.getActiveVersion());
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
         synchronized (this) {

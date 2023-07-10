@@ -93,7 +93,7 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
         Map<String, ShardingSphereTable> tables = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
@@ -118,7 +118,7 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterViewEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
         Map<String, ShardingSphereView> views = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
