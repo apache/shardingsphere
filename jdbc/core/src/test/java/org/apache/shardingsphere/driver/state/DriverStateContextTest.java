@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.state;
 
-import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
@@ -80,7 +79,7 @@ class DriverStateContextTest {
     
     @Test
     void assertGetConnectionWithOkState() {
-        Connection actual = DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager, mock(JDBCContext.class));
+        Connection actual = DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager);
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
 }
