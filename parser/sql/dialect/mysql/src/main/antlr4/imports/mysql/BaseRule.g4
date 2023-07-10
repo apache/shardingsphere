@@ -136,6 +136,7 @@ identifierKeywordsUnambiguous
     | AVG_ROW_LENGTH
     | AVG
     | BACKUP
+    | BEFORE
     | BINLOG
     | BIT
     | BLOCK

@@ -17,6 +17,23 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_user_variable_before_after">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="@before=@after" start-index="7" stop-index="20">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="20">
+                        <left>
+                            <variable-segment start-index="7" stop-index="13" variable="before" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <variable-segment start-index="15" stop-index="20" variable="after" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
     <select sql-case-id="select_with_exist_in">
         <projections start-index="7" stop-index="93">
             <expression-projection text="+0 IN(0b111111111111111111111111111111111111111111111111111,rpad(1.0,2048,1),32767.1)" start-index="7" stop-index="93">
