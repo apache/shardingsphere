@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.context;
 
 import org.apache.shardingsphere.driver.state.circuit.datasource.CircuitBreakerDataSource;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceUnitsChangedEvent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -46,7 +46,7 @@ class JDBCContextTest {
     @Test
     void assertGetCachedDatabaseMetaDataAfterRefreshingExisting() throws SQLException {
         JDBCContext jdbcContext = new JDBCContext(Collections.singletonMap("foo_db", new CircuitBreakerDataSource()));
-        jdbcContext.refreshCachedDatabaseMetaData(mock(DataSourceChangedEvent.class));
+        jdbcContext.refreshCachedDatabaseMetaData(mock(DataSourceUnitsChangedEvent.class));
         assertNull(jdbcContext.getCachedDatabaseMetaData());
     }
 }

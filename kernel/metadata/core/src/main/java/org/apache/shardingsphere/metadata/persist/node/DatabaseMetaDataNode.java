@@ -267,13 +267,25 @@ public final class DatabaseMetaDataNode {
     }
     
     /**
-     * Get version by data sources path.
+     * Get version by data source units path.
      * 
+     * @param dataSourceNodeFullPath data sources unit node full path
+     * @return version
+     */
+    public static Optional<String> getVersionByDataSourceUnitsPath(final String dataSourceNodeFullPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/versions/([\\w\\-]+)/data_sources/units", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Get version by data source nodes path.
+     *
      * @param dataSourceNodeFullPath data sources node full path
      * @return version
      */
-    public static Optional<String> getVersionByDataSourcesPath(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/versions/([\\w\\-]+)/data_sources", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getVersionByDataSourceNodesPath(final String dataSourceNodeFullPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/versions/([\\w\\-]+)/data_sources/nodes", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }

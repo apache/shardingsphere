@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.context;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceUnitsChangedEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -56,7 +56,7 @@ public final class JDBCContext {
      */
     @SuppressWarnings("UnstableApiUsage")
     @Subscribe
-    public void refreshCachedDatabaseMetaData(final DataSourceChangedEvent event) throws SQLException {
+    public void refreshCachedDatabaseMetaData(final DataSourceUnitsChangedEvent event) throws SQLException {
         cachedDatabaseMetaData.set(createCachedDatabaseMetaData(DataSourcePoolCreator.create(event.getDataSourcePropertiesMap())).orElse(null));
     }
     

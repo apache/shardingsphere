@@ -19,17 +19,17 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.conf
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 import java.util.Map;
 
 /**
- * Data source changed event.
+ * Data source nodes changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceChangedEvent implements GovernanceEvent {
+public final class DataSourceNodesChangedEvent implements GovernanceEvent {
     
     private final String databaseName;
     
