@@ -27,19 +27,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
-import java.util.TreeSet;
 
 /**
  * Set charset executor of MySQL.
  */
 public final class MySQLSetCharsetExecutor implements MySQLSessionVariableHandler {
-    
-    private static final Collection<String> TYPE_ALIASES = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-    
-    static {
-        TYPE_ALIASES.add("character_set_client");
-    }
     
     @Override
     public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
@@ -72,7 +66,7 @@ public final class MySQLSetCharsetExecutor implements MySQLSessionVariableHandle
     }
     
     @Override
-    public Collection<String> getTypeAliases() {
-        return TYPE_ALIASES;
+    public Collection<Object> getTypeAliases() {
+        return Collections.singleton("character_set_client");
     }
 }
