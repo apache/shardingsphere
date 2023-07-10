@@ -10,7 +10,7 @@ From emerging technologies like generative AI to discussions on cloud-native tec
 
 Among the participants, the[ ShardingSphere](https://shardingsphere.apache.org/) open-source community and its PMC and[ SphereEx](https://www.sphere-ex.com/) co-founder and CTO[ Trista Pan](https://github.com/tristaZero), made their mark in the Developer Lounge, engaging with enthusiasts and sharing experiences. In this blog post, we will delve into the DevLounge's roundtable discussion on unlocking data value with open source and explore ShardingSphere's approach to data security.
 
-![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China1.jpg") ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China2.jpeg") ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China3.jpeg") 
+![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China1.jpg) ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China2.jpeg) ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China3.jpeg) 
 
 ## Roundtable Discussion: How Developers Can Unlock Data Value with Open Source
 
@@ -50,9 +50,9 @@ Addressing the challenges in data value mining, Trista highlighted data security
 
 At the event, ShardingSphere's lightweight open-source distributed SQL transaction & query engine garnered significant attention. Database developers, operations engineers, and architects showed great interest in ShardingSphere's technical framework, implementation, feature highlights, and its joint solution with AWS Aurora. Many expressed a desire to join the ShardingSphere community to gain hands-on experience and expand their knowledge.
 
-![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China7.jpg") ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China8.jpg")
+![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China7.jpg) ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China8.jpg)
 
-![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China9.jpg") ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China10.jpg")
+![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China9.jpg) ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China10.jpg)
 
 ## Conclusion
 
