@@ -331,6 +331,42 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Register storage node.
+     *
+     * @param databaseName database name
+     * @param dataSourceProps data source properties
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void registerStorageNode(final String databaseName, final Map<String, DataSourceProperties> dataSourceProps) {
+        // TODO Support for registering storage node #25447
+    }
+    
+    /**
+     * Alter storage node.
+     *
+     * @param databaseName database name
+     * @param storageUnitName storage unit name
+     * @param dataSourceProps data source properties
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void alterStorageNode(final String databaseName, final String storageUnitName, final Map<String, DataSourceProperties> dataSourceProps) {
+        // TODO Support for registering storage node #25447
+    
+    }
+    
+    /**
+     * Unregister storage node.
+     *
+     * @param databaseName database name
+     * @param storageUnitName storage unit name
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void unregisterStorageNode(final String databaseName, final String storageUnitName) {
+        // TODO Support for registering storage node #25447
+    
+    }
+    
+    /**
      * Alter rule configuration.
      * 
      * @param databaseName database name
