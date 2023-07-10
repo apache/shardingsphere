@@ -173,7 +173,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         Map<String, DataSourceProperties> dataSourcePropertiesMap = yamlDataSources.isEmpty()
                 ? new HashMap<>()
                 : yamlDataSources.entrySet().stream().collect(Collectors.toMap(
-                Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                        Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         return new DataSourceNodesChangedEvent(databaseName, databaseVersion, dataSourcePropertiesMap);
     }
     
