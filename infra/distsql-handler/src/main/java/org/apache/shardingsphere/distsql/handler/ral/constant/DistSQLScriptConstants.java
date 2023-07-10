@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.constant;
+package org.apache.shardingsphere.distsql.handler.ral.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
