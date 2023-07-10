@@ -166,7 +166,7 @@ GRANT CREATE, ALTER, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON target_ds_1.
 
 Once you have granted the necessary permissions, begin by initializing the source tables in the source database. This involves simulating initial data that will serve as the foundation for the migration process.
 
-### Step 1: Initialize Data in the Source Database
+## Step 1: Initialize Data in the Source Database
 
 1. Initialize tables in the source database: Create the necessary tables in the source database and populate them with initial data.
 
@@ -190,7 +190,7 @@ INSERT INTO t_user (id, username, password, mobile) VALUES (3, 'mike', 'aaa123',
 INSERT INTO t_user (id, username, password, mobile) VALUES (4, 'bob', 'aaabbb', '13111111114');
 ```
 
-### Step 2: Initialize ShardingSphere-Proxy Rules
+## Step 2: Initialize ShardingSphere-Proxy Rules
 
 Next, start ShardingSphere-Proxy in cluster mode and log in through the database client. Execute the commands to create the necessary databases and initialize the rule definitions.
 
@@ -265,7 +265,7 @@ REGISTER STORAGE UNIT read_ds_1  (
 
 By completing these steps, the configurations for the target database are initialized and ready for data migration.
 
-### Step 3: Start Data Migration Job
+## Step 3: Start Data Migration Job
 
 Now it's time to initiate the data migration process itself.
 
@@ -300,7 +300,7 @@ During the data migration process, you can monitor the progress and ensure its a
    
 -  Check migration status: Use the command "SHOW MIGRATION STATUS &lt;jobId>" to view detailed information about a specific migration job, such as the number of tasks, processed records count, and the percentage of completion.
 
-### Step 4: Check Data Consistency
+## Step 4: Check Data Consistency
 
 ShardingSphere provides the ability to check data consistency using DistSQL. This step is particularly useful when dealing with large amounts of data, as it allows independent verification of data sources before and after migration.
 
@@ -321,7 +321,7 @@ mysql> SHOW MIGRATION STATUS j0102p000041c4912117c302e9facd92f9a74a478c;
 1 row in set (0.04 sec)
 ```
 
-### Step 5: Submit the Migration Job
+## Step 5: Submit the Migration Job
 
 Once the consistency check is completed, you can submit the migration job to finalize the migration process. This step also includes necessary operations such as cleaning up PostgreSQL Replication Slot and refreshing table metadata：
 
