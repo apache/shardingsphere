@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabas
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceNodesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceUnitsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
@@ -60,7 +61,18 @@ public final class ConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DataSourceUnitsChangedEvent event) {
-        contextManager.alterDataSourceConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
+        contextManager.alterDataSourceUnitsConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
+        disableDataSources();
+    }
+    
+    /**
+     * Renew data source configuration.
+     *
+     * @param event data source changed event.
+     */
+    @Subscribe
+    public synchronized void renew(final DataSourceNodesChangedEvent event) {
+        contextManager.alterDataSourceNodesConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
         disableDataSources();
     }
     

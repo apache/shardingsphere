@@ -416,13 +416,13 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Alter data source configuration.
+     * Alter data source units configuration.
      * 
      * @param databaseName database name
      * @param dataSourcePropsMap altered data source properties map
      */
     @SuppressWarnings("rawtypes")
-    public synchronized void alterDataSourceConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    public synchronized void alterDataSourceUnitsConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
@@ -443,6 +443,16 @@ public final class ContextManager implements AutoCloseable {
         } catch (final SQLException ex) {
             log.error("Alter database: {} data source configuration failed", databaseName, ex);
         }
+    }
+    
+    /**
+     * Alter data source nodes configuration.
+     *
+     * @param databaseName database name
+     * @param dataSourcePropsMap altered data source properties map
+     */
+    public synchronized void alterDataSourceNodesConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        // TODO Support for registering storage node #25447
     }
     
     /**
