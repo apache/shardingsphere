@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.scenario.migration.metadata.processor.ChangedMigrationJobConfigurationProcessor
+org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.metadata.processor.ConsistencyCheckJobConfigurationChangedProcessor
