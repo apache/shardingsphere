@@ -19,17 +19,17 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.metada
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
-import org.apache.shardingsphere.data.pipeline.common.metadata.node.config.processor.impl.AbstractChangedJobConfigurationProcessor;
+import org.apache.shardingsphere.data.pipeline.common.metadata.node.config.processor.impl.AbstractJobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 
 /**
- * Changed consistency check job configuration processor.
+ * Consistency check job configuration changed processor.
  */
 @Slf4j
-public final class ChangedConsistencyCheckJobConfigurationProcessor extends AbstractChangedJobConfigurationProcessor {
+public final class ConsistencyCheckJobConfigurationChangedProcessor extends AbstractJobConfigurationChangedProcessor {
     
     @Override
     protected void onDeleted(final JobConfiguration jobConfig) {

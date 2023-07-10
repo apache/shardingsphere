@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 /**
- * Changed job configuration processor.
+ * Job configuration changed processor.
  */
-public interface ChangedJobConfigurationProcessor extends TypedSPI {
+public interface JobConfigurationChangedProcessor extends TypedSPI {
     
     /**
      * Process changed job configuration.

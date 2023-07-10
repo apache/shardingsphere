@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.metadata.proc
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
-import org.apache.shardingsphere.data.pipeline.common.metadata.node.config.processor.impl.AbstractChangedJobConfigurationProcessor;
+import org.apache.shardingsphere.data.pipeline.common.metadata.node.config.processor.impl.AbstractJobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
@@ -28,10 +28,10 @@ import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigur
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 
 /**
- * Changed migration job configuration processor.
+ * Migration job configuration changed processor.
  */
 @Slf4j
-public final class ChangedMigrationJobConfigurationProcessor extends AbstractChangedJobConfigurationProcessor {
+public final class MigrationJobConfigurationChangedProcessor extends AbstractJobConfigurationChangedProcessor {
     
     @Override
     protected void onDeleted(final JobConfiguration jobConfig) {
