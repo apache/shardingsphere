@@ -78,7 +78,7 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

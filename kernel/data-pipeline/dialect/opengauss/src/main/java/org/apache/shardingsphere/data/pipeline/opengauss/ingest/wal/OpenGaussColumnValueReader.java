@@ -66,7 +66,7 @@ public final class OpenGaussColumnValueReader extends AbstractColumnValueReader 
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

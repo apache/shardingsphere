@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -28,7 +28,7 @@ import java.util.Collection;
  * Create table SQL generator.
  */
 @SingletonSPI
-public interface CreateTableSQLGenerator extends TypedSPI {
+public interface CreateTableSQLGenerator extends DatabaseTypedSPI {
     
     /**
     * Generate create table SQLs.

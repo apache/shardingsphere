@@ -34,7 +34,7 @@ public final class FixtureColumnValueReader extends AbstractColumnValueReader {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

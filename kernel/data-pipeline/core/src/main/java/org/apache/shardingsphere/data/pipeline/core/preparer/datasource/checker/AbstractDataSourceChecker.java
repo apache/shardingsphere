@@ -76,11 +76,4 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
             return !resultSet.next();
         }
     }
-    
-    protected abstract String getDatabaseType();
-    
-    @Override
-    public String getType() {
-        return getDatabaseType();
-    }
 }

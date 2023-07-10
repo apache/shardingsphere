@@ -71,7 +71,7 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
     }
     
     @Override
-    protected String getDatabaseType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

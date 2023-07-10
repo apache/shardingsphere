@@ -46,7 +46,7 @@ public final class MySQLDataTypeLoader implements DialectDataTypeLoader {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

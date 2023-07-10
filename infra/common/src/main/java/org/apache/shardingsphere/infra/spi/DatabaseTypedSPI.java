@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
+package org.apache.shardingsphere.infra.spi;
 
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 /**
- * Column value reader.
+ * Database typed SPI.
  */
-@SingletonSPI
-public interface ColumnValueReader extends DatabaseTypedSPI {
+public interface DatabaseTypedSPI extends TypedSPI {
     
     /**
-     * Read column value.
+     * Get database type.
      *
-     * @param resultSet result set
-     * @param resultSetMetaData result set meta data
-     * @param columnIndex column index
-     * @return column value
-     * @throws SQLException from database
+     * @return database type
      */
-    Object readValue(ResultSet resultSet, ResultSetMetaData resultSetMetaData, int columnIndex) throws SQLException;
+    String getDatabaseType();
+    
+    @Override
+    default DatabaseType getType() {
+        return TypedSPILoader.getService(DatabaseType.class, getDatabaseType());
+    }
 }
