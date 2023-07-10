@@ -351,7 +351,6 @@ public final class ContextManager implements AutoCloseable {
     @SuppressWarnings("rawtypes")
     public synchronized void alterStorageNode(final String databaseName, final String storageUnitName, final Map<String, DataSourceProperties> dataSourceProps) {
         // TODO Support for registering storage node #25447
-    
     }
     
     /**
@@ -363,7 +362,6 @@ public final class ContextManager implements AutoCloseable {
     @SuppressWarnings("rawtypes")
     public synchronized void unregisterStorageNode(final String databaseName, final String storageUnitName) {
         // TODO Support for registering storage node #25447
-    
     }
     
     /**
