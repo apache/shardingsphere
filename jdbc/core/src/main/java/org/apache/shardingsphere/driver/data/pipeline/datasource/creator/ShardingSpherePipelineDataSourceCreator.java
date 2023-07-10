@@ -38,11 +38,14 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ShardingSphere pipeline data source creator.
  */
 public final class ShardingSpherePipelineDataSourceCreator implements PipelineDataSourceCreator {
+    
+    private static final AtomicInteger STANDALONE_DATABASE_ID = new AtomicInteger(1);
     
     @Override
     public DataSource createPipelineDataSource(final Object dataSourceConfig) throws SQLException {
@@ -57,7 +60,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         }
         rootConfig.setDatabaseName(rootConfig.getDatabaseName());
         rootConfig.setSchemaName(rootConfig.getSchemaName());
-        rootConfig.setMode(createStandaloneModeConfiguration(rootConfig.getDatabaseName()));
+        rootConfig.setMode(createStandaloneModeConfiguration());
         return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
     }
     
@@ -97,7 +100,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         }
     }
     
-    private YamlModeConfiguration createStandaloneModeConfiguration(final String databaseName) {
+    private YamlModeConfiguration createStandaloneModeConfiguration() {
         YamlModeConfiguration result = new YamlModeConfiguration();
         result.setType("Standalone");
         YamlPersistRepositoryConfiguration repository = new YamlPersistRepositoryConfiguration();
@@ -105,7 +108,8 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         repository.setType("JDBC");
         Properties props = new Properties();
         repository.setProps(props);
-        props.setProperty(JDBCRepositoryPropertyKey.JDBC_URL.getKey(), String.format("jdbc:h2:mem:config_%s;DB_CLOSE_DELAY=0;DATABASE_TO_UPPER=false;MODE=MYSQL", databaseName));
+        props.setProperty(JDBCRepositoryPropertyKey.JDBC_URL.getKey(),
+                String.format("jdbc:h2:mem:pipeline_db_%d;DB_CLOSE_DELAY=0;DATABASE_TO_UPPER=false;MODE=MYSQL", STANDALONE_DATABASE_ID.getAndIncrement()));
         return result;
     }
     
