@@ -67,7 +67,10 @@ public final class JDBCRepository implements StandalonePersistRepository {
                 Statement statement = connection.createStatement()) {
             // TODO remove it later. Add for reset standalone test e2e's env. Need to close DataSource to release H2's memory data
             if (jdbcRepositoryProps.<String>getValue(JDBCRepositoryPropertyKey.JDBC_URL).contains("h2:mem:")) {
-                statement.execute("DROP TABLE IF EXISTS `repository`");
+                try {
+                    statement.execute("TRUNCATE TABLE `repository`");
+                } catch (final SQLException ignored) {
+                }
             }
             // Finish TODO
             statement.execute(repositorySQL.getCreateTableSQL());
