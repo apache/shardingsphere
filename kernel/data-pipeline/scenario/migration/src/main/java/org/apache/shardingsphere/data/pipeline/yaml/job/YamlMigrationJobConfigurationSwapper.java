@@ -20,6 +20,8 @@ package org.apache.shardingsphere.data.pipeline.yaml.job;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
@@ -39,8 +41,8 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setJobId(data.getJobId());
         result.setTargetDatabaseName(data.getTargetDatabaseName());
-        result.setSourceDatabaseType(data.getSourceDatabaseType());
-        result.setTargetDatabaseType(data.getTargetDatabaseType());
+        result.setSourceDatabaseType(data.getSourceDatabaseType().getType());
+        result.setTargetDatabaseType(data.getTargetDatabaseType().getType());
         result.setSources(data.getSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
                 entry -> dataSourceConfigSwapper.swapToYamlConfiguration(entry.getValue()), (key, value) -> value, LinkedHashMap::new)));
         result.setTarget(dataSourceConfigSwapper.swapToYamlConfiguration(data.getTarget()));
@@ -56,7 +58,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
     @Override
     public MigrationJobConfiguration swapToObject(final YamlMigrationJobConfiguration yamlConfig) {
         return new MigrationJobConfiguration(yamlConfig.getJobId(), yamlConfig.getDatabaseName(),
-                yamlConfig.getSourceDatabaseType(), yamlConfig.getTargetDatabaseType(),
+                TypedSPILoader.getService(DatabaseType.class, yamlConfig.getSourceDatabaseType()), TypedSPILoader.getService(DatabaseType.class, yamlConfig.getTargetDatabaseType()),
                 yamlConfig.getSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
                         entry -> dataSourceConfigSwapper.swapToObject(entry.getValue()), (key, value) -> value, LinkedHashMap::new)),
                 dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),

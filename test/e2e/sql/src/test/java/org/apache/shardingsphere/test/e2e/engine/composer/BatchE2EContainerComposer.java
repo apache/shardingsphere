@@ -55,7 +55,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Batch E2E container composer.
  */
-public final class BatchE2EContainerComposer extends E2EContainerComposer {
+public final class BatchE2EContainerComposer extends E2EContainerComposer implements AutoCloseable {
     
     private final DatabaseType databaseType;
     
@@ -185,6 +185,5 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer {
     @Override
     public void close() {
         dataSetEnvironmentManager.cleanData();
-        super.close();
     }
 }

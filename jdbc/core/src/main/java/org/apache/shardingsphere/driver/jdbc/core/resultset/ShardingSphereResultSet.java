@@ -66,7 +66,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
                                    final ExecutionContext executionContext) throws SQLException {
         super(resultSets, statement, selectContainsEnhancedTable, executionContext);
         this.mergeResultSet = mergeResultSet;
-        columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(executionContext.getSqlStatementContext(), resultSets.get(0).getMetaData());
+        columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(executionContext.getSqlStatementContext(), selectContainsEnhancedTable, resultSets.get(0).getMetaData());
     }
     
     public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final boolean selectContainsEnhancedTable,

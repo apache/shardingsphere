@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
@@ -32,7 +33,8 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
+@Setter
+@EqualsAndHashCode(exclude = {"originalOwner", "originalName"})
 @ToString
 public final class ColumnProjection implements Projection {
     
@@ -41,6 +43,10 @@ public final class ColumnProjection implements Projection {
     private final IdentifierValue nameIdentifier;
     
     private final IdentifierValue aliasIdentifier;
+    
+    private IdentifierValue originalOwner;
+    
+    private IdentifierValue originalName;
     
     public ColumnProjection(final String owner, final String name, final String alias) {
         this(null == owner ? null : new IdentifierValue(owner, QuoteCharacter.NONE), new IdentifierValue(name, QuoteCharacter.NONE),
@@ -81,7 +87,28 @@ public final class ColumnProjection implements Projection {
     }
     
     @Override
-    public Projection cloneWithOwner(final IdentifierValue ownerIdentifier) {
-        return new ColumnProjection(ownerIdentifier, nameIdentifier, aliasIdentifier);
+    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
+        ColumnProjection result = null == aliasIdentifier ? new ColumnProjection(subqueryTableAlias, nameIdentifier, null) : new ColumnProjection(subqueryTableAlias, aliasIdentifier, null);
+        result.setOriginalOwner(originalOwner);
+        result.setOriginalName(originalName);
+        return result;
+    }
+    
+    /**
+     * Get original owner.
+     *
+     * @return original owner
+     */
+    public IdentifierValue getOriginalOwner() {
+        return null == originalOwner ? ownerIdentifier : originalOwner;
+    }
+    
+    /**
+     * Get original name.
+     * 
+     * @return original name
+     */
+    public IdentifierValue getOriginalName() {
+        return null == originalName ? nameIdentifier : originalName;
     }
 }

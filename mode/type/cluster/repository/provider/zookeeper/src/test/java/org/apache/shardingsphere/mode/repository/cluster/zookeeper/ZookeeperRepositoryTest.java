@@ -128,7 +128,7 @@ class ZookeeperRepositoryTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void mockDistributedLockHolder() {
-        DistributedLockHolder distributedLockHolder = new DistributedLockHolder("Zookeeper", client, new ZookeeperProperties(new Properties()));
+        DistributedLockHolder distributedLockHolder = new DistributedLockHolder("ZooKeeper", client, new ZookeeperProperties(new Properties()));
         Plugins.getMemberAccessor().set(DistributedLockHolder.class.getDeclaredField("locks"), distributedLockHolder, Collections.singletonMap("/locks/glock", mock(ZookeeperDistributedLock.class)));
         Plugins.getMemberAccessor().set(ZookeeperRepository.class.getDeclaredField("distributedLockHolder"), REPOSITORY, distributedLockHolder);
     }

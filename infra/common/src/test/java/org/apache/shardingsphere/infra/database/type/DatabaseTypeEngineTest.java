@@ -162,4 +162,12 @@ class DatabaseTypeEngineTest {
     void assertGetDatabaseTypeWithCorrectOrder() {
         assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:infra.fixture:long.length://localhost:3306/test").getType(), is("INFRA.FIXTURE.LONG.LENGTH"));
     }
+    
+    @Test
+    void assertGetBranchDatabaseTypes() {
+        Collection<String> trunkDatabaseTypes = Collections.singleton(new MySQLDatabaseType().getType());
+        Collection<DatabaseType> actual = DatabaseTypeEngine.getTrunkAndBranchDatabaseTypes(trunkDatabaseTypes);
+        assertTrue(actual.contains(TypedSPILoader.getService(DatabaseType.class, "MySQL")), "MySQL not present");
+        assertTrue(actual.contains(TypedSPILoader.getService(DatabaseType.class, "MariaDB")), "MariaDB not present");
+    }
 }

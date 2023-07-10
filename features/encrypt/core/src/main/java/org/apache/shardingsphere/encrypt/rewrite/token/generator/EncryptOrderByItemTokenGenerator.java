@@ -103,7 +103,9 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         }
         Collection<OrderByItem> result = new LinkedList<>();
         SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
-        result.addAll(statementContext.getOrderByContext().getItems());
+        if (!statementContext.getOrderByContext().isGenerated()) {
+            result.addAll(statementContext.getOrderByContext().getItems());
+        }
         result.addAll(statementContext.getGroupByContext().getItems());
         for (SelectStatementContext each : statementContext.getSubqueryContexts().values()) {
             result.addAll(getOrderByItems(each));
@@ -116,7 +118,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
             return false;
         }
         SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
-        if (!statementContext.getOrderByContext().getItems().isEmpty() || !statementContext.getGroupByContext().getItems().isEmpty()) {
+        if (!statementContext.getOrderByContext().getItems().isEmpty() && !statementContext.getOrderByContext().isGenerated() || !statementContext.getGroupByContext().getItems().isEmpty()) {
             return true;
         }
         for (SelectStatementContext each : statementContext.getSubqueryContexts().values()) {

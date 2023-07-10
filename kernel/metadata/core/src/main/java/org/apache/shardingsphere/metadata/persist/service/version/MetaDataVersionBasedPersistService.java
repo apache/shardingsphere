@@ -32,4 +32,21 @@ public interface MetaDataVersionBasedPersistService {
      * @param metaDataVersions meta data versions
      */
     void switchActiveVersion(Collection<MetaDataVersion> metaDataVersions);
+    
+    /**
+     * Get active version by full path.
+     *
+     * @param fullPath full path
+     * @return active version
+     */
+    String getActiveVersionByFullPath(String fullPath);
+    
+    /**
+     * Get version path by active version.
+     *
+     * @param path path
+     * @param activeVersion active version
+     * @return version path
+     */
+    String getVersionPathByActiveVersion(String path, String activeVersion);
 }

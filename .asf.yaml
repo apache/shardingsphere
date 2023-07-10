@@ -22,7 +22,7 @@ notifications:
   jobs: notifications@shardingsphere.apache.org
 
 github:
-  description: Ecosystem to transform any database into a distributed database system, and enhance it with sharding, elastic scaling, encryption features & more
+  description: Distributed SQL transaction & query engine for data sharding, scaling, encryption, and more - on any database.
   labels:
     - database-plus
     - database

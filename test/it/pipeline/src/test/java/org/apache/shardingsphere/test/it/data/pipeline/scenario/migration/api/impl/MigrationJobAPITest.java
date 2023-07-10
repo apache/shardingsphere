@@ -341,6 +341,7 @@ class MigrationJobAPITest {
         String jobId = optional.get();
         YamlInventoryIncrementalJobItemProgress yamlJobItemProgress = new YamlInventoryIncrementalJobItemProgress();
         yamlJobItemProgress.setStatus(JobStatus.RUNNING.name());
+        yamlJobItemProgress.setSourceDatabaseType("MySQL");
         PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
         List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId);
         assertThat(jobItemInfos.size(), is(1));
@@ -354,6 +355,7 @@ class MigrationJobAPITest {
         Optional<String> optional = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(optional.isPresent());
         YamlInventoryIncrementalJobItemProgress yamlJobItemProgress = new YamlInventoryIncrementalJobItemProgress();
+        yamlJobItemProgress.setSourceDatabaseType("MySQL");
         yamlJobItemProgress.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK.name());
         yamlJobItemProgress.setProcessedRecordsCount(100);
         yamlJobItemProgress.setInventoryRecordsCount(50);

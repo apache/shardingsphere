@@ -28,7 +28,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Locale;
-import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -36,7 +35,7 @@ import java.util.TreeSet;
  */
 public final class MySQLSetCharsetExecutor implements MySQLSessionVariableHandler {
     
-    private static final Set<String> TYPE_ALIASES = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    private static final Collection<String> TYPE_ALIASES = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     
     static {
         TYPE_ALIASES.add("character_set_client");

@@ -18,24 +18,21 @@
 package org.apache.shardingsphere.data.pipeline.common.job.type;
 
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Job type.
  */
 @SingletonSPI
-public interface JobType {
+public interface JobType extends TypedSPI {
     
     /**
-     * Get type name.
+     * Get job type code.
      *
-     * @return type name
+     * @return job type code
      */
-    String getTypeName();
+    String getCode();
     
-    /**
-     * Get type code.
-     *
-     * @return type code
-     */
-    String getTypeCode();
+    @Override
+    String getType();
 }

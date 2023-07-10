@@ -55,6 +55,7 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
     }
     
     /**
+     * TODO remove this method after remove Compatible_Cluster mode
      * Update current rule configuration.
      *
      * @param sqlStatement SQL statement

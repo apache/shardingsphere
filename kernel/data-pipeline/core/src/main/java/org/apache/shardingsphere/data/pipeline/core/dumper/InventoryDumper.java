@@ -47,7 +47,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInva
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -90,9 +90,9 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         this.dumperConfig = dumperConfig;
         this.channel = channel;
         this.dataSource = dataSource;
-        String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getType();
-        sqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, databaseType);
-        columnValueReader = PipelineTypedSPILoader.getDatabaseTypedService(ColumnValueReader.class, databaseType);
+        DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
+        sqlBuilder = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, databaseType);
+        columnValueReader = DatabaseTypedSPILoader.getService(ColumnValueReader.class, databaseType);
         this.metaDataLoader = metaDataLoader;
     }
     
@@ -112,6 +112,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         }
     }
     
+    @SuppressWarnings("MagicConstant")
     private void dump(final PipelineTableMetaData tableMetaData, final Connection connection) throws SQLException {
         int batchSize = dumperConfig.getBatchSize();
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();

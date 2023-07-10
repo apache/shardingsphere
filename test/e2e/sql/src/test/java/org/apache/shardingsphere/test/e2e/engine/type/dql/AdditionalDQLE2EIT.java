@@ -51,17 +51,16 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            init(testParam, containerComposer);
-            // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
-            if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
-                return;
-            }
-            if (isUseXMLAsExpectedDataset()) {
-                assertExecuteQueryWithXMLExpected(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            } else {
-                assertExecuteQueryWithExpectedDataSource(containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            }
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        init(testParam, containerComposer);
+        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
+        if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
+            return;
+        }
+        if (isUseXMLAsExpectedDataset()) {
+            assertExecuteQueryWithXMLExpected(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        } else {
+            assertExecuteQueryWithExpectedDataSource(containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         }
     }
     
@@ -73,17 +72,16 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            init(testParam, containerComposer);
-            // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
-            if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
-                return;
-            }
-            if (isUseXMLAsExpectedDataset()) {
-                assertExecuteQueryWithXMLExpected(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-            } else {
-                assertExecuteQueryWithExpectedDataSource(containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-            }
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        init(testParam, containerComposer);
+        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
+        if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
+            return;
+        }
+        if (isUseXMLAsExpectedDataset()) {
+            assertExecuteQueryWithXMLExpected(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+        } else {
+            assertExecuteQueryWithExpectedDataSource(containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
         }
     }
     
@@ -95,17 +93,16 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            init(testParam, containerComposer);
-            // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
-            if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
-                return;
-            }
-            if (isUseXMLAsExpectedDataset()) {
-                assertExecuteWithXMLExpected(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            } else {
-                assertExecuteWithExpectedDataSource(containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            }
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        init(testParam, containerComposer);
+        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
+        if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
+            return;
+        }
+        if (isUseXMLAsExpectedDataset()) {
+            assertExecuteWithXMLExpected(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        } else {
+            assertExecuteWithExpectedDataSource(containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         }
     }
     
@@ -117,17 +114,16 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            init(testParam, containerComposer);
-            // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
-            if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
-                return;
-            }
-            if (isUseXMLAsExpectedDataset()) {
-                assertExecuteWithXMLExpected(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-            } else {
-                assertExecuteWithExpectedDataSource(containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-            }
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        init(testParam, containerComposer);
+        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
+        if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
+            return;
+        }
+        if (isUseXMLAsExpectedDataset()) {
+            assertExecuteWithXMLExpected(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+        } else {
+            assertExecuteWithExpectedDataSource(containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
         }
     }
     

@@ -239,7 +239,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             MergedResult mergedResult = mergeQuery(queryResults);
             List<ResultSet> resultSets = getResultSets();
             if (null == columnLabelAndIndexMap) {
-                columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData());
+                columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, selectContainsEnhancedTable, resultSets.get(0).getMetaData());
             }
             result = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext, columnLabelAndIndexMap);
             // CHECKSTYLE:OFF
@@ -511,7 +511,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
             if (null == columnLabelAndIndexMap) {
-                columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData());
+                columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, selectContainsEnhancedTable, resultSets.get(0).getMetaData());
             }
             currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext, columnLabelAndIndexMap);
         }
