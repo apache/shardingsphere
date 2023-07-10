@@ -131,7 +131,7 @@ class DatabaseMetaDataNodeTest {
     
     @Test
     void assertGetMetaDataDataSourceNodesPath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataDataSourceUnitsPath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/data_sources/nodes"));
+        assertThat(DatabaseMetaDataNode.getMetaDataDataSourceNodesPath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/data_sources/nodes"));
     }
     
     @Test
