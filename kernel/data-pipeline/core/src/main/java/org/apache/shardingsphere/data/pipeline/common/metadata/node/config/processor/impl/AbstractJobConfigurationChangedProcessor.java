@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.common.metadata.node.config.proc
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.common.metadata.node.config.processor.ChangedJobConfigurationProcessor;
+import org.apache.shardingsphere.data.pipeline.common.metadata.node.config.processor.JobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
@@ -33,10 +33,10 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import java.util.Collection;
 
 /**
- * Abstract changed job configuration processor.
+ * Abstract job configuration changed processor.
  */
 @Slf4j
-public abstract class AbstractChangedJobConfigurationProcessor implements ChangedJobConfigurationProcessor {
+public abstract class AbstractJobConfigurationChangedProcessor implements JobConfigurationChangedProcessor {
     
     @Override
     public void process(final Type eventType, final JobConfiguration jobConfig) {
