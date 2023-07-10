@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.globalclock.core.executor;
 
 import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
-import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
@@ -30,6 +32,7 @@ import org.apache.shardingsphere.transaction.spi.TransactionHookAdapter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -37,21 +40,30 @@ import java.util.Properties;
  */
 public final class GlobalClockTransactionHook extends TransactionHookAdapter {
     
-    private GlobalClockProvider globalClockProvider;
-    
-    private GlobalClockTransactionExecutor globalClockTransactionExecutor;
-    
     private final LockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.GLOBAL_LOCK.getLockName());
     
     private boolean enabled;
     
+    private GlobalClockTransactionExecutor globalClockTransactionExecutor;
+    
+    private GlobalClockProvider globalClockProvider;
+    
     @Override
     public void init(final Properties props) {
-        enabled = Boolean.parseBoolean(props.getProperty("enabled"));
-        if (enabled) {
-            globalClockProvider = TypedSPILoader.getService(GlobalClockProvider.class, String.join(".", props.getProperty("type"), props.getProperty("provider")));
-            globalClockTransactionExecutor = TypedSPILoader.getService(GlobalClockTransactionExecutor.class, props.getProperty("trunkType"));
+        if (!Boolean.parseBoolean(props.getProperty("enabled"))) {
+            enabled = false;
+            return;
         }
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, props.getProperty("trunkType"));
+        Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
+        if (!globalClockTransactionExecutor.isPresent()) {
+            enabled = false;
+            return;
+        }
+        enabled = true;
+        this.globalClockTransactionExecutor = globalClockTransactionExecutor.get();
+        globalClockProvider = TypedSPILoader.getService(GlobalClockProvider.class, String.join(".", props.getProperty("type"), props.getProperty("provider")));
+        
     }
     
     @Override

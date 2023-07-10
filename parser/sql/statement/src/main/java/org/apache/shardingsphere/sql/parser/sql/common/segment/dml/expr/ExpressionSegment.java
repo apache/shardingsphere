@@ -23,4 +23,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
  * Expression segment.
  */
 public interface ExpressionSegment extends SQLSegment {
+    
+    /**
+     * Get text.
+     *
+     * @return text
+     */
+    String getText();
 }

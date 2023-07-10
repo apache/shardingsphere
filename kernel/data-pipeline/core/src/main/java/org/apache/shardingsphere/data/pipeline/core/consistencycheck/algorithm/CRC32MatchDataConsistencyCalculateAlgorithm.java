@@ -20,16 +20,17 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.util.DatabaseTypeUtils;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedCRC32DataConsistencyCalculateAlgorithmException;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,11 +49,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {
     
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeUtils.getTrunkAndBranchDatabaseTypes(Collections.singleton(new MySQLDatabaseType().getType()));
+    private static final Collection<DatabaseType> SUPPORTED_DATABASE_TYPES = DatabaseTypeEngine.getTrunkAndBranchDatabaseTypes(Collections.singleton("MySQL"));
     
     @Override
     public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
-        PipelineSQLBuilder sqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, param.getDatabaseType());
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType());
+        PipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, databaseType);
         List<CalculatedItem> calculatedItems = param.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, param, each)).collect(Collectors.toList());
         return Collections.singletonList(new CalculatedResult(calculatedItems.get(0).getRecordsCount(), calculatedItems.stream().map(CalculatedItem::getCrc32).collect(Collectors.toList())));
     }
@@ -80,7 +82,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
     }
     
     @Override
-    public Collection<String> getSupportedDatabaseTypes() {
+    public Collection<DatabaseType> getSupportedDatabaseTypes() {
         return SUPPORTED_DATABASE_TYPES;
     }
     

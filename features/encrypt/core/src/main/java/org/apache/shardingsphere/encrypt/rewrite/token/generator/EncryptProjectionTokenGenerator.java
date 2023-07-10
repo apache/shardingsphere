@@ -43,6 +43,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -95,7 +97,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                     continue;
                 }
                 Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-                if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnProjection.getName())) {
+                if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnProjection.getName()) && !containsTableSubquery(selectStatementContext)) {
                     sqlTokens.add(generateSQLToken(encryptTable.get().getEncryptColumn(columnProjection.getName()), columnSegment, columnProjection, subqueryType));
                 }
             }
@@ -123,7 +125,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         for (Projection each : actualColumns) {
             String tableName = columnTableNames.get(each.getExpression());
             Optional<EncryptTable> encryptTable = null == tableName ? Optional.empty() : encryptRule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(each.getColumnLabel())) {
+            if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(each.getColumnLabel()) || containsTableSubquery(selectStatementContext)) {
                 projections.add(each.getAlias().map(optional -> (Projection) new ColumnProjection(null, optional, null)).orElse(each));
             } else if (each instanceof ColumnProjection) {
                 projections.addAll(generateProjections(encryptTable.get().getEncryptColumn(((ColumnProjection) each).getName()), (ColumnProjection) each, subqueryType, true, segment));
@@ -132,6 +134,16 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         int startIndex = segment.getOwner().isPresent() ? segment.getOwner().get().getStartIndex() : segment.getStartIndex();
         previousSQLTokens.removeIf(each -> each.getStartIndex() == startIndex);
         return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, selectStatementContext.getDatabaseType().getQuoteCharacter());
+    }
+    
+    private boolean containsTableSubquery(final SelectStatementContext selectStatementContext) {
+        if (selectStatementContext.getSqlStatement().getFrom() instanceof SubqueryTableSegment) {
+            return true;
+        } else if (selectStatementContext.getSqlStatement().getFrom() instanceof JoinTableSegment) {
+            JoinTableSegment joinTableSegment = (JoinTableSegment) selectStatementContext.getSqlStatement().getFrom();
+            return joinTableSegment.getLeft() instanceof SubqueryTableSegment || joinTableSegment.getRight() instanceof SubqueryTableSegment;
+        }
+        return false;
     }
     
     private ColumnProjection buildColumnProjection(final ColumnProjectionSegment segment) {
@@ -188,7 +200,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     private Collection<ColumnProjection> generateTableSubqueryProjections(final EncryptColumn encryptColumn, final ColumnProjection column, final boolean shorthand) {
         Collection<ColumnProjection> result = new LinkedList<>();
         result.add(distinctOwner(new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(encryptColumn.getCipher().getName(),
-                column.getNameIdentifier().getQuoteCharacter()), null), shorthand));
+                column.getNameIdentifier().getQuoteCharacter()), Optional.ofNullable(column.getAliasIdentifier()).orElse(column.getNameIdentifier())), shorthand));
         encryptColumn.getAssistedQuery().ifPresent(optional -> result.add(
                 new ColumnProjection(column.getOwnerIdentifier(), new IdentifierValue(optional.getName(), column.getNameIdentifier().getQuoteCharacter()), null)));
         return result;

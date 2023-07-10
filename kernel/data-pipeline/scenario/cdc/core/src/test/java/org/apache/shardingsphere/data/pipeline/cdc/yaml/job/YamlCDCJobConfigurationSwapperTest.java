@@ -39,6 +39,7 @@ class YamlCDCJobConfigurationSwapperTest {
         yamlJobConfig.setDatabaseName("test_db");
         yamlJobConfig.setSchemaTableNames(Arrays.asList("test.t_order", "t_order_item"));
         yamlJobConfig.setFull(true);
+        yamlJobConfig.setSourceDatabaseType("MySQL");
         YamlSinkConfiguration sinkConfig = new YamlSinkConfiguration();
         sinkConfig.setSinkType(CDCSinkType.SOCKET.name());
         yamlJobConfig.setSinkConfig(sinkConfig);

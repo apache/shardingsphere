@@ -65,18 +65,17 @@ class DDLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            init(containerComposer);
-            try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-                if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
-                    executeUpdateForStatement(containerComposer, connection);
-                } else {
-                    executeUpdateForPreparedStatement(containerComposer, connection);
-                }
-                assertTableMetaData(testParam, containerComposer);
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        init(containerComposer);
+        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
+            if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
+                executeUpdateForStatement(containerComposer, connection);
+            } else {
+                executeUpdateForPreparedStatement(containerComposer, connection);
             }
-            tearDown(containerComposer);
+            assertTableMetaData(testParam, containerComposer);
         }
+        tearDown(containerComposer);
     }
     
     private void executeUpdateForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
@@ -101,18 +100,17 @@ class DDLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            init(containerComposer);
-            try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-                if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
-                    executeForStatement(containerComposer, connection);
-                } else {
-                    executeForPreparedStatement(containerComposer, connection);
-                }
-                assertTableMetaData(testParam, containerComposer);
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        init(containerComposer);
+        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
+            if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
+                executeForStatement(containerComposer, connection);
+            } else {
+                executeForPreparedStatement(containerComposer, connection);
             }
-            tearDown(containerComposer);
+            assertTableMetaData(testParam, containerComposer);
         }
+        tearDown(containerComposer);
     }
     
     private void executeForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {

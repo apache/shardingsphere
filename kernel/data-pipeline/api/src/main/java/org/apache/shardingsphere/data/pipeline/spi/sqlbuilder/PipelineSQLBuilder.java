@@ -189,4 +189,7 @@ public interface PipelineSQLBuilder extends TypedSPI {
     default Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         return Optional.empty();
     }
+    
+    @Override
+    String getType();
 }

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 @SPIDescription("Fixture description.")
 public final class DataConsistencyCalculateAlgorithmFixture implements DataConsistencyCalculateAlgorithm {
@@ -46,8 +45,8 @@ public final class DataConsistencyCalculateAlgorithmFixture implements DataConsi
     }
     
     @Override
-    public Collection<String> getSupportedDatabaseTypes() {
-        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().map(DatabaseType::getType).collect(Collectors.toList());
+    public Collection<DatabaseType> getSupportedDatabaseTypes() {
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
     }
     
     @Override

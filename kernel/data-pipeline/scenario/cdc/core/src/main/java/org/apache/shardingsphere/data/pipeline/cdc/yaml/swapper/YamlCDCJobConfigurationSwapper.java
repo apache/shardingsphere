@@ -25,6 +25,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.config.YamlCDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.config.YamlCDCJobConfiguration.YamlSinkConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
@@ -46,7 +48,7 @@ public final class YamlCDCJobConfigurationSwapper implements YamlConfigurationSw
         result.setDatabaseName(data.getDatabaseName());
         result.setSchemaTableNames(data.getSchemaTableNames());
         result.setFull(data.isFull());
-        result.setSourceDatabaseType(data.getSourceDatabaseType());
+        result.setSourceDatabaseType(data.getSourceDatabaseType().getType());
         result.setDataSourceConfiguration(dataSourceConfigSwapper.swapToYamlConfiguration(data.getDataSourceConfig()));
         result.setTablesFirstDataNodes(null == data.getTablesFirstDataNodes() ? null : data.getTablesFirstDataNodes().marshal());
         List<String> jobShardingDataNodes = null == data.getJobShardingDataNodes() ? null : data.getJobShardingDataNodes().stream().map(JobDataNodeLine::marshal).collect(Collectors.toList());
@@ -73,7 +75,8 @@ public final class YamlCDCJobConfigurationSwapper implements YamlConfigurationSw
         YamlSinkConfiguration yamlSinkConfig = yamlConfig.getSinkConfig();
         SinkConfiguration sinkConfig = new SinkConfiguration(CDCSinkType.valueOf(yamlSinkConfig.getSinkType()), yamlSinkConfig.getProps());
         JobDataNodeLine tablesFirstDataNodes = null == yamlConfig.getTablesFirstDataNodes() ? null : JobDataNodeLine.unmarshal(yamlConfig.getTablesFirstDataNodes());
-        return new CDCJobConfiguration(yamlConfig.getJobId(), yamlConfig.getDatabaseName(), yamlConfig.getSchemaTableNames(), yamlConfig.isFull(), yamlConfig.getSourceDatabaseType(),
+        return new CDCJobConfiguration(yamlConfig.getJobId(), yamlConfig.getDatabaseName(), yamlConfig.getSchemaTableNames(), yamlConfig.isFull(),
+                TypedSPILoader.getService(DatabaseType.class, yamlConfig.getSourceDatabaseType()),
                 (ShardingSpherePipelineDataSourceConfiguration) dataSourceConfigSwapper.swapToObject(yamlConfig.getDataSourceConfiguration()), tablesFirstDataNodes,
                 jobShardingDataNodes, yamlConfig.isDecodeWithTX(), sinkConfig, yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
     }

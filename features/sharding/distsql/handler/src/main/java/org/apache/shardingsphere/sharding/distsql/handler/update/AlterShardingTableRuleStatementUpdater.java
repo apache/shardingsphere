@@ -62,7 +62,6 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
                 result.getTables().add(each);
             }
         }
-        // TODO find unused algorithm
         return result;
     }
     

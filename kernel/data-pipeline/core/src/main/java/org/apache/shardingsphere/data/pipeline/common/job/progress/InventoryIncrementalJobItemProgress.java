@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.common.job.progress;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
  * Inventory incremental job item progress.
@@ -30,7 +31,7 @@ public final class InventoryIncrementalJobItemProgress implements PipelineJobIte
     
     private JobStatus status = JobStatus.RUNNING;
     
-    private String sourceDatabaseType;
+    private DatabaseType sourceDatabaseType;
     
     private String dataSourceName;
     

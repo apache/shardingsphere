@@ -48,7 +48,7 @@ public final class NewConfigurationChangedSubscriber {
      */
     @Subscribe
     public void renew(final RegisterStorageUnitEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.registerStorageUnit(event.getDatabaseName(),
@@ -62,7 +62,7 @@ public final class NewConfigurationChangedSubscriber {
      */
     @Subscribe
     public void renew(final AlterStorageUnitEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(),
@@ -115,7 +115,7 @@ public final class NewConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterGlobalRuleConfigurationEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.alterGlobalRuleConfiguration(contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().load(event.getRuleSimpleName()));
@@ -128,7 +128,7 @@ public final class NewConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterPropertiesEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.alterProperties(contextManager.getMetaDataContexts().getPersistService().getPropsService().load());

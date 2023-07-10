@@ -20,10 +20,11 @@ package org.apache.shardingsphere.test.e2e.transaction.framework.container.confi
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +47,7 @@ public final class ProxyClusterContainerConfigurationFactory {
     }
     
     private static String getProxyDatasourceName(final DatabaseType databaseType) {
-        return (DatabaseTypeUtils.isPostgreSQL(databaseType) || DatabaseTypeUtils.isOpenGauss(databaseType)) ? "postgres" : "";
+        return (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) ? "postgres" : "";
     }
     
     private static Map<String, String> getMountedResource(final String scenario, final DatabaseType databaseType) {

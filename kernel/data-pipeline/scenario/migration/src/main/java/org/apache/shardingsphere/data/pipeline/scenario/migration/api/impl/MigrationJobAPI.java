@@ -48,7 +48,7 @@ import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSou
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobTypeFactory;
+import org.apache.shardingsphere.data.pipeline.common.job.type.JobCodeRegistry;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineSchemaUtils;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.common.pojo.TableBasedPipelineJobInfo;
@@ -73,7 +73,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -294,7 +294,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         Collection<CreateTableEntry> createTableEntries = new LinkedList<>();
         for (JobDataNodeEntry each : jobConfig.getTablesFirstDataNodes().getEntries()) {
             String sourceSchemaName = tableNameSchemaNameMapping.getSchemaName(each.getLogicTableName());
-            String targetSchemaName = TypedSPILoader.getService(DatabaseType.class, jobConfig.getTargetDatabaseType()).isSchemaAvailable() ? sourceSchemaName : null;
+            String targetSchemaName = jobConfig.getTargetDatabaseType().isSchemaAvailable() ? sourceSchemaName : null;
             DataNode dataNode = each.getDataNodes().get(0);
             PipelineDataSourceConfiguration sourceDataSourceConfig = jobConfig.getSources().get(dataNode.getDataSourceName());
             CreateTableEntry createTableEntry = new CreateTableEntry(
@@ -396,7 +396,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     private void cleanTempTableOnRollback(final String jobId) throws SQLException {
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
-        PipelineSQLBuilder pipelineSQLBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, jobConfig.getTargetDatabaseType());
+        PipelineSQLBuilder pipelineSQLBuilder = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, jobConfig.getTargetDatabaseType());
         TableNameSchemaNameMapping mapping = new TableNameSchemaNameMapping(jobConfig.getTargetTableSchemaMap());
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(jobConfig.getTarget());
@@ -517,7 +517,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     @Override
     public JobType getJobType() {
-        return JobTypeFactory.getInstance(MigrationJobType.TYPE_CODE);
+        return TypedSPILoader.getService(JobType.class, JobCodeRegistry.getJobType(MigrationJobType.TYPE_CODE));
     }
     
     @Override

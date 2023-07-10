@@ -135,7 +135,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
      * @return true if source and target database the same, otherwise false
      */
     public boolean isSourceTargetDatabaseTheSame() {
-        return jobConfig.getSourceDatabaseType().equalsIgnoreCase(jobConfig.getTargetDatabaseType());
+        return jobConfig.getSourceDatabaseType() == jobConfig.getTargetDatabaseType();
     }
     
     @Override

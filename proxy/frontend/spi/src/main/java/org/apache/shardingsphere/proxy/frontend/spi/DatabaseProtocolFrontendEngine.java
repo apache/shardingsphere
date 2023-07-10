@@ -72,4 +72,7 @@ public interface DatabaseProtocolFrontendEngine extends TypedSPI {
      * @param exception exception
      */
     void handleException(ConnectionSession connectionSession, Exception exception);
+    
+    @Override
+    String getType();
 }

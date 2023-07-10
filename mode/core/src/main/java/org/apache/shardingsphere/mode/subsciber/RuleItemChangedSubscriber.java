@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.event.config.AlterDatabaseRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.DropDatabaseRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 
 /**
  * Rule item changed subscriber.
@@ -44,15 +45,16 @@ public final class RuleItemChangedSubscriber {
     @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
     @Subscribe
     public void renew(final AlterRuleItemEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        RuleItemConfigurationChangedGenerator generator = TypedSPILoader.getService(RuleItemConfigurationChangedGenerator.class, event.getType());
-        String yamlContent = contextManager.getInstanceContext().getModeContextManager().getVersionPathByActiveVersionKey(event.getActiveVersionKey(), event.getActiveVersion());
+        RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
+        String yamlContent =
+                contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getVersionPathByActiveVersion(event.getActiveVersionKey(), event.getActiveVersion());
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        RuleConfiguration currentRuleConfig = generator.findRuleConfiguration(database);
+        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
         synchronized (this) {
-            generator.changeRuleItemConfiguration(event, currentRuleConfig, generator.swapRuleItemConfigurationFromEvent(event, yamlContent));
+            processor.changeRuleItemConfiguration(event, currentRuleConfig, processor.swapRuleItemConfiguration(event, yamlContent));
             contextManager.getInstanceContext().getEventBusContext().post(new AlterDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
         }
     }
@@ -68,11 +70,11 @@ public final class RuleItemChangedSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
-        RuleItemConfigurationChangedGenerator generator = TypedSPILoader.getService(RuleItemConfigurationChangedGenerator.class, event.getType());
+        RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
-        RuleConfiguration currentRuleConfig = generator.findRuleConfiguration(database);
+        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
         synchronized (this) {
-            generator.dropRuleItemConfiguration(event, currentRuleConfig);
+            processor.dropRuleItemConfiguration(event, currentRuleConfig);
             contextManager.getInstanceContext().getEventBusContext().post(new DropDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
         }
     }

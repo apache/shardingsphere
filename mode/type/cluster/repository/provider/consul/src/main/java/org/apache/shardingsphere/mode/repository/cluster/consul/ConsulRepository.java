@@ -199,9 +199,4 @@ public final class ConsulRepository implements ClusterPersistRepository {
     public String getType() {
         return "Consul";
     }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return ClusterPersistRepository.super.getTypeAliases();
-    }
 }

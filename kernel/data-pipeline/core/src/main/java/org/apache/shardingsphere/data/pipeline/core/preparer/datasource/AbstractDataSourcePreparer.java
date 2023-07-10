@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSou
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
@@ -57,7 +57,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
         CreateTableConfiguration createTableConfig = param.getCreateTableConfig();
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(targetDatabaseType).orElse(null);
-        PipelineSQLBuilder sqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, targetDatabaseType.getType());
+        PipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, targetDatabaseType);
         Collection<String> createdSchemaNames = new HashSet<>();
         for (CreateTableEntry each : createTableConfig.getCreateTableEntries()) {
             String targetSchemaName = each.getTargetName().getSchemaName().getOriginal();
