@@ -112,7 +112,7 @@ class ResourceMetaDataChangedSubscriberTest {
     
     @Test
     void assertRenewForDatabaseAdded() {
-        when(persistService.getDataSourceService().load("db_added")).thenReturn(createDataSourcePropertiesMap());
+        when(persistService.getDataSourceUnitService().load("db_added")).thenReturn(createDataSourcePropertiesMap());
         when(persistService.getDatabaseRulePersistService().load("db_added")).thenReturn(Collections.emptyList());
         subscriber.renew(new DatabaseAddedEvent("db_added"));
         assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_added").getResourceMetaData().getDataSources());
