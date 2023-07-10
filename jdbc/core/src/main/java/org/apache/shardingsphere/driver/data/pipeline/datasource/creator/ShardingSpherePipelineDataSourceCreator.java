@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
@@ -46,6 +47,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     @Override
     public DataSource createPipelineDataSource(final Object dataSourceConfig) throws SQLException {
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(YamlEngine.marshal(dataSourceConfig), YamlRootConfiguration.class);
+        disableSystemSchemaMetadata(rootConfig);
         enableStreamingQuery(rootConfig);
         updateSingleRuleConfiguration(rootConfig);
         Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(rootConfig.getRules());
@@ -64,6 +66,10 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         YamlSingleRuleConfiguration singleRuleConfig = new YamlSingleRuleConfiguration();
         singleRuleConfig.setTables(Collections.singletonList(SingleTableConstants.ALL_TABLES));
         rootConfig.getRules().add(singleRuleConfig);
+    }
+    
+    private void disableSystemSchemaMetadata(final YamlRootConfiguration rootConfig) {
+        rootConfig.getProps().put(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ENABLED.getKey(), String.valueOf(Boolean.FALSE));
     }
     
     // TODO Another way is improving ExecuteQueryCallback.executeSQL to enable streaming query, then remove it
