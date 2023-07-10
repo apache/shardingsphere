@@ -42,6 +42,11 @@ class AbstractDataSourcePreparerTest {
         @Override
         public void prepareTargetTables(final PrepareTargetTablesParameter param) {
         }
+        
+        @Override
+        public String getDatabaseType() {
+            return "FIXTURE";
+        }
     };
     
     @Test

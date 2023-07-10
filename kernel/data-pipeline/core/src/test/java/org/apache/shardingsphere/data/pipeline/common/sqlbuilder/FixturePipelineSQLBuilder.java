@@ -104,7 +104,7 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "FIXTURE";
     }
 }
