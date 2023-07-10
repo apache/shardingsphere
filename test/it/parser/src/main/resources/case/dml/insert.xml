@@ -2269,4 +2269,21 @@
             </value>
         </values>
     </insert>
+    
+    <insert sql-case-id="insert_with_content_keyword">
+        <table name="SYS_MQ_MSG" start-index="12" stop-index="19" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1999-12-01 10:00:00" start-index="30" stop-index="59" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1999-12-01 10:00:00" start-index="62" stop-index="91" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1999-12-01 10:00:00" start-index="94" stop-index="123" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>
