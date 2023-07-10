@@ -21,23 +21,22 @@ import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ShadowRuleNodePathProviderTest {
+class ShadowRuleNodePathProviderTest {
     
     @Test
-    void assertShadowRuleNodePath() {
+    void assertNew() {
         RuleNodePathProvider ruleNodePathProvider = new ShadowRuleNodePathProvider();
         RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
-        assertEquals(3, actualRuleNodePath.getNamedItems().size());
+        assertThat(actualRuleNodePath.getNamedItems().size(), is(3));
         assertTrue(actualRuleNodePath.getNamedItems().containsKey(ShadowRuleNodePathProvider.ALGORITHMS));
         assertTrue(actualRuleNodePath.getNamedItems().containsKey(ShadowRuleNodePathProvider.TABLES));
         assertTrue(actualRuleNodePath.getNamedItems().containsKey(ShadowRuleNodePathProvider.DATA_SOURCES));
-        assertEquals(1, actualRuleNodePath.getUniqueItems().size());
+        assertThat(actualRuleNodePath.getUniqueItems().size(), is(1));
         assertTrue(actualRuleNodePath.getUniqueItems().containsKey(ShadowRuleNodePathProvider.DEFAULT_ALGORITHM));
-        assertNotNull(actualRuleNodePath.getRoot());
-        assertEquals(ShadowRuleNodePathProvider.RULE_TYPE, actualRuleNodePath.getRoot().getRuleType());
+        assertThat(actualRuleNodePath.getRoot().getRuleType(), is(ShadowRuleNodePathProvider.RULE_TYPE));
     }
 }

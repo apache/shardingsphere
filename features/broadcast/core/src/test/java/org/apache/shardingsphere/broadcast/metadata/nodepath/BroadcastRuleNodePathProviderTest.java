@@ -21,20 +21,19 @@ import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BroadcastRuleNodePathProviderTest {
+class BroadcastRuleNodePathProviderTest {
     
     @Test
-    void assertBroadcastRuleNodePath() {
+    void assertNew() {
         RuleNodePathProvider ruleNodePathProvider = new BroadcastRuleNodePathProvider();
         RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
         assertTrue(actualRuleNodePath.getNamedItems().isEmpty());
-        assertEquals(1, actualRuleNodePath.getUniqueItems().size());
+        assertThat(actualRuleNodePath.getUniqueItems().size(), is(1));
         assertTrue(actualRuleNodePath.getUniqueItems().containsKey(BroadcastRuleNodePathProvider.TABLES));
-        assertNotNull(actualRuleNodePath.getRoot());
-        assertEquals(BroadcastRuleNodePathProvider.RULE_TYPE, actualRuleNodePath.getRoot().getRuleType());
+        assertThat(actualRuleNodePath.getRoot().getRuleType(), is(BroadcastRuleNodePathProvider.RULE_TYPE));
     }
 }
