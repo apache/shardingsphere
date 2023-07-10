@@ -72,7 +72,7 @@ class MetaDataPersistServiceTest {
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         metaDataPersistService = new MetaDataPersistService(mock(PersistRepository.class));
-        setField("dataSourceService", dataSourceService);
+        setField("dataSourceUnitService", dataSourceService);
         setField("databaseRulePersistService", databaseRulePersistService);
         setField("globalRuleService", globalRuleService);
         setField("propsService", propsService);
