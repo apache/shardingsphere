@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.datasource;
+package org.apache.shardingsphere.mode.event.datasource.unit;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Add data source event.
+ * Add data source unit event.
  */
 @Getter
 @RequiredArgsConstructor

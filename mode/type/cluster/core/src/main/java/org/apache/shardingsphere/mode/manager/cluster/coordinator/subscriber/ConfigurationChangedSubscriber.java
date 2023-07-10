@@ -55,7 +55,7 @@ public final class ConfigurationChangedSubscriber {
     }
     
     /**
-     * Renew data source configuration.
+     * Renew data source units configuration.
      *
      * @param event data source changed event.
      */
@@ -66,7 +66,7 @@ public final class ConfigurationChangedSubscriber {
     }
     
     /**
-     * Renew data source configuration.
+     * Renew data source nodes configuration.
      *
      * @param event data source changed event.
      */

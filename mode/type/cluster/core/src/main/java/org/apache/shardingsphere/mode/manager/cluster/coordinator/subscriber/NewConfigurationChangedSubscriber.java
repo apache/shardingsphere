@@ -22,9 +22,9 @@ import org.apache.shardingsphere.mode.event.config.AlterDatabaseRuleConfiguratio
 import org.apache.shardingsphere.mode.event.config.DropDatabaseRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.global.AlterPropertiesEvent;
-import org.apache.shardingsphere.mode.event.datasource.AlterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.datasource.RegisterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.datasource.UnregisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.AlterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.RegisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.UnregisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**

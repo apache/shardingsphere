@@ -346,25 +346,47 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
-     * Get data source name by data source node.
+     * Get data source name by data source unit node.
      *
      * @param path path
      * @return data source name
      */
-    public static Optional<String> getDataSourceNameByDataSourceNode(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getDataSourceNameByDataSourceUnitNode(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/" + DATA_SOURCE_UNITS_NODE +"/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
     
     /**
-     * Is  data source active version node.
+     * Get data source name by data source nodes node.
+     *
+     * @param path path
+     * @return data source name
+     */
+    public static Optional<String> getDataSourceNameByDataSourceNode(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/" + DATA_SOURCE_NODES_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Is data source unit active version node.
      *
      * @param path path
      * @return true or false
      */
-    public static boolean isDataSourceActiveVersionNode(final String path) {
-        return Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+    public static boolean isDataSourceUnitActiveVersionNode(final String path) {
+        return Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/" + DATA_SOURCE_UNITS_NODE + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+    }
+    
+    /**
+     * Is data source unit active version node.
+     *
+     * @param path path
+     * @return true or false
+     */
+    public static boolean isDataSourceNodeActiveVersionNode(final String path) {
+        return Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE  + "/" + DATA_SOURCE_NODES_NODE + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
     
     /**

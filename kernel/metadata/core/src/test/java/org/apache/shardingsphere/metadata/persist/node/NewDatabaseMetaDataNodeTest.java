@@ -34,15 +34,20 @@ class NewDatabaseMetaDataNodeTest {
     }
     
     @Test
-    void assertGetDataSourceNameByDataSourceNode() {
-        Optional<String> actual = NewDatabaseMetaDataNode.getDataSourceNameByDataSourceNode("/metadata/logic_db/data_sources/foo_ds/versions/0");
+    void assertGetDataSourceNameByDataSourceUnitNode() {
+        Optional<String> actual = NewDatabaseMetaDataNode.getDataSourceNameByDataSourceUnitNode("/metadata/logic_db/data_sources/units/foo_ds/versions/0");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_ds"));
     }
     
     @Test
-    void assertIsDataSourceActiveVersionNode() {
-        assertTrue(NewDatabaseMetaDataNode.isDataSourceActiveVersionNode("/metadata/logic_db/data_sources/foo_ds/active_version"));
+    void assertIsDataSourceUnitActiveVersionNode() {
+        assertTrue(NewDatabaseMetaDataNode.isDataSourceUnitActiveVersionNode("/metadata/logic_db/data_sources/units/foo_ds/active_version"));
+    }
+    
+    @Test
+    void assertIsDataSourceNodeActiveVersionNode() {
+        assertTrue(NewDatabaseMetaDataNode.isDataSourceNodeActiveVersionNode("/metadata/logic_db/data_sources/nodes/foo_ds/active_version"));
     }
     
     @Test
