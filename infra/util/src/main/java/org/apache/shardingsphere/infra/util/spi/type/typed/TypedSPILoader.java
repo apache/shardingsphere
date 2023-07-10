@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -134,8 +133,7 @@ public final class TypedSPILoader {
      * @throws ServiceProviderNotFoundServerException service provider not found server exception
      */
     public static <T extends TypedSPI> boolean checkService(final Class<T> spiClass, final String type, final Properties props) {
-        Collection<T> serviceInstances = ShardingSphereServiceLoader.getServiceInstances(spiClass);
-        for (T each : serviceInstances) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 each.init(null == props ? new Properties() : convertToStringTypedProperties(props));
                 return true;
