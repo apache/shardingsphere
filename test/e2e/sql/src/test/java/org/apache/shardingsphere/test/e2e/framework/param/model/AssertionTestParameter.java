@@ -50,6 +50,8 @@ public final class AssertionTestParameter implements E2ETestParameter {
     
     @Override
     public String toString() {
-        return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, databaseType.getType(), sqlExecuteType, testCaseContext.getTestCase().getSql());
+        String sql = null == testCaseContext ? null : testCaseContext.getTestCase().getSql();
+        String type = null == databaseType ? null : databaseType.getType();
+        return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, type, sqlExecuteType, sql);
     }
 }

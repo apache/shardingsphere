@@ -49,16 +49,15 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            init(testParam, containerComposer);
-            int actualUpdateCount;
-            try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-                actualUpdateCount = SQLExecuteType.Literal == containerComposer.getSqlExecuteType()
-                        ? executeUpdateForStatement(containerComposer, connection)
-                        : executeUpdateForPreparedStatement(containerComposer, connection);
-            }
-            assertDataSet(testParam, containerComposer, actualUpdateCount);
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        init(testParam, containerComposer);
+        int actualUpdateCount;
+        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
+            actualUpdateCount = SQLExecuteType.Literal == containerComposer.getSqlExecuteType()
+                    ? executeUpdateForStatement(containerComposer, connection)
+                    : executeUpdateForPreparedStatement(containerComposer, connection);
         }
+        assertDataSet(testParam, containerComposer, actualUpdateCount);
     }
     
     private int executeUpdateForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
@@ -84,16 +83,15 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            init(testParam, containerComposer);
-            int actualUpdateCount;
-            try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-                actualUpdateCount = SQLExecuteType.Literal == containerComposer.getSqlExecuteType()
-                        ? executeForStatement(containerComposer, connection)
-                        : executeForPreparedStatement(containerComposer, connection);
-            }
-            assertDataSet(testParam, containerComposer, actualUpdateCount);
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        init(testParam, containerComposer);
+        int actualUpdateCount;
+        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
+            actualUpdateCount = SQLExecuteType.Literal == containerComposer.getSqlExecuteType()
+                    ? executeForStatement(containerComposer, connection)
+                    : executeForPreparedStatement(containerComposer, connection);
         }
+        assertDataSet(testParam, containerComposer, actualUpdateCount);
     }
     
     private int executeForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
