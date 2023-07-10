@@ -134,9 +134,6 @@ public final class TypedSPILoader {
      * @throws ServiceProviderNotFoundServerException service provider not found server exception
      */
     public static <T extends TypedSPI> boolean checkService(final Class<T> spiClass, final String type, final Properties props) {
-        if (null == type) {
-            return false;
-        }
         Collection<T> serviceInstances = ShardingSphereServiceLoader.getServiceInstances(spiClass);
         for (T each : serviceInstances) {
             if (matchesType(type, each)) {
