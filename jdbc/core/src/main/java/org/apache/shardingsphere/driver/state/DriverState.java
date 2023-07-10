@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.driver.state;
 
-import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Connection;
 
@@ -35,8 +34,7 @@ public interface DriverState extends TypedSPI {
      *
      * @param databaseName database name
      * @param contextManager context manager
-     * @param jdbcContext JDBC context
      * @return connection
      */
-    Connection getConnection(String databaseName, ContextManager contextManager, JDBCContext jdbcContext);
+    Connection getConnection(String databaseName, ContextManager contextManager);
 }

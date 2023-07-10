@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.context.CachedDatabaseMetaData;
 
 import java.sql.DatabaseMetaData;
 import java.sql.RowIdLifetime;
+import java.sql.SQLException;
 
 /**
  * Adapted database meta data.
@@ -29,677 +29,676 @@ import java.sql.RowIdLifetime;
 @RequiredArgsConstructor
 public abstract class AdaptedDatabaseMetaData extends WrapperAdapter implements DatabaseMetaData {
     
-    private final CachedDatabaseMetaData cachedDatabaseMetaData;
+    private final DatabaseMetaData databaseMetaData;
     
     @Override
-    public final String getURL() {
-        return cachedDatabaseMetaData.getUrl();
+    public final String getURL() throws SQLException {
+        return databaseMetaData.getURL();
     }
     
     @Override
-    public final String getUserName() {
-        return cachedDatabaseMetaData.getUserName();
+    public final String getUserName() throws SQLException {
+        return databaseMetaData.getUserName();
     }
     
     @Override
-    public final String getDatabaseProductName() {
-        return cachedDatabaseMetaData.getDatabaseProductName();
+    public final String getDatabaseProductName() throws SQLException {
+        return databaseMetaData.getDatabaseProductName();
     }
     
     @Override
-    public final String getDatabaseProductVersion() {
-        return cachedDatabaseMetaData.getDatabaseProductVersion();
+    public final String getDatabaseProductVersion() throws SQLException {
+        return databaseMetaData.getDatabaseProductVersion();
     }
     
     @Override
-    public final String getDriverName() {
-        return cachedDatabaseMetaData.getDriverName();
+    public final String getDriverName() throws SQLException {
+        return databaseMetaData.getDriverName();
     }
     
     @Override
-    public final String getDriverVersion() {
-        return cachedDatabaseMetaData.getDriverVersion();
+    public final String getDriverVersion() throws SQLException {
+        return databaseMetaData.getDriverVersion();
     }
     
     @Override
     public final int getDriverMajorVersion() {
-        return cachedDatabaseMetaData.getDriverMajorVersion();
+        return databaseMetaData.getDriverMajorVersion();
     }
     
     @Override
     public final int getDriverMinorVersion() {
-        return cachedDatabaseMetaData.getDriverMinorVersion();
+        return databaseMetaData.getDriverMinorVersion();
     }
     
     @Override
-    public final int getDatabaseMajorVersion() {
-        return cachedDatabaseMetaData.getDatabaseMajorVersion();
+    public final int getDatabaseMajorVersion() throws SQLException {
+        return databaseMetaData.getDatabaseMajorVersion();
     }
     
     @Override
-    public final int getDatabaseMinorVersion() {
-        return cachedDatabaseMetaData.getDatabaseMinorVersion();
+    public final int getDatabaseMinorVersion() throws SQLException {
+        return databaseMetaData.getDatabaseMinorVersion();
     }
     
     @Override
-    public final int getJDBCMajorVersion() {
-        return cachedDatabaseMetaData.getJdbcMajorVersion();
+    public final int getJDBCMajorVersion() throws SQLException {
+        return databaseMetaData.getJDBCMajorVersion();
     }
     
     @Override
-    public final int getJDBCMinorVersion() {
-        return cachedDatabaseMetaData.getJdbcMinorVersion();
+    public final int getJDBCMinorVersion() throws SQLException {
+        return databaseMetaData.getJDBCMinorVersion();
     }
     
     @Override
-    public final boolean isReadOnly() {
-        return cachedDatabaseMetaData.isReadOnly();
+    public final boolean isReadOnly() throws SQLException {
+        return databaseMetaData.isReadOnly();
     }
     
     @Override
-    public final boolean allProceduresAreCallable() {
-        return cachedDatabaseMetaData.isAllProceduresAreCallable();
+    public final boolean allProceduresAreCallable() throws SQLException {
+        return databaseMetaData.allProceduresAreCallable();
     }
     
     @Override
-    public final boolean allTablesAreSelectable() {
-        return cachedDatabaseMetaData.isAllTablesAreSelectable();
+    public final boolean allTablesAreSelectable() throws SQLException {
+        return databaseMetaData.allTablesAreSelectable();
     }
     
     @Override
-    public final boolean nullsAreSortedHigh() {
-        return cachedDatabaseMetaData.isNullsAreSortedHigh();
+    public final boolean nullsAreSortedHigh() throws SQLException {
+        return databaseMetaData.nullsAreSortedHigh();
     }
     
     @Override
-    public final boolean nullsAreSortedLow() {
-        return cachedDatabaseMetaData.isNullsAreSortedLow();
+    public final boolean nullsAreSortedLow() throws SQLException {
+        return databaseMetaData.nullsAreSortedLow();
     }
     
     @Override
-    public final boolean nullsAreSortedAtStart() {
-        return cachedDatabaseMetaData.isNullsAreSortedAtStart();
+    public final boolean nullsAreSortedAtStart() throws SQLException {
+        return databaseMetaData.nullsAreSortedAtStart();
     }
     
     @Override
-    public final boolean nullsAreSortedAtEnd() {
-        return cachedDatabaseMetaData.isNullsAreSortedAtEnd();
+    public final boolean nullsAreSortedAtEnd() throws SQLException {
+        return databaseMetaData.nullsAreSortedAtEnd();
     }
     
     @Override
-    public final boolean usesLocalFiles() {
-        return cachedDatabaseMetaData.isUsesLocalFiles();
+    public final boolean usesLocalFiles() throws SQLException {
+        return databaseMetaData.usesLocalFiles();
     }
     
     @Override
-    public final boolean usesLocalFilePerTable() {
-        return cachedDatabaseMetaData.isUsesLocalFilePerTable();
+    public final boolean usesLocalFilePerTable() throws SQLException {
+        return databaseMetaData.usesLocalFilePerTable();
     }
     
     @Override
-    public final boolean supportsMixedCaseIdentifiers() {
-        return cachedDatabaseMetaData.isStoresMixedCaseIdentifiers();
+    public final boolean supportsMixedCaseIdentifiers() throws SQLException {
+        return databaseMetaData.storesMixedCaseIdentifiers();
     }
     
     @Override
-    public final boolean storesUpperCaseIdentifiers() {
-        return cachedDatabaseMetaData.isStoresUpperCaseIdentifiers();
+    public final boolean storesUpperCaseIdentifiers() throws SQLException {
+        return databaseMetaData.storesUpperCaseIdentifiers();
     }
     
     @Override
-    public final boolean storesLowerCaseIdentifiers() {
-        return cachedDatabaseMetaData.isStoresLowerCaseIdentifiers();
+    public final boolean storesLowerCaseIdentifiers() throws SQLException {
+        return databaseMetaData.storesLowerCaseIdentifiers();
     }
     
     @Override
-    public final boolean storesMixedCaseIdentifiers() {
-        return cachedDatabaseMetaData.isStoresMixedCaseIdentifiers();
+    public final boolean storesMixedCaseIdentifiers() throws SQLException {
+        return databaseMetaData.storesMixedCaseIdentifiers();
     }
     
     @Override
-    public final boolean supportsMixedCaseQuotedIdentifiers() {
-        return cachedDatabaseMetaData.isSupportsMixedCaseQuotedIdentifiers();
+    public final boolean supportsMixedCaseQuotedIdentifiers() throws SQLException {
+        return databaseMetaData.supportsMixedCaseQuotedIdentifiers();
     }
     
     @Override
-    public final boolean storesUpperCaseQuotedIdentifiers() {
-        return cachedDatabaseMetaData.isStoresUpperCaseQuotedIdentifiers();
+    public final boolean storesUpperCaseQuotedIdentifiers() throws SQLException {
+        return databaseMetaData.storesUpperCaseQuotedIdentifiers();
     }
     
     @Override
-    public final boolean storesLowerCaseQuotedIdentifiers() {
-        return cachedDatabaseMetaData.isStoresLowerCaseQuotedIdentifiers();
+    public final boolean storesLowerCaseQuotedIdentifiers() throws SQLException {
+        return databaseMetaData.storesLowerCaseQuotedIdentifiers();
     }
     
     @Override
-    public final boolean storesMixedCaseQuotedIdentifiers() {
-        return cachedDatabaseMetaData.isSupportsMixedCaseQuotedIdentifiers();
+    public final boolean storesMixedCaseQuotedIdentifiers() throws SQLException {
+        return databaseMetaData.storesMixedCaseQuotedIdentifiers();
     }
     
     @Override
-    public final String getIdentifierQuoteString() {
-        return cachedDatabaseMetaData.getIdentifierQuoteString();
+    public final String getIdentifierQuoteString() throws SQLException {
+        return databaseMetaData.getIdentifierQuoteString();
     }
     
     @Override
-    public final String getSQLKeywords() {
-        return cachedDatabaseMetaData.getSqlKeywords();
+    public final String getSQLKeywords() throws SQLException {
+        return databaseMetaData.getSQLKeywords();
     }
     
     @Override
-    public final String getNumericFunctions() {
-        return cachedDatabaseMetaData.getNumericFunctions();
+    public final String getNumericFunctions() throws SQLException {
+        return databaseMetaData.getNumericFunctions();
     }
     
     @Override
-    public final String getStringFunctions() {
-        return cachedDatabaseMetaData.getStringFunctions();
+    public final String getStringFunctions() throws SQLException {
+        return databaseMetaData.getStringFunctions();
     }
     
     @Override
-    public final String getSystemFunctions() {
-        return cachedDatabaseMetaData.getSystemFunctions();
+    public final String getSystemFunctions() throws SQLException {
+        return databaseMetaData.getSystemFunctions();
     }
     
     @Override
-    public final String getTimeDateFunctions() {
-        return cachedDatabaseMetaData.getTimeDateFunctions();
+    public final String getTimeDateFunctions() throws SQLException {
+        return databaseMetaData.getTimeDateFunctions();
     }
     
     @Override
-    public final String getSearchStringEscape() {
-        return cachedDatabaseMetaData.getSearchStringEscape();
+    public final String getSearchStringEscape() throws SQLException {
+        return databaseMetaData.getSearchStringEscape();
     }
     
     @Override
-    public final String getExtraNameCharacters() {
-        return cachedDatabaseMetaData.getExtraNameCharacters();
+    public final String getExtraNameCharacters() throws SQLException {
+        return databaseMetaData.getExtraNameCharacters();
     }
     
     @Override
-    public final boolean supportsAlterTableWithAddColumn() {
-        return cachedDatabaseMetaData.isSupportsAlterTableWithAddColumn();
+    public final boolean supportsAlterTableWithAddColumn() throws SQLException {
+        return databaseMetaData.supportsAlterTableWithAddColumn();
     }
     
     @Override
-    public final boolean supportsAlterTableWithDropColumn() {
-        return cachedDatabaseMetaData.isSupportsAlterTableWithDropColumn();
+    public final boolean supportsAlterTableWithDropColumn() throws SQLException {
+        return databaseMetaData.supportsAlterTableWithDropColumn();
     }
     
     @Override
-    public final boolean supportsColumnAliasing() {
-        return cachedDatabaseMetaData.isSupportsColumnAliasing();
+    public final boolean supportsColumnAliasing() throws SQLException {
+        return databaseMetaData.supportsColumnAliasing();
     }
     
     @Override
-    public final boolean nullPlusNonNullIsNull() {
-        return cachedDatabaseMetaData.isNullPlusNonNullIsNull();
+    public final boolean nullPlusNonNullIsNull() throws SQLException {
+        return databaseMetaData.nullPlusNonNullIsNull();
     }
     
     @Override
-    public final boolean supportsConvert() {
-        return cachedDatabaseMetaData.isSupportsConvert();
+    public final boolean supportsConvert() throws SQLException {
+        return databaseMetaData.supportsConvert();
     }
     
     @Override
-    public final boolean supportsConvert(final int fromType, final int toType) {
-        return cachedDatabaseMetaData.isSupportsConvert();
+    public final boolean supportsConvert(final int fromType, final int toType) throws SQLException {
+        return databaseMetaData.supportsConvert();
     }
     
     @Override
-    public final boolean supportsTableCorrelationNames() {
-        return cachedDatabaseMetaData.isSupportsTableCorrelationNames();
+    public final boolean supportsTableCorrelationNames() throws SQLException {
+        return databaseMetaData.supportsTableCorrelationNames();
     }
     
     @Override
-    public final boolean supportsDifferentTableCorrelationNames() {
-        return cachedDatabaseMetaData.isSupportsDifferentTableCorrelationNames();
+    public final boolean supportsDifferentTableCorrelationNames() throws SQLException {
+        return databaseMetaData.supportsDifferentTableCorrelationNames();
     }
     
     @Override
-    public final boolean supportsExpressionsInOrderBy() {
-        return cachedDatabaseMetaData.isSupportsExpressionsInOrderBy();
+    public final boolean supportsExpressionsInOrderBy() throws SQLException {
+        return databaseMetaData.supportsExpressionsInOrderBy();
     }
     
     @Override
-    public final boolean supportsOrderByUnrelated() {
-        return cachedDatabaseMetaData.isSupportsOrderByUnrelated();
+    public final boolean supportsOrderByUnrelated() throws SQLException {
+        return databaseMetaData.supportsOrderByUnrelated();
     }
     
     @Override
-    public final boolean supportsGroupBy() {
-        return cachedDatabaseMetaData.isSupportsGroupBy();
+    public final boolean supportsGroupBy() throws SQLException {
+        return databaseMetaData.supportsGroupBy();
     }
     
     @Override
-    public final boolean supportsGroupByUnrelated() {
-        return cachedDatabaseMetaData.isSupportsGroupByUnrelated();
+    public final boolean supportsGroupByUnrelated() throws SQLException {
+        return databaseMetaData.supportsGroupByUnrelated();
     }
     
     @Override
-    public final boolean supportsGroupByBeyondSelect() {
-        return cachedDatabaseMetaData.isSupportsGroupByBeyondSelect();
+    public final boolean supportsGroupByBeyondSelect() throws SQLException {
+        return databaseMetaData.supportsGroupByBeyondSelect();
     }
     
     @Override
-    public final boolean supportsLikeEscapeClause() {
-        return cachedDatabaseMetaData.isSupportsLikeEscapeClause();
+    public final boolean supportsLikeEscapeClause() throws SQLException {
+        return databaseMetaData.supportsLikeEscapeClause();
     }
     
     @Override
-    public final boolean supportsMultipleResultSets() {
-        return cachedDatabaseMetaData.isSupportsMultipleResultSets();
+    public final boolean supportsMultipleResultSets() throws SQLException {
+        return databaseMetaData.supportsMultipleResultSets();
     }
     
     @Override
-    public final boolean supportsMultipleTransactions() {
-        return cachedDatabaseMetaData.isSupportsMultipleTransactions();
+    public final boolean supportsMultipleTransactions() throws SQLException {
+        return databaseMetaData.supportsMultipleTransactions();
     }
     
     @Override
-    public final boolean supportsNonNullableColumns() {
-        return cachedDatabaseMetaData.isSupportsNonNullableColumns();
+    public final boolean supportsNonNullableColumns() throws SQLException {
+        return databaseMetaData.supportsNonNullableColumns();
     }
     
     @Override
-    public final boolean supportsMinimumSQLGrammar() {
-        return cachedDatabaseMetaData.isSupportsMinimumSQLGrammar();
+    public final boolean supportsMinimumSQLGrammar() throws SQLException {
+        return databaseMetaData.supportsMinimumSQLGrammar();
     }
     
     @Override
-    public final boolean supportsCoreSQLGrammar() {
-        return cachedDatabaseMetaData.isSupportsCoreSQLGrammar();
+    public final boolean supportsCoreSQLGrammar() throws SQLException {
+        return databaseMetaData.supportsCoreSQLGrammar();
     }
     
     @Override
-    public final boolean supportsExtendedSQLGrammar() {
-        return cachedDatabaseMetaData.isSupportsExtendedSQLGrammar();
+    public final boolean supportsExtendedSQLGrammar() throws SQLException {
+        return databaseMetaData.supportsExtendedSQLGrammar();
     }
     
     @Override
-    public final boolean supportsANSI92EntryLevelSQL() {
-        return cachedDatabaseMetaData.isSupportsANSI92EntryLevelSQL();
+    public final boolean supportsANSI92EntryLevelSQL() throws SQLException {
+        return databaseMetaData.supportsANSI92EntryLevelSQL();
     }
     
     @Override
-    public final boolean supportsANSI92IntermediateSQL() {
-        return cachedDatabaseMetaData.isSupportsANSI92IntermediateSQL();
+    public final boolean supportsANSI92IntermediateSQL() throws SQLException {
+        return databaseMetaData.supportsANSI92IntermediateSQL();
     }
     
     @Override
-    public final boolean supportsANSI92FullSQL() {
-        return cachedDatabaseMetaData.isSupportsANSI92FullSQL();
+    public final boolean supportsANSI92FullSQL() throws SQLException {
+        return databaseMetaData.supportsANSI92FullSQL();
     }
     
     @Override
-    public final boolean supportsIntegrityEnhancementFacility() {
-        return cachedDatabaseMetaData.isSupportsIntegrityEnhancementFacility();
+    public final boolean supportsIntegrityEnhancementFacility() throws SQLException {
+        return databaseMetaData.supportsIntegrityEnhancementFacility();
     }
     
     @Override
-    public final boolean supportsOuterJoins() {
-        return cachedDatabaseMetaData.isSupportsOuterJoins();
+    public final boolean supportsOuterJoins() throws SQLException {
+        return databaseMetaData.supportsOuterJoins();
     }
     
     @Override
-    public final boolean supportsFullOuterJoins() {
-        return cachedDatabaseMetaData.isSupportsFullOuterJoins();
+    public final boolean supportsFullOuterJoins() throws SQLException {
+        return databaseMetaData.supportsFullOuterJoins();
     }
     
     @Override
-    public final boolean supportsLimitedOuterJoins() {
-        return cachedDatabaseMetaData.isSupportsLimitedOuterJoins();
+    public final boolean supportsLimitedOuterJoins() throws SQLException {
+        return databaseMetaData.supportsLimitedOuterJoins();
     }
     
     @Override
-    public final String getSchemaTerm() {
-        return cachedDatabaseMetaData.getSchemaTerm();
+    public final String getSchemaTerm() throws SQLException {
+        return databaseMetaData.getSchemaTerm();
     }
     
     @Override
-    public final String getProcedureTerm() {
-        return cachedDatabaseMetaData.getProcedureTerm();
+    public final String getProcedureTerm() throws SQLException {
+        return databaseMetaData.getProcedureTerm();
     }
     
     @Override
-    public final String getCatalogTerm() {
-        return cachedDatabaseMetaData.getCatalogTerm();
+    public final String getCatalogTerm() throws SQLException {
+        return databaseMetaData.getCatalogTerm();
     }
     
     @Override
-    public final boolean isCatalogAtStart() {
-        return cachedDatabaseMetaData.isCatalogAtStart();
+    public final boolean isCatalogAtStart() throws SQLException {
+        return databaseMetaData.isCatalogAtStart();
     }
     
     @Override
-    public final String getCatalogSeparator() {
-        return cachedDatabaseMetaData.getCatalogSeparator();
+    public final String getCatalogSeparator() throws SQLException {
+        return databaseMetaData.getCatalogSeparator();
     }
     
     @Override
-    public final boolean supportsSchemasInDataManipulation() {
-        return cachedDatabaseMetaData.isSupportsSchemasInDataManipulation();
+    public final boolean supportsSchemasInDataManipulation() throws SQLException {
+        return databaseMetaData.supportsSchemasInDataManipulation();
     }
     
     @Override
-    public final boolean supportsSchemasInProcedureCalls() {
-        return cachedDatabaseMetaData.isSupportsSchemasInProcedureCalls();
+    public final boolean supportsSchemasInProcedureCalls() throws SQLException {
+        return databaseMetaData.supportsSchemasInProcedureCalls();
     }
     
     @Override
-    public final boolean supportsSchemasInTableDefinitions() {
-        return cachedDatabaseMetaData.isSupportsSchemasInTableDefinitions();
+    public final boolean supportsSchemasInTableDefinitions() throws SQLException {
+        return databaseMetaData.supportsSchemasInTableDefinitions();
     }
     
     @Override
-    public final boolean supportsSchemasInIndexDefinitions() {
-        return cachedDatabaseMetaData.isSupportsSchemasInIndexDefinitions();
+    public final boolean supportsSchemasInIndexDefinitions() throws SQLException {
+        return databaseMetaData.supportsSchemasInIndexDefinitions();
     }
     
     @Override
-    public final boolean supportsSchemasInPrivilegeDefinitions() {
-        return cachedDatabaseMetaData.isSupportsSchemasInPrivilegeDefinitions();
+    public final boolean supportsSchemasInPrivilegeDefinitions() throws SQLException {
+        return databaseMetaData.supportsSchemasInPrivilegeDefinitions();
     }
     
     @Override
-    public final boolean supportsCatalogsInDataManipulation() {
-        return cachedDatabaseMetaData.isSupportsCatalogsInDataManipulation();
+    public final boolean supportsCatalogsInDataManipulation() throws SQLException {
+        return databaseMetaData.supportsCatalogsInDataManipulation();
     }
     
     @Override
-    public final boolean supportsCatalogsInProcedureCalls() {
-        return cachedDatabaseMetaData.isSupportsCatalogsInProcedureCalls();
+    public final boolean supportsCatalogsInProcedureCalls() throws SQLException {
+        return databaseMetaData.supportsCatalogsInProcedureCalls();
     }
     
     @Override
-    public final boolean supportsCatalogsInTableDefinitions() {
-        return cachedDatabaseMetaData.isSupportsCatalogsInTableDefinitions();
+    public final boolean supportsCatalogsInTableDefinitions() throws SQLException {
+        return databaseMetaData.supportsCatalogsInTableDefinitions();
     }
     
     @Override
-    public final boolean supportsCatalogsInIndexDefinitions() {
-        return cachedDatabaseMetaData.isSupportsCatalogsInIndexDefinitions();
+    public final boolean supportsCatalogsInIndexDefinitions() throws SQLException {
+        return databaseMetaData.supportsCatalogsInIndexDefinitions();
     }
     
     @Override
-    public final boolean supportsCatalogsInPrivilegeDefinitions() {
-        return cachedDatabaseMetaData.isSupportsCatalogsInPrivilegeDefinitions();
+    public final boolean supportsCatalogsInPrivilegeDefinitions() throws SQLException {
+        return databaseMetaData.supportsCatalogsInPrivilegeDefinitions();
     }
     
     @Override
-    public final boolean supportsPositionedDelete() {
-        return cachedDatabaseMetaData.isSupportsPositionedDelete();
+    public final boolean supportsPositionedDelete() throws SQLException {
+        return databaseMetaData.supportsPositionedDelete();
     }
     
     @Override
-    public final boolean supportsPositionedUpdate() {
-        return cachedDatabaseMetaData.isSupportsPositionedUpdate();
+    public final boolean supportsPositionedUpdate() throws SQLException {
+        return databaseMetaData.supportsPositionedUpdate();
     }
     
     @Override
-    public final boolean supportsSelectForUpdate() {
-        return cachedDatabaseMetaData.isSupportsSelectForUpdate();
+    public final boolean supportsSelectForUpdate() throws SQLException {
+        return databaseMetaData.supportsSelectForUpdate();
     }
     
     @Override
-    public final boolean supportsStoredProcedures() {
-        return cachedDatabaseMetaData.isSupportsStoredProcedures();
+    public final boolean supportsStoredProcedures() throws SQLException {
+        return databaseMetaData.supportsStoredProcedures();
     }
     
     @Override
-    public final boolean supportsSubqueriesInComparisons() {
-        return cachedDatabaseMetaData.isSupportsSubqueriesInComparisons();
+    public final boolean supportsSubqueriesInComparisons() throws SQLException {
+        return databaseMetaData.supportsSubqueriesInComparisons();
     }
     
     @Override
-    public final boolean supportsSubqueriesInExists() {
-        return cachedDatabaseMetaData.isSupportsSubqueriesInExists();
+    public final boolean supportsSubqueriesInExists() throws SQLException {
+        return databaseMetaData.supportsSubqueriesInExists();
     }
     
     @Override
-    public final boolean supportsSubqueriesInIns() {
-        return cachedDatabaseMetaData.isSupportsSubqueriesInIns();
+    public final boolean supportsSubqueriesInIns() throws SQLException {
+        return databaseMetaData.supportsSubqueriesInIns();
     }
     
     @Override
-    public final boolean supportsSubqueriesInQuantifieds() {
-        return cachedDatabaseMetaData.isSupportsSubqueriesInQuantifieds();
+    public final boolean supportsSubqueriesInQuantifieds() throws SQLException {
+        return databaseMetaData.supportsSubqueriesInQuantifieds();
     }
     
     @Override
-    public final boolean supportsCorrelatedSubqueries() {
-        return cachedDatabaseMetaData.isSupportsCorrelatedSubqueries();
+    public final boolean supportsCorrelatedSubqueries() throws SQLException {
+        return databaseMetaData.supportsCorrelatedSubqueries();
     }
     
     @Override
-    public final boolean supportsUnion() {
-        return cachedDatabaseMetaData.isSupportsUnion();
+    public final boolean supportsUnion() throws SQLException {
+        return databaseMetaData.supportsUnion();
     }
     
     @Override
-    public final boolean supportsUnionAll() {
-        return cachedDatabaseMetaData.isSupportsUnionAll();
+    public final boolean supportsUnionAll() throws SQLException {
+        return databaseMetaData.supportsUnionAll();
     }
     
     @Override
-    public final boolean supportsOpenCursorsAcrossCommit() {
-        return cachedDatabaseMetaData.isSupportsOpenCursorsAcrossCommit();
+    public final boolean supportsOpenCursorsAcrossCommit() throws SQLException {
+        return databaseMetaData.supportsOpenCursorsAcrossCommit();
     }
     
     @Override
-    public final boolean supportsOpenCursorsAcrossRollback() {
-        return cachedDatabaseMetaData.isSupportsOpenCursorsAcrossRollback();
+    public final boolean supportsOpenCursorsAcrossRollback() throws SQLException {
+        return databaseMetaData.supportsOpenCursorsAcrossRollback();
     }
     
     @Override
-    public final boolean supportsOpenStatementsAcrossCommit() {
-        return cachedDatabaseMetaData.isSupportsOpenStatementsAcrossCommit();
+    public final boolean supportsOpenStatementsAcrossCommit() throws SQLException {
+        return databaseMetaData.supportsOpenStatementsAcrossCommit();
     }
     
     @Override
-    public final boolean supportsOpenStatementsAcrossRollback() {
-        return cachedDatabaseMetaData.isSupportsOpenStatementsAcrossRollback();
+    public final boolean supportsOpenStatementsAcrossRollback() throws SQLException {
+        return databaseMetaData.supportsOpenStatementsAcrossRollback();
     }
     
     @Override
-    public final int getMaxBinaryLiteralLength() {
-        return cachedDatabaseMetaData.getMaxBinaryLiteralLength();
+    public final int getMaxBinaryLiteralLength() throws SQLException {
+        return databaseMetaData.getMaxBinaryLiteralLength();
     }
     
     @Override
-    public final int getMaxCharLiteralLength() {
-        return cachedDatabaseMetaData.getMaxCharLiteralLength();
+    public final int getMaxCharLiteralLength() throws SQLException {
+        return databaseMetaData.getMaxCharLiteralLength();
     }
     
     @Override
-    public final int getMaxColumnNameLength() {
-        return cachedDatabaseMetaData.getMaxColumnNameLength();
+    public final int getMaxColumnNameLength() throws SQLException {
+        return databaseMetaData.getMaxColumnNameLength();
     }
     
     @Override
-    public final int getMaxColumnsInGroupBy() {
-        return cachedDatabaseMetaData.getMaxColumnsInGroupBy();
+    public final int getMaxColumnsInGroupBy() throws SQLException {
+        return databaseMetaData.getMaxColumnsInGroupBy();
     }
     
     @Override
-    public final int getMaxColumnsInIndex() {
-        return cachedDatabaseMetaData.getMaxColumnsInIndex();
+    public final int getMaxColumnsInIndex() throws SQLException {
+        return databaseMetaData.getMaxColumnsInIndex();
     }
     
     @Override
-    public final int getMaxColumnsInOrderBy() {
-        return cachedDatabaseMetaData.getMaxColumnsInOrderBy();
+    public final int getMaxColumnsInOrderBy() throws SQLException {
+        return databaseMetaData.getMaxColumnsInOrderBy();
     }
     
     @Override
-    public final int getMaxColumnsInSelect() {
-        return cachedDatabaseMetaData.getMaxColumnsInSelect();
+    public final int getMaxColumnsInSelect() throws SQLException {
+        return databaseMetaData.getMaxColumnsInSelect();
     }
     
     @Override
-    public final int getMaxColumnsInTable() {
-        return cachedDatabaseMetaData.getMaxColumnsInTable();
+    public final int getMaxColumnsInTable() throws SQLException {
+        return databaseMetaData.getMaxColumnsInTable();
     }
     
     @Override
-    public final int getMaxConnections() {
-        return cachedDatabaseMetaData.getMaxConnections();
+    public final int getMaxConnections() throws SQLException {
+        return databaseMetaData.getMaxConnections();
     }
     
     @Override
-    public final int getMaxCursorNameLength() {
-        return cachedDatabaseMetaData.getMaxCursorNameLength();
+    public final int getMaxCursorNameLength() throws SQLException {
+        return databaseMetaData.getMaxCursorNameLength();
     }
     
     @Override
-    public final int getMaxIndexLength() {
-        return cachedDatabaseMetaData.getMaxIndexLength();
+    public final int getMaxIndexLength() throws SQLException {
+        return databaseMetaData.getMaxIndexLength();
     }
     
     @Override
-    public final int getMaxSchemaNameLength() {
-        return cachedDatabaseMetaData.getMaxSchemaNameLength();
+    public final int getMaxSchemaNameLength() throws SQLException {
+        return databaseMetaData.getMaxSchemaNameLength();
     }
     
     @Override
-    public final int getMaxProcedureNameLength() {
-        return cachedDatabaseMetaData.getMaxProcedureNameLength();
+    public final int getMaxProcedureNameLength() throws SQLException {
+        return databaseMetaData.getMaxProcedureNameLength();
     }
     
     @Override
-    public final int getMaxCatalogNameLength() {
-        return cachedDatabaseMetaData.getMaxCatalogNameLength();
+    public final int getMaxCatalogNameLength() throws SQLException {
+        return databaseMetaData.getMaxCatalogNameLength();
     }
     
     @Override
-    public final int getMaxRowSize() {
-        return cachedDatabaseMetaData.getMaxRowSize();
+    public final int getMaxRowSize() throws SQLException {
+        return databaseMetaData.getMaxRowSize();
     }
     
     @Override
-    public final boolean doesMaxRowSizeIncludeBlobs() {
-        return cachedDatabaseMetaData.isDoesMaxRowSizeIncludeBlobs();
+    public final boolean doesMaxRowSizeIncludeBlobs() throws SQLException {
+        return databaseMetaData.doesMaxRowSizeIncludeBlobs();
     }
     
     @Override
-    public final int getMaxStatementLength() {
-        return cachedDatabaseMetaData.getMaxStatementLength();
+    public final int getMaxStatementLength() throws SQLException {
+        return databaseMetaData.getMaxStatementLength();
     }
     
     @Override
-    public final int getMaxStatements() {
-        return cachedDatabaseMetaData.getMaxStatements();
+    public final int getMaxStatements() throws SQLException {
+        return databaseMetaData.getMaxStatements();
     }
     
     @Override
-    public final int getMaxTableNameLength() {
-        return cachedDatabaseMetaData.getMaxTableNameLength();
+    public final int getMaxTableNameLength() throws SQLException {
+        return databaseMetaData.getMaxTableNameLength();
     }
     
     @Override
-    public final int getMaxTablesInSelect() {
-        return cachedDatabaseMetaData.getMaxTablesInSelect();
+    public final int getMaxTablesInSelect() throws SQLException {
+        return databaseMetaData.getMaxTablesInSelect();
     }
     
     @Override
-    public final int getMaxUserNameLength() {
-        return cachedDatabaseMetaData.getMaxUserNameLength();
+    public final int getMaxUserNameLength() throws SQLException {
+        return databaseMetaData.getMaxUserNameLength();
     }
     
     @Override
-    public final int getDefaultTransactionIsolation() {
-        return cachedDatabaseMetaData.getDefaultTransactionIsolation();
+    public final int getDefaultTransactionIsolation() throws SQLException {
+        return databaseMetaData.getDefaultTransactionIsolation();
     }
     
     @Override
-    public final boolean supportsTransactions() {
-        return cachedDatabaseMetaData.isSupportsTransactions();
+    public final boolean supportsTransactions() throws SQLException {
+        return databaseMetaData.supportsTransactions();
     }
     
     @Override
-    public final boolean supportsDataDefinitionAndDataManipulationTransactions() {
-        return cachedDatabaseMetaData.isSupportsDataDefinitionAndDataManipulationTransactions();
+    public final boolean supportsDataDefinitionAndDataManipulationTransactions() throws SQLException {
+        return databaseMetaData.supportsDataDefinitionAndDataManipulationTransactions();
     }
     
     @Override
-    public final boolean supportsDataManipulationTransactionsOnly() {
-        return cachedDatabaseMetaData.isSupportsDataManipulationTransactionsOnly();
+    public final boolean supportsDataManipulationTransactionsOnly() throws SQLException {
+        return databaseMetaData.supportsDataManipulationTransactionsOnly();
     }
     
     @Override
-    public final boolean dataDefinitionCausesTransactionCommit() {
-        return cachedDatabaseMetaData.isDataDefinitionCausesTransactionCommit();
+    public final boolean dataDefinitionCausesTransactionCommit() throws SQLException {
+        return databaseMetaData.dataDefinitionCausesTransactionCommit();
     }
     
     @Override
-    public final boolean dataDefinitionIgnoredInTransactions() {
-        return cachedDatabaseMetaData.isDataDefinitionIgnoredInTransactions();
+    public final boolean dataDefinitionIgnoredInTransactions() throws SQLException {
+        return databaseMetaData.dataDefinitionIgnoredInTransactions();
     }
     
     @Override
-    public final boolean supportsBatchUpdates() {
-        return cachedDatabaseMetaData.isSupportsBatchUpdates();
+    public final boolean supportsBatchUpdates() throws SQLException {
+        return databaseMetaData.supportsBatchUpdates();
     }
     
     @Override
-    public final boolean supportsSavepoints() {
-        return cachedDatabaseMetaData.isSupportsSavepoints();
+    public final boolean supportsSavepoints() throws SQLException {
+        return databaseMetaData.supportsSavepoints();
     }
     
     @Override
-    public final boolean supportsNamedParameters() {
-        return cachedDatabaseMetaData.isSupportsNamedParameters();
+    public final boolean supportsNamedParameters() throws SQLException {
+        return databaseMetaData.supportsNamedParameters();
     }
     
     @Override
-    public final boolean supportsMultipleOpenResults() {
-        return cachedDatabaseMetaData.isSupportsMultipleOpenResults();
+    public final boolean supportsMultipleOpenResults() throws SQLException {
+        return databaseMetaData.supportsMultipleOpenResults();
     }
     
     @Override
-    public final boolean supportsGetGeneratedKeys() {
-        return cachedDatabaseMetaData.isSupportsGetGeneratedKeys();
+    public final boolean supportsGetGeneratedKeys() throws SQLException {
+        return databaseMetaData.supportsGetGeneratedKeys();
     }
     
     @Override
-    public final int getResultSetHoldability() {
-        return cachedDatabaseMetaData.getResultSetHoldability();
+    public final int getResultSetHoldability() throws SQLException {
+        return databaseMetaData.getResultSetHoldability();
     }
     
-    @SuppressWarnings("MagicConstant")
     @Override
-    public final int getSQLStateType() {
-        return cachedDatabaseMetaData.getSqlStateType();
+    public final int getSQLStateType() throws SQLException {
+        return databaseMetaData.getSQLStateType();
     }
     
     @Override
-    public final boolean locatorsUpdateCopy() {
-        return cachedDatabaseMetaData.isLocatorsUpdateCopy();
+    public final boolean locatorsUpdateCopy() throws SQLException {
+        return databaseMetaData.locatorsUpdateCopy();
     }
     
     @Override
-    public final boolean supportsStatementPooling() {
-        return cachedDatabaseMetaData.isSupportsStatementPooling();
+    public final boolean supportsStatementPooling() throws SQLException {
+        return databaseMetaData.supportsStatementPooling();
     }
     
     @Override
-    public final boolean supportsStoredFunctionsUsingCallSyntax() {
-        return cachedDatabaseMetaData.isSupportsStoredFunctionsUsingCallSyntax();
+    public final boolean supportsStoredFunctionsUsingCallSyntax() throws SQLException {
+        return databaseMetaData.supportsStoredFunctionsUsingCallSyntax();
     }
     
     @Override
-    public final boolean autoCommitFailureClosesAllResultSets() {
-        return cachedDatabaseMetaData.isAutoCommitFailureClosesAllResultSets();
+    public final boolean autoCommitFailureClosesAllResultSets() throws SQLException {
+        return databaseMetaData.autoCommitFailureClosesAllResultSets();
     }
     
     @Override
-    public final RowIdLifetime getRowIdLifetime() {
-        return cachedDatabaseMetaData.getRowIdLifetime();
+    public final RowIdLifetime getRowIdLifetime() throws SQLException {
+        return databaseMetaData.getRowIdLifetime();
     }
     
     @Override
-    public final boolean generatedKeyAlwaysReturned() {
-        return cachedDatabaseMetaData.isGeneratedKeyAlwaysReturned();
+    public final boolean generatedKeyAlwaysReturned() throws SQLException {
+        return databaseMetaData.generatedKeyAlwaysReturned();
     }
     
     @Override
