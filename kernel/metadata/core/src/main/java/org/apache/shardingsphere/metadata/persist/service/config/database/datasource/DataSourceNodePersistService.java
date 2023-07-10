@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.config.database;
+package org.apache.shardingsphere.metadata.persist.service.config.database.datasource;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Data source persist service.
+ * Data source node persist service.
  */
 @RequiredArgsConstructor
-public final class DataSourcePersistService implements DatabaseBasedPersistService<Map<String, DataSourceProperties>> {
+public final class DataSourceNodePersistService implements DatabaseBasedPersistService<Map<String, DataSourceProperties>> {
     
     private static final String DEFAULT_VERSION = "0";
     
@@ -48,7 +46,7 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
         if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
             repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
         }
-        repository.persist(DatabaseMetaDataNode.getMetaDataDataSourceUnitsPath(databaseName, getDatabaseActiveVersion(databaseName)),
+        repository.persist(DatabaseMetaDataNode.getMetaDataDataSourceNodesPath(databaseName, getDatabaseActiveVersion(databaseName)),
                 YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourceConfigs)));
     }
     
@@ -60,13 +58,7 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     @Override
     public Map<String, DataSourceProperties> load(final String databaseName) {
         return isExisted(databaseName) ? getDataSourceProperties(repository.getDirectly(
-                DatabaseMetaDataNode.getMetaDataDataSourceUnitsPath(databaseName, getDatabaseActiveVersion(databaseName)))) : new LinkedHashMap<>();
-    }
-    
-    @Override
-    public Map<String, DataSourceProperties> load(final String databaseName, final String version) {
-        String yamlContent = repository.getDirectly(DatabaseMetaDataNode.getMetaDataDataSourceUnitsPath(databaseName, version));
-        return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : getDataSourceProperties(yamlContent);
+                DatabaseMetaDataNode.getMetaDataDataSourceNodesPath(databaseName, getDatabaseActiveVersion(databaseName)))) : new LinkedHashMap<>();
     }
     
     private boolean isExisted(final String databaseName) {
@@ -96,16 +88,6 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
         Map<String, DataSourceProperties> dataSourceConfigs = load(databaseName);
         dataSourceConfigs.putAll(toBeAppendedDataSourcePropsMap);
         persist(databaseName, dataSourceConfigs);
-    }
-    
-    @Override
-    public Collection<MetaDataVersion> persistStorageUnits(final String databaseName, final Map<String, DataSourceProperties> dataSourceConfigs) {
-        if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
-            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
-        }
-        repository.persist(DatabaseMetaDataNode.getMetaDataDataSourceUnitsPath(databaseName, getDatabaseActiveVersion(databaseName)),
-                YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourceConfigs)));
-        return Collections.emptyList();
     }
     
     private String getDatabaseActiveVersion(final String databaseName) {

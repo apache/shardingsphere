@@ -54,7 +54,9 @@ public interface DatabaseBasedPersistService<T> {
      * @param name name
      * @return configurations
      */
-    T load(String databaseName, String name);
+    default T load(String databaseName, String name) {
+        return null;
+    }
     
     /**
      * Delete rule.
@@ -93,16 +95,5 @@ public interface DatabaseBasedPersistService<T> {
      * @param toBeAppendedDataSourcePropsMap data source properties map to be appended
      */
     default void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
-    }
-    
-    /**
-     * Persist storage units.
-     *
-     * @param databaseName database name
-     * @param configs configurations
-     * @return meta data versions
-     */
-    default Collection<MetaDataVersion> persistStorageUnits(final String databaseName, T configs) {
-        return Collections.emptyList();
     }
 }

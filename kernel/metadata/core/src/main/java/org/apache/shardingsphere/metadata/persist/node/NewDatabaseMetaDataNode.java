@@ -68,6 +68,16 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
+     * Get data source nodes node.
+     *
+     * @param databaseName database name
+     * @return data sources node
+     */
+    public static String getDataSourceNodesNode(final String databaseName) {
+        return String.join("/", getMetaDataNodeNode(), databaseName, DATA_SOURCES_NODE, DATA_SOURCE_NODES_NODE);
+    }
+    
+    /**
      * Get data source unit node.
      *
      * @param databaseName database name
@@ -75,6 +85,17 @@ public final class NewDatabaseMetaDataNode {
      * @return data source node
      */
     public static String getDataSourceUnitNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourceUnitsNode(databaseName), dataSourceName);
+    }
+    
+    /**
+     * Get data source unit node.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return data source node
+     */
+    public static String getDataSourceNode(final String databaseName, final String dataSourceName) {
         return String.join("/", getDataSourceUnitsNode(databaseName), dataSourceName);
     }
     
@@ -91,6 +112,18 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
+     * Get data source node with version.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @param version version
+     * @return data source node with version
+     */
+    public static String getDataSourceNodeWithVersion(final String databaseName, final String dataSourceName, final String version) {
+        return String.join("/", getDataSourceNodeVersionsNode(databaseName, dataSourceName), version);
+    }
+    
+    /**
      * Get data source unit active version node.
      *
      * @param databaseName database name
@@ -102,6 +135,17 @@ public final class NewDatabaseMetaDataNode {
     }
     
     /**
+     * Get data source node active version node.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return data source active version node
+     */
+    public static String getDataSourceNodeActiveVersionNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourceNodesNode(databaseName), dataSourceName, ACTIVE_VERSION);
+    }
+    
+    /**
      * Get data source unit versions node.
      *
      * @param databaseName database name
@@ -110,6 +154,17 @@ public final class NewDatabaseMetaDataNode {
      */
     public static String getDataSourceUnitVersionsNode(final String databaseName, final String dataSourceName) {
         return String.join("/", getDataSourceUnitsNode(databaseName), dataSourceName, VERSIONS);
+    }
+    
+    /**
+     * Get data source node versions node.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return data source versions node
+     */
+    public static String getDataSourceNodeVersionsNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourceNodesNode(databaseName), dataSourceName, VERSIONS);
     }
     
     /**

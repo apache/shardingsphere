@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.config.database;
+package org.apache.shardingsphere.metadata.persist.service.config.database.datasource;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -35,10 +36,10 @@ import java.util.Map.Entry;
 
 /**
  * TODO Rename DataSourcePersistService when metadata structure adjustment completed. #25485
- * New Data source persist service.
+ * New Data source unit persist service.
  */
 @RequiredArgsConstructor
-public final class NewDataSourcePersistService implements DatabaseBasedPersistService<Map<String, DataSourceProperties>> {
+public final class NewDataSourceUnitPersistService implements DatabaseBasedPersistService<Map<String, DataSourceProperties>> {
     
     private static final String DEFAULT_VERSION = "0";
     
@@ -109,23 +110,6 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
     @Override
     public void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
         persist(databaseName, toBeAppendedDataSourcePropsMap);
-    }
-    
-    @Override
-    public Collection<MetaDataVersion> persistStorageUnits(final String databaseName, final Map<String, DataSourceProperties> dataSourceConfigs) {
-        Collection<MetaDataVersion> result = new LinkedList<>();
-        for (Entry<String, DataSourceProperties> entry : dataSourceConfigs.entrySet()) {
-            List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getDataSourceUnitVersionsNode(databaseName, entry.getKey()));
-            String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            repository.persist(NewDatabaseMetaDataNode.getDataSourceUnitNodeWithVersion(databaseName, entry.getKey(), nextActiveVersion),
-                    YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
-            if (Strings.isNullOrEmpty(getDataSourceActiveVersion(databaseName, entry.getKey()))) {
-                repository.persist(NewDatabaseMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
-            }
-            result.add(new MetaDataVersion(NewDatabaseMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey()),
-                    getDataSourceActiveVersion(databaseName, entry.getKey()), nextActiveVersion));
-        }
-        return result;
     }
     
     private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {

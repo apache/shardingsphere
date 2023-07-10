@@ -52,7 +52,7 @@ public final class NewConfigurationChangedSubscriber {
             return;
         }
         contextManager.registerStorageUnit(event.getDatabaseName(),
-                contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(event.getDatabaseName(), event.getStorageUnitName()));
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
     /**
@@ -66,7 +66,7 @@ public final class NewConfigurationChangedSubscriber {
             return;
         }
         contextManager.alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(),
-                contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(event.getDatabaseName(), event.getStorageUnitName()));
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
     /**
