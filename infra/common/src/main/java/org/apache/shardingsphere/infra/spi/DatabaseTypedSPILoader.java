@@ -61,6 +61,6 @@ public final class DatabaseTypedSPILoader {
      * @return found service
      */
     public static <T extends TypedSPI> T getService(final Class<T> spiClass, final DatabaseType databaseType) {
-        return findService(spiClass, databaseType).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass));
+        return findService(spiClass, databaseType).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, databaseType.getType()));
     }
 }
