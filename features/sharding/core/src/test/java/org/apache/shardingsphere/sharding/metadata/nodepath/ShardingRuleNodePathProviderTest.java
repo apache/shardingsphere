@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class ShardingRuleNodePathProviderTest {
-
+    
     @Test
     void assertNew() {
         RuleNodePathProvider ruleNodePathProvider = new ShardingRuleNodePathProvider();
