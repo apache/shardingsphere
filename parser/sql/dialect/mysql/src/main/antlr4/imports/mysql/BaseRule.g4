@@ -255,6 +255,7 @@ identifierKeywordsUnambiguous
     | JSON
     | JSON_VALUE
     | KEY
+    | KEYS
     | KEY_BLOCK_SIZE
     | LAST
     | LEAVES
