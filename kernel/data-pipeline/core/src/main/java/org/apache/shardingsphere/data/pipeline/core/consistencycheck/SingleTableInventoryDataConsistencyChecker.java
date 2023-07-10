@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
-import org.apache.shardingsphere.data.pipeline.common.util.CloseUtils;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
@@ -105,8 +105,8 @@ public final class SingleTableInventoryDataConsistencyChecker {
         try {
             return check0(sourceCalculatedResults, targetCalculatedResults, executor);
         } finally {
-            CloseUtils.closeQuietly(sourceParam.getCalculationContext());
-            CloseUtils.closeQuietly(targetParam.getCalculationContext());
+            QuietlyCloser.close(sourceParam.getCalculationContext());
+            QuietlyCloser.close(targetParam.getCalculationContext());
         }
     }
     

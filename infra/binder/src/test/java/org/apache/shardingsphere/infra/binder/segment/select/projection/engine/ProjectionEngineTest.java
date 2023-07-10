@@ -233,14 +233,15 @@ class ProjectionEngineTest {
                 .createProjection(subqueryTableSegment, shorthandProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
-        assertThat(((ShorthandProjection) actual.get()).getColumnProjections().size(), is(1));
+        assertThat(((ShorthandProjection) actual.get()).getColumnProjections().size(), is(2));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(2));
         Collection<ColumnProjection> columnProjections = new LinkedList<>();
         columnProjections.add(new ColumnProjection(null, "name", null));
+        columnProjections.add(new ColumnProjection(null, "leave_date", null));
         assertThat(((ShorthandProjection) actual.get()).getColumnProjections(), is(columnProjections));
         Collection<Projection> expectedColumnProjections = new LinkedHashSet<>();
         expectedColumnProjections.add(new ColumnProjection(null, "name", null));
-        expectedColumnProjections.add(new ExpressionProjection("nvl(leave_date, '20991231')", "leave_date"));
+        expectedColumnProjections.add(new ColumnProjection(null, "leave_date", null));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(expectedColumnProjections));
     }
     

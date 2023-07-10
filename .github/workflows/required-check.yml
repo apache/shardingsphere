@@ -43,7 +43,7 @@ jobs:
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Run CheckStyle
-        run: ./mvnw checkstyle:check -T1C
+        run: ./mvnw checkstyle:check spotless:check -T1C
   
   check-license:
     name: Check - License

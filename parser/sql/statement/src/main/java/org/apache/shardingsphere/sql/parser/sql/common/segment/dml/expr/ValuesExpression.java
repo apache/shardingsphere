@@ -36,4 +36,13 @@ public final class ValuesExpression implements ExpressionSegment {
     private final int stopIndex;
     
     private final Collection<InsertValuesSegment> rowConstructorList = new LinkedList<>();
+    
+    @Override
+    public String getText() {
+        StringBuilder result = new StringBuilder();
+        for (InsertValuesSegment each : rowConstructorList) {
+            result.append(each.getValues());
+        }
+        return result.toString();
+    }
 }
