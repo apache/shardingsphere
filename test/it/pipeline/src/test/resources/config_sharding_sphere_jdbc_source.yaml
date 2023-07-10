@@ -29,6 +29,9 @@ mode:
       maxRetries: 3
       operationTimeoutMilliseconds: 500
 
+props:
+  system-schema-metadata-enabled: false
+
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
