@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.config.database;
+package org.apache.shardingsphere.metadata.persist.service.config.database.rule;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -50,11 +49,6 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
                 YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
-    @Override
-    public Collection<MetaDataVersion> persistConfig(final String databaseName, final Collection<RuleConfiguration> configs) {
-        return Collections.emptyList();
-    }
-    
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
         return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(ruleConfigs);
     }
@@ -66,15 +60,6 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
                 ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName,
                         getDatabaseActiveVersion(databaseName))), Collection.class, true))
                 : new LinkedList<>();
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public Collection<RuleConfiguration> load(final String databaseName, final String version) {
-        String yamlContent = repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, version));
-        return Strings.isNullOrEmpty(yamlContent) ? new LinkedList<>()
-                : new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(DatabaseMetaDataNode
-                        .getRulePath(databaseName, getDatabaseActiveVersion(databaseName))), Collection.class, true));
     }
     
     private boolean isExisted(final String databaseName) {

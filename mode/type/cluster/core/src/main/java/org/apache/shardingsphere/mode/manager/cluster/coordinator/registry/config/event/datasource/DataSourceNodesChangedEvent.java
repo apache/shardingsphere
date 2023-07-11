@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.datasource;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
+import java.util.Map;
+
 /**
- * Add data source event.
+ * Data source nodes changed event.
  */
-@Getter
 @RequiredArgsConstructor
-public final class RegisterStorageUnitEvent implements GovernanceEvent {
+@Getter
+public final class DataSourceNodesChangedEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final String storageUnitName;
+    private final String databaseVersion;
     
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    private final Map<String, DataSourceProperties> dataSourcePropertiesMap;
 }
