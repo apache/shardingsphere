@@ -22,6 +22,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+/**
+ * Expected extract arg expression.
+ */
 @Getter
 public class ExpectedExtractArgExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
     
