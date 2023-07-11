@@ -414,7 +414,7 @@ class ProjectionsContextEngineTest {
         projectionsSegment.getProjections().add(projectionSegment);
         selectStatement.setProjections(projectionsSegment);
         subquerySelectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, subquerySelectStatement));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, subquerySelectStatement, ""));
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("d")));
         selectStatement.setFrom(subqueryTableSegment);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
@@ -459,7 +459,7 @@ class ProjectionsContextEngineTest {
         projectionsSegment.getProjections().add(projectionSegment);
         selectStatement.setProjections(projectionsSegment);
         subquerySelectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, subquerySelectStatement));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, subquerySelectStatement, ""));
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("TABLE")));
         selectStatement.setFrom(subqueryTableSegment);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));

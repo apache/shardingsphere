@@ -348,7 +348,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx) {
         String operator = getOriginalText(ctx.patternMatchingOperator()).toUpperCase();
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
-        ListExpression right = new ListExpression(ctx.aExpr(1).start.getStartIndex(), ctx.aExpr().get(ctx.aExpr().size() - 1).stop.getStopIndex());
+        ListExpression right = new ListExpression(ctx.aExpr(1).start.getStartIndex(), ctx.aExpr().get(ctx.aExpr().size() - 1).stop.getStopIndex(), getOriginalText(ctx));
         for (int i = 1; i < ctx.aExpr().size(); i++) {
             right.getItems().add((ExpressionSegment) visit(ctx.aExpr().get(i)));
         }
@@ -410,9 +410,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     
     private ExpressionSegment createSubqueryExpressionSegment(final CExprContext ctx) {
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(),
-                ctx.selectWithParens().getStop().getStopIndex(), (OpenGaussSelectStatement) visit(ctx.selectWithParens()));
+                ctx.selectWithParens().getStop().getStopIndex(), (OpenGaussSelectStatement) visit(ctx.selectWithParens()), getOriginalText(ctx));
         if (null != ctx.EXISTS()) {
-            return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
+            return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment, getOriginalText(ctx));
         }
         return new SubqueryExpressionSegment(subquerySegment);
     }
@@ -427,7 +427,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         }
         ExpressionSegment caseExpr = null == ctx.caseArg() ? null : (ExpressionSegment) visit(ctx.caseArg().aExpr());
         ExpressionSegment elseExpr = null == ctx.caseDefault() ? null : (ExpressionSegment) visit(ctx.caseDefault().aExpr());
-        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr);
+        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr, getOriginalText(ctx));
     }
     
     @Override
@@ -518,17 +518,17 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
         ExpressionSegment right = createInExpressionSegment(ctx.inExpr());
         boolean not = null != ctx.NOT();
-        return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
+        return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not, getOriginalText(ctx));
     }
     
     @SuppressWarnings("unchecked")
     private ExpressionSegment createInExpressionSegment(final InExprContext ctx) {
         if (null != ctx.selectWithParens()) {
             OpenGaussSelectStatement select = (OpenGaussSelectStatement) visit(ctx.selectWithParens());
-            SubquerySegment subquerySegment = new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), select);
+            SubquerySegment subquerySegment = new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), select, getOriginalText(ctx));
             return new SubqueryExpressionSegment(subquerySegment);
         }
-        ListExpression result = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
+        ListExpression result = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), getOriginalText(ctx));
         result.getItems().addAll(((CollectionValue<ExpressionSegment>) visit(ctx.exprList())).getValue());
         return result;
     }
@@ -549,7 +549,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bExpr());
         ExpressionSegment and = (ExpressionSegment) visit(ctx.aExpr(1));
         boolean not = null != ctx.NOT();
-        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
+        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not, getOriginalText(ctx));
     }
     
     @Override
@@ -577,12 +577,12 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
         if (null == ctx.DISTINCT()) {
-            AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+            AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getOriginalText(ctx));
             result.getParameters().addAll(expressionSegments);
             return result;
         }
         AggregationDistinctProjectionSegment result =
-                new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
+                new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx), getOriginalText(ctx));
         result.getParameters().addAll(expressionSegments);
         return result;
     }
@@ -655,6 +655,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         result.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
+        result.setText(getOriginalText(ctx));
         if (null != ctx.dataTypeLength()) {
             DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
             result.setDataLength(dataTypeLengthSegment);
@@ -751,7 +752,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         ValuesClauseContext valuesClause = ctx.select().selectNoParens().selectClauseN().simpleSelect().valuesClause();
         if (null == valuesClause) {
             OpenGaussSelectStatement selectStatement = (OpenGaussSelectStatement) visit(ctx.select());
-            result.setInsertSelect(new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement));
+            result.setInsertSelect(new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx)));
         } else {
             result.getValues().addAll(createInsertValuesSegments(valuesClause));
         }
@@ -1163,7 +1164,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     
     private SubqueryTableSegment getSubqueryTableSegment(final TableReferenceContext ctx) {
         OpenGaussSelectStatement select = (OpenGaussSelectStatement) visit(ctx.selectWithParens());
-        SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select);
+        SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select, getOriginalText(ctx));
         SubqueryTableSegment result = new SubqueryTableSegment(subquery);
         if (null != ctx.aliasClause()) {
             result.setAlias((AliasSegment) visit(ctx.aliasClause()));

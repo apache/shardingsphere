@@ -37,12 +37,5 @@ public final class ValuesExpression implements ExpressionSegment {
     
     private final Collection<InsertValuesSegment> rowConstructorList = new LinkedList<>();
     
-    @Override
-    public String getText() {
-        StringBuilder result = new StringBuilder();
-        for (InsertValuesSegment each : rowConstructorList) {
-            result.append(each.getValues());
-        }
-        return result.toString();
-    }
+    private final String text;
 }

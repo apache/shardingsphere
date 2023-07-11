@@ -35,6 +35,9 @@ public class LiteralExpressionSegment implements SimpleExpressionSegment {
     
     @Override
     public String getText() {
-        return literals.toString();
+        if (null == literals) {
+            return "NULL";
+        }
+        return literals instanceof String ? "'" + literals + "'" : String.valueOf(literals);
     }
 }

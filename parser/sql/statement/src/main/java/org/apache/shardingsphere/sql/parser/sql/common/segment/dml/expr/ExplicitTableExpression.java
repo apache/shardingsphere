@@ -34,8 +34,5 @@ public final class ExplicitTableExpression implements ExpressionSegment {
     
     private final TableNameSegment tableNameSegment;
     
-    @Override
-    public String getText() {
-        return tableNameSegment.getIdentifier().getValue();
-    }
+    private final String text;
 }

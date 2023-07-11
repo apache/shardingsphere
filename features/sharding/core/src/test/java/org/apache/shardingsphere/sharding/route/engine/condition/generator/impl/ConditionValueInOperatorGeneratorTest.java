@@ -52,9 +52,9 @@ class ConditionValueInOperatorGeneratorTest {
     
     @Test
     void assertNowExpression() {
-        ListExpression listExpression = new ListExpression(0, 0);
+        ListExpression listExpression = new ListExpression(0, 0, "(now())");
         listExpression.getItems().add(new CommonExpressionSegment(0, 0, "now()"));
-        InExpression inExpression = new InExpression(0, 0, null, listExpression, false);
+        InExpression inExpression = new InExpression(0, 0, null, listExpression, false, "IN (now())");
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(inExpression, column, new LinkedList<>(), timestampServiceRule);
         assertTrue(shardingConditionValue.isPresent());
         assertThat(((ListShardingConditionValue<?>) shardingConditionValue.get()).getValues().iterator().next(), instanceOf(Date.class));
@@ -65,9 +65,9 @@ class ConditionValueInOperatorGeneratorTest {
     @Test
     void assertGenerateConditionValueWithParameter() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
-        ListExpression right = new ListExpression(0, 0);
+        ListExpression right = new ListExpression(0, 0, "(?)");
         right.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 0));
-        InExpression predicate = new InExpression(0, 0, left, right, false);
+        InExpression predicate = new InExpression(0, 0, left, right, false, "IN (?)");
         Optional<ShardingConditionValue> actual = generator.generate(predicate, column, Collections.singletonList(1), timestampServiceRule);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ListShardingConditionValue.class));
@@ -81,9 +81,9 @@ class ConditionValueInOperatorGeneratorTest {
     @Test
     void assertGenerateConditionValueWithoutParameter() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        ListExpression right = new ListExpression(0, 0);
+        ListExpression right = new ListExpression(0, 0, "(?)");
         right.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 0));
-        InExpression predicate = new InExpression(0, 0, left, right, false);
+        InExpression predicate = new InExpression(0, 0, left, right, false, "IN (?)");
         Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), timestampServiceRule);
         assertFalse(actual.isPresent());
     }

@@ -52,8 +52,8 @@ class ColumnExtractorParameterizedTest {
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.of(new BinaryOperationExpression(0, 0, COLUMN_SEGMENT, null, null, null)),
-                    Arguments.of(new InExpression(0, 0, COLUMN_SEGMENT, null, false)),
-                    Arguments.of(new BetweenExpression(0, 0, COLUMN_SEGMENT, null, null, false)));
+                    Arguments.of(new InExpression(0, 0, COLUMN_SEGMENT, null, false, null)),
+                    Arguments.of(new BetweenExpression(0, 0, COLUMN_SEGMENT, null, null, false, null)));
         }
     }
 }

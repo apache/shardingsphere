@@ -162,7 +162,7 @@ class InsertStatementContextTest {
         InsertStatement insertStatement = new MySQLInsertStatement();
         SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SubquerySegment insertSelect = new SubquerySegment(0, 0, selectStatement);
+        SubquerySegment insertSelect = new SubquerySegment(0, 0, selectStatement, "");
         insertStatement.setInsertSelect(insertSelect);
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         InsertStatementContext actual = createInsertStatementContext(Collections.singletonList("param"), insertStatement);

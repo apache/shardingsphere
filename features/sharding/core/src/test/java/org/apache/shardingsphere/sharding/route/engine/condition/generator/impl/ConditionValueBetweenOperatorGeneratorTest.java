@@ -67,7 +67,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
         int and = 2;
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, and);
-        BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
+        BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false, "BETWEEN 1 AND 2");
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(value, column, new LinkedList<>(), timestampServiceRule);
         assertTrue(shardingConditionValue.isPresent());
         RangeShardingConditionValue<Integer> rangeShardingConditionValue = (RangeShardingConditionValue<Integer>) shardingConditionValue.get();
@@ -85,7 +85,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
         long and = 3147483647L;
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, and);
-        BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
+        BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false, "BETWEEN 3 AND 3147483647");
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(value, column, new LinkedList<>(), timestampServiceRule);
         assertTrue(shardingConditionValue.isPresent());
         RangeShardingConditionValue<Comparable<?>> rangeShardingConditionValue = (RangeShardingConditionValue<Comparable<?>>) shardingConditionValue.get();
@@ -101,7 +101,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
         int between = 1;
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
-        BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
+        BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false, "BETWEEN 1 AND now()");
         assertThrows(ClassCastException.class, () -> generator.generate(value, column, new LinkedList<>(), timestampServiceRule));
     }
     
@@ -111,7 +111,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
         Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, timestamp);
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
-        BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
+        BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false, "BETWEEN ? AND now()");
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(value, column, new LinkedList<>(), timestampServiceRule);
         assertTrue(shardingConditionValue.isPresent());
         RangeShardingConditionValue<Date> rangeShardingConditionValue = (RangeShardingConditionValue<Date>) shardingConditionValue.get();
@@ -129,7 +129,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
         final Date after = calendar.getTime();
         ExpressionSegment betweenSegment = new CommonExpressionSegment(0, 0, "now()");
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
-        BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
+        BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false, "BETWEEN now() AND now()");
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(value, column, new LinkedList<>(), timestampServiceRule);
         assertTrue(shardingConditionValue.isPresent());
         RangeShardingConditionValue<Date> rangeShardingConditionValue = (RangeShardingConditionValue<Date>) shardingConditionValue.get();
@@ -145,7 +145,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
         ParameterMarkerExpressionSegment between = new ParameterMarkerExpressionSegment(0, 0, 0);
         ParameterMarkerExpressionSegment and = new ParameterMarkerExpressionSegment(0, 0, 1);
-        BetweenExpression predicate = new BetweenExpression(0, 0, left, between, and, false);
+        BetweenExpression predicate = new BetweenExpression(0, 0, left, between, and, false, "BETWEEN ? AND ?");
         Optional<ShardingConditionValue> actual = generator.generate(predicate, column, Arrays.asList(1, 2), timestampServiceRule);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(RangeShardingConditionValue.class));
@@ -161,7 +161,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
         ParameterMarkerExpressionSegment between = new ParameterMarkerExpressionSegment(0, 0, 0);
         ParameterMarkerExpressionSegment and = new ParameterMarkerExpressionSegment(0, 0, 1);
-        BetweenExpression predicate = new BetweenExpression(0, 0, left, between, and, false);
+        BetweenExpression predicate = new BetweenExpression(0, 0, left, between, and, false, "BETWEEN ? AND ?");
         Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), timestampServiceRule);
         assertFalse(actual.isPresent());
     }

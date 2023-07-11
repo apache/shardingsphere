@@ -145,7 +145,7 @@ class ProjectionEngineTest {
     
     @Test
     void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationProjectionSegment() {
-        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.COUNT, "(1)");
+        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.COUNT, "(1)", "");
         Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), aggregationProjectionSegment);
         assertTrue(actual.isPresent());
@@ -154,7 +154,7 @@ class ProjectionEngineTest {
     
     @Test
     void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationDistinctProjectionSegmentAndAggregationTypeIsAvg() {
-        AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, AggregationType.AVG, "(1)", "distinctExpression");
+        AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, AggregationType.AVG, "(1)", "distinctExpression", "");
         Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), aggregationDistinctProjectionSegment);
         assertTrue(actual.isPresent());
@@ -163,7 +163,7 @@ class ProjectionEngineTest {
     
     @Test
     void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationProjectionSegmentAndAggregationTypeIsAvg() {
-        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.AVG, "(1)");
+        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.AVG, "(1)", "");
         Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), aggregationProjectionSegment);
         assertTrue(actual.isPresent());
@@ -228,7 +228,7 @@ class ProjectionEngineTest {
         subSelectStatement.setProjections(subQuerySegment);
         subSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("staff_info"))));
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
-        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, subSelectStatement));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, subSelectStatement, ""));
         Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType)
                 .createProjection(subqueryTableSegment, shorthandProjectionSegment);
         assertTrue(actual.isPresent());

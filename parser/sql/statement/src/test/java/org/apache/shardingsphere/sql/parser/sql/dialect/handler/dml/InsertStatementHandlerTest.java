@@ -176,7 +176,7 @@ class InsertStatementHandlerTest {
     @Test
     void assertGetSelectSubqueryForOracle() {
         OracleInsertStatement insertStatement = new OracleInsertStatement();
-        insertStatement.setSelectSubquery(new SubquerySegment(0, 0, new OracleSelectStatement()));
+        insertStatement.setSelectSubquery(new SubquerySegment(0, 0, new OracleSelectStatement(), ""));
         Optional<SubquerySegment> subquerySegment = InsertStatementHandler.getSelectSubquery(insertStatement);
         assertTrue(subquerySegment.isPresent());
         assertThat(subquerySegment.get(), is(insertStatement.getSelectSubquery().get()));

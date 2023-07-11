@@ -134,10 +134,10 @@ class ExpressionExtractUtilsTest {
     
     @Test
     void assertGetParameterMarkerExpressionsFromInExpression() {
-        ListExpression listExpression = new ListExpression(0, 0);
+        ListExpression listExpression = new ListExpression(0, 0, "(?, ?)");
         listExpression.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 1, ParameterMarkerType.QUESTION));
         listExpression.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 2, ParameterMarkerType.QUESTION));
-        List<ExpressionSegment> inExpressions = Collections.singletonList(new InExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("order_id")), listExpression, false));
+        List<ExpressionSegment> inExpressions = Collections.singletonList(new InExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("order_id")), listExpression, false, "IN (?, ?)"));
         List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtils.getParameterMarkerExpressions(inExpressions);
         assertThat(actual.size(), is(2));
     }

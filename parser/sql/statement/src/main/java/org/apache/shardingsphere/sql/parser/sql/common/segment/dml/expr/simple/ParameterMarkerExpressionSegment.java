@@ -77,6 +77,6 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     
     @Override
     public String getText() {
-        return parameterMarkerType.getMarker();
+        return ParameterMarkerType.QUESTION == parameterMarkerType ? "?" : "$" + (parameterMarkerIndex + 1);
     }
 }

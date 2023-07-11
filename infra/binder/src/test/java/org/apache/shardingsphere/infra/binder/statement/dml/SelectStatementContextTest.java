@@ -361,7 +361,7 @@ class SelectStatementContextTest {
         final ShardingSphereDatabase database = mockDatabase();
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 0, AggregationType.MAX, "");
+        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 0, AggregationType.MAX, "", "");
         aggregationProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("id")));
         projectionsSegment.getProjections().add(aggregationProjectionSegment);
         selectStatement.setProjections(projectionsSegment);
@@ -439,7 +439,7 @@ class SelectStatementContextTest {
         subqueryProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         subSelectStatement.setProjections(subqueryProjections);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement);
+        SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement, "");
         SubqueryProjectionSegment subqueryProjectionSegment = new SubqueryProjectionSegment(subquerySegment, "");
         projectionsSegment.getProjections().add(subqueryProjectionSegment);
         selectStatement.setProjections(projectionsSegment);
@@ -481,11 +481,11 @@ class SelectStatementContextTest {
         ProjectionsSegment subqueryProjections = new ProjectionsSegment(0, 0);
         subqueryProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         subSelectStatement.setProjections(subqueryProjections);
-        SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(new SubquerySegment(0, 0, subSelectStatement));
+        SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(new SubquerySegment(0, 0, subSelectStatement, ""));
         SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
         WhereSegment whereSegment = new WhereSegment(0, 0, subqueryExpressionSegment);
         selectStatement.setWhere(whereSegment);
-        SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement);
+        SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement, "");
         when(projectionSegment.getSubquery()).thenReturn(subquerySegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(projectionSegment);
@@ -563,8 +563,8 @@ class SelectStatementContextTest {
     
     private void assertContainsPartialDistinctAggregation(final SelectStatement selectStatement) {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
-        projectionsSegment.getProjections().add(new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "(1)", "distinctExpression"));
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)", ""));
+        projectionsSegment.getProjections().add(new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "(1)", "distinctExpression", ""));
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase()), mock(ShardingSphereResourceMetaData.class),
                 mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));

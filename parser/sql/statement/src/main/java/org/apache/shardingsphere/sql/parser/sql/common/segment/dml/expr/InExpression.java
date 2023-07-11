@@ -39,6 +39,8 @@ public final class InExpression implements ExpressionSegment {
     
     private final boolean not;
     
+    private final String text;
+    
     /**
      * Get expression list from right.
      *
@@ -52,10 +54,5 @@ public final class InExpression implements ExpressionSegment {
             result.add(this);
         }
         return result;
-    }
-    
-    @Override
-    public String getText() {
-        return left.getText() + right.getText();
     }
 }

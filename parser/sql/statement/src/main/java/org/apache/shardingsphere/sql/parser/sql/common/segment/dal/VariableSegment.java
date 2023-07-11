@@ -40,6 +40,12 @@ public final class VariableSegment implements ExpressionSegment {
     
     private String scope;
     
+    private final String text;
+    
+    public VariableSegment(final int startIndex, final int stopIndex, final String variable) {
+        this(startIndex, stopIndex, variable, variable);
+    }
+    
     /**
      * Get scope.
      *
@@ -47,10 +53,5 @@ public final class VariableSegment implements ExpressionSegment {
      */
     public Optional<String> getScope() {
         return Optional.ofNullable(scope);
-    }
-    
-    @Override
-    public String getText() {
-        return variable;
     }
 }

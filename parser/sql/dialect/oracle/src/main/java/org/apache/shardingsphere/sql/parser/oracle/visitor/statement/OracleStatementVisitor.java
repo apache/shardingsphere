@@ -336,7 +336,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.datetimeExpr()) {
             return createDatetimeExpression(ctx, ctx.datetimeExpr());
         }
-        return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
+        return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false, getOriginalText(ctx));
     }
     
     private ASTNode createDatetimeExpression(final ExprContext ctx, final DatetimeExprContext datetimeExpr) {
@@ -411,21 +411,22 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
         if (null == ctx.subquery()) {
-            ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
+            ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), getOriginalText(ctx));
             for (ExprContext each : ctx.expr()) {
                 listExpression.getItems().add((ExpressionSegment) visit(each));
             }
             right = listExpression;
         } else {
-            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.subquery())));
+            right = new SubqueryExpressionSegment(
+                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.subquery()), getOriginalText(ctx)));
         }
         boolean not = null != ctx.NOT();
-        return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
+        return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not, getOriginalText(ctx));
     }
     
     private BinaryOperationExpression createBinaryOperationExpressionFromLike(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
-        ListExpression right = new ListExpression(ctx.simpleExpr(0).start.getStartIndex(), ctx.simpleExpr().get(ctx.simpleExpr().size() - 1).stop.getStopIndex());
+        ListExpression right = new ListExpression(ctx.simpleExpr(0).start.getStartIndex(), ctx.simpleExpr().get(ctx.simpleExpr().size() - 1).stop.getStopIndex(), getOriginalText(ctx));
         for (SimpleExprContext each : ctx.simpleExpr()) {
             right.getItems().add((ExpressionSegment) visit(each));
         }
@@ -439,7 +440,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
         boolean not = null != ctx.NOT();
-        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
+        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not, getOriginalText(ctx));
     }
     
     @Override
@@ -485,7 +486,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         if (null != ctx.subquery()) {
-            return new SubquerySegment(startIndex, stopIndex, (OracleSelectStatement) visit(ctx.subquery()));
+            return new SubquerySegment(startIndex, stopIndex, (OracleSelectStatement) visit(ctx.subquery()), getOriginalText(ctx));
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
@@ -547,11 +548,11 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
         if (null != ctx.DISTINCT()) {
             AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                    type, innerExpression, getDistinctExpression(ctx));
+                    type, innerExpression, getDistinctExpression(ctx), getOriginalText(ctx));
             result.getParameters().addAll(getExpressions(ctx));
             return result;
         }
-        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx));
         return result;
     }
@@ -813,6 +814,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         result.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
+        result.setText(getOriginalText(ctx));
         if (null != ctx.dataTypeLength()) {
             DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
             result.setDataLength(dataTypeLengthSegment);

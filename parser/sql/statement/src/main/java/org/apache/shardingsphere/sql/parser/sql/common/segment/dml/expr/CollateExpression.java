@@ -34,8 +34,5 @@ public final class CollateExpression implements ExpressionSegment {
     
     private final SimpleExpressionSegment collateName;
     
-    @Override
-    public String getText() {
-        return collateName.getText();
-    }
+    private final String text;
 }

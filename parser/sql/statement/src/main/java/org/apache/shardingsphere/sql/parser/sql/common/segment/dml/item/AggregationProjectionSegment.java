@@ -44,14 +44,17 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     
     private final Collection<ExpressionSegment> parameters = new LinkedList<>();
     
+    private final String text;
+    
     @Setter
     private AliasSegment alias;
     
-    public AggregationProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String innerExpression) {
+    public AggregationProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String innerExpression, final String text) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.type = type;
         this.innerExpression = innerExpression;
+        this.text = text;
     }
     
     @Override
@@ -62,10 +65,5 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     @Override
     public final Optional<AliasSegment> getAlias() {
         return Optional.ofNullable(alias);
-    }
-    
-    @Override
-    public String getText() {
-        return innerExpression;
     }
 }

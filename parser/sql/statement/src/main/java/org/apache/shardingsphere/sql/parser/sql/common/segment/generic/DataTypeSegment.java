@@ -33,8 +33,5 @@ public final class DataTypeSegment implements ExpressionSegment {
     
     private DataTypeLengthSegment dataLength;
     
-    @Override
-    public String getText() {
-        return dataTypeName;
-    }
+    private String text;
 }

@@ -355,7 +355,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.orOperator()) {
             return createBinaryOperationExpression(ctx, ctx.orOperator().getText());
         }
-        return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
+        return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false, getOriginalText(ctx));
     }
     
     private ASTNode createBinaryOperationExpression(final ExprContext ctx, final String operator) {
@@ -426,7 +426,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     private BinaryOperationExpression createBinaryOperationExpressionFromLike(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
-        ListExpression right = new ListExpression(ctx.simpleExpr(0).start.getStartIndex(), ctx.simpleExpr().get(ctx.simpleExpr().size() - 1).stop.getStopIndex());
+        ListExpression right = new ListExpression(ctx.simpleExpr(0).start.getStartIndex(), ctx.simpleExpr().get(ctx.simpleExpr().size() - 1).stop.getStopIndex(), getOriginalText(ctx));
         for (SimpleExprContext each : ctx.simpleExpr()) {
             right.getItems().add((ExpressionSegment) visit(each));
         }
@@ -439,16 +439,17 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
         if (null == ctx.subquery()) {
-            ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
+            ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), getOriginalText(ctx));
             for (ExprContext each : ctx.expr()) {
                 listExpression.getItems().add((ExpressionSegment) visit(each));
             }
             right = listExpression;
         } else {
-            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SQLServerSelectStatement) visit(ctx.subquery())));
+            right = new SubqueryExpressionSegment(
+                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SQLServerSelectStatement) visit(ctx.subquery()), getOriginalText(ctx)));
         }
         boolean not = null != ctx.NOT();
-        return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
+        return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not, getOriginalText(ctx));
     }
     
     private BetweenExpression createBetweenSegment(final PredicateContext ctx) {
@@ -456,7 +457,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
         boolean not = null != ctx.NOT();
-        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
+        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not, getOriginalText(ctx));
     }
     
     @Override
@@ -502,7 +503,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         if (null != ctx.subquery()) {
-            return new SubquerySegment(startIndex, stopIndex, (SQLServerSelectStatement) visit(ctx.subquery()));
+            return new SubquerySegment(startIndex, stopIndex, (SQLServerSelectStatement) visit(ctx.subquery()), getOriginalText(ctx));
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
@@ -565,11 +566,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
         if (null != ctx.distinct()) {
             AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                    type, innerExpression, getDistinctExpression(ctx));
+                    type, innerExpression, getDistinctExpression(ctx), getOriginalText(ctx));
             result.getParameters().addAll(getExpressions(ctx));
             return result;
         }
-        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx));
         return result;
     }
@@ -665,6 +666,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
+        result.setText(getOriginalText(ctx));
         if (null != ctx.dataTypeLength()) {
             DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
             result.setDataLength(dataTypeLengthSegment);
@@ -747,9 +749,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         Collection<CommonTableExpressionSegment> result = new LinkedList<>();
         for (CteClauseContext each : ctx.cteClause()) {
             SubquerySegment subquery = new SubquerySegment(each.subquery().aggregationClause().start.getStartIndex(),
-                    each.subquery().aggregationClause().stop.getStopIndex(), (SQLServerSelectStatement) visit(each.subquery()));
+                    each.subquery().aggregationClause().stop.getStopIndex(), (SQLServerSelectStatement) visit(each.subquery()), getOriginalText(each));
             IdentifierValue identifier = (IdentifierValue) visit(each.identifier());
-            CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier, subquery);
+            CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier, subquery, getOriginalText(ctx));
             if (null != each.columnNames()) {
                 ColumnNamesContext columnNames = each.columnNames();
                 CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(columnNames);
@@ -968,7 +970,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
         SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) visit(ctx.select());
-        return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement);
+        return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx));
     }
     
     @Override
@@ -1205,7 +1207,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.subquery()) {
             SQLServerSelectStatement subquery = (SQLServerSelectStatement) visit(ctx.subquery());
-            SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery);
+            SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx));
             SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
             if (null != ctx.alias()) {
                 result.setAlias((AliasSegment) visit(ctx.alias()));

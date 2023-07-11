@@ -416,7 +416,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.orOperator()) {
             return createBinaryOperationExpression(ctx, ctx.orOperator().getText());
         }
-        return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
+        return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false, getOriginalText(ctx));
     }
     
     private BinaryOperationExpression createBinaryOperationExpression(final ExprContext ctx, final String operator) {
@@ -492,7 +492,8 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.predicate()) {
             right = (ExpressionSegment) visit(ctx.predicate());
         } else {
-            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery())));
+            right = new SubqueryExpressionSegment(
+                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()), getOriginalText(ctx)));
         }
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
@@ -523,14 +524,15 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
         if (null != ctx.subquery()) {
-            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery())));
+            right = new SubqueryExpressionSegment(
+                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()), getOriginalText(ctx)));
         } else {
-            right = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
+            right = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), getOriginalText(ctx));
             for (ExprContext each : ctx.expr()) {
                 ((ListExpression) right).getItems().add((ExpressionSegment) visit(each));
             }
         }
-        return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
+        return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not, getOriginalText(ctx));
     }
     
     private BinaryOperationExpression createBinaryOperationExpressionFromLike(final PredicateContext ctx) {
@@ -541,7 +543,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             right = (ExpressionSegment) visit(ctx.bitExpr(1));
             operator = "SOUNDS LIKE";
         } else {
-            ListExpression listExpression = new ListExpression(ctx.simpleExpr(0).start.getStartIndex(), ctx.simpleExpr().get(ctx.simpleExpr().size() - 1).stop.getStopIndex());
+            ListExpression listExpression = new ListExpression(ctx.simpleExpr(0).start.getStartIndex(), ctx.simpleExpr().get(ctx.simpleExpr().size() - 1).stop.getStopIndex(), getOriginalText(ctx));
             for (SimpleExprContext each : ctx.simpleExpr()) {
                 listExpression.getItems().add((ExpressionSegment) visit(each));
             }
@@ -573,7 +575,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
         boolean not = null != ctx.NOT();
-        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
+        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not, getOriginalText(ctx));
     }
     
     @Override
@@ -593,8 +595,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         int startIndex = ctx.start.getStartIndex();
         int stopIndex = ctx.stop.getStopIndex();
         if (null != ctx.subquery()) {
-            SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().getStart().getStartIndex(), ctx.subquery().getStop().getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()));
-            return null == ctx.EXISTS() ? new SubqueryExpressionSegment(subquerySegment) : new ExistsSubqueryExpression(startIndex, stopIndex, subquerySegment);
+            SubquerySegment subquerySegment =
+                    new SubquerySegment(ctx.subquery().getStart().getStartIndex(), ctx.subquery().getStop().getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()), getOriginalText(ctx));
+            return null == ctx.EXISTS() ? new SubqueryExpressionSegment(subquerySegment) : new ExistsSubqueryExpression(startIndex, stopIndex, subquerySegment, getOriginalText(ctx));
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
@@ -612,7 +615,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return visit(ctx.functionCall());
         }
         if (null != ctx.collateClause()) {
-            return new CollateExpression(startIndex, stopIndex, (SimpleExpressionSegment) visit(ctx.collateClause()));
+            return new CollateExpression(startIndex, stopIndex, (SimpleExpressionSegment) visit(ctx.collateClause()), getOriginalText(ctx));
         }
         if (null != ctx.columnRef()) {
             return visit(ctx.columnRef());
@@ -626,7 +629,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 ((ExistsSubqueryExpression) expression).setNot(true);
                 return expression;
             }
-            return new NotExpression(startIndex, stopIndex, (ExpressionSegment) expression, "!".equalsIgnoreCase(ctx.notOperator().getText()));
+            return new NotExpression(startIndex, stopIndex, (ExpressionSegment) expression, "!".equalsIgnoreCase(ctx.notOperator().getText()), getOriginalText(ctx));
         }
         if (null != ctx.LP_() && 1 == ctx.expr().size()) {
             return visit(ctx.expr(0));
@@ -791,7 +794,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         MySQLSelectStatement result = new MySQLSelectStatement();
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
-        ValuesExpression valuesExpression = new ValuesExpression(startIndex, stopIndex);
+        ValuesExpression valuesExpression = new ValuesExpression(startIndex, stopIndex, getOriginalText(ctx));
         valuesExpression.getRowConstructorList().addAll(createRowConstructorList(ctx.rowConstructorList()));
         result.setProjections(new ProjectionsSegment(startIndex, stopIndex));
         result.getProjections().getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), valuesExpression));
@@ -812,7 +815,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         TableNameSegment tableNameSegment = new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().getText()));
-        ExplicitTableExpression explicitTableExpression = new ExplicitTableExpression(startIndex, stopIndex, tableNameSegment);
+        ExplicitTableExpression explicitTableExpression = new ExplicitTableExpression(startIndex, stopIndex, tableNameSegment, getOriginalText(ctx));
         result.setProjections(new ProjectionsSegment(startIndex, stopIndex));
         result.getProjections().getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), explicitTableExpression));
         return result;
@@ -915,11 +918,11 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
         if (null != ctx.distinct()) {
             AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                    type, innerExpression, getDistinctExpression(ctx));
+                    type, innerExpression, getDistinctExpression(ctx), getOriginalText(ctx));
             result.getParameters().addAll(getExpressions(ctx));
             return result;
         }
-        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx));
         return result;
     }
@@ -1020,6 +1023,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             dataType.setDataTypeName(ctx.DATETIME().getText());
             dataType.setStartIndex(ctx.DATETIME().getSymbol().getStartIndex());
             dataType.setStopIndex(ctx.DATETIME().getSymbol().getStopIndex());
+            dataType.setText(getOriginalText(ctx));
             if (null != ctx.typeDatetimePrecision()) {
                 dataType.setDataLength((DataTypeLengthSegment) visit(ctx.typeDatetimePrecision()));
             }
@@ -1034,6 +1038,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         result.setDataTypeName(ctx.castTypeName.getText());
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
+        result.setText(getOriginalText(ctx));
         if (null != ctx.fieldLength()) {
             DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.fieldLength());
             result.setDataLength(dataTypeLengthSegment);
@@ -1194,7 +1199,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         ExpressionSegment caseExpr = null == ctx.simpleExpr() ? null : (ExpressionSegment) visit(ctx.simpleExpr());
         ExpressionSegment elseExpr = null == ctx.caseElse() ? null : (ExpressionSegment) visit(ctx.caseElse().expr());
-        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr);
+        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr, getOriginalText(ctx));
     }
     
     @Override
@@ -1204,12 +1209,12 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitUserVariable(final UserVariableContext ctx) {
-        return new VariableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.textOrIdentifier().getText());
+        return new VariableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.textOrIdentifier().getText(), getOriginalText(ctx));
     }
     
     @Override
     public ASTNode visitSystemVariable(final SystemVariableContext ctx) {
-        VariableSegment result = new VariableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.rvalueSystemVariable().getText());
+        VariableSegment result = new VariableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.rvalueSystemVariable().getText(), getOriginalText(ctx));
         if (null != ctx.systemVariableScope) {
             result.setScope(ctx.systemVariableScope.getText());
         }
@@ -1236,6 +1241,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         result.setDataTypeName(ctx.dataTypeName.getText());
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
+        result.setText(getOriginalText(ctx));
         if (null != ctx.fieldLength()) {
             DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.fieldLength());
             result.setDataLength(dataTypeLengthSegment);
@@ -1345,7 +1351,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
         MySQLSelectStatement selectStatement = (MySQLSelectStatement) visit(ctx.select());
-        return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement);
+        return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx));
     }
     
     @Override
@@ -1416,7 +1422,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     private SubquerySegment createReplaceSelectSegment(final ReplaceSelectClauseContext ctx) {
         MySQLSelectStatement selectStatement = (MySQLSelectStatement) visit(ctx.select());
-        return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement);
+        return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx));
     }
     
     @Override
@@ -1788,7 +1794,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.subquery()) {
             MySQLSelectStatement subquery = (MySQLSelectStatement) visit(ctx.subquery());
-            SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery);
+            SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx));
             SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
             if (null != ctx.alias()) {
                 result.setAlias((AliasSegment) visit(ctx.alias()));

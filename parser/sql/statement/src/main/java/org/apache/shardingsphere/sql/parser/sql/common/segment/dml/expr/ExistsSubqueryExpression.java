@@ -35,8 +35,5 @@ public class ExistsSubqueryExpression implements ExpressionSegment {
     @Setter
     private boolean not;
     
-    @Override
-    public String getText() {
-        return subquery.getText();
-    }
+    private final String text;
 }

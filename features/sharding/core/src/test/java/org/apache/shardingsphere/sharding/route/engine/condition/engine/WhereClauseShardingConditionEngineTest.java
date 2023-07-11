@@ -88,7 +88,7 @@ class WhereClauseShardingConditionEngineTest {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, and);
-        BetweenExpression betweenExpression = new BetweenExpression(0, 0, left, betweenSegment, andSegment, false);
+        BetweenExpression betweenExpression = new BetweenExpression(0, 0, left, betweenSegment, andSegment, false, "BETWEEN 1 AND 100");
         when(whereSegment.getExpr()).thenReturn(betweenExpression);
         when(shardingRule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
         List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
@@ -99,10 +99,10 @@ class WhereClauseShardingConditionEngineTest {
     @Test
     void assertCreateShardingConditionsForSelectInStatement() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
-        ListExpression right = new ListExpression(0, 0);
+        ListExpression right = new ListExpression(0, 0, "IN (5)");
         LiteralExpressionSegment literalExpressionSegment = new LiteralExpressionSegment(0, 0, 5);
         right.getItems().add(literalExpressionSegment);
-        InExpression inExpression = new InExpression(0, 0, left, right, false);
+        InExpression inExpression = new InExpression(0, 0, left, right, false, "IN (5)");
         when(whereSegment.getExpr()).thenReturn(inExpression);
         when(shardingRule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
         List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());

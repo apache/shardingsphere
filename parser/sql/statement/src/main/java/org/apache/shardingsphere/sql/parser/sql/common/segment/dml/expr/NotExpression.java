@@ -32,8 +32,5 @@ public final class NotExpression implements ExpressionSegment {
     
     private final Boolean notSign;
     
-    @Override
-    public String getText() {
-        return expression.getText();
-    }
+    private final String text;
 }
