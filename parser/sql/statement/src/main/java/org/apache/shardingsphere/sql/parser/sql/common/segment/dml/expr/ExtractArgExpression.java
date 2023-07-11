@@ -25,11 +25,11 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class ExtractArgExpression implements ExpressionSegment {
+public final class ExtractArgExpression implements ExpressionSegment {
     
-        private final int startIndex;
-        
-        private final int stopIndex;
-        
-        private final String text;
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final String text;
 }
