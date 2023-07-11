@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
@@ -25,12 +24,9 @@ import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 
 import java.lang.reflect.Method;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.Map;
 
 /**
  * Tracing JDBC executor callback advice executor.
@@ -42,14 +38,11 @@ public abstract class TracingJDBCExecutorCallbackAdvice<T> implements InstanceMe
     protected static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @Override
-    @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     public final void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-        Map<String, DatabaseType> storageTypes = AgentReflectionUtils.getFieldValue(target, "storageTypes");
-        DatabaseType storageType = storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName());
-        DataSourceMetaData metaData = AgentReflectionUtils.invokeMethod(
-                JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
-                target, executionUnit.getStorageResource().getConnection().getMetaData(), storageType);
+        ShardingSphereResourceMetaData resourceMetaData = AgentReflectionUtils.getFieldValue(target, "resourceMetaData");
+        DataSourceMetaData metaData = resourceMetaData.getDataSourceMetaData(executionUnit.getExecutionUnit().getDataSourceName());
+        DatabaseType storageType = resourceMetaData.getStorageType(executionUnit.getExecutionUnit().getDataSourceName());
         recordExecuteInfo(RootSpanContext.get(), target, executionUnit, (boolean) args[1], metaData, storageType.getType());
     }
     

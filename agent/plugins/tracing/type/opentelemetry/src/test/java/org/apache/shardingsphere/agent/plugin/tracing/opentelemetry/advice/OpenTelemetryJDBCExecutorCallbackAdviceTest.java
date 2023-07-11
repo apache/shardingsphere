@@ -34,12 +34,12 @@ import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeCon
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.fixture.JDBCExecutorCallbackFixture;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +53,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -85,7 +84,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         prepare();
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     private void prepare() {
         Statement statement = mock(Statement.class);
@@ -95,13 +94,11 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(statement.getConnection()).thenReturn(connection);
         executionUnit = new JDBCExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Collections.emptyList())), null, statement);
-        JDBCExecutorCallback jdbcExecutorCallback = new JDBCExecutorCallbackFixture(new MySQLDatabaseType(), Collections.singletonMap("ds", new MySQLDatabaseType()),
-                new MySQLSelectStatement(), true);
-        Map<String, DataSourceMetaData> cachedDatasourceMetaData = (Map<String, DataSourceMetaData>) Plugins.getMemberAccessor()
-                .get(JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA"), jdbcExecutorCallback);
-        cachedDatasourceMetaData.put("mock_url", mock(DataSourceMetaData.class));
-        Map<String, DatabaseType> storageTypes = Collections.singletonMap(DATA_SOURCE_NAME, new MySQLDatabaseType());
-        Plugins.getMemberAccessor().set(JDBCExecutorCallback.class.getDeclaredField("storageTypes"), jdbcExecutorCallback, storageTypes);
+        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
+        when(resourceMetaData.getStorageType(DATA_SOURCE_NAME)).thenReturn(new MySQLDatabaseType());
+        when(resourceMetaData.getDataSourceMetaData(DATA_SOURCE_NAME)).thenReturn(mock(DataSourceMetaData.class));
+        JDBCExecutorCallback jdbcExecutorCallback = new JDBCExecutorCallbackFixture(new MySQLDatabaseType(), resourceMetaData, new MySQLSelectStatement(), true);
+        Plugins.getMemberAccessor().set(JDBCExecutorCallback.class.getDeclaredField("resourceMetaData"), jdbcExecutorCallback, resourceMetaData);
         targetObject = (TargetAdviceObject) jdbcExecutorCallback;
     }
     
