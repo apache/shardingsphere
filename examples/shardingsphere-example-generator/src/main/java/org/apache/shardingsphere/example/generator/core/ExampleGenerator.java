@@ -79,4 +79,7 @@ public interface ExampleGenerator extends TypedSPI {
      * @throws TemplateException template exception
      */
     void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String outputPath) throws IOException, TemplateException;
+    
+    @Override
+    String getType();
 }
