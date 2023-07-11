@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
@@ -64,7 +65,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         this.resourceName = resourceName;
         this.dataSource = dataSource;
         if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
-            xaDataSource = new DataSourceSwapper(TypedSPILoader.getService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
+            xaDataSource = new DataSourceSwapper(DatabaseTypedSPILoader.getService(XADataSourceDefinition.class, databaseType)).swap(dataSource);
             xaConnectionWrapper = TypedSPILoader.getService(XAConnectionWrapper.class, databaseType.getType());
             this.xaTransactionManagerProvider = xaTransactionManagerProvider;
             xaTransactionManagerProvider.registerRecoveryResource(resourceName, xaDataSource);

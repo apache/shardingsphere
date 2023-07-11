@@ -22,8 +22,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 
@@ -69,7 +69,7 @@ public final class DataSourceUtils {
     private static AtomikosDataSourceBean createAtomikosDataSourceBean(final DatabaseType databaseType, final DataSource dataSource, final String databaseName) {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         result.setUniqueResourceName(databaseName);
-        result.setXaDataSource(new DataSourceSwapper(TypedSPILoader.getService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource));
+        result.setXaDataSource(new DataSourceSwapper(DatabaseTypedSPILoader.getService(XADataSourceDefinition.class, databaseType)).swap(dataSource));
         return result;
     }
     
