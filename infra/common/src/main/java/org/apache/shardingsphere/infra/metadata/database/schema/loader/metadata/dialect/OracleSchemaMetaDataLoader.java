@@ -194,7 +194,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "Oracle";
     }
 }

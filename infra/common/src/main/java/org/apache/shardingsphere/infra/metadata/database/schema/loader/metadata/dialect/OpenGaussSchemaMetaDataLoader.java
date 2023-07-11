@@ -157,7 +157,7 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

@@ -209,7 +209,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

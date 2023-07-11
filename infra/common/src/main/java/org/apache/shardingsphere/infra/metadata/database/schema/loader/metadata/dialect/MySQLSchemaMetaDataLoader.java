@@ -165,7 +165,7 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

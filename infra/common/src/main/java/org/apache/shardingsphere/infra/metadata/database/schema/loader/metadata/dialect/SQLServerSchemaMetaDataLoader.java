@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.dialect;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -73,7 +71,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
                 tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
             }
         }
-        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList));
+        return Collections.singleton(new SchemaMetaData(defaultSchemaName, tableMetaDataList));
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
@@ -81,7 +79,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
-            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPILoader.getService(DatabaseType.class, getType()));
+            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), getType());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
@@ -145,7 +143,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "SQLServer";
     }
 }

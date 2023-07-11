@@ -185,7 +185,7 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }
