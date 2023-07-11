@@ -17,6 +17,10 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_convert_function1" value="SELECT CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" db-types="MySQL" />
+    <sql-case id="select_convert_function2" value="SELECT CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" db-types="MySQL" />
+    <sql-case id="select_convert_function3" value="SELECT CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR(4))" db-types="MySQL" />
+    <sql-case id="select_convert_function4" value="SELECT CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" db-types="MySQL" />
     <sql-case id="select_with_exist_in" value="SELECT (+0 IN(0b111111111111111111111111111111111111111111111111111,rpad(1.0,2048,1),32767.1))" db-types="MySQL" />
     <sql-case id="select_constant_without_table" value="SELECT 1 as a" db-types="MySQL, PostgreSQL,openGauss, SQLServer" />
     <sql-case id="select_with_operator_ilike" value="SELECT id from t_order where name !~ '^pg_toast'" db-types="PostgreSQL,openGauss" />

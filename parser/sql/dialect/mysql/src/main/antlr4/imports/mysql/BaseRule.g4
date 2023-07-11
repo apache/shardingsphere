@@ -80,7 +80,7 @@ numberLiterals
     ;
     
 temporalLiterals
-    : (DATE | TIME | TIMESTAMP) SINGLE_QUOTED_TEXT
+    : (DATE | TIME | TIMESTAMP) textString
     ;
     
 hexadecimalLiterals
@@ -827,7 +827,7 @@ triggerEvent
 triggerOrder
     : (FOLLOWS | PRECEDES) triggerName
     ;
-    
+
 expr
     : booleanPrimary
     | expr andOperator expr
@@ -928,7 +928,7 @@ columnRef
 columnRefList
     : columnRef (COMMA_ columnRef)*
     ;
-    
+
 functionCall
     : aggregationFunction | specialFunction | regularFunction | jsonFunction | udfFunction
     ;
@@ -987,8 +987,18 @@ frameBetween
     ;
     
 specialFunction
-    : groupConcatFunction | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction 
-    | charFunction | trimFunction | weightStringFunction | valuesFunction | currentUserFunction
+    : castFunction
+    | convertFunction
+    | currentUserFunction
+    | charFunction
+    | extractFunction
+    | groupConcatFunction
+    | positionFunction
+    | substringFunction
+    | trimFunction
+    | valuesFunction
+    | weightStringFunction
+    | windowFunction
     ;
     
 currentUserFunction
