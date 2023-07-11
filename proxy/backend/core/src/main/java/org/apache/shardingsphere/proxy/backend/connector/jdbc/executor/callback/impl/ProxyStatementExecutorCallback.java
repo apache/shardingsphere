@@ -24,6 +24,7 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 
 /**
@@ -39,6 +40,10 @@ public final class ProxyStatementExecutorCallback extends ProxyJDBCExecutorCallb
     
     @Override
     protected boolean execute(final String sql, final Statement statement, final boolean isReturnGeneratedKeys) throws SQLException {
-        return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
+        try {
+            return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
+        } catch (final SQLFeatureNotSupportedException ignore) {
+            return statement.execute(sql);
+        }
     }
 }
