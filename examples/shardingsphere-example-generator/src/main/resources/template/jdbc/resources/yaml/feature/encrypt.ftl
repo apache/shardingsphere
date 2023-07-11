@@ -35,7 +35,7 @@
   encryptors:
     standard_encryptor:
       type: AES
-    assisted_encryptor:
-      type: assistedTest
       props:
         aes-key-value: 123456
+    assisted_encryptor:
+      type: assistedTest
