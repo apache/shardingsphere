@@ -96,7 +96,7 @@ class ShardingRemoveTokenGeneratorTest {
     
     private static ProjectionsSegment createProjectionsSegment() {
         ProjectionsSegment result = new ProjectionsSegment(0, 8);
-        result.getProjections().add(new AggregationDistinctProjectionSegment(0, 8, AggregationType.SUM, "number", "(DISTINCT number)"));
+        result.getProjections().add(new AggregationDistinctProjectionSegment(0, 8, AggregationType.SUM, "number", "(DISTINCT number)", "(DISTINCT number)"));
         return result;
     }
 }
