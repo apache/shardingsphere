@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -27,9 +28,9 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
@@ -59,6 +60,8 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class DatabaseAdminQueryBackendHandlerTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     private DatabaseAdminQueryBackendHandler handler;
     
     @BeforeEach
@@ -75,8 +78,8 @@ class DatabaseAdminQueryBackendHandlerTest {
     void assertExecute() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
-            typedSPILoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(mock(QueryHeaderBuilder.class));
+        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(mock(QueryHeaderBuilder.class));
             assertThat(((QueryResponseHeader) handler.execute()).getQueryHeaders().size(), is(1));
         }
     }
@@ -85,8 +88,8 @@ class DatabaseAdminQueryBackendHandlerTest {
     void assertNext() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
-            typedSPILoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(mock(QueryHeaderBuilder.class));
+        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(mock(QueryHeaderBuilder.class));
             handler.execute();
             assertTrue(handler.next());
             assertFalse(handler.next());
@@ -97,8 +100,8 @@ class DatabaseAdminQueryBackendHandlerTest {
     void assertGetRowData() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
-            typedSPILoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(mock(QueryHeaderBuilder.class));
+        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(mock(QueryHeaderBuilder.class));
             handler.execute();
             assertTrue(handler.next());
             assertThat(handler.getRowData().getData().size(), is(1));
@@ -106,8 +109,11 @@ class DatabaseAdminQueryBackendHandlerTest {
     }
     
     private ContextManager mockContextManager() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getProtocolType()).thenReturn(databaseType);
+        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(
-                Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class)), mock(ShardingSphereResourceMetaData.class),
+                Collections.singletonMap("foo_db", database), mock(ShardingSphereResourceMetaData.class),
                 mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         return new ContextManager(metaDataContexts, mock(InstanceContext.class));
     }
