@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -75,7 +76,7 @@ class DatabaseAdminQueryBackendHandlerTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
-            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(mock(QueryHeaderBuilder.class));
+            typedSPILoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(mock(QueryHeaderBuilder.class));
             assertThat(((QueryResponseHeader) handler.execute()).getQueryHeaders().size(), is(1));
         }
     }
@@ -85,7 +86,7 @@ class DatabaseAdminQueryBackendHandlerTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
-            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(mock(QueryHeaderBuilder.class));
+            typedSPILoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(mock(QueryHeaderBuilder.class));
             handler.execute();
             assertTrue(handler.next());
             assertFalse(handler.next());
@@ -97,7 +98,7 @@ class DatabaseAdminQueryBackendHandlerTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
-            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(mock(QueryHeaderBuilder.class));
+            typedSPILoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(mock(QueryHeaderBuilder.class));
             handler.execute();
             assertTrue(handler.next());
             assertThat(handler.getRowData().getData().size(), is(1));
