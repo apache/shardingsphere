@@ -114,7 +114,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     }
     
     @Override
-    protected String getDatabaseType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

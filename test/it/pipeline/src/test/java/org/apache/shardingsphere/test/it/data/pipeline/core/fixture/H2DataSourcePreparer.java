@@ -42,7 +42,7 @@ public final class H2DataSourcePreparer extends AbstractDataSourcePreparer {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

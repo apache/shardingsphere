@@ -39,7 +39,7 @@ public final class BasicDataSourceChecker extends AbstractDataSourceChecker {
     }
     
     @Override
-    protected String getDatabaseType() {
+    public String getDatabaseType() {
         return databaseType;
     }
 }

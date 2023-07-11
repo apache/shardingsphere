@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
 
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -28,7 +28,7 @@ import java.sql.SQLException;
  * Column value reader.
  */
 @SingletonSPI
-public interface ColumnValueReader extends TypedSPI {
+public interface ColumnValueReader extends DatabaseTypedSPI {
     
     /**
      * Read column value.

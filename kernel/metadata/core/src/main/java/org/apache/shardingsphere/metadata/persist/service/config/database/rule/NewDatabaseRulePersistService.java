@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.config.database;
+package org.apache.shardingsphere.metadata.persist.service.config.database.rule;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfi
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.AbstractPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -125,17 +126,5 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     public Collection<RuleConfiguration> load(final String databaseName) {
         Collection<YamlDataNode> dataNodes = getDataNodes(NewDatabaseMetaDataNode.getRulesNode(databaseName));
         return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
-    }
-    
-    /**
-     * Load rule configuration.
-     *
-     * @deprecated Remove this method when metadata structure adjustment completed. #25485
-     */
-    @Deprecated
-    @Override
-    public Collection<RuleConfiguration> load(final String databaseName, final String name) {
-        // TODO Remove this method when metadata structure adjustment completed. #25485
-        return Collections.emptyList();
     }
 }

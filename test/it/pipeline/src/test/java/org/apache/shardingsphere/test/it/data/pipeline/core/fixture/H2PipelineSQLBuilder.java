@@ -44,7 +44,7 @@ public final class H2PipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

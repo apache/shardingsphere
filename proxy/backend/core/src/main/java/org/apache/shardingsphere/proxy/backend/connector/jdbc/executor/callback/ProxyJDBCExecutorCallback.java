@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.sane.SaneQueryResultEngine;
@@ -37,7 +38,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -53,10 +53,10 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     private boolean hasMetaData;
     
-    protected ProxyJDBCExecutorCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement,
+    protected ProxyJDBCExecutorCallback(final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
                                         final DatabaseConnector databaseConnector,
                                         final boolean isReturnGeneratedKeys, final boolean isExceptionThrown, final boolean fetchMetaData) {
-        super(protocolType, storageTypes, sqlStatement, isExceptionThrown);
+        super(protocolType, resourceMetaData, sqlStatement, isExceptionThrown);
         this.databaseConnector = databaseConnector;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         this.fetchMetaData = fetchMetaData;

@@ -28,8 +28,9 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourcePersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.datasource.DataSourceNodePersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.datasource.DataSourceUnitPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.rule.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
@@ -52,7 +53,9 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     
     private final PersistRepository repository;
     
-    private final DataSourcePersistService dataSourceService;
+    private final DataSourceUnitPersistService dataSourceUnitService;
+    
+    private final DataSourceNodePersistService dataSourceNodeService;
     
     private final DatabaseMetaDataPersistService databaseMetaDataService;
     
@@ -68,7 +71,8 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
-        dataSourceService = new DataSourcePersistService(repository);
+        dataSourceUnitService = new DataSourceUnitPersistService(repository);
+        dataSourceNodeService = new DataSourceNodePersistService(repository);
         databaseMetaDataService = new DatabaseMetaDataPersistService(repository);
         databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
@@ -90,7 +94,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
         if (dataSourcePropertiesMap.isEmpty() && databaseConfigs.getRuleConfigurations().isEmpty()) {
             databaseMetaDataService.addDatabase(databaseName);
         } else {
-            dataSourceService.persist(databaseName, getDataSourcePropertiesMap(databaseConfigs.getDataSources()));
+            dataSourceUnitService.persist(databaseName, getDataSourcePropertiesMap(databaseConfigs.getDataSources()));
             databaseRulePersistService.persist(databaseName, decorateRuleConfigs(databaseName, dataSources, rules));
         }
     }
@@ -119,7 +123,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     
     @Override
     public Map<String, DataSource> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(databaseName);
+        Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceUnitService.load(databaseName);
         return databaseConfigs.containsKey(databaseName)
                 ? mergeEffectiveDataSources(persistedDataPropsMap, databaseConfigs.get(databaseName).getDataSources())
                 : DataSourcePoolCreator.create(persistedDataPropsMap);

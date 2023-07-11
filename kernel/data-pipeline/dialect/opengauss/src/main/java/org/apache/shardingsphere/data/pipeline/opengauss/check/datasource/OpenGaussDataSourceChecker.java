@@ -69,7 +69,7 @@ public final class OpenGaussDataSourceChecker extends AbstractDataSourceChecker 
     }
     
     @Override
-    protected String getDatabaseType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
@@ -37,15 +38,19 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ShardingSphere pipeline data source creator.
  */
 public final class ShardingSpherePipelineDataSourceCreator implements PipelineDataSourceCreator {
     
+    private static final AtomicInteger STANDALONE_DATABASE_ID = new AtomicInteger(1);
+    
     @Override
     public DataSource createPipelineDataSource(final Object dataSourceConfig) throws SQLException {
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(YamlEngine.marshal(dataSourceConfig), YamlRootConfiguration.class);
+        disableSystemSchemaMetadata(rootConfig);
         enableStreamingQuery(rootConfig);
         updateSingleRuleConfiguration(rootConfig);
         Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(rootConfig.getRules());
@@ -55,7 +60,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         }
         rootConfig.setDatabaseName(rootConfig.getDatabaseName());
         rootConfig.setSchemaName(rootConfig.getSchemaName());
-        rootConfig.setMode(createStandaloneModeConfiguration(rootConfig.getDatabaseName()));
+        rootConfig.setMode(createStandaloneModeConfiguration());
         return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
     }
     
@@ -64,6 +69,10 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         YamlSingleRuleConfiguration singleRuleConfig = new YamlSingleRuleConfiguration();
         singleRuleConfig.setTables(Collections.singletonList(SingleTableConstants.ALL_TABLES));
         rootConfig.getRules().add(singleRuleConfig);
+    }
+    
+    private void disableSystemSchemaMetadata(final YamlRootConfiguration rootConfig) {
+        rootConfig.getProps().put(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ENABLED.getKey(), String.valueOf(Boolean.FALSE));
     }
     
     // TODO Another way is improving ExecuteQueryCallback.executeSQL to enable streaming query, then remove it
@@ -91,7 +100,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         }
     }
     
-    private YamlModeConfiguration createStandaloneModeConfiguration(final String databaseName) {
+    private YamlModeConfiguration createStandaloneModeConfiguration() {
         YamlModeConfiguration result = new YamlModeConfiguration();
         result.setType("Standalone");
         YamlPersistRepositoryConfiguration repository = new YamlPersistRepositoryConfiguration();
@@ -99,7 +108,8 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         repository.setType("JDBC");
         Properties props = new Properties();
         repository.setProps(props);
-        props.setProperty(JDBCRepositoryPropertyKey.JDBC_URL.getKey(), String.format("jdbc:h2:mem:config_%s;DB_CLOSE_DELAY=0;DATABASE_TO_UPPER=false;MODE=MYSQL", databaseName));
+        props.setProperty(JDBCRepositoryPropertyKey.JDBC_URL.getKey(),
+                String.format("jdbc:h2:mem:pipeline_db_%d;DB_CLOSE_DELAY=0;DATABASE_TO_UPPER=false;MODE=MYSQL", STANDALONE_DATABASE_ID.getAndIncrement()));
         return result;
     }
     

@@ -60,7 +60,7 @@ public final class PostgreSQLColumnValueReader extends AbstractColumnValueReader
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

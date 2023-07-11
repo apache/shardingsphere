@@ -37,7 +37,7 @@ public final class PostgreSQLIncrementalDumperCreator implements IncrementalDump
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

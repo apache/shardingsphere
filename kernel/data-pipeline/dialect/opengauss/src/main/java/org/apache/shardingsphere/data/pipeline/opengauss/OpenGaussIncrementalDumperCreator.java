@@ -37,7 +37,7 @@ public final class OpenGaussIncrementalDumperCreator implements IncrementalDumpe
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }
