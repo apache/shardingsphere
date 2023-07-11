@@ -26,7 +26,7 @@
             name: status_assisted
             encryptorName: assisted_encryptor
     t_order_item:
-      columns
+      columns:
         phone:
           cipher: 
             name: phone
