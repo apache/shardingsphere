@@ -46,7 +46,7 @@ class H2XAConnectionWrapperTest {
     
     @Test
     void assertWrap() throws SQLException {
-        XAConnection actual = TypedSPILoader.getService(XAConnectionWrapper.class, databaseType.getType()).wrap(createXADataSource(), mockConnection());
+        XAConnection actual = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(JdbcXAConnection.class));
     }
     
