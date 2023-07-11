@@ -67,7 +67,7 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
     }
     
     @SuppressWarnings("MagicConstant")
-    private static Statement createStatement(final Connection connection, final StatementOption option) throws SQLException {
+    private Statement createStatement(final Connection connection, final StatementOption option) throws SQLException {
         Statement result;
         try {
             result = connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
@@ -78,7 +78,7 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
     }
     
     @SuppressWarnings("MagicConstant")
-    private static PreparedStatement prepareStatement(final Connection connection, final StatementOption option, final String sql) throws SQLException {
+    private PreparedStatement prepareStatement(final Connection connection, final StatementOption option, final String sql) throws SQLException {
         PreparedStatement result;
         try {
             result = connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
