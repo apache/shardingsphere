@@ -33,6 +33,6 @@ class OpenGaussSaneQueryResultEngineTest {
     
     @Test
     void assertGetType() {
-        assertThat(new OpenGaussSaneQueryResultEngine().getType(), is("openGauss"));
+        assertThat(new OpenGaussSaneQueryResultEngine().getType().getType(), is("openGauss"));
     }
 }
