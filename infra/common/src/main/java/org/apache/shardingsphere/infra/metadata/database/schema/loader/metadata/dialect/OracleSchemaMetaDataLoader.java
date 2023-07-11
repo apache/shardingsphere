@@ -93,7 +93,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>(tables.size(), 1F);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
-            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPILoader.getService(DatabaseType.class, getType()));
+            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), getType());
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
