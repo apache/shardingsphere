@@ -71,7 +71,7 @@ class TopPaginationContextEngineTest {
     void assertCreatePaginationContextWhenPredicateInRightValue() {
         String name = "rowNumberAlias";
         ColumnSegment columnSegment = new ColumnSegment(0, 10, new IdentifierValue(name));
-        InExpression inExpression = new InExpression(0, 0, columnSegment, new ListExpression(0, 0), false);
+        InExpression inExpression = new InExpression(0, 0, columnSegment, new ListExpression(0, 0, ""), false, "");
         PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(
                 new TopProjectionSegment(0, 10, null, name), Collections.singletonList(inExpression), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
