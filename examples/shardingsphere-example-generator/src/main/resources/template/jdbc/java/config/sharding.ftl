@@ -19,7 +19,6 @@
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(getOrderTableRuleConfiguration());
         result.getTables().add(getOrderItemTableRuleConfiguration());
-        result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "${r"ds_${user_id % 2}"}");
