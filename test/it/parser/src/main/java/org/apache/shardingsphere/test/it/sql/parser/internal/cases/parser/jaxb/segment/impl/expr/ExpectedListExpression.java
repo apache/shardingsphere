@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
@@ -28,7 +27,7 @@ import java.util.List;
  * Expected list expression.
  */
 @Getter
-public final class ExpectedListExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+public final class ExpectedListExpression extends ExpectedBaseExpression {
     
     @XmlElement
     private final List<ExpectedExpression> items = new LinkedList<>();

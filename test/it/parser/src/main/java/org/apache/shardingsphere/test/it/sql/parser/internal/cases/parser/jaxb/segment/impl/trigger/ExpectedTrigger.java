@@ -22,10 +22,18 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpressionSegment;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 /**
  * Expected trigger.
  */
 @Getter
 @Setter
 public final class ExpectedTrigger extends AbstractExpectedIdentifierSQLSegment implements ExpectedExpressionSegment {
+    
+    @XmlAttribute
+    private String text;
+    
+    @XmlAttribute(name = "literal-text")
+    private String literalText;
 }

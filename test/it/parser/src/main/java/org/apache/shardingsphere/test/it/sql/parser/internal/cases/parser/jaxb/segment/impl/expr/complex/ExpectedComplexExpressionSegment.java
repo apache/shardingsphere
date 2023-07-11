@@ -23,11 +23,4 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
  * Expected complex expression segment.
  */
 public interface ExpectedComplexExpressionSegment extends ExpectedExpressionSegment {
-    
-    /**
-     * Get text.
-     *
-     * @return text
-     */
-    String getText();
 }

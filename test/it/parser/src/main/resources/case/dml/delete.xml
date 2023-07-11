@@ -434,9 +434,9 @@
     <delete sql-case-id="delete_multi_tables" parameters="1">
         <where start-index="56" stop-index="124">
             <expr>
-                <binary-operation-expression start-index="62" stop-index="124">
+                <binary-operation-expression start-index="62" stop-index="124" literal-text="t_order.order_id = t_order_item.order_id and t_order.status = 1" text="t_order.order_id = t_order_item.order_id and t_order.status = ?">
                     <left>
-                        <binary-operation-expression start-index="62" stop-index="101">
+                        <binary-operation-expression start-index="62" stop-index="101" text="t_order.order_id = t_order_item.order_id">
                             <left>
                                 <column name="order_id" start-index="62" stop-index="77">
                                     <owner name="t_order" start-index="62" stop-index="68" />
@@ -444,7 +444,7 @@
                             </left>
                             <operator>=</operator>
                             <right>
-                                <column name="order_id" start-index="81" stop-index="101">
+                                <column name="order_id" start-index="81" stop-index="101" text="">
                                     <owner name="t_order_item" start-index="81" stop-index="92" />
                                 </column>
                             </right>
@@ -452,7 +452,7 @@
                     </left>
                     <operator>and</operator>
                     <right>
-                        <binary-operation-expression start-index="107" stop-index="124">
+                        <binary-operation-expression start-index="107" stop-index="124" literal-text="t_order.status = 1" text="t_order.status = ?">
                             <left>
                                 <column name="status" start-index="107" stop-index="120">
                                     <owner name="t_order" start-index="107" stop-index="113" />

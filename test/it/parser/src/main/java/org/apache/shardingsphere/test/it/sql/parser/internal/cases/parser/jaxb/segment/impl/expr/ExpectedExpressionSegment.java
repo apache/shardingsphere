@@ -21,4 +21,11 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
  * Expected expression segment.
  */
 public interface ExpectedExpressionSegment {
+    
+    /**
+     * Get text.
+     *
+     * @return text
+     */
+    String getText();
 }

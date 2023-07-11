@@ -512,7 +512,7 @@
         </from>
         <where start-index="81" stop-index="177">
             <expr>
-                <exists-subquery start-index="91" stop-index="177">
+                <exists-subquery start-index="91" stop-index="177" literal-text="EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)" text="EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)">
                     <not>true</not>
                     <subquery start-index="98" stop-index="177">
                         <select>

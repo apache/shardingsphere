@@ -799,7 +799,7 @@
         </projections>
         <where start-index="22" stop-index="98">
             <expr>
-                <binary-operation-expression start-index="28" stop-index="98">
+                <binary-operation-expression start-index="28" stop-index="98" literal-text="t_order.status > ALL (SELECt status FROM t_order_item WHERE status > 1)" text="t_order.status > ALL (SELECt status FROM t_order_item WHERE status > ?)">
                     <left>
                         <column name="status" start-index="28" stop-index="41">
                             <owner name="t_order" start-index="28" stop-index="34" />
@@ -807,7 +807,7 @@
                     </left>
                     <operator>&gt; ALL</operator>
                     <right>
-                        <subquery start-index="49" stop-index="98">
+                        <subquery start-index="49" stop-index="98" literal-text="t_order.status > ALL (SELECt status FROM t_order_item WHERE status > 1)" text="t_order.status > ALL (SELECt status FROM t_order_item WHERE status > ?)">
                             <select>
                                 <from start-index="69" stop-index="80">
                                     <simple-table name="t_order_item" start-index="69" stop-index="80" />
@@ -817,7 +817,7 @@
                                 </projections>
                                 <where start-index="82" stop-index="97">
                                     <expr>
-                                        <binary-operation-expression start-index="88" stop-index="97">
+                                        <binary-operation-expression start-index="88" stop-index="97" literal-text="status > 1" text="status > ?">
                                             <left>
                                                 <column name="status" start-index="88" stop-index="93" />
                                             </left>
@@ -893,7 +893,7 @@
         </projections>
         <where start-index="22" stop-index="56">
             <expr>
-                <in-expression start-index="28" stop-index="56">
+                <in-expression start-index="28" stop-index="56" literal-text="t_order.order_id IN (1, 2, 3)" text="t_order.order_id IN (?, ?, ?)">
                     <not>false</not>
                     <left>
                         <column name="order_id" start-index="28" stop-index="43">
@@ -901,7 +901,7 @@
                         </column>
                     </left>
                     <right>
-                        <list-expression start-index="48" stop-index="56">
+                        <list-expression start-index="48" stop-index="56" literal-text="t_order.order_id IN (1, 2, 3)" text="t_order.order_id IN (?, ?, ?)">
                             <items>
                                 <literal-expression value="1" start-index="49" stop-index="49" />
                                 <parameter-marker-expression parameter-index="0" start-index="49" stop-index="49" />
@@ -930,7 +930,7 @@
         </projections>
         <where start-index="22" stop-index="59">
             <expr>
-                <between-expression start-index="28" stop-index="59">
+                <between-expression start-index="28" stop-index="59" literal-text="t_order.order_id BETWEEN 1 AND 2" text="t_order.order_id BETWEEN ? AND ?">
                     <not>false</not>
                     <left>
                         <column name="order_id" start-index="28" stop-index="43">

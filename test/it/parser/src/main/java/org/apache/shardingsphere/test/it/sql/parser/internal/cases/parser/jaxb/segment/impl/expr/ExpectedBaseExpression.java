@@ -19,20 +19,20 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedSubquery;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Expected exists subquery.
+ * Expected base complex expression.
  */
 @Getter
 @Setter
-public final class ExpectedExistsSubquery extends ExpectedBaseExpression {
+public abstract class ExpectedBaseExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
     
-    @XmlElement
-    private boolean not;
+    @XmlAttribute
+    private String text;
     
-    @XmlElement
-    private ExpectedSubquery subquery;
+    @XmlAttribute(name = "literal-text")
+    private String literalText;
 }

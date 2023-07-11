@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
@@ -25,8 +26,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExplicitTableExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExplicitTableExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
@@ -52,19 +53,20 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ins
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedBaseExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedBetweenExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedBinaryOperationExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedCaseWhenExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedCollateExpression;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExplicitTableExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExistsSubquery;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExplicitTableExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedInExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedListExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedNotExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedTypeCastExpression;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedVariableSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedValuesExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedVariableSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
@@ -136,10 +138,19 @@ public final class ExpressionAssert {
             assertNull(actual, assertContext.getText("Actual common expression should not exist."));
         } else {
             assertNotNull(actual, assertContext.getText("Actual common expression should exist."));
-            String expectedText = SQLCaseType.LITERAL == assertContext.getCaseType() && null != expected.getLiteralText() ? expected.getLiteralText() : expected.getText();
-            assertThat(assertContext.getText("Common expression text assertion error: "), actual.getText(), is(expectedText));
+            assertExpressionText(assertContext, actual, expected);
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
+    }
+    
+    private static void assertExpressionText(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedBaseExpression expected) {
+        String expectedText = SQLCaseType.LITERAL == assertContext.getCaseType() && null != expected.getLiteralText()
+                ? expected.getLiteralText()
+                : expected.getText();
+        if (Strings.isNullOrEmpty(expectedText)) {
+            return;
+        }
+        assertThat(assertContext.getText("Expression text assertion error: "), actual.getText(), is(expectedText));
     }
     
     /**
@@ -155,6 +166,7 @@ public final class ExpressionAssert {
             assertNull(actual, assertContext.getText("Actual subquery expression should not exist."));
         } else {
             assertNotNull(actual, assertContext.getText("Actual subquery expression should exist."));
+            assertExpressionText(assertContext, actual, expected);
             assertSubquery(assertContext, actual.getSubquery(), expected);
         }
     }
@@ -190,6 +202,7 @@ public final class ExpressionAssert {
             assertNull(actual, assertContext.getText("Actual exists subquery should not exist."));
         } else {
             assertNotNull(actual, assertContext.getText("Actual exists subquery should exist."));
+            assertExpressionText(assertContext, actual, expected);
             assertSubquery(assertContext, actual.getSubquery(), expected.getSubquery());
             assertThat(assertContext.getText("Exists subquery expression not value assert error."),
                     actual.isNot(), is(expected.isNot()));
@@ -214,6 +227,7 @@ public final class ExpressionAssert {
                     actual.getOperator(), is(expected.getOperator()));
             assertExpression(assertContext, actual.getRight(), expected.getRight());
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
+            assertExpressionText(assertContext, actual, expected);
         }
     }
     
@@ -234,6 +248,7 @@ public final class ExpressionAssert {
                     actual.isNot(), is(expected.isNot()));
             assertExpression(assertContext, actual.getRight(), expected.getRight());
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
+            assertExpressionText(assertContext, actual, expected);
         }
     }
     
@@ -251,6 +266,7 @@ public final class ExpressionAssert {
             assertNotNull(actual, assertContext.getText("Actual not expression should exist."));
             assertExpression(assertContext, actual.getExpression(), expected.getExpr());
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
+            assertExpressionText(assertContext, actual, expected);
         }
     }
     
@@ -274,6 +290,7 @@ public final class ExpressionAssert {
                 assertExpression(assertContext, actualItems.next(), expectedItems.next());
             }
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
+            assertExpressionText(assertContext, actual, expected);
         }
     }
     
@@ -295,6 +312,7 @@ public final class ExpressionAssert {
             assertThat(assertContext.getText("Between expression not value assert error."),
                     actual.isNot(), is(expected.isNot()));
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
+            assertExpressionText(assertContext, actual, expected);
         }
     }
     
@@ -336,6 +354,7 @@ public final class ExpressionAssert {
         } else {
             assertExpression(assertContext, actual.getCollateName(), expected.getCollateName());
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
+            assertExpressionText(assertContext, actual, expected);
         }
     }
     
@@ -359,6 +378,7 @@ public final class ExpressionAssert {
         }
         assertExpression(assertContext, actual.getCaseExpr(), expected.getCaseExpr());
         assertExpression(assertContext, actual.getElseExpr(), expected.getElseExpr());
+        assertExpressionText(assertContext, actual, expected);
     }
     
     private static void assertTypeCastExpression(final SQLCaseAssertContext assertContext, final TypeCastExpression actual, final ExpectedTypeCastExpression expected) {
@@ -369,6 +389,7 @@ public final class ExpressionAssert {
         assertNotNull(actual, assertContext.getText("Type cast expression is expected."));
         assertThat(assertContext.getText("Actual data type is different with expected in type case expression."), actual.getDataType(), is(expected.getDataType()));
         assertExpression(assertContext, actual.getExpression(), expected.getExpression());
+        assertExpressionText(assertContext, actual, expected);
     }
     
     private static void assertVariableSegment(final SQLCaseAssertContext assertContext, final VariableSegment actual, final ExpectedVariableSegment expected) {
@@ -378,6 +399,7 @@ public final class ExpressionAssert {
         }
         assertThat(assertContext.getText("Actual scope is different with expected scope."), actual.getScope().orElse(null), is(expected.getScope()));
         assertThat(assertContext.getText("Actual variable is different with expected variable."), actual.getVariable(), is(expected.getVariable()));
+        assertExpressionText(assertContext, actual, expected);
     }
     
     private static void assertValuesExpression(final SQLCaseAssertContext assertContext, final ValuesExpression actual, final ExpectedValuesExpression expected) {
@@ -391,6 +413,7 @@ public final class ExpressionAssert {
         } else {
             assertFalse(actual.getRowConstructorList().isEmpty(), assertContext.getText("Values expression should exist."));
             InsertValuesClauseAssert.assertIs(assertContext, actual.getRowConstructorList(), expected.getInsertValuesClause());
+            assertExpressionText(assertContext, actual, expected);
         }
     }
     

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple;
 
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedBaseExpression;
 
 /**
  * Expected base simple expression.
  */
-public abstract class ExpectedBaseSimpleExpression extends AbstractExpectedSQLSegment implements ExpectedSimpleExpressionSegment {
+public abstract class ExpectedBaseSimpleExpression extends ExpectedBaseExpression implements ExpectedSimpleExpressionSegment {
 }

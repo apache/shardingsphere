@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpressionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedOwner;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -34,4 +35,10 @@ public final class ExpectedColumn extends AbstractExpectedIdentifierSQLSegment i
     
     @XmlElement
     private ExpectedOwner owner;
+    
+    @XmlAttribute
+    private String text;
+    
+    @XmlAttribute(name = "literal-text")
+    private String literalText;
 }

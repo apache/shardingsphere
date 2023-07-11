@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertValuesClause;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -29,7 +28,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @Getter
 @Setter
-public final class ExpectedValuesExpression extends AbstractExpectedSQLSegment {
+public final class ExpectedValuesExpression extends ExpectedBaseExpression {
     
     @XmlElement(name = "values")
     private ExpectedInsertValuesClause insertValuesClause;
