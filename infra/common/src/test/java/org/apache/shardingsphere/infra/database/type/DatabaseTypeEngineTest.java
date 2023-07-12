@@ -159,8 +159,8 @@ class DatabaseTypeEngineTest {
     }
     
     @Test
-    void assertGetDatabaseTypeWithCorrectOrder() {
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:infra.fixture:long.length://localhost:3306/test").getType(), is("INFRA.FIXTURE.LONG.LENGTH"));
+    void assertGetDatabaseTypeWithBranch() {
+        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:infra.fixture:branch://localhost:3306/test").getType(), is("INFRA.BRANCH.FIXTURE"));
     }
     
     @Test

@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.infra.fixture;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.TrunkDatabaseType;
+import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 
 import java.util.Collection;
@@ -26,7 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class InfraDatabaseTypeFixture implements TrunkDatabaseType {
+public final class InfraBranchDatabaseTypeFixture implements BranchDatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -35,7 +37,7 @@ public final class InfraDatabaseTypeFixture implements TrunkDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:infra.fixture:");
+        return Collections.singleton("jdbc:infra.fixture:branch:");
     }
     
     @Override
@@ -55,6 +57,11 @@ public final class InfraDatabaseTypeFixture implements TrunkDatabaseType {
     
     @Override
     public String getType() {
-        return "INFRA.FIXTURE";
+        return "INFRA.BRANCH.FIXTURE";
+    }
+    
+    @Override
+    public DatabaseType getTrunkDatabaseType() {
+        return TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE");
     }
 }

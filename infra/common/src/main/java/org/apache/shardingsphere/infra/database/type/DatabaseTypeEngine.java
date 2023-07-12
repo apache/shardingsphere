@@ -47,6 +47,25 @@ public final class DatabaseTypeEngine {
     private static final String DEFAULT_DATABASE_TYPE = "MySQL";
     
     /**
+     * Get database type.
+     *
+     * @param url database URL
+     * @return database type
+     */
+    public static DatabaseType getDatabaseType(final String url) {
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().filter(each -> matchURLs(url, each))
+                .max(Comparator.comparing(each -> getMatchedUrlPrefixLength(each, url))).orElseGet(() -> TypedSPILoader.getService(DatabaseType.class, "SQL92"));
+    }
+    
+    private static boolean matchURLs(final String url, final DatabaseType databaseType) {
+        return databaseType.getJdbcUrlPrefixes().stream().anyMatch(url::startsWith);
+    }
+    
+    private static Integer getMatchedUrlPrefixLength(final DatabaseType databaseType, final String url) {
+        return databaseType.getJdbcUrlPrefixes().stream().filter(url::startsWith).findFirst().map(String::length).orElse(0);
+    }
+    
+    /**
      * Get protocol type.
      * 
      * @param databaseName database name
@@ -109,17 +128,6 @@ public final class DatabaseTypeEngine {
     }
     
     /**
-     * Get database type.
-     *
-     * @param url database URL
-     * @return database type
-     */
-    public static DatabaseType getDatabaseType(final String url) {
-        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().filter(each -> matchURLs(url, each))
-                .max(Comparator.comparing(each -> getMatchedUrlPrefixLength(each, url))).orElseGet(() -> TypedSPILoader.getService(DatabaseType.class, "SQL92"));
-    }
-    
-    /**
      * Get storage type.
      *
      * @param dataSources data sources
@@ -140,14 +148,6 @@ public final class DatabaseTypeEngine {
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
         String configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeEngine.getTrunkDatabaseType(configuredDatabaseType));
-    }
-    
-    private static boolean matchURLs(final String url, final DatabaseType databaseType) {
-        return databaseType.getJdbcUrlPrefixes().stream().anyMatch(url::startsWith);
-    }
-    
-    private static Integer getMatchedUrlPrefixLength(final DatabaseType databaseType, final String url) {
-        return databaseType.getJdbcUrlPrefixes().stream().filter(url::startsWith).findFirst().map(String::length).orElse(0);
     }
     
     /**
