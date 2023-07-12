@@ -31,10 +31,12 @@ public interface DatabaseTypedSPI extends TypedSPI {
      *
      * @return database type
      */
-    String getDatabaseType();
+    default String getDatabaseType() {
+        return null;
+    }
     
     @Override
     default DatabaseType getType() {
-        return TypedSPILoader.getService(DatabaseType.class, getDatabaseType());
+        return null == getDatabaseType() ? null : TypedSPILoader.getService(DatabaseType.class, getDatabaseType());
     }
 }

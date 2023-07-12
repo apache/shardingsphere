@@ -41,7 +41,7 @@ public final class PostgreSQLOptimizerBuilder implements OptimizerSQLDialectBuil
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

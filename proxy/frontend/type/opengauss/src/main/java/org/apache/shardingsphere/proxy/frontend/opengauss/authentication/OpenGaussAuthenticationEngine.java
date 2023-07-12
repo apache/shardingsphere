@@ -47,9 +47,11 @@ import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidP
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.PrivilegeNotGrantedException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.UnknownUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
@@ -119,7 +121,8 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         PostgreSQLPasswordMessagePacket passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
         login(rule, passwordMessagePacket.getDigest());
         context.write(new PostgreSQLAuthenticationOKPacket());
-        context.write(new PostgreSQLParameterStatusPacket("server_version", DatabaseProtocolServerInfo.getProtocolVersion(currentAuthResult.getDatabase(), "openGauss")));
+        context.write(new PostgreSQLParameterStatusPacket("server_version",
+                DatabaseProtocolServerInfo.getProtocolVersion(currentAuthResult.getDatabase(), TypedSPILoader.getService(DatabaseType.class, "openGauss"))));
         context.write(new PostgreSQLParameterStatusPacket("client_encoding", clientEncoding));
         context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
         context.write(new PostgreSQLParameterStatusPacket("integer_datetimes", "on"));

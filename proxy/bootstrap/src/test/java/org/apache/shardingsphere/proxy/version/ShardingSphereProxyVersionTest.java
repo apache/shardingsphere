@@ -51,13 +51,13 @@ class ShardingSphereProxyVersionTest {
     @Test
     void assertSetVersionWhenStorageTypeSameWithProtocolType() throws SQLException {
         ShardingSphereProxyVersion.setVersion(mockContextManager("MySQL", "5.7.22"));
-        assertThat(DatabaseProtocolServerInfo.getProtocolVersion("foo_db", "MySQL"), startsWith("5.7.22"));
+        assertThat(DatabaseProtocolServerInfo.getProtocolVersion("foo_db", TypedSPILoader.getService(DatabaseType.class, "MySQL")), startsWith("5.7.22"));
     }
     
     @Test
     void assertSetVersionWhenStorageTypeDifferentWithProtocolType() throws SQLException {
         ShardingSphereProxyVersion.setVersion(mockContextManager("Oracle", "12.0.0"));
-        assertThat(DatabaseProtocolServerInfo.getProtocolVersion("foo_db", "MySQL"), startsWith("5.7.22"));
+        assertThat(DatabaseProtocolServerInfo.getProtocolVersion("foo_db", TypedSPILoader.getService(DatabaseType.class, "MySQL")), startsWith("5.7.22"));
     }
     
     private ContextManager mockContextManager(final String databaseType, final String databaseProductVersion) throws SQLException {

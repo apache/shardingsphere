@@ -46,7 +46,7 @@ public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }
