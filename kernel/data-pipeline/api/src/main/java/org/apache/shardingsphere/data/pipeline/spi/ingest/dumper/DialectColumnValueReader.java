@@ -23,21 +23,22 @@ import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
- * Column value reader.
+ * Dialect column value reader.
  */
 @SingletonSPI
-public interface ColumnValueReader extends DatabaseTypedSPI {
+public interface DialectColumnValueReader extends DatabaseTypedSPI {
     
     /**
-     * Read column value.
+     * Read dialect column value.
      *
      * @param resultSet result set
      * @param resultSetMetaData result set meta data
      * @param columnIndex column index
      * @return column value
-     * @throws SQLException from database
+     * @throws SQLException SQL exception
      */
-    Object readValue(ResultSet resultSet, ResultSetMetaData resultSetMetaData, int columnIndex) throws SQLException;
+    Optional<Object> read(ResultSet resultSet, ResultSetMetaData resultSetMetaData, int columnIndex) throws SQLException;
 }
