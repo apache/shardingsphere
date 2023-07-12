@@ -43,7 +43,7 @@ class RuleNodePathTest {
     }
     
     @Test
-    public void assertGetNamedItem() {
+    void assertGetNamedItem() {
         NamedRuleItemNodePath namedRulePath = ruleNodePath.getNamedItem("tables");
         assertThat(namedRulePath.getPath("foo_table"), is("tables/foo_table"));
         Optional<String> path = namedRulePath.getName("/metadata/foo_db/rules/foo/tables/foo_table/versions/0");
@@ -52,7 +52,7 @@ class RuleNodePathTest {
     }
     
     @Test
-    public void assertGetUniqueItem() {
+    void assertGetUniqueItem() {
         UniqueRuleItemNodePath uniqueRulePath = ruleNodePath.getUniqueItem("tables");
         assertThat(uniqueRulePath.getPath(), is("tables"));
         assertTrue(uniqueRulePath.isValidatedPath("/metadata/db/rules/foo/tables/versions/1234"));
