@@ -47,7 +47,7 @@ public final class OpenGaussColumnValueReader extends AbstractColumnValueReader 
         if (isBoolType(metaData, columnIndex)) {
             return resultSet.getBoolean(columnIndex);
         }
-        return super.defaultDoReadValue(resultSet, metaData, columnIndex);
+        return defaultDoReadValue(resultSet, metaData, columnIndex);
     }
     
     private boolean isMoneyType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {

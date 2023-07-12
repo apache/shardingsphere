@@ -30,7 +30,7 @@ public final class FixtureColumnValueReader extends AbstractColumnValueReader {
     
     @Override
     protected Object doReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return super.defaultDoReadValue(resultSet, metaData, columnIndex);
+        return defaultDoReadValue(resultSet, metaData, columnIndex);
     }
     
     @Override
