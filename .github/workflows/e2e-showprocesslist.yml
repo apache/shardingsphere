@@ -61,7 +61,7 @@ jobs:
     name: E2E - ShowProcesslist
     runs-on: ubuntu-latest
     env:
-      mysql_version: 5.7
+      mysql_version: mysql:5.7
     timeout-minutes: 10
     strategy:
       matrix:
