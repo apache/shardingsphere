@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database type.
@@ -93,6 +94,15 @@ public interface DatabaseType extends TypedSPI {
         } catch (final SQLException ignored) {
             return null;
         }
+    }
+    
+    /**
+     * Get default schema name.
+     *
+     * @return default schema name
+     */
+    default Optional<String> getDefaultSchema() {
+        return Optional.empty();
     }
     
     /**

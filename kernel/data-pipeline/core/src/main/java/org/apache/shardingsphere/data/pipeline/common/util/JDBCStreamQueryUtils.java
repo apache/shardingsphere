@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 
@@ -51,7 +50,7 @@ public final class JDBCStreamQueryUtils {
         if (databaseType instanceof MySQLDatabaseType) {
             return generateForMySQL(connection, sql);
         }
-        if (databaseType instanceof SchemaSupportedDatabaseType) {
+        if (databaseType.getDefaultSchema().isPresent()) {
             return generateForPostgreSQL(connection, sql);
         }
         if (databaseType instanceof H2DatabaseType) {
