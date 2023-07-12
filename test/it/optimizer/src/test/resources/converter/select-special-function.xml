@@ -17,5 +17,5 @@
   -->
 
 <sql-node-converter-test-cases>
-    <test-cases sql-case-id="select_extract_function" expected-sql="SELECT EXTRACT(&quot;YEAR&quot; FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
+    <test-cases sql-case-id="select_extract_function" expected-sql="SELECT EXTRACT(&quot;YEAR&quot; FROM '2001-02-16 20:38:40' :: TIMESTAMP)" db-types="PostgreSQL,openGauss" />
 </sql-node-converter-test-cases>
