@@ -179,7 +179,7 @@ public final class DatabaseTypeEngine {
      * @return default schema name
      */
     public static String getDefaultSchemaName(final DatabaseType protocolType, final String databaseName) {
-        return protocolType.getDefaultSchema().orElse(databaseName.toLowerCase());
+        return protocolType.getDefaultSchema().orElseGet(() -> null == databaseName ? null : databaseName.toLowerCase());
     }
     
     /**
