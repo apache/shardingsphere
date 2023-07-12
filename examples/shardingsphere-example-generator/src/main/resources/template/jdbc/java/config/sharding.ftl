@@ -28,6 +28,10 @@
         return result;
     }
     
+    private BroadcastRuleConfiguration createBroadcastRuleConfiguration() {
+        return new BroadcastRuleConfiguration(Collections.singleton("t_address"));
+    }
+    
     private static ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", null);
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));

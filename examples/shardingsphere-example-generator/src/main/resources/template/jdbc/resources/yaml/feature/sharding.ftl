@@ -58,3 +58,7 @@
     keyGenerators:
       snowflake_generator:
         type: SNOWFLAKE
+    
+- !BROADCAST
+    tables:
+      - t_address
