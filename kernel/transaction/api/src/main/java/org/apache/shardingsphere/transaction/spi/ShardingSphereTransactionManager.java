@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.spi;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
@@ -30,7 +29,6 @@ import java.util.Map;
 /**
  * ShardingSphere transaction manager.
  */
-@SingletonSPI
 public interface ShardingSphereTransactionManager extends TypedSPI, AutoCloseable {
     
     /**
