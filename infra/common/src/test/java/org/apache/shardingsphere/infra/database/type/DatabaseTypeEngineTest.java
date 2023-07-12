@@ -52,6 +52,21 @@ import static org.mockito.Mockito.when;
 class DatabaseTypeEngineTest {
     
     @Test
+    void assertGetDatabaseTypeWithTrunkURL() {
+        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:infra.fixture://localhost:3306/test").getType(), is("INFRA.TRUNK.FIXTURE"));
+    }
+    
+    @Test
+    void assertGetDatabaseTypeWithBranchURL() {
+        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:infra.fixture:branch://localhost:3306/test").getType(), is("INFRA.BRANCH.FIXTURE"));
+    }
+    
+    @Test
+    void assertGetDatabaseTypeWithUnrecognizedURL() {
+        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:sqlite:test").getType(), is("SQL92"));
+    }
+    
+    @Test
     void assertGetProtocolTypeFromConfiguredProperties() {
         Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "MySQL"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
@@ -101,16 +116,6 @@ class DatabaseTypeEngineTest {
         assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(Collections.singleton(dataSource)));
     }
     
-    @Test
-    void assertGetDatabaseTypeWithRecognizedURL() {
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:mysql://localhost:3306/test").getType(), is("MySQL"));
-    }
-    
-    @Test
-    void assertGetDatabaseTypeWithUnrecognizedURL() {
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:sqlite:test").getType(), is("SQL92"));
-    }
-    
     private DataSource mockDataSource(final DatabaseType databaseType) throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn(getURL(databaseType));
@@ -156,11 +161,6 @@ class DatabaseTypeEngineTest {
         assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaSupportDatabaseType, ""), is("public"));
         DatabaseType schemaNoSupportDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaNoSupportDatabaseType, "MySQL"), is("mysql"));
-    }
-    
-    @Test
-    void assertGetDatabaseTypeWithBranch() {
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:infra.fixture:branch://localhost:3306/test").getType(), is("INFRA.BRANCH.FIXTURE"));
     }
     
     @Test

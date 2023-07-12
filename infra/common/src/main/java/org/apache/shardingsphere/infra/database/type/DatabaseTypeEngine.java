@@ -31,12 +31,12 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Database type engine.
@@ -53,16 +53,20 @@ public final class DatabaseTypeEngine {
      * @return database type
      */
     public static DatabaseType getDatabaseType(final String url) {
-        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().filter(each -> matchURLs(url, each))
-                .max(Comparator.comparing(each -> getMatchedUrlPrefixLength(each, url))).orElseGet(() -> TypedSPILoader.getService(DatabaseType.class, "SQL92"));
+        Collection<DatabaseType> databaseTypes = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().filter(each -> matchURLs(url, each)).collect(Collectors.toList());
+        if (databaseTypes.isEmpty()) {
+            return TypedSPILoader.getService(DatabaseType.class, "SQL92");
+        }
+        for (DatabaseType each : databaseTypes) {
+            if (each instanceof BranchDatabaseType) {
+                return each;
+            }
+        }
+        return databaseTypes.iterator().next();
     }
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {
         return databaseType.getJdbcUrlPrefixes().stream().anyMatch(url::startsWith);
-    }
-    
-    private static Integer getMatchedUrlPrefixLength(final DatabaseType databaseType, final String url) {
-        return databaseType.getJdbcUrlPrefixes().stream().filter(url::startsWith).findFirst().map(String::length).orElse(0);
     }
     
     /**
@@ -70,7 +74,7 @@ public final class DatabaseTypeEngine {
      * 
      * @param databaseName database name
      * @param databaseConfig database configuration
-     * @param props props
+     * @param props configuration properties
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
@@ -81,7 +85,7 @@ public final class DatabaseTypeEngine {
      * Get protocol type.
      *
      * @param databaseConfigs database configurations
-     * @param props props
+     * @param props configuration properties
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
