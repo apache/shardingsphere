@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class InfraLongLengthPrefixDatabaseTypeFixture implements TrunkDatabaseType {
+public final class InfraTrunkDatabaseTypeFixture implements TrunkDatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -35,7 +35,7 @@ public final class InfraLongLengthPrefixDatabaseTypeFixture implements TrunkData
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:infra.fixture:long.length:");
+        return Collections.singleton("jdbc:infra.fixture:");
     }
     
     @Override
@@ -55,6 +55,6 @@ public final class InfraLongLengthPrefixDatabaseTypeFixture implements TrunkData
     
     @Override
     public String getType() {
-        return "INFRA.FIXTURE.LONG.LENGTH";
+        return "INFRA.TRUNK.FIXTURE";
     }
 }
