@@ -206,7 +206,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             String columnName = insertColumnNames.isEmpty() ? resultSetMetaData.getColumnName(i) : insertColumnNames.get(i - 1);
             ShardingSpherePreconditions.checkNotNull(tableMetaData.getColumnMetaData(columnName), () -> new PipelineInvalidParameterException(String.format("Column name is %s", columnName)));
             boolean isUniqueKey = tableMetaData.getColumnMetaData(columnName).isUniqueKey();
-            result.addColumn(new Column(columnName, columnValueReaderEngine.readValue(resultSet, resultSetMetaData, i), true, isUniqueKey));
+            result.addColumn(new Column(columnName, columnValueReaderEngine.read(resultSet, resultSetMetaData, i), true, isUniqueKey));
         }
         return result;
     }

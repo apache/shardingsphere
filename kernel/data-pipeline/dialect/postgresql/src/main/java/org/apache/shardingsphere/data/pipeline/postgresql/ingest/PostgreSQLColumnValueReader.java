@@ -46,12 +46,12 @@ public final class PostgreSQLColumnValueReader implements DialectColumnValueRead
         return Optional.empty();
     }
     
-    private boolean isMoneyType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
-        return PG_MONEY_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
+    private boolean isMoneyType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return PG_MONEY_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
     }
     
-    private boolean isBitType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
-        return Types.BIT == resultSetMetaData.getColumnType(index) && PG_BIT_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
+    private boolean isBitType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return Types.BIT == metaData.getColumnType(columnIndex) && PG_BIT_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
     }
     
     private static PGobject getBitObject(final ResultSet resultSet, final int columnIndex) throws SQLException {

@@ -35,7 +35,7 @@ public final class ColumnValueReaderEngine {
     private final DialectColumnValueReader dialectColumnValueReader;
     
     public ColumnValueReaderEngine(final DatabaseType databaseType) {
-        dialectColumnValueReader = DatabaseTypedSPILoader.getService(DialectColumnValueReader.class, databaseType);
+        dialectColumnValueReader = DatabaseTypedSPILoader.findService(DialectColumnValueReader.class, databaseType).orElse(null);
     }
     
     /**
@@ -47,14 +47,19 @@ public final class ColumnValueReaderEngine {
      * @return column value
      * @throws SQLException SQL exception
      */
-    public Object readValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+    public Object read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
         if (resultSet.wasNull()) {
             return null;
         }
-        Optional<Object> dialectValue = dialectColumnValueReader.read(resultSet, metaData, columnIndex);
-        if (dialectValue.isPresent()) {
-            return dialectValue;
-        }
+        Optional<Object> dialectValue = readDialectValue(resultSet, metaData, columnIndex);
+        return dialectValue.isPresent() ? dialectValue : readStandardValue(resultSet, metaData, columnIndex);
+    }
+    
+    private Optional<Object> readDialectValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return null == dialectColumnValueReader ? Optional.empty() : dialectColumnValueReader.read(resultSet, metaData, columnIndex);
+    }
+    
+    private static Object readStandardValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
         int columnType = metaData.getColumnType(columnIndex);
         switch (columnType) {
             case Types.BOOLEAN:

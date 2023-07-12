@@ -51,19 +51,16 @@ public final class OpenGaussColumnValueReader implements DialectColumnValueReade
         return Optional.empty();
     }
     
-    private boolean isMoneyType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
-        return MONEY_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
+    private boolean isMoneyType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return MONEY_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
     }
     
-    private boolean isBoolType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
-        return BOOL_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
+    private boolean isBoolType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return BOOL_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
     }
     
-    private boolean isBitType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
-        if (Types.BIT == resultSetMetaData.getColumnType(index)) {
-            return BIT_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
-        }
-        return false;
+    private boolean isBitType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return Types.BIT == metaData.getColumnType(columnIndex) && BIT_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
     }
     
     @Override

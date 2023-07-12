@@ -96,10 +96,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 int columnCount = resultSetMetaData.getColumnCount();
                 Collection<Object> columnRecord = new LinkedList<>();
                 for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                    columnRecord.add(columnValueReaderEngine.readValue(resultSet, resultSetMetaData, columnIndex));
+                    columnRecord.add(columnValueReaderEngine.read(resultSet, resultSetMetaData, columnIndex));
                 }
                 records.add(columnRecord);
-                maxUniqueKeyValue = columnValueReaderEngine.readValue(resultSet, resultSetMetaData, param.getUniqueKey().getOrdinalPosition());
+                maxUniqueKeyValue = columnValueReaderEngine.read(resultSet, resultSetMetaData, param.getUniqueKey().getOrdinalPosition());
                 if (records.size() == chunkSize) {
                     break;
                 }
