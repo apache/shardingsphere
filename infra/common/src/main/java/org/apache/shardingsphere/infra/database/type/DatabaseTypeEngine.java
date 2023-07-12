@@ -179,17 +179,7 @@ public final class DatabaseTypeEngine {
      * @return default schema name
      */
     public static String getDefaultSchemaName(final DatabaseType protocolType, final String databaseName) {
-        return protocolType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) protocolType).getDefaultSchema() : databaseName.toLowerCase();
-    }
-    
-    /**
-     * Get default schema name.
-     *
-     * @param protocolType protocol type
-     * @return default schema name
-     */
-    public static Optional<String> getDefaultSchemaName(final DatabaseType protocolType) {
-        return protocolType instanceof SchemaSupportedDatabaseType ? Optional.of(((SchemaSupportedDatabaseType) protocolType).getDefaultSchema()) : Optional.empty();
+        return protocolType.getDefaultSchema().orElseGet(() -> null == databaseName ? null : databaseName.toLowerCase());
     }
     
     /**
