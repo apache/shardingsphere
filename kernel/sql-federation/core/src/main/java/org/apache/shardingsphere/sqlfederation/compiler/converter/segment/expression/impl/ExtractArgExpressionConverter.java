@@ -29,6 +29,7 @@ import java.util.Optional;
  * Extract arg expression converter.
  */
 public class ExtractArgExpressionConverter implements SQLSegmentConverter<ExtractArgExpression, SqlNode> {
+    
     @Override
     public Optional<SqlNode> convert(final ExtractArgExpression expression) {
         if (null == expression) {
