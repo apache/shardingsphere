@@ -19,13 +19,11 @@ package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expre
 
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlBasicTypeNameSpec;
-import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.SqlDataTypeSpec;
-import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlTypeNameSpec;
+import org.apache.calcite.sql.fun.SqlCastFunction;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.type.InferTypes;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
@@ -50,6 +48,6 @@ public class TypeCastExpressionConverter implements SQLSegmentConverter<TypeCast
         SqlTypeNameSpec sqlTypeName = new SqlBasicTypeNameSpec(SqlTypeName.valueOf(segment.getDataType().toUpperCase()), SqlParserPos.ZERO);
         SqlDataTypeSpec sqlDataTypeSpec = new SqlDataTypeSpec(sqlTypeName, SqlParserPos.ZERO);
         List<SqlNode> operandList = new ArrayList<>(Arrays.asList(exprssion.get(), sqlDataTypeSpec));
-        return Optional.of(new SqlBasicCall(new SqlBinaryOperator("::", SqlKind.CAST, 94, true, null, InferTypes.FIRST_KNOWN, null), operandList, SqlParserPos.ZERO));
+        return Optional.of(new SqlBasicCall(new SqlCastFunction(), operandList, SqlParserPos.ZERO));
     }
 }
