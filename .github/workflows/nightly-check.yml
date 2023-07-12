@@ -163,7 +163,7 @@ jobs:
           echo "Checking $file"
           markdown-link-check -c .github/workflows/resources/linkcheck/markdown-link-check.json -q "$file"
           done
-
+          
   check-codeql:
     if: (github.repository == 'apache/shardingsphere')
     name: Check - CodeQL
