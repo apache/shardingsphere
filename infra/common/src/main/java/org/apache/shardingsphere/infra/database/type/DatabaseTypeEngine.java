@@ -74,7 +74,7 @@ public final class DatabaseTypeEngine {
      * 
      * @param databaseName database name
      * @param databaseConfig database configuration
-     * @param props props
+     * @param props configuration properties
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
@@ -85,7 +85,7 @@ public final class DatabaseTypeEngine {
      * Get protocol type.
      *
      * @param databaseConfigs database configurations
-     * @param props props
+     * @param props configuration properties
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
