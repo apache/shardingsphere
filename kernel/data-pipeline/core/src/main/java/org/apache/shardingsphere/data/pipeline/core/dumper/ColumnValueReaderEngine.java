@@ -17,27 +17,49 @@
 
 package org.apache.shardingsphere.data.pipeline.core.dumper;
 
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.DialectColumnValueReader;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Optional;
 
 /**
- * Abstract column value reader.
+ * Column value reader engine.
  */
-public abstract class AbstractColumnValueReader implements ColumnValueReader {
+public final class ColumnValueReaderEngine {
     
-    @Override
-    public final Object readValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        Object result = doReadValue(resultSet, metaData, columnIndex);
-        return resultSet.wasNull() ? null : result;
+    private final DialectColumnValueReader dialectColumnValueReader;
+    
+    public ColumnValueReaderEngine(final DatabaseType databaseType) {
+        dialectColumnValueReader = DatabaseTypedSPILoader.findService(DialectColumnValueReader.class, databaseType).orElse(null);
     }
     
-    protected abstract Object doReadValue(ResultSet resultSet, ResultSetMetaData metaData, int columnIndex) throws SQLException;
+    /**
+     * Read column value.
+     * 
+     * @param resultSet result set
+     * @param metaData result set meta data
+     * @param columnIndex column index
+     * @return column value
+     * @throws SQLException SQL exception
+     */
+    public Object read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        if (resultSet.wasNull()) {
+            return null;
+        }
+        Optional<Object> dialectValue = readDialectValue(resultSet, metaData, columnIndex);
+        return dialectValue.isPresent() ? dialectValue : readStandardValue(resultSet, metaData, columnIndex);
+    }
     
-    protected final Object defaultDoReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+    private Optional<Object> readDialectValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return null == dialectColumnValueReader ? Optional.empty() : dialectColumnValueReader.read(resultSet, metaData, columnIndex);
+    }
+    
+    private static Object readStandardValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
         int columnType = metaData.getColumnType(columnIndex);
         switch (columnType) {
             case Types.BOOLEAN:

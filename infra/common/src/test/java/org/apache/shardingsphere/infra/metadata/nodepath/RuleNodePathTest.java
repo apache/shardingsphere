@@ -36,7 +36,7 @@ class RuleNodePathTest {
     private RuleNodePath ruleNodePath;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         List<String> namedRuleItemNodePathTypes = Collections.singletonList("tables");
         List<String> uniqueRuleItemNodePathTypes = Arrays.asList("tables", "tables.type");
         ruleNodePath = new RuleNodePath("foo", namedRuleItemNodePathTypes, uniqueRuleItemNodePathTypes);
