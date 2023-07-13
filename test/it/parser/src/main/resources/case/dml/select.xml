@@ -164,7 +164,7 @@
             </expression-projection>
         </projections>
     </select>
-
+    
     <select sql-case-id="select_system_variables" >
         <projections start-index="7" stop-index="121">
             <expression-projection text="@@session.auto_increment_increment" alias="auto_increment_increment" start-index="7" stop-index="65">
@@ -539,7 +539,7 @@
             </expr>
         </where>
     </select>
-
+    
     <select sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
         <from>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -932,7 +932,7 @@
             <offset value="0" parameter-index="2" start-index="75" stop-index="75" literal-start-index="77" literal-stop-index="77" />
         </limit>
     </select>
-
+    
     <select sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
         <from>
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
@@ -1111,7 +1111,7 @@
             </expr>
         </where>
     </select>
-
+    
     <select sql-case-id="select_like_with_single_quotes" >
         <from>
             <simple-table name="admin" start-index="15" stop-index="19" />
@@ -1137,7 +1137,7 @@
             </expr>
         </where>
     </select>
-
+    
     <select sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
         <from>
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
@@ -2344,7 +2344,7 @@
             <column-projection name="item_id" start-index="14" stop-index="20" />
         </projections>
     </select>
-
+    
     <select sql-case-id="select_distinct_with_multi_column_without_order_by" >
         <from>
             <simple-table name="t_order" start-index="47" stop-index="53" />
@@ -2366,7 +2366,7 @@
             <column-projection name="status" start-index="33" stop-index="38" />
         </projections>
     </select>
-
+    
     <select sql-case-id="select_distinct_with_owner_column_without_order_by" >
         <from>
             <simple-table name="t_order" start-index="38" stop-index="44" />
@@ -3447,7 +3447,7 @@
             <expression-projection text="1" start-index="7" stop-index="7" />
         </projections>
     </select>
-
+    
     <select sql-case-id="select_with_cast_as_signed">
         <from>
             <simple-table name="t_order" start-index="45" stop-index="51" />
@@ -3531,7 +3531,7 @@
             <column-projection name="user_id" start-index="38" stop-index="44" />
         </projections>
     </select>
-
+    
     <select sql-case-id="select_with_cast_as_signed_integer">
         <from>
             <simple-table name="t_order" start-index="53" stop-index="59" />
@@ -3573,7 +3573,7 @@
             <column-projection name="user_id" start-index="42" stop-index="48" />
         </projections>
     </select>
-
+    
     <select sql-case-id="select_with_simple_table" >
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -4113,7 +4113,7 @@
             <column-item name="product" start-index="309" stop-index="315" />
         </order-by>
     </select>
-
+    
     <select sql-case-id="select_with_comments">
         <from>
             <simple-table name="t_order" start-index="51" stop-index="57" />
@@ -4147,7 +4147,7 @@
             <column-projection name="order_item_id_value" start-index="22" stop-index="40" />
         </projections>
     </select>
-
+    
     <select sql-case-id="select_with_dollar_parameter_for_postgresql" parameters="1, 12" >
         <projections start-index="7" stop-index="14">
             <column-projection name="order_id" start-index="7" stop-index="14" />
@@ -4940,7 +4940,7 @@
             <simple-table name="t_order" start-index="38" stop-index="44" />
         </from>
     </select>
-
+    
     <select sql-case-id="select_literal_type_cast_money">
         <projections start-index="7" stop-index="18">
             <expression-projection text="'$99'::money" start-index="7" stop-index="18">
@@ -4955,7 +4955,7 @@
             </expression-projection>
         </projections>
     </select>
-
+    
     <select sql-case-id="select_positional_parameter_type_cast_money" parameters="123.00">
         <projections start-index="7" stop-index="15">
             <expression-projection text="$1::money" start-index="7" stop-index="15">
@@ -4970,7 +4970,7 @@
             </expression-projection>
         </projections>
     </select>
-
+    
     <select sql-case-id="select_string_constant_type_cast">
         <projections start-index="7" stop-index="25">
             <expression-projection text="int4 '1'" start-index="7" stop-index="14">
@@ -4995,7 +4995,7 @@
             </expression-projection>
         </projections>
     </select>
-
+    
     <select sql-case-id="select_constant_with_nested_type_cast">
         <projections start-index="7" stop-index="60">
             <expression-projection text="CAST(MONEY '1' AS VARCHAR)::CHAR(10)::VARCHAR::CHAR(4)" start-index="7" stop-index="60">
@@ -5069,7 +5069,7 @@
             <simple-table name="DUAL" start-index="19" stop-index="22" />
         </from>
     </select>
-
+    
     <select sql-case-id="select_with_keyword_system" parameters="0">
         <from>
             <simple-table name="vtx_project" start-index="14" stop-index="24" />
