@@ -196,6 +196,26 @@
     <create-table sql-case-id="create_object_table">
         <table name="t_log" start-index="13" stop-index="17" />
     </create-table>
+
+    <create-table sql-case-id="create_table_with_char_varing">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="char" start-index="19" stop-index="38">
+            <column name="id" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_any_type">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="AnyData" start-index="19" stop-index="39">
+            <column name="a_anydata" />
+        </column-definition>
+        <column-definition type="AnyType" start-index="42" stop-index="62">
+            <column name="a_anytype" />
+        </column-definition>
+        <column-definition type="AnyDataSet" start-index="65" stop-index="91">
+            <column name="a_anydataset" />
+        </column-definition>
+    </create-table>
   
     <create-table sql-case-id="create_local_temp_table">
         <table name="t_temp_log" start-index="24" stop-index="33" />
