@@ -17,9 +17,25 @@
 
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
+
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
-public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
+public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilder {
+    
+    @Override
+    public boolean isKeyword(final String item) {
+        return false;
+    }
+    
+    @Override
+    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
+        return Collections.emptyList();
+    }
     
     @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
@@ -29,21 +45,6 @@ public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder 
     @Override
     public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         return Optional.of(String.format("SELECT CRC32(%s) FROM %s", column, tableName));
-    }
-    
-    @Override
-    protected boolean isKeyword(final String item) {
-        return false;
-    }
-    
-    @Override
-    protected String getLeftIdentifierQuoteString() {
-        return null;
-    }
-    
-    @Override
-    protected String getRightIdentifierQuoteString() {
-        return null;
     }
     
     @Override

@@ -20,20 +20,21 @@ package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 /**
- * Abstract pipeline SQL builder.
+ * Pipeline SQL builder engine.
  */
-public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
+public final class PipelineSQLBuilderEngine {
     
     private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
     
@@ -43,24 +44,45 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     private final ConcurrentMap<String, String> sqlCacheMap = new ConcurrentHashMap<>();
     
+    private final DatabaseType databaseType;
+    
+    private final DialectPipelineSQLBuilder pipelineSQLBuilder;
+    
+    public PipelineSQLBuilderEngine(final DatabaseType databaseType) {
+        this.databaseType = databaseType;
+        pipelineSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
+    }
+    
     /**
      * Add left and right identifier quote string.
      *
      * @param item to add quote item
      * @return add quote string
      */
-    public final String quote(final String item) {
-        return isKeyword(item) ? getLeftIdentifierQuoteString() + item + getRightIdentifierQuoteString() : item;
+    public String quote(final String item) {
+        return pipelineSQLBuilder.isKeyword(item) ? databaseType.getQuoteCharacter().wrap(item) : item;
     }
     
-    protected abstract boolean isKeyword(String item);
+    /**
+     * Build create schema SQL.
+     *
+     * @param schemaName schema name
+     * @return create schema SQL
+     */
+    public Optional<String> buildCreateSchemaSQL(final String schemaName) {
+        return pipelineSQLBuilder.buildCreateSchemaSQL(schemaName);
+    }
     
-    protected abstract String getLeftIdentifierQuoteString();
-    
-    protected abstract String getRightIdentifierQuoteString();
-    
-    @Override
-    public final String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
+    /**
+     * Build divisible inventory dump SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param columnNames column names
+     * @param uniqueKey unique key
+     * @return divisible inventory dump SQL
+     */
+    public String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
         String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);
         return String.format("SELECT %s FROM %s WHERE %s>=? AND %s<=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey, quotedUniqueKey, quotedUniqueKey);
@@ -73,42 +95,78 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         return columnNames.stream().map(this::quote).collect(Collectors.joining(","));
     }
     
-    @Override
-    public final String buildNoLimitedDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
+    /**
+     * Build divisible inventory dump SQL without limited value.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param columnNames column names
+     * @param uniqueKey unique key
+     * @return divisible inventory dump SQL without end value
+     */
+    public String buildNoLimitedDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
         String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);
         return String.format("SELECT %s FROM %s WHERE %s>=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
     }
     
-    @Override
-    public final String buildIndivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
+    /**
+     * Build indivisible inventory dump first SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param columnNames column names
+     * @param uniqueKey unique key
+     * @return indivisible inventory dump SQL
+     */
+    public String buildIndivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
         String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);
         return String.format("SELECT %s FROM %s ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey);
     }
     
-    @Override
-    public final String buildNoUniqueKeyInventoryDumpSQL(final String schemaName, final String tableName) {
+    /**
+     * Build no unique key inventory dump SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName tableName
+     * @return inventory dump all SQL
+     */
+    public String buildNoUniqueKeyInventoryDumpSQL(final String schemaName, final String tableName) {
         String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         return String.format("SELECT * FROM %s", qualifiedTableName);
     }
     
-    protected final String getQualifiedTableName(final String schemaName, final String tableName) {
+    /**
+     * Get qualified table name.
+     * 
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return qualified table name
+     */
+    public String getQualifiedTableName(final String schemaName, final String tableName) {
         StringBuilder result = new StringBuilder();
-        if (getType().isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
+        if (databaseType.isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
             result.append(quote(schemaName)).append('.');
         }
         result.append(quote(tableName));
         return result.toString();
     }
     
-    @Override
+    /**
+     * Build insert SQL.
+     *
+     * @param schemaName schema name
+     * @param dataRecord data record
+     * @return insert SQL
+     */
     public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
             sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(schemaName, dataRecord.getTableName(), dataRecord.getColumns()));
         }
-        return sqlCacheMap.get(sqlCacheKey);
+        String insertSQL = sqlCacheMap.get(sqlCacheKey);
+        return pipelineSQLBuilder.buildInsertSQLOnDuplicatePart(schemaName, dataRecord).map(optional -> insertSQL + " " + optional).orElse(insertSQL);
     }
     
     private String buildInsertSQLInternal(final String schemaName, final String tableName, final List<Column> columns) {
@@ -123,8 +181,15 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         return String.format("INSERT INTO %s(%s) VALUES(%s)", getQualifiedTableName(schemaName, tableName), columnsLiteral, holder);
     }
     
-    @Override
-    public final String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
+    /**
+     * Build update SQL.
+     *
+     * @param schemaName schema name
+     * @param dataRecord data record
+     * @param conditionColumns condition columns
+     * @return update SQL
+     */
+    public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
             sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(schemaName, dataRecord.getTableName(), conditionColumns));
@@ -141,13 +206,25 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         return String.format("UPDATE %s SET %%s WHERE %s", getQualifiedTableName(schemaName, tableName), buildWhereSQL(conditionColumns));
     }
     
-    @Override
+    /**
+     * Extract updated columns.
+     *
+     * @param dataRecord data record
+     * @return filtered columns
+     */
     public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        return new ArrayList<>(RecordUtils.extractUpdatedColumns(dataRecord));
+        return pipelineSQLBuilder.extractUpdatedColumns(dataRecord);
     }
     
-    @Override
-    public final String buildDeleteSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
+    /**
+     * Build delete SQL.
+     *
+     * @param schemaName schema name
+     * @param dataRecord data record
+     * @param conditionColumns condition columns
+     * @return delete SQL
+     */
+    public String buildDeleteSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
             sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(schemaName, dataRecord.getTableName(), conditionColumns));
@@ -155,8 +232,14 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         return sqlCacheMap.get(sqlCacheKey);
     }
     
-    @Override
-    public final String buildDropSQL(final String schemaName, final String tableName) {
+    /**
+     * Build drop SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return drop SQL
+     */
+    public String buildDropSQL(final String schemaName, final String tableName) {
         return String.format("DROP TABLE IF EXISTS %s", getQualifiedTableName(schemaName, tableName));
     }
     
@@ -173,19 +256,52 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         return where.toString();
     }
     
-    @Override
-    public final String buildCountSQL(final String schemaName, final String tableName) {
+    /**
+     * Build count SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return count SQL
+     */
+    public String buildCountSQL(final String schemaName, final String tableName) {
         return String.format("SELECT COUNT(*) FROM %s", getQualifiedTableName(schemaName, tableName));
     }
     
-    @Override
-    public final String buildUniqueKeyMinMaxValuesSQL(final String schemaName, final String tableName, final String uniqueKey) {
+    /**
+     * Build estimated count SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return estimated count SQL
+     */
+    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
+        return pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, tableName);
+    }
+    
+    /**
+     * Build unique key minimum maximum values SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param uniqueKey unique key
+     * @return min max unique key SQL
+     */
+    public String buildUniqueKeyMinMaxValuesSQL(final String schemaName, final String tableName, final String uniqueKey) {
         String quotedUniqueKey = quote(uniqueKey);
         return String.format("SELECT MIN(%s), MAX(%s) FROM %s", quotedUniqueKey, quotedUniqueKey, getQualifiedTableName(schemaName, tableName));
     }
     
-    @Override
-    public final String buildQueryAllOrderingSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey, final boolean firstQuery) {
+    /**
+     * Build query all ordering SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param columnNames column names
+     * @param uniqueKey unique key, it may be primary key, not null
+     * @param firstQuery first query
+     * @return query SQL
+     */
+    public String buildQueryAllOrderingSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey, final boolean firstQuery) {
         String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);
         return firstQuery
@@ -193,8 +309,26 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
                 : String.format("SELECT %s FROM %s WHERE %s>? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
     }
     
-    @Override
-    public final String buildCheckEmptySQL(final String schemaName, final String tableName) {
+    /**
+     * Build check empty SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return check SQL
+     */
+    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
         return String.format("SELECT * FROM %s LIMIT 1", getQualifiedTableName(schemaName, tableName));
+    }
+    
+    /**
+     * Build CRC32 SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table Name
+     * @param column column
+     * @return CRC32 SQL
+     */
+    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
+        return pipelineSQLBuilder.buildCRC32SQL(schemaName, tableName, column);
     }
 }

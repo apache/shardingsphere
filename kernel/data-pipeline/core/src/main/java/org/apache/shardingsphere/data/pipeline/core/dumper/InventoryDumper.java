@@ -40,15 +40,14 @@ import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPo
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PrimaryKeyPositionFactory;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLBuilderEngine;
 import org.apache.shardingsphere.data.pipeline.common.util.JDBCStreamQueryUtils;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
@@ -77,7 +76,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private final DataSource dataSource;
     
-    private final PipelineSQLBuilder sqlBuilder;
+    private final PipelineSQLBuilderEngine sqlBuilderEngine;
     
     private final ColumnValueReaderEngine columnValueReaderEngine;
     
@@ -90,7 +89,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         this.channel = channel;
         this.dataSource = dataSource;
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
-        sqlBuilder = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, databaseType);
+        sqlBuilderEngine = new PipelineSQLBuilderEngine(databaseType);
         columnValueReaderEngine = new ColumnValueReaderEngine(databaseType);
         this.metaDataLoader = metaDataLoader;
     }
@@ -159,20 +158,20 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         LogicTableName logicTableName = new LogicTableName(dumperConfig.getLogicTableName());
         String schemaName = dumperConfig.getSchemaName(logicTableName);
         if (!dumperConfig.hasUniqueKey()) {
-            return sqlBuilder.buildNoUniqueKeyInventoryDumpSQL(schemaName, dumperConfig.getActualTableName());
+            return sqlBuilderEngine.buildNoUniqueKeyInventoryDumpSQL(schemaName, dumperConfig.getActualTableName());
         }
         PrimaryKeyPosition<?> position = (PrimaryKeyPosition<?>) dumperConfig.getPosition();
         PipelineColumnMetaData firstColumn = dumperConfig.getUniqueKeyColumns().get(0);
         List<String> columnNames = dumperConfig.getColumnNameList(logicTableName).orElse(Collections.singletonList("*"));
         if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) || PipelineJdbcUtils.isStringColumn(firstColumn.getDataType())) {
             if (null != position.getBeginValue() && null != position.getEndValue()) {
-                return sqlBuilder.buildDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());
+                return sqlBuilderEngine.buildDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());
             }
             if (null != position.getBeginValue() && null == position.getEndValue()) {
-                return sqlBuilder.buildNoLimitedDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());
+                return sqlBuilderEngine.buildNoLimitedDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());
             }
         }
-        return sqlBuilder.buildIndivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());
+        return sqlBuilderEngine.buildIndivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());
     }
     
     private void setParameters(final PreparedStatement preparedStatement) throws SQLException {

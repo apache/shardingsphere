@@ -20,17 +20,20 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.AbstractPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLBuilderEngine;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 /**
  * PostgreSQL pipeline SQL builder.
  */
-public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
+public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     private static final Set<String> RESERVED_KEYWORDS = new HashSet<>(Arrays.asList(
             "ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BETWEEN", "BIGINT", "BINARY",
@@ -44,18 +47,8 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
             "WINDOW", "WITH", "XMLATTRIBUTES", "XMLCONCAT", "XMLELEMENT", "XMLEXISTS", "XMLFOREST", "XMLNAMESPACES", "XMLPARSE", "XMLPI", "XMLROOT", "XMLSERIALIZE", "XMLTABLE"));
     
     @Override
-    protected boolean isKeyword(final String item) {
+    public boolean isKeyword(final String item) {
         return RESERVED_KEYWORDS.contains(item.toUpperCase());
-    }
-    
-    @Override
-    protected String getLeftIdentifierQuoteString() {
-        return "\"";
-    }
-    
-    @Override
-    protected String getRightIdentifierQuoteString() {
-        return "\"";
     }
     
     @Override
@@ -64,13 +57,12 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     }
     
     @Override
-    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
-        String result = super.buildInsertSQL(schemaName, dataRecord);
+    public Optional<String> buildInsertSQLOnDuplicatePart(final String schemaName, final DataRecord dataRecord) {
         // TODO without unique key, job has been interrupted, which may lead to data duplication
         if (dataRecord.getUniqueKeyValue().isEmpty()) {
-            return result;
+            return Optional.empty();
         }
-        return result + buildConflictSQL(dataRecord);
+        return Optional.of(buildConflictSQL(dataRecord));
     }
     
     // Refer to https://www.postgresql.org/docs/current/sql-insert.html
@@ -93,9 +85,18 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     }
     
     @Override
+    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
+        return new ArrayList<>(RecordUtils.extractUpdatedColumns(dataRecord));
+    }
+    
+    @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
-        return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
+        return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;",
+                new PipelineSQLBuilderEngine(getType()).getQualifiedTableName(schemaName, tableName)));
+    }
+    
+    private String quote(final String item) {
+        return isKeyword(item) ? getType().getQuoteCharacter().wrap(item) : item;
     }
     
     @Override
