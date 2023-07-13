@@ -22,7 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -32,79 +33,79 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class PipelineSQLBuilderTest {
+class PipelineSQLBuilderEngineTest {
     
-    private final PipelineSQLBuilder pipelineSQLBuilder = new H2PipelineSQLBuilder();
+    private final PipelineSQLBuilderEngine sqlBuilderEngine = new PipelineSQLBuilderEngine(TypedSPILoader.getService(DatabaseType.class, "H2"));
     
     @Test
     void assertBuildDivisibleInventoryDumpSQL() {
-        String actual = pipelineSQLBuilder.buildDivisibleInventoryDumpSQL(null, "t_order", Collections.singletonList("*"), "order_id");
+        String actual = sqlBuilderEngine.buildDivisibleInventoryDumpSQL(null, "t_order", Collections.singletonList("*"), "order_id");
         assertThat(actual, is("SELECT * FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC"));
-        actual = pipelineSQLBuilder.buildDivisibleInventoryDumpSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
+        actual = sqlBuilderEngine.buildDivisibleInventoryDumpSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC"));
     }
     
     @Test
     void assertBuildDivisibleInventoryDumpSQLNoEnd() {
-        String actual = pipelineSQLBuilder.buildDivisibleInventoryDumpSQLNoEnd(null, "t_order", Collections.singletonList("*"), "order_id");
+        String actual = sqlBuilderEngine.buildNoLimitedDivisibleInventoryDumpSQL(null, "t_order", Collections.singletonList("*"), "order_id");
         assertThat(actual, is("SELECT * FROM t_order WHERE order_id>=? ORDER BY order_id ASC"));
-        actual = pipelineSQLBuilder.buildDivisibleInventoryDumpSQLNoEnd(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
+        actual = sqlBuilderEngine.buildNoLimitedDivisibleInventoryDumpSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? ORDER BY order_id ASC"));
     }
     
     @Test
     void assertBuildIndivisibleInventoryDumpSQL() {
-        String actual = pipelineSQLBuilder.buildIndivisibleInventoryDumpSQL(null, "t_order", Collections.singletonList("*"), "order_id");
+        String actual = sqlBuilderEngine.buildIndivisibleInventoryDumpSQL(null, "t_order", Collections.singletonList("*"), "order_id");
         assertThat(actual, is("SELECT * FROM t_order ORDER BY order_id ASC"));
-        actual = pipelineSQLBuilder.buildIndivisibleInventoryDumpSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
+        actual = sqlBuilderEngine.buildIndivisibleInventoryDumpSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC"));
     }
     
     @Test
     void assertBuildQueryAllOrderingSQLFirstQuery() {
-        String actual = pipelineSQLBuilder.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", true);
+        String actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", true);
         assertThat(actual, is("SELECT * FROM t_order ORDER BY order_id ASC"));
-        actual = pipelineSQLBuilder.buildQueryAllOrderingSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", true);
+        actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", true);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC"));
     }
     
     @Test
     void assertBuildQueryAllOrderingSQLNonFirstQuery() {
-        String actual = pipelineSQLBuilder.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", false);
+        String actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", false);
         assertThat(actual, is("SELECT * FROM t_order WHERE order_id>? ORDER BY order_id ASC"));
-        actual = pipelineSQLBuilder.buildQueryAllOrderingSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", false);
+        actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", false);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC"));
     }
     
     @Test
     void assertBuildInsertSQL() {
-        String actual = pipelineSQLBuilder.buildInsertSQL(null, mockDataRecord("t2"));
+        String actual = sqlBuilderEngine.buildInsertSQL(null, mockDataRecord("t2"));
         assertThat(actual, is("INSERT INTO t2(id,sc,c1,c2,c3) VALUES(?,?,?,?,?)"));
     }
     
     @Test
     void assertBuildUpdateSQLWithPrimaryKey() {
-        String actual = pipelineSQLBuilder.buildUpdateSQL(null, mockDataRecord("t2"), RecordUtils.extractPrimaryColumns(mockDataRecord("t2")));
+        String actual = sqlBuilderEngine.buildUpdateSQL(null, mockDataRecord("t2"), RecordUtils.extractPrimaryColumns(mockDataRecord("t2")));
         assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ?"));
     }
     
     @Test
     void assertBuildUpdateSQLWithShardingColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
-        String actual = pipelineSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
+        String actual = sqlBuilderEngine.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ? AND sc = ?"));
     }
     
     @Test
     void assertBuildDeleteSQLWithPrimaryKey() {
-        String actual = pipelineSQLBuilder.buildDeleteSQL(null, mockDataRecord("t3"), RecordUtils.extractPrimaryColumns(mockDataRecord("t3")));
+        String actual = sqlBuilderEngine.buildDeleteSQL(null, mockDataRecord("t3"), RecordUtils.extractPrimaryColumns(mockDataRecord("t3")));
         assertThat(actual, is("DELETE FROM t3 WHERE id = ?"));
     }
     
     @Test
     void assertBuildDeleteSQLWithConditionColumns() {
         DataRecord dataRecord = mockDataRecord("t3");
-        String actual = pipelineSQLBuilder.buildDeleteSQL(null, dataRecord, mockConditionColumns(dataRecord));
+        String actual = sqlBuilderEngine.buildDeleteSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("DELETE FROM t3 WHERE id = ? AND sc = ?"));
     }
     
@@ -124,7 +125,7 @@ class PipelineSQLBuilderTest {
     
     @Test
     void assertBuildDeleteSQLWithoutUniqueKey() {
-        String actual = pipelineSQLBuilder.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey("t_order"),
+        String actual = sqlBuilderEngine.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey("t_order"),
                 RecordUtils.extractConditionColumns(mockDataRecordWithoutUniqueKey("t_order"), Collections.emptySet()));
         assertThat(actual, is("DELETE FROM t_order WHERE id = ? AND name = ?"));
     }
@@ -132,7 +133,7 @@ class PipelineSQLBuilderTest {
     @Test
     void assertBuildUpdateSQLWithoutShardingColumns() {
         DataRecord dataRecord = mockDataRecordWithoutUniqueKey("t_order");
-        String actual = pipelineSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
+        String actual = sqlBuilderEngine.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("UPDATE t_order SET name = ? WHERE id = ? AND name = ?"));
     }
     

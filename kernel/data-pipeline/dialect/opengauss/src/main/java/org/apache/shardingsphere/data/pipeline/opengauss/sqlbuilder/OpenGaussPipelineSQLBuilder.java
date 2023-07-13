@@ -19,7 +19,8 @@ package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.AbstractPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLBuilderEngine;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Pipeline SQL builder of openGauss.
  */
-public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
+public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     private static final Set<String> RESERVED_KEYWORDS = new HashSet<>(Arrays.asList(
             "ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHID", "AUTHORIZATION", "BETWEEN", "BIGINT",
@@ -48,18 +49,8 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
             "XMLFOREST", "XMLPARSE", "XMLPI", "XMLROOT", "XMLSERIALIZE"));
     
     @Override
-    protected boolean isKeyword(final String item) {
+    public boolean isKeyword(final String item) {
         return RESERVED_KEYWORDS.contains(item.toUpperCase());
-    }
-    
-    @Override
-    protected String getLeftIdentifierQuoteString() {
-        return "\"";
-    }
-    
-    @Override
-    protected String getRightIdentifierQuoteString() {
-        return "\"";
     }
     
     @Override
@@ -68,16 +59,7 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     }
     
     @Override
-    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
-        return super.buildInsertSQL(schemaName, dataRecord) + buildConflictSQL(dataRecord);
-    }
-    
-    @Override
-    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        return dataRecord.getColumns().stream().filter(each -> !(each.isUniqueKey())).collect(Collectors.toList());
-    }
-    
-    private String buildConflictSQL(final DataRecord dataRecord) {
+    public Optional<String> buildInsertSQLOnDuplicatePart(final String schemaName, final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
@@ -87,13 +69,22 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
             result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(',');
         }
         result.setLength(result.length() - 1);
-        return result.toString();
+        return Optional.of(result.toString());
+    }
+    
+    @Override
+    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
+        return dataRecord.getColumns().stream().filter(each -> !(each.isUniqueKey())).collect(Collectors.toList());
     }
     
     @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
-        return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
+        return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;",
+                new PipelineSQLBuilderEngine(getType()).getQualifiedTableName(schemaName, tableName)));
+    }
+    
+    private String quote(final String item) {
+        return isKeyword(item) ? getType().getQuoteCharacter().wrap(item) : item;
     }
     
     @Override

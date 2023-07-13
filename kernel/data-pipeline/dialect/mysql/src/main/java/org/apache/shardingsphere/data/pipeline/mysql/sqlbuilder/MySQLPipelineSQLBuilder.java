@@ -19,17 +19,21 @@ package org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.AbstractPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLBuilderEngine;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 /**
  * MySQL pipeline SQL builder.
  */
-public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
+public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     private static final Set<String> RESERVED_KEYWORDS = new HashSet<>(Arrays.asList(
             "ADD", "ALL", "ALTER", "ANALYZE", "AND", "AS", "ASC", "BEFORE", "BETWEEN", "BIGINT", "BINARY", "BLOB", "BOTH", "BY", "CALL",
@@ -50,26 +54,12 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
             "WHEN", "WHERE", "WHILE", "WINDOW", "WITH", "WRITE", "XOR", "YEAR_MONTH", "ZEROFILL"));
     
     @Override
-    protected boolean isKeyword(final String item) {
+    public boolean isKeyword(final String item) {
         return RESERVED_KEYWORDS.contains(item.toUpperCase());
     }
     
     @Override
-    public String getLeftIdentifierQuoteString() {
-        return "`";
-    }
-    
-    @Override
-    public String getRightIdentifierQuoteString() {
-        return "`";
-    }
-    
-    @Override
-    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
-        return super.buildInsertSQL(schemaName, dataRecord) + buildDuplicateUpdateSQL(dataRecord);
-    }
-    
-    private String buildDuplicateUpdateSQL(final DataRecord dataRecord) {
+    public Optional<String> buildInsertSQLOnDuplicatePart(final String schemaName, final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
@@ -83,7 +73,12 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
             result.append(quote(column.getName())).append("=VALUES(").append(quote(column.getName())).append("),");
         }
         result.setLength(result.length() - 1);
-        return result.toString();
+        return Optional.of(result.toString());
+    }
+    
+    @Override
+    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
+        return new ArrayList<>(RecordUtils.extractUpdatedColumns(dataRecord));
     }
     
     @Override
@@ -94,7 +89,11 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
         return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'",
-                getQualifiedTableName(schemaName, tableName)));
+                new PipelineSQLBuilderEngine(getType()).getQualifiedTableName(schemaName, tableName)));
+    }
+    
+    private String quote(final String item) {
+        return isKeyword(item) ? getType().getQuoteCharacter().wrap(item) : item;
     }
     
     @Override
