@@ -68,8 +68,8 @@ jobs:
         env:
           changed_operations: ${{ needs.detect-changed-files.outputs.changed_operations }}
           current_operation: ${{ matrix.operation }}
+        # TODO define shell file and pass parameter
         run: |
-          # TODO define shell file and pass parameter
           echo "skip_current_step=false" >> $GITHUB_ENV
           if [[ ${changed_operations} == '["ignore"]' ]]; then
             echo "${current_operation} is ignore by ignore filter"
