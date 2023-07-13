@@ -157,7 +157,7 @@ public final class PipelineSQLBuilderEngine {
             sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(schemaName, dataRecord.getTableName(), dataRecord.getColumns()));
         }
         String insertSQL = sqlCacheMap.get(sqlCacheKey);
-        return dialectSQLBuilder.buildInsertSQLOnDuplicatePart(schemaName, dataRecord).map(optional -> insertSQL + " " + optional).orElse(insertSQL);
+        return dialectSQLBuilder.buildInsertSQLOnDuplicateClause(schemaName, dataRecord).map(optional -> insertSQL + " " + optional).orElse(insertSQL);
     }
     
     private String buildInsertSQLInternal(final String schemaName, final String tableName, final List<Column> columns) {

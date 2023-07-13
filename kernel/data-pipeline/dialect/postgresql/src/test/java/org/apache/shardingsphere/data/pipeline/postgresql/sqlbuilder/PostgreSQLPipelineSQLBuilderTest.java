@@ -34,7 +34,7 @@ class PostgreSQLPipelineSQLBuilderTest {
     
     @Test
     void assertBuildInsertSQLOnDuplicatePart() {
-        String actual = sqlBuilder.buildInsertSQLOnDuplicatePart("schema1", mockDataRecord()).orElse(null);
+        String actual = sqlBuilder.buildInsertSQLOnDuplicateClause("schema1", mockDataRecord()).orElse(null);
         assertThat(actual, is(" ON CONFLICT (order_id) DO UPDATE SET user_id=EXCLUDED.user_id,status=EXCLUDED.status"));
     }
     
