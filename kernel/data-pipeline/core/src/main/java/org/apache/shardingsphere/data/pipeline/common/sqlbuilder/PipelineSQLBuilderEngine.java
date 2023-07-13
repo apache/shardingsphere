@@ -22,7 +22,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.sqlbuilder.SQLSegmentBuilder;
 
 import java.util.Collection;
 import java.util.List;
@@ -44,13 +43,13 @@ public final class PipelineSQLBuilderEngine {
     
     private final DialectPipelineSQLBuilder dialectSQLBuilder;
     
-    private final SQLSegmentBuilder sqlSegmentBuilder;
+    private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
     
     private final ConcurrentMap<String, String> sqlCacheMap;
     
     public PipelineSQLBuilderEngine(final DatabaseType databaseType) {
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
-        sqlSegmentBuilder = new SQLSegmentBuilder(databaseType);
+        sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
         sqlCacheMap = new ConcurrentHashMap<>();
     }
     

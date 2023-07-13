@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
- * SQL segment builder.
+ * Pipeline SQL segment builder.
  */
 @RequiredArgsConstructor
-public final class SQLSegmentBuilder {
+public final class PipelineSQLSegmentBuilder {
     
     private final DatabaseType databaseType;
     

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
-import org.apache.shardingsphere.infra.sqlbuilder.SQLSegmentBuilder;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLSegmentBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     
     @Override
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
-        SQLSegmentBuilder sqlSegmentBuilder = new SQLSegmentBuilder(getType());
+        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
         return Optional.of(String.format("CREATE SCHEMA IF NOT EXISTS %s", sqlSegmentBuilder.getEscapedIdentifier(schemaName)));
     }
     
@@ -55,7 +55,7 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
         }
         result.setLength(result.length() - 1);
         result.append(") DO UPDATE SET ");
-        SQLSegmentBuilder sqlSegmentBuilder = new SQLSegmentBuilder(getType());
+        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
             if (column.isUniqueKey()) {
@@ -74,12 +74,13 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     
     @Override
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", new SQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName));
+        return String.format("SELECT * FROM %s LIMIT 1", new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName));
     }
     
     @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", new SQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName)));
+        return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;",
+                new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName)));
     }
     
     @Override

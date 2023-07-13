@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -24,29 +24,29 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SQLSegmentBuilderTest {
+class PipelineSQLSegmentBuilderTest {
     
     @Test
     void assertGetEscapedIdentifier() {
-        SQLSegmentBuilder sqlSegmentBuilder = new SQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"));
+        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"));
         assertThat(sqlSegmentBuilder.getEscapedIdentifier("SELECT"), is("`SELECT`"));
     }
     
     @Test
     void assertGetUnescapedIdentifier() {
-        SQLSegmentBuilder sqlSegmentBuilder = new SQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"));
+        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"));
         assertThat(sqlSegmentBuilder.getEscapedIdentifier("INSERT"), is("INSERT"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithUnsupportedSchema() {
-        SQLSegmentBuilder sqlSegmentBuilder = new SQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"));
+        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"));
         assertThat(sqlSegmentBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_tbl"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithSupportedSchema() {
-        SQLSegmentBuilder sqlSegmentBuilder = new SQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "INFRA.BRANCH.FIXTURE"));
+        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "INFRA.BRANCH.FIXTURE"));
         assertThat(sqlSegmentBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_schema.foo_tbl"));
     }
 }
