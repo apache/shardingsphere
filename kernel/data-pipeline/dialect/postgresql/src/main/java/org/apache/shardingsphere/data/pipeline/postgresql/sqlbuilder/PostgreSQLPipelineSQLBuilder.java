@@ -49,7 +49,7 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     
     // Refer to https://www.postgresql.org/docs/current/sql-insert.html
     private String buildConflictSQL(final DataRecord dataRecord) {
-        StringBuilder result = new StringBuilder(" ON CONFLICT (");
+        StringBuilder result = new StringBuilder("ON CONFLICT (");
         for (Column each : RecordUtils.extractPrimaryColumns(dataRecord)) {
             result.append(each.getName()).append(',');
         }

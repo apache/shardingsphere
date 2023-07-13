@@ -39,7 +39,7 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
     
     @Override
     public Optional<String> buildInsertSQLOnDuplicateClause(final String schemaName, final DataRecord dataRecord) {
-        StringBuilder result = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
+        StringBuilder result = new StringBuilder("ON DUPLICATE KEY UPDATE ");
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
             if (column.isUniqueKey()) {
