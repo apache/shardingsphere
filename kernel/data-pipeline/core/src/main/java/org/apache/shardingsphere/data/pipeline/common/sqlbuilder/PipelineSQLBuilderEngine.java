@@ -47,11 +47,11 @@ public final class PipelineSQLBuilderEngine {
     
     private final DatabaseType databaseType;
     
-    private final DialectPipelineSQLBuilder pipelineSQLBuilder;
+    private final DialectPipelineSQLBuilder dialectSQLBuilder;
     
     public PipelineSQLBuilderEngine(final DatabaseType databaseType) {
         this.databaseType = databaseType;
-        pipelineSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
+        dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
     }
     
     /**
@@ -61,7 +61,7 @@ public final class PipelineSQLBuilderEngine {
      * @return create schema SQL
      */
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
-        return pipelineSQLBuilder.buildCreateSchemaSQL(schemaName);
+        return dialectSQLBuilder.buildCreateSchemaSQL(schemaName);
     }
     
     /**
@@ -157,7 +157,7 @@ public final class PipelineSQLBuilderEngine {
             sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(schemaName, dataRecord.getTableName(), dataRecord.getColumns()));
         }
         String insertSQL = sqlCacheMap.get(sqlCacheKey);
-        return pipelineSQLBuilder.buildInsertSQLOnDuplicatePart(schemaName, dataRecord).map(optional -> insertSQL + " " + optional).orElse(insertSQL);
+        return dialectSQLBuilder.buildInsertSQLOnDuplicatePart(schemaName, dataRecord).map(optional -> insertSQL + " " + optional).orElse(insertSQL);
     }
     
     private String buildInsertSQLInternal(final String schemaName, final String tableName, final List<Column> columns) {
@@ -204,7 +204,7 @@ public final class PipelineSQLBuilderEngine {
      * @return filtered columns
      */
     public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        return pipelineSQLBuilder.extractUpdatedColumns(dataRecord);
+        return dialectSQLBuilder.extractUpdatedColumns(dataRecord);
     }
     
     /**
@@ -266,7 +266,7 @@ public final class PipelineSQLBuilderEngine {
      * @return estimated count SQL
      */
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, tableName);
+        return dialectSQLBuilder.buildEstimatedCountSQL(schemaName, tableName);
     }
     
     /**
@@ -308,7 +308,7 @@ public final class PipelineSQLBuilderEngine {
      * @return check SQL
      */
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return pipelineSQLBuilder.buildCheckEmptySQL(schemaName, tableName);
+        return dialectSQLBuilder.buildCheckEmptySQL(schemaName, tableName);
     }
     
     /**
@@ -320,6 +320,6 @@ public final class PipelineSQLBuilderEngine {
      * @return CRC32 SQL
      */
     public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
-        return pipelineSQLBuilder.buildCRC32SQL(schemaName, tableName, column);
+        return dialectSQLBuilder.buildCRC32SQL(schemaName, tableName, column);
     }
 }
