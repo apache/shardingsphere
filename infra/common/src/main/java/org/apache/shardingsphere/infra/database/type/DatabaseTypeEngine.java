@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
@@ -201,33 +200,5 @@ public final class DatabaseTypeEngine {
             }
         }
         return result;
-    }
-    
-    /**
-     * Escape identifier if necessary.
-     * 
-     * @param databaseType database type
-     * @param identifier identifier to be processed
-     * @return escaped identifier
-     */
-    public static String escapeIdentifierIfNecessary(final DatabaseType databaseType, final String identifier) {
-        return databaseType.isReservedWord(identifier) ? databaseType.getQuoteCharacter().wrap(identifier) : identifier;
-    }
-    
-    /**
-     * Get qualified table name.
-     *
-     * @param databaseType database type
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return qualified table name
-     */
-    public static String getQualifiedTableName(final DatabaseType databaseType, final String schemaName, final String tableName) {
-        StringBuilder result = new StringBuilder();
-        if (databaseType.isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
-            result.append(escapeIdentifierIfNecessary(databaseType, schemaName)).append('.');
-        }
-        result.append(escapeIdentifierIfNecessary(databaseType, tableName));
-        return result.toString();
     }
 }

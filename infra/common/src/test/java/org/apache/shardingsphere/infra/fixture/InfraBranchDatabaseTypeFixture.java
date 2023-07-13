@@ -56,12 +56,17 @@ public final class InfraBranchDatabaseTypeFixture implements BranchDatabaseType 
     }
     
     @Override
-    public String getType() {
-        return "INFRA.BRANCH.FIXTURE";
+    public DatabaseType getTrunkDatabaseType() {
+        return TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE");
     }
     
     @Override
-    public DatabaseType getTrunkDatabaseType() {
-        return TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE");
+    public boolean isSchemaAvailable() {
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "INFRA.BRANCH.FIXTURE";
     }
 }

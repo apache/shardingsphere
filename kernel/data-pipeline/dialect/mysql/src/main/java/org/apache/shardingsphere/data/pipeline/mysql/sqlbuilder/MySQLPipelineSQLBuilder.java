@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.sqlbuilder.SQLSegmentBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +35,7 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
     @Override
     public Optional<String> buildInsertSQLOnDuplicateClause(final String schemaName, final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder("ON DUPLICATE KEY UPDATE ");
+        SQLSegmentBuilder sqlSegmentBuilder = new SQLSegmentBuilder(getType());
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
             if (!column.isUpdated()) {
@@ -44,8 +45,7 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
             if (column.isUniqueKey()) {
                 continue;
             }
-            result.append(DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), column.getName()))
-                    .append("=VALUES(").append(DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), column.getName())).append("),");
+            result.append(sqlSegmentBuilder.getEscapedIdentifier(column.getName())).append("=VALUES(").append(sqlSegmentBuilder.getEscapedIdentifier(column.getName())).append("),");
         }
         result.setLength(result.length() - 1);
         return Optional.of(result.toString());
@@ -58,19 +58,20 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
     
     @Override
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", DatabaseTypeEngine.getQualifiedTableName(getType(), schemaName, tableName));
+        return String.format("SELECT * FROM %s LIMIT 1", new SQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName));
     }
     
     @Override
     public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
+        SQLSegmentBuilder sqlSegmentBuilder = new SQLSegmentBuilder(getType());
         return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM %s",
-                DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), column), DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), tableName)));
+                sqlSegmentBuilder.getEscapedIdentifier(column), sqlSegmentBuilder.getEscapedIdentifier(tableName)));
     }
     
     @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
         return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'",
-                DatabaseTypeEngine.getQualifiedTableName(getType(), schemaName, tableName)));
+                new SQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName)));
     }
     
     @Override
