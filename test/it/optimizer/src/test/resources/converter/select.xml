@@ -17,5 +17,5 @@
   -->
 
 <sql-node-converter-test-cases>
-    <test-cases sql-case-id="select_string_constant_type_cast" expected-sql="SELECT int4 '1', money '2'" dbtypes="openGauss,PostgreSQL" />
+    <test-cases sql-case-id="select_string_constant_type_cast" expected-sql="SELECT CAST('1' AS INTEGER), CAST('2' AS DECIMAL)" dbtypes="openGauss,PostgreSQL" />
 </sql-node-converter-test-cases>

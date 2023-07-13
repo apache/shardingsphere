@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -47,6 +48,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expres
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.LiteralExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ParameterMarkerExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.SubqueryExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.TypeCastExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl.AggregationProjectionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl.DataTypeConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.NotExpressionConverter;
@@ -108,6 +110,9 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         }
         if (segment instanceof NotExpression) {
             return new NotExpressionConverter().convert((NotExpression) segment);
+        }
+        if (segment instanceof TypeCastExpression) {
+            return new TypeCastExpressionConverter().convert((TypeCastExpression) segment);
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }
