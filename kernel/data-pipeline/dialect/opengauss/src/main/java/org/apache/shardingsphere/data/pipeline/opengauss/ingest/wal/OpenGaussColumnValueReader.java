@@ -39,11 +39,11 @@ public final class OpenGaussColumnValueReader implements DialectColumnValueReade
     @Override
     public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
         if (isMoneyType(metaData, columnIndex)) {
-            return Optional.of(resultSet.getBigDecimal(columnIndex));
+            return Optional.ofNullable(resultSet.getBigDecimal(columnIndex));
         }
         if (isBitType(metaData, columnIndex)) {
             // openGauss JDBC driver can't parse bit(n) correctly when n > 1, so JDBC url already add bitToString, there just return string
-            return Optional.of(resultSet.getString(columnIndex));
+            return Optional.ofNullable(resultSet.getString(columnIndex));
         }
         if (isBoolType(metaData, columnIndex)) {
             return Optional.of(resultSet.getBoolean(columnIndex));
