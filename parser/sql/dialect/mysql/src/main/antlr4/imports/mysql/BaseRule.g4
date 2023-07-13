@@ -988,13 +988,17 @@ frameBetween
     
 specialFunction
     : groupConcatFunction | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction 
-    | charFunction | trimFunction | weightStringFunction | valuesFunction | currentUserFunction
+    | charFunction | trimFunction | weightStringFunction | valuesFunction | currentUserFunction | groupingFunction
     ;
     
 currentUserFunction
     : CURRENT_USER (LP_ RP_)?
     ;
     
+groupingFunction
+    : GROUPING LP_ expr (COMMA_ expr)* RP_
+    ;
+
 groupConcatFunction
     : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
     ;
