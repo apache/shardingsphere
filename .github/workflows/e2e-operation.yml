@@ -50,14 +50,13 @@ jobs:
   
   e2e-operation-job:
     needs: detect-changed-files
-    name: E2E - ${{ matrix.function }}
+    name: E2E - ${{ matrix.operation }}
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
       fail-fast: false
       matrix:
-        # TODO refactor name to operation
-        function: [ transaction, pipeline, showprocesslist ]
+        operation: [ transaction, pipeline, showprocesslist ]
     env:
       postgresql_version: postgres:12-alpine
       mysql_version: mysql:5.7
@@ -65,10 +64,10 @@ jobs:
     timeout-minutes: 40
     steps:
       # TODO check the name is nessasary
-      - name: Detect ${{ matrix.function }} Execution Condition
+      - name: Detect ${{ matrix.operation }} Execution Condition
         env:
           changed_operations: ${{ needs.detect-changed-files.outputs.changed_operations }}
-          current_operation: ${{ matrix.function }}
+          current_operation: ${{ matrix.operation }}
         run: |
           # TODO define shell file and pass parameter
           echo "skip_current_step=false" >> $GITHUB_ENV
@@ -101,9 +100,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-      - name: Build ${{ matrix.function }} E2E Image
+      - name: Build ${{ matrix.operation }} E2E Image
         if: (env.skip_current_step == 'false')
-        run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.function }} -Pit.env.docker -DskipTests
+        run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pit.env.docker -DskipTests
       - name: Setup JDK 8 for Test
         if: (env.skip_current_step == 'false')
         uses: actions/setup-java@v3
@@ -111,12 +110,12 @@ jobs:
           distribution: 'temurin'
           java-version: 8
         # TODO set to matrix exclude
-      - name: Run MySQL ${{ matrix.function }} E2E Test
+      - name: Run MySQL ${{ matrix.operation }} E2E Test
         if: (env.skip_current_step == 'false')
-        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.function }}/pom.xml -D${{ matrix.function }}.it.env.type=docker -D${{ matrix.function }}.it.docker.mysql.version=${{ env.mysql_version }}
-      - name: Run PostgreSQL ${{ matrix.function }} E2E Test
-        if: (env.skip_current_step == 'false' && matrix.function != 'showprocesslist')
-        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.function }}/pom.xml -D${{ matrix.function }}.it.env.type=docker -D${{ matrix.function }}.it.docker.postgresql.version=${{ env.postgresql_version }}
-      - name: Run openGauss ${{ matrix.function }} E2E Test
-        if: (env.skip_current_step == 'false' && matrix.function != 'showprocesslist')
-        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.function }}/pom.xml -D${{ matrix.function }}.it.env.type=docker -D${{ matrix.function }}.it.docker.opengauss.version=${{ env.opengauss_version }}
+        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.it.docker.mysql.version=${{ env.mysql_version }}
+      - name: Run PostgreSQL ${{ matrix.operation }} E2E Test
+        if: (env.skip_current_step == 'false' && matrix.operation != 'showprocesslist')
+        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.it.docker.postgresql.version=${{ env.postgresql_version }}
+      - name: Run openGauss ${{ matrix.operation }} E2E Test
+        if: (env.skip_current_step == 'false' && matrix.operation != 'showprocesslist')
+        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.it.docker.opengauss.version=${{ env.opengauss_version }}
