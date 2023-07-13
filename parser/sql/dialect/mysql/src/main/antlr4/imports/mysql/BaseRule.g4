@@ -232,6 +232,7 @@ identifierKeywordsUnambiguous
     | GET_MASTER_PUBLIC_KEY
     | GRANTS
     | GROUP_REPLICATION
+    | GROUPS
     | HASH
     | HISTOGRAM
     | HISTORY
@@ -371,6 +372,7 @@ identifierKeywordsUnambiguous
     | QUERY
     | QUICK
     | RANDOM
+    | RANK
     | READ_ONLY
     | REBUILD
     | RECOVER
