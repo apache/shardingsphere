@@ -46,7 +46,7 @@ public final class ShowProcessListEnvironment {
     private ShowProcessListEnvironment() {
         props = loadProperties();
         runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes", "Standalone, Cluster"));
-        itEnvType = ShowProcessListEnvTypeEnum.valueOf(props.getProperty("it.env.type", ShowProcessListEnvTypeEnum.NONE.name()).toUpperCase());
+        itEnvType = ShowProcessListEnvTypeEnum.valueOf(props.getProperty("it.env.type", ShowProcessListEnvTypeEnum.DOCKER.name()).toUpperCase());
         scenarios = getScenarios(props);
         governanceCenters = Splitter.on(",").trimResults().splitToList(props.getProperty("it.governance.centers"));
     }
