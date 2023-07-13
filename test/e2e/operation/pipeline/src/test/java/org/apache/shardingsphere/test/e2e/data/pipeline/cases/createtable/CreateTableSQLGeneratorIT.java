@@ -36,8 +36,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerSto
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -49,10 +47,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -101,17 +97,13 @@ class CreateTableSQLGeneratorIT {
     
     private void startStorageContainer(final DatabaseType databaseType, final String storageContainerImage) {
         StorageContainerConfiguration storageContainerConfig = createStorageContainerConfiguration(databaseType, storageContainerImage);
-        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage, "", storageContainerConfig);
+        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage, storageContainerConfig);
         storageContainer.start();
     }
     
     private StorageContainerConfiguration createStorageContainerConfiguration(final DatabaseType databaseType, final String storageContainerImage) {
-        if (databaseType instanceof MySQLDatabaseType) {
-            int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
-            Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
-            return MySQLContainerConfigurationFactory.newInstance(null, null, mountedResources);
-        }
-        return StorageContainerConfigurationFactory.newInstance(databaseType);
+        int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
+        return StorageContainerConfigurationFactory.newInstance(databaseType, majorVersion);
     }
     
     private void assertSQL(final Collection<String> actualSQL, final Collection<String> expectedSQL) {
