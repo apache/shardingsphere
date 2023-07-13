@@ -73,7 +73,7 @@ public final class ShowProcessListEnvironment {
     }
     
     private Collection<String> getScenarios(final Properties props) {
-        Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("it.scenarios"));
+        Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("it.scenarios", "cluster_jdbc_proxy"));
         for (String each : result) {
             new ScenarioCommonPath(each).checkFolderExist();
         }
