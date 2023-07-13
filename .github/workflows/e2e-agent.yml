@@ -60,7 +60,10 @@ jobs:
   mysql:
     name: E2E - Agent with MySQL
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
+      max-parallel: 5
+      fail-fast: false
       matrix:
         include:
           - adapter: proxy

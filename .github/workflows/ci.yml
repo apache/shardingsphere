@@ -58,7 +58,7 @@ jobs:
   ci:
     name: CI - Compile by JDK 11 and Run on JDK 8
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3
       - name: Setup JDK 11 for Build
@@ -86,7 +86,7 @@ jobs:
     if: github.repository == 'apache/shardingsphere'
     name: Upload Test Coverage Report
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
