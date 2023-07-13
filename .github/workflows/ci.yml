@@ -61,6 +61,11 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3
+      - name: Setup JDK 11 for Compile
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 11
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -71,23 +76,21 @@ jobs:
           key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Build prod with Maven
+      - name: Build Project with Maven
         run: ./mvnw -T1C -B -ntp clean install
       - name: Setup JDK 8 for Test
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Run tests with JDK 8
+      - name: Run Tests with JDK 8
         run: ./mvnw -T1C -B -ntp -fae test
 
   test-coverage:
     if: github.repository == 'apache/shardingsphere'
-    name: Test coverage report on JDK ${{ matrix.java-version }}
+    name: Upload Test Coverage Report
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java-version: [ 11, 20 ]
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
@@ -100,7 +103,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.java-version }}
+          java-version: 11
       - name: Build with Maven
         run: ./mvnw -T1C -B -ntp clean install -DskipTests
       - name: Upload to Codecov
