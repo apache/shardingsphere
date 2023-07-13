@@ -34,6 +34,11 @@ public final class InfraTrunkDatabaseTypeFixture implements TrunkDatabaseType {
     }
     
     @Override
+    public boolean isReservedWord(final String identifier) {
+        return "SELECT".equalsIgnoreCase(identifier);
+    }
+    
+    @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton("jdbc:infra.fixture:");
     }
