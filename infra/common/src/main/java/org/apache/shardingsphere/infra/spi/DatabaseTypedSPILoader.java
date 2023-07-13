@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Optional;
@@ -41,13 +40,13 @@ public final class DatabaseTypedSPILoader {
      * @param <T> SPI class type
      * @return found service
      */
-    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final DatabaseType databaseType) {
-        Optional<T> result = TypedSPILoader.findService(spiClass, databaseType.getType());
+    public static <T extends DatabaseTypedSPI> Optional<T> findService(final Class<T> spiClass, final DatabaseType databaseType) {
+        Optional<T> result = TypedSPILoader.findService(spiClass, databaseType);
         if (result.isPresent()) {
             return result;
         }
         if (databaseType instanceof BranchDatabaseType) {
-            return TypedSPILoader.findService(spiClass, ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getType());
+            return TypedSPILoader.findService(spiClass, ((BranchDatabaseType) databaseType).getTrunkDatabaseType());
         }
         return result;
     }
@@ -60,7 +59,7 @@ public final class DatabaseTypedSPILoader {
      * @param <T> SPI class type
      * @return found service
      */
-    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final DatabaseType databaseType) {
-        return findService(spiClass, databaseType).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass));
+    public static <T extends DatabaseTypedSPI> T getService(final Class<T> spiClass, final DatabaseType databaseType) {
+        return findService(spiClass, databaseType).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, databaseType.getType()));
     }
 }

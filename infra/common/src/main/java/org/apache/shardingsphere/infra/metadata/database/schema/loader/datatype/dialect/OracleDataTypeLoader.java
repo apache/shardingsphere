@@ -35,7 +35,7 @@ public final class OracleDataTypeLoader implements DialectDataTypeLoader {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "Oracle";
     }
 }

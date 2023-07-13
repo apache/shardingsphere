@@ -83,9 +83,4 @@ class OpenGaussAdminExecutorCreatorTest {
         assertThat(creator.create(sqlStatementContext), is(Optional.empty()));
         assertThat(creator.create(sqlStatementContext, "", "", Collections.emptyList()), is(Optional.empty()));
     }
-    
-    @Test
-    void assertGetType() {
-        assertThat(new OpenGaussAdminExecutorCreator().getType(), is("openGauss"));
-    }
 }

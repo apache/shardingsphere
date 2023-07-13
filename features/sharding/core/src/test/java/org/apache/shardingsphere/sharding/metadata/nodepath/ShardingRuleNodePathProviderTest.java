@@ -25,26 +25,24 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ShardingRuleNodePathProviderTest {
-
+class ShardingRuleNodePathProviderTest {
+    
     @Test
-    void assertShardingRuleNodePath() {
+    void assertNew() {
         RuleNodePathProvider ruleNodePathProvider = new ShardingRuleNodePathProvider();
         RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
-        assertEquals(6, actualRuleNodePath.getNamedItems().size());
+        assertThat(actualRuleNodePath.getNamedItems().size(), is(6));
         List<String> namedRuleItems = Arrays.asList(ShardingRuleNodePathProvider.TABLES, ShardingRuleNodePathProvider.AUTO_TABLES, ShardingRuleNodePathProvider.BINDING_TABLES,
                 ShardingRuleNodePathProvider.ALGORITHMS, ShardingRuleNodePathProvider.KEY_GENERATORS, ShardingRuleNodePathProvider.AUDITORS);
         assertThat("Named rule items equality without order", actualRuleNodePath.getNamedItems().keySet(), IsIterableContainingInAnyOrder.containsInAnyOrder(namedRuleItems.toArray()));
-        assertEquals(6, actualRuleNodePath.getUniqueItems().size());
+        assertThat(actualRuleNodePath.getUniqueItems().size(), is(6));
         List<String> uniqueRuleItems = Arrays.asList(ShardingRuleNodePathProvider.DEFAULT_DATABASE_STRATEGY, ShardingRuleNodePathProvider.DEFAULT_TABLE_STRATEGY,
                 ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY, ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY, ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN,
                 ShardingRuleNodePathProvider.SHARDING_CACHE);
         assertThat("Unique rule items equality without order", actualRuleNodePath.getUniqueItems().keySet(), IsIterableContainingInAnyOrder.containsInAnyOrder(uniqueRuleItems.toArray()));
-        assertNotNull(actualRuleNodePath.getRoot());
-        assertEquals(ShardingRuleNodePathProvider.RULE_TYPE, actualRuleNodePath.getRoot().getRuleType());
+        assertThat(actualRuleNodePath.getRoot().getRuleType(), is(ShardingRuleNodePathProvider.RULE_TYPE));
     }
 }

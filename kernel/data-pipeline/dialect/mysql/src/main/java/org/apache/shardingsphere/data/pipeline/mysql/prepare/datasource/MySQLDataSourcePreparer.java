@@ -42,7 +42,7 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

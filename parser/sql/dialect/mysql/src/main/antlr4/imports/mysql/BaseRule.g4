@@ -44,7 +44,18 @@ customKeyword
     | COPY
     | UL_BINARY
     | AUTOCOMMIT
+    | ARCHIVE
+    | BLACKHOLE
+    | CSV
+    | FEDERATED
     | INNODB
+    | MEMORY
+    | MRG_MYISAM
+    | MYISAM
+    | NDB
+    | NDBCLUSTER
+    | PERFORMANCE_SCHEMA
+    | TOKUDB
     | REDO_LOG
     | LAST_VALUE
     | PRIMARY
@@ -84,7 +95,7 @@ temporalLiterals
     ;
     
 hexadecimalLiterals
-    : UNDERSCORE_CHARSET? HEX_DIGIT_ collateClause?
+    : UNDERSCORE_CHARSET? UL_BINARY? HEX_DIGIT_ collateClause?
     ;
     
 bitValueLiterals
@@ -827,7 +838,7 @@ triggerEvent
 triggerOrder
     : (FOLLOWS | PRECEDES) triggerName
     ;
-
+    
 expr
     : booleanPrimary
     | expr andOperator expr
@@ -928,7 +939,7 @@ columnRef
 columnRefList
     : columnRef (COMMA_ columnRef)*
     ;
-
+    
 functionCall
     : aggregationFunction | specialFunction | regularFunction | jsonFunction | udfFunction
     ;
@@ -999,12 +1010,17 @@ specialFunction
     | valuesFunction
     | weightStringFunction
     | windowFunction
+    | groupingFunction
     ;
     
 currentUserFunction
     : CURRENT_USER (LP_ RP_)?
     ;
     
+groupingFunction
+    : GROUPING LP_ expr (COMMA_ expr)* RP_
+    ;
+
 groupConcatFunction
     : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
     ;

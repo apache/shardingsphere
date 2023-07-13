@@ -84,7 +84,7 @@ public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGe
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

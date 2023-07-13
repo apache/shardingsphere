@@ -23,9 +23,12 @@ import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.datasource.AlterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.datasource.RegisterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.datasource.UnregisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.nodes.AlterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.datasource.nodes.RegisterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.datasource.nodes.UnregisterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.AlterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.RegisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.UnregisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.schema.table.AlterTableEvent;
 import org.apache.shardingsphere.mode.event.schema.table.DropTableEvent;
 import org.apache.shardingsphere.mode.event.schema.view.AlterViewEvent;
@@ -127,19 +130,40 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
     }
     
     private Optional<GovernanceEvent> createDataSourceEvent(final String databaseName, final DataChangedEvent event) {
-        Optional<String> dataSourceName = NewDatabaseMetaDataNode.getDataSourceNameByDataSourceNode(event.getKey());
-        if (!dataSourceName.isPresent()) {
-            return Optional.empty();
+        if (NewDatabaseMetaDataNode.isDataSourceUnitActiveVersionNode(event.getKey())) {
+            return createStorageUnitChangedEvent(databaseName, event);
         }
-        if (NewDatabaseMetaDataNode.isDataSourceActiveVersionNode(event.getKey())) {
-            if (Type.ADDED == event.getType()) {
-                return Optional.of(new RegisterStorageUnitEvent(databaseName, dataSourceName.get(), event.getKey(), event.getValue()));
-            }
-            if (Type.UPDATED == event.getType()) {
-                return Optional.of(new AlterStorageUnitEvent(databaseName, dataSourceName.get(), event.getKey(), event.getValue()));
-            }
-            return Optional.of(new UnregisterStorageUnitEvent(databaseName, dataSourceName.get()));
+        if (NewDatabaseMetaDataNode.isDataSourceNodeActiveVersionNode(event.getKey())) {
+            return createStorageNodeChangedEvent(databaseName, event);
         }
         return Optional.empty();
+    }
+    
+    private Optional<GovernanceEvent> createStorageUnitChangedEvent(final String databaseName, final DataChangedEvent event) {
+        Optional<String> dataSourceUnitName = NewDatabaseMetaDataNode.getDataSourceNameByDataSourceUnitNode(event.getKey());
+        if (!dataSourceUnitName.isPresent()) {
+            return Optional.empty();
+        }
+        if (Type.ADDED == event.getType()) {
+            return Optional.of(new RegisterStorageUnitEvent(databaseName, dataSourceUnitName.get(), event.getKey(), event.getValue()));
+        }
+        if (Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterStorageUnitEvent(databaseName, dataSourceUnitName.get(), event.getKey(), event.getValue()));
+        }
+        return Optional.of(new UnregisterStorageUnitEvent(databaseName, dataSourceUnitName.get()));
+    }
+    
+    private Optional<GovernanceEvent> createStorageNodeChangedEvent(final String databaseName, final DataChangedEvent event) {
+        Optional<String> dataSourceNodeName = NewDatabaseMetaDataNode.getDataSourceNameByDataSourceNode(event.getKey());
+        if (!dataSourceNodeName.isPresent()) {
+            return Optional.empty();
+        }
+        if (Type.ADDED == event.getType()) {
+            return Optional.of(new RegisterStorageNodeEvent(databaseName, dataSourceNodeName.get(), event.getKey(), event.getValue()));
+        }
+        if (Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterStorageNodeEvent(databaseName, dataSourceNodeName.get(), event.getKey(), event.getValue()));
+        }
+        return Optional.of(new UnregisterStorageNodeEvent(databaseName, dataSourceNodeName.get()));
     }
 }

@@ -25,11 +25,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ServiceProviderNotFoundExceptionTest {
     
     @Test
-    void assertGetMessageWithClassOnly() {
-        assertThat(new ServiceProviderNotFoundServerException(Object.class).getMessage(), is("SPI-00001: No implementation class load from SPI `java.lang.Object`."));
-    }
-    
-    @Test
     void assertGetMessageWithClassAndType() {
         assertThat(new ServiceProviderNotFoundServerException(Object.class, "Foo").getMessage(), is("SPI-00001: No implementation class load from SPI `java.lang.Object` with type `Foo`."));
     }

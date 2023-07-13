@@ -19,58 +19,17 @@ package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
-    
-    @Override
-    public String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
-        return "";
-    }
-    
-    @Override
-    public String buildDivisibleInventoryDumpSQLNoEnd(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
-        return "";
-    }
-    
-    @Override
-    public String buildIndivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
-        return "";
-    }
-    
-    @Override
-    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
-        return "";
-    }
-    
-    @Override
-    public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
-        return "";
-    }
+public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
     public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
         return Collections.emptyList();
-    }
-    
-    @Override
-    public String buildDeleteSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
-        return "";
-    }
-    
-    @Override
-    public String buildDropSQL(final String schemaName, final String tableName) {
-        return "";
-    }
-    
-    @Override
-    public String buildCountSQL(final String schemaName, final String tableName) {
-        return "";
     }
     
     @Override
@@ -79,32 +38,12 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildUniqueKeyMinMaxValuesSQL(final String schemaName, final String tableName, final String uniqueKey) {
-        return "";
-    }
-    
-    @Override
-    public String buildQueryAllOrderingSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey, final boolean firstQuery) {
-        return "";
-    }
-    
-    @Override
-    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return null;
-    }
-    
-    @Override
     public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         return Optional.of(String.format("SELECT CRC32(%s) FROM %s", column, tableName));
     }
     
     @Override
-    public String buildNoUniqueKeyInventoryDumpSQL(final String schemaName, final String tableName) {
-        return "";
-    }
-    
-    @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "FIXTURE";
     }
 }

@@ -30,7 +30,7 @@ public final class OracleTimestampLoadingSQLProvider implements TimestampLoading
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "Oracle";
     }
 }

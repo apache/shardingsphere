@@ -17,23 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-public final class H2PipelineSQLBuilder extends AbstractPipelineSQLBuilder {
+public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
-    protected boolean isKeyword(final String item) {
-        return false;
-    }
-    
-    @Override
-    protected String getLeftIdentifierQuoteString() {
-        return "";
-    }
-    
-    @Override
-    protected String getRightIdentifierQuoteString() {
-        return "";
+    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
+        return new ArrayList<>(RecordUtils.extractUpdatedColumns(dataRecord));
     }
     
     @Override
@@ -42,7 +39,7 @@ public final class H2PipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

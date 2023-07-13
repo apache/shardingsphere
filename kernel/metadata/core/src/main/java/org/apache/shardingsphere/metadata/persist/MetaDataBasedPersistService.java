@@ -47,11 +47,18 @@ public interface MetaDataBasedPersistService {
     PersistRepository getRepository();
     
     /**
-     * Get data source service.
+     * Get data source unit service.
      * 
      * @return persist service
      */
-    DatabaseBasedPersistService<Map<String, DataSourceProperties>> getDataSourceService();
+    DatabaseBasedPersistService<Map<String, DataSourceProperties>> getDataSourceUnitService();
+    
+    /**
+     * Get data source node service.
+     *
+     * @return persist service
+     */
+    DatabaseBasedPersistService<Map<String, DataSourceProperties>> getDataSourceNodeService();
     
     /**
      * Get database meta data service.

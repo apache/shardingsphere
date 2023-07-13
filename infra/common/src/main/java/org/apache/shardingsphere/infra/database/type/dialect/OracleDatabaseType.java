@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.OracleDataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.TrunkDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 
 import java.sql.Connection;
@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * Database type of Oracle.
  */
-public final class OracleDatabaseType implements DatabaseType {
+public final class OracleDatabaseType implements TrunkDatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {

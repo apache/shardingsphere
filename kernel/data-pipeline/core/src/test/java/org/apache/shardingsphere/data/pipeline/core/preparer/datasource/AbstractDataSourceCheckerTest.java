@@ -64,16 +64,16 @@ class AbstractDataSourceCheckerTest {
         dataSourceChecker = new AbstractDataSourceChecker() {
             
             @Override
-            protected String getDatabaseType() {
-                return "H2";
-            }
-            
-            @Override
             public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
             }
             
             @Override
             public void checkVariable(final Collection<? extends DataSource> dataSources) {
+            }
+            
+            @Override
+            public String getDatabaseType() {
+                return "H2";
             }
         };
         dataSources = new LinkedList<>();

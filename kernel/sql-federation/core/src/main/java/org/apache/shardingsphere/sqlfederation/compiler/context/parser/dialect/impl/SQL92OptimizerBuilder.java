@@ -41,7 +41,7 @@ public final class SQL92OptimizerBuilder implements OptimizerSQLDialectBuilder {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "SQL92";
     }
 }
