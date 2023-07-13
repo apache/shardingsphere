@@ -42,7 +42,7 @@ class MySQLPipelineSQLBuilderTest {
     @Test
     void assertBuildInsertSQLOnDuplicateClauseHasShardingColumn() {
         String actual = sqlBuilder.buildInsertSQLOnDuplicateClause(null, mockDataRecord("t2")).orElse(null);
-        assertThat(actual, is(" ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
+        assertThat(actual, is("ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test
