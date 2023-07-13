@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLBuilderEngine;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     
     @Override
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
-        return Optional.of(String.format("CREATE SCHEMA IF NOT EXISTS %s", quote(schemaName)));
+        return Optional.of(String.format("CREATE SCHEMA IF NOT EXISTS %s", DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), schemaName)));
     }
     
     @Override
@@ -59,7 +60,8 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
             if (column.isUniqueKey()) {
                 continue;
             }
-            result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(',');
+            result.append(DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), column.getName()))
+                    .append("=EXCLUDED.").append(DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), column.getName())).append(',');
         }
         result.setLength(result.length() - 1);
         return result.toString();
@@ -79,10 +81,6 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
         return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;",
                 new PipelineSQLBuilderEngine(getType()).getQualifiedTableName(schemaName, tableName)));
-    }
-    
-    private String quote(final String item) {
-        return getType().isReservedWord(item) ? getType().getQuoteCharacter().wrap(item) : item;
     }
     
     @Override

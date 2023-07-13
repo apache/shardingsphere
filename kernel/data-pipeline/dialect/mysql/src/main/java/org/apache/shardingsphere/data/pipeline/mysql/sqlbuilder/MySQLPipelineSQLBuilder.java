@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLBuilderEngine;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,8 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
             if (column.isUniqueKey()) {
                 continue;
             }
-            result.append(quote(column.getName())).append("=VALUES(").append(quote(column.getName())).append("),");
+            result.append(DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), column.getName()))
+                    .append("=VALUES(").append(DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), column.getName())).append("),");
         }
         result.setLength(result.length() - 1);
         return Optional.of(result.toString());
@@ -62,17 +64,14 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
     
     @Override
     public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
-        return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM %s", quote(column), quote(tableName)));
+        return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM %s",
+                DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), column), DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), tableName)));
     }
     
     @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
         return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'",
                 new PipelineSQLBuilderEngine(getType()).getQualifiedTableName(schemaName, tableName)));
-    }
-    
-    private String quote(final String item) {
-        return getType().isReservedWord(item) ? getType().getQuoteCharacter().wrap(item) : item;
     }
     
     @Override

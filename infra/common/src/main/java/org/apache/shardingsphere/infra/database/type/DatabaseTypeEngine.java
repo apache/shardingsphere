@@ -201,4 +201,15 @@ public final class DatabaseTypeEngine {
         }
         return result;
     }
+    
+    /**
+     * Escape identifier if necessary.
+     * 
+     * @param databaseType database type
+     * @param identifier identifier to be processed
+     * @return escaped identifier
+     */
+    public static String escapeIdentifierIfNecessary(final DatabaseType databaseType, final String identifier) {
+        return databaseType.isReservedWord(identifier) ? databaseType.getQuoteCharacter().wrap(identifier) : identifier;
+    }
 }

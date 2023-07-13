@@ -165,9 +165,18 @@ class DatabaseTypeEngineTest {
     
     @Test
     void assertGetBranchDatabaseTypes() {
-        Collection<String> trunkDatabaseTypes = Collections.singleton(new MySQLDatabaseType().getType());
-        Collection<DatabaseType> actual = DatabaseTypeEngine.getTrunkAndBranchDatabaseTypes(trunkDatabaseTypes);
+        Collection<DatabaseType> actual = DatabaseTypeEngine.getTrunkAndBranchDatabaseTypes(Collections.singleton("MySQL"));
         assertTrue(actual.contains(TypedSPILoader.getService(DatabaseType.class, "MySQL")), "MySQL not present");
         assertTrue(actual.contains(TypedSPILoader.getService(DatabaseType.class, "MariaDB")), "MariaDB not present");
+    }
+    
+    @Test
+    void assertEscapeIdentifierIfNecessary() {
+        assertThat(DatabaseTypeEngine.escapeIdentifierIfNecessary(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"), "SELECT"), is("`SELECT`"));
+    }
+    
+    @Test
+    void assertEscapeIdentifierIfUnnecessary() {
+        assertThat(DatabaseTypeEngine.escapeIdentifierIfNecessary(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"), "INSERT"), is("INSERT"));
     }
 }
