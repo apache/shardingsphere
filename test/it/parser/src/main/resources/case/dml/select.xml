@@ -5132,4 +5132,18 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_keyword_groups_and_rank">
+        <from>
+            <simple-table alias="t" name="t_order" start-index="29" stop-index="37" literal-start-index="29" literal-stop-index="37"/>
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
+            <column-projection name="groups" start-index="7" stop-index="14" literal-start-index="7" literal-stop-index="14">
+                <owner name="t" start-index="7" stop-index="7" literal-start-index="7" literal-stop-index="7"/>
+            </column-projection>
+            <column-projection name="rank" start-index="17" stop-index="22" literal-start-index="17" literal-stop-index="22">
+                <owner name="t" start-index="17" stop-index="17" literal-start-index="17" literal-stop-index="17"/>
+            </column-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
