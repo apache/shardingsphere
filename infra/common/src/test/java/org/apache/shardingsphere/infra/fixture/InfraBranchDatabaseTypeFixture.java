@@ -61,11 +61,6 @@ public final class InfraBranchDatabaseTypeFixture implements BranchDatabaseType 
     }
     
     @Override
-    public boolean isSchemaAvailable() {
-        return true;
-    }
-    
-    @Override
     public String getType() {
         return "INFRA.BRANCH.FIXTURE";
     }

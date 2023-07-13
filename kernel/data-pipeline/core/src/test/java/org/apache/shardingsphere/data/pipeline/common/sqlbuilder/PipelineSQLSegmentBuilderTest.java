@@ -28,25 +28,25 @@ class PipelineSQLSegmentBuilderTest {
     
     @Test
     void assertGetEscapedIdentifier() {
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"));
+        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         assertThat(sqlSegmentBuilder.getEscapedIdentifier("SELECT"), is("`SELECT`"));
     }
     
     @Test
     void assertGetUnescapedIdentifier() {
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"));
-        assertThat(sqlSegmentBuilder.getEscapedIdentifier("INSERT"), is("INSERT"));
+        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        assertThat(sqlSegmentBuilder.getEscapedIdentifier("SELECT1"), is("SELECT1"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithUnsupportedSchema() {
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"));
+        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         assertThat(sqlSegmentBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_tbl"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithSupportedSchema() {
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "INFRA.BRANCH.FIXTURE"));
+        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         assertThat(sqlSegmentBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_schema.foo_tbl"));
     }
 }
