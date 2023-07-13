@@ -84,7 +84,7 @@ temporalLiterals
     ;
     
 hexadecimalLiterals
-    : UNDERSCORE_CHARSET? HEX_DIGIT_ collateClause?
+    : UNDERSCORE_CHARSET? UL_BINARY? HEX_DIGIT_ collateClause?
     ;
     
 bitValueLiterals
