@@ -28,14 +28,13 @@ import java.util.Optional;
 /**
  * Extract arg expression converter.
  */
-public class ExtractArgExpressionConverter implements SQLSegmentConverter<ExtractArgExpression, SqlNode> {
+public final class ExtractArgExpressionConverter implements SQLSegmentConverter<ExtractArgExpression, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final ExtractArgExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
-        SqlIdentifier argName = new SqlIdentifier(expression.getText(), SqlParserPos.ZERO);
-        return Optional.of(argName);
+        return Optional.of(new SqlIdentifier(expression.getText(), SqlParserPos.ZERO));
     }
 }
