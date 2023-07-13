@@ -34,7 +34,7 @@ env:
 jobs:
   build-it-image:
     if: github.repository == 'apache/shardingsphere'
-    name: Build IT image
+    name: Build IT Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -50,11 +50,11 @@ jobs:
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Build IT image
+      - name: Build IT Image
         run: ./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
       - name: Verify SQL CI Run
         run: ./mvnw -B install -pl test/e2e/sql -Dspotless.apply.skip=true
-      - name: Save IT image
+      - name: Save IT Image
         run: docker save -o /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - uses: actions/upload-artifact@v3
         with:
@@ -63,12 +63,12 @@ jobs:
           retention-days: 1
 
   it-empty-rule:
-    name: empty rule
+    name: Empty Rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: build-it-image
     strategy:
-      max-parallel: 2
+      max-parallel: 5
       fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
@@ -87,7 +87,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-      - name: Download IT image
+      - name: Download IT Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
         with:
@@ -100,12 +100,12 @@ jobs:
         run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
 
   it-single-rule:
-    name: single rule
+    name: Single Rule
     needs: it-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
-      max-parallel: 2
+      max-parallel: 5
       fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
@@ -125,25 +125,25 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-      - name: Download IT image
+      - name: Download IT Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
         with:
           name: it-image
           path: /tmp/
-      - name: Load IT image
+      - name: Load IT Image
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
       - name: Run E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
   it-mixture-rule:
-    name: mixture rule
+    name: Mixture Rule
     needs: it-single-rule
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
-      max-parallel: 2
+      max-parallel: 5
       fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
@@ -163,13 +163,13 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-      - name: Download IT image
+      - name: Download IT Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
         with:
           name: it-image
           path: /tmp/
-      - name: Load IT image
+      - name: Load IT Image
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
       - name: Run E2E Test
