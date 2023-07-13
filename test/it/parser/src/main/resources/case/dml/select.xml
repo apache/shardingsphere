@@ -71,6 +71,46 @@
         </order-by>
     </select>
 
+    <select sql-case-id="select_convert_function1">
+        <projections start-index="7" stop-index="59">
+            <expression-projection text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" start-index="7" stop-index="59">
+                <expr>
+                    <function start-index="7" stop-index="59" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" function-name="CONVERT" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_convert_function2">
+        <projections start-index="7" stop-index="57">
+            <expression-projection text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" start-index="7" stop-index="57">
+                <expr>
+                    <function start-index="7" stop-index="57" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" function-name="CONVERT" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_convert_function3">
+        <projections start-index="7" stop-index="55">
+            <expression-projection text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR(4))" start-index="7" stop-index="55">
+                <expr>
+                    <function start-index="7" stop-index="55" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR(4))" function-name="CONVERT" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_convert_function4">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" start-index="7" stop-index="52">
+                <expr>
+                    <function start-index="7" stop-index="52" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" function-name="CONVERT" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_exist_in">
         <projections start-index="7" stop-index="93">
             <expression-projection text="+0 IN(0b111111111111111111111111111111111111111111111111111,rpad(1.0,2048,1),32767.1)" start-index="7" stop-index="93">
