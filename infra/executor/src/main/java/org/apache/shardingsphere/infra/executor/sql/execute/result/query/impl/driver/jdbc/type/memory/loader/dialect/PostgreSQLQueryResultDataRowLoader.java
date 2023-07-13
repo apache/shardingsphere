@@ -38,7 +38,7 @@ public final class PostgreSQLQueryResultDataRowLoader extends AbstractQueryResul
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

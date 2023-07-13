@@ -146,7 +146,7 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

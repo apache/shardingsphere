@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.Optional;
 /**
  * Pipeline SQL builder.
  */
-public interface PipelineSQLBuilder extends TypedSPI {
+public interface PipelineSQLBuilder extends DatabaseTypedSPI {
     
     /**
      * Build create schema SQL.
@@ -189,7 +189,4 @@ public interface PipelineSQLBuilder extends TypedSPI {
     default Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         return Optional.empty();
     }
-    
-    @Override
-    String getType();
 }

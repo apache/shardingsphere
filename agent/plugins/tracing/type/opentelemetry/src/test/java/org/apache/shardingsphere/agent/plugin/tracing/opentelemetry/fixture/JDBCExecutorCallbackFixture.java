@@ -23,11 +23,11 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
 import java.util.Optional;
 
 @Getter
@@ -36,8 +36,8 @@ public final class JDBCExecutorCallbackFixture extends JDBCExecutorCallback<Obje
     
     private Object attachment;
     
-    public JDBCExecutorCallbackFixture(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-        super(protocolType, storageTypes, sqlStatement, isExceptionThrown);
+    public JDBCExecutorCallbackFixture(final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+        super(protocolType, resourceMetaData, sqlStatement, isExceptionThrown);
     }
     
     @Override

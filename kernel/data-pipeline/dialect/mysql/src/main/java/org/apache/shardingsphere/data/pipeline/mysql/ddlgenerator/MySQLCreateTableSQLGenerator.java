@@ -51,7 +51,7 @@ public final class MySQLCreateTableSQLGenerator implements CreateTableSQLGenerat
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

@@ -33,6 +33,6 @@ class PostgreSQLSaneQueryResultEngineTest {
     
     @Test
     void assertGetType() {
-        assertThat(new PostgreSQLSaneQueryResultEngine().getType(), is("PostgreSQL"));
+        assertThat(new PostgreSQLSaneQueryResultEngine().getType().getType(), is("PostgreSQL"));
     }
 }

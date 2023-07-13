@@ -452,7 +452,6 @@ public abstract class TransactionBaseE2EIT {
         private String getStorageContainerImageName(final String databaseType, final String databaseVersion) {
             switch (databaseType) {
                 case TransactionTestConstants.MYSQL:
-                    return "mysql/mysql-server:" + databaseVersion;
                 case TransactionTestConstants.POSTGRESQL:
                 case TransactionTestConstants.OPENGAUSS:
                     return databaseVersion;

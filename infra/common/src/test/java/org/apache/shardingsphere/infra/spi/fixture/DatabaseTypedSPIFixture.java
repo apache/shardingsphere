@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.spi.fixture;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
 
-public interface DatabaseTypedSPIFixture extends TypedSPI {
+public interface DatabaseTypedSPIFixture extends DatabaseTypedSPI {
 }

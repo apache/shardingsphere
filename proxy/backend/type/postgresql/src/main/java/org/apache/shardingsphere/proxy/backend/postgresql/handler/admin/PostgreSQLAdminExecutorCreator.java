@@ -96,7 +96,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

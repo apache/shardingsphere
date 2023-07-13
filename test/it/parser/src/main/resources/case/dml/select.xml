@@ -17,6 +17,36 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_with_hex_function">
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" start-index="7" stop-index="50">
+                <expr>
+                    <function start-index="7" stop-index="50" text="HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" function-name="HEX">
+                        <parameter>
+                            <binary-operation-expression start-index="11" stop-index="49">
+                                <left>
+                                    <common-expression start-index="11" stop-index="24" text="_binary0x0003" />
+                                </left>
+                                <operator>&lt;&lt;</operator>
+                                <right>
+                                    <binary-operation-expression start-index="30" stop-index="48">
+                                        <left>
+                                            <common-expression start-index="30" stop-index="41" text="_binary0x38" />
+                                        </left>
+                                        <operator>|</operator>
+                                        <right>
+                                            <common-expression start-index="45" stop-index="48" text="0x38" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_distinct_with_grouping_function">
         <from>
             <simple-table name="t1" start-index="24" stop-index="25" />

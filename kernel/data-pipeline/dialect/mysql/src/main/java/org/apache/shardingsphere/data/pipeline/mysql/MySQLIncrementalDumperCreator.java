@@ -37,7 +37,7 @@ public final class MySQLIncrementalDumperCreator implements IncrementalDumperCre
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

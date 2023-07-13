@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractDataSourceAdapter;
-import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -54,12 +53,9 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     private final ContextManager contextManager;
     
-    private final JDBCContext jdbcContext;
-    
     public ShardingSphereDataSource(final String databaseName, final ModeConfiguration modeConfig) throws SQLException {
         this.databaseName = databaseName;
         contextManager = createContextManager(databaseName, modeConfig, new LinkedHashMap<>(), new LinkedList<>(), new Properties());
-        jdbcContext = new JDBCContext(contextManager.getDataSourceMap(databaseName));
         contextManagerInitializedCallback(databaseName, contextManager);
     }
     
@@ -67,7 +63,6 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.databaseName = databaseName;
         contextManager = createContextManager(databaseName, modeConfig, dataSourceMap, ruleConfigs, null == props ? new Properties() : props);
-        jdbcContext = new JDBCContext(contextManager.getDataSourceMap(databaseName));
         contextManagerInitializedCallback(databaseName, contextManager);
     }
     
@@ -95,7 +90,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public Connection getConnection() {
-        return DriverStateContext.getConnection(databaseName, contextManager, jdbcContext);
+        return DriverStateContext.getConnection(databaseName, contextManager);
     }
     
     @Override

@@ -331,6 +331,40 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Register storage node.
+     *
+     * @param databaseName database name
+     * @param dataSourceProps data source properties
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void registerStorageNode(final String databaseName, final Map<String, DataSourceProperties> dataSourceProps) {
+        // TODO Support for registering storage node #25447
+    }
+    
+    /**
+     * Alter storage node.
+     *
+     * @param databaseName database name
+     * @param storageUnitName storage unit name
+     * @param dataSourceProps data source properties
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void alterStorageNode(final String databaseName, final String storageUnitName, final Map<String, DataSourceProperties> dataSourceProps) {
+        // TODO Support for registering storage node #25447
+    }
+    
+    /**
+     * Unregister storage node.
+     *
+     * @param databaseName database name
+     * @param storageUnitName storage unit name
+     */
+    @SuppressWarnings("rawtypes")
+    public synchronized void unregisterStorageNode(final String databaseName, final String storageUnitName) {
+        // TODO Support for registering storage node #25447
+    }
+    
+    /**
      * Alter rule configuration.
      * 
      * @param databaseName database name
@@ -416,13 +450,13 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Alter data source configuration.
+     * Alter data source units configuration.
      * 
      * @param databaseName database name
      * @param dataSourcePropsMap altered data source properties map
      */
     @SuppressWarnings("rawtypes")
-    public synchronized void alterDataSourceConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    public synchronized void alterDataSourceUnitsConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
@@ -443,6 +477,16 @@ public final class ContextManager implements AutoCloseable {
         } catch (final SQLException ex) {
             log.error("Alter database: {} data source configuration failed", databaseName, ex);
         }
+    }
+    
+    /**
+     * Alter data source nodes configuration.
+     *
+     * @param databaseName database name
+     * @param dataSourcePropsMap altered data source properties map
+     */
+    public synchronized void alterDataSourceNodesConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        // TODO Support for registering storage node #25447
     }
     
     /**
@@ -636,7 +680,7 @@ public final class ContextManager implements AutoCloseable {
         try {
             ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
             ShardingSphereResourceMetaData currentResourceMetaData = database.getResourceMetaData();
-            Map<String, DataSourceProperties> dataSourceProps = metaDataContexts.get().getPersistService().getDataSourceService().load(databaseName);
+            Map<String, DataSourceProperties> dataSourceProps = metaDataContexts.get().getPersistService().getDataSourceUnitService().load(databaseName);
             SwitchingResource switchingResource = new ResourceSwitchManager().createByAlterDataSourceProps(currentResourceMetaData, dataSourceProps);
             metaDataContexts.get().getMetaData().getDatabases().putAll(renewDatabase(database, switchingResource));
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(databaseName, switchingResource);

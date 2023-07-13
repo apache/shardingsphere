@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
+import org.apache.shardingsphere.infra.database.type.TrunkDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -33,11 +33,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database type of PostgreSQL.
  */
-public final class PostgreSQLDatabaseType implements SchemaSupportedDatabaseType {
+public final class PostgreSQLDatabaseType implements TrunkDatabaseType {
     
     private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
     
@@ -84,8 +85,8 @@ public final class PostgreSQLDatabaseType implements SchemaSupportedDatabaseType
     }
     
     @Override
-    public String getDefaultSchema() {
-        return "public";
+    public Optional<String> getDefaultSchema() {
+        return Optional.of("public");
     }
     
     @Override

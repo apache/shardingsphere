@@ -21,21 +21,20 @@ import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CompatibleEncryptRuleNodePathProviderTest {
+class CompatibleEncryptRuleNodePathProviderTest {
     
     @Test
-    void assertCompatibleEncryptRuleNodePath() {
+    void assertNew() {
         RuleNodePathProvider ruleNodePathProvider = new CompatibleEncryptRuleNodePathProvider();
         RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
-        assertEquals(2, actualRuleNodePath.getNamedItems().size());
+        assertThat(actualRuleNodePath.getNamedItems().size(), is(2));
         assertTrue(actualRuleNodePath.getNamedItems().containsKey(CompatibleEncryptRuleNodePathProvider.ENCRYPTORS));
         assertTrue(actualRuleNodePath.getNamedItems().containsKey(CompatibleEncryptRuleNodePathProvider.TABLES));
         assertTrue(actualRuleNodePath.getUniqueItems().isEmpty());
-        assertNotNull(actualRuleNodePath.getRoot());
-        assertEquals(CompatibleEncryptRuleNodePathProvider.RULE_TYPE, actualRuleNodePath.getRoot().getRuleType());
+        assertThat(actualRuleNodePath.getRoot().getRuleType(), is(CompatibleEncryptRuleNodePathProvider.RULE_TYPE));
     }
 }

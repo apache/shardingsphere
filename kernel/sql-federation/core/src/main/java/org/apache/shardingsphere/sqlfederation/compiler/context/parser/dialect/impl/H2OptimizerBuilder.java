@@ -42,7 +42,7 @@ public final class H2OptimizerBuilder implements OptimizerSQLDialectBuilder {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

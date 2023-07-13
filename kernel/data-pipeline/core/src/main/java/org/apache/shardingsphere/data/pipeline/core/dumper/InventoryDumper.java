@@ -44,12 +44,11 @@ import org.apache.shardingsphere.data.pipeline.common.util.JDBCStreamQueryUtils;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
@@ -80,7 +79,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private final PipelineSQLBuilder sqlBuilder;
     
-    private final ColumnValueReader columnValueReader;
+    private final ColumnValueReaderEngine columnValueReaderEngine;
     
     private final PipelineTableMetaDataLoader metaDataLoader;
     
@@ -92,7 +91,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         this.dataSource = dataSource;
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
         sqlBuilder = DatabaseTypedSPILoader.getService(PipelineSQLBuilder.class, databaseType);
-        columnValueReader = DatabaseTypedSPILoader.getService(ColumnValueReader.class, databaseType);
+        columnValueReaderEngine = new ColumnValueReaderEngine(databaseType);
         this.metaDataLoader = metaDataLoader;
     }
     
@@ -207,7 +206,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             String columnName = insertColumnNames.isEmpty() ? resultSetMetaData.getColumnName(i) : insertColumnNames.get(i - 1);
             ShardingSpherePreconditions.checkNotNull(tableMetaData.getColumnMetaData(columnName), () -> new PipelineInvalidParameterException(String.format("Column name is %s", columnName)));
             boolean isUniqueKey = tableMetaData.getColumnMetaData(columnName).isUniqueKey();
-            result.addColumn(new Column(columnName, columnValueReader.readValue(resultSet, resultSetMetaData, i), true, isUniqueKey));
+            result.addColumn(new Column(columnName, columnValueReaderEngine.read(resultSet, resultSetMetaData, i), true, isUniqueKey));
         }
         return result;
     }
