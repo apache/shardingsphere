@@ -169,14 +169,4 @@ class DatabaseTypeEngineTest {
         assertTrue(actual.contains(TypedSPILoader.getService(DatabaseType.class, "MySQL")), "MySQL not present");
         assertTrue(actual.contains(TypedSPILoader.getService(DatabaseType.class, "MariaDB")), "MariaDB not present");
     }
-    
-    @Test
-    void assertEscapeIdentifierIfNecessary() {
-        assertThat(DatabaseTypeEngine.escapeIdentifierIfNecessary(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"), "SELECT"), is("`SELECT`"));
-    }
-    
-    @Test
-    void assertEscapeIdentifierIfUnnecessary() {
-        assertThat(DatabaseTypeEngine.escapeIdentifierIfNecessary(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"), "INSERT"), is("INSERT"));
-    }
 }

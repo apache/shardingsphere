@@ -19,9 +19,8 @@ package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLBuilderEngine;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.sqlbuilder.SQLSegmentBuilder;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,19 +33,20 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
     
     @Override
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
-        return Optional.of(String.format("CREATE SCHEMA %s", DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), schemaName)));
+        SQLSegmentBuilder sqlSegmentBuilder = new SQLSegmentBuilder(getType());
+        return Optional.of(String.format("CREATE SCHEMA %s", sqlSegmentBuilder.getEscapedIdentifier(schemaName)));
     }
     
     @Override
     public Optional<String> buildInsertSQLOnDuplicateClause(final String schemaName, final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder("ON DUPLICATE KEY UPDATE ");
+        SQLSegmentBuilder sqlSegmentBuilder = new SQLSegmentBuilder(getType());
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
             if (column.isUniqueKey()) {
                 continue;
             }
-            result.append(DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), column.getName()))
-                    .append("=EXCLUDED.").append(DatabaseTypeEngine.escapeIdentifierIfNecessary(getType(), column.getName())).append(',');
+            result.append(sqlSegmentBuilder.getEscapedIdentifier(column.getName())).append("=EXCLUDED.").append(sqlSegmentBuilder.getEscapedIdentifier(column.getName())).append(',');
         }
         result.setLength(result.length() - 1);
         return Optional.of(result.toString());
@@ -59,13 +59,13 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
     
     @Override
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", new PipelineSQLBuilderEngine(getType()).getQualifiedTableName(schemaName, tableName));
+        return String.format("SELECT * FROM %s LIMIT 1", new SQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName));
     }
     
     @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
         return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;",
-                new PipelineSQLBuilderEngine(getType()).getQualifiedTableName(schemaName, tableName)));
+                new SQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName)));
     }
     
     @Override
