@@ -20,7 +20,6 @@ package org.apache.shardingsphere.single.decorator;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -68,7 +67,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         Map<String, Collection<DataNode>> actualDataNodes = SingleTableDataNodeLoader.load(databaseName, databaseType, aggregatedDataSources, excludedTables);
         Collection<DataNode> configuredDataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, splitTables);
         checkRuleConfiguration(databaseName, aggregatedDataSources, excludedTables, configuredDataNodes);
-        boolean isSchemaSupportedDatabaseType = databaseType instanceof SchemaSupportedDatabaseType;
+        boolean isSchemaSupportedDatabaseType = databaseType.getDefaultSchema().isPresent();
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return loadAllTables(isSchemaSupportedDatabaseType, actualDataNodes);
         }

@@ -24,7 +24,6 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
@@ -71,7 +70,7 @@ public class AggregationProjection implements Projection {
      */
     @Override
     public String getColumnLabel() {
-        return getAlias().orElseGet(() -> databaseType instanceof SchemaSupportedDatabaseType ? type.name().toLowerCase() : getExpression());
+        return getAlias().orElseGet(() -> databaseType.getDefaultSchema().isPresent() ? type.name().toLowerCase() : getExpression());
     }
     
     @Override

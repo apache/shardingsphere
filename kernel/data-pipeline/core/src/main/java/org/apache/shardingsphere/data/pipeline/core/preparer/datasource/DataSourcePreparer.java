@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
 
@@ -26,7 +26,7 @@ import java.sql.SQLException;
  * Data source preparer.
  */
 @SingletonSPI
-public interface DataSourcePreparer extends TypedSPI {
+public interface DataSourcePreparer extends DatabaseTypedSPI {
     
     /**
      * Prepare target schemas.

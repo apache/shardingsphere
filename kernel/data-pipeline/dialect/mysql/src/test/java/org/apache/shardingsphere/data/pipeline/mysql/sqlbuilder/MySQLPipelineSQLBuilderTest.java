@@ -34,15 +34,15 @@ class MySQLPipelineSQLBuilderTest {
     private final MySQLPipelineSQLBuilder sqlBuilder = new MySQLPipelineSQLBuilder();
     
     @Test
-    void assertBuildInsertSQL() {
-        String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t1"));
-        assertThat(actual, is("INSERT INTO t1(id,sc,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
+    void assertBuildInsertSQLOnDuplicatePart() {
+        String actual = sqlBuilder.buildInsertSQLOnDuplicateClause(null, mockDataRecord("t1")).orElse(null);
+        assertThat(actual, is(" ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test
-    void assertBuildInsertSQLHasShardingColumn() {
-        String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t2"));
-        assertThat(actual, is("INSERT INTO t2(id,sc,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
+    void assertBuildInsertSQLOnDuplicatePartHasShardingColumn() {
+        String actual = sqlBuilder.buildInsertSQLOnDuplicateClause(null, mockDataRecord("t2")).orElse(null);
+        assertThat(actual, is(" ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test
@@ -60,15 +60,6 @@ class MySQLPipelineSQLBuilderTest {
         result.addColumn(new Column("c2", "", true, false));
         result.addColumn(new Column("c3", "", true, false));
         return result;
-    }
-    
-    @Test
-    void assertQuoteKeyword() {
-        String tableName = "CASCADE";
-        String actualCountSql = sqlBuilder.buildCountSQL(null, tableName);
-        assertThat(actualCountSql, is(String.format("SELECT COUNT(*) FROM %s", sqlBuilder.quote(tableName))));
-        actualCountSql = sqlBuilder.buildCountSQL(null, tableName.toLowerCase());
-        assertThat(actualCountSql, is(String.format("SELECT COUNT(*) FROM %s", sqlBuilder.quote(tableName.toLowerCase()))));
     }
     
     @Test

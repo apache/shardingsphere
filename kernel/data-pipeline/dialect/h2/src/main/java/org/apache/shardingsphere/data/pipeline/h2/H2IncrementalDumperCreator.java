@@ -41,7 +41,7 @@ public final class H2IncrementalDumperCreator implements IncrementalDumperCreato
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

@@ -39,7 +39,7 @@ public final class OpenGaussJdbcQueryPropertiesExtension implements JdbcQueryPro
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

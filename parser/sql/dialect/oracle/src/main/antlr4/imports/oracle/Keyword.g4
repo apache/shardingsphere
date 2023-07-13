@@ -791,3 +791,15 @@ PATH
 EXTRACT
     : E X T R A C T
     ;
+    
+ANYDATA
+    : A N Y D A T A
+    ;
+    
+ANYTYPE
+    : A N Y T Y P E
+    ;
+    
+ANYDATASET
+    : A N Y D A T A S E T
+    ;

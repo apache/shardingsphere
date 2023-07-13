@@ -21,21 +21,20 @@ import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class EncryptRuleNodePathProviderTest {
+class EncryptRuleNodePathProviderTest {
     
     @Test
-    void assertEncryptRuleNodePath() {
+    void assertNew() {
         RuleNodePathProvider ruleNodePathProvider = new EncryptRuleNodePathProvider();
         RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
-        assertEquals(2, actualRuleNodePath.getNamedItems().size());
+        assertThat(actualRuleNodePath.getNamedItems().size(), is(2));
         assertTrue(actualRuleNodePath.getNamedItems().containsKey(EncryptRuleNodePathProvider.ENCRYPTORS));
         assertTrue(actualRuleNodePath.getNamedItems().containsKey(EncryptRuleNodePathProvider.TABLES));
         assertTrue(actualRuleNodePath.getUniqueItems().isEmpty());
-        assertNotNull(actualRuleNodePath.getRoot());
-        assertEquals(EncryptRuleNodePathProvider.RULE_TYPE, actualRuleNodePath.getRoot().getRuleType());
+        assertThat(actualRuleNodePath.getRoot().getRuleType(), is(EncryptRuleNodePathProvider.RULE_TYPE));
     }
 }

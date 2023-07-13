@@ -44,7 +44,18 @@ customKeyword
     | COPY
     | UL_BINARY
     | AUTOCOMMIT
+    | ARCHIVE
+    | BLACKHOLE
+    | CSV
+    | FEDERATED
     | INNODB
+    | MEMORY
+    | MRG_MYISAM
+    | MYISAM
+    | NDB
+    | NDBCLUSTER
+    | PERFORMANCE_SCHEMA
+    | TOKUDB
     | REDO_LOG
     | LAST_VALUE
     | PRIMARY
@@ -80,11 +91,11 @@ numberLiterals
     ;
     
 temporalLiterals
-    : (DATE | TIME | TIMESTAMP) SINGLE_QUOTED_TEXT
+    : (DATE | TIME | TIMESTAMP) textString
     ;
     
 hexadecimalLiterals
-    : UNDERSCORE_CHARSET? HEX_DIGIT_ collateClause?
+    : UNDERSCORE_CHARSET? UL_BINARY? HEX_DIGIT_ collateClause?
     ;
     
 bitValueLiterals
@@ -989,14 +1000,29 @@ frameBetween
     ;
     
 specialFunction
-    : groupConcatFunction | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction 
-    | charFunction | trimFunction | weightStringFunction | valuesFunction | currentUserFunction
+    : castFunction
+    | convertFunction
+    | currentUserFunction
+    | charFunction
+    | extractFunction
+    | groupConcatFunction
+    | positionFunction
+    | substringFunction
+    | trimFunction
+    | valuesFunction
+    | weightStringFunction
+    | windowFunction
+    | groupingFunction
     ;
     
 currentUserFunction
     : CURRENT_USER (LP_ RP_)?
     ;
     
+groupingFunction
+    : GROUPING LP_ expr (COMMA_ expr)* RP_
+    ;
+
 groupConcatFunction
     : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
     ;
