@@ -91,7 +91,7 @@ numberLiterals
     ;
     
 temporalLiterals
-    : (DATE | TIME | TIMESTAMP) SINGLE_QUOTED_TEXT
+    : (DATE | TIME | TIMESTAMP) textString
     ;
     
 hexadecimalLiterals
@@ -998,8 +998,19 @@ frameBetween
     ;
     
 specialFunction
-    : groupConcatFunction | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction 
-    | charFunction | trimFunction | weightStringFunction | valuesFunction | currentUserFunction | groupingFunction
+    : castFunction
+    | convertFunction
+    | currentUserFunction
+    | charFunction
+    | extractFunction
+    | groupConcatFunction
+    | positionFunction
+    | substringFunction
+    | trimFunction
+    | valuesFunction
+    | weightStringFunction
+    | windowFunction
+    | groupingFunction
     ;
     
 currentUserFunction
