@@ -17,6 +17,33 @@
   -->
 
 <sql-parser-test-cases>
+    <create-table sql-case-id="create_table_with_backtick_engine_with_string">
+        <table name="t`1" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="18" />
+        <column-definition type="int" start-index="20" stop-index="24">
+            <column name="a" />
+        </column-definition>
+        <create-table-option start-index="27" stop-index="41">
+            <engine name="Innodb" start-index="34" stop-index="41" />
+        </create-table-option>
+    </create-table>
+    <create-table sql-case-id="create_table_with_backtick_engine_innodb">
+        <table name="t`1" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="18" />
+        <column-definition type="int" start-index="20" stop-index="24">
+            <column name="a" />
+        </column-definition>
+        <create-table-option start-index="27" stop-index="39">
+            <engine name="INNODB" start-index="34" stop-index="39" />
+        </create-table-option>
+    </create-table>
+    <create-table sql-case-id="create_table_with_backtick_engine_myisam">
+        <table name="t`1" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="18" />
+        <column-definition type="int" start-index="20" stop-index="24">
+            <column name="a" />
+        </column-definition>
+        <create-table-option start-index="27" stop-index="39">
+            <engine name="myisam" start-index="34" stop-index="39" />
+        </create-table-option>
+    </create-table>
     <create-table sql-case-id="create_table_with_backtick">
         <table name="`t_order" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="23" />
         <column-definition type="int" start-index="26" stop-index="30">
@@ -51,6 +78,9 @@
         <column-definition type="varchar" start-index="39" stop-index="56">
             <column name="status" />
         </column-definition>
+        <create-table-option start-index="59" stop-index="95">
+            <engine name="InnoDB" start-index="66" stop-index="71" />
+        </create-table-option>
     </create-table>
     
     <create-table sql-case-id="create_table_with_keyword">
@@ -282,6 +312,9 @@
         <column-definition type="VARCHAR" start-index="123" stop-index="143">
             <column name="column3" start-delimiter="`" end-delimiter="`" />
         </column-definition>
+        <create-table-option start-index="146" stop-index="158">
+            <engine name="INNODB" start-index="153" stop-index="158" />
+        </create-table-option>
     </create-table>
     
     <create-table sql-case-id="create_temporary_table">
@@ -824,6 +857,9 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
+        <create-table-option start-index="132" stop-index="148">
+            <comment text="'t_order'" start-index="140" stop-index="148" />
+        </create-table-option>
     </create-table>
     
     <create-table sql-case-id="create_table_with_partition">
@@ -1806,6 +1842,9 @@
         <column-definition type="VARCHAR" start-index="49" stop-index="74">
             <column name="status" />
         </column-definition>
+        <create-table-option start-index="77" stop-index="89">
+            <engine name="INNODB" start-index="84" stop-index="89" />
+        </create-table-option>
     </create-table>
 
     <create-table sql-case-id="create_table_with_invisible">
@@ -1819,6 +1858,9 @@
         <column-definition type="VARCHAR" start-index="49" stop-index="76">
             <column name="status" />
         </column-definition>
+        <create-table-option start-index="79" stop-index="91">
+            <engine name="INNODB" start-index="86" stop-index="91" />
+        </create-table-option>
     </create-table>
     
     <create-table sql-case-id="create_table_with_varchar2_char_and_byte_type">

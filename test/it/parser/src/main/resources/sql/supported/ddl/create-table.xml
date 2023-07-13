@@ -17,6 +17,9 @@
   -->
 
 <sql-cases>
+    <sql-case id="create_table_with_backtick_engine_with_string" value="create table `t``1`(a int) engine='Innodb'" db-types="MySQL" />
+    <sql-case id="create_table_with_backtick_engine_innodb" value="create table `t``1`(a int) engine=INNODB" db-types="MySQL" />
+    <sql-case id="create_table_with_backtick_engine_myisam" value="create table `t``1`(a int) engine=myisam" db-types="MySQL" />
     <sql-case id="create_table_with_backtick" value="CREATE TABLE ```t_order` (i int)" db-types="MySQL" />
     <sql-case id="create_table_column_with_backtick" value="create table `````t_o``r``d``e``r``` (```i` int)" db-types="MySQL" />
     <sql-case id="create_table_with_like" value="CREATE TABLE t_log LIKE t_old_log" db-types="MySQL" />
