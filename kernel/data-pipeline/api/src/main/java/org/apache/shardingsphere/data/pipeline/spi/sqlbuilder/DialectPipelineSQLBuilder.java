@@ -78,12 +78,4 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     default Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         return Optional.empty();
     }
-    
-    /**
-     * Judge whether keyword.
-     * 
-     * @param item item to be judged
-     * @return is keyword or not
-     */
-    boolean isKeyword(String item);
 }

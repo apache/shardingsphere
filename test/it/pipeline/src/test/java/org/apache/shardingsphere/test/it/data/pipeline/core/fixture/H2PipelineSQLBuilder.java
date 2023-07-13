@@ -29,11 +29,6 @@ import java.util.Optional;
 public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
-    public boolean isKeyword(final String item) {
-        return false;
-    }
-    
-    @Override
     public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
         return new ArrayList<>(RecordUtils.extractUpdatedColumns(dataRecord));
     }

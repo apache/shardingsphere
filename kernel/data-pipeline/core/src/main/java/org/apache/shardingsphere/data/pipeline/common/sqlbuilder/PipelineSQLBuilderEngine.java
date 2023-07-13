@@ -60,7 +60,7 @@ public final class PipelineSQLBuilderEngine {
      * @return add quote string
      */
     public String quote(final String item) {
-        return pipelineSQLBuilder.isKeyword(item) ? databaseType.getQuoteCharacter().wrap(item) : item;
+        return databaseType.isReservedWord(item) ? databaseType.getQuoteCharacter().wrap(item) : item;
     }
     
     /**

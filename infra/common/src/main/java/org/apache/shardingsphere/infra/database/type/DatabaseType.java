@@ -43,6 +43,16 @@ public interface DatabaseType extends TypedSPI {
     QuoteCharacter getQuoteCharacter();
     
     /**
+     * Judge whether identifier is reserved word.
+     *
+     * @param identifier identifier to be judged
+     * @return is reserved word or not
+     */
+    default boolean isReservedWord(String identifier) {
+        return false;
+    }
+    
+    /**
      * Get alias of JDBC URL prefixes.
      * 
      * @return Alias of JDBC URL prefixes
