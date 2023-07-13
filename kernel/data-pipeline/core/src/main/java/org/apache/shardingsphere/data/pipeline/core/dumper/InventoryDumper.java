@@ -169,7 +169,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                 return sqlBuilder.buildDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());
             }
             if (null != position.getBeginValue() && null == position.getEndValue()) {
-                return sqlBuilder.buildDivisibleInventoryDumpSQLNoEnd(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());
+                return sqlBuilder.buildNoLimitedDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());
             }
         }
         return sqlBuilder.buildIndivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());

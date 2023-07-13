@@ -46,9 +46,9 @@ class PipelineSQLBuilderTest {
     
     @Test
     void assertBuildDivisibleInventoryDumpSQLNoEnd() {
-        String actual = pipelineSQLBuilder.buildDivisibleInventoryDumpSQLNoEnd(null, "t_order", Collections.singletonList("*"), "order_id");
+        String actual = pipelineSQLBuilder.buildNoLimitedDivisibleInventoryDumpSQL(null, "t_order", Collections.singletonList("*"), "order_id");
         assertThat(actual, is("SELECT * FROM t_order WHERE order_id>=? ORDER BY order_id ASC"));
-        actual = pipelineSQLBuilder.buildDivisibleInventoryDumpSQLNoEnd(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
+        actual = pipelineSQLBuilder.buildNoLimitedDivisibleInventoryDumpSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? ORDER BY order_id ASC"));
     }
     

@@ -52,7 +52,7 @@ public interface PipelineSQLBuilder extends DatabaseTypedSPI {
     String buildDivisibleInventoryDumpSQL(String schemaName, String tableName, List<String> columnNames, String uniqueKey);
     
     /**
-     * Build divisible inventory dump SQL without end value.
+     * Build divisible inventory dump SQL without limited value.
      *
      * @param schemaName schema name
      * @param tableName table name
@@ -60,7 +60,7 @@ public interface PipelineSQLBuilder extends DatabaseTypedSPI {
      * @param uniqueKey unique key
      * @return divisible inventory dump SQL without end value
      */
-    String buildDivisibleInventoryDumpSQLNoEnd(String schemaName, String tableName, List<String> columnNames, String uniqueKey);
+    String buildNoLimitedDivisibleInventoryDumpSQL(String schemaName, String tableName, List<String> columnNames, String uniqueKey);
     
     /**
      * Build indivisible inventory dump first SQL.
