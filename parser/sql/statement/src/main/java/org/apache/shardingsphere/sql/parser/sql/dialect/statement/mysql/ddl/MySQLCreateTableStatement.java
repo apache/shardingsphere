@@ -52,6 +52,7 @@ public final class MySQLCreateTableStatement extends CreateTableStatement implem
     
     /**
      * Get create table option segment.
+     *
      * @return create table option segment
      */
     public Optional<CreateTableOptionSegment> getCreateTableOptionSegment() {
