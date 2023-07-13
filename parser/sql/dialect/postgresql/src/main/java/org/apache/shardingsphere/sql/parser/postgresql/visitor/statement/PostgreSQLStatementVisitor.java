@@ -452,7 +452,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getText(), getOriginalText(ctx));
         Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
-        if (ctx.getChild(0).getText().toUpperCase().equals("EXTRACT")) {
+        if ("EXTRACT".equalsIgnoreCase(ctx.getChild(0).getText())) {
             result.getParameters().add((ExpressionSegment) visit(getTargetRuleContextFromParseTree(ctx, ExtractArgContext.class).iterator().next()));
         }
         result.getParameters().addAll(expressionSegments);

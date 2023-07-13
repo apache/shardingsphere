@@ -29,25 +29,21 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCast
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * Type cast expression converter.
  */
-public class TypeCastExpressionConverter implements SQLSegmentConverter<TypeCastExpression, SqlNode> {
+public final class TypeCastExpressionConverter implements SQLSegmentConverter<TypeCastExpression, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final TypeCastExpression segment) {
-        Optional<SqlNode> exprssion = new ExpressionConverter().convert(segment.getExpression());
-        if (!exprssion.isPresent()) {
+        Optional<SqlNode> expression = new ExpressionConverter().convert(segment.getExpression());
+        if (!expression.isPresent()) {
             return Optional.empty();
         }
         SqlTypeNameSpec sqlTypeName = new SqlBasicTypeNameSpec(SqlTypeName.valueOf(segment.getDataType().toUpperCase()), SqlParserPos.ZERO);
-        SqlDataTypeSpec sqlDataTypeSpec = new SqlDataTypeSpec(sqlTypeName, SqlParserPos.ZERO);
-        List<SqlNode> operandList = new ArrayList<>(Arrays.asList(exprssion.get(), sqlDataTypeSpec));
-        return Optional.of(new SqlBasicCall(new SqlCastFunction(), operandList, SqlParserPos.ZERO));
+        return Optional.of(new SqlBasicCall(new SqlCastFunction(), Arrays.asList(expression.get(), new SqlDataTypeSpec(sqlTypeName, SqlParserPos.ZERO)), SqlParserPos.ZERO));
     }
 }
