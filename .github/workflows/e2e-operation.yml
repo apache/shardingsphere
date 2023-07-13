@@ -111,7 +111,7 @@ jobs:
           java-version: 8
       - name: Run MySQL ${{ matrix.function }} E2E Test
         if: (env.skip_current_step == 'false')
-        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.function }}/pom.xml -D${{ matrix.function }}.it.env.type=docker -D${{ matrix.function }}.it.docker.mysql.version=${{ env.mysql_version }}
+        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.function }}/pom.xml -D${{ matrix.function }}.it.env.type=docker -D${{ matrix.function }}.it.docker.mysql.version=${{ env.mysql_version }} -Dit.scenarios=cluster_jdbc_proxy -Dit.run.modes=Standalone,Cluster
       - name: Run PostgreSQL ${{ matrix.function }} E2E Test
         if: (env.skip_current_step == 'false' && matrix.function != 'showprocesslist')
         run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.function }}/pom.xml -D${{ matrix.function }}.it.env.type=docker -D${{ matrix.function }}.it.docker.postgresql.version=${{ env.postgresql_version }}
