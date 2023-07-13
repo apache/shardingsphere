@@ -44,8 +44,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dorny/paths-filter@v2
-        # TODO remove the id content
-        id: filter
         with:
           token: ${{ github.token }}
           filters: .github/workflows/resources/filter/filters.yml
