@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLBuilderEngine;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 
@@ -59,13 +58,13 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
     
     @Override
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", new PipelineSQLBuilderEngine(getType()).getQualifiedTableName(schemaName, tableName));
+        return String.format("SELECT * FROM %s LIMIT 1", DatabaseTypeEngine.getQualifiedTableName(getType(), schemaName, tableName));
     }
     
     @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
         return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;",
-                new PipelineSQLBuilderEngine(getType()).getQualifiedTableName(schemaName, tableName)));
+                DatabaseTypeEngine.getQualifiedTableName(getType(), schemaName, tableName)));
     }
     
     @Override
