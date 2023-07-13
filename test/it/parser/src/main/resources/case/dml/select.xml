@@ -1022,7 +1022,7 @@
             </expr>
         </where>
     </select>
-
+    
     <select sql-case-id="select_count_like_concat_postgres" parameters="'init', 1, 2, 9, 10">
         <from>
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
