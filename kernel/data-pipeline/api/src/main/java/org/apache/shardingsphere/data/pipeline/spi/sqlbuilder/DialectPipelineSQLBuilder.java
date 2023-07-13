@@ -59,6 +59,15 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     List<Column> extractUpdatedColumns(DataRecord dataRecord);
     
     /**
+     * Build check empty SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return check SQL
+     */
+    String buildCheckEmptySQL(String schemaName, String tableName);
+    
+    /**
      * Build estimated count SQL.
      *
      * @param schemaName schema name

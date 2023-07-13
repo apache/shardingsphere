@@ -33,6 +33,11 @@ public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilde
     }
     
     @Override
+    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
+        return null;
+    }
+    
+    @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
         return Optional.empty();
     }

@@ -34,6 +34,11 @@ public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
     }
     
     @Override
+    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", new PipelineSQLBuilderEngine(getType()).getQualifiedTableName(schemaName, tableName));
+    }
+    
+    @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
         return Optional.empty();
     }

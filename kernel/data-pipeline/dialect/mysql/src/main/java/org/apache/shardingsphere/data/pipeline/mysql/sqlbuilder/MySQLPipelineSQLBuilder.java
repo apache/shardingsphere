@@ -56,6 +56,11 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
     }
     
     @Override
+    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", new PipelineSQLBuilderEngine(getType()).getQualifiedTableName(schemaName, tableName));
+    }
+    
+    @Override
     public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM %s", quote(column), quote(tableName)));
     }
