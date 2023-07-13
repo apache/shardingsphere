@@ -40,7 +40,7 @@ public final class ColumnValueReaderEngine {
     
     /**
      * Read column value.
-     * 
+     *
      * @param resultSet result set
      * @param metaData result set meta data
      * @param columnIndex column index
@@ -48,11 +48,9 @@ public final class ColumnValueReaderEngine {
      * @throws SQLException SQL exception
      */
     public Object read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        if (resultSet.wasNull()) {
-            return null;
-        }
         Optional<Object> dialectValue = readDialectValue(resultSet, metaData, columnIndex);
-        return dialectValue.isPresent() ? dialectValue : readStandardValue(resultSet, metaData, columnIndex);
+        Object result = dialectValue.isPresent() ? dialectValue.get() : readStandardValue(resultSet, metaData, columnIndex);
+        return resultSet.wasNull() ? null : result;
     }
     
     private Optional<Object> readDialectValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {

@@ -38,7 +38,7 @@ public final class PostgreSQLColumnValueReader implements DialectColumnValueRead
     @Override
     public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
         if (isMoneyType(metaData, columnIndex)) {
-            return Optional.of(resultSet.getBigDecimal(columnIndex));
+            return Optional.ofNullable(resultSet.getBigDecimal(columnIndex));
         }
         if (isBitType(metaData, columnIndex)) {
             return Optional.of(getBitObject(resultSet, columnIndex));
