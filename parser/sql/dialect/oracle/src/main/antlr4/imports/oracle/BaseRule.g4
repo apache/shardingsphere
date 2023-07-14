@@ -591,7 +591,6 @@ expr
     : expr andOperator expr
     | expr orOperator expr
     | notOperator expr
-    | PRIOR expr
     | LP_ expr RP_
     | booleanPrimary
     | aggregationFunction
@@ -613,6 +612,7 @@ notOperator
 
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    | PRIOR predicate
     | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
@@ -625,6 +625,7 @@ comparisonOperator
 
 predicate
     : bitExpr NOT? IN subquery
+    | PRIOR predicate
     | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
     | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_ AND predicate
     | bitExpr NOT? BETWEEN bitExpr AND predicate
@@ -658,6 +659,7 @@ simpleExpr
     | caseExpression
     | columnName
     | privateExprOfDb
+    | PRIOR identifier
     ;
 
 functionCall
