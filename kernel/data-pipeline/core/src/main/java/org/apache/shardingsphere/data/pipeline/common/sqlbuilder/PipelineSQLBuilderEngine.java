@@ -18,17 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
 import lombok.Getter;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 /**
@@ -36,26 +31,21 @@ import java.util.stream.Collectors;
  */
 public final class PipelineSQLBuilderEngine {
     
-    private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
-    
-    private static final String UPDATE_SQL_CACHE_KEY_PREFIX = "UPDATE_";
-    
-    private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
-    
     @Getter
     private final PipelineInventoryDumpSQLBuilder inventoryDumpSQLBuilder;
+    
+    @Getter
+    private final PipelineImportSQLBuilder importSQLBuilder;
     
     private final DialectPipelineSQLBuilder dialectSQLBuilder;
     
     private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
     
-    private final ConcurrentMap<String, String> sqlCacheMap;
-    
     public PipelineSQLBuilderEngine(final DatabaseType databaseType) {
         inventoryDumpSQLBuilder = new PipelineInventoryDumpSQLBuilder(databaseType);
+        importSQLBuilder = new PipelineImportSQLBuilder(databaseType);
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
         sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
-        sqlCacheMap = new ConcurrentHashMap<>();
     }
     
     /**
@@ -66,78 +56,6 @@ public final class PipelineSQLBuilderEngine {
      */
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
         return dialectSQLBuilder.buildCreateSchemaSQL(schemaName);
-    }
-    
-    /**
-     * Build insert SQL.
-     *
-     * @param schemaName schema name
-     * @param dataRecord data record
-     * @return insert SQL
-     */
-    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
-        String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
-        if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            String insertMainClause = buildInsertMainClause(schemaName, dataRecord);
-            sqlCacheMap.put(sqlCacheKey, dialectSQLBuilder.buildInsertOnDuplicateClause(schemaName, dataRecord).map(optional -> insertMainClause + " " + optional).orElse(insertMainClause));
-        }
-        return sqlCacheMap.get(sqlCacheKey);
-    }
-    
-    private String buildInsertMainClause(final String schemaName, final DataRecord dataRecord) {
-        String columnsLiteral = dataRecord.getColumns().stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName())).collect(Collectors.joining(","));
-        String valuesLiteral = dataRecord.getColumns().stream().map(each -> "?").collect(Collectors.joining(","));
-        return String.format("INSERT INTO %s(%s) VALUES(%s)", sqlSegmentBuilder.getQualifiedTableName(schemaName, dataRecord.getTableName()), columnsLiteral, valuesLiteral);
-    }
-    
-    /**
-     * Build update SQL.
-     *
-     * @param schemaName schema name
-     * @param dataRecord data record
-     * @param conditionColumns condition columns
-     * @return update SQL
-     */
-    public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
-        String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
-        if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            String updateMainClause = buildUpdateMainClause(schemaName, dataRecord);
-            sqlCacheMap.put(sqlCacheKey, buildWhereClause(conditionColumns).map(optional -> updateMainClause + optional).orElse(updateMainClause));
-        }
-        return sqlCacheMap.get(sqlCacheKey);
-    }
-    
-    private String buildUpdateMainClause(final String schemaName, final DataRecord dataRecord) {
-        Collection<Column> setColumns = dataRecord.getColumns().stream().filter(Column::isUpdated).collect(Collectors.toList());
-        String updateSetClause = setColumns.stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + " = ?").collect(Collectors.joining(","));
-        return String.format("UPDATE %s SET %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, dataRecord.getTableName()), updateSetClause);
-    }
-    
-    /**
-     * Build delete SQL.
-     *
-     * @param schemaName schema name
-     * @param dataRecord data record
-     * @param conditionColumns condition columns
-     * @return delete SQL
-     */
-    public String buildDeleteSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
-        String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
-        if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            String deleteMainClause = buildDeleteMainClause(schemaName, dataRecord);
-            sqlCacheMap.put(sqlCacheKey, buildWhereClause(conditionColumns).map(optional -> deleteMainClause + optional).orElse(deleteMainClause));
-        }
-        return sqlCacheMap.get(sqlCacheKey);
-    }
-    
-    private String buildDeleteMainClause(final String schemaName, final DataRecord dataRecord) {
-        return String.format("DELETE FROM %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, dataRecord.getTableName()));
-    }
-    
-    private Optional<String> buildWhereClause(final Collection<Column> conditionColumns) {
-        return conditionColumns.isEmpty()
-                ? Optional.empty()
-                : Optional.of(" WHERE " + conditionColumns.stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + " = ?").collect(Collectors.joining(" AND ")));
     }
     
     /**
