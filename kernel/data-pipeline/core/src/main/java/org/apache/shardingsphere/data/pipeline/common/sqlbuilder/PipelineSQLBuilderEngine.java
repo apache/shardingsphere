@@ -78,16 +78,16 @@ public final class PipelineSQLBuilderEngine {
     public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            String insertMainClause = buildInsertMainClause(schemaName, dataRecord.getTableName(), dataRecord.getColumns());
+            String insertMainClause = buildInsertMainClause(schemaName, dataRecord);
             sqlCacheMap.put(sqlCacheKey, dialectSQLBuilder.buildInsertOnDuplicateClause(schemaName, dataRecord).map(optional -> insertMainClause + " " + optional).orElse(insertMainClause));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
     
-    private String buildInsertMainClause(final String schemaName, final String tableName, final List<Column> columns) {
-        String columnsLiteral = columns.stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName())).collect(Collectors.joining(","));
-        String valuesLiteral = columns.stream().map(each -> "?").collect(Collectors.joining(","));
-        return String.format("INSERT INTO %s(%s) VALUES(%s)", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), columnsLiteral, valuesLiteral);
+    private String buildInsertMainClause(final String schemaName, final DataRecord dataRecord) {
+        String columnsLiteral = dataRecord.getColumns().stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName())).collect(Collectors.joining(","));
+        String valuesLiteral = dataRecord.getColumns().stream().map(each -> "?").collect(Collectors.joining(","));
+        return String.format("INSERT INTO %s(%s) VALUES(%s)", sqlSegmentBuilder.getQualifiedTableName(schemaName, dataRecord.getTableName()), columnsLiteral, valuesLiteral);
     }
     
     /**
@@ -101,16 +101,16 @@ public final class PipelineSQLBuilderEngine {
     public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            Collection<Column> setColumns = dataRecord.getColumns().stream().filter(Column::isUpdated).collect(Collectors.toList());
-            String updateMainClause = buildUpdateMainClause(schemaName, dataRecord.getTableName(), setColumns, conditionColumns);
-            sqlCacheMap.put(sqlCacheKey, updateMainClause);
+            String updateMainClause = buildUpdateMainClause(schemaName, dataRecord);
+            sqlCacheMap.put(sqlCacheKey, buildWhereClause(conditionColumns).map(optional -> updateMainClause + optional).orElse(updateMainClause));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
     
-    private String buildUpdateMainClause(final String schemaName, final String tableName, final Collection<Column> setColumns, final Collection<Column> conditionColumns) {
+    private String buildUpdateMainClause(final String schemaName, final DataRecord dataRecord) {
+        Collection<Column> setColumns = dataRecord.getColumns().stream().filter(Column::isUpdated).collect(Collectors.toList());
         String updateSetClause = setColumns.stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + " = ?").collect(Collectors.joining(","));
-        return String.format("UPDATE %s SET %s WHERE %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), updateSetClause, buildWhereSQL(conditionColumns));
+        return String.format("UPDATE %s SET %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, dataRecord.getTableName()), updateSetClause);
     }
     
     /**
@@ -124,9 +124,20 @@ public final class PipelineSQLBuilderEngine {
     public String buildDeleteSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(schemaName, dataRecord.getTableName(), conditionColumns));
+            String deleteMainClause = buildDeleteMainClause(schemaName, dataRecord);
+            sqlCacheMap.put(sqlCacheKey, buildWhereClause(conditionColumns).map(optional -> deleteMainClause + optional).orElse(deleteMainClause));
         }
         return sqlCacheMap.get(sqlCacheKey);
+    }
+    
+    private String buildDeleteMainClause(final String schemaName, final DataRecord dataRecord) {
+        return String.format("DELETE FROM %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, dataRecord.getTableName()));
+    }
+    
+    private Optional<String> buildWhereClause(final Collection<Column> conditionColumns) {
+        return conditionColumns.isEmpty()
+                ? Optional.empty()
+                : Optional.of(" WHERE " + conditionColumns.stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + " = ?").collect(Collectors.joining(" AND ")));
     }
     
     /**
@@ -138,19 +149,6 @@ public final class PipelineSQLBuilderEngine {
      */
     public String buildDropSQL(final String schemaName, final String tableName) {
         return String.format("DROP TABLE IF EXISTS %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
-    }
-    
-    private String buildDeleteSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("DELETE FROM %s WHERE %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), buildWhereSQL(conditionColumns));
-    }
-    
-    private String buildWhereSQL(final Collection<Column> conditionColumns) {
-        StringBuilder where = new StringBuilder();
-        for (Column each : conditionColumns) {
-            where.append(String.format("%s = ? AND ", sqlSegmentBuilder.getEscapedIdentifier(each.getName())));
-        }
-        where.setLength(where.length() - 5);
-        return where.toString();
     }
     
     /**
