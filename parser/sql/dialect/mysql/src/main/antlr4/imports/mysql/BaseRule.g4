@@ -147,6 +147,7 @@ identifierKeywordsUnambiguous
     | AVG_ROW_LENGTH
     | AVG
     | BACKUP
+    | BEFORE
     | BINLOG
     | BIT
     | BLOCK
@@ -266,6 +267,7 @@ identifierKeywordsUnambiguous
     | JSON
     | JSON_VALUE
     | KEY
+    | KEYS
     | KEY_BLOCK_SIZE
     | LAST
     | LEAVES
