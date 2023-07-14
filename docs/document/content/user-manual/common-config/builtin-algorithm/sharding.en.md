@@ -108,60 +108,6 @@ Attributes:
 | datetime-interval-amount (?) | int        | Interval of sharding value, after which the next shard will be entered                                                                                                                                                        | 1               |
 | datetime-interval-unit (?)   | String     | Unit of sharding value interval, must can be transformed to Java ChronoUnit's Enum value. For example: MONTHS                                                                                                                 | DAYS            |
 
-#### Fixed interval sharding algorithm provided by CosId
-
-A fixed time range sharding algorithm implemented by the tool class based on `me.ahoo.cosid:cosid-core`.
-When the sharding key is a JSR-310 containing class or a time-related class, it will be converted to `java.time.LocalDateTime` before the next sharding.
-See the discussion at https://github.com/apache/shardingsphere/issues/14047.
-
-Type：COSID_INTERVAL
-
-Attributes：
-
-| *Name*                   | *DataType* | *Description*                                                                                                                                                           | *Default Value* |
-|--------------------------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| zone-id                  | String     | Time zone, which must follow the contained value of `java.time.ZoneId`. For example: Asia/Shanghai                                                                      |                 |
-| logic-name-prefix        | String     | Prefix pattern of sharding data sources or tables                                                                                                                       |                 |
-| datetime-lower           | String     | Datetime sharding lower boundary, pattern is consistent with the timestamp format of `yyyy-MM-dd HH:mm:ss`                                                              |                 |
-| datetime-upper           | String     | Datetime sharding upper boundary, pattern is consistent with the timestamp format of `yyyy-MM-dd HH:mm:ss`                                                              |                 |
-| sharding-suffix-pattern  | String     | Suffix pattern of sharding data sources or tables, must can be transformed to Java LocalDateTime, must be consistent with `datetime-interval-unit`. For example: yyyyMM |                 |
-| datetime-interval-unit   | String     | Unit of sharding value interval, must can be transformed to Java ChronoUnit's Enum value. For example: MONTHS                                                           |                 |
-| datetime-interval-amount | int        | Interval of sharding value, after which the next shard will be entered                                                                                                  |
-
-#### Snowflake key-based fixed interval sharding algorithm provided by CosId
-
-Snowflake ID sharding algorithm with fixed time range implemented by tool class based on `me.ahoo.cosid:cosid-core`.
-When the sharding key is a JSR-310 containing class or a time-related class, it will be converted to `java.time.LocalDateTime` before the next sharding.
-See the discussion at https://github.com/apache/shardingsphere/issues/14047.
-
-Type：COSID_INTERVAL_SNOWFLAKE
-
-Attributes：
-
-| *Name*                   | *DataType* | *Description*                                                                                                                                                           | *Default Value* |
-|--------------------------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| zone-id                  | String     | Time zone, which must follow the contained value of `java.time.ZoneId`. For example: Asia/Shanghai                                                                      |                 |
-| logic-name-prefix        | String     | Prefix pattern of sharding data sources or tables                                                                                                                       |                 |
-| datetime-lower           | String     | Datetime sharding lower boundary, pattern is consistent with the timestamp format of `yyyy-MM-dd HH:mm:ss`                                                              |                 |
-| datetime-upper           | String     | Datetime sharding upper boundary, pattern is consistent with the timestamp format of `yyyy-MM-dd HH:mm:ss`                                                              |                 |
-| sharding-suffix-pattern  | String     | Suffix pattern of sharding data sources or tables, must can be transformed to Java LocalDateTime, must be consistent with `datetime-interval-unit`. For example: yyyyMM |                 |
-| datetime-interval-unit   | String     | Unit of sharding value interval, must can be transformed to Java ChronoUnit's Enum value. For example: MONTHS                                                           |                 |
-| datetime-interval-amount | int        | Interval of sharding value, after which the next shard will be entered                                                                                                  |
-
-#### Modulo sharding algorithm provided by CosId
-
-Modulo sharding algorithm implemented by the tool class based on `me.ahoo.cosid:cosid-core`.
-See the discussion at https://github.com/apache/shardingsphere/issues/14047 .
-
-Type: COSID_MOD
-
-Attributes:
-
-| *Name*            | *DataType* | *Description*                                     |
-|-------------------|------------|---------------------------------------------------|
-| mod               | int        | Sharding count                                    |
-| logic-name-prefix | String     | Prefix pattern of sharding data sources or tables |
-
 ### Complex Sharding Algorithm
 
 #### Complex Inline Sharding Algorithm
