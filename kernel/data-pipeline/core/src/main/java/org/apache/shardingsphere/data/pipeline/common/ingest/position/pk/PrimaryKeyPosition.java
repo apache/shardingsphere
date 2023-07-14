@@ -15,25 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.ingest.position;
+package org.apache.shardingsphere.data.pipeline.common.ingest.position.pk;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-class UnsupportedKeyPositionTest {
+/**
+ * Primary key position.
+ * 
+ * @param <T> type of value
+ */
+public interface PrimaryKeyPosition<T> extends IngestPosition {
     
-    @Test
-    void assertInit() {
-        UnsupportedKeyPosition position = (UnsupportedKeyPosition) PrimaryKeyPositionFactory.newInstance("u,,");
-        assertNull(position.getBeginValue());
-        assertNull(position.getEndValue());
-    }
+    /**
+     * Get begin value.
+     *
+     * @return begin value
+     */
+    T getBeginValue();
     
-    @Test
-    void assertToString() {
-        assertThat(new UnsupportedKeyPosition().toString(), is("u,,"));
-    }
+    /**
+     * Get end value.
+     *
+     * @return end value
+     */
+    T getEndValue();
+    
+    /**
+     * Convert value.
+     * @param value value to be converted
+     * @return converted value
+     */
+    T convert(String value);
+    
+    /**
+     * Get type.
+     * 
+     * @return type
+     */
+    char getType();
 }

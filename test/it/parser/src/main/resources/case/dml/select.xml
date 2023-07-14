@@ -111,6 +111,75 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_function_aes_decrypt_and_aes_encrypt">
+        <from>
+            <simple-table name="t1" start-index="78" stop-index="79" />
+        </from>
+        <projections start-index="7" stop-index="71">
+            <expression-projection text="AES_DECRYPT(AES_ENCRYPT(@ENCSTR, @keys, @Iv), @keys, @Iv)=@ENCSTR" start-index="7" stop-index="71">
+                <expr>
+                    <binary-operation-expression text="AES_DECRYPT(AES_ENCRYPT(@ENCSTR, @keys, @Iv), @keys, @Iv)=@ENCSTR" start-index="7" stop-index="71">
+                        <left>
+                            <function start-index="7" stop-index="63" text="AES_DECRYPT(AES_ENCRYPT(@ENCSTR, @keys, @Iv), @keys, @Iv)" function-name="AES_DECRYPT">
+                                <parameter>
+                                    <function start-index="19" stop-index="50" text="AES_ENCRYPT(@ENCSTR, @keys, @Iv)" function-name="AES_ENCRYPT">
+                                        <parameter>
+                                            <variable-segment start-index="31" stop-index="37" variable="ENCSTR" />
+                                        </parameter>
+                                        <parameter>
+                                            <variable-segment start-index="40" stop-index="44" variable="keys" />
+                                        </parameter>
+                                        <parameter>
+                                            <variable-segment start-index="47" stop-index="49" variable="Iv" />
+                                        </parameter>
+                                    </function>
+                                </parameter>
+                                <parameter>
+                                    <variable-segment start-index="53" stop-index="57" variable="keys" />
+                                </parameter>
+                                <parameter>
+                                    <variable-segment start-index="60" stop-index="62" variable="Iv" />
+                                </parameter>
+                            </function>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <variable-segment start-index="65" stop-index="71" variable="ENCSTR" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_user_variable_before_after">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="@before=@after" start-index="7" stop-index="20">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="20">
+                        <left>
+                            <variable-segment start-index="7" stop-index="13" variable="before" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <variable-segment start-index="15" stop-index="20" variable="after" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_global_default_key_buffer_size">
+        <projections start-index="7" stop-index="40">
+            <expression-projection text="@@global.default.`key_buffer_size`" start-index="7" stop-index="40">
+                <expr>
+                    <variable-segment start-index="7" stop-index="40" scope="global" variable="default.`key_buffer_size`" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_exist_in">
         <projections start-index="7" stop-index="93">
             <expression-projection text="+0 IN(0b111111111111111111111111111111111111111111111111111,rpad(1.0,2048,1),32767.1)" start-index="7" stop-index="93">

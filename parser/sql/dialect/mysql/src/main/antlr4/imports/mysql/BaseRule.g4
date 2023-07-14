@@ -147,6 +147,7 @@ identifierKeywordsUnambiguous
     | AVG_ROW_LENGTH
     | AVG
     | BACKUP
+    | BEFORE
     | BINLOG
     | BIT
     | BLOCK
@@ -193,6 +194,7 @@ identifierKeywordsUnambiguous
     | DAY
     | DAY_MINUTE
     | DEFAULT_AUTH
+    | DEFAULT
     | DEFINER
     | DEFINITION
     | DELAY_KEY_WRITE
@@ -266,6 +268,7 @@ identifierKeywordsUnambiguous
     | JSON
     | JSON_VALUE
     | KEY
+    | KEYS
     | KEY_BLOCK_SIZE
     | LAST
     | LEAVES

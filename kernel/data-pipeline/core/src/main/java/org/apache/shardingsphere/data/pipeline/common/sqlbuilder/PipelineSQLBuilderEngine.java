@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
-import com.google.common.base.Strings;
+import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 
 import java.util.Collection;
@@ -43,15 +42,20 @@ public final class PipelineSQLBuilderEngine {
     
     private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
     
-    private final ConcurrentMap<String, String> sqlCacheMap = new ConcurrentHashMap<>();
-    
-    private final DatabaseType databaseType;
+    @Getter
+    private final PipelineInventoryDumpSQLBuilder inventoryDumpSQLBuilder;
     
     private final DialectPipelineSQLBuilder dialectSQLBuilder;
     
+    private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
+    
+    private final ConcurrentMap<String, String> sqlCacheMap;
+    
     public PipelineSQLBuilderEngine(final DatabaseType databaseType) {
-        this.databaseType = databaseType;
+        inventoryDumpSQLBuilder = new PipelineInventoryDumpSQLBuilder(databaseType);
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
+        sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
+        sqlCacheMap = new ConcurrentHashMap<>();
     }
     
     /**
@@ -62,86 +66,6 @@ public final class PipelineSQLBuilderEngine {
      */
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
         return dialectSQLBuilder.buildCreateSchemaSQL(schemaName);
-    }
-    
-    /**
-     * Build divisible inventory dump SQL.
-     *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @param uniqueKey unique key
-     * @return divisible inventory dump SQL
-     */
-    public String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
-        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
-        String quotedUniqueKey = DatabaseTypeEngine.escapeIdentifierIfNecessary(databaseType, uniqueKey);
-        return String.format("SELECT %s FROM %s WHERE %s>=? AND %s<=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey, quotedUniqueKey, quotedUniqueKey);
-    }
-    
-    private String buildQueryColumns(final List<String> columnNames) {
-        if (columnNames.isEmpty()) {
-            return "*";
-        }
-        return columnNames.stream().map(each -> DatabaseTypeEngine.escapeIdentifierIfNecessary(databaseType, each)).collect(Collectors.joining(","));
-    }
-    
-    /**
-     * Build divisible inventory dump SQL without limited value.
-     *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @param uniqueKey unique key
-     * @return divisible inventory dump SQL without end value
-     */
-    public String buildNoLimitedDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
-        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
-        String quotedUniqueKey = DatabaseTypeEngine.escapeIdentifierIfNecessary(databaseType, uniqueKey);
-        return String.format("SELECT %s FROM %s WHERE %s>=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
-    }
-    
-    /**
-     * Build indivisible inventory dump first SQL.
-     *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @param uniqueKey unique key
-     * @return indivisible inventory dump SQL
-     */
-    public String buildIndivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
-        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
-        String quotedUniqueKey = DatabaseTypeEngine.escapeIdentifierIfNecessary(databaseType, uniqueKey);
-        return String.format("SELECT %s FROM %s ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey);
-    }
-    
-    /**
-     * Build no unique key inventory dump SQL.
-     *
-     * @param schemaName schema name
-     * @param tableName tableName
-     * @return inventory dump all SQL
-     */
-    public String buildNoUniqueKeyInventoryDumpSQL(final String schemaName, final String tableName) {
-        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
-        return String.format("SELECT * FROM %s", qualifiedTableName);
-    }
-    
-    /**
-     * Get qualified table name.
-     * 
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return qualified table name
-     */
-    public String getQualifiedTableName(final String schemaName, final String tableName) {
-        StringBuilder result = new StringBuilder();
-        if (databaseType.isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
-            result.append(DatabaseTypeEngine.escapeIdentifierIfNecessary(databaseType, schemaName)).append('.');
-        }
-        result.append(DatabaseTypeEngine.escapeIdentifierIfNecessary(databaseType, tableName));
-        return result.toString();
     }
     
     /**
@@ -164,12 +88,12 @@ public final class PipelineSQLBuilderEngine {
         StringBuilder columnsLiteral = new StringBuilder();
         StringBuilder holder = new StringBuilder();
         for (Column each : columns) {
-            columnsLiteral.append(String.format("%s,", DatabaseTypeEngine.escapeIdentifierIfNecessary(databaseType, each.getName())));
+            columnsLiteral.append(String.format("%s,", sqlSegmentBuilder.getEscapedIdentifier(each.getName())));
             holder.append("?,");
         }
         columnsLiteral.setLength(columnsLiteral.length() - 1);
         holder.setLength(holder.length() - 1);
-        return String.format("INSERT INTO %s(%s) VALUES(%s)", getQualifiedTableName(schemaName, tableName), columnsLiteral, holder);
+        return String.format("INSERT INTO %s(%s) VALUES(%s)", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), columnsLiteral, holder);
     }
     
     /**
@@ -187,14 +111,14 @@ public final class PipelineSQLBuilderEngine {
         }
         StringBuilder updatedColumnString = new StringBuilder();
         for (Column each : extractUpdatedColumns(dataRecord)) {
-            updatedColumnString.append(String.format("%s = ?,", DatabaseTypeEngine.escapeIdentifierIfNecessary(databaseType, each.getName())));
+            updatedColumnString.append(String.format("%s = ?,", sqlSegmentBuilder.getEscapedIdentifier(each.getName())));
         }
         updatedColumnString.setLength(updatedColumnString.length() - 1);
         return String.format(sqlCacheMap.get(sqlCacheKey), updatedColumnString);
     }
     
     private String buildUpdateSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("UPDATE %s SET %%s WHERE %s", getQualifiedTableName(schemaName, tableName), buildWhereSQL(conditionColumns));
+        return String.format("UPDATE %s SET %%s WHERE %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), buildWhereSQL(conditionColumns));
     }
     
     /**
@@ -231,17 +155,17 @@ public final class PipelineSQLBuilderEngine {
      * @return drop SQL
      */
     public String buildDropSQL(final String schemaName, final String tableName) {
-        return String.format("DROP TABLE IF EXISTS %s", getQualifiedTableName(schemaName, tableName));
+        return String.format("DROP TABLE IF EXISTS %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
     
     private String buildDeleteSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("DELETE FROM %s WHERE %s", getQualifiedTableName(schemaName, tableName), buildWhereSQL(conditionColumns));
+        return String.format("DELETE FROM %s WHERE %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), buildWhereSQL(conditionColumns));
     }
     
     private String buildWhereSQL(final Collection<Column> conditionColumns) {
         StringBuilder where = new StringBuilder();
         for (Column each : conditionColumns) {
-            where.append(String.format("%s = ? AND ", DatabaseTypeEngine.escapeIdentifierIfNecessary(databaseType, each.getName())));
+            where.append(String.format("%s = ? AND ", sqlSegmentBuilder.getEscapedIdentifier(each.getName())));
         }
         where.setLength(where.length() - 5);
         return where.toString();
@@ -255,7 +179,7 @@ public final class PipelineSQLBuilderEngine {
      * @return count SQL
      */
     public String buildCountSQL(final String schemaName, final String tableName) {
-        return String.format("SELECT COUNT(*) FROM %s", getQualifiedTableName(schemaName, tableName));
+        return String.format("SELECT COUNT(*) FROM %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
     
     /**
@@ -278,8 +202,8 @@ public final class PipelineSQLBuilderEngine {
      * @return min max unique key SQL
      */
     public String buildUniqueKeyMinMaxValuesSQL(final String schemaName, final String tableName, final String uniqueKey) {
-        String quotedUniqueKey = DatabaseTypeEngine.escapeIdentifierIfNecessary(databaseType, uniqueKey);
-        return String.format("SELECT MIN(%s), MAX(%s) FROM %s", quotedUniqueKey, quotedUniqueKey, getQualifiedTableName(schemaName, tableName));
+        String quotedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
+        return String.format("SELECT MIN(%s), MAX(%s) FROM %s", quotedUniqueKey, quotedUniqueKey, sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
     
     /**
@@ -293,11 +217,15 @@ public final class PipelineSQLBuilderEngine {
      * @return query SQL
      */
     public String buildQueryAllOrderingSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey, final boolean firstQuery) {
-        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
-        String quotedUniqueKey = DatabaseTypeEngine.escapeIdentifierIfNecessary(databaseType, uniqueKey);
+        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
+        String quotedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
         return firstQuery
                 ? String.format("SELECT %s FROM %s ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey)
                 : String.format("SELECT %s FROM %s WHERE %s>? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
+    }
+    
+    private String buildQueryColumns(final List<String> columnNames) {
+        return columnNames.isEmpty() ? "*" : columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
     }
     
     /**

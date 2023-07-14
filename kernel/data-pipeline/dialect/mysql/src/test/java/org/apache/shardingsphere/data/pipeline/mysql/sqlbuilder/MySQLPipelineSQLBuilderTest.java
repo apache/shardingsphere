@@ -34,15 +34,15 @@ class MySQLPipelineSQLBuilderTest {
     private final MySQLPipelineSQLBuilder sqlBuilder = new MySQLPipelineSQLBuilder();
     
     @Test
-    void assertBuildInsertSQLOnDuplicatePart() {
+    void assertBuildInsertSQLOnDuplicateClause() {
         String actual = sqlBuilder.buildInsertSQLOnDuplicateClause(null, mockDataRecord("t1")).orElse(null);
-        assertThat(actual, is(" ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
+        assertThat(actual, is("ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test
-    void assertBuildInsertSQLOnDuplicatePartHasShardingColumn() {
+    void assertBuildInsertSQLOnDuplicateClauseHasShardingColumn() {
         String actual = sqlBuilder.buildInsertSQLOnDuplicateClause(null, mockDataRecord("t2")).orElse(null);
-        assertThat(actual, is(" ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
+        assertThat(actual, is("ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test

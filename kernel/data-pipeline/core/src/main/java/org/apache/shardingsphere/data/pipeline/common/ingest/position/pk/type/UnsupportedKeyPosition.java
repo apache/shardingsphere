@@ -15,41 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.ingest.position;
+package org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.PrimaryKeyPosition;
 
 /**
- * Integer primary key position.
+ * Unsupported key position.
  */
-public final class IntegerPrimaryKeyPosition extends PrimaryKeyPosition<Long> implements IngestPosition {
+public final class UnsupportedKeyPosition implements PrimaryKeyPosition<Void> {
     
-    private final long beginValue;
-    
-    private final long endValue;
-    
-    public IntegerPrimaryKeyPosition(final long beginValue, final long endValue) {
-        this.beginValue = beginValue;
-        this.endValue = endValue;
+    @Override
+    public Void getBeginValue() {
+        return null;
     }
     
     @Override
-    public Long getBeginValue() {
-        return beginValue;
+    public Void getEndValue() {
+        return null;
     }
     
     @Override
-    public Long getEndValue() {
-        return endValue;
+    public Void convert(final String value) {
+        throw new UnsupportedOperationException();
     }
     
     @Override
-    protected Long convert(final String value) {
-        return Long.parseLong(value);
+    public char getType() {
+        return 'u';
     }
     
     @Override
-    protected char getType() {
-        return 'i';
+    public String toString() {
+        return String.format("%s,,", getType());
     }
 }

@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.ingest.position;
+package org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type;
 
+import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.PrimaryKeyPositionFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
-class NoUniqueKeyPositionTest {
+class IntegerPrimaryKeyPositionTest {
     
     @Test
     void assertInit() {
-        NoUniqueKeyPosition position = (NoUniqueKeyPosition) PrimaryKeyPositionFactory.newInstance("n,,");
-        assertNull(position.getBeginValue());
-        assertNull(position.getEndValue());
+        IntegerPrimaryKeyPosition position = (IntegerPrimaryKeyPosition) PrimaryKeyPositionFactory.newInstance("i,1,100");
+        assertThat(position.getBeginValue(), is(1L));
+        assertThat(position.getEndValue(), is(100L));
     }
     
     @Test
     void assertToString() {
-        assertThat(new NoUniqueKeyPosition().toString(), is("n,,"));
+        assertThat(new IntegerPrimaryKeyPosition(1, 100).toString(), is("i,1,100"));
     }
 }

@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.ingest.position;
+package org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type;
 
+import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.PrimaryKeyPositionFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-class StringPrimaryKeyPositionTest {
+class UnsupportedKeyPositionTest {
     
     @Test
     void assertInit() {
-        StringPrimaryKeyPosition position = (StringPrimaryKeyPosition) PrimaryKeyPositionFactory.newInstance("s,hi,jk");
-        assertThat(position.getBeginValue(), is("hi"));
-        assertThat(position.getEndValue(), is("jk"));
+        UnsupportedKeyPosition position = (UnsupportedKeyPosition) PrimaryKeyPositionFactory.newInstance("u,,");
+        assertNull(position.getBeginValue());
+        assertNull(position.getEndValue());
     }
     
     @Test
     void assertToString() {
-        assertThat(new StringPrimaryKeyPosition("hi", "jk").toString(), is("s,hi,jk"));
+        assertThat(new UnsupportedKeyPosition().toString(), is("u,,"));
     }
 }

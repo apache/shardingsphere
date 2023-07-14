@@ -38,30 +38,6 @@ class PipelineSQLBuilderEngineTest {
     private final PipelineSQLBuilderEngine sqlBuilderEngine = new PipelineSQLBuilderEngine(TypedSPILoader.getService(DatabaseType.class, "H2"));
     
     @Test
-    void assertBuildDivisibleInventoryDumpSQL() {
-        String actual = sqlBuilderEngine.buildDivisibleInventoryDumpSQL(null, "t_order", Collections.singletonList("*"), "order_id");
-        assertThat(actual, is("SELECT * FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC"));
-        actual = sqlBuilderEngine.buildDivisibleInventoryDumpSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC"));
-    }
-    
-    @Test
-    void assertBuildDivisibleInventoryDumpSQLNoEnd() {
-        String actual = sqlBuilderEngine.buildNoLimitedDivisibleInventoryDumpSQL(null, "t_order", Collections.singletonList("*"), "order_id");
-        assertThat(actual, is("SELECT * FROM t_order WHERE order_id>=? ORDER BY order_id ASC"));
-        actual = sqlBuilderEngine.buildNoLimitedDivisibleInventoryDumpSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? ORDER BY order_id ASC"));
-    }
-    
-    @Test
-    void assertBuildIndivisibleInventoryDumpSQL() {
-        String actual = sqlBuilderEngine.buildIndivisibleInventoryDumpSQL(null, "t_order", Collections.singletonList("*"), "order_id");
-        assertThat(actual, is("SELECT * FROM t_order ORDER BY order_id ASC"));
-        actual = sqlBuilderEngine.buildIndivisibleInventoryDumpSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC"));
-    }
-    
-    @Test
     void assertBuildQueryAllOrderingSQLFirstQuery() {
         String actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", true);
         assertThat(actual, is("SELECT * FROM t_order ORDER BY order_id ASC"));
@@ -125,20 +101,20 @@ class PipelineSQLBuilderEngineTest {
     
     @Test
     void assertBuildDeleteSQLWithoutUniqueKey() {
-        String actual = sqlBuilderEngine.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey("t_order"),
-                RecordUtils.extractConditionColumns(mockDataRecordWithoutUniqueKey("t_order"), Collections.emptySet()));
+        String actual = sqlBuilderEngine.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey(),
+                RecordUtils.extractConditionColumns(mockDataRecordWithoutUniqueKey(), Collections.emptySet()));
         assertThat(actual, is("DELETE FROM t_order WHERE id = ? AND name = ?"));
     }
     
     @Test
     void assertBuildUpdateSQLWithoutShardingColumns() {
-        DataRecord dataRecord = mockDataRecordWithoutUniqueKey("t_order");
+        DataRecord dataRecord = mockDataRecordWithoutUniqueKey();
         String actual = sqlBuilderEngine.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("UPDATE t_order SET name = ? WHERE id = ? AND name = ?"));
     }
     
-    private DataRecord mockDataRecordWithoutUniqueKey(final String tableName) {
-        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new PlaceholderPosition(), 4);
+    private DataRecord mockDataRecordWithoutUniqueKey() {
+        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, "t_order", new PlaceholderPosition(), 4);
         result.addColumn(new Column("id", "", false, false));
         result.addColumn(new Column("name", "", true, false));
         return result;
