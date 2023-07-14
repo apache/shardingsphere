@@ -101,20 +101,20 @@ class PipelineSQLBuilderEngineTest {
     
     @Test
     void assertBuildDeleteSQLWithoutUniqueKey() {
-        String actual = sqlBuilderEngine.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey("t_order"),
-                RecordUtils.extractConditionColumns(mockDataRecordWithoutUniqueKey("t_order"), Collections.emptySet()));
+        String actual = sqlBuilderEngine.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey(),
+                RecordUtils.extractConditionColumns(mockDataRecordWithoutUniqueKey(), Collections.emptySet()));
         assertThat(actual, is("DELETE FROM t_order WHERE id = ? AND name = ?"));
     }
     
     @Test
     void assertBuildUpdateSQLWithoutShardingColumns() {
-        DataRecord dataRecord = mockDataRecordWithoutUniqueKey("t_order");
+        DataRecord dataRecord = mockDataRecordWithoutUniqueKey();
         String actual = sqlBuilderEngine.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("UPDATE t_order SET name = ? WHERE id = ? AND name = ?"));
     }
     
-    private DataRecord mockDataRecordWithoutUniqueKey(final String tableName) {
-        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new PlaceholderPosition(), 4);
+    private DataRecord mockDataRecordWithoutUniqueKey() {
+        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, "t_order", new PlaceholderPosition(), 4);
         result.addColumn(new Column("id", "", false, false));
         result.addColumn(new Column("name", "", true, false));
         return result;
