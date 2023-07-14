@@ -111,6 +111,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Run ${{ matrix.operation }} ${{ matrix.image.type }}-${{ matrix.image.version }} E2E Test
+      - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
         if: (env.skip_current_step == 'false')
         run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.${{ matrix.image.type }}=${{ matrix.image.version }}
