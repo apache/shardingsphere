@@ -26,7 +26,7 @@ Apache ShardingSphere 会将用户请求的明文进行加密后存储到底层�
 
 **数据源配置**：指数据源配置。
 
-**加密算法配置**：指使用什么加密算法进行加解密。目前 ShardingSphere 内置了五种加解密算法：AES，MD5，RC4，SM3 和 SM4。用户还可以通过实现 ShardingSphere 提供的接口，自行实现一套加解密算法。
+**加密算法配置**：指使用什么加密算法进行加解密。目前 ShardingSphere 内置了三种加解密算法：AES，MD5 和 RC4。用户还可以通过实现 ShardingSphere 提供的接口，自行实现一套加解密算法。
 
 **加密表配置**：用于告诉 ShardingSphere 数据表里哪个列用于存储密文数据（cipherColumn）、使用什么算法加解密（encryptorName）、哪个列用于存储辅助查询数据（assistedQueryColumn）、使用什么算法加解密（assistedQueryEncryptorName）以及用户想使用哪个列进行 SQL 编写（logicColumn）。
 
@@ -110,4 +110,4 @@ Apache ShardingSphere 提供了加密算法用于数据加密，即 `EncryptAlgo
 在用户进行 `INSERT`，`DELETE`，`UPDATE` 时，ShardingSphere会按照用户配置，对SQL进行解析、改写、路由，并调用 `encrypt()` 将数据加密后存储到数据库， 
 而在 `SELECT` 时，则调用 `decrypt()` 方法将从数据库中取出的加密数据进行逆向解密，最终将原始数据返回给用户。
 
-当前，Apache ShardingSphere 针对这种类型的加密解决方案提供了五种具体实现类，分别是 MD5（不可逆），AES（可逆），RC4（可逆），SM3（不可逆），SM4（可逆），用户只需配置即可使用这五种内置的方案。
+当前，Apache ShardingSphere 针对这种类型的加密解决方案提供了三种具体实现类，分别是 MD5（不可逆），AES（可逆），RC4（可逆），用户只需配置即可使用这三种内置的方案。
