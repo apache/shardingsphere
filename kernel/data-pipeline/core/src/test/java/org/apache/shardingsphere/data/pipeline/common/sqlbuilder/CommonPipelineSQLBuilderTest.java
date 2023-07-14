@@ -27,23 +27,23 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class PipelineSQLBuilderEngineTest {
+class CommonPipelineSQLBuilderTest {
     
-    private final PipelineSQLBuilderEngine sqlBuilderEngine = new PipelineSQLBuilderEngine(TypedSPILoader.getService(DatabaseType.class, "H2"));
+    private final CommonPipelineSQLBuilder pipelineSQLBuilder = new CommonPipelineSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "H2"));
     
     @Test
     void assertBuildQueryAllOrderingSQLFirstQuery() {
-        String actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", true);
+        String actual = pipelineSQLBuilder.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", true);
         assertThat(actual, is("SELECT * FROM t_order ORDER BY order_id ASC"));
-        actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", true);
+        actual = pipelineSQLBuilder.buildQueryAllOrderingSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", true);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC"));
     }
     
     @Test
     void assertBuildQueryAllOrderingSQLNonFirstQuery() {
-        String actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", false);
+        String actual = pipelineSQLBuilder.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", false);
         assertThat(actual, is("SELECT * FROM t_order WHERE order_id>? ORDER BY order_id ASC"));
-        actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", false);
+        actual = pipelineSQLBuilder.buildQueryAllOrderingSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", false);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC"));
     }
 }

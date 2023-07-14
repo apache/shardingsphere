@@ -26,15 +26,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Pipeline SQL builder engine.
+ * Common pipeline SQL builder.
  */
-public final class PipelineSQLBuilderEngine {
+public final class CommonPipelineSQLBuilder {
     
     private final DialectPipelineSQLBuilder dialectSQLBuilder;
     
     private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
     
-    public PipelineSQLBuilderEngine(final DatabaseType databaseType) {
+    public CommonPipelineSQLBuilder(final DatabaseType databaseType) {
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
         sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
     }
