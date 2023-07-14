@@ -78,22 +78,16 @@ public final class PipelineSQLBuilderEngine {
     public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(schemaName, dataRecord.getTableName(), dataRecord.getColumns()));
+            String insertMainClause = buildInsertMainClause(schemaName, dataRecord.getTableName(), dataRecord.getColumns());
+            sqlCacheMap.put(sqlCacheKey, dialectSQLBuilder.buildInsertOnDuplicateClause(schemaName, dataRecord).map(optional -> insertMainClause + " " + optional).orElse(insertMainClause));
         }
-        String insertSQL = sqlCacheMap.get(sqlCacheKey);
-        return dialectSQLBuilder.buildInsertSQLOnDuplicateClause(schemaName, dataRecord).map(optional -> insertSQL + " " + optional).orElse(insertSQL);
+        return sqlCacheMap.get(sqlCacheKey);
     }
     
-    private String buildInsertSQLInternal(final String schemaName, final String tableName, final List<Column> columns) {
-        StringBuilder columnsLiteral = new StringBuilder();
-        StringBuilder holder = new StringBuilder();
-        for (Column each : columns) {
-            columnsLiteral.append(String.format("%s,", sqlSegmentBuilder.getEscapedIdentifier(each.getName())));
-            holder.append("?,");
-        }
-        columnsLiteral.setLength(columnsLiteral.length() - 1);
-        holder.setLength(holder.length() - 1);
-        return String.format("INSERT INTO %s(%s) VALUES(%s)", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), columnsLiteral, holder);
+    private String buildInsertMainClause(final String schemaName, final String tableName, final List<Column> columns) {
+        String columnsLiteral = columns.stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName())).collect(Collectors.joining(","));
+        String valuesLiteral = columns.stream().map(each -> "?").collect(Collectors.joining(","));
+        return String.format("INSERT INTO %s(%s) VALUES(%s)", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), columnsLiteral, valuesLiteral);
     }
     
     /**
@@ -107,18 +101,15 @@ public final class PipelineSQLBuilderEngine {
     public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(schemaName, dataRecord.getTableName(), conditionColumns));
+            String updateMainClause = buildUpdateMainClause(schemaName, dataRecord.getTableName(), extractUpdatedColumns(dataRecord), conditionColumns);
+            sqlCacheMap.put(sqlCacheKey, updateMainClause);
         }
-        StringBuilder updatedColumnString = new StringBuilder();
-        for (Column each : extractUpdatedColumns(dataRecord)) {
-            updatedColumnString.append(String.format("%s = ?,", sqlSegmentBuilder.getEscapedIdentifier(each.getName())));
-        }
-        updatedColumnString.setLength(updatedColumnString.length() - 1);
-        return String.format(sqlCacheMap.get(sqlCacheKey), updatedColumnString);
+        return sqlCacheMap.get(sqlCacheKey);
     }
     
-    private String buildUpdateSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("UPDATE %s SET %%s WHERE %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), buildWhereSQL(conditionColumns));
+    private String buildUpdateMainClause(final String schemaName, final String tableName, final Collection<Column> setColumns, final Collection<Column> conditionColumns) {
+        String updateSetClause = setColumns.stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + " = ?").collect(Collectors.joining(","));
+        return String.format("UPDATE %s SET %s WHERE %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), updateSetClause, buildWhereSQL(conditionColumns));
     }
     
     /**
