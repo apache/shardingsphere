@@ -19,7 +19,7 @@ name: Schedule - Check
 
 on:
   schedule:
-    - cron: '0 */1 * * *'  # very hour
+    - cron: '0 */1 * * *'  # every hour
   workflow_dispatch:
 
 env:
