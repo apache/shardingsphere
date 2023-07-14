@@ -38,7 +38,7 @@ public final class PostgreSQLJdbcQueryPropertiesExtension implements JdbcQueryPr
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

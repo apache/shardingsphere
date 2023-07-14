@@ -42,7 +42,7 @@ public final class FixtureDataSourceChecker implements DataSourceChecker {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

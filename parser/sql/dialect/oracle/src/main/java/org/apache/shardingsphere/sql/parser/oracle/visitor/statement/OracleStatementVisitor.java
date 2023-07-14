@@ -810,7 +810,12 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public final ASTNode visitDataType(final DataTypeContext ctx) {
         DataTypeSegment result = new DataTypeSegment();
-        result.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
+        if (null != ctx.dataTypeName()) {
+            result.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
+        }
+        if (null != ctx.specialDatatype()) {
+            result.setDataTypeName(((KeywordValue) visit(ctx.specialDatatype().dataTypeName())).getValue());
+        }
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.dataTypeLength()) {

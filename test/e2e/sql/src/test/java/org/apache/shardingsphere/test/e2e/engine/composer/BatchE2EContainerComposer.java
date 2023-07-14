@@ -65,7 +65,7 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer implem
     
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
-    public BatchE2EContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException, SQLException {
+    public BatchE2EContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException {
         super(testParam);
         databaseType = testParam.getDatabaseType();
         for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {

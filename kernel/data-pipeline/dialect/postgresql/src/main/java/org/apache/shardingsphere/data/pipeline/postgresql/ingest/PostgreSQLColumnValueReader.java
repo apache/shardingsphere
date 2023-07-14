@@ -17,31 +17,44 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
-import org.apache.shardingsphere.data.pipeline.core.dumper.AbstractColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.DialectColumnValueReader;
 import org.postgresql.util.PGobject;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Optional;
 
 /**
  * Column value reader for PostgreSQL.
  */
-public final class PostgreSQLColumnValueReader extends AbstractColumnValueReader {
+public final class PostgreSQLColumnValueReader implements DialectColumnValueReader {
     
     private static final String PG_MONEY_TYPE = "money";
     
     private static final String PG_BIT_TYPE = "bit";
     
     @Override
-    protected Object doReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        if (isPgMoneyType(metaData, columnIndex)) {
-            return resultSet.getBigDecimal(columnIndex);
+    public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        if (isMoneyType(metaData, columnIndex)) {
+            return Optional.ofNullable(resultSet.getBigDecimal(columnIndex));
         }
-        if (!isPgBitType(metaData, columnIndex)) {
-            return defaultDoReadValue(resultSet, metaData, columnIndex);
+        if (isBitType(metaData, columnIndex)) {
+            return Optional.of(getBitObject(resultSet, columnIndex));
         }
+        return Optional.empty();
+    }
+    
+    private boolean isMoneyType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return PG_MONEY_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
+    }
+    
+    private boolean isBitType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return Types.BIT == metaData.getColumnType(columnIndex) && PG_BIT_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
+    }
+    
+    private static PGobject getBitObject(final ResultSet resultSet, final int columnIndex) throws SQLException {
         PGobject result = new PGobject();
         result.setType("bit");
         Object bitValue = resultSet.getObject(columnIndex);
@@ -51,16 +64,8 @@ public final class PostgreSQLColumnValueReader extends AbstractColumnValueReader
         return result;
     }
     
-    private boolean isPgMoneyType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
-        return PG_MONEY_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
-    }
-    
-    private boolean isPgBitType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
-        return Types.BIT == resultSetMetaData.getColumnType(index) && PG_BIT_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
-    }
-    
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

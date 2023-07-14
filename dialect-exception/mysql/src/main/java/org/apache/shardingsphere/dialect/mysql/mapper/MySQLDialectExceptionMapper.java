@@ -121,7 +121,7 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

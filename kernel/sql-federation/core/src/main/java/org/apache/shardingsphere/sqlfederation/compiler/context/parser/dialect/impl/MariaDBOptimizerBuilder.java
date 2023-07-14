@@ -41,7 +41,7 @@ public final class MariaDBOptimizerBuilder implements OptimizerSQLDialectBuilder
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MariaDB";
     }
 }

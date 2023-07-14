@@ -48,6 +48,7 @@ import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -70,7 +71,6 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -141,12 +141,13 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts, connectionSession);
         SQLFederationExecutorContext context = new SQLFederationExecutorContext(true, queryContext, metaDataContexts.getMetaData());
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(getDatabaseName(connectionSession));
-        sqlFederationEngine.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData().getStorageTypes(), sqlStatement), context);
+        sqlFederationEngine.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData(), sqlStatement), context);
         return context.getExecutionUnits();
     }
     
-    private JDBCExecutorCallback<ExecuteResult> createPreviewFederationCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement) {
-        return new JDBCExecutorCallback<ExecuteResult>(protocolType, storageTypes, sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()) {
+    private JDBCExecutorCallback<ExecuteResult> createPreviewFederationCallback(final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData,
+                                                                                final SQLStatement sqlStatement) {
+        return new JDBCExecutorCallback<ExecuteResult>(protocolType, resourceMetaData, sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()) {
             
             @Override
             protected ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {

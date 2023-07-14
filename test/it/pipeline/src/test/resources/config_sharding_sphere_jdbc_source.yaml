@@ -29,6 +29,9 @@ mode:
       maxRetries: 3
       operationTimeoutMilliseconds: 500
 
+props:
+  system-schema-metadata-enabled: false
+
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
@@ -38,20 +41,20 @@ dataSources:
 
 rules:
 - !SHARDING
-  defaultDatabaseStrategy:
-    standard:
-      shardingAlgorithmName: default_db_inline
-      shardingColumn: user_id
+#  defaultDatabaseStrategy:
+#    standard:
+#      shardingAlgorithmName: default_db_inline
+#      shardingColumn: user_id
   tables:
     t_order:
       actualDataNodes: ds_0.t_order
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
-      tableStrategy:
-        standard:
-          shardingAlgorithmName: t_order_tbl_inline
-          shardingColumn: order_id
+#      tableStrategy:
+#        standard:
+#          shardingAlgorithmName: t_order_tbl_inline
+#          shardingColumn: order_id
   shardingAlgorithms:
     default_db_inline:
       type: INLINE

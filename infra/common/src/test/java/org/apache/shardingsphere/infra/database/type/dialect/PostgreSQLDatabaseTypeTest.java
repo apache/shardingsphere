@@ -28,6 +28,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -91,6 +92,6 @@ class PostgreSQLDatabaseTypeTest {
     
     @Test
     void assertGetDefaultSchema() {
-        assertThat(new PostgreSQLDatabaseType().getDefaultSchema(), is("public"));
+        assertThat(new PostgreSQLDatabaseType().getDefaultSchema(), is(Optional.of("public")));
     }
 }

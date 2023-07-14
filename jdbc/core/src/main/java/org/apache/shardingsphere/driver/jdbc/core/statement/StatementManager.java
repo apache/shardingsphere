@@ -27,7 +27,9 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Executor
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,13 +43,11 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
     
     private final ForceExecuteTemplate<Statement> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
-    @SuppressWarnings("MagicConstant")
     @Override
     public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
-        return connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
+        return createStatement(connection, option);
     }
     
-    @SuppressWarnings("MagicConstant")
     @Override
     public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final ConnectionMode connectionMode, final StatementOption option,
                                            final DatabaseType databaseType) throws SQLException {
@@ -59,9 +59,31 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
                         ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
                         : connection.prepareStatement(sql, option.getColumns());
             } else {
-                result = connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
+                result = prepareStatement(connection, option, sql);
             }
             cachedStatements.put(new CacheKey(executionUnit, connectionMode), result);
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("MagicConstant")
+    private Statement createStatement(final Connection connection, final StatementOption option) throws SQLException {
+        Statement result;
+        try {
+            result = connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
+        } catch (final SQLFeatureNotSupportedException ignore) {
+            result = connection.createStatement();
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("MagicConstant")
+    private PreparedStatement prepareStatement(final Connection connection, final StatementOption option, final String sql) throws SQLException {
+        PreparedStatement result;
+        try {
+            result = connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
+        } catch (final SQLFeatureNotSupportedException ignore) {
+            result = connection.prepareStatement(sql);
         }
         return result;
     }

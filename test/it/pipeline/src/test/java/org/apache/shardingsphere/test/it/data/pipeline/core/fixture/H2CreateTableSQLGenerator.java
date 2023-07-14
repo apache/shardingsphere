@@ -22,7 +22,6 @@ import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGe
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -32,7 +31,7 @@ import java.util.Collections;
 public final class H2CreateTableSQLGenerator implements CreateTableSQLGenerator {
     
     @Override
-    public Collection<String> generate(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
+    public Collection<String> generate(final DataSource dataSource, final String schemaName, final String tableName) {
         if ("t_order".equalsIgnoreCase(tableName)) {
             return Collections.singletonList(PipelineContextUtils.getCreateOrderTableSchema());
         }
@@ -40,7 +39,7 @@ public final class H2CreateTableSQLGenerator implements CreateTableSQLGenerator 
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

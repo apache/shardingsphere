@@ -21,11 +21,13 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ServiceLoader;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -34,6 +36,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingSphereDriverTest {
+    
+    @Test
+    void assertJavaSqlDriverRegistered() {
+        assertTrue(isShardingSphereDriverSPIExisting(), "Could not load ShardingSphereDriver from META-INF/services/java.sql.Driver");
+    }
+    
+    private boolean isShardingSphereDriverSPIExisting() {
+        for (Driver each : ServiceLoader.load(Driver.class)) {
+            if (each instanceof ShardingSphereDriver) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     @Test
     void assertConnectWithInvalidURL() {

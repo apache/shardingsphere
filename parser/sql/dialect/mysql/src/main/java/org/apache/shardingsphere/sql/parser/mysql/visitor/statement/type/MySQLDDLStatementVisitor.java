@@ -61,6 +61,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateP
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTablespaceContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTableOptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTableOptionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DeallocateContext;
@@ -122,6 +124,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.engine.EngineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -131,11 +134,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.Routi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.CreateTableOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -259,6 +264,22 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         }
         if (null != ctx.createLikeClause()) {
             result.setLikeTable((SimpleTableSegment) visit(ctx.createLikeClause()));
+        }
+        if (null != ctx.createTableOptions()) {
+            result.setCreateTableOptionSegment((CreateTableOptionSegment) visit(ctx.createTableOptions()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateTableOptions(final CreateTableOptionsContext ctx) {
+        CreateTableOptionSegment result = new CreateTableOptionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (CreateTableOptionContext each : ctx.createTableOption()) {
+            if (null != each.engineRef()) {
+                result.setEngine((EngineSegment) visit(each.engineRef()));
+            } else if (null != each.COMMENT()) {
+                result.setCommentSegment(new CommentSegment(each.string_().getText(), each.string_().getStart().getStartIndex(), each.string_().getStop().getStopIndex()));
+            }
         }
         return result;
     }
