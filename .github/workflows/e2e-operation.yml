@@ -63,24 +63,12 @@ jobs:
       opengauss_version: enmotech/opengauss:2.1.0
     timeout-minutes: 40
     steps:
-      # TODO check the name is nessasary
       - env:
           changed_operations: ${{ needs.detect-changed-files.outputs.changed_operations }}
           current_operation: ${{ matrix.operation }}
         # TODO define shell file and pass parameter
         run: |
-          echo "skip_current_step=false" >> $GITHUB_ENV
-          if [[ ${changed_operations} == '["ignore"]' ]]; then
-            echo "${current_operation} is ignore by ignore filter"
-            echo "skip_current_step=true" >> $GITHUB_ENV
-          fi
-          
-          if [[ ${changed_operations} == *""$current_operation""* ]]; then
-            echo "${current_operation} is detected by changed filter"
-            else
-              echo "${current_operation} is ignore by filter"
-              echo "skip_current_step=true" >> $GITHUB_ENV
-          fi
+          sh .github/workflows/resources/filter/detect-filter-function.sh
       - name: Checkout Project
         if: (env.skip_current_step == 'false')
         uses: actions/checkout@v3
