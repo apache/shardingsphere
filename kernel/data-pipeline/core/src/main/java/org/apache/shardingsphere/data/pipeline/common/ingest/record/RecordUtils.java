@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Record utility class.
@@ -77,12 +78,6 @@ public final class RecordUtils {
      * @return updated columns
      */
     public static List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        List<Column> result = new ArrayList<>(dataRecord.getColumns().size());
-        for (Column each : dataRecord.getColumns()) {
-            if (each.isUpdated()) {
-                result.add(each);
-            }
-        }
-        return result;
+        return dataRecord.getColumns().stream().filter(Column::isUpdated).collect(Collectors.toList());
     }
 }

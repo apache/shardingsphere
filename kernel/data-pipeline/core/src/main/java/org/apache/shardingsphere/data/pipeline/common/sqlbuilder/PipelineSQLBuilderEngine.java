@@ -101,7 +101,8 @@ public final class PipelineSQLBuilderEngine {
     public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            String updateMainClause = buildUpdateMainClause(schemaName, dataRecord.getTableName(), extractUpdatedColumns(dataRecord), conditionColumns);
+            Collection<Column> setColumns = dataRecord.getColumns().stream().filter(Column::isUpdated).collect(Collectors.toList());
+            String updateMainClause = buildUpdateMainClause(schemaName, dataRecord.getTableName(), setColumns, conditionColumns);
             sqlCacheMap.put(sqlCacheKey, updateMainClause);
         }
         return sqlCacheMap.get(sqlCacheKey);
@@ -110,16 +111,6 @@ public final class PipelineSQLBuilderEngine {
     private String buildUpdateMainClause(final String schemaName, final String tableName, final Collection<Column> setColumns, final Collection<Column> conditionColumns) {
         String updateSetClause = setColumns.stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + " = ?").collect(Collectors.joining(","));
         return String.format("UPDATE %s SET %s WHERE %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), updateSetClause, buildWhereSQL(conditionColumns));
-    }
-    
-    /**
-     * Extract updated columns.
-     *
-     * @param dataRecord data record
-     * @return filtered columns
-     */
-    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        return dialectSQLBuilder.extractUpdatedColumns(dataRecord);
     }
     
     /**

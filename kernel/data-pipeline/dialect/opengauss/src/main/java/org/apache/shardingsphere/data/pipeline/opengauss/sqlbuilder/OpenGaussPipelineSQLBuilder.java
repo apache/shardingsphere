@@ -19,12 +19,10 @@ package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Pipeline SQL builder of openGauss.
@@ -50,11 +48,6 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
         }
         result.setLength(result.length() - 1);
         return Optional.of(result.toString());
-    }
-    
-    @Override
-    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        return dataRecord.getColumns().stream().filter(each -> !(each.isUniqueKey())).collect(Collectors.toList());
     }
     
     @Override
