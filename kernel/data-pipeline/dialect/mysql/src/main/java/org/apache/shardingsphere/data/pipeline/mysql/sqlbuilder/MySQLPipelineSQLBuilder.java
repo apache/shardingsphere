@@ -19,12 +19,9 @@ package org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -49,11 +46,6 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
         }
         result.setLength(result.length() - 1);
         return Optional.of(result.toString());
-    }
-    
-    @Override
-    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        return new ArrayList<>(RecordUtils.extractUpdatedColumns(dataRecord));
     }
     
     @Override

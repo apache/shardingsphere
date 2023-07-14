@@ -17,20 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilder {
-    
-    @Override
-    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        return Collections.emptyList();
-    }
     
     @Override
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
