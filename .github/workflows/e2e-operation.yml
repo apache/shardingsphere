@@ -69,7 +69,7 @@ jobs:
         # TODO define shell file and pass parameter
         run: |
           echo "skip_current_step=false" >> $GITHUB_ENV
-          function checkCurrentStep() {
+          function checkCurrentStep {
             if [[ ${changed_operations} == '["ignore"]' ]]; then
               echo "${current_operation} is ignore by ignore filter"
               echo "skip_current_step=true" >> $GITHUB_ENV
