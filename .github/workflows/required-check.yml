@@ -33,6 +33,11 @@ jobs:
   check-checkstyle:
     name: Check - CheckStyle
     runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Make the origin check passed'
+  check-checkstyle-and-spotless:
+    name: Check - CheckStyle and Spotless
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
@@ -42,7 +47,7 @@ jobs:
           key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Run CheckStyle
+      - name: Run CheckStyle and Spotless
         run: ./mvnw checkstyle:check spotless:check -T1C
   
   check-license:
