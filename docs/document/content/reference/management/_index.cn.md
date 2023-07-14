@@ -21,15 +21,22 @@ namespace
    ├     ├──active_verison                                     
    ├     ├──versions  
    ├     ├     ├──0                  
-   ├──metadata                                           # Metadata 配置
+   ├──metadata                                           # Metadata configuration
    ├     ├──${databaseName} 
-   ├     ├     ├──data_sources                           # 存储单元结构配置
-   ├     ├     ├     ├──${dataSourceName}                        
-   ├     ├     ├     ├     ├──active_verison             # 激活版本                                 
-   ├     ├     ├     ├     ├──versions                   # 版本号
-   ├     ├     ├     ├     ├     ├──0
-   ├     ├     ├     ├──...                                
-   ├     ├     ├──schemas                                # Schema 列表   
+   ├     ├     ├──data_sources                          
+   ├     ├     ├     ├──units 							 # Storage unit configuration
+   ├     ├     ├     ├    ├──${dataSourceName}                        
+   ├     ├     ├     ├    ├     ├──active_verison             # Active version                                 
+   ├     ├     ├     ├    ├     ├──versions                   # version list
+   ├     ├     ├     ├    ├     ├     ├──0
+   ├     ├     ├     ├    ├──...   
+   ├     ├     ├     ├──nodes 							 # Storage node configuration
+   ├     ├     ├     ├    ├──${dataSourceName}                        
+   ├     ├     ├     ├    ├     ├──active_verison             # Active version                                 
+   ├     ├     ├     ├    ├     ├──versions                   # version list
+   ├     ├     ├     ├    ├     ├     ├──0
+   ├     ├     ├     ├    ├──...                             
+   ├     ├     ├──schemas                                   # Schema 列表   
    ├     ├     ├     ├──${schemaName}                    
    ├     ├     ├     ├     ├──tables                     # 表结构配置
    ├     ├     ├     ├     ├     ├──${tableName}         
@@ -116,7 +123,27 @@ kernel-executor-size: 20
 sql-show: true
 ```
 
-### /metadata/${databaseName}/data_sources/ds_0/versions/0
+### /metadata/${databaseName}/data_sources/units/ds_0/versions/0
+
+数据库连接池的，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid，HikariCP）。
+
+```yaml
+ds_0:
+  initializationFailTimeout: 1
+  validationTimeout: 5000
+  maxLifetime: 1800000
+  leakDetectionThreshold: 0
+  minimumIdle: 1
+  password: root
+  idleTimeout: 60000
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  maximumPoolSize: 50
+  connectionTimeout: 30000
+  username: root
+  poolName: HikariPool-1
+```
+### /metadata/${databaseName}/data_sources/nodes/ds_0/versions/0
 
 数据库连接池的，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid，HikariCP）。
 
