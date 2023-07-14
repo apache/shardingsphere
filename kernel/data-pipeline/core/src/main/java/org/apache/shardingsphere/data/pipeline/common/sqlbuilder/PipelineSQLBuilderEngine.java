@@ -18,17 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
 import lombok.Getter;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 /**
@@ -36,26 +31,21 @@ import java.util.stream.Collectors;
  */
 public final class PipelineSQLBuilderEngine {
     
-    private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
-    
-    private static final String UPDATE_SQL_CACHE_KEY_PREFIX = "UPDATE_";
-    
-    private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
-    
     @Getter
     private final PipelineInventoryDumpSQLBuilder inventoryDumpSQLBuilder;
+    
+    @Getter
+    private final PipelineImportSQLBuilder importSQLBuilder;
     
     private final DialectPipelineSQLBuilder dialectSQLBuilder;
     
     private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
     
-    private final ConcurrentMap<String, String> sqlCacheMap;
-    
     public PipelineSQLBuilderEngine(final DatabaseType databaseType) {
         inventoryDumpSQLBuilder = new PipelineInventoryDumpSQLBuilder(databaseType);
+        importSQLBuilder = new PipelineImportSQLBuilder(databaseType);
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
         sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
-        sqlCacheMap = new ConcurrentHashMap<>();
     }
     
     /**
@@ -69,85 +59,6 @@ public final class PipelineSQLBuilderEngine {
     }
     
     /**
-     * Build insert SQL.
-     *
-     * @param schemaName schema name
-     * @param dataRecord data record
-     * @return insert SQL
-     */
-    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
-        String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
-        if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(schemaName, dataRecord.getTableName(), dataRecord.getColumns()));
-        }
-        String insertSQL = sqlCacheMap.get(sqlCacheKey);
-        return dialectSQLBuilder.buildInsertSQLOnDuplicateClause(schemaName, dataRecord).map(optional -> insertSQL + " " + optional).orElse(insertSQL);
-    }
-    
-    private String buildInsertSQLInternal(final String schemaName, final String tableName, final List<Column> columns) {
-        StringBuilder columnsLiteral = new StringBuilder();
-        StringBuilder holder = new StringBuilder();
-        for (Column each : columns) {
-            columnsLiteral.append(String.format("%s,", sqlSegmentBuilder.getEscapedIdentifier(each.getName())));
-            holder.append("?,");
-        }
-        columnsLiteral.setLength(columnsLiteral.length() - 1);
-        holder.setLength(holder.length() - 1);
-        return String.format("INSERT INTO %s(%s) VALUES(%s)", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), columnsLiteral, holder);
-    }
-    
-    /**
-     * Build update SQL.
-     *
-     * @param schemaName schema name
-     * @param dataRecord data record
-     * @param conditionColumns condition columns
-     * @return update SQL
-     */
-    public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
-        String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
-        if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(schemaName, dataRecord.getTableName(), conditionColumns));
-        }
-        StringBuilder updatedColumnString = new StringBuilder();
-        for (Column each : extractUpdatedColumns(dataRecord)) {
-            updatedColumnString.append(String.format("%s = ?,", sqlSegmentBuilder.getEscapedIdentifier(each.getName())));
-        }
-        updatedColumnString.setLength(updatedColumnString.length() - 1);
-        return String.format(sqlCacheMap.get(sqlCacheKey), updatedColumnString);
-    }
-    
-    private String buildUpdateSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("UPDATE %s SET %%s WHERE %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), buildWhereSQL(conditionColumns));
-    }
-    
-    /**
-     * Extract updated columns.
-     *
-     * @param dataRecord data record
-     * @return filtered columns
-     */
-    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        return dialectSQLBuilder.extractUpdatedColumns(dataRecord);
-    }
-    
-    /**
-     * Build delete SQL.
-     *
-     * @param schemaName schema name
-     * @param dataRecord data record
-     * @param conditionColumns condition columns
-     * @return delete SQL
-     */
-    public String buildDeleteSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
-        String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
-        if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(schemaName, dataRecord.getTableName(), conditionColumns));
-        }
-        return sqlCacheMap.get(sqlCacheKey);
-    }
-    
-    /**
      * Build drop SQL.
      *
      * @param schemaName schema name
@@ -156,19 +67,6 @@ public final class PipelineSQLBuilderEngine {
      */
     public String buildDropSQL(final String schemaName, final String tableName) {
         return String.format("DROP TABLE IF EXISTS %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
-    }
-    
-    private String buildDeleteSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("DELETE FROM %s WHERE %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), buildWhereSQL(conditionColumns));
-    }
-    
-    private String buildWhereSQL(final Collection<Column> conditionColumns) {
-        StringBuilder where = new StringBuilder();
-        for (Column each : conditionColumns) {
-            where.append(String.format("%s = ? AND ", sqlSegmentBuilder.getEscapedIdentifier(each.getName())));
-        }
-        where.setLength(where.length() - 5);
-        return where.toString();
     }
     
     /**

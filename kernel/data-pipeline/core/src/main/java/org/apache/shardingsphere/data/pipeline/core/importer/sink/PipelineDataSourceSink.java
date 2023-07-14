@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Default importer.
+ * Pipeline data source sink.
  */
 @Slf4j
 public final class PipelineDataSourceSink implements PipelineSink {
@@ -201,7 +201,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     private void executeBatchInsert(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         DataRecord dataRecord = dataRecords.get(0);
-        String insertSql = sqlBuilderEngine.buildInsertSQL(getSchemaName(dataRecord.getTableName()), dataRecord);
+        String insertSql = sqlBuilderEngine.getImportSQLBuilder().buildInsertSQL(getSchemaName(dataRecord.getTableName()), dataRecord);
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertSql)) {
             batchInsertStatement.set(preparedStatement);
             preparedStatement.setQueryTimeout(30);
@@ -230,26 +230,26 @@ public final class PipelineDataSourceSink implements PipelineSink {
     private void executeUpdate(final Connection connection, final DataRecord dataRecord) throws SQLException {
         Set<String> shardingColumns = importerConfig.getShardingColumns(dataRecord.getTableName());
         List<Column> conditionColumns = RecordUtils.extractConditionColumns(dataRecord, shardingColumns);
-        List<Column> updatedColumns = sqlBuilderEngine.extractUpdatedColumns(dataRecord);
-        String updateSql = sqlBuilderEngine.buildUpdateSQL(getSchemaName(dataRecord.getTableName()), dataRecord, conditionColumns);
+        List<Column> setColumns = dataRecord.getColumns().stream().filter(Column::isUpdated).collect(Collectors.toList());
+        String updateSql = sqlBuilderEngine.getImportSQLBuilder().buildUpdateSQL(getSchemaName(dataRecord.getTableName()), dataRecord, conditionColumns);
         try (PreparedStatement preparedStatement = connection.prepareStatement(updateSql)) {
             updateStatement.set(preparedStatement);
-            for (int i = 0; i < updatedColumns.size(); i++) {
-                preparedStatement.setObject(i + 1, updatedColumns.get(i).getValue());
+            for (int i = 0; i < setColumns.size(); i++) {
+                preparedStatement.setObject(i + 1, setColumns.get(i).getValue());
             }
             for (int i = 0; i < conditionColumns.size(); i++) {
                 Column keyColumn = conditionColumns.get(i);
                 // TODO There to be compatible with PostgreSQL before value is null except primary key and unsupported updating sharding value now.
                 if (shardingColumns.contains(keyColumn.getName()) && keyColumn.getOldValue() == null) {
-                    preparedStatement.setObject(updatedColumns.size() + i + 1, keyColumn.getValue());
+                    preparedStatement.setObject(setColumns.size() + i + 1, keyColumn.getValue());
                     continue;
                 }
-                preparedStatement.setObject(updatedColumns.size() + i + 1, keyColumn.getOldValue());
+                preparedStatement.setObject(setColumns.size() + i + 1, keyColumn.getOldValue());
             }
             // TODO if table without unique key the conditionColumns before values is null, so update will fail at PostgreSQL
             int updateCount = preparedStatement.executeUpdate();
             if (1 != updateCount) {
-                log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}, conditionColumns={}", updateCount, updateSql, updatedColumns, conditionColumns);
+                log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}, conditionColumns={}", updateCount, updateSql, setColumns, conditionColumns);
             }
         } finally {
             updateStatement.set(null);
@@ -258,7 +258,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     private void executeBatchDelete(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         DataRecord dataRecord = dataRecords.get(0);
-        String deleteSQL = sqlBuilderEngine.buildDeleteSQL(getSchemaName(dataRecord.getTableName()), dataRecord,
+        String deleteSQL = sqlBuilderEngine.getImportSQLBuilder().buildDeleteSQL(getSchemaName(dataRecord.getTableName()), dataRecord,
                 RecordUtils.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName())));
         try (PreparedStatement preparedStatement = connection.prepareStatement(deleteSQL)) {
             batchDeleteStatement.set(preparedStatement);
