@@ -74,15 +74,8 @@ public final class PipelineSQLBuilderEngine {
      */
     public String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        String quotedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        return String.format("SELECT %s FROM %s WHERE %s>=? AND %s<=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey, quotedUniqueKey, quotedUniqueKey);
-    }
-    
-    private String buildQueryColumns(final List<String> columnNames) {
-        if (columnNames.isEmpty()) {
-            return "*";
-        }
-        return columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
+        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
+        return String.format("SELECT %s FROM %s WHERE %s>=? AND %s<=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, escapedUniqueKey, escapedUniqueKey);
     }
     
     /**
@@ -96,8 +89,12 @@ public final class PipelineSQLBuilderEngine {
      */
     public String buildNoLimitedDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        String quotedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        return String.format("SELECT %s FROM %s WHERE %s>=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
+        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
+        return String.format("SELECT %s FROM %s WHERE %s>=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, escapedUniqueKey);
+    }
+    
+    private String buildQueryColumns(final List<String> columnNames) {
+        return columnNames.isEmpty() ? "*" : columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
     }
     
     /**

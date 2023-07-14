@@ -50,8 +50,6 @@ public final class PrimaryKeyPositionFactory {
                 return new IntegerPrimaryKeyPosition(Long.parseLong(beginValue), Long.parseLong(endValue));
             case 's':
                 return new StringPrimaryKeyPosition(beginValue, endValue);
-            case 'n':
-                return new NoUniqueKeyPosition();
             case 'u':
                 return new UnsupportedKeyPosition();
             default:
