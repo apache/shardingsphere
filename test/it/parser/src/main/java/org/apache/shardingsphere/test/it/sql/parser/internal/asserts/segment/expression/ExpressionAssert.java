@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExtractA
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
@@ -397,7 +397,7 @@ public final class ExpressionAssert {
             InsertValuesClauseAssert.assertIs(assertContext, actual.getRowConstructorList(), expected.getInsertValuesClause());
         }
     }
-
+    
     private static void assertExplicitExpression(final SQLCaseAssertContext assertContext, final ExplicitTableExpression actual, final ExpectedExplicitTableExpression expected) {
         if (null == expected) {
             assertNull(actual, assertContext.getText("Table segment should not exist."));
@@ -411,7 +411,7 @@ public final class ExpressionAssert {
             IdentifierValueAssert.assertIs(assertContext, actual.getTableNameSegment().getIdentifier(), expected, "table");
         }
     }
-
+    
     /**
      * Assert extract arg expression.
      *
@@ -426,8 +426,8 @@ public final class ExpressionAssert {
         }
         assertThat(assertContext.getText("Extract arg expression assertion error: "), actual.getText(), is(expected.getText()));
     }
-
-    private static void assertMatchSegment(final SQLCaseAssertContext assertContext, final MatchExpression actual, final ExpectedMatchExpression expected) {
+    
+    private static void assertMatchSegment(final SQLCaseAssertContext assertContext, final MatchAgainstExpression actual, final ExpectedMatchExpression expected) {
         if (null == expected) {
             assertNull(actual, assertContext.getText("Actual match expression should not exist."));
         } else {
@@ -435,7 +435,7 @@ public final class ExpressionAssert {
             assertExpression(assertContext, actual.getExpr(), expected.getExpr());
         }
     }
-
+    
     /**
      * Assert expression by actual expression segment class type.
      *
@@ -495,10 +495,9 @@ public final class ExpressionAssert {
             assertExplicitExpression(assertContext, (ExplicitTableExpression) actual, expected.getExplicitTableExpression());
         } else if (actual instanceof ExtractArgExpression) {
             assertExtractArgExpression(assertContext, (ExtractArgExpression) actual, expected.getExtractArgExpression());
-        } else if (actual instanceof MatchExpression) {
-            assertMatchSegment(assertContext, (MatchExpression) actual, expected.getMatchExpression());
-        }
-         else {
+        } else if (actual instanceof MatchAgainstExpression) {
+            assertMatchSegment(assertContext, (MatchAgainstExpression) actual, expected.getMatchExpression());
+        } else {
             throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
         }
     }

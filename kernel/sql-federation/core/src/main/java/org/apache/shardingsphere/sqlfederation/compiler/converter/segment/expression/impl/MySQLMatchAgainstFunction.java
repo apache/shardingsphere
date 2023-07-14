@@ -20,6 +20,9 @@ package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expre
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlWriter;
+import org.apache.calcite.sql.SqlWriter.Frame;
+import org.apache.calcite.sql.SqlWriter.FrameTypeEnum;
+import org.apache.calcite.sql.SqlWriter.FrameType;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlNode;
@@ -39,8 +42,8 @@ import java.util.List;
  */
 public final class MySQLMatchAgainstFunction extends SqlFunction {
     
-    private static final SqlWriter.FrameType FRAME_TYPE =
-            SqlWriter.FrameTypeEnum.create("MATCH");
+    private static final FrameType FRAME_TYPE =
+            FrameTypeEnum.create("MATCH");
     
     public MySQLMatchAgainstFunction() {
         super("MATCH_AGAINST", SqlKind.OTHER_FUNCTION, ReturnTypes.DOUBLE, InferTypes.FIRST_KNOWN, OperandTypes.ANY, SqlFunctionCategory.STRING);
@@ -48,7 +51,7 @@ public final class MySQLMatchAgainstFunction extends SqlFunction {
     
     @Override
     public void unparse(final SqlWriter writer, final SqlCall call, final int leftPrec, final int rightPrec) {
-        final SqlWriter.Frame frame = writer.startList(FRAME_TYPE, "MATCH", "");
+        final Frame frame = writer.startList(FRAME_TYPE, "MATCH", "");
         writer.sep("(");
         List<SqlNode> operandList = call.getOperandList();
         final int size = operandList.size();

@@ -95,16 +95,16 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "variable-segment")
     private ExpectedVariableSegment variableSegment;
-
+    
     @XmlElement(name = "values-expression")
     private ExpectedValuesExpression valuesExpression;
-
+    
     @XmlElement(name = "explicit-table")
     private ExpectedExplicitTableExpression explicitTableExpression;
-
+    
     @XmlElement(name = "extract-arg")
     private ExpectedExtractArgExpression extractArgExpression;
-
+    
     @XmlElement(name = "match-expression")
     private ExpectedMatchExpression matchExpression;
 }

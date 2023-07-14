@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class MatchExpression implements ExpressionSegment {
+public final class MatchAgainstExpression implements ExpressionSegment {
     
     private final int startIndex;
     
@@ -34,4 +34,15 @@ public final class MatchExpression implements ExpressionSegment {
     private final ColumnSegment columnName;
     
     private final ExpressionSegment expr;
+    
+    private final String matchSearchModifier;
+    
+    @Override
+    public String getText() {
+        StringBuilder result = new StringBuilder();
+        result.append(columnName.getText());
+        result.append(expr.getText());
+        result.append(matchSearchModifier);
+        return result.toString();
+    }
 }

@@ -23,7 +23,7 @@ import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAgainstExpression;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
 
@@ -34,14 +34,15 @@ import java.util.Optional;
 /**
  * Match expression converter.
  */
-public final class MatchExpressionConverter implements SQLSegmentConverter<MatchExpression, SqlNode> {
+public final class MatchExpressionConverter implements SQLSegmentConverter<MatchAgainstExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final MatchExpression segment) {
+    public Optional<SqlNode> convert(final MatchAgainstExpression segment) {
         List<SqlNode> column = new LinkedList<>();
         column.add(new SqlIdentifier(segment.getColumnName().getIdentifier().getValue(), SqlParserPos.ZERO));
         SqlNode against = new ExpressionConverter().convert(segment.getExpr()).get();
-        SqlNode searchModifier = SqlLiteral.createCharString("IN NATURAL LANGUAGE MODE", SqlParserPos.ZERO);
+        String matchSearchModifier = matchSearchModifier(segment.getMatchSearchModifier());
+        SqlNode searchModifier = SqlLiteral.createCharString(matchSearchModifier, SqlParserPos.ZERO);
         int sqlNodeSize = column.size() + 2;
         SqlNode[] sqlNodes = new SqlNode[sqlNodeSize];
         for (int i = 0; i < column.size(); i++) {
@@ -51,5 +52,18 @@ public final class MatchExpressionConverter implements SQLSegmentConverter<Match
         sqlNodes[sqlNodeSize - 1] = searchModifier;
         SqlOperator operator = SQLExtensionOperatorTable.MATCH_AGAINST;
         return Optional.of(new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO));
+    }
+    
+    private String matchSearchModifier(final String matchSearchModifier) {
+        if ("INNATURALLANGUAGEMODE".equalsIgnoreCase(matchSearchModifier)) {
+            return "IN NATURAL LANGUAGE MODE";
+        }
+        if ("INNATURALLANGUAGEMODEWITHQUERYEXPANSION".equalsIgnoreCase(matchSearchModifier)) {
+            return "IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION";
+        }
+        if ("WITHQUERYEXPANSION".equalsIgnoreCase(matchSearchModifier)) {
+            return "WITH QUERY EXPANSION";
+        }
+        return null;
     }
 }
