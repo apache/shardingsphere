@@ -21,19 +21,19 @@ namespace
    ├     ├──active_verison                                     
    ├     ├──versions  
    ├     ├     ├──0                  
-   ├──metadata                                           # Metadata configuration
+   ├──metadata                                           # Metadata 配置
    ├     ├──${databaseName} 
    ├     ├     ├──data_sources                          
-   ├     ├     ├     ├──units 							 # Storage unit configuration
+   ├     ├     ├     ├──units 							 # 存储单元结构配置
    ├     ├     ├     ├    ├──${dataSourceName}                        
-   ├     ├     ├     ├    ├     ├──active_verison             # Active version                                 
-   ├     ├     ├     ├    ├     ├──versions                   # version list
+   ├     ├     ├     ├    ├     ├──active_verison             # 激活版本                                 
+   ├     ├     ├     ├    ├     ├──versions                   # 版本号
    ├     ├     ├     ├    ├     ├     ├──0
    ├     ├     ├     ├    ├──...   
-   ├     ├     ├     ├──nodes 							 # Storage node configuration
+   ├     ├     ├     ├──nodes 							 # 存储节点结构配置
    ├     ├     ├     ├    ├──${dataSourceName}                        
-   ├     ├     ├     ├    ├     ├──active_verison             # Active version                                 
-   ├     ├     ├     ├    ├     ├──versions                   # version list
+   ├     ├     ├     ├    ├     ├──active_verison             # 激活版本                                
+   ├     ├     ├     ├    ├     ├──versions                   # 版本号
    ├     ├     ├     ├    ├     ├     ├──0
    ├     ├     ├     ├    ├──...                             
    ├     ├     ├──schemas                                   # Schema 列表   
