@@ -17,6 +17,20 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_with_collate">
+        <projections start-index="7" stop-index="58">
+            <expression-projection text="NAME_CONST('var', 'value') COLLATE latin1_general_cs" start-index="7" stop-index="58">
+                <expr>
+                    <collate-expression start-index="7" stop-index="58">
+                        <collate-name>
+                            <literal-expression start-index="34" stop-index="58" value="latin1_general_cs" />
+                        </collate-name>
+                    </collate-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
     <select sql-case-id="select_with_hex_function">
         <projections start-index="7" stop-index="50">
             <expression-projection text="HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" start-index="7" stop-index="50">

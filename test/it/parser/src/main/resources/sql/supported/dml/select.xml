@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_with_collate" value="SELECT NAME_CONST('var', 'value') COLLATE latin1_general_cs" db-types="MySQL" />
     <sql-case id="select_with_hex_function" value="SELECT HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" db-types="MySQL" />
     <sql-case id="select_distinct_with_grouping_function" value="SELECT DISTINCT f1 FROM t1 GROUP BY f1 WITH ROLLUP ORDER BY f1, ANY_VALUE(GROUPING(f1))" db-types="MySQL" />
     <sql-case id="select_convert_function1" value="SELECT CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" db-types="MySQL" />
