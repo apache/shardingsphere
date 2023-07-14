@@ -50,7 +50,7 @@ jobs:
   
   e2e-operation-job:
     needs: detect-changed-files
-    name: E2E - ${{ matrix.operation }} - ${{ matrix.storage_image.version }}
+    name: E2E - ${{ matrix.operation }} Base on ${{ matrix.storage_image.version }}
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
