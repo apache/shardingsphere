@@ -50,19 +50,19 @@ jobs:
   
   e2e-operation-job:
     needs: detect-changed-files
-    name: E2E - ${{ matrix.operation }} on ${{ matrix.storage_image.version }}
+    name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
       fail-fast: false
       matrix:
         operation: [ transaction, pipeline, showprocesslist ]
-        storage_image: [ { type: "it.docker.mysql.version", version: "mysql:5.7" }, { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }, { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" } ]
+        image: [ { type: "it.docker.mysql.version", version: "mysql:5.7" }, { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }, { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" } ]
         exclude:
           - operation: showprocesslist
-            storage_image: { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }
+            image: { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }
           - operation: showprocesslist
-            storage_image: { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" }
+            image: { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" }
     timeout-minutes: 40
     steps:
       - env:
@@ -111,6 +111,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Run ${{ matrix.operation }} ${{ matrix.storage_image.type }}-${{ matrix.storage_image.version }} E2E Test
+      - name: Run ${{ matrix.operation }} ${{ matrix.image.type }}-${{ matrix.image.version }} E2E Test
         if: (env.skip_current_step == 'false')
-        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.${{ matrix.storage_image.type }}=${{ matrix.storage_image.version }}
+        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.${{ matrix.image.type }}=${{ matrix.image.version }}
