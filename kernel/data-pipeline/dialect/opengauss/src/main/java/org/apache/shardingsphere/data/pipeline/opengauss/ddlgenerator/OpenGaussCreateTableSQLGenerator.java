@@ -54,7 +54,7 @@ public final class OpenGaussCreateTableSQLGenerator implements CreateTableSQLGen
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

@@ -209,7 +209,7 @@ helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apac
 
 ### 5. GitHub 版本预发布
 
-在 [GitHub Releases](https://github.com/apache/shardingsphere/releases) 页面创建新版本。
+在 [GitHub Releases](https://github.com/apache/shardingsphere-on-cloud/releases) 页面创建新版本。
 
 编辑版本号及版本说明，选择 `Set as a pre-release`，并点击 `Publish release`。
 

@@ -48,8 +48,8 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private DatabaseMetaData currentDatabaseMetaData;
     
-    public ShardingSphereDatabaseMetaData(final ShardingSphereConnection connection) {
-        super(connection.getJdbcContext().getCachedDatabaseMetaData());
+    public ShardingSphereDatabaseMetaData(final ShardingSphereConnection connection) throws SQLException {
+        super(connection.getDatabaseConnectionManager().getRandomConnection().getMetaData());
         this.connection = connection;
         rules = connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules();
     }

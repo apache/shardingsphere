@@ -17,6 +17,15 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_with_hex_function" value="SELECT HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" db-types="MySQL" />
+    <sql-case id="select_distinct_with_grouping_function" value="SELECT DISTINCT f1 FROM t1 GROUP BY f1 WITH ROLLUP ORDER BY f1, ANY_VALUE(GROUPING(f1))" db-types="MySQL" />
+    <sql-case id="select_convert_function1" value="SELECT CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" db-types="MySQL" />
+    <sql-case id="select_convert_function2" value="SELECT CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" db-types="MySQL" />
+    <sql-case id="select_convert_function3" value="SELECT CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR(4))" db-types="MySQL" />
+    <sql-case id="select_convert_function4" value="SELECT CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" db-types="MySQL" />
+    <sql-case id="select_function_aes_decrypt_and_aes_encrypt" value="SELECT AES_DECRYPT(AES_ENCRYPT(@ENCSTR, @keys, @Iv), @keys, @Iv)=@ENCSTR FROM t1" db-types="MySQL" />
+    <sql-case id="select_user_variable_before_after" value="SELECT @before=@after" db-types="MySQL" />
+    <sql-case id="select_global_default_key_buffer_size" value="SELECT @@global.default.`key_buffer_size`" db-types="MySQL" />
     <sql-case id="select_with_exist_in" value="SELECT (+0 IN(0b111111111111111111111111111111111111111111111111111,rpad(1.0,2048,1),32767.1))" db-types="MySQL" />
     <sql-case id="select_constant_without_table" value="SELECT 1 as a" db-types="MySQL, PostgreSQL,openGauss, SQLServer" />
     <sql-case id="select_with_operator_ilike" value="SELECT id from t_order where name !~ '^pg_toast'" db-types="PostgreSQL,openGauss" />
@@ -165,4 +174,5 @@
     <sql-case id="select_projection_with_parameter" value="SELECT 1 AS id, ? AS status, SYSDATE AS create_time, TRUNC(SYSDATE) AS create_date FROM DUAL" db-types="Oracle"  />
     <sql-case id="select_with_chinese_comma" value="SELECT 1， 2，3 FROM DUAL" db-types="Oracle"  />
     <sql-case id="select_with_keyword_system" value="SELECT * FROM vtx_project WHERE system = ?" />
+    <sql-case id="select_with_keyword_groups_and_rank" value="SELECT t.groups, t.rank FROM t_order t" db-types="MySQL" />
 </sql-cases>

@@ -33,7 +33,7 @@ public final class H2JdbcQueryPropertiesExtension implements JdbcQueryProperties
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

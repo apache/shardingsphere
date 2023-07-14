@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.globalclock.core.executor;
 
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,7 +28,7 @@ import java.util.Collection;
  * Global clock transaction executor.
  */
 @SingletonSPI
-public interface GlobalClockTransactionExecutor extends TypedSPI {
+public interface GlobalClockTransactionExecutor extends DatabaseTypedSPI {
     
     /**
      * Send snapshot timestamp.

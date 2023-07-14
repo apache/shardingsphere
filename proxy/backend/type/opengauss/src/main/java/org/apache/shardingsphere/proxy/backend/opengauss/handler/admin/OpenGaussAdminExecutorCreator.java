@@ -78,7 +78,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

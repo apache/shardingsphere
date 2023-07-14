@@ -95,7 +95,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         }
         MetaDataBasedPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
         String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
-        Map<String, DataSourceProperties> dataSourcePropsMap = persistService.getDataSourceService().load(actualDatabaseName);
+        Map<String, DataSourceProperties> dataSourcePropsMap = persistService.getDataSourceUnitService().load(actualDatabaseName);
         Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = persistService.getGlobalRuleService().loadUsers();

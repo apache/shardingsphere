@@ -35,7 +35,7 @@ public final class PostgreSQLSaneQueryResultEngine implements SaneQueryResultEng
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

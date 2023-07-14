@@ -99,19 +99,19 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     
     @Override
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeRegisterStorageUnitProps) {
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().persistConfig(databaseName, toBeRegisterStorageUnitProps);
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().persistConfig(databaseName, toBeRegisterStorageUnitProps);
     }
     
     @Override
     public void alterStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeUpdatedStorageUnitProps) {
-        DatabaseBasedPersistService<Map<String, DataSourceProperties>> dataSourceService = contextManager.getMetaDataContexts().getPersistService().getDataSourceService();
+        DatabaseBasedPersistService<Map<String, DataSourceProperties>> dataSourceService = contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService();
         contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(dataSourceService.persistConfig(databaseName, toBeUpdatedStorageUnitProps));
     }
     
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) {
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().delete(databaseName,
-                getToBeDroppedDataSourcePropsMap(contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(databaseName), toBeDroppedStorageUnitNames));
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().delete(databaseName,
+                getToBeDroppedDataSourcePropsMap(contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(databaseName), toBeDroppedStorageUnitNames));
     }
     
     private Map<String, DataSourceProperties> getToBeDroppedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {

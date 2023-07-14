@@ -33,7 +33,7 @@ public final class H2XADataSourceDefinition implements XADataSourceDefinition {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

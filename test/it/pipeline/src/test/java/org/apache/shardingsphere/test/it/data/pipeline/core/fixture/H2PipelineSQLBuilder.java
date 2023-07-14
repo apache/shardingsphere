@@ -17,25 +17,16 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.AbstractPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
 import java.util.Optional;
 
-public final class H2PipelineSQLBuilder extends AbstractPipelineSQLBuilder {
+public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
-    protected boolean isKeyword(final String item) {
-        return false;
-    }
-    
-    @Override
-    protected String getLeftIdentifierQuoteString() {
-        return "";
-    }
-    
-    @Override
-    protected String getRightIdentifierQuoteString() {
-        return "";
+    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName));
     }
     
     @Override
@@ -44,7 +35,7 @@ public final class H2PipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

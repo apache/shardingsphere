@@ -48,7 +48,7 @@ public final class MySQLQueryResultDataRowLoader extends AbstractQueryResultData
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

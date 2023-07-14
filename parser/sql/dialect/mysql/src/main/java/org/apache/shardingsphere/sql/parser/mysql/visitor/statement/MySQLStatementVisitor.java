@@ -55,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Duplica
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EngineRefContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FieldLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FieldsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromClauseContext;
@@ -153,6 +154,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.engine.EngineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -1919,6 +1921,11 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         parameterMarkerSegments.add(segment);
         return segment;
+    }
+    
+    @Override
+    public ASTNode visitEngineRef(final EngineRefContext ctx) {
+        return new EngineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), SQLUtils.getExactlyValue(ctx.textOrIdentifier().getText()));
     }
     
     /**

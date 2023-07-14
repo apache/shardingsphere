@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 
 import java.sql.SQLException;
 
@@ -49,7 +49,7 @@ public final class QueryHeaderBuilderEngine {
     public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
         String columnName = queryResultMetaData.getColumnName(columnIndex);
         String columnLabel = queryResultMetaData.getColumnLabel(columnIndex);
-        return TypedSPILoader.getService(QueryHeaderBuilder.class, databaseType.getType()).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
+        return DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
     }
     
     /**
@@ -66,7 +66,7 @@ public final class QueryHeaderBuilderEngine {
                              final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
         String columnName = getColumnName(projectionsContext, queryResultMetaData, columnIndex);
         String columnLabel = getColumnLabel(projectionsContext, queryResultMetaData, columnIndex);
-        return TypedSPILoader.getService(QueryHeaderBuilder.class, databaseType.getType()).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
+        return DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
     }
     
     private String getColumnLabel(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {

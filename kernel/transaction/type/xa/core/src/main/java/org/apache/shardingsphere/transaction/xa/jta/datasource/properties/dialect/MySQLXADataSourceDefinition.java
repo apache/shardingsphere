@@ -33,7 +33,7 @@ public final class MySQLXADataSourceDefinition implements XADataSourceDefinition
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

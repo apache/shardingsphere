@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowLogicalTablesStatement;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.regular.RegularUtils;
@@ -37,10 +36,7 @@ public final class ShowLogicalTableExecutor implements RQLExecutor<ShowLogicalTa
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowLogicalTablesStatement sqlStatement) {
-        String schemaName = database.getName();
-        if (database.getProtocolType() instanceof SchemaSupportedDatabaseType) {
-            schemaName = ((SchemaSupportedDatabaseType) database.getProtocolType()).getDefaultSchema();
-        }
+        String schemaName = database.getProtocolType().getDefaultSchema().orElse(database.getName());
         if (null == database.getSchema(schemaName)) {
             return Collections.emptyList();
         }

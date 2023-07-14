@@ -19,14 +19,14 @@ package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 
@@ -60,9 +60,9 @@ public final class MetaDataContexts implements AutoCloseable {
             return new ShardingSphereStatistics();
         }
         // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
-        Optional<ShardingSphereStatisticsBuilder> statisticsBuilder = TypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, protocolType instanceof SchemaSupportedDatabaseType
-                ? "PostgreSQL"
-                : protocolType.getType());
+        Optional<ShardingSphereStatisticsBuilder> statisticsBuilder = DatabaseTypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, protocolType.getDefaultSchema().isPresent()
+                ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")
+                : protocolType);
         if (!statisticsBuilder.isPresent()) {
             return new ShardingSphereStatistics();
         }
