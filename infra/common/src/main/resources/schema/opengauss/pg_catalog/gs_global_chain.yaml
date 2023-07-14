@@ -1,0 +1,102 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: gs_global_chain
+columns:
+  blocknum:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: blocknum
+    primaryKey: false
+    unsigned: false
+    visible: true
+  dbname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: dbname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  username:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: username
+    primaryKey: false
+    unsigned: false
+    visible: true
+  starttime:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: starttime
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: relid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relnsp:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: relnsp
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: relname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relhash:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: relhash
+    primaryKey: false
+    unsigned: false
+    visible: true
+  globalhash:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: globalhash
+    primaryKey: false
+    unsigned: false
+    visible: true
+  txcommand:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: txcommand
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  gs_global_chain_relid_index:
+    name: gs_global_chain_relid_index

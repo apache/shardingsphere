@@ -24,7 +24,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.exception.algorithm.MismatchedEncryptAlgorithmTypeException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -36,14 +35,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,33 +59,6 @@ class EncryptRuleTest {
     @Test
     void assertGetNotExistedEncryptTable() {
         assertThrows(EncryptTableNotFoundException.class, () -> new EncryptRule(createEncryptRuleConfiguration()).getEncryptTable("not_existed_tbl"));
-    }
-    
-    @Test
-    void assertGetEncryptValues() {
-        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration())
-                .encrypt(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
-        for (Object each : encryptAssistedQueryValues) {
-            assertNull(each);
-        }
-    }
-    
-    @Test
-    void assertGetEncryptAssistedQueryValues() {
-        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration())
-                .getEncryptAssistedQueryValues(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
-        for (Object each : encryptAssistedQueryValues) {
-            assertNull(each);
-        }
-    }
-    
-    @Test
-    void assertGetEncryptLikeQueryValues() {
-        List<Object> encryptLikeQueryValues = new EncryptRule(createEncryptRuleConfiguration())
-                .getEncryptLikeQueryValues(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
-        for (Object actual : encryptLikeQueryValues) {
-            assertNull(actual);
-        }
     }
     
     @Test

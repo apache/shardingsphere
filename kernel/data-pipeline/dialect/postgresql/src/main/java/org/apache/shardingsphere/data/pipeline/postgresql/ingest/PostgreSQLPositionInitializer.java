@@ -137,7 +137,7 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

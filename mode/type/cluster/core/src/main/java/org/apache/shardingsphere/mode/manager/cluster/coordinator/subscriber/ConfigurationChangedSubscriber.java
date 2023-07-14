@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabas
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceNodesChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceUnitsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 
@@ -43,14 +43,11 @@ import java.util.stream.Collectors;
 @SuppressWarnings("UnstableApiUsage")
 public final class ConfigurationChangedSubscriber {
     
-    private final MetaDataPersistService persistService;
-    
     private final RegistryCenter registryCenter;
     
     private final ContextManager contextManager;
     
-    public ConfigurationChangedSubscriber(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
-        this.persistService = persistService;
+    public ConfigurationChangedSubscriber(final RegistryCenter registryCenter, final ContextManager contextManager) {
         this.registryCenter = registryCenter;
         this.contextManager = contextManager;
         contextManager.getInstanceContext().getEventBusContext().register(this);
@@ -58,16 +55,25 @@ public final class ConfigurationChangedSubscriber {
     }
     
     /**
-     * Renew data source configuration.
+     * Renew data source units configuration.
      *
      * @param event data source changed event.
      */
     @Subscribe
-    public synchronized void renew(final DataSourceChangedEvent event) {
-        if (persistService.getMetaDataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
-            contextManager.alterDataSourceConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
-            disableDataSources();
-        }
+    public synchronized void renew(final DataSourceUnitsChangedEvent event) {
+        contextManager.alterDataSourceUnitsConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
+        disableDataSources();
+    }
+    
+    /**
+     * Renew data source nodes configuration.
+     *
+     * @param event data source changed event.
+     */
+    @Subscribe
+    public synchronized void renew(final DataSourceNodesChangedEvent event) {
+        contextManager.alterDataSourceNodesConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
+        disableDataSources();
     }
     
     /**
@@ -77,10 +83,8 @@ public final class ConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) {
-        if (persistService.getMetaDataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
-            contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigs());
-            disableDataSources();
-        }
+        contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigs());
+        disableDataSources();
     }
     
     /**
@@ -132,6 +136,6 @@ public final class ConfigurationChangedSubscriber {
     
     private Map<String, StorageNodeDataSource> getDisabledDataSources() {
         return registryCenter.getStorageNodeStatusService().loadStorageNodes().entrySet()
-                .stream().filter(entry -> DataSourceState.DISABLED == entry.getValue().getStatus()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .stream().filter(entry -> DataSourceState.DISABLED == entry.getValue().getStatus()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 }

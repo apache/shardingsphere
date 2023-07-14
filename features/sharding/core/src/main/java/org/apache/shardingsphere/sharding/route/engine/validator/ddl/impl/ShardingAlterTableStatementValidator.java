@@ -47,7 +47,7 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
                 : sqlStatementContext.getTablesContext().getTableNames();
         Optional<SimpleTableSegment> renameTable = ((AlterTableStatement) sqlStatementContext.getSqlStatement()).getRenameTable();
-        if (renameTable.isPresent() && shardingRule.tableRuleExists(tableNames)) {
+        if (renameTable.isPresent() && shardingRule.containsShardingTable(tableNames)) {
             throw new UnsupportedShardingOperationException("ALTER TABLE ... RENAME TO ...", renameTable.get().getTableName().getIdentifier().getValue());
         }
     }

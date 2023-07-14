@@ -84,7 +84,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         int statementId = MySQLStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
-        MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSQL(), sqlStatementContext, new CopyOnWriteArrayList<>());
+        MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext(), new CopyOnWriteArrayList<>());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         return createPackets(sqlStatementContext, statementId, serverPreparedStatement);
     }
@@ -148,8 +148,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         Collection<MySQLPacket> result = new ArrayList<>(projections.size());
         for (Projection each : projections) {
             // TODO Calculate column definition flag for other projection types
-            if (each instanceof ColumnProjection) {
-                result.add(Optional.ofNullable(columnToTableMap.get(each.getExpression())).map(schema::getTable).map(table -> table.getColumn(((ColumnProjection) each).getName()))
+            if (each instanceof ColumnProjection && null != ((ColumnProjection) each).getOriginalName()) {
+                result.add(Optional.ofNullable(columnToTableMap.get(each.getExpression())).map(schema::getTable)
+                        .map(table -> table.getColumns().get(((ColumnProjection) each).getOriginalName().getValue()))
                         .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column), MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
                         .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING)));
             } else {

@@ -19,11 +19,10 @@ package org.apache.shardingsphere.sqlfederation.compiler.context.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect.OptimizerSQLDialectBuilder;
 
 import java.util.Map;
@@ -63,9 +62,6 @@ public final class OptimizerParserContextFactory {
     }
     
     private static Properties createSQLDialectProperties(final DatabaseType databaseType) {
-        Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
-        result.putAll(TypedSPILoader.getService(OptimizerSQLDialectBuilder.class, null == databaseType ? null : databaseType.getType()).build());
-        return result;
+        return DatabaseTypedSPILoader.getService(OptimizerSQLDialectBuilder.class, databaseType).build();
     }
 }

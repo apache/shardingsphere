@@ -92,7 +92,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine {
         try {
             message.write(payload);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             out.resetWriterIndex();
             SQLException unknownSQLException = new UnknownSQLException(ex).toSQLException();

@@ -42,8 +42,8 @@ public final class ClasspathDriverURLProvider implements ShardingSphereDriverURL
     
     @Override
     @SneakyThrows(IOException.class)
-    public byte[] getContent(final String url) {
-        String configuredFile = url.substring("jdbc:shardingsphere:".length(), url.contains("?") ? url.indexOf('?') : url.length());
+    public byte[] getContent(final String url, final String urlPrefix) {
+        String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
         String file = configuredFile.substring(CLASSPATH_TYPE.length());
         Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere driver URL.");
         try (

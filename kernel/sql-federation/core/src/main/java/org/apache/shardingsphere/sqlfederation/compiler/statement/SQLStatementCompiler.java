@@ -29,6 +29,8 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.SQLNodeConverterEngine;
+import org.apache.shardingsphere.sqlfederation.compiler.operator.util.LogicalScanRelShuttle;
+import org.apache.shardingsphere.sqlfederation.compiler.planner.util.SQLFederationPlannerUtils;
 
 import java.util.Objects;
 
@@ -40,26 +42,27 @@ public final class SQLStatementCompiler {
     
     private final SqlToRelConverter converter;
     
-    private final RelOptPlanner hepPlanner;
-    
     /**
      * Compile sql statement to execution plan.
      *
      * @param sqlStatement SQL statement
+     * @param databaseType database type
      * @return sql federation execution plan
      */
-    public SQLFederationExecutionPlan compile(final SQLStatement sqlStatement) {
+    public SQLFederationExecutionPlan compile(final SQLStatement sqlStatement, final String databaseType) {
         RelMetadataQueryBase.THREAD_PROVIDERS.set(JaninoRelMetadataProvider.DEFAULT);
         SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
-        RelNode logicPlan = converter.convertQuery(sqlNode, true, true).rel;
+        RelNode logicalPlan = converter.convertQuery(sqlNode, true, true).rel;
         RelDataType resultColumnType = Objects.requireNonNull(converter.validator).getValidatedNodeType(sqlNode);
-        RelNode rewritePlan = rewrite(logicPlan, hepPlanner);
+        RelNode replacePlan = LogicalScanRelShuttle.replace(logicalPlan, databaseType);
+        RelNode rewritePlan = rewrite(replacePlan, SQLFederationPlannerUtils.createHepPlanner());
         RelNode physicalPlan = optimize(rewritePlan, converter);
+        RelMetadataQueryBase.THREAD_PROVIDERS.remove();
         return new SQLFederationExecutionPlan(physicalPlan, resultColumnType);
     }
     
-    private RelNode rewrite(final RelNode logicPlan, final RelOptPlanner hepPlanner) {
-        hepPlanner.setRoot(logicPlan);
+    private RelNode rewrite(final RelNode logicalPlan, final RelOptPlanner hepPlanner) {
+        hepPlanner.setRoot(logicalPlan);
         return hepPlanner.findBestExp();
     }
     

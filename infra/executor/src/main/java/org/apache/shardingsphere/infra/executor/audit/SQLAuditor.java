@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.audit;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -44,6 +45,8 @@ public interface SQLAuditor<T extends ShardingSphereRule> extends OrderedSPI<T> 
      * @param globalRuleMetaData global rule meta data
      * @param database current database
      * @param rule rule
+     * @param hintValueContext hint value context
      */
-    void audit(SQLStatementContext sqlStatementContext, List<Object> params, Grantee grantee, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule);
+    void audit(SQLStatementContext sqlStatementContext, List<Object> params, Grantee grantee, ShardingSphereRuleMetaData globalRuleMetaData,
+               ShardingSphereDatabase database, T rule, HintValueContext hintValueContext);
 }

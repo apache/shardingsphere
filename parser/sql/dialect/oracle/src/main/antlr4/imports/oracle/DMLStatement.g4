@@ -168,7 +168,7 @@ functionHeading
     ;
 
 parameterDeclaration
-    : parameterName ((IN? dataType ((COLON_ EQ_ | DEFAULT) expr)?) | (IN? OUT NOCOPY? dataType))?
+    : parameterName ((IN? dataType ((ASSIGNMENT_OPERATOR_ | DEFAULT) expr)?) | (IN? OUT NOCOPY? dataType))?
     ;
 
 procedureDeclaration
@@ -406,8 +406,7 @@ unqualifiedShorthand
     ;
 
 selectList
-    : unqualifiedShorthand
-    | selectProjection (COMMA_ selectProjection)*
+    : (unqualifiedShorthand | selectProjection) (COMMA_ selectProjection)*
     ;
 
 selectProjection

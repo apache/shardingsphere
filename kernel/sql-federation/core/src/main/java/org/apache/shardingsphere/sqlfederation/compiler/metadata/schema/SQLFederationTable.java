@@ -27,6 +27,7 @@ import org.apache.calcite.linq4j.tree.Expression;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptTable.ToRelContext;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.QueryableTable;
@@ -38,13 +39,13 @@ import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutorContext;
-import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerablePushDownTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.util.SQLFederationDataTypeUtils;
-import org.apache.shardingsphere.sqlfederation.compiler.operator.physical.enumerable.EnumerablePushDownTableScan;
 import org.apache.shardingsphere.sqlfederation.compiler.statistic.SQLFederationStatistic;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableScanExecutor;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableScanExecutorContext;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
 
 /**
  * SQL federation table.
@@ -59,64 +60,7 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
     private final DatabaseType protocolType;
     
     @Setter
-    private EnumerablePushDownTableScanExecutor pushDownTableScanExecutor;
-    
-    /**
-     * Execute filter and project when query the federation translatable table.
-     *
-     * @param root data context
-     * @param filterValues right value in filter condition
-     * @param projects fields to be projected
-     * @return enumerable result
-     */
-    public Enumerable<Object> projectAndFilterScalar(final DataContext root, final String[] filterValues, final int[] projects) {
-        return pushDownTableScanExecutor.executeScalar(table, new EnumerablePushDownTableScanExecutorContext(root, filterValues, projects));
-    }
-    
-    /**
-     * Execute filter and project when query the federation translatable table.
-     *
-     * @param root data context
-     * @param projects fields to be projected
-     * @return enumerable result
-     */
-    public Enumerable<Object> projectScalar(final DataContext root, final int[] projects) {
-        return pushDownTableScanExecutor.executeScalar(table, new EnumerablePushDownTableScanExecutorContext(root, null, projects));
-    }
-    
-    /**
-     * Execute filter and project when query the federation translatable table.
-     *
-     * @param root data context
-     * @param filterValues right value in filter condition
-     * @param projects fields to be projected
-     * @return enumerable result
-     */
-    public Enumerable<Object[]> projectAndFilter(final DataContext root, final String[] filterValues, final int[] projects) {
-        return pushDownTableScanExecutor.execute(table, new EnumerablePushDownTableScanExecutorContext(root, filterValues, projects));
-    }
-    
-    /**
-     * Execute filter and project when query the federation translatable table.
-     *
-     * @param root data context
-     * @param projects fields to be projected
-     * @return enumerable result
-     */
-    public Enumerable<Object[]> project(final DataContext root, final int[] projects) {
-        return pushDownTableScanExecutor.execute(table, new EnumerablePushDownTableScanExecutorContext(root, null, projects));
-    }
-    
-    /**
-     * Get column type from table by column identity.
-     *
-     * @param index column identity
-     * @return column data type
-     */
-    public int getColumnType(final int index) {
-        String columnName = table.getColumnNames().get(index);
-        return table.getColumn(columnName).getDataType();
-    }
+    private EnumerableScanExecutor scanExecutor;
     
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
@@ -140,8 +84,19 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
     
     @Override
     public RelNode toRel(final ToRelContext context, final RelOptTable relOptTable) {
-        int[] fields = getFieldIndexes(relOptTable.getRowType().getFieldCount());
-        return new EnumerablePushDownTableScan(context.getCluster(), relOptTable, this, fields);
+        return LogicalTableScan.create(context.getCluster(), relOptTable, Collections.emptyList());
+    }
+    
+    /**
+     * Execute.
+     *
+     * @param root data context
+     * @param sql sql
+     * @param paramIndexes param indexes
+     * @return enumerable result
+     */
+    public Enumerable<Object> execute(final DataContext root, final String sql, final int[] paramIndexes) {
+        return scanExecutor.execute(table, new EnumerableScanExecutorContext(root, sql, paramIndexes));
     }
     
     @Override
@@ -152,13 +107,5 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
     @Override
     public Statistic getStatistic() {
         return statistic;
-    }
-    
-    private int[] getFieldIndexes(final int fieldCount) {
-        int[] result = new int[fieldCount];
-        for (int index = 0; index < fieldCount; index++) {
-            result[index] = index;
-        }
-        return result;
     }
 }

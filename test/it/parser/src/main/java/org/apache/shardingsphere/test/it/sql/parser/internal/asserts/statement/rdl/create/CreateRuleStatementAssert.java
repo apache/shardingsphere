@@ -53,17 +53,17 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.single.SetDefaultSingleTableStorageUnitStatementTestCase;
 
 /**
- * Create RDL Statement assert.
+ * Create rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateRuleStatementAssert {
     
     /**
-     * Assert create RDL statement is correct with expected parser result.
+     * Assert create rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create RDL statement
-     * @param expected expected create RDL statement test case
+     * @param actual actual create rule statement
+     * @param expected expected create rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateRuleStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof CreateEncryptRuleStatement) {
@@ -73,8 +73,7 @@ public final class CreateRuleStatementAssert {
         } else if (actual instanceof CreateShardingTableReferenceRuleStatement) {
             CreateShardingTableReferenceRuleStatementAssert.assertIs(assertContext, (CreateShardingTableReferenceRuleStatement) actual, (CreateShardingTableReferenceRuleStatementTestCase) expected);
         } else if (actual instanceof CreateBroadcastTableRuleStatement) {
-            CreateBroadcastTableRuleStatementAssert.assertIs(assertContext, (CreateBroadcastTableRuleStatement) actual,
-                    (CreateBroadcastTableRuleStatementTestCase) expected);
+            CreateBroadcastTableRuleStatementAssert.assertIs(assertContext, (CreateBroadcastTableRuleStatement) actual, (CreateBroadcastTableRuleStatementTestCase) expected);
         } else if (actual instanceof CreateShardingTableRuleStatement) {
             CreateShardingTableRuleStatementAssert.assertIs(assertContext, (CreateShardingTableRuleStatement) actual, expected);
         } else if (actual instanceof CreateShadowRuleStatement) {

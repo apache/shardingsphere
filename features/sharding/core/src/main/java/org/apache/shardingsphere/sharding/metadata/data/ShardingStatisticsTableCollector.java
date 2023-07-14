@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.sharding.metadata.data;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDataCollector;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -45,7 +44,7 @@ import java.util.Optional;
 /**
  * Sharding statistics table data collector.
  */
-public final class ShardingStatisticsTableCollector implements ShardingSphereDataCollector {
+public final class ShardingStatisticsTableCollector implements ShardingSphereStatisticsCollector {
     
     private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
@@ -66,7 +65,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS);
         DatabaseType protocolType = shardingSphereDatabases.values().iterator().next().getProtocolType();
-        if (protocolType instanceof SchemaSupportedDatabaseType) {
+        if (protocolType.getDefaultSchema().isPresent()) {
             collectFromDatabase(shardingSphereDatabases.get(databaseName), result);
         } else {
             for (ShardingSphereDatabase each : shardingSphereDatabases.values()) {

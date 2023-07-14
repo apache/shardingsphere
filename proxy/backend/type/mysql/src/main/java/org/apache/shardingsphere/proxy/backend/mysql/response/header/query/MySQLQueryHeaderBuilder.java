@@ -70,7 +70,7 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
     

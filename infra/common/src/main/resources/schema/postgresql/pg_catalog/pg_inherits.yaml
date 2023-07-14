@@ -38,6 +38,14 @@ columns:
     name: inhseqno
     primaryKey: false
     visible: true
+  inhdetachpending:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: inhdetachpending
+    primaryKey: false
+    unsigned: false
+    visible: true
 indexes:
   pg_inherits_parent_index:
     name: pg_inherits_parent_index

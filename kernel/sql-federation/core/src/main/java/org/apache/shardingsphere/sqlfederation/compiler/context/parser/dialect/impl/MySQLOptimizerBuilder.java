@@ -41,7 +41,7 @@ public final class MySQLOptimizerBuilder implements OptimizerSQLDialectBuilder {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
     

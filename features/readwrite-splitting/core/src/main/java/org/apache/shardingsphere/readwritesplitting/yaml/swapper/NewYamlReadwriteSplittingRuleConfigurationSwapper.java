@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.yaml.swapper;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
@@ -28,15 +29,17 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
-import org.apache.shardingsphere.readwritesplitting.metadata.converter.ReadwriteSplittingNodeConverter;
+import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * TODO Rename YamlReadwriteSplittingRuleConfigurationSwapper when metadata structure adjustment completed. #25485
@@ -46,14 +49,18 @@ public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements 
     
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
+    private final RuleNodePath readwriteSplittingRuleNodePath = new ReadwriteSplittingRuleNodePathProvider().getRuleNodePath();
+    
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final ReadwriteSplittingRuleConfiguration data) {
-        Collection<YamlDataNode> result = new LinkedHashSet<>();
-        for (ReadwriteSplittingDataSourceRuleConfiguration each : data.getDataSources()) {
-            result.add(new YamlDataNode(ReadwriteSplittingNodeConverter.getGroupNamePath(each.getName()), YamlEngine.marshal(swapToYamlConfiguration(each))));
-        }
+        Collection<YamlDataNode> result = new LinkedList<>();
         for (Entry<String, AlgorithmConfiguration> entry : data.getLoadBalancers().entrySet()) {
-            result.add(new YamlDataNode(ReadwriteSplittingNodeConverter.getLoadBalancerPath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
+            result.add(new YamlDataNode(readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS).getPath(entry.getKey()),
+                    YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
+        }
+        for (ReadwriteSplittingDataSourceRuleConfiguration each : data.getDataSources()) {
+            result.add(new YamlDataNode(readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES).getPath(each.getName()),
+                    YamlEngine.marshal(swapToYamlConfiguration(each))));
         }
         return result;
     }
@@ -68,20 +75,20 @@ public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements 
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+    public Optional<ReadwriteSplittingRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
+        List<YamlDataNode> validDataNodes = dataNodes.stream().filter(each -> readwriteSplittingRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        if (validDataNodes.isEmpty()) {
+            return Optional.empty();
+        }
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         Map<String, AlgorithmConfiguration> loadBalancerMap = new LinkedHashMap<>();
-        for (YamlDataNode each : dataNodes) {
-            if (ReadwriteSplittingNodeConverter.isDataSourcePath(each.getKey())) {
-                ReadwriteSplittingNodeConverter.getGroupName(each.getKey())
-                        .ifPresent(groupName -> dataSources.add(swapDataSource(groupName, YamlEngine.unmarshal(each.getValue(), YamlReadwriteSplittingDataSourceRuleConfiguration.class))));
-            } else if (ReadwriteSplittingNodeConverter.isLoadBalancerPath(each.getKey())) {
-                ReadwriteSplittingNodeConverter.getLoadBalancerName(each.getKey())
-                        .ifPresent(
-                                loadBalancerName -> loadBalancerMap.put(loadBalancerName, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
-            }
+        for (YamlDataNode each : validDataNodes) {
+            readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES).getName(each.getKey())
+                    .ifPresent(optional -> dataSources.add(swapDataSource(optional, YamlEngine.unmarshal(each.getValue(), YamlReadwriteSplittingDataSourceRuleConfiguration.class))));
+            readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS).getName(each.getKey())
+                    .ifPresent(optional -> loadBalancerMap.put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
         }
-        return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancerMap);
+        return Optional.of(new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancerMap));
     }
     
     private ReadwriteSplittingDataSourceRuleConfiguration swapDataSource(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {

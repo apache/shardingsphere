@@ -39,7 +39,7 @@ jobs:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         java-version: [ 11, 17, 20 ]
     steps:
-      - name: Support long paths in Windows
+      - name: Support Long Paths in Windows
         if: matrix.os == 'windows-latest'
         run: git config --global core.longpaths true
       - uses: actions/checkout@v3
@@ -54,9 +54,9 @@ jobs:
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-cache-
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Build prod with Maven
+      - name: Build Project with Maven
         run: ./mvnw -T1C -B -ntp clean install
-      - name: Build examples with Maven
+      - name: Build Examples with Maven
         run: ./mvnw -T1C -B -f examples/pom.xml clean package
   
   ci-jdk8:
@@ -92,5 +92,5 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Run tests with JDK 8
+      - name: Run Tests with JDK 8
         run: ./mvnw -T1C -B -ntp -fae test

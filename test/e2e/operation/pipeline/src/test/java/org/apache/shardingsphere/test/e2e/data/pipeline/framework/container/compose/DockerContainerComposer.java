@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.com
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.config.proxy.PipelineProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.St
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import java.security.InvalidParameterException;
@@ -67,7 +67,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         }
         for (int i = 0; i < storageContainerCount; i++) {
             StorageContainerConfiguration storageContainerConfig;
-            if (DatabaseTypeUtils.isMySQL(databaseType)) {
+            if (databaseType instanceof MySQLDatabaseType) {
                 int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
                 Map<String, String> mountedResources = new HashMap<>();
                 mountedResources.put(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);

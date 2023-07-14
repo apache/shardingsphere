@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.data.pipeline.mysql.datasource;
 
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,26 +35,32 @@ class MySQLJdbcQueryPropertiesExtensionTest {
     
     @Test
     void assertExtendQueryProperties() {
-        Optional<JdbcQueryPropertiesExtension> extension = TypedSPILoader.findService(JdbcQueryPropertiesExtension.class, "MySQL");
+        Optional<JdbcQueryPropertiesExtension> extension = DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         assertTrue(extension.isPresent());
         assertExtension(extension.get());
-        assertQueryProperties(extension.get().extendQueryProperties());
+        Properties props = new Properties();
+        extension.get().extendQueryProperties(props);
+        assertQueryProperties(props, "600");
+        props = new Properties();
+        props.setProperty("netTimeoutForStreamingResults", "3600");
+        extension.get().extendQueryProperties(props);
+        assertQueryProperties(props, "3600");
     }
     
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {
         assertThat(actual, instanceOf(MySQLJdbcQueryPropertiesExtension.class));
-        assertThat(actual.getType(), equalTo("MySQL"));
+        assertThat(actual.getType(), is(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
     }
     
-    private void assertQueryProperties(final Properties actual) {
-        assertThat(actual.size(), equalTo(8));
-        assertThat(actual.getProperty("useSSL"), equalTo(Boolean.FALSE.toString()));
-        assertThat(actual.getProperty("useServerPrepStmts"), equalTo(Boolean.FALSE.toString()));
-        assertThat(actual.getProperty("rewriteBatchedStatements"), equalTo(Boolean.TRUE.toString()));
-        assertThat(actual.getProperty("yearIsDateType"), equalTo(Boolean.FALSE.toString()));
-        assertThat(actual.getProperty("zeroDateTimeBehavior"), equalTo("convertToNull"));
-        assertThat(actual.getProperty("noDatetimeStringSync"), equalTo(Boolean.TRUE.toString()));
-        assertThat(actual.getProperty("jdbcCompliantTruncation"), equalTo(Boolean.FALSE.toString()));
-        assertThat(actual.getProperty("netTimeoutForStreamingResults"), equalTo("600"));
+    private void assertQueryProperties(final Properties actual, final String expectedNetTimeoutForStreamingResults) {
+        assertThat(actual.size(), is(8));
+        assertThat(actual.getProperty("useSSL"), is(Boolean.FALSE.toString()));
+        assertThat(actual.getProperty("useServerPrepStmts"), is(Boolean.FALSE.toString()));
+        assertThat(actual.getProperty("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
+        assertThat(actual.getProperty("yearIsDateType"), is(Boolean.FALSE.toString()));
+        assertThat(actual.getProperty("zeroDateTimeBehavior"), is("convertToNull"));
+        assertThat(actual.getProperty("noDatetimeStringSync"), is(Boolean.TRUE.toString()));
+        assertThat(actual.getProperty("jdbcCompliantTruncation"), is(Boolean.FALSE.toString()));
+        assertThat(actual.getProperty("netTimeoutForStreamingResults"), is(expectedNetTimeoutForStreamingResults));
     }
 }

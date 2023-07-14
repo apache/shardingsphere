@@ -19,15 +19,14 @@ package org.apache.shardingsphere.data.pipeline.core.importer;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
-import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
-import org.apache.shardingsphere.data.pipeline.spi.importer.sink.PipelineSink;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
+import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -69,6 +68,6 @@ public final class SingleChannelConsumerImporter extends AbstractLifecycleExecut
     
     @Override
     protected void doStop() {
-        CloseUtils.closeQuietly(sink);
+        QuietlyCloser.close(sink);
     }
 }

@@ -23,5 +23,7 @@
     <sql-case id="do_with_function_1" value="DO FROM_BASE64(CAST((MID(UUID(),20,64)) AS BINARY(55)))" db-types="MySQL" />
     <sql-case id="do_with_function_2" value="DO FROM_BASE64(CAST(RIGHT(11,1)AS BINARY(24)))" db-types="MySQL" />
     <sql-case id="do_with_function_3" value="DO COUNT(DISTINCT ROUND(CAST(SLEEP(0) AS DECIMAL), NULL))" db-types="MySQL" />
+    <sql-case id="do_with_function_4" value="DO ST_AsText(@centroid_point) as centroid" db-types="MySQL" />
+    <sql-case id="do_with_function_5" value="DO SLEEP(5) as t, SLEEP(5) as t1" db-types="MySQL" />
     <sql-case id="do_with_crc32_function" value="DO CRC32(CHAR(1.134475E+308))" db-types="MySQL" />
 </sql-cases>

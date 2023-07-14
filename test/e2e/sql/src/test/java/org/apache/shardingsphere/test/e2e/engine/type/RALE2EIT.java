@@ -59,11 +59,10 @@ class RALE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            init(containerComposer);
-            assertExecute(containerComposer);
-            tearDown(containerComposer);
-        }
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        init(containerComposer);
+        assertExecute(containerComposer);
+        tearDown(containerComposer);
     }
     
     private void assertExecute(final SingleE2EContainerComposer containerComposer) throws SQLException {

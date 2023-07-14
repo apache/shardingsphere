@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Collections;
 
 /**
  * Mode context manager.
@@ -124,12 +124,21 @@ public interface ModeContextManager {
     }
     
     /**
-     * Remove rule configuration.
+     * Remove rule configuration item.
      *
      * @param databaseName database name
      * @param toBeRemovedRuleConfig to be removed rule config
      */
-    default void removeRuleConfiguration(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
+    default void removeRuleConfigurationItem(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
+    }
+    
+    /**
+     * Remove rule configuration.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     */
+    default void removeRuleConfiguration(String databaseName, String ruleName) {
     }
     
     /**
@@ -144,10 +153,8 @@ public interface ModeContextManager {
      * Alter global rule configuration.
      *
      * @param globalRuleConfig global rule config
-     * @return meta data versions
      */
-    default Collection<MetaDataVersion> alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) {
-        return Collections.emptyList();
+    default void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) {
     }
     
     /**
@@ -156,36 +163,4 @@ public interface ModeContextManager {
      * @param props pros
      */
     void alterProperties(Properties props);
-    
-    /**
-     * TODO Need to DistSQL handle call it
-     * New alter properties.
-     *
-     * @param props pros
-     * @return meta data versions
-     */
-    Collection<MetaDataVersion> newAlterProperties(Properties props);
-    
-    /**
-     * TODO Remove to MetaDataPersistService
-     * Get active version by key.
-     *
-     * @param key key
-     * @return active version
-     */
-    default String getActiveVersionByKey(String key) {
-        return "";
-    }
-    
-    /**
-     * TODO Remove to MetaDataPersistService
-     * Get version path by active version key.
-     *
-     * @param key key
-     * @param activeVersion active version
-     * @return version path
-     */
-    default String getVersionPathByActiveVersionKey(String key, String activeVersion) {
-        return "";
-    }
 }

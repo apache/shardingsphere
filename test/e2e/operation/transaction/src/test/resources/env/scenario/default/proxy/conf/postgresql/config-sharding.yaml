@@ -42,6 +42,9 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
 rules:
+  - !SINGLE
+    tables:
+      - "*.*.*"
   - !SHARDING
     tables:
       t_order:

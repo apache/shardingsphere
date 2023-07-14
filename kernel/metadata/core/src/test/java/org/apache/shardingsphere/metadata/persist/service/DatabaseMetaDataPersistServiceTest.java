@@ -127,11 +127,11 @@ class DatabaseMetaDataPersistServiceTest {
         assertThat(schema.size(), is(1));
         assertTrue(databaseMetaDataPersistService.loadSchemas("test").isEmpty());
         assertThat(schema.get("foo_schema").getAllTableNames(), is(Collections.singleton("t_order")));
-        assertThat(schema.get("foo_schema").getTable("t_order").getIndexes().size(), is(1));
-        assertThat(schema.get("foo_schema").getTable("t_order").getIndexes().iterator().next().getName(), is("PRIMARY"));
+        assertThat(schema.get("foo_schema").getTable("t_order").getIndexValues().size(), is(1));
+        assertThat(schema.get("foo_schema").getTable("t_order").getIndexValues().iterator().next().getName(), is("PRIMARY"));
         assertThat(schema.get("foo_schema").getAllColumnNames("t_order").size(), is(1));
-        assertThat(schema.get("foo_schema").getTable("t_order").getColumns().size(), is(1));
-        assertThat(schema.get("foo_schema").getTable("t_order").getColumns().iterator().next().getName(), is("id"));
+        assertThat(schema.get("foo_schema").getTable("t_order").getColumnValues().size(), is(1));
+        assertThat(schema.get("foo_schema").getTable("t_order").getColumnValues().iterator().next().getName(), is("id"));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})

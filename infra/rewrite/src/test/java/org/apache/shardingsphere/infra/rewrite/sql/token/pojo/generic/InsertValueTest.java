@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -65,6 +67,16 @@ class InsertValueTest {
         InsertValue insertValue = new InsertValue(expressionSegments);
         String actualToString = insertValue.toString();
         String expectedToString = "(?, $1, 'literals', complexExpressionSegment, $2::varchar::jsonb)";
+        assertThat(actualToString, is(expectedToString));
+    }
+    
+    @Test
+    void assertSysdateToString() {
+        List<ExpressionSegment> expressionSegments = new ArrayList<>(1);
+        expressionSegments.add(new ColumnSegment(0, 6, new IdentifierValue("SYSDATE")));
+        InsertValue insertValue = new InsertValue(expressionSegments);
+        String actualToString = insertValue.toString();
+        String expectedToString = "(SYSDATE)";
         assertThat(actualToString, is(expectedToString));
     }
 }

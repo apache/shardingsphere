@@ -36,6 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -89,7 +90,7 @@ class DropReadwriteSplittingRuleStatementUpdaterTest {
     void assertUpdateCurrentRuleConfiguration() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
-        assertThat(ruleConfig.getLoadBalancers().size(), is(1));
+        assertThat(ruleConfig.getLoadBalancers().size(), is(0));
     }
     
     @Test
@@ -103,7 +104,7 @@ class DropReadwriteSplittingRuleStatementUpdaterTest {
     void assertUpdateCurrentRuleConfigurationWithoutLoadBalancerName() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createCurrentRuleConfigurationWithoutLoadBalancerName();
         assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
-        assertThat(ruleConfig.getLoadBalancers().size(), is(1));
+        assertThat(ruleConfig.getLoadBalancers().size(), is(0));
     }
     
     private DropReadwriteSplittingRuleStatement createSQLStatement() {
@@ -112,24 +113,27 @@ class DropReadwriteSplittingRuleStatementUpdaterTest {
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds",
-                "", Collections.emptyList(), "TEST");
-        Map<String, AlgorithmConfiguration> loadBalancers = Collections.singletonMap("readwrite_ds", new AlgorithmConfiguration("TEST", new Properties()));
+                "", Collections.emptyList(), "readwrite_ds");
+        Map<String, AlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+        loadBalancers.put("readwrite_ds", new AlgorithmConfiguration("TEST", new Properties()));
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), loadBalancers);
     }
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfigurationWithoutLoadBalancerName() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds",
-                "", Collections.emptyList(), null);
-        Map<String, AlgorithmConfiguration> loadBalancers = Collections.singletonMap("readwrite_ds", new AlgorithmConfiguration("TEST", new Properties()));
+                "", new LinkedList<>(), null);
+        Map<String, AlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+        loadBalancers.put("readwrite_ds", new AlgorithmConfiguration("TEST", new Properties()));
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), loadBalancers);
     }
     
     private ReadwriteSplittingRuleConfiguration createMultipleCurrentRuleConfigurations() {
         ReadwriteSplittingDataSourceRuleConfiguration fooDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("foo_ds",
-                "", Collections.emptyList(), "TEST");
+                "", new LinkedList<>(), "TEST");
         ReadwriteSplittingDataSourceRuleConfiguration barDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("bar_ds",
-                "", Collections.emptyList(), "TEST");
-        Map<String, AlgorithmConfiguration> loadBalancers = Collections.singletonMap("foo_ds", new AlgorithmConfiguration("TEST", new Properties()));
+                "", new LinkedList<>(), "TEST");
+        Map<String, AlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+        loadBalancers.put("TEST", new AlgorithmConfiguration("TEST", new Properties()));
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Arrays.asList(fooDataSourceRuleConfig, barDataSourceRuleConfig)), loadBalancers);
     }
 }

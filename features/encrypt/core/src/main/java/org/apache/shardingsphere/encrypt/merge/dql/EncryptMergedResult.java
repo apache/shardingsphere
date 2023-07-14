@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -62,16 +63,18 @@ public final class EncryptMergedResult implements MergedResult {
         TablesContext tablesContext = selectStatementContext.getTablesContext();
         String schemaName = tablesContext.getSchemaName()
                 .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName()));
-        Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(Collections.singleton(columnProjection.get()), database.getSchema(schemaName));
-        Optional<String> tableName = findTableName(columnProjection.get(), expressionTableNames);
+        ColumnProjection originalColumn = new ColumnProjection(columnProjection.get().getOriginalOwner(), columnProjection.get().getOriginalName(), null);
+        Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(Collections.singletonList(originalColumn), database.getSchema(schemaName));
+        Optional<String> tableName = findTableName(originalColumn, expressionTableNames);
         if (!tableName.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
-        if (!encryptRule.findEncryptTable(tableName.get()).map(optional -> optional.isEncryptColumn(columnProjection.get().getName())).orElse(false)) {
+        if (!encryptRule.findEncryptTable(tableName.get()).map(optional -> optional.isEncryptColumn(originalColumn.getName())).orElse(false)) {
             return mergedResult.getValue(columnIndex, type);
         }
         Object cipherValue = mergedResult.getValue(columnIndex, Object.class);
-        return encryptRule.decrypt(database.getName(), schemaName, tableName.get(), columnProjection.get().getName(), cipherValue);
+        EncryptColumn encryptColumn = encryptRule.getEncryptTable(tableName.get()).getEncryptColumn(originalColumn.getName());
+        return encryptColumn.getCipher().decrypt(database.getName(), schemaName, tableName.get(), originalColumn.getName(), cipherValue);
     }
     
     private Optional<String> findTableName(final ColumnProjection columnProjection, final Map<String, String> columnTableNames) {

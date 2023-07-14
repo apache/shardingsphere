@@ -61,7 +61,7 @@ public abstract class EncryptShowColumnsMergedResult implements MergedResult {
             return false;
         }
         String columnName = getOriginalValue(COLUMN_FIELD_INDEX, String.class).toString();
-        while (encryptTable.get().getAssistedQueryColumns().contains(columnName) || encryptTable.get().getLikeQueryColumns().contains(columnName)) {
+        while (isDerivedColumn(encryptTable.get(), columnName)) {
             hasNext = nextValue();
             if (!hasNext) {
                 return false;
@@ -69,6 +69,10 @@ public abstract class EncryptShowColumnsMergedResult implements MergedResult {
             columnName = getOriginalValue(COLUMN_FIELD_INDEX, String.class).toString();
         }
         return true;
+    }
+    
+    private boolean isDerivedColumn(final EncryptTable encryptTable, final String columnName) {
+        return encryptTable.isAssistedQueryColumn(columnName) || encryptTable.isLikeQueryColumn(columnName);
     }
     
     @Override

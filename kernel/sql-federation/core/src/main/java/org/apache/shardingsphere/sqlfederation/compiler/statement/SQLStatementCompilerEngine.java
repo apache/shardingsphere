@@ -28,13 +28,10 @@ import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionP
  */
 public final class SQLStatementCompilerEngine {
     
-    private final SQLStatementCompiler sqlFederationCompiler;
-    
     private final LoadingCache<ExecutionPlanCacheKey, SQLFederationExecutionPlan> executionPlanCache;
     
-    public SQLStatementCompilerEngine(final SQLStatementCompiler sqlFederationCompiler, final CacheOption cacheOption) {
-        this.sqlFederationCompiler = sqlFederationCompiler;
-        executionPlanCache = ExecutionPlanCacheBuilder.build(cacheOption, sqlFederationCompiler);
+    public SQLStatementCompilerEngine(final CacheOption cacheOption) {
+        executionPlanCache = ExecutionPlanCacheBuilder.build(cacheOption);
     }
     
     /**
@@ -45,6 +42,6 @@ public final class SQLStatementCompilerEngine {
      * @return SQL federation execution plan
      */
     public SQLFederationExecutionPlan compile(final ExecutionPlanCacheKey cacheKey, final boolean useCache) {
-        return useCache ? executionPlanCache.get(cacheKey) : sqlFederationCompiler.compile(cacheKey.getSqlStatement());
+        return useCache ? executionPlanCache.get(cacheKey) : cacheKey.getSqlStatementCompiler().compile(cacheKey.getSqlStatement(), cacheKey.getDatabaseType());
     }
 }

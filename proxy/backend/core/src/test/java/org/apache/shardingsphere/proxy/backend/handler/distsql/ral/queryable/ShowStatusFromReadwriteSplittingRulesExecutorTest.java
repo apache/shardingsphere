@@ -93,6 +93,7 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
                 new ShardingSphereRuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.emptyMap());
         Map<String, ShardingSphereDatabase> databaseMap = new LinkedHashMap<>();
         databaseMap.put("readwrite_db", database);
-        return new ShardingSphereMetaData(databaseMap, new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        return new ShardingSphereMetaData(databaseMap, mock(ShardingSphereResourceMetaData.class),
+                new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
 }

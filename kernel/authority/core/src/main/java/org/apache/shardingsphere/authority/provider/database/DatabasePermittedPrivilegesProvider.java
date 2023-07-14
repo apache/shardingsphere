@@ -54,7 +54,7 @@ public final class DatabasePermittedPrivilegesProvider implements AuthorityProvi
     }
     
     @Override
-    public Collection<String> getTypeAliases() {
+    public Collection<Object> getTypeAliases() {
         return Collections.singleton("SCHEMA_PRIVILEGES_PERMITTED");
     }
 }

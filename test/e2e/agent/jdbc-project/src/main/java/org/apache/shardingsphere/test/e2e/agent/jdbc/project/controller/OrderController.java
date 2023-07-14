@@ -17,107 +17,84 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.enums.StatementType;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.OrderService;
-import org.apache.shardingsphere.test.e2e.agent.jdbc.project.vo.response.HttpResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import java.util.Collection;
 
 /**
  * Order controller.
  */
-@RestController
-@RequestMapping("/order")
-public class OrderController extends AbstractRestController {
+@RequiredArgsConstructor
+public final class OrderController {
     
-    @Resource
-    private OrderService orderService;
+    private final OrderService orderService;
     
     /**
      * Create table.
-     *
-     * @return http result
      */
-    @GetMapping("/createTable")
-    public HttpResult<Void> createTable() {
+    public void createTable() {
         orderService.createTable();
-        return success();
     }
     
     /**
      * Drop table.
-     *
-     * @return http result
      */
-    @GetMapping("/dropTable")
-    public HttpResult<Void> dropTable() {
+    public void dropTable() {
         orderService.dropTable();
-        return success();
     }
     
     /**
      * Insert order.
-     *
-     * @return http result
      */
-    @GetMapping("/insert")
-    public HttpResult<Void> insert() {
+    public void insert() {
         long index = 0;
-        while (index++ < 100) {
+        while (index++ <= 100) {
             OrderEntity order = new OrderEntity(index, index, "OK");
             orderService.insert(order, 0 == (index & 1) ? StatementType.STATEMENT : StatementType.PREPARED, 0 == index % 5);
         }
-        index = 0;
-        while (index++ < 10) {
+    }
+    
+    /**
+     * Create error request.
+     */
+    public void createErrorRequest() {
+        long index = 0;
+        while (index++ <= 10) {
             OrderEntity order = new OrderEntity(index, index, "Fail");
             orderService.insert(order, 0 == (index & 1) ? StatementType.STATEMENT : StatementType.PREPARED, false);
         }
-        return success();
     }
     
     /**
      * Update.
-     *
-     * @return http result
      */
-    @GetMapping("/update")
-    public HttpResult<Void> update() {
+    public void update() {
         Collection<OrderEntity> orders = orderService.selectAll(StatementType.STATEMENT);
         int index = 0;
         for (OrderEntity each : orders) {
             each.setStatus("Fail");
             orderService.update(each, 0 == (index++ & 1) ? StatementType.STATEMENT : StatementType.PREPARED);
         }
-        return success();
     }
     
     /**
      * Delete order.
-     *
-     * @return http result
      */
-    @GetMapping("/delete")
-    public HttpResult<Void> delete() {
+    public void delete() {
         Collection<OrderEntity> orders = orderService.selectAll(StatementType.STATEMENT);
         int index = 0;
         for (OrderEntity each : orders) {
             orderService.delete(each.getOrderId(), 0 == (index++ & 1) ? StatementType.STATEMENT : StatementType.PREPARED);
         }
-        return success();
     }
     
     /**
      * Select all order.
-     *
-     * @return http result
      */
-    @GetMapping("selectAll")
-    public HttpResult<Collection<OrderEntity>> selectAll() {
-        return success(orderService.selectAll(StatementType.PREPARED));
+    public void selectAll() {
+        orderService.selectAll(StatementType.PREPARED);
     }
 }

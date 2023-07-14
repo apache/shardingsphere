@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.event.schema.table.AlterTableEvent;
 import org.apache.shardingsphere.mode.event.schema.table.DropTableEvent;
 import org.apache.shardingsphere.mode.event.schema.view.AlterViewEvent;
@@ -27,6 +29,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
+
+import java.util.Map;
 
 /**
  * TODO Rename ResourceMetaDataChangedSubscriber when metadata structure adjustment completed. #25485
@@ -89,10 +93,12 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getTable(), null);
+        Map<String, ShardingSphereTable> tables = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
+                .getTableMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getTableName());
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), tables.values().iterator().next(), null);
     }
     
     /**
@@ -102,11 +108,7 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DropTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
         contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), null);
-        
     }
     
     /**
@@ -116,10 +118,12 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterViewEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getView());
+        Map<String, ShardingSphereView> views = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
+                .getViewMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getViewName());
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, views.values().iterator().next());
     }
     
     /**
@@ -129,9 +133,6 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DropViewEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
-            return;
-        }
         contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getViewName());
     }
 }

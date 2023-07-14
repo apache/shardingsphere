@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -29,11 +28,12 @@ import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatem
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -72,49 +72,31 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     
     @Override
     public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final DropShadowRuleStatement sqlStatement) {
-        Collection<ShadowDataSourceConfiguration> toBeDroppedDataSources = new LinkedList<>();
-        Map<String, ShadowTableConfiguration> toBeDroppedTables = new LinkedHashMap<>();
-        Map<String, AlgorithmConfiguration> toBeDroppedShadowAlgorithms = new HashMap<>();
-        for (String each : sqlStatement.getNames()) {
-            compareAndGetToBeDroppedRule(currentRuleConfig, toBeDroppedDataSources, toBeDroppedTables, toBeDroppedShadowAlgorithms, each, sqlStatement.getNames());
-        }
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setDataSources(toBeDroppedDataSources);
-        result.setTables(toBeDroppedTables);
-        result.setShadowAlgorithms(toBeDroppedShadowAlgorithms);
+        for (String each : sqlStatement.getNames()) {
+            result.getDataSources().add(new ShadowDataSourceConfiguration(each, null, null));
+            dropRule(currentRuleConfig, each);
+        }
+        currentRuleConfig.getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(sqlStatement.getNames()::contains));
+        for (Entry<String, ShadowTableConfiguration> each : currentRuleConfig.getTables().entrySet()) {
+            if (each.getValue().getDataSourceNames().isEmpty()) {
+                result.getTables().put(each.getKey(), each.getValue());
+            }
+        }
+        currentRuleConfig.getTables().entrySet().removeIf(entry -> entry.getValue().getDataSourceNames().isEmpty());
+        findUnusedAlgorithms(currentRuleConfig).forEach(each -> result.getShadowAlgorithms().put(each, currentRuleConfig.getShadowAlgorithms().get(each)));
         return result;
-    }
-    
-    private void compareAndGetToBeDroppedRule(final ShadowRuleConfiguration currentRuleConfig, final Collection<ShadowDataSourceConfiguration> toBeDroppedDataSources,
-                                              final Map<String, ShadowTableConfiguration> toBeDroppedTables, final Map<String, AlgorithmConfiguration> toBeDroppedShadowAlgorithms,
-                                              final String toBeDroppedDataSourceName, final Collection<String> toBeDroppedDataSourceNames) {
-        toBeDroppedDataSources.add(new ShadowDataSourceConfiguration(toBeDroppedDataSourceName, null, null));
-        for (Map.Entry<String, ShadowTableConfiguration> each : currentRuleConfig.getTables().entrySet()) {
-            if (toBeDroppedDataSourceNames.containsAll(each.getValue().getDataSourceNames())) {
-                toBeDroppedTables.put(each.getKey(), each.getValue());
-            }
-        }
-        Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().entrySet().stream().filter(each -> !toBeDroppedTables.containsKey(each.getKey()))
-                .flatMap(entry -> entry.getValue().getShadowAlgorithmNames().stream()).collect(Collectors.toSet());
-        if (null != currentRuleConfig.getDefaultShadowAlgorithmName()) {
-            inUsedAlgorithms.add(currentRuleConfig.getDefaultShadowAlgorithmName());
-        }
-        for (String each : currentRuleConfig.getShadowAlgorithms().keySet()) {
-            if (!inUsedAlgorithms.contains(each)) {
-                toBeDroppedShadowAlgorithms.put(each, currentRuleConfig.getShadowAlgorithms().get(each));
-            }
-        }
     }
     
     @Override
     public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final DropShadowRuleStatement sqlStatement) {
         Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
         Collection<String> toBeDroppedDataSourceNames = sqlStatement.getNames();
-        for (Map.Entry<String, ShadowTableConfiguration> each : currentRuleConfig.getTables().entrySet()) {
+        for (Entry<String, ShadowTableConfiguration> each : currentRuleConfig.getTables().entrySet()) {
             if (!toBeDroppedDataSourceNames.containsAll(each.getValue().getDataSourceNames())) {
                 List<String> currentDataSources = new LinkedList<>(each.getValue().getDataSourceNames());
                 currentDataSources.removeAll(toBeDroppedDataSourceNames);
-                tables.put(each.getKey(), new ShadowTableConfiguration(currentDataSources, null));
+                tables.put(each.getKey(), new ShadowTableConfiguration(currentDataSources, each.getValue().getShadowAlgorithmNames()));
             }
         }
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
@@ -124,20 +106,30 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getDataSources().removeIf(each -> sqlStatement.getNames().contains(each.getName()));
+        for (String each : sqlStatement.getNames()) {
+            dropRule(currentRuleConfig, each);
+        }
         currentRuleConfig.getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(sqlStatement.getNames()::contains));
         currentRuleConfig.getTables().entrySet().removeIf(entry -> entry.getValue().getDataSourceNames().isEmpty());
         dropUnusedAlgorithm(currentRuleConfig);
         return currentRuleConfig.getDataSources().isEmpty() || currentRuleConfig.getTables().isEmpty();
     }
     
+    private void dropRule(final ShadowRuleConfiguration currentRuleConfig, final String ruleName) {
+        Optional<ShadowDataSourceConfiguration> dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(each -> ruleName.equals(each.getName())).findAny();
+        dataSourceRuleConfig.ifPresent(optional -> currentRuleConfig.getDataSources().remove(optional));
+    }
+    
     private void dropUnusedAlgorithm(final ShadowRuleConfiguration currentRuleConfig) {
+        findUnusedAlgorithms(currentRuleConfig).forEach(each -> currentRuleConfig.getShadowAlgorithms().remove(each));
+    }
+    
+    private static Collection<String> findUnusedAlgorithms(final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().entrySet().stream().flatMap(entry -> entry.getValue().getShadowAlgorithmNames().stream()).collect(Collectors.toSet());
         if (null != currentRuleConfig.getDefaultShadowAlgorithmName()) {
             inUsedAlgorithms.add(currentRuleConfig.getDefaultShadowAlgorithmName());
         }
-        Collection<String> unusedAlgorithms = currentRuleConfig.getShadowAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
-        unusedAlgorithms.forEach(each -> currentRuleConfig.getShadowAlgorithms().remove(each));
+        return currentRuleConfig.getShadowAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
     }
     
     @Override

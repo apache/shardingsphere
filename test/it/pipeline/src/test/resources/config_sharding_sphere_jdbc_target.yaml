@@ -15,6 +15,9 @@
 # limitations under the License.
 #
 
+props:
+  system-schema-metadata-enabled: false
+
 dataSources:
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
@@ -26,6 +29,7 @@ dataSources:
     url: jdbc:h2:mem:test_ds_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
     username: root
     password: root
+
 rules:
 - !SHARDING
   defaultDatabaseStrategy:

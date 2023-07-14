@@ -63,4 +63,9 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     public final Optional<AliasSegment> getAlias() {
         return Optional.ofNullable(alias);
     }
+    
+    @Override
+    public String getText() {
+        return innerExpression;
+    }
 }

@@ -6,6 +6,7 @@ weight = 2
 ## 背景信息
 
 ShardingSphere 内置提供了多种分片算法，按照类型可以划分为自动分片算法、标准分片算法、复合分片算法和 Hint 分片算法，能够满足用户绝大多数业务场景的需要。此外，考虑到业务场景的复杂性，内置算法也提供了自定义分片算法的方式，用户可以通过编写 Java 代码来完成复杂的分片逻辑。
+需要注意的是，自动分片算法的分片逻辑由 ShardingSphere 自动管理，需要通过配置 autoTables 分片规则进行使用。
 
 ## 参数解释
 
@@ -103,60 +104,6 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | sharding-suffix-pattern      | String | 分片数据源或真实表的后缀格式，必须遵循 Java DateTimeFormatter 的格式，必须和 `datetime-interval-unit` 保持一致。例如：yyyyMM                                                 |       |
 | datetime-interval-amount (?) | int    | 分片键时间间隔，超过该时间间隔将进入下一分片                                                                                                                     | 1     |
 | datetime-interval-unit (?)   | String | 分片键时间间隔单位，必须遵循 Java ChronoUnit 的枚举值。例如：MONTHS                                                                                              | DAYS  |
-
-#### 基于 CosId 的固定时间范围的分片算法
-
-基于 `me.ahoo.cosid:cosid-core` 的工具类实现的固定时间范围的分片算法。
-当分片键为 JSR-310 的所含类或与时间相关的类，将转换为`java.time.LocalDateTime`后再做下一步分片。
-参考 https://github.com/apache/shardingsphere/issues/14047 的讨论。
-
-类型：COSID_INTERVAL
-
-可配置属性：
-
-| *属性名称*                   | *数据类型* | *说明*                                                                                       | *默认值* |
-|--------------------------|--------|--------------------------------------------------------------------------------------------|-------|
-| zone-id                  | String | 时区，必须遵循 `java.time.ZoneId` 的所含值。 例如：Asia/Shanghai                                          |       |
-| logic-name-prefix        | String | 分片数据源或真实表的前缀格式                                                                             |       |
-| datetime-lower           | String | 时间分片下界值，格式与 `yyyy-MM-dd HH:mm:ss` 的时间戳格式一致                                                 |       |
-| datetime-upper           | String | 时间分片上界值，格式与 `yyyy-MM-dd HH:mm:ss` 的时间戳格式一致                                                 |       |
-| sharding-suffix-pattern  | String | 分片数据源或真实表的后缀格式，必须遵循 Java DateTimeFormatter 的格式，必须和 `datetime-interval-unit` 保持一致。例如：yyyyMM |       |
-| datetime-interval-unit   | String | 分片键时间间隔单位，必须遵循 Java ChronoUnit 的枚举值。例如：MONTHS                                              |       |
-| datetime-interval-amount | int    | 分片键时间间隔，超过该时间间隔将进入下一分片                                                                     |       |
-
-#### 基于 CosId 的雪花ID固定时间范围的分片算法
-
-基于 `me.ahoo.cosid:cosid-core` 的工具类实现的雪花ID固定时间范围的分片算法。
-当分片键为 JSR-310 的所含类或与时间相关的类，将转换为`java.time.LocalDateTime`后再做下一步分片。
-参考 https://github.com/apache/shardingsphere/issues/14047 的讨论。
-
-类型：COSID_INTERVAL_SNOWFLAKE
-
-可配置属性：
-
-| *属性名称*                   | *数据类型* | *说明*                                                                                       | *默认值* |
-|--------------------------|--------|--------------------------------------------------------------------------------------------|-------|
-| zone-id                  | String | 时区，必须遵循 `java.time.ZoneId` 的所含值。 例如：Asia/Shanghai                                          |       |
-| logic-name-prefix        | String | 分片数据源或真实表的前缀格式                                                                             |       |
-| datetime-lower           | String | 时间分片下界值，格式与 `yyyy-MM-dd HH:mm:ss` 的时间戳格式一致                                                 |       |
-| datetime-upper           | String | 时间分片上界值，格式与 `yyyy-MM-dd HH:mm:ss` 的时间戳格式一致                                                 |       |
-| sharding-suffix-pattern  | String | 分片数据源或真实表的后缀格式，必须遵循 Java DateTimeFormatter 的格式，必须和 `datetime-interval-unit` 保持一致。例如：yyyyMM |       |
-| datetime-interval-unit   | String | 分片键时间间隔单位，必须遵循 Java ChronoUnit 的枚举值。例如：MONTHS                                              |       |
-| datetime-interval-amount | int    | 分片键时间间隔，超过该时间间隔将进入下一分片                                                                     |       |
-
-#### 基于 CosId 的取模分片算法
-
-基于 `me.ahoo.cosid:cosid-core` 的工具类实现的取模分片算法。
-参考 https://github.com/apache/shardingsphere/issues/14047 的讨论。
-
-类型：COSID_MOD
-
-可配置属性：
-
-| *属性名称*            | *数据类型* | *说明*           |
-|-------------------|--------|----------------|
-| mod               | int    | 分片数量           |
-| logic-name-prefix | String | 分片数据源或真实表的前缀格式 |
 
 ### 复合分片算法
 

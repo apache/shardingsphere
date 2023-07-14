@@ -21,7 +21,6 @@ import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsExcep
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.single.distsql.handler.exception.MissingRequiredSingleTableException;
 import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
-import org.apache.shardingsphere.single.exception.InvalidSingleRuleConfigurationException;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
 import javax.sql.DataSource;
@@ -52,31 +50,22 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(database.getProtocolType(), database.getName());
-        checkTables(database, sqlStatement, currentRuleConfig, defaultSchemaName);
+        checkDuplicatedTables(database, sqlStatement, defaultSchemaName);
         checkStorageUnits(database, sqlStatement);
         checkActualTableExist(database, sqlStatement, defaultSchemaName);
     }
     
-    private void checkTables(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig, final String defaultSchemaName) {
+    private void checkDuplicatedTables(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final String defaultSchemaName) {
         Collection<SingleTableSegment> tableSegments = sqlStatement.getTables();
-        boolean isSchemaSupportedDatabaseType = database.getProtocolType() instanceof SchemaSupportedDatabaseType;
+        boolean isSchemaSupportedDatabaseType = database.getProtocolType().getDefaultSchema().isPresent();
         ShardingSphereSchema schema = database.getSchema(defaultSchemaName);
         for (SingleTableSegment each : tableSegments) {
-            checkTableRuleExist(currentRuleConfig, each);
             checkDatabaseTypeAndTableNodeStyle(isSchemaSupportedDatabaseType, each);
             if (SingleTableConstants.ASTERISK.equals(each.getTableName())) {
                 continue;
             }
             ShardingSpherePreconditions.checkState(!schema.containsTable(each.getTableName()), () -> new TableExistsException(each.getTableName()));
         }
-    }
-    
-    private void checkTableRuleExist(final SingleRuleConfiguration currentRuleConfig, final SingleTableSegment segment) {
-        if (null == currentRuleConfig) {
-            return;
-        }
-        ShardingSpherePreconditions.checkState(!currentRuleConfig.getTables().contains(segment.toString()),
-                () -> new InvalidSingleRuleConfigurationException(String.format("Duplicated table definition `%s`", segment)));
     }
     
     private void checkDatabaseTypeAndTableNodeStyle(final boolean isSchemaSupportedDatabaseType, final SingleTableSegment singleTableSegment) {
@@ -92,7 +81,10 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
         }
     }
     
-    private Collection<String> getRequiredTables(final LoadSingleTableStatement sqlStatement) {
+    private Collection<String> getRequiredTables(final SingleRuleConfiguration currentRuleConfig, final LoadSingleTableStatement sqlStatement) {
+        if (null != currentRuleConfig) {
+            return sqlStatement.getTables().stream().map(SingleTableSegment::toString).filter(each -> !currentRuleConfig.getTables().contains(each)).collect(Collectors.toSet());
+        }
         return sqlStatement.getTables().stream().map(SingleTableSegment::toString).collect(Collectors.toSet());
     }
     
@@ -146,7 +138,7 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     @Override
     public SingleRuleConfiguration buildToBeCreatedRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final LoadSingleTableStatement sqlStatement) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
-        result.getTables().addAll(getRequiredTables(sqlStatement));
+        result.getTables().addAll(getRequiredTables(currentRuleConfig, sqlStatement));
         return result;
     }
     

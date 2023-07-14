@@ -20,16 +20,27 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * System schema utility.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SystemSchemaUtils {
+    
+    private static final Collection<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new HashSet<>(3, 1F);
+    
+    static {
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("version()");
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("intervaltonum(gs_password_deadline())");
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("gs_password_notifytime()");
+    }
     
     /**
      * Judge whether SQL statement contains system schema or not.
@@ -40,7 +51,7 @@ public final class SystemSchemaUtils {
      * @return whether SQL statement contains system schema or not
      */
     public static boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames, final ShardingSphereDatabase database) {
-        if (database.isComplete() && !(databaseType instanceof SchemaSupportedDatabaseType)) {
+        if (database.isComplete() && !databaseType.getDefaultSchema().isPresent()) {
             return false;
         }
         for (String each : schemaNames) {
@@ -48,6 +59,21 @@ public final class SystemSchemaUtils {
                 return true;
             }
         }
-        return !(databaseType instanceof SchemaSupportedDatabaseType) && databaseType.getSystemSchemas().contains(database.getName());
+        return !databaseType.getDefaultSchema().isPresent() && databaseType.getSystemSchemas().contains(database.getName());
+    }
+    
+    /**
+     * Judge whether query is openGauss system catalog query or not.
+     * 
+     * @param databaseType database type
+     * @param projections projections
+     * @return whether query is openGauss system catalog query or not
+     */
+    public static boolean isOpenGaussSystemCatalogQuery(final DatabaseType databaseType, final Collection<ProjectionSegment> projections) {
+        if (!(databaseType instanceof OpenGaussDatabaseType)) {
+            return false;
+        }
+        return 1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment
+                && SYSTEM_CATALOG_QUERY_EXPRESSIONS.contains(((ExpressionProjectionSegment) projections.iterator().next()).getText().toLowerCase());
     }
 }

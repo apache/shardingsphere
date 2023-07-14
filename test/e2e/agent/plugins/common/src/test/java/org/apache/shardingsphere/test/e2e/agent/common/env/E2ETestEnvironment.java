@@ -21,13 +21,12 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Response;
-import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 
 import javax.sql.DataSource;
-import java.io.IOException;
+import java.io.File;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -136,7 +135,7 @@ public final class E2ETestEnvironment {
     private boolean waitForJdbcEnvironmentReady() {
         log.info("Jdbc project with agent environment initializing ...");
         try {
-            Awaitility.await().atMost(2L, TimeUnit.MINUTES).pollInterval(5L, TimeUnit.SECONDS).until(() -> isJdbcReady(props));
+            Awaitility.await().atMost(2L, TimeUnit.MINUTES).pollInterval(5L, TimeUnit.SECONDS).until(() -> isJdbcReady());
         } catch (final ConditionTimeoutException ignored) {
             log.info("Jdbc project with agent environment initialization failed ...");
             return false;
@@ -145,16 +144,9 @@ public final class E2ETestEnvironment {
         return true;
     }
     
-    private boolean isJdbcReady(final Properties props) {
-        log.info("Try to connect jdbc project ...");
-        String baseUrl = props.getProperty("jdbc.base.url");
-        String selectAllUrl = props.getProperty("jdbc.path.select.all");
-        try {
-            Response response = OkHttpUtils.getInstance().getResponse(String.join("", baseUrl, selectAllUrl));
-            response.close();
-            return response.isSuccessful();
-        } catch (final IOException ignored) {
-        }
-        return false;
+    private boolean isJdbcReady() {
+        log.info("Wait for the jdbc project environment to be ready ...");
+        String logPath = String.join(File.separator, Paths.get("").toAbsolutePath().toString(), String.join(File.separator, "target", "jdbc", "logs", "stdout.log"));
+        return new File(logPath).exists();
     }
 }

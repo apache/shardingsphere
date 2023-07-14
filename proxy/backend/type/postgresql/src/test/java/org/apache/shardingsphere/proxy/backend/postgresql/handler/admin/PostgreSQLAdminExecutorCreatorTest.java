@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.SelectDatabaseExecutor;
-import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.SelectTableExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -98,8 +96,7 @@ class PostgreSQLAdminExecutorCreatorTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn((SelectStatement) sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, PSQL_SELECT_DATABASES, "", Collections.emptyList());
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(SelectDatabaseExecutor.class));
+        assertFalse(actual.isPresent());
     }
     
     @Test
@@ -108,8 +105,7 @@ class PostgreSQLAdminExecutorCreatorTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn((SelectStatement) sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, PSQL_SELECT_TABLESPACES, "", Collections.emptyList());
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(SelectTableExecutor.class));
+        assertFalse(actual.isPresent());
     }
     
     @Test
@@ -164,10 +160,5 @@ class PostgreSQLAdminExecutorCreatorTest {
     void assertCreateWithDMLStatement() {
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(new PostgreSQLDeleteStatement());
         assertThat(new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "delete from t where id = 1", "", Collections.emptyList()), is(Optional.empty()));
-    }
-    
-    @Test
-    void assertGetType() {
-        assertThat(new PostgreSQLAdminExecutorCreator().getType(), is("PostgreSQL"));
     }
 }

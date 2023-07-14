@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatement;
 
 import java.util.List;
@@ -39,6 +40,8 @@ public final class MySQLServerPreparedStatement implements ServerPreparedStateme
     private final String sql;
     
     private final SQLStatementContext sqlStatementContext;
+    
+    private final HintValueContext hintValueContext;
     
     private final List<Integer> parameterColumnDefinitionFlags;
     

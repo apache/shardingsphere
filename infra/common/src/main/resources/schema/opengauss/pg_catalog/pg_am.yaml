@@ -1,0 +1,272 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_am
+columns:
+  amname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: amname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amstrategies:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: amstrategies
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amsupport:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: amsupport
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amcanorder:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: amcanorder
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amcanorderbyop:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: amcanorderbyop
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amcanbackward:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: amcanbackward
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amcanunique:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: amcanunique
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amcanmulticol:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: amcanmulticol
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amoptionalkey:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: amoptionalkey
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amsearcharray:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: amsearcharray
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amsearchnulls:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: amsearchnulls
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amstorage:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: amstorage
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amclusterable:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: amclusterable
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ampredlocks:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: ampredlocks
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amkeytype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: amkeytype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  aminsert:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: aminsert
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ambeginscan:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: ambeginscan
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amgettuple:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: amgettuple
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amgetbitmap:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: amgetbitmap
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amrescan:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: amrescan
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amendscan:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: amendscan
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ammarkpos:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: ammarkpos
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amrestrpos:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: amrestrpos
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ammerge:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: ammerge
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ambuild:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: ambuild
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ambuildempty:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: ambuildempty
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ambulkdelete:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: ambulkdelete
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amvacuumcleanup:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: amvacuumcleanup
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amcanreturn:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: amcanreturn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amcostestimate:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: amcostestimate
+    primaryKey: false
+    unsigned: false
+    visible: true
+  amoptions:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: amoptions
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_am_name_index:
+    name: pg_am_name_index
+  pg_am_oid_index:
+    name: pg_am_oid_index

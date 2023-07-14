@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.junit.jupiter.api.Test;
 
@@ -40,9 +41,21 @@ class SystemSchemaBuilderRuleTest {
         SystemSchemaBuilderRule actualPerformanceSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "performance_schema");
         assertThat(actualPerformanceSchema, is(SystemSchemaBuilderRule.MYSQL_PERFORMANCE_SCHEMA));
         assertThat(actualPerformanceSchema.getTables().size(), is(87));
+        SystemSchemaBuilderRule actualSysSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "sys");
+        assertThat(actualSysSchema, is(SystemSchemaBuilderRule.MYSQL_SYS));
+        assertThat(actualSysSchema.getTables().size(), is(53));
+        SystemSchemaBuilderRule actualPgInformationSchema = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "information_schema");
+        assertThat(actualPgInformationSchema, is(SystemSchemaBuilderRule.POSTGRESQL_INFORMATION_SCHEMA));
+        assertThat(actualPgInformationSchema.getTables().size(), is(69));
         SystemSchemaBuilderRule actualPgCatalog = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "pg_catalog");
         assertThat(actualPgCatalog, is(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG));
-        assertThat(actualPgCatalog.getTables().size(), is(27));
+        assertThat(actualPgCatalog.getTables().size(), is(134));
+        SystemSchemaBuilderRule actualOgInformationSchema = SystemSchemaBuilderRule.valueOf(new OpenGaussDatabaseType().getType(), "information_schema");
+        assertThat(actualOgInformationSchema, is(SystemSchemaBuilderRule.OPEN_GAUSS_INFORMATION_SCHEMA));
+        assertThat(actualOgInformationSchema.getTables().size(), is(66));
+        SystemSchemaBuilderRule actualOgPgCatalog = SystemSchemaBuilderRule.valueOf(new OpenGaussDatabaseType().getType(), "pg_catalog");
+        assertThat(actualOgPgCatalog, is(SystemSchemaBuilderRule.OPEN_GAUSS_PG_CATALOG));
+        assertThat(actualOgPgCatalog.getTables().size(), is(240));
     }
     
     @Test
@@ -63,6 +76,10 @@ class SystemSchemaBuilderRuleTest {
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_attribute"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_auth_members"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_authid"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_available_extension_versions"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_available_extensions"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_backend_memory_contexts"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_cast"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_range"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_replication_origin"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_rewrite"));

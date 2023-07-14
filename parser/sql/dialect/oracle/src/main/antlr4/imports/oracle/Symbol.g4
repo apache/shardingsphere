@@ -58,3 +58,4 @@ QUESTION_:           '?';
 AT_:                 '@';
 SEMI_:               ';';
 DOLLAR_:             '$';
+ASSIGNMENT_OPERATOR_:':=';

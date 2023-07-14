@@ -17,36 +17,31 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher;
 
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlViewSwapper;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
-import org.apache.shardingsphere.mode.event.datasource.AlterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.datasource.RegisterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.datasource.UnregisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.datasource.nodes.AlterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.datasource.nodes.RegisterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.datasource.nodes.UnregisterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.AlterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.RegisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.UnregisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.schema.table.AlterTableEvent;
 import org.apache.shardingsphere.mode.event.schema.table.DropTableEvent;
 import org.apache.shardingsphere.mode.event.schema.view.AlterViewEvent;
 import org.apache.shardingsphere.mode.event.schema.view.DropViewEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.NewGovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationEventBuilder;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.NewGovernanceWatcher;
-import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -55,7 +50,7 @@ import java.util.Optional;
  */
 public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<GovernanceEvent> {
     
-    private static final Collection<RuleConfigurationEventBuilder> EVENT_BUILDERS = ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationEventBuilder.class);
+    private final RuleConfigurationEventBuilder ruleConfigurationEventBuilder = new RuleConfigurationEventBuilder();
     
     @Override
     public Collection<String> getWatchingKeys(final String databaseName) {
@@ -81,13 +76,11 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
             return createSchemaChangedEvent(databaseName.get(), schemaName.get(), event);
         }
         schemaName = NewDatabaseMetaDataNode.getSchemaNameByTableNode(key);
-        Optional<String> tableNameVersion = NewDatabaseMetaDataNode.getTableNameVersion(key);
-        if (databaseName.isPresent() && schemaName.isPresent() && tableNameVersion.isPresent()) {
-            return createTableChangedEvent(databaseName.get(), schemaName.get(), tableNameVersion.get(), event);
+        if (databaseName.isPresent() && schemaName.isPresent() && NewDatabaseMetaDataNode.isTableActiveVersionNode(event.getKey())) {
+            return createTableChangedEvent(databaseName.get(), schemaName.get(), event);
         }
-        Optional<String> viewNameVersion = NewDatabaseMetaDataNode.getViewNameVersion(key);
-        if (databaseName.isPresent() && schemaName.isPresent() && viewNameVersion.isPresent()) {
-            return createViewChangedEvent(databaseName.get(), schemaName.get(), viewNameVersion.get(), event);
+        if (databaseName.isPresent() && schemaName.isPresent() && NewDatabaseMetaDataNode.isViewActiveVersionNode(event.getKey())) {
+            return createViewChangedEvent(databaseName.get(), schemaName.get(), event);
         }
         if (!databaseName.isPresent()) {
             return Optional.empty();
@@ -95,7 +88,7 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
         if (NewDatabaseMetaDataNode.isDataSourcesNode(key)) {
             return createDataSourceEvent(databaseName.get(), event);
         }
-        return createDatabaseRuleEvent(databaseName.get(), event);
+        return ruleConfigurationEventBuilder.build(databaseName.get(), event);
     }
     
     private Optional<GovernanceEvent> createDatabaseChangedEvent(final String databaseName, final DataChangedEvent event) {
@@ -118,51 +111,59 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createTableChangedEvent(final String databaseName, final String schemaName, final String tableNameVersion, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createTableChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
+        Optional<String> tableName = NewDatabaseMetaDataNode.getTableName(event.getKey());
+        Preconditions.checkState(tableName.isPresent(), "Not found table name.");
         if (Type.DELETED == event.getType()) {
-            return Optional.of(new DropTableEvent(databaseName, schemaName, NewDatabaseMetaDataNode.getTableName(event.getKey()).orElse(""), event.getKey(), tableNameVersion));
+            return Optional.of(new DropTableEvent(databaseName, schemaName, tableName.get()));
         }
-        return Optional.of(new AlterTableEvent(databaseName, schemaName,
-                new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereTable.class)), event.getKey(), tableNameVersion));
+        return Optional.of(new AlterTableEvent(databaseName, schemaName, tableName.get(), event.getKey(), event.getValue()));
     }
     
-    private Optional<GovernanceEvent> createViewChangedEvent(final String databaseName, final String schemaName, final String viewNameVersion, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createViewChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
+        Optional<String> viewName = NewDatabaseMetaDataNode.getViewName(event.getKey());
+        Preconditions.checkState(viewName.isPresent(), "Not found view name.");
         if (Type.DELETED == event.getType()) {
-            return Optional.of(new DropViewEvent(databaseName, schemaName, NewDatabaseMetaDataNode.getViewName(event.getKey()).orElse(""), event.getKey(), viewNameVersion));
+            return Optional.of(new DropViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
         }
-        return Optional.of(new AlterViewEvent(databaseName, schemaName,
-                new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereView.class)), event.getKey(), viewNameVersion));
+        return Optional.of(new AlterViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
     }
     
-    @SuppressWarnings("unchecked")
     private Optional<GovernanceEvent> createDataSourceEvent(final String databaseName, final DataChangedEvent event) {
-        Optional<String> dataSourceName = NewDatabaseMetaDataNode.getDataSourceNameByDataSourceNode(event.getKey());
-        if (!dataSourceName.isPresent()) {
-            return Optional.empty();
+        if (NewDatabaseMetaDataNode.isDataSourceUnitActiveVersionNode(event.getKey())) {
+            return createStorageUnitChangedEvent(databaseName, event);
         }
-        Optional<String> version = NewDatabaseMetaDataNode.getVersionByDataSourceNode(event.getKey());
-        if (!version.isPresent()) {
+        if (NewDatabaseMetaDataNode.isDataSourceNodeActiveVersionNode(event.getKey())) {
+            return createStorageNodeChangedEvent(databaseName, event);
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<GovernanceEvent> createStorageUnitChangedEvent(final String databaseName, final DataChangedEvent event) {
+        Optional<String> dataSourceUnitName = NewDatabaseMetaDataNode.getDataSourceNameByDataSourceUnitNode(event.getKey());
+        if (!dataSourceUnitName.isPresent()) {
             return Optional.empty();
         }
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new RegisterStorageUnitEvent(databaseName, dataSourceName.get(),
-                    new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(YamlEngine.unmarshal(event.getValue(), Map.class)), event.getKey(), version.get()));
+            return Optional.of(new RegisterStorageUnitEvent(databaseName, dataSourceUnitName.get(), event.getKey(), event.getValue()));
         }
         if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterStorageUnitEvent(databaseName, dataSourceName.get(),
-                    new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(YamlEngine.unmarshal(event.getValue(), Map.class)), event.getKey(), version.get()));
+            return Optional.of(new AlterStorageUnitEvent(databaseName, dataSourceUnitName.get(), event.getKey(), event.getValue()));
         }
-        return Optional.of(new UnregisterStorageUnitEvent(databaseName, dataSourceName.get(), event.getKey(), version.get()));
+        return Optional.of(new UnregisterStorageUnitEvent(databaseName, dataSourceUnitName.get()));
     }
     
-    private Optional<GovernanceEvent> createDatabaseRuleEvent(final String databaseName, final DataChangedEvent event) {
-        for (RuleConfigurationEventBuilder each : EVENT_BUILDERS) {
-            Optional<GovernanceEvent> result = each.build(databaseName, event);
-            if (!result.isPresent()) {
-                continue;
-            }
-            return result;
+    private Optional<GovernanceEvent> createStorageNodeChangedEvent(final String databaseName, final DataChangedEvent event) {
+        Optional<String> dataSourceNodeName = NewDatabaseMetaDataNode.getDataSourceNameByDataSourceNode(event.getKey());
+        if (!dataSourceNodeName.isPresent()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        if (Type.ADDED == event.getType()) {
+            return Optional.of(new RegisterStorageNodeEvent(databaseName, dataSourceNodeName.get(), event.getKey(), event.getValue()));
+        }
+        if (Type.UPDATED == event.getType()) {
+            return Optional.of(new AlterStorageNodeEvent(databaseName, dataSourceNodeName.get(), event.getKey(), event.getValue()));
+        }
+        return Optional.of(new UnregisterStorageNodeEvent(databaseName, dataSourceNodeName.get()));
     }
 }

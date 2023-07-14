@@ -49,4 +49,9 @@ public final class CompatibleEncryptRuleConfiguration implements DatabaseRuleCon
     public EncryptRuleConfiguration convertToEncryptRuleConfiguration() {
         return new EncryptRuleConfiguration(tables, encryptors);
     }
+    
+    @Override
+    public boolean isEmpty() {
+        return tables.isEmpty();
+    }
 }
