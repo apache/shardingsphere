@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
-import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
@@ -31,19 +30,11 @@ import java.util.stream.Collectors;
  */
 public final class PipelineSQLBuilderEngine {
     
-    @Getter
-    private final PipelineInventoryDumpSQLBuilder inventoryDumpSQLBuilder;
-    
-    @Getter
-    private final PipelineImportSQLBuilder importSQLBuilder;
-    
     private final DialectPipelineSQLBuilder dialectSQLBuilder;
     
     private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
     
     public PipelineSQLBuilderEngine(final DatabaseType databaseType) {
-        inventoryDumpSQLBuilder = new PipelineInventoryDumpSQLBuilder(databaseType);
-        importSQLBuilder = new PipelineImportSQLBuilder(databaseType);
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
         sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
     }

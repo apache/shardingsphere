@@ -41,7 +41,6 @@ import org.apache.shardingsphere.data.pipeline.common.ingest.position.Placeholde
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.PrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.PrimaryKeyPositionFactory;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineInventoryDumpSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLBuilderEngine;
 import org.apache.shardingsphere.data.pipeline.common.util.JDBCStreamQueryUtils;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
@@ -77,7 +76,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private final DataSource dataSource;
     
-    private final PipelineSQLBuilderEngine sqlBuilderEngine;
+    private final PipelineInventoryDumpSQLBuilder inventoryDumpSQLBuilder;
     
     private final ColumnValueReaderEngine columnValueReaderEngine;
     
@@ -90,7 +89,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         this.channel = channel;
         this.dataSource = dataSource;
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
-        sqlBuilderEngine = new PipelineSQLBuilderEngine(databaseType);
+        inventoryDumpSQLBuilder = new PipelineInventoryDumpSQLBuilder(databaseType);
         columnValueReaderEngine = new ColumnValueReaderEngine(databaseType);
         this.metaDataLoader = metaDataLoader;
     }
@@ -156,7 +155,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         if (!Strings.isNullOrEmpty(dumperConfig.getQuerySQL())) {
             return dumperConfig.getQuerySQL();
         }
-        PipelineInventoryDumpSQLBuilder inventoryDumpSQLBuilder = sqlBuilderEngine.getInventoryDumpSQLBuilder();
         LogicTableName logicTableName = new LogicTableName(dumperConfig.getLogicTableName());
         String schemaName = dumperConfig.getSchemaName(logicTableName);
         if (!dumperConfig.hasUniqueKey()) {
