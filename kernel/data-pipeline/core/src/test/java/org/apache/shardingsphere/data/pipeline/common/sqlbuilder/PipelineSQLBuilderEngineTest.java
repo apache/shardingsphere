@@ -38,30 +38,6 @@ class PipelineSQLBuilderEngineTest {
     private final PipelineSQLBuilderEngine sqlBuilderEngine = new PipelineSQLBuilderEngine(TypedSPILoader.getService(DatabaseType.class, "H2"));
     
     @Test
-    void assertBuildDivisibleInventoryDumpSQL() {
-        String actual = sqlBuilderEngine.buildDivisibleInventoryDumpSQL(null, "t_order", Collections.singletonList("*"), "order_id");
-        assertThat(actual, is("SELECT * FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC"));
-        actual = sqlBuilderEngine.buildDivisibleInventoryDumpSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC"));
-    }
-    
-    @Test
-    void assertBuildDivisibleInventoryDumpSQLNoEnd() {
-        String actual = sqlBuilderEngine.buildNoLimitedDivisibleInventoryDumpSQL(null, "t_order", Collections.singletonList("*"), "order_id");
-        assertThat(actual, is("SELECT * FROM t_order WHERE order_id>=? ORDER BY order_id ASC"));
-        actual = sqlBuilderEngine.buildNoLimitedDivisibleInventoryDumpSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? ORDER BY order_id ASC"));
-    }
-    
-    @Test
-    void assertBuildIndivisibleInventoryDumpSQL() {
-        String actual = sqlBuilderEngine.buildIndivisibleInventoryDumpSQL(null, "t_order", Collections.singletonList("*"), "order_id");
-        assertThat(actual, is("SELECT * FROM t_order ORDER BY order_id ASC"));
-        actual = sqlBuilderEngine.buildIndivisibleInventoryDumpSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC"));
-    }
-    
-    @Test
     void assertBuildQueryAllOrderingSQLFirstQuery() {
         String actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", true);
         assertThat(actual, is("SELECT * FROM t_order ORDER BY order_id ASC"));
