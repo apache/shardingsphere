@@ -47,7 +47,7 @@ jobs:
           filters: .github/workflows/resources/filter/filters.yml
     outputs:
       changed_operations: ${{ steps.filter.outputs.changes }}
-  
+
   e2e-operation-job:
     needs: detect-changed-files
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
