@@ -170,6 +170,16 @@
         </projections>
     </select>
     
+    <select sql-case-id="select_global_default_key_buffer_size">
+        <projections start-index="7" stop-index="40">
+            <expression-projection text="@@global.default.`key_buffer_size`" start-index="7" stop-index="40">
+                <expr>
+                    <variable-segment start-index="7" stop-index="40" scope="global" variable="default.`key_buffer_size`" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_exist_in">
         <projections start-index="7" stop-index="93">
             <expression-projection text="+0 IN(0b111111111111111111111111111111111111111111111111111,rpad(1.0,2048,1),32767.1)" start-index="7" stop-index="93">

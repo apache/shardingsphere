@@ -194,6 +194,7 @@ identifierKeywordsUnambiguous
     | DAY
     | DAY_MINUTE
     | DEFAULT_AUTH
+    | DEFAULT
     | DEFINER
     | DEFINITION
     | DELAY_KEY_WRITE
