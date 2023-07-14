@@ -78,8 +78,8 @@ public final class PipelineSQLBuilderEngine {
     public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            String insertSQL = buildInsertMainClause(schemaName, dataRecord.getTableName(), dataRecord.getColumns());
-            sqlCacheMap.put(sqlCacheKey, dialectSQLBuilder.buildInsertOnDuplicateClause(schemaName, dataRecord).map(optional -> insertSQL + " " + optional).orElse(insertSQL));
+            String insertMainClause = buildInsertMainClause(schemaName, dataRecord.getTableName(), dataRecord.getColumns());
+            sqlCacheMap.put(sqlCacheKey, dialectSQLBuilder.buildInsertOnDuplicateClause(schemaName, dataRecord).map(optional -> insertMainClause + " " + optional).orElse(insertMainClause));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
