@@ -32,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrement
 import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.NoUniqueKeyPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.StringPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.UnsupportedKeyPosition;
@@ -166,7 +165,7 @@ public final class InventoryTaskSplitter {
         long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperConfig, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         if (!dumperConfig.hasUniqueKey()) {
-            return Collections.singletonList(new NoUniqueKeyPosition());
+            return Collections.singleton(new UnsupportedKeyPosition());
         }
         List<PipelineColumnMetaData> uniqueKeyColumns = dumperConfig.getUniqueKeyColumns();
         if (1 == uniqueKeyColumns.size()) {
