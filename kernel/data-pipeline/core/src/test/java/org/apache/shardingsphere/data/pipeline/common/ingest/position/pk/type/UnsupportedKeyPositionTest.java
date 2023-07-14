@@ -15,35 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.ingest.position;
+package org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type;
 
-/**
- * Primary key position.
- * 
- * @param <T> type of value
- */
-public abstract class PrimaryKeyPosition<T> {
+import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.PrimaryKeyPositionFactory;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+class UnsupportedKeyPositionTest {
     
-    /**
-     * Get begin value.
-     *
-     * @return begin value
-     */
-    public abstract T getBeginValue();
+    @Test
+    void assertInit() {
+        UnsupportedKeyPosition position = (UnsupportedKeyPosition) PrimaryKeyPositionFactory.newInstance("u,,");
+        assertNull(position.getBeginValue());
+        assertNull(position.getEndValue());
+    }
     
-    /**
-     * Get end value.
-     *
-     * @return end value
-     */
-    public abstract T getEndValue();
-    
-    protected abstract T convert(String value);
-    
-    protected abstract char getType();
-    
-    @Override
-    public final String toString() {
-        return String.format("%s,%s,%s", getType(), null != getBeginValue() ? getBeginValue() : "", null != getEndValue() ? getEndValue() : "");
+    @Test
+    void assertToString() {
+        assertThat(new UnsupportedKeyPosition().toString(), is("u,,"));
     }
 }

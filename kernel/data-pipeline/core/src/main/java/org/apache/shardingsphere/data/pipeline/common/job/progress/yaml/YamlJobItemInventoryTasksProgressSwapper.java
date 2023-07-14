@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.common.job.progress.yaml;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.PrimaryKeyPositionFactory;
+import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.PrimaryKeyPositionFactory;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.common.task.progress.InventoryTaskProgress;
 
