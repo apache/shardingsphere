@@ -70,20 +70,17 @@ jobs:
           current_operation: ${{ matrix.operation }}
         run: |
           echo "skip_current_step=false" >> $GITHUB_ENV
-          function checkCurrentStep() {
-            if [[ ${changed_operations} == '["ignore"]' ]]; then
-              echo "${current_operation} is ignore by ignore filter"
+          if [[ ${changed_operations} == '["ignore"]' ]]; then
+            echo "${current_operation} is ignore by ignore filter"
+            echo "skip_current_step=true" >> $GITHUB_ENV
+          fi
+          
+          if [[ ${changed_operations} == *""$current_operation""* ]]; then
+            echo "${current_operation} is detected by changed filter"
+            else
+              echo "${current_operation} is ignore by filter"
               echo "skip_current_step=true" >> $GITHUB_ENV
-            fi
-            
-            if [[ ${changed_operations} == *""$current_operation""* ]]; then
-              echo "${current_operation} is detected by changed filter"
-              else
-                echo "${current_operation} is ignore by filter"
-                echo "skip_current_step=true" >> $GITHUB_ENV
-            fi
-          }
-          checkCurrentStep
+          fi
       - name: Checkout Project
         if: (env.skip_current_step == 'false')
         uses: actions/checkout@v3
