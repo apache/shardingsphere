@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class CommonPipelineSQLBuilderTest {
     
-    private final CommonPipelineSQLBuilder pipelineSQLBuilder = new CommonPipelineSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "H2"));
+    private final CommonPipelineSQLBuilder pipelineSQLBuilder = new CommonPipelineSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     
     @Test
     void assertBuildQueryAllOrderingSQLFirstQuery() {
