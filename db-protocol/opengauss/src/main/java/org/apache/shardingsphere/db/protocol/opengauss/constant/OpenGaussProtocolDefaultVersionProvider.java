@@ -30,7 +30,7 @@ public final class OpenGaussProtocolDefaultVersionProvider implements DatabasePr
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

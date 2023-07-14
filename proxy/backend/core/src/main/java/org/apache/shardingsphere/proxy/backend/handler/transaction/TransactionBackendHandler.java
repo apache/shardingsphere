@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
@@ -124,7 +123,7 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     }
     
     private boolean isSchemaSupportedDatabaseType() {
-        return connectionSession.getProtocolType() instanceof SchemaSupportedDatabaseType;
+        return connectionSession.getProtocolType().getDefaultSchema().isPresent();
     }
     
     private SQLStatement getSQLStatementByCommit() {

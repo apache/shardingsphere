@@ -76,7 +76,7 @@ public final class ShardingSphereResourceMetaData {
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             Map<String, Object> standardProps = DataSourcePropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();
             DatabaseType storageType = storageTypes.get(entry.getKey());
-            result.put(entry.getKey(), storageType.getDataSourceMetaData(standardProps.get("url").toString(), standardProps.get("username").toString()));
+            result.put(entry.getKey(), storageType.getDataSourceMetaData(String.valueOf(standardProps.get("url")), String.valueOf(standardProps.get("username"))));
         }
         return result;
     }

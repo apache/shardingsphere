@@ -19,8 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.junit.jupiter.api.Test;
 
@@ -61,13 +60,13 @@ class AggregationProjectionTest {
     
     @Test
     void assertGetColumnLabelWithoutAliasForPostgreSQL() {
-        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, mock(PostgreSQLDatabaseType.class));
+        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         assertThat(projection.getColumnLabel(), is("count"));
     }
     
     @Test
     void assertGetColumnLabelWithoutAliasForOpenGauss() {
-        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, mock(OpenGaussDatabaseType.class));
+        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, TypedSPILoader.getService(DatabaseType.class, "openGauss"));
         assertThat(projection.getColumnLabel(), is("count"));
     }
 }

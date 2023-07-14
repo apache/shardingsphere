@@ -17,6 +17,159 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_with_hex_function">
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" start-index="7" stop-index="50">
+                <expr>
+                    <function start-index="7" stop-index="50" text="HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" function-name="HEX">
+                        <parameter>
+                            <binary-operation-expression start-index="11" stop-index="49">
+                                <left>
+                                    <common-expression start-index="11" stop-index="24" text="_binary0x0003" />
+                                </left>
+                                <operator>&lt;&lt;</operator>
+                                <right>
+                                    <binary-operation-expression start-index="30" stop-index="48">
+                                        <left>
+                                            <common-expression start-index="30" stop-index="41" text="_binary0x38" />
+                                        </left>
+                                        <operator>|</operator>
+                                        <right>
+                                            <common-expression start-index="45" stop-index="48" text="0x38" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_distinct_with_grouping_function">
+        <from>
+            <simple-table name="t1" start-index="24" stop-index="25" />
+        </from>
+        <projections start-index="16" stop-index="17" distinct-row="true">
+            <column-projection name="f1" start-index="16" stop-index="17" />
+        </projections>
+        <group-by>
+            <column-item name="f1" order-direction="ASC" start-index="36" stop-index="37" />
+        </group-by>
+        <order-by>
+            <column-item name="f1" order-direction="ASC" start-index="60" stop-index="61" />
+            <expression-item start-index="64" stop-index="86" expression="ANY_VALUE(GROUPING(f1))">
+                <expr>
+                    <function start-index="64" stop-index="86" text="ANY_VALUE(GROUPING(f1))" function-name="ANY_VALUE">
+                        <parameter>
+                            <function start-index="74" stop-index="85" text="GROUPING(f1)" function-name="GROUPING(f1)" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_convert_function1">
+        <projections start-index="7" stop-index="59">
+            <expression-projection text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" start-index="7" stop-index="59">
+                <expr>
+                    <function start-index="7" stop-index="59" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" function-name="CONVERT" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_convert_function2">
+        <projections start-index="7" stop-index="57">
+            <expression-projection text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" start-index="7" stop-index="57">
+                <expr>
+                    <function start-index="7" stop-index="57" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" function-name="CONVERT" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_convert_function3">
+        <projections start-index="7" stop-index="55">
+            <expression-projection text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR(4))" start-index="7" stop-index="55">
+                <expr>
+                    <function start-index="7" stop-index="55" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR(4))" function-name="CONVERT" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_convert_function4">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" start-index="7" stop-index="52">
+                <expr>
+                    <function start-index="7" stop-index="52" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" function-name="CONVERT" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_function_aes_decrypt_and_aes_encrypt">
+        <from>
+            <simple-table name="t1" start-index="78" stop-index="79" />
+        </from>
+        <projections start-index="7" stop-index="71">
+            <expression-projection text="AES_DECRYPT(AES_ENCRYPT(@ENCSTR, @keys, @Iv), @keys, @Iv)=@ENCSTR" start-index="7" stop-index="71">
+                <expr>
+                    <binary-operation-expression text="AES_DECRYPT(AES_ENCRYPT(@ENCSTR, @keys, @Iv), @keys, @Iv)=@ENCSTR" start-index="7" stop-index="71">
+                        <left>
+                            <function start-index="7" stop-index="63" text="AES_DECRYPT(AES_ENCRYPT(@ENCSTR, @keys, @Iv), @keys, @Iv)" function-name="AES_DECRYPT">
+                                <parameter>
+                                    <function start-index="19" stop-index="50" text="AES_ENCRYPT(@ENCSTR, @keys, @Iv)" function-name="AES_ENCRYPT">
+                                        <parameter>
+                                            <variable-segment start-index="31" stop-index="37" variable="ENCSTR" />
+                                        </parameter>
+                                        <parameter>
+                                            <variable-segment start-index="40" stop-index="44" variable="keys" />
+                                        </parameter>
+                                        <parameter>
+                                            <variable-segment start-index="47" stop-index="49" variable="Iv" />
+                                        </parameter>
+                                    </function>
+                                </parameter>
+                                <parameter>
+                                    <variable-segment start-index="53" stop-index="57" variable="keys" />
+                                </parameter>
+                                <parameter>
+                                    <variable-segment start-index="60" stop-index="62" variable="Iv" />
+                                </parameter>
+                            </function>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <variable-segment start-index="65" stop-index="71" variable="ENCSTR" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_user_variable_before_after">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="@before=@after" start-index="7" stop-index="20">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="20">
+                        <left>
+                            <variable-segment start-index="7" stop-index="13" variable="before" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <variable-segment start-index="15" stop-index="20" variable="after" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
     <select sql-case-id="select_with_exist_in">
         <projections start-index="7" stop-index="93">
             <expression-projection text="+0 IN(0b111111111111111111111111111111111111111111111111111,rpad(1.0,2048,1),32767.1)" start-index="7" stop-index="93">
@@ -53,7 +206,7 @@
             </expression-projection>
         </projections>
     </select>
-
+    
     <select sql-case-id="select_constant_without_table" >
         <projections start-index="7" stop-index="12">
             <expression-projection text="1" alias="a" start-index="7" stop-index="12">
@@ -4131,7 +4284,7 @@
                                     </right>
                                 </binary-operation-expression>
                             </right>
-                        </binary-operation-expression>    
+                        </binary-operation-expression>
                     </left>
                     <operator>OR</operator>
                     <right>
@@ -4254,7 +4407,7 @@
             </simple-table>
         </from>
         <projections start-index="7" stop-index="14">
-            <column-projection name="order_id" start-index="7" stop-index="14" />             
+            <column-projection name="order_id" start-index="7" stop-index="14" />
         </projections>
         <where start-index="36" stop-index="69">
             <expr>
@@ -4351,12 +4504,12 @@
             <column-projection name="USER_NO" start-index="7" stop-index="15">
                 <owner name="T" start-index="7" stop-index="7" />
             </column-projection>>
-         </projections>
+        </projections>
     </select>
 
     <select sql-case-id="select_with_character_charset">
         <projections start-index="7" stop-index="24">
-    <!--    TODO StringLiteralValue should consider about _binary/_utf8mb4-->
+            <!--    TODO StringLiteralValue should consider about _binary/_utf8mb4-->
             <expression-projection text="binary'abc" alias="a" start-index="7" stop-index="24" />
         </projections>
     </select>
@@ -5037,5 +5190,19 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+
+    <select sql-case-id="select_with_keyword_groups_and_rank">
+        <from>
+            <simple-table alias="t" name="t_order" start-index="29" stop-index="37" literal-start-index="29" literal-stop-index="37"/>
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
+            <column-projection name="groups" start-index="7" stop-index="14" literal-start-index="7" literal-stop-index="14">
+                <owner name="t" start-index="7" stop-index="7" literal-start-index="7" literal-stop-index="7"/>
+            </column-projection>
+            <column-projection name="rank" start-index="17" stop-index="22" literal-start-index="17" literal-stop-index="22">
+                <owner name="t" start-index="17" stop-index="17" literal-start-index="17" literal-stop-index="17"/>
+            </column-projection>
+        </projections>
     </select>
 </sql-parser-test-cases>

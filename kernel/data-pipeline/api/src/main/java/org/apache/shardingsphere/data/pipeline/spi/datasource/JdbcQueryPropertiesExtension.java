@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.datasource;
 
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Properties;
 
@@ -26,7 +26,7 @@ import java.util.Properties;
  * JDBC query properties extension.
  */
 @SingletonSPI
-public interface JdbcQueryPropertiesExtension extends TypedSPI {
+public interface JdbcQueryPropertiesExtension extends DatabaseTypedSPI {
     
     /**
      * Extend query properties.

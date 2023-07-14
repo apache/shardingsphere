@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database type.
@@ -40,6 +41,16 @@ public interface DatabaseType extends TypedSPI {
      * @return quote character
      */
     QuoteCharacter getQuoteCharacter();
+    
+    /**
+     * Judge whether identifier is reserved word.
+     *
+     * @param identifier identifier to be judged
+     * @return is reserved word or not
+     */
+    default boolean isReservedWord(String identifier) {
+        return false;
+    }
     
     /**
      * Get alias of JDBC URL prefixes.
@@ -93,6 +104,15 @@ public interface DatabaseType extends TypedSPI {
         } catch (final SQLException ignored) {
             return null;
         }
+    }
+    
+    /**
+     * Get default schema name.
+     *
+     * @return default schema name
+     */
+    default Optional<String> getDefaultSchema() {
+        return Optional.empty();
     }
     
     /**

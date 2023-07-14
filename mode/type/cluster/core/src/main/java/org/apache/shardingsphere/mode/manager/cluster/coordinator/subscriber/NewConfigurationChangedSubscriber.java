@@ -22,9 +22,12 @@ import org.apache.shardingsphere.mode.event.config.AlterDatabaseRuleConfiguratio
 import org.apache.shardingsphere.mode.event.config.DropDatabaseRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.global.AlterPropertiesEvent;
-import org.apache.shardingsphere.mode.event.datasource.AlterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.datasource.RegisterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.datasource.UnregisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.nodes.AlterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.datasource.nodes.RegisterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.datasource.nodes.UnregisterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.AlterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.RegisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.UnregisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
@@ -52,7 +55,7 @@ public final class NewConfigurationChangedSubscriber {
             return;
         }
         contextManager.registerStorageUnit(event.getDatabaseName(),
-                contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(event.getDatabaseName(), event.getStorageUnitName()));
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
     /**
@@ -66,7 +69,7 @@ public final class NewConfigurationChangedSubscriber {
             return;
         }
         contextManager.alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(),
-                contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(event.getDatabaseName(), event.getStorageUnitName()));
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
     /**
@@ -80,6 +83,47 @@ public final class NewConfigurationChangedSubscriber {
             return;
         }
         contextManager.unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
+    }
+    
+    /**
+     * Renew for register storage node.
+     *
+     * @param event register storage node event
+     */
+    @Subscribe
+    public void renew(final RegisterStorageNodeEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+            return;
+        }
+        contextManager.registerStorageNode(event.getDatabaseName(),
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageNodeName()));
+    }
+    
+    /**
+     * Renew for alter storage node.
+     *
+     * @param event register storage node event
+     */
+    @Subscribe
+    public void renew(final AlterStorageNodeEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+            return;
+        }
+        contextManager.alterStorageNode(event.getDatabaseName(), event.getStorageNodeName(),
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageNodeName()));
+    }
+    
+    /**
+     * Renew for unregister storage node.
+     *
+     * @param event register storage node event
+     */
+    @Subscribe
+    public void renew(final UnregisterStorageNodeEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        contextManager.unregisterStorageNode(event.getDatabaseName(), event.getStorageNodeName());
     }
     
     /**

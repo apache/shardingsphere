@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.datasource;
 
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,16 +35,16 @@ class OpenGaussJdbcQueryPropertiesExtensionTest {
     
     @Test
     void assertExtendQueryProperties() {
-        Optional<JdbcQueryPropertiesExtension> extension = TypedSPILoader.findService(JdbcQueryPropertiesExtension.class, "openGauss");
+        Optional<JdbcQueryPropertiesExtension> extension = DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, TypedSPILoader.getService(DatabaseType.class, "openGauss"));
         assertTrue(extension.isPresent());
         assertExtension(extension.get());
     }
     
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {
         assertThat(actual, instanceOf(OpenGaussJdbcQueryPropertiesExtension.class));
-        assertThat(actual.getType(), equalTo("openGauss"));
+        assertThat(actual.getType(), is(TypedSPILoader.getService(DatabaseType.class, "openGauss")));
         Properties props = new Properties();
         actual.extendQueryProperties(props);
-        assertThat(props.size(), equalTo(2));
+        assertThat(props.size(), is(2));
     }
 }

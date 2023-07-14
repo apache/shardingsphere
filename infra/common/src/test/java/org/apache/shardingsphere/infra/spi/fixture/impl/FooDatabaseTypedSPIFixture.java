@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.spi.fixture.DatabaseTypedSPIFixture;
 public final class FooDatabaseTypedSPIFixture implements DatabaseTypedSPIFixture {
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

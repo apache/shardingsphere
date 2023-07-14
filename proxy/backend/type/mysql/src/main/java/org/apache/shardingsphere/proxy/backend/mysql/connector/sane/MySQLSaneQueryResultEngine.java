@@ -99,7 +99,7 @@ public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

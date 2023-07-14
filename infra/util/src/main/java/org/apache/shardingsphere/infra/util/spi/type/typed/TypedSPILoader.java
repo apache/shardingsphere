@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -40,7 +39,7 @@ public final class TypedSPILoader {
      * @param <T> SPI class type
      * @return contains or not
      */
-    public static <T extends TypedSPI> boolean contains(final Class<T> spiClass, final String type) {
+    public static <T extends TypedSPI> boolean contains(final Class<T> spiClass, final Object type) {
         return ShardingSphereServiceLoader.getServiceInstances(spiClass).stream().anyMatch(each -> matchesType(type, each));
     }
     
@@ -52,7 +51,7 @@ public final class TypedSPILoader {
      * @param <T> SPI class type
      * @return service
      */
-    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final String type) {
+    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final Object type) {
         return findService(spiClass, type, new Properties());
     }
     
@@ -65,9 +64,9 @@ public final class TypedSPILoader {
      * @param <T> SPI class type
      * @return service
      */
-    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final String type, final Properties props) {
+    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final Object type, final Properties props) {
         if (null == type) {
-            return findService(spiClass);
+            return findDefaultService(spiClass);
         }
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
@@ -75,10 +74,10 @@ public final class TypedSPILoader {
                 return Optional.of(each);
             }
         }
-        return findService(spiClass);
+        return findDefaultService(spiClass);
     }
     
-    private static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass) {
+    private static <T extends TypedSPI> Optional<T> findDefaultService(final Class<T> spiClass) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (!each.isDefault()) {
                 continue;
@@ -106,7 +105,7 @@ public final class TypedSPILoader {
      * @param <T> SPI class type
      * @return service
      */
-    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type) {
+    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final Object type) {
         return getService(spiClass, type, new Properties());
     }
     
@@ -119,8 +118,8 @@ public final class TypedSPILoader {
      * @param <T> SPI class type
      * @return service
      */
-    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type, final Properties props) {
-        return findService(spiClass, type, props).orElseGet(() -> findService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, type)));
+    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final Object type, final Properties props) {
+        return findService(spiClass, type, props).orElseGet(() -> findDefaultService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, type)));
     }
     
     /**
@@ -133,9 +132,8 @@ public final class TypedSPILoader {
      * @return is valid service or not
      * @throws ServiceProviderNotFoundServerException service provider not found server exception
      */
-    public static <T extends TypedSPI> boolean checkService(final Class<T> spiClass, final String type, final Properties props) {
-        Collection<T> serviceInstances = ShardingSphereServiceLoader.getServiceInstances(spiClass);
-        for (T each : serviceInstances) {
+    public static <T extends TypedSPI> boolean checkService(final Class<T> spiClass, final Object type, final Properties props) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 each.init(null == props ? new Properties() : convertToStringTypedProperties(props));
                 return true;
@@ -144,12 +142,12 @@ public final class TypedSPILoader {
         throw new ServiceProviderNotFoundServerException(spiClass, type);
     }
     
-    private static boolean matchesType(final String type, final TypedSPI instance) {
+    private static boolean matchesType(final Object type, final TypedSPI instance) {
         if (null == instance.getType()) {
             return false;
         }
-        if (instance.getType() instanceof String) {
-            return instance.getType().toString().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type);
+        if (instance.getType() instanceof String && type instanceof String) {
+            return instance.getType().toString().equalsIgnoreCase(type.toString()) || instance.getTypeAliases().contains(type);
         }
         return instance.getType().equals(type) || instance.getTypeAliases().contains(type);
     }
