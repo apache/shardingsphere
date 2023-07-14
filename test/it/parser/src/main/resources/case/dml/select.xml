@@ -169,6 +169,7 @@
             </expression-projection>
         </projections>
     </select>
+    
     <select sql-case-id="select_with_exist_in">
         <projections start-index="7" stop-index="93">
             <expression-projection text="+0 IN(0b111111111111111111111111111111111111111111111111111,rpad(1.0,2048,1),32767.1)" start-index="7" stop-index="93">
@@ -205,7 +206,7 @@
             </expression-projection>
         </projections>
     </select>
-
+    
     <select sql-case-id="select_constant_without_table" >
         <projections start-index="7" stop-index="12">
             <expression-projection text="1" alias="a" start-index="7" stop-index="12">
