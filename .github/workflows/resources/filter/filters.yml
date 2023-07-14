@@ -19,9 +19,12 @@ ignore:
   - '**/*.md'
 
 pipeline:
-  - '.github/workflows/**'
+  - '.github/workflows/e2e-operation.yml'
   - 'infra/**/src/main/**'
   - 'mode/**/src/main/**'
+  - 'features/encrypt/src/main/**'
+  - 'features/features/readwrite-splitting/src/main/**'
+  - 'features/sharding/src/main/**'
   - 'proxy/**/src/main/**'
   - 'jdbc/core/src/main/**'
   - '**/*-distsql*/**/src/main/**'
@@ -33,10 +36,9 @@ pipeline:
   - 'test/e2e/fixture/**'
   - 'test/e2e/env/**'
   - 'test/e2e/operation/pipeline/**'
-  
+
 showprocesslist:
-  - '.github/workflows/**'
-  - '.github/workflows/e2e.yml'
+  - '.github/workflows/e2e-operation.yml'
   - 'infra/common/src/main/**'
   - 'mode/**/src/main/**'
   - 'proxy/**/src/main/**'
@@ -45,9 +47,9 @@ showprocesslist:
   - 'test/e2e/fixture/**'
   - 'test/e2e/env/**'
   - 'test/e2e/operation/showprocesslist/**'
-  
+
 transaction:
-  - '.github/workflows/**'
+  - '.github/workflows/e2e-operation.yml'
   - 'infra/common/src/main/**'
   - 'mode/**/src/main/**'
   - 'proxy/**/src/main/**'
