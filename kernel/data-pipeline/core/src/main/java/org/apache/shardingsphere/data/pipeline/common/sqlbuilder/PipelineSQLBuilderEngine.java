@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
+import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
@@ -41,6 +42,9 @@ public final class PipelineSQLBuilderEngine {
     
     private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
     
+    @Getter
+    private final PipelineInventoryDumpSQLBuilder inventoryDumpSQLBuilder;
+    
     private final DialectPipelineSQLBuilder dialectSQLBuilder;
     
     private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
@@ -48,6 +52,7 @@ public final class PipelineSQLBuilderEngine {
     private final ConcurrentMap<String, String> sqlCacheMap;
     
     public PipelineSQLBuilderEngine(final DatabaseType databaseType) {
+        inventoryDumpSQLBuilder = new PipelineInventoryDumpSQLBuilder(databaseType);
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
         sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
         sqlCacheMap = new ConcurrentHashMap<>();
@@ -61,67 +66,6 @@ public final class PipelineSQLBuilderEngine {
      */
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
         return dialectSQLBuilder.buildCreateSchemaSQL(schemaName);
-    }
-    
-    /**
-     * Build divisible inventory dump SQL.
-     *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @param uniqueKey unique key
-     * @return divisible inventory dump SQL
-     */
-    public String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        return String.format("SELECT %s FROM %s WHERE %s>=? AND %s<=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, escapedUniqueKey, escapedUniqueKey);
-    }
-    
-    /**
-     * Build divisible inventory dump SQL without limited value.
-     *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @param uniqueKey unique key
-     * @return divisible inventory dump SQL without end value
-     */
-    public String buildNoLimitedDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        return String.format("SELECT %s FROM %s WHERE %s>=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, escapedUniqueKey);
-    }
-    
-    private String buildQueryColumns(final List<String> columnNames) {
-        return columnNames.isEmpty() ? "*" : columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
-    }
-    
-    /**
-     * Build indivisible inventory dump first SQL.
-     *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @param uniqueKey unique key
-     * @return indivisible inventory dump SQL
-     */
-    public String buildIndivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        String quotedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        return String.format("SELECT %s FROM %s ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey);
-    }
-    
-    /**
-     * Build no unique key inventory dump SQL.
-     *
-     * @param schemaName schema name
-     * @param tableName tableName
-     * @return inventory dump all SQL
-     */
-    public String buildNoUniqueKeyInventoryDumpSQL(final String schemaName, final String tableName) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        return String.format("SELECT * FROM %s", qualifiedTableName);
     }
     
     /**
@@ -278,6 +222,10 @@ public final class PipelineSQLBuilderEngine {
         return firstQuery
                 ? String.format("SELECT %s FROM %s ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey)
                 : String.format("SELECT %s FROM %s WHERE %s>? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
+    }
+    
+    private String buildQueryColumns(final List<String> columnNames) {
+        return columnNames.isEmpty() ? "*" : columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
     }
     
     /**
