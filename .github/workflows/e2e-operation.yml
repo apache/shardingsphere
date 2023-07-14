@@ -113,4 +113,4 @@ jobs:
           java-version: 8
       - name: Run ${{ matrix.operation }} ${{ matrix.storage_image.type }}-${{ matrix.storage_image.version }} E2E Test
         if: (env.skip_current_step == 'false')
-        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.${{ matrix.storage_image.type }}=${{ env.mysql_version }}
+        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.${{ matrix.storage_image.type }}=${{ matrix.storage_image.version }}
