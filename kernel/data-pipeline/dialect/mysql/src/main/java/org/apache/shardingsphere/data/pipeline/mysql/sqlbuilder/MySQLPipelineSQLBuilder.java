@@ -54,16 +54,16 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
     }
     
     @Override
+    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
+        return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'",
+                new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName)));
+    }
+    
+    @Override
     public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
         return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM %s",
                 sqlSegmentBuilder.getEscapedIdentifier(column), sqlSegmentBuilder.getEscapedIdentifier(tableName)));
-    }
-    
-    @Override
-    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'",
-                new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName)));
     }
     
     @Override
