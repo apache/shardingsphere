@@ -16,6 +16,7 @@
 #
 
 name: E2E - Operation
+run-name: E2E - Operation
 
 on:
   push:
