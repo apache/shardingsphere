@@ -35,7 +35,7 @@ env:
 
 jobs:
   e2e-operation-job:
-    name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
+    name: E2E - Operation
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
