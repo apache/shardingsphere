@@ -243,6 +243,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropPluggableDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropPolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropProcedureStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropProfileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropPublicationStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropRestorePointStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropRollbackSegmentStatementTestCase;
@@ -772,6 +773,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "drop-dimension")
     private final List<DropDimensionStatementTestCase> dropDimensionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-profile")
+    private final List<DropProfileStatementTestCase> dropProfileStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-directory")
     private final List<DropDirectoryStatementTestCase> dropDirectoryTestCases = new LinkedList<>();

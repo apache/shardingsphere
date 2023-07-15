@@ -322,6 +322,10 @@ schemaName
     : identifier
     ;
 
+profileName
+    : identifier
+    ;
+
 tableName
     : (owner DOT_)? name
     ;
