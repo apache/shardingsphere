@@ -32,7 +32,7 @@ class OpenGaussPipelineSQLBuilderTest {
     
     @Test
     void assertBuildInsertSQLOnDuplicatePart() {
-        String actual = sqlBuilder.buildInsertOnDuplicateClause(null, mockDataRecord()).orElse(null);
+        String actual = sqlBuilder.buildInsertOnDuplicateClause(mockDataRecord()).orElse(null);
         assertThat(actual, is("ON DUPLICATE KEY UPDATE c0=EXCLUDED.c0,c1=EXCLUDED.c1,c2=EXCLUDED.c2,c3=EXCLUDED.c3"));
     }
     

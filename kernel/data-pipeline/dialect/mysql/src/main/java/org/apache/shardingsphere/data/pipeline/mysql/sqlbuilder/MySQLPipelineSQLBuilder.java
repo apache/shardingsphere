@@ -30,7 +30,7 @@ import java.util.Optional;
 public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
-    public Optional<String> buildInsertOnDuplicateClause(final String schemaName, final DataRecord dataRecord) {
+    public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder("ON DUPLICATE KEY UPDATE ");
         PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
