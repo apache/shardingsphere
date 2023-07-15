@@ -25,7 +25,7 @@ public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilde
     
     @Override
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return null;
+        return String.format("SELECT * FROM %s LIMIT 1", tableName);
     }
     
     @Override

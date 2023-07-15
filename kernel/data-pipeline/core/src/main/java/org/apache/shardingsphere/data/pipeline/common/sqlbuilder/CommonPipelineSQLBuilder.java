@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
-import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
@@ -27,23 +26,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Pipeline SQL builder engine.
+ * Common pipeline SQL builder.
  */
-public final class PipelineSQLBuilderEngine {
-    
-    @Getter
-    private final PipelineInventoryDumpSQLBuilder inventoryDumpSQLBuilder;
-    
-    @Getter
-    private final PipelineImportSQLBuilder importSQLBuilder;
+public final class CommonPipelineSQLBuilder {
     
     private final DialectPipelineSQLBuilder dialectSQLBuilder;
     
     private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
     
-    public PipelineSQLBuilderEngine(final DatabaseType databaseType) {
-        inventoryDumpSQLBuilder = new PipelineInventoryDumpSQLBuilder(databaseType);
-        importSQLBuilder = new PipelineImportSQLBuilder(databaseType);
+    public CommonPipelineSQLBuilder(final DatabaseType databaseType) {
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
         sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
     }
@@ -100,8 +91,8 @@ public final class PipelineSQLBuilderEngine {
      * @return min max unique key SQL
      */
     public String buildUniqueKeyMinMaxValuesSQL(final String schemaName, final String tableName, final String uniqueKey) {
-        String quotedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        return String.format("SELECT MIN(%s), MAX(%s) FROM %s", quotedUniqueKey, quotedUniqueKey, sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
+        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
+        return String.format("SELECT MIN(%s), MAX(%s) FROM %s", escapedUniqueKey, escapedUniqueKey, sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
     
     /**
@@ -116,10 +107,10 @@ public final class PipelineSQLBuilderEngine {
      */
     public String buildQueryAllOrderingSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey, final boolean firstQuery) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        String quotedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
+        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
         return firstQuery
-                ? String.format("SELECT %s FROM %s ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey)
-                : String.format("SELECT %s FROM %s WHERE %s>? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
+                ? String.format("SELECT %s FROM %s ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey)
+                : String.format("SELECT %s FROM %s WHERE %s>? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, escapedUniqueKey);
     }
     
     private String buildQueryColumns(final List<String> columnNames) {
