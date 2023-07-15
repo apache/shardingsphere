@@ -113,6 +113,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropRo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropSynonymContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTriggerContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackTableContext;
@@ -241,6 +242,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackTableStatement;
@@ -932,6 +934,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitAlterLibrary(final AlterLibraryContext ctx) {
         return new OracleAlterLibraryStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropType(final DropTypeContext ctx) {
+        return new OracleDropTypeStatement();
     }
     
     @Override

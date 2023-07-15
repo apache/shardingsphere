@@ -108,6 +108,7 @@ execute
     | createRestorePoint
     | dropRestorePoint
     | dropOperator
+    | dropType
     | alterLibrary
     | alterMaterializedZonemap
     | alterJava
