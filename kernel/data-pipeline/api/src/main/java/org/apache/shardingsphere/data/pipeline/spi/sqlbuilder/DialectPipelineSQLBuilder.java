@@ -64,7 +64,9 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
      * @param tableName table name
      * @return estimated count SQL
      */
-    Optional<String> buildEstimatedCountSQL(String schemaName, String tableName);
+    default Optional<String> buildEstimatedCountSQL(String schemaName, String tableName) {
+        return Optional.empty();
+    }
     
     /**
      * Build CRC32 SQL.
