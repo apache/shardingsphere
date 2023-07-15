@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-collation sql-case-id="drop_context_empno" />
-    <drop-collation sql-case-id="drop_context_provider" />
-    <drop-collation sql-case-id="drop_context_global_cust" />
+    <drop-context sql-case-id="drop_context_empno" />
+    <drop-context sql-case-id="drop_context_provider" />
+    <drop-context sql-case-id="drop_context_global_cust" />
 </sql-parser-test-cases>
