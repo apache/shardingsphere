@@ -255,6 +255,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropSubscriptionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropSynonymStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropTableSpaceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropTextSearchStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropTriggerStatementTestCase;
@@ -457,6 +458,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "insert")
     private final List<InsertStatementTestCase> insertTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-tablespace")
+    private final List<DropTableSpaceStatementTestCase> dropTableSpaceTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-table")
     private final List<CreateTableStatementTestCase> createTableTestCases = new LinkedList<>();

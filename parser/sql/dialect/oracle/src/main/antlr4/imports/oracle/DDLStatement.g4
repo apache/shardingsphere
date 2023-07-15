@@ -60,6 +60,10 @@ dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
 
+dropTableSpace
+    : DROP TABLESPACE tablespaceName (INCLUDING CONTENTS ((AND | KEEP) DATAFILES)? (CASCADE CONSTRAINTS)? )?
+    ;
+
 dropPackage
     : DROP PACKAGE BODY? packageName
     ;

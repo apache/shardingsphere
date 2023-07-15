@@ -82,6 +82,7 @@ execute
     | dropSynonym
     | dropPackage
     | dropEdition
+    | dropTableSpace
     | dropOutline
     | alterOutline
     | alterAnalyticView

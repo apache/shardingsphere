@@ -112,6 +112,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropRe
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropRollbackSegmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropSynonymContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableSpaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackDatabaseContext;
@@ -239,6 +240,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropRestorePointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropRollbackSegmentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropSynonymStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTableSpaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropViewStatement;
@@ -882,6 +884,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitDropRollbackSegment(final DropRollbackSegmentContext ctx) {
         return new OracleDropRollbackSegmentStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropTableSpace(final DropTableSpaceContext ctx) {
+        return new OracleDropTableSpaceStatement();
     }
     
     @Override
