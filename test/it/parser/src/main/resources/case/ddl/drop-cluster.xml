@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-database sql-case-id="drop_cluster" />
-    <drop-database sql-case-id="drop_cluster_including_tables" />
-    <drop-database sql-case-id="drop_cluster_including_tables_cascade_constraints" />
+    <drop-cluster sql-case-id="drop_cluster" />
+    <drop-cluster sql-case-id="drop_cluster_including_tables" />
+    <drop-cluster sql-case-id="drop_cluster_including_tables_cascade_constraints" />
 </sql-parser-test-cases>
