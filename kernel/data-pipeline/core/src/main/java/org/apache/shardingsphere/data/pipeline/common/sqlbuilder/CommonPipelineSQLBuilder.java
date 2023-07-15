@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQL
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,7 +46,7 @@ public final class CommonPipelineSQLBuilder {
      * @return create schema SQL
      */
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
-        return dialectSQLBuilder.buildCreateSchemaSQL(schemaName);
+        return dialectSQLBuilder.buildCreateSchemaSQL(sqlSegmentBuilder.getEscapedIdentifier(schemaName));
     }
     
     /**
@@ -79,7 +79,7 @@ public final class CommonPipelineSQLBuilder {
      * @return estimated count SQL
      */
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return dialectSQLBuilder.buildEstimatedCountSQL(schemaName, tableName);
+        return dialectSQLBuilder.buildEstimatedCountSQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
     
     /**
@@ -105,16 +105,13 @@ public final class CommonPipelineSQLBuilder {
      * @param firstQuery first query
      * @return query SQL
      */
-    public String buildQueryAllOrderingSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey, final boolean firstQuery) {
+    public String buildQueryAllOrderingSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey, final boolean firstQuery) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
         String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
+        String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
         return firstQuery
-                ? String.format("SELECT %s FROM %s ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey)
-                : String.format("SELECT %s FROM %s WHERE %s>? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, escapedUniqueKey);
-    }
-    
-    private String buildQueryColumns(final List<String> columnNames) {
-        return columnNames.isEmpty() ? "*" : columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
+                ? String.format("SELECT %s FROM %s ORDER BY %s ASC", queryColumns, qualifiedTableName, escapedUniqueKey)
+                : String.format("SELECT %s FROM %s WHERE %s>? ORDER BY %s ASC", queryColumns, qualifiedTableName, escapedUniqueKey, escapedUniqueKey);
     }
     
     /**
@@ -125,18 +122,18 @@ public final class CommonPipelineSQLBuilder {
      * @return check SQL
      */
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return dialectSQLBuilder.buildCheckEmptySQL(schemaName, tableName);
+        return dialectSQLBuilder.buildCheckEmptySQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
     
     /**
      * Build CRC32 SQL.
      *
      * @param schemaName schema name
-     * @param tableName table Name
-     * @param column column
+     * @param tableName table name
+     * @param columnName column name
      * @return CRC32 SQL
      */
-    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
-        return dialectSQLBuilder.buildCRC32SQL(schemaName, tableName, column);
+    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String columnName) {
+        return dialectSQLBuilder.buildCRC32SQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), sqlSegmentBuilder.getEscapedIdentifier(columnName));
     }
 }

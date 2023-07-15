@@ -30,7 +30,7 @@ import java.util.Optional;
 public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
-    public Optional<String> buildInsertOnDuplicateClause(final String schemaName, final DataRecord dataRecord) {
+    public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder("ON DUPLICATE KEY UPDATE ");
         PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
@@ -49,21 +49,18 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
     }
     
     @Override
-    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName));
+    public String buildCheckEmptySQL(final String qualifiedTableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
     }
     
     @Override
-    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'",
-                new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName)));
+    public Optional<String> buildEstimatedCountSQL(final String qualifiedTableName) {
+        return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'", qualifiedTableName));
     }
     
     @Override
-    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
-        return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM %s",
-                sqlSegmentBuilder.getEscapedIdentifier(column), sqlSegmentBuilder.getEscapedIdentifier(tableName)));
+    public Optional<String> buildCRC32SQL(final String qualifiedTableName, final String columnName) {
+        return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM %s", columnName, qualifiedTableName));
     }
     
     @Override
