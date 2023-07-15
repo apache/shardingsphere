@@ -669,6 +669,8 @@ public enum SQLVisitorRule {
     
     DROP_LIBRARY("DropLibrary", SQLStatementType.DDL),
     
+    DROP_CLUSTER("DropCluster", SQLStatementType.DDL),
+    
     DROP_MATERIALIZED_VIEW_LOG("DropMaterializedViewLog", SQLStatementType.DDL),
     
     DROP_MATERIALIZED_ZONEMAP("DropMaterializedZonemap", SQLStatementType.DDL),
