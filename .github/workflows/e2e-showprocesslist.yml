@@ -61,7 +61,7 @@ jobs:
     name: E2E - ShowProcesslist
     runs-on: ubuntu-latest
     env:
-      mysql_version: 5.7
+      mysql_version: mysql:5.7
     timeout-minutes: 10
     strategy:
       matrix:
@@ -81,7 +81,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-      - name: Build ShowProcesslist E2E image
+      - name: Build ShowProcesslist E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/operation/showprocesslist -Pit.env.docker -DskipTests
       - name: Setup JDK 8 for Test
         uses: actions/setup-java@v3

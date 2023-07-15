@@ -350,9 +350,4 @@ class MySQLAdminExecutorCreatorTest {
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "delete from t", "", Collections.emptyList());
         assertThat(actual, is(Optional.empty()));
     }
-    
-    @Test
-    void assertGetType() {
-        assertThat(new MySQLAdminExecutorCreator().getType(), is("MySQL"));
-    }
 }

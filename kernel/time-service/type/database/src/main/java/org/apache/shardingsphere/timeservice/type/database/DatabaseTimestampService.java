@@ -20,7 +20,7 @@ package org.apache.shardingsphere.timeservice.type.database;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.timeservice.spi.TimestampService;
 import org.apache.shardingsphere.timeservice.type.database.exception.DatetimeLoadingException;
@@ -56,7 +56,7 @@ public final class DatabaseTimestampService implements TimestampService {
     @Override
     public Timestamp getTimestamp() {
         try {
-            return loadDatetime(dataSource, TypedSPILoader.getService(TimestampLoadingSQLProvider.class, DatabaseTypeEngine.getTrunkDatabaseTypeName(storageType)).getTimestampLoadingSQL());
+            return loadDatetime(dataSource, DatabaseTypedSPILoader.getService(TimestampLoadingSQLProvider.class, storageType).getTimestampLoadingSQL());
         } catch (final SQLException ex) {
             throw new DatetimeLoadingException(ex);
         }

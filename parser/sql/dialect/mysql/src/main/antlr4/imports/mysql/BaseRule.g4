@@ -44,7 +44,18 @@ customKeyword
     | COPY
     | UL_BINARY
     | AUTOCOMMIT
+    | ARCHIVE
+    | BLACKHOLE
+    | CSV
+    | FEDERATED
     | INNODB
+    | MEMORY
+    | MRG_MYISAM
+    | MYISAM
+    | NDB
+    | NDBCLUSTER
+    | PERFORMANCE_SCHEMA
+    | TOKUDB
     | REDO_LOG
     | LAST_VALUE
     | PRIMARY
@@ -80,11 +91,11 @@ numberLiterals
     ;
     
 temporalLiterals
-    : (DATE | TIME | TIMESTAMP) SINGLE_QUOTED_TEXT
+    : (DATE | TIME | TIMESTAMP) textString
     ;
     
 hexadecimalLiterals
-    : UNDERSCORE_CHARSET? HEX_DIGIT_ collateClause?
+    : UNDERSCORE_CHARSET? UL_BINARY? HEX_DIGIT_ collateClause?
     ;
     
 bitValueLiterals
@@ -136,6 +147,7 @@ identifierKeywordsUnambiguous
     | AVG_ROW_LENGTH
     | AVG
     | BACKUP
+    | BEFORE
     | BINLOG
     | BIT
     | BLOCK
@@ -182,6 +194,7 @@ identifierKeywordsUnambiguous
     | DAY
     | DAY_MINUTE
     | DEFAULT_AUTH
+    | DEFAULT
     | DEFINER
     | DEFINITION
     | DELAY_KEY_WRITE
@@ -232,6 +245,7 @@ identifierKeywordsUnambiguous
     | GET_MASTER_PUBLIC_KEY
     | GRANTS
     | GROUP_REPLICATION
+    | GROUPS
     | HASH
     | HISTOGRAM
     | HISTORY
@@ -254,6 +268,7 @@ identifierKeywordsUnambiguous
     | JSON
     | JSON_VALUE
     | KEY
+    | KEYS
     | KEY_BLOCK_SIZE
     | LAST
     | LEAVES
@@ -371,6 +386,7 @@ identifierKeywordsUnambiguous
     | QUERY
     | QUICK
     | RANDOM
+    | RANK
     | READ_ONLY
     | REBUILD
     | RECOVER
@@ -987,14 +1003,29 @@ frameBetween
     ;
     
 specialFunction
-    : groupConcatFunction | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction 
-    | charFunction | trimFunction | weightStringFunction | valuesFunction | currentUserFunction
+    : castFunction
+    | convertFunction
+    | currentUserFunction
+    | charFunction
+    | extractFunction
+    | groupConcatFunction
+    | positionFunction
+    | substringFunction
+    | trimFunction
+    | valuesFunction
+    | weightStringFunction
+    | windowFunction
+    | groupingFunction
     ;
     
 currentUserFunction
     : CURRENT_USER (LP_ RP_)?
     ;
     
+groupingFunction
+    : GROUPING LP_ expr (COMMA_ expr)* RP_
+    ;
+
 groupConcatFunction
     : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
     ;

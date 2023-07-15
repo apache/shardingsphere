@@ -91,7 +91,7 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

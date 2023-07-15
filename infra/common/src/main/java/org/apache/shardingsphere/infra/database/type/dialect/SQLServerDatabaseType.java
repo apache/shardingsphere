@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.TrunkDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 
 import java.util.Arrays;
@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Database type of SQLServer.
  */
-public final class SQLServerDatabaseType implements DatabaseType {
+public final class SQLServerDatabaseType implements TrunkDatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {

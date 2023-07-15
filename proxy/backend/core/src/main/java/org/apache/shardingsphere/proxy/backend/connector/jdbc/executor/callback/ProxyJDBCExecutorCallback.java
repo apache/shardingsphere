@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.sane.SaneQueryResultEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Optional;
@@ -71,7 +72,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
             databaseConnector.add(resultSet);
             return createQueryResult(resultSet, connectionMode, storageType);
         }
-        return new UpdateResult(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
+        return new UpdateResult(Math.max(statement.getUpdateCount(), 0), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
     }
     
     protected abstract boolean execute(String sql, Statement statement, boolean isReturnGeneratedKeys) throws SQLException;
@@ -81,8 +82,12 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     }
     
     private long getGeneratedKey(final Statement statement) throws SQLException {
-        ResultSet resultSet = statement.getGeneratedKeys();
-        return resultSet.next() ? getGeneratedKeyIfInteger(resultSet) : 0L;
+        try {
+            ResultSet resultSet = statement.getGeneratedKeys();
+            return resultSet.next() ? getGeneratedKeyIfInteger(resultSet) : 0L;
+        } catch (final SQLFeatureNotSupportedException ignore) {
+            return 0L;
+        }
     }
     
     private long getGeneratedKeyIfInteger(final ResultSet resultSet) throws SQLException {
@@ -98,7 +103,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     @Override
     protected final Optional<ExecuteResult> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
-        return TypedSPILoader.getService(SaneQueryResultEngine.class, getProtocolTypeType().getType()).getSaneQueryResult(sqlStatement, ex);
+        return DatabaseTypedSPILoader.getService(SaneQueryResultEngine.class, getProtocolTypeType()).getSaneQueryResult(sqlStatement, ex);
     }
     
     private DatabaseType getProtocolTypeType() {
