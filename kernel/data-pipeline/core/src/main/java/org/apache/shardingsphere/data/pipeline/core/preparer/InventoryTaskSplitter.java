@@ -37,7 +37,7 @@ import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.St
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.UnsupportedKeyPosition;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataUtils;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.CommonPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.common.util.IntervalToRangeIterator;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.core.dumper.InventoryDumper;
@@ -201,7 +201,7 @@ public final class InventoryTaskSplitter {
     
     private Range<Long> getUniqueKeyValuesRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
         String uniqueKey = dumperConfig.getUniqueKeyColumns().get(0).getName();
-        CommonPipelineSQLBuilder pipelineSQLBuilder = new CommonPipelineSQLBuilder(jobItemContext.getJobConfig().getSourceDatabaseType());
+        PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(jobItemContext.getJobConfig().getSourceDatabaseType());
         String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName(), uniqueKey);
         try (
                 Connection connection = dataSource.getConnection();
