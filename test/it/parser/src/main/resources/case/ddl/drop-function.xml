@@ -20,4 +20,5 @@
     <drop-function sql-case-id="drop_function" />
     <drop-function sql-case-id="drop_functions" />
     <drop-function sql-case-id="drop_function_without_argument_list" />
+    <drop-function sql-case-id="drop_function_with_schema" />
 </sql-parser-test-cases>
