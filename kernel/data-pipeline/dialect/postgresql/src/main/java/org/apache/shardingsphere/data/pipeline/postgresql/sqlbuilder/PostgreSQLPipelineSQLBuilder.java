@@ -37,7 +37,7 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     }
     
     @Override
-    public Optional<String> buildInsertOnDuplicateClause(final String schemaName, final DataRecord dataRecord) {
+    public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
         // TODO without unique key, job has been interrupted, which may lead to data duplication
         if (dataRecord.getUniqueKeyValue().isEmpty()) {
             return Optional.empty();

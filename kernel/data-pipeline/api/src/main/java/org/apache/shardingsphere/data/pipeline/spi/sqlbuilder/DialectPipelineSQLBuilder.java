@@ -40,11 +40,10 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     /**
      * Build on duplicate clause of insert SQL.
      *
-     * @param schemaName schema name
      * @param dataRecord data record
      * @return on duplicate clause of insert SQL
      */
-    default Optional<String> buildInsertOnDuplicateClause(String schemaName, DataRecord dataRecord) {
+    default Optional<String> buildInsertOnDuplicateClause(DataRecord dataRecord) {
         return Optional.empty();
     }
     
