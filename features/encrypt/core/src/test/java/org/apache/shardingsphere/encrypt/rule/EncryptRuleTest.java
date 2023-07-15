@@ -22,8 +22,8 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleCo
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.exception.algorithm.MismatchedEncryptAlgorithmTypeException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,15 +35,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,71 +52,13 @@ class EncryptRuleTest {
     }
     
     @Test
-    void assertFindStandardEncryptor() {
-        assertTrue(new EncryptRule(createEncryptRuleConfiguration()).findStandardEncryptor("t_encrypt", "pwd").isPresent());
+    void assertGetEncryptTable() {
+        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getEncryptTable("t_encrypt").getTable(), is("t_encrypt"));
     }
     
     @Test
-    void assertNotFindStandardEncryptor() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).findStandardEncryptor("t_encrypt", "other_column").isPresent());
-    }
-    
-    @Test
-    void assertGetEncryptValues() {
-        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration())
-                .encrypt(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
-        for (Object each : encryptAssistedQueryValues) {
-            assertNull(each);
-        }
-    }
-    
-    @Test
-    void assertGetCipherColumnWhenEncryptColumnExist() {
-        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getCipherColumn("t_encrypt", "pwd"), is("pwd_cipher"));
-    }
-    
-    @Test
-    void assertGetCipherColumnWhenNoEncryptColumn() {
-        // TODO should not throw NPE
-        assertThrows(NullPointerException.class, () -> new EncryptRule(createEncryptRuleConfiguration()).getCipherColumn("t_encrypt", "pwd_cipher"));
-    }
-    
-    @Test
-    void assertGetLogicAndCipherColumns() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getLogicAndCipherColumnsMap("t_encrypt").isEmpty());
-    }
-    
-    @Test
-    void assertFindAssistedQueryColumn() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).findAssistedQueryColumn("t_encrypt", "pwd_cipher").isPresent());
-    }
-    
-    @Test
-    void assertGetEncryptAssistedQueryValues() {
-        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration())
-                .getEncryptAssistedQueryValues(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
-        for (Object each : encryptAssistedQueryValues) {
-            assertNull(each);
-        }
-    }
-    
-    @Test
-    void assertGetAssistedQueryColumns() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getAssistedQueryColumns("t_encrypt").isEmpty());
-    }
-    
-    @Test
-    void assertFindLikeQueryColumn() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).findLikeQueryColumn("t_encrypt", "pwd_cipher").isPresent());
-    }
-    
-    @Test
-    void assertGetEncryptLikeQueryValues() {
-        List<Object> encryptLikeQueryValues = new EncryptRule(createEncryptRuleConfiguration())
-                .getEncryptLikeQueryValues(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
-        for (Object actual : encryptLikeQueryValues) {
-            assertNull(actual);
-        }
+    void assertGetNotExistedEncryptTable() {
+        assertThrows(EncryptTableNotFoundException.class, () -> new EncryptRule(createEncryptRuleConfiguration()).getEncryptTable("not_existed_tbl"));
     }
     
     @Test

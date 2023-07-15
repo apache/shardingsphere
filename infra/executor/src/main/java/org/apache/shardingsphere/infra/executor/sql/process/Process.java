@@ -73,10 +73,18 @@ public final class Process {
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         username = null == grantee ? null : grantee.getUsername();
         hostname = null == grantee ? null : grantee.getHostname();
-        totalUnitCount = executionGroupContext.getInputGroups().stream().mapToInt(each -> each.getInputs().size()).sum();
+        totalUnitCount = getTotalUnitCount(executionGroupContext);
         processStatements = getProcessStatements(executionGroupContext);
         completedUnitCount = new AtomicInteger(0);
         this.idle = idle;
+    }
+    
+    private int getTotalUnitCount(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        int result = 0;
+        for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
+            result += each.getInputs().size();
+        }
+        return result;
     }
     
     private Collection<Statement> getProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {

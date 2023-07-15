@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -68,7 +67,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
-    private final SQLHintExtractor sqlHintExtractor;
+    private final HintValueContext hintValueContext;
     
     public ShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions, final SQLStatementContext sqlStatementContext,
                                          final HintValueContext hintValueContext, final ConfigurationProperties props) {
@@ -76,7 +75,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         this.shardingConditions = shardingConditions;
         this.sqlStatementContext = sqlStatementContext;
         this.props = props;
-        this.sqlHintExtractor = new SQLHintExtractor(sqlStatementContext.getSqlStatement(), hintValueContext);
+        this.hintValueContext = hintValueContext;
     }
     
     @Override
@@ -113,7 +112,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private boolean isRoutingBySQLHint() {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         for (String each : tableNames) {
-            if (sqlHintExtractor.containsHintShardingValue(each)) {
+            if (hintValueContext.containsHintShardingValue(each)) {
                 return true;
             }
         }
@@ -203,8 +202,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         Collection<Comparable<?>> shardingValues = new LinkedList<>();
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         for (String each : tableNames) {
-            if (each.equals(logicTableName) && sqlHintExtractor.containsHintShardingDatabaseValue(each)) {
-                shardingValues.addAll(sqlHintExtractor.getHintShardingDatabaseValue(each));
+            if (each.equals(logicTableName) && hintValueContext.containsHintShardingDatabaseValue(each)) {
+                shardingValues.addAll(hintValueContext.getHintShardingDatabaseValue(each));
             }
         }
         return getShardingConditions(shardingValues);
@@ -221,8 +220,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         Collection<Comparable<?>> shardingValues = new LinkedList<>();
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         for (String each : tableNames) {
-            if (each.equals(logicTableName) && sqlHintExtractor.containsHintShardingTableValue(each)) {
-                shardingValues.addAll(sqlHintExtractor.getHintShardingTableValue(each));
+            if (each.equals(logicTableName) && hintValueContext.containsHintShardingTableValue(each)) {
+                shardingValues.addAll(hintValueContext.getHintShardingTableValue(each));
             }
         }
         return getShardingConditions(shardingValues);

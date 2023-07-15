@@ -52,6 +52,7 @@
     <sql-case id="count-encrypt-rule" value="COUNT ENCRYPT RULE FROM db1" db-types="ShardingSphere" />
     <sql-case id="count-shadow-rule" value="COUNT SHADOW RULE FROM db1" db-types="ShardingSphere" />
     <sql-case id="count-mask-rule" value="COUNT MASK RULE FROM db1" db-types="ShardingSphere" />
+    <sql-case id="count-broadcast-rule" value="COUNT BROADCAST RULE FROM db1" db-types="ShardingSphere" />
     <sql-case id="show-storage-units" value="SHOW STORAGE UNITS" db-types="ShardingSphere" />
     <sql-case id="show-storage-units-from" value="SHOW STORAGE UNITS FROM sharding_db" db-types="ShardingSphere" />
     <sql-case id="show-storage-units-where-usage-count" value="SHOW STORAGE UNITS FROM sharding_db WHERE USAGE_COUNT = 0" db-types="ShardingSphere" />

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.task;
 
-import org.apache.shardingsphere.data.pipeline.api.task.progress.TaskProgress;
+import org.apache.shardingsphere.data.pipeline.common.task.progress.TaskProgress;
 
 import java.io.Closeable;
 import java.util.Collection;

@@ -36,13 +36,33 @@ public final class NewGlobalNode {
     private static final String VERSIONS = "versions";
     
     /**
+     * Get global rule node.
+     *
+     * @param rulePath rule path
+     * @return global rule node
+     */
+    public static String getGlobalRuleNode(final String rulePath) {
+        return String.join("/", getGlobalRuleRootNode(), rulePath);
+    }
+    
+    /**
      * Get global rule active version node.
      *
-     * @param ruleName rule name
+     * @param rulePath rule path
      * @return global rule active version node
      */
-    public static String getGlobalRuleActiveVersionNode(final String ruleName) {
-        return String.join("/", getGlobalRuleRootNode(), ruleName, ACTIVE_VERSION);
+    public static String getGlobalRuleActiveVersionNode(final String rulePath) {
+        return String.join("/", getGlobalRuleRootNode(), rulePath, ACTIVE_VERSION);
+    }
+    
+    /**
+     * Get global rule versions node.
+     *
+     * @param ruleName rule name
+     * @return global rule versions node
+     */
+    public static String getGlobalRuleVersionsNode(final String ruleName) {
+        return String.join("/", getGlobalRuleRootNode(), ruleName, VERSIONS);
     }
     
     /**
@@ -53,7 +73,7 @@ public final class NewGlobalNode {
      * @return global rule version node
      */
     public static String getGlobalRuleVersionNode(final String ruleName, final String version) {
-        return String.join("/", getGlobalRuleRootNode(), ruleName, VERSIONS, version);
+        return String.join("/", getGlobalRuleVersionsNode(ruleName), version);
     }
     
     /**
@@ -81,10 +101,24 @@ public final class NewGlobalNode {
      * @return properties version node
      */
     public static String getPropsVersionNode(final String version) {
-        return String.join("/", getPropsRootNode(), VERSIONS, version);
+        return String.join("/", getPropsVersionsNode(), version);
     }
     
-    private static String getPropsRootNode() {
+    /**
+     * Get properties versions node.
+     *
+     * @return properties versions node
+     */
+    public static String getPropsVersionsNode() {
+        return String.join("/", getPropsRootNode(), VERSIONS);
+    }
+    
+    /**
+     * Get properties node.
+     *
+     * @return properties node
+     */
+    public static String getPropsRootNode() {
         return String.join("/", "", PROPS_NODE);
     }
 }

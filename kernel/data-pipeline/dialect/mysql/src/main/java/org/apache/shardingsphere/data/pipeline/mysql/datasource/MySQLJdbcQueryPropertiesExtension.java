@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerVersion;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -30,6 +32,8 @@ import java.util.Properties;
 public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
     
     private static final String MYSQL_CONNECTOR_VERSION = initMysqlConnectorVersion();
+    
+    private static final List<String> NOT_OVERRIDE_PROPERTIES = Collections.singletonList("netTimeoutForStreamingResults");
     
     private final Properties queryProps = new Properties();
     
@@ -64,12 +68,17 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
     }
     
     @Override
-    public Properties extendQueryProperties() {
-        return queryProps;
+    public void extendQueryProperties(final Properties props) {
+        for (String each : queryProps.stringPropertyNames()) {
+            if (NOT_OVERRIDE_PROPERTIES.contains(each) && props.containsKey(each)) {
+                continue;
+            }
+            props.setProperty(each, queryProps.getProperty(each));
+        }
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

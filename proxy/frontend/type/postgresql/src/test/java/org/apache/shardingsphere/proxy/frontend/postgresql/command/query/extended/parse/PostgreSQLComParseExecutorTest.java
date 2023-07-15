@@ -116,7 +116,7 @@ class PostgreSQLComParseExecutorTest {
     }
     
     @Test
-    void assetExecuteWithNonOrderedParameterizedSQL() throws ReflectiveOperationException {
+    void assertExecuteWithNonOrderedParameterizedSQL() throws ReflectiveOperationException {
         final String rawSQL = "update t_test set name=$2 where id=$1";
         final String expectedSQL = "update t_test set name=? where id=?";
         final String statementId = "S_2";

@@ -1,0 +1,184 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: gs_recyclebin
+columns:
+  rcybaseid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: rcybaseid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcydbid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: rcydbid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcyrelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: rcyrelid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcyname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: rcyname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcyoriginname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: rcyoriginname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcyoperation:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: rcyoperation
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcytype:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: rcytype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcyrecyclecsn:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: rcyrecyclecsn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcyrecycletime:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: rcyrecycletime
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcycreatecsn:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: rcycreatecsn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcychangecsn:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: rcychangecsn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcynamespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: rcynamespace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcyowner:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: rcyowner
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcytablespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: rcytablespace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcyrelfilenode:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: rcyrelfilenode
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcycanrestore:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rcycanrestore
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcycanpurge:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: rcycanpurge
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcyfrozenxid:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: rcyfrozenxid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  rcyfrozenxid64:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: rcyfrozenxid64
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  gs_recyclebin_id_index:
+    name: gs_recyclebin_id_index
+  gs_recyclebin_baseid_index:
+    name: gs_recyclebin_baseid_index
+  gs_recyclebin_name_index:
+    name: gs_recyclebin_name_index
+  gs_recyclebin_dbid_nsp_oriname_index:
+    name: gs_recyclebin_dbid_nsp_oriname_index
+  gs_recyclebin_dbid_spcid_rcycsn_index:
+    name: gs_recyclebin_dbid_spcid_rcycsn_index
+  gs_recyclebin_dbid_relid_index:
+    name: gs_recyclebin_dbid_relid_index

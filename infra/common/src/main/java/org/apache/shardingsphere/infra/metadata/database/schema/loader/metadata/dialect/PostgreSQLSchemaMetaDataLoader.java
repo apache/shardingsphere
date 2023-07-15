@@ -111,7 +111,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
         Collection<String> roleTableGrants = loadRoleTableGrants(connection, tables);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables)); ResultSet resultSet = preparedStatement.executeQuery()) {
-            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPILoader.getService(DatabaseType.class, getType()));
+            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), getType());
             Collection<String> primaryKeys = loadPrimaryKeys(connection, schemaNames);
             while (resultSet.next()) {
                 String tableName = resultSet.getString("table_name");
@@ -209,7 +209,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

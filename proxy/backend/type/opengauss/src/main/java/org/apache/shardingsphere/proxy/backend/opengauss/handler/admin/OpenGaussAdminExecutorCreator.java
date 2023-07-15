@@ -59,7 +59,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         if (isSystemCatalogQuery(sqlStatementContext)) {
-            return Optional.of(new OpenGaussSystemCatalogAdminQueryExecutor(sql));
+            return Optional.of(new OpenGaussSystemCatalogAdminQueryExecutor(sqlStatementContext, sql, databaseName, parameters));
         }
         return delegated.create(sqlStatementContext, sql, databaseName, parameters);
     }
@@ -78,7 +78,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

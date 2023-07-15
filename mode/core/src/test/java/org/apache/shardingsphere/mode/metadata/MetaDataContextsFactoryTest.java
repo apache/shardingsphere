@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.rule.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -125,6 +125,7 @@ class MetaDataContextsFactoryTest {
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
         return new ContextManagerBuilderParameter(null,
-                Collections.singletonMap("foo_db", mock(DataSourceGeneratedDatabaseConfiguration.class)), Collections.emptyList(), new Properties(), Collections.emptyList(), null, false);
+                Collections.singletonMap("foo_db", mock(DataSourceGeneratedDatabaseConfiguration.class)), Collections.emptyMap(),
+                Collections.emptyList(), new Properties(), Collections.emptyList(), null, false);
     }
 }

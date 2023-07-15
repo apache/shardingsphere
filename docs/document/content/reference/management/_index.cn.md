@@ -8,30 +8,68 @@ weight = 3
 
 在定义的命名空间下，`rules` 、`props` 和 `metadata` 节点以 YAML 格式存储配置，可通过修改节点来实现对于配置的动态管理。
 `nodes` 存储数据库访问对象运行节点，用于区分不同数据库访问实例。
-`sys_data` 存储系统表中的数据记录。
+`statistics` 存储系统表中的数据记录。
 
 ```
 namespace
-   ├──rules                                   # 全局规则配置
-   ├──props                                   # 属性配置
-   ├──metadata                                # Metadata 配置
-   ├     ├──${databaseName}                   # 逻辑数据库名称
-   ├     ├     ├──schemas                     # Schema 列表   
-   ├     ├     ├     ├──${schemaName}         # 逻辑 Schema 名称
-   ├     ├     ├     ├     ├──tables          # 表结构配置
-   ├     ├     ├     ├     ├     ├──${tableName} 
+   ├──rules                                             # 全局规则配置
+   ├     ├──transaction
+   ├     ├     ├──active_version                                     
+   ├     ├     ├──versions  
+   ├     ├     ├     ├──0       
+   ├──props                                              # 属性配置
+   ├     ├──active_verison                                     
+   ├     ├──versions  
+   ├     ├     ├──0                  
+   ├──metadata                                           # Metadata 配置
+   ├     ├──${databaseName} 
+   ├     ├     ├──data_sources                          
+   ├     ├     ├     ├──units 							 # 存储单元结构配置
+   ├     ├     ├     ├    ├──${dataSourceName}                        
+   ├     ├     ├     ├    ├     ├──active_verison             # 激活版本                                 
+   ├     ├     ├     ├    ├     ├──versions                   # 版本号
+   ├     ├     ├     ├    ├     ├     ├──0
+   ├     ├     ├     ├    ├──...   
+   ├     ├     ├     ├──nodes 							 # 存储节点结构配置
+   ├     ├     ├     ├    ├──${dataSourceName}                        
+   ├     ├     ├     ├    ├     ├──active_verison             # 激活版本                                
+   ├     ├     ├     ├    ├     ├──versions                   # 版本号
+   ├     ├     ├     ├    ├     ├     ├──0
+   ├     ├     ├     ├    ├──...                             
+   ├     ├     ├──schemas                                   # Schema 列表   
+   ├     ├     ├     ├──${schemaName}                    
+   ├     ├     ├     ├     ├──tables                     # 表结构配置
+   ├     ├     ├     ├     ├     ├──${tableName}         
+   ├     ├     ├     ├     ├     ├     ├──active_verison # 激活版本                                 
+   ├     ├     ├     ├     ├     ├     ├──versions       # 版本号
+   ├     ├     ├     ├     ├     ├     ├     ├──0
    ├     ├     ├     ├     ├     ├──...  
-   ├     ├     ├     ├     ├──views          # 视图结构配置
-   ├     ├     ├     ├     ├     ├──${viewName} 
+   ├     ├     ├     ├     ├──views                      # 视图结构配置
+   ├     ├     ├     ├     ├     ├──${viewName}
+   ├     ├     ├     ├     ├     ├     ├──active_verison # 激活版本                           
+   ├     ├     ├     ├     ├     ├     ├──versions       # 版本号
+   ├     ├     ├     ├     ├     ├     ├     ├──0
    ├     ├     ├     ├     ├     ├──...  
-   ├     ├     ├     ├──...    
-   ├     ├     ├──versions                    # 元数据版本列表      
-   ├     ├     ├     ├──${versionNumber}      # 元数据版本号
-   ├     ├     ├     ├     ├──data_sources     # 数据源配置
-   ├     ├     ├     ├     ├──rules           # 规则配置   
-   ├     ├     ├     ├──...
-   ├     ├     ├──active_version              # 激活的元数据版本号
-   ├     ├──...      
+   ├     ├     ├──rules
+   ├     ├     ├     ├──sharding
+   ├     ├     ├     ├     ├──algorithms
+   ├     ├     ├     ├     ├     ├──${algorithmName}     # algorithm 名称
+   ├     ├     ├     ├     ├     ├     ├──active_verison # 激活版本                           
+   ├     ├     ├     ├     ├     ├     ├──versions       # 版本号
+   ├     ├     ├     ├     ├     ├     ├     ├──0
+   ├     ├     ├     ├     ├     ├──...
+   ├     ├     ├     ├     ├──key_generators
+   ├     ├     ├     ├     ├     ├──${keyGeneratorName}  # keyGenerator名称
+   ├     ├     ├     ├     ├     ├     ├──active_verison # 激活版本                           
+   ├     ├     ├     ├     ├     ├     ├──versions       # 版本号
+   ├     ├     ├     ├     ├     ├     ├     ├──0
+   ├     ├     ├     ├     ├     ├──...         
+   ├     ├     ├     ├     ├──tables
+   ├     ├     ├     ├     ├     ├──${tableName}         # 逻辑表名称
+   ├     ├     ├     ├     ├     ├     ├──active_verison # 激活版本                           
+   ├     ├     ├     ├     ├     ├     ├──versions       # 版本号
+   ├     ├     ├     ├     ├     ├     ├     ├──0
+   ├     ├     ├     ├     ├     ├──...          
    ├──nodes
    ├    ├──compute_nodes
    ├    ├     ├──online
@@ -56,7 +94,7 @@ namespace
    ├    ├──storage_nodes                       
    ├    ├     ├──${databaseName.groupName.ds} 
    ├    ├     ├──${databaseName.groupName.ds}
-   ├──sys_data
+   ├──statistics
    ├    ├──shardingsphere
    ├    ├     ├──schemas
    ├    ├     ├     ├──shardingsphere
@@ -68,28 +106,26 @@ namespace
 
 ### /rules
 
-全局规则配置，可包含事务配置、SQL 解析配置等。
+全局规则配置，事务配置。
 
-```yaml
+```
 transaction:
   defaultType: XA
   providerType: Atomikos
-sqlParser:
-  sqlCommentParseEnabled: true
 ```
 
 ### /props
 
-属性配置，详情请参见[配置手册](/cn/user-manual/shardingsphere-jdbc/props/)。
+属性配置，详情请参见[配置手册](/cn/user-manual/common-config/props/)。
 
 ```yaml
 kernel-executor-size: 20
 sql-show: true
 ```
 
-### /metadata/${databaseName}/versions/${versionNumber}/dataSources
+### /metadata/${databaseName}/data_sources/units/ds_0/versions/0
 
-多个数据库连接池的集合，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid，HikariCP）。
+数据库连接池的，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid，HikariCP）。
 
 ```yaml
 ds_0:
@@ -106,7 +142,13 @@ ds_0:
   connectionTimeout: 30000
   username: root
   poolName: HikariPool-1
-ds_1:
+```
+### /metadata/${databaseName}/data_sources/nodes/ds_0/versions/0
+
+数据库连接池的，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid，HikariCP）。
+
+```yaml
+ds_0:
   initializationFailTimeout: 1
   validationTimeout: 5000
   maxLifetime: 1800000
@@ -114,32 +156,41 @@ ds_1:
   minimumIdle: 1
   password: root
   idleTimeout: 60000
-  jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   maximumPoolSize: 50
   connectionTimeout: 30000
   username: root
-  poolName: HikariPool-2
+  poolName: HikariPool-1
 ```
 
-### /metadata/${databaseName}/versions/${versionNumber}/rules
+### /metadata/${databaseName}/rules/sharding/tables/t_order/versions/0
 
-规则配置，可包括数据分片、读写分离、数据加密、影子库压测等配置。
+分片规则配置。
 
 ```yaml
-- !SHARDING
-  xxx
-  
-- !READWRITE_SPLITTING
-  xxx
-  
-- !ENCRYPT
-  xxx
+actualDataNodes: ds_${0..1}.t_order_${0..1}
+auditStrategy:
+  allowHintDisable: true
+  auditorNames:
+    - t_order_dml_sharding_conditions_0
+databaseStrategy:
+  standard:
+    shardingAlgorithmName: t_order_database_inline
+    shardingColumn: user_id
+keyGenerateStrategy:
+  column: another_id
+  keyGeneratorName: t_order_snowflake
+logicTable: t_order
+tableStrategy:
+  standard:
+    shardingAlgorithmName: t_order_table_inline
+    shardingColumn: order_id
 ```
 
-### /metadata/${databaseName}/schemas/${schemaName}/tables
+### /metadata/${databaseName}/schemas/${schemaName}/tables/t_order/versions/0
 
-表结构配置，每个表使用单独节点存储，暂不支持动态修改。
+表结构配置，每个表使用单独节点存储。
 
 ```yaml
 name: t_order                             # 表名

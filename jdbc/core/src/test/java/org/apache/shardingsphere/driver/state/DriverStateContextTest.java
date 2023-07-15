@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.driver.state;
 
-import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
@@ -62,7 +62,8 @@ class DriverStateContextTest {
         Map<String, ShardingSphereDatabase> databases = mockDatabases();
         ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class)));
         MetaDataContexts metaDataContexts = new MetaDataContexts(
-                mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, globalRuleMetaData, new ConfigurationProperties(new Properties())));
+                mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, mock(ShardingSphereResourceMetaData.class),
+                        globalRuleMetaData, new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getInstanceContext().getInstance().getState()).thenReturn(new InstanceStateContext());
         when(contextManager.getClusterStateContext()).thenReturn(new ClusterStateContext());
@@ -78,7 +79,7 @@ class DriverStateContextTest {
     
     @Test
     void assertGetConnectionWithOkState() {
-        Connection actual = DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager, mock(JDBCContext.class));
+        Connection actual = DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager);
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
 }

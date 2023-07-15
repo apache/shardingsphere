@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorAssertionEntity;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorOutputEntity;
@@ -38,7 +38,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.St
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -93,8 +92,8 @@ class CreateTableSQLGeneratorIT {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             for (CreateTableSQLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
                 statement.execute(each.getInput().getSql());
-                Collection<String> actualDDLs = TypedSPILoader.getService(
-                        CreateTableSQLGenerator.class, testParam.getDatabaseType().getType()).generate(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
+                Collection<String> actualDDLs = DatabaseTypedSPILoader.getService(
+                        CreateTableSQLGenerator.class, testParam.getDatabaseType()).generate(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
                 assertSQL(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }
@@ -107,7 +106,7 @@ class CreateTableSQLGeneratorIT {
     }
     
     private StorageContainerConfiguration createStorageContainerConfiguration(final DatabaseType databaseType, final String storageContainerImage) {
-        if (DatabaseTypeUtils.isMySQL(databaseType)) {
+        if (databaseType instanceof MySQLDatabaseType) {
             int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
             Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
             return MySQLContainerConfigurationFactory.newInstance(null, null, mountedResources);

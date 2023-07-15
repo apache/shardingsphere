@@ -48,8 +48,6 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     
     private Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups = new LinkedList<>();
     
-    private Collection<String> broadcastTables = new LinkedList<>();
-    
     private ShardingStrategyConfiguration defaultDatabaseShardingStrategy;
     
     private ShardingStrategyConfiguration defaultTableShardingStrategy;
@@ -67,4 +65,9 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     private Map<String, AlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
     private ShardingCacheConfiguration shardingCache;
+    
+    @Override
+    public boolean isEmpty() {
+        return tables.isEmpty() && autoTables.isEmpty() && null == defaultDatabaseShardingStrategy && null == defaultTableShardingStrategy;
+    }
 }

@@ -210,7 +210,7 @@ helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apac
 
 ### 5. Publish pre-release on GitHub
 
-Click `Draft a new release` on [GitHub Releases](https://github.com/apache/shardingsphere/releases) page.
+Click `Draft a new release` on [GitHub Releases](https://github.com/apache/shardingsphere-on-cloud/releases) page.
 
 Input release version and release notes, select `Set as a pre-release`, click `Publish release`.
 

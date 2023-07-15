@@ -23,7 +23,6 @@ import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -50,7 +49,9 @@ public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
             checkSupportedDropCurrentDatabase(connectionSession);
             connectionSession.setCurrentDatabase(null);
         }
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().dropDatabase(sqlStatement.getDatabaseName());
+        if (ProxyContext.getInstance().databaseExists(sqlStatement.getDatabaseName())) {
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().dropDatabase(sqlStatement.getDatabaseName());
+        }
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -67,7 +68,7 @@ public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
     }
     
     private void checkSupportedDropCurrentDatabase(final ConnectionSession connectionSession) {
-        if (connectionSession.getProtocolType() instanceof SchemaSupportedDatabaseType) {
+        if (connectionSession.getProtocolType().getDefaultSchema().isPresent()) {
             throw new UnsupportedOperationException("cannot drop the currently open database");
         }
     }

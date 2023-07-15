@@ -72,7 +72,7 @@ public abstract class BaseDQLE2EIT {
         useXMLAsExpectedDataset = null != containerComposer.getAssertion().getExpectedDataFile();
     }
     
-    private void fillDataOnlyOnce(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, IOException, JAXBException {
+    private void fillDataOnlyOnce(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws IOException, JAXBException {
         String cacheKey = testParam.getKey() + "-" + System.identityHashCode(containerComposer.getActualDataSourceMap());
         if (!FILLED_SUITES.contains(cacheKey)) {
             synchronized (FILLED_SUITES) {

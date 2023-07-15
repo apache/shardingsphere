@@ -23,8 +23,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
+import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
@@ -64,7 +65,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         parameter = YamlEngine.marshal(rootConfig);
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeEngine.getDatabaseType(getJdbcUrl(props));
-        appendJdbcQueryProperties(databaseType.getType());
+        appendJdbcQueryProperties(databaseType);
         adjustDataSourceProperties(rootConfig.getDataSources());
     }
     
@@ -86,20 +87,19 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         return result.toString();
     }
     
-    private void appendJdbcQueryProperties(final String databaseType) {
-        Optional<JdbcQueryPropertiesExtension> extension = PipelineTypedSPILoader.findDatabaseTypedService(JdbcQueryPropertiesExtension.class, databaseType);
+    private void appendJdbcQueryProperties(final DatabaseType databaseType) {
+        Optional<JdbcQueryPropertiesExtension> extension = DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;
         }
-        Properties queryProps = extension.get().extendQueryProperties();
-        if (queryProps.isEmpty()) {
-            return;
-        }
-        rootConfig.getDataSources()
-                .forEach((key, value) -> {
-                    String jdbcUrlKey = value.containsKey("url") ? "url" : "jdbcUrl";
-                    value.replace(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties(value.get(jdbcUrlKey).toString(), queryProps));
-                });
+        StandardJdbcUrlParser standardJdbcUrlParser = new StandardJdbcUrlParser();
+        rootConfig.getDataSources().forEach((key, value) -> {
+            String jdbcUrlKey = value.containsKey("url") ? "url" : "jdbcUrl";
+            String jdbcUrl = value.get(jdbcUrlKey).toString();
+            Properties queryProperties = standardJdbcUrlParser.parseQueryProperties(jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?") + 1) : "");
+            extension.get().extendQueryProperties(queryProperties);
+            value.replace(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties(jdbcUrl, queryProperties));
+        });
     }
     
     private void adjustDataSourceProperties(final Map<String, Map<String, Object>> dataSources) {

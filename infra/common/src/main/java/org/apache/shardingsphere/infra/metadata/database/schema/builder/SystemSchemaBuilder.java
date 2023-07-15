@@ -19,8 +19,9 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
@@ -33,6 +34,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * System schema builder.
@@ -45,19 +47,26 @@ public final class SystemSchemaBuilder {
      * 
      * @param databaseName database name
      * @param databaseType database type
+     * @param props configuration properties                         
      * @return ShardingSphere system schema map
      */
-    public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType) {
+    public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType, final ConfigurationProperties props) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(databaseType.getSystemSchemas().size(), 1F);
+        boolean isSystemSchemaMetaDataEnabled = isSystemSchemaMetaDataEnabled(props.getProps());
         YamlTableSwapper swapper = new YamlTableSwapper();
         for (String each : getSystemSchemas(databaseName, databaseType)) {
-            result.put(each.toLowerCase(), createSchema(getSchemaStreams(each, databaseType), swapper));
+            result.put(each.toLowerCase(), createSchema(each, getSchemaStreams(each, databaseType), swapper, isSystemSchemaMetaDataEnabled));
         }
         return result;
     }
     
+    private static boolean isSystemSchemaMetaDataEnabled(final Properties props) {
+        TemporaryConfigurationPropertyKey configKey = TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ENABLED;
+        return Boolean.parseBoolean(props.getOrDefault(configKey.getKey(), configKey.getDefaultValue()).toString());
+    }
+    
     private static Collection<String> getSystemSchemas(final String originalDatabaseName, final DatabaseType databaseType) {
-        String databaseName = databaseType instanceof SchemaSupportedDatabaseType ? "postgres" : originalDatabaseName;
+        String databaseName = databaseType.getDefaultSchema().isPresent() ? "postgres" : originalDatabaseName;
         return databaseType.getSystemDatabaseSchemaMap().getOrDefault(databaseName, Collections.emptyList());
     }
     
@@ -70,11 +79,14 @@ public final class SystemSchemaBuilder {
         return result;
     }
     
-    private static ShardingSphereSchema createSchema(final Collection<InputStream> schemaStreams, final YamlTableSwapper swapper) {
+    private static ShardingSphereSchema createSchema(final String schemaName, final Collection<InputStream> schemaStreams, final YamlTableSwapper swapper,
+                                                     final boolean isSystemSchemaMetadataEnabled) {
         Map<String, ShardingSphereTable> tables = new LinkedHashMap<>(schemaStreams.size(), 1F);
         for (InputStream each : schemaStreams) {
             YamlShardingSphereTable metaData = new Yaml().loadAs(each, YamlShardingSphereTable.class);
-            tables.put(metaData.getName(), swapper.swapToObject(metaData));
+            if (isSystemSchemaMetadataEnabled || KernelSupportedSystemTables.isSupportedSystemTable(schemaName, metaData.getName())) {
+                tables.put(metaData.getName(), swapper.swapToObject(metaData));
+            }
         }
         return new ShardingSphereSchema(tables, Collections.emptyMap());
     }

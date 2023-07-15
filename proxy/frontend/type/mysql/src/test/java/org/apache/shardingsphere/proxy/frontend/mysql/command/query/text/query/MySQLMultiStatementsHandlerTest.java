@@ -90,7 +90,7 @@ class MySQLMultiStatementsHandlerTest {
         when(statement.getConnection()).thenReturn(connection);
         when(statement.executeBatch()).thenReturn(new int[]{1, 1, 1});
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
-        when(databaseConnectionManager.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(databaseConnectionManager.getConnections(nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         when(result.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         JDBCBackendStatement backendStatement = mock(JDBCBackendStatement.class);
         when(backendStatement.createStorageResource(eq(connection), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class))).thenReturn(statement);

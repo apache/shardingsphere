@@ -33,6 +33,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NewYamlReadwriteSplittingRuleConfigurationSwapperTest {
     
@@ -54,29 +55,27 @@ class NewYamlReadwriteSplittingRuleConfigurationSwapperTest {
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(2));
         Iterator<YamlDataNode> iterator = result.iterator();
-        assertThat(iterator.next().getKey(), is("data_sources/group_0"));
         assertThat(iterator.next().getKey(), is("load_balancers/random"));
+        assertThat(iterator.next().getKey(), is("data_sources/group_0"));
     }
     
     @Test
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        ReadwriteSplittingRuleConfiguration result = swapper.swapToObject(config);
-        assertThat(result.getDataSources().size(), is(0));
-        assertThat(result.getLoadBalancers().size(), is(0));
+        assertFalse(swapper.swapToObject(config).isPresent());
     }
     
     @Test
     void assertSwapToObject() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0", "loadBalancerName: random\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0/versions/0", "loadBalancerName: random\n"
                 + "readDataSourceNames:\n"
                 + "- read_ds_0\n"
                 + "- read_ds_1\n"
                 + "transactionalReadQueryStrategy: DYNAMIC\n"
                 + "writeDataSourceName: write_ds\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random", "type: random\n"));
-        ReadwriteSplittingRuleConfiguration result = swapper.swapToObject(config);
+        config.add(new YamlDataNode("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random/versions/0", "type: random\n"));
+        ReadwriteSplittingRuleConfiguration result = swapper.swapToObject(config).get();
         assertThat(result.getDataSources().size(), is(1));
         assertThat(result.getDataSources().iterator().next().getName(), is("group_0"));
         assertThat(result.getDataSources().iterator().next().getWriteDataSourceName(), is("write_ds"));

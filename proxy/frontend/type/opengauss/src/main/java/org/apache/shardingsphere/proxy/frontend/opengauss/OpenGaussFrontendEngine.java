@@ -55,7 +55,7 @@ public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEn
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

@@ -25,6 +25,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +44,15 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket impl
     @Getter(AccessLevel.NONE)
     private final String sql;
     
-    public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload) {
+    private final HintValueContext hintValueContext;
+    
+    public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload, final boolean sqlCommentParseEnabled) {
         this.payload = payload;
         payload.readInt4();
         statementId = payload.readStringNul();
-        sql = payload.readStringNul();
+        String originSQL = payload.readStringNul();
+        hintValueContext = sqlCommentParseEnabled ? new HintValueContext() : SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
+        sql = sqlCommentParseEnabled ? originSQL : SQLHintUtils.removeHint(originSQL);
     }
     
     /**

@@ -52,6 +52,21 @@ import static org.mockito.Mockito.when;
 class DatabaseTypeEngineTest {
     
     @Test
+    void assertGetDatabaseTypeWithTrunkURL() {
+        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:infra.fixture://localhost:3306/test").getType(), is("INFRA.TRUNK.FIXTURE"));
+    }
+    
+    @Test
+    void assertGetDatabaseTypeWithBranchURL() {
+        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:infra.fixture:branch://localhost:3306/test").getType(), is("INFRA.BRANCH.FIXTURE"));
+    }
+    
+    @Test
+    void assertGetDatabaseTypeWithUnrecognizedURL() {
+        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:sqlite:test").getType(), is("SQL92"));
+    }
+    
+    @Test
     void assertGetProtocolTypeFromConfiguredProperties() {
         Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "MySQL"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
@@ -99,16 +114,6 @@ class DatabaseTypeEngineTest {
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenThrow(SQLException.class);
         assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(Collections.singleton(dataSource)));
-    }
-    
-    @Test
-    void assertGetDatabaseTypeWithRecognizedURL() {
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:mysql://localhost:3306/test").getType(), is("MySQL"));
-    }
-    
-    @Test
-    void assertGetDatabaseTypeWithUnrecognizedURL() {
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:sqlite:test").getType(), is("SQL92"));
     }
     
     private DataSource mockDataSource(final DatabaseType databaseType) throws SQLException {
@@ -159,7 +164,9 @@ class DatabaseTypeEngineTest {
     }
     
     @Test
-    void assertGetDatabaseTypeWithCorrectOrder() {
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:infra.fixture:long.length://localhost:3306/test").getType(), is("INFRA.FIXTURE.LONG.LENGTH"));
+    void assertGetBranchDatabaseTypes() {
+        Collection<DatabaseType> actual = DatabaseTypeEngine.getTrunkAndBranchDatabaseTypes(Collections.singleton("MySQL"));
+        assertTrue(actual.contains(TypedSPILoader.getService(DatabaseType.class, "MySQL")), "MySQL not present");
+        assertTrue(actual.contains(TypedSPILoader.getService(DatabaseType.class, "MariaDB")), "MariaDB not present");
     }
 }

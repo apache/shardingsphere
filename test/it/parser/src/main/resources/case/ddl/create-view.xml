@@ -17,6 +17,59 @@
   -->
 
 <sql-parser-test-cases>
+    <create-view sql-case-id="create_view_with_udf" view-definition="SELECT DB29023216.TESTFUNC()">
+        <view name="V_T1_C" start-index="12" stop-index="17" />
+        <select>
+            <projections start-index="29" stop-index="49">
+                <expression-projection text="DB29023216.TESTFUNC()" start-index="29" stop-index="49">
+                    <expr>
+                        <function function-name="DB29023216.TESTFUNC()" text="DB29023216.TESTFUNC()" start-index="29" stop-index="49" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </create-view>
+    <create-view sql-case-id="create_view_with_udf_nested_fun" view-definition="SELECT DB29023216.TESTFUNC(NOW())">
+        <view name="V_T1_C" start-index="12" stop-index="17" />
+        <select>
+            <projections start-index="29" stop-index="54">
+                <expression-projection text="DB29023216.TESTFUNC(NOW())" start-index="29" stop-index="54">
+                    <expr>
+                        <function function-name="DB29023216.TESTFUNC(NOW())" text="DB29023216.TESTFUNC(NOW())" start-index="29" stop-index="54">
+                            <parameter>
+                                <function function-name="NOW" text="NOW()" start-index="49" stop-index="53" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </create-view>
+    <create-view sql-case-id="create_view_with_udf_arg" view-definition="SELECT DB29023216.TESTFUNC(1,2,3,4)">
+        <view name="V_T1_C" start-index="12" stop-index="17" />
+        <select>
+            <projections start-index="29" stop-index="56">
+                <expression-projection text="DB29023216.TESTFUNC(1,2,3,4)" start-index="29" stop-index="56">
+                    <expr>
+                        <function function-name="DB29023216.TESTFUNC(1,2,3,4)" text="DB29023216.TESTFUNC(1,2,3,4)" start-index="29" stop-index="56">
+                            <parameter>
+                                <literal-expression start-index="49" stop-index="49" value="1" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression start-index="51" stop-index="51" value="2" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression start-index="53" stop-index="53" value="3" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression start-index="55" stop-index="55" value="4" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </create-view>
     <create-view sql-case-id="create_view" view-definition="SELECT * FROM films WHERE kind = 'Comedy'">
         <view name="comedies" start-index="12" stop-index="19" />
         <select>

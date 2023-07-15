@@ -98,8 +98,8 @@ class DecoratedEncryptShowColumnsMergedResultTest {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
-        when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.singleton("user_id_assisted"));
-        when(encryptTable.getLikeQueryColumns()).thenReturn(Collections.singleton("user_id_like"));
+        when(encryptTable.isAssistedQueryColumn("user_id_assisted")).thenReturn(true);
+        when(encryptTable.isLikeQueryColumn("user_id_like")).thenReturn(true);
         when(encryptTable.isCipherColumn("user_id_cipher")).thenReturn(true);
         when(encryptTable.getLogicColumnByCipherColumn("user_id_cipher")).thenReturn("user_id");
         return result;

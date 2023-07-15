@@ -91,7 +91,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
             return false;
         }
         QualifiedTable sampleTable = singleTableNames.iterator().next();
-        Optional<DataNode> dataNode = rule.findSingleTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
+        Optional<DataNode> dataNode = rule.findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
         if (!dataNode.isPresent()) {
             return true;
         }
@@ -106,7 +106,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
     private Collection<DataNode> getTableDataNodes(final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
         Collection<DataNode> result = new HashSet<>();
         for (QualifiedTable each : singleTableNames) {
-            rule.findSingleTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(result::add);
+            rule.findTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(result::add);
         }
         return result;
     }

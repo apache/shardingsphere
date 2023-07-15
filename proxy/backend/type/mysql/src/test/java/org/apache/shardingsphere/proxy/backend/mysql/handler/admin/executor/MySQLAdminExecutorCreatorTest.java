@@ -339,7 +339,7 @@ class MySQLAdminExecutorCreatorTest {
     private void initProxyContext(final Map<String, ShardingSphereDatabase> databases) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(databases, mock(ShardingSphereResourceMetaData.class), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
@@ -349,10 +349,5 @@ class MySQLAdminExecutorCreatorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLDeleteStatement());
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "delete from t", "", Collections.emptyList());
         assertThat(actual, is(Optional.empty()));
-    }
-    
-    @Test
-    void assertGetType() {
-        assertThat(new MySQLAdminExecutorCreator().getType(), is("MySQL"));
     }
 }

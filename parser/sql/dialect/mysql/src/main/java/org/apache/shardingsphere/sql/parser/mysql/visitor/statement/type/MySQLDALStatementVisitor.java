@@ -250,7 +250,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -415,7 +415,11 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
             segment.getPartitions().addAll(((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
             result.setPartitionDefinition(segment);
         }
-        result.setName((IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.DEFAULT()) {
+            result.setName(new IdentifierValue(ctx.DEFAULT().getText()));
+        } else {
+            result.setName((IdentifierValue) visit(ctx.identifier()));
+        }
         return result;
     }
     
@@ -619,7 +623,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -632,7 +636,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -646,7 +650,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
         result.setContainsFull(null != ctx.FULL());
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -659,7 +663,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -677,7 +681,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -693,7 +697,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -815,7 +819,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -825,7 +829,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -835,7 +839,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -845,7 +849,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -855,7 +859,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -868,7 +872,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     

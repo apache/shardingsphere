@@ -65,7 +65,7 @@ env:
 
 jobs:
   build-e2e-image:
-    name: Build E2E image
+    name: Build E2E Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -81,11 +81,11 @@ jobs:
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Build E2E image
+      - name: Build E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
       - name: Verify CI
         run: ./mvnw -B install -pl test/e2e/sql -Dspotless.apply.skip=true
-      - name: Save E2E image
+      - name: Save E2E Image
         run: docker save -o /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - uses: actions/upload-artifact@v3
         with:
@@ -94,11 +94,13 @@ jobs:
           retention-days: 1
 
   e2e-empty-rule:
-    name: empty rule
+    name: Empty Rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: build-e2e-image
     strategy:
+      max-parallel: 5
+      fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL, openGauss ]
@@ -122,24 +124,26 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Download E2E image
+      - name: Download E2E Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
         with:
           name: e2e-image
           path: /tmp/
-      - name: Load E2E image
+      - name: Load E2E Image
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
       - name: Run E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.run.additional.cases=false -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER ${{ matrix.additional-options }}
 
   e2e-single-rule:
-    name: single rule
+    name: Single Rule
     needs: e2e-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
+      max-parallel: 5
+      fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
@@ -160,13 +164,13 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Download E2E image
+      - name: Download E2E Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
         with:
           name: e2e-image
           path: /tmp/
-      - name: Load E2E image
+      - name: Load E2E Image
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
       - name: Run E2E Test
@@ -176,8 +180,10 @@ jobs:
     name: mixture rule
     needs: e2e-single-rule
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     strategy:
+      max-parallel: 5
+      fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
@@ -198,13 +204,13 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Download E2E image
+      - name: Download E2E Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
         with:
           name: e2e-image
           path: /tmp/
-      - name: Load E2E image
+      - name: Load E2E Image
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
       - name: Run E2E Test

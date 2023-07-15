@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -45,13 +48,44 @@ public interface DatabaseBasedPersistService<T> {
     T load(String databaseName);
     
     /**
-     * Load configurations based version.
-     * 
+     * Load configuration.
+     *
      * @param databaseName database name
-     * @param version version
+     * @param name name
      * @return configurations
      */
-    T load(String databaseName, String version);
+    default T load(String databaseName, String name) {
+        return null;
+    }
+    
+    /**
+     * Delete rule.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     */
+    default void delete(String databaseName, String ruleName) {
+    }
+    
+    /**
+     * Delete configurations.
+     *
+     * @param databaseName database name
+     * @param configs configurations
+     */
+    default void delete(String databaseName, T configs) {
+    }
+    
+    /**
+     * Persist configurations.
+     *
+     * @param databaseName database name
+     * @param configs configurations
+     * @return meta data versions
+     */
+    default Collection<MetaDataVersion> persistConfig(String databaseName, T configs) {
+        return Collections.emptyList();
+    }
     
     /**
      * TODO remove this after meta data refactor completed

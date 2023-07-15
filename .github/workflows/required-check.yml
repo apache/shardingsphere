@@ -30,8 +30,8 @@ env:
   REPOSITORY_NAME: shardingsphere
 
 jobs:
-  check-checkstyle:
-    name: Check - CheckStyle
+  check-checkstyle-and-spotless:
+    name: Check - CheckStyle and Spotless
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -42,8 +42,8 @@ jobs:
           key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Run CheckStyle
-        run: ./mvnw checkstyle:check -T1C
+      - name: Run CheckStyle and Spotless
+        run: ./mvnw checkstyle:check spotless:check -T1C
   
   check-license:
     name: Check - License

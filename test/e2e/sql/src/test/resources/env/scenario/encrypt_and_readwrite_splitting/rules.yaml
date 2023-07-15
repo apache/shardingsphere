@@ -16,7 +16,9 @@
 #
 
 rules:
-
+- !SINGLE
+  tables:
+    - "*.*"
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds:
@@ -73,9 +75,7 @@ rules:
           cipher:
             name: telephone_cipher
             encryptorName: aes_encryptor
+    
+props:
+  sql-show: true
 
-sqlFederation:
-  sqlFederationEnabled: true
-  executionPlanCache:
-    initialCapacity: 2000
-    maximumSize: 65535

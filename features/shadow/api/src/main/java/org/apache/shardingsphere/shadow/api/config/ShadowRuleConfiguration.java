@@ -44,4 +44,9 @@ public final class ShadowRuleConfiguration implements DatabaseRuleConfiguration,
     private Map<String, AlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
     
     private String defaultShadowAlgorithmName;
+    
+    @Override
+    public boolean isEmpty() {
+        return dataSources.isEmpty() || tables.isEmpty();
+    }
 }

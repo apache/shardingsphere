@@ -44,9 +44,6 @@ rules:
   bindingTables (+): # 绑定表规则列表
     - <logic_table_name_1, logic_table_name_2, ...> 
     - <logic_table_name_1, logic_table_name_2, ...> 
-  broadcastTables (+): # 广播表规则列表
-    - <table_name>
-    - <table_name>
   defaultDatabaseStrategy: # 默认数据库分片策略
   defaultTableStrategy: # 默认表分片策略
   defaultKeyGenerateStrategy: # 默认的分布式序列策略
@@ -71,6 +68,11 @@ rules:
       type: # 分片审计算法类型
       props: # 分片审计算法属性配置
       # ...
+
+- !BROADCAST
+  tables: # 广播表规则列表
+    - <table_name>
+    - <table_name>
 ```
 
 ## 操作步骤
@@ -133,8 +135,6 @@ rules:
   defaultShardingColumn: account_id
   bindingTables:
     - t_order,t_order_item
-  broadcastTables:
-    - t_address
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
@@ -165,6 +165,10 @@ rules:
   auditors:
     sharding_key_required_auditor:
       type: DML_SHARDING_CONDITIONS
+
+- !BROADCAST
+  tables:
+    - t_address
 
 props:
   sql-show: false

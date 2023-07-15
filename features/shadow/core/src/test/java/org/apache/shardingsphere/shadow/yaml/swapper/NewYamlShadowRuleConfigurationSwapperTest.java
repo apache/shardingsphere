@@ -34,6 +34,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NewYamlShadowRuleConfigurationSwapperTest {
     
@@ -52,10 +53,10 @@ class NewYamlShadowRuleConfigurationSwapperTest {
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(4));
         Iterator<YamlDataNode> iterator = result.iterator();
-        assertThat(iterator.next().getKey(), is("data_sources/foo"));
-        assertThat(iterator.next().getKey(), is("tables/foo_table"));
         assertThat(iterator.next().getKey(), is("algorithms/FIXTURE"));
         assertThat(iterator.next().getKey(), is("default_algorithm_name"));
+        assertThat(iterator.next().getKey(), is("data_sources/foo"));
+        assertThat(iterator.next().getKey(), is("tables/foo_table"));
     }
     
     private ShadowRuleConfiguration createMaximumShadowRule() {
@@ -76,23 +77,21 @@ class NewYamlShadowRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObjectEmpty() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        ShadowRuleConfiguration result = swapper.swapToObject(config);
-        assertThat(result.getTables().size(), is(0));
-        assertThat(result.getShadowAlgorithms().size(), is(0));
+        assertFalse(swapper.swapToObject(config).isPresent());
     }
     
     @Test
     void assertSwapToObject() {
         Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/data_sources/foo_db", "productionDataSourceName: ds_0\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/data_sources/foo_db/versions/0", "productionDataSourceName: ds_0\n"
                 + "shadowDataSourceName: ds_1\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/tables/foo_table", "dataSourceNames:\n"
+        config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/tables/foo_table/versions/0", "dataSourceNames:\n"
                 + "- ds_0\n"
                 + "shadowAlgorithmNames:\n"
                 + "- FIXTURE\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/algorithms/FIXTURE", "type: FIXTURE\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/default_algorithm_name", "FIXTURE"));
-        ShadowRuleConfiguration result = swapper.swapToObject(config);
+        config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/default_algorithm_name/versions/0", "FIXTURE"));
+        ShadowRuleConfiguration result = swapper.swapToObject(config).get();
         assertThat(result.getDataSources().size(), is(1));
         assertThat(result.getDataSources().iterator().next().getName(), is("foo_db"));
         assertThat(result.getDataSources().iterator().next().getProductionDataSourceName(), is("ds_0"));

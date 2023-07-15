@@ -20,10 +20,10 @@ package org.apache.shardingsphere.globalclock.core.yaml.swapper;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.core.rule.constant.GlobalClockOrder;
 import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration;
-import org.apache.shardingsphere.infra.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,11 +34,11 @@ import java.util.Properties;
  * TODO Rename YamlGlobalClockRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * YAML global clock rule configuration swapper.
  */
-public final class NewYamlGlobalClockRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<GlobalClockRuleConfiguration> {
+public final class NewYamlGlobalClockRuleConfigurationSwapper implements NewYamlGlobalRuleConfigurationSwapper<GlobalClockRuleConfiguration> {
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final GlobalClockRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlGlobalClockRuleConfiguration swapToYamlConfiguration(final GlobalClockRuleConfiguration data) {
@@ -51,15 +51,15 @@ public final class NewYamlGlobalClockRuleConfigurationSwapper implements NewYaml
     }
     
     @Override
-    public GlobalClockRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+    public Optional<GlobalClockRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            Optional<String> version = GlobalRuleNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
+            Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }
-            return swapToObject(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class));
+            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class)));
         }
-        return new GlobalClockRuleConfiguration("", "", false, new Properties());
+        return Optional.empty();
     }
     
     private GlobalClockRuleConfiguration swapToObject(final YamlGlobalClockRuleConfiguration yamlConfig) {

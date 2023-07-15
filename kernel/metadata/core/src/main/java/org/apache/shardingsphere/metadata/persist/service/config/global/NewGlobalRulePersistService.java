@@ -18,40 +18,45 @@
 package org.apache.shardingsphere.metadata.persist.service.config.global;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.NewGlobalNode;
+import org.apache.shardingsphere.metadata.persist.service.config.AbstractPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * TODO Rename GlobalRulePersistService when metadata structure adjustment completed. #25485
  * New Global rule persist service.
  */
-@RequiredArgsConstructor
-public final class NewGlobalRulePersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
+public final class NewGlobalRulePersistService extends AbstractPersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
     
     private static final String DEFAULT_VERSION = "0";
     
     private final PersistRepository repository;
     
+    public NewGlobalRulePersistService(final PersistRepository repository) {
+        super(repository);
+        this.repository = repository;
+    }
+    
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
-        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
-        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        Map<RuleConfiguration, NewYamlGlobalRuleConfigurationSwapper> yamlConfigs = new NewYamlGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
+        for (Entry<RuleConfiguration, NewYamlGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
@@ -60,47 +65,50 @@ public final class NewGlobalRulePersistService implements GlobalPersistService<C
         }
     }
     
-    private void persistDataNodes(final Collection<YamlDataNode> dataNodes) {
-        for (YamlDataNode each : dataNodes) {
-            if (Strings.isNullOrEmpty(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()))) {
-                repository.persist(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), DEFAULT_VERSION);
-            }
-            repository.persist(NewGlobalNode.getGlobalRuleVersionNode(each.getKey(), DEFAULT_VERSION), each.getValue());
-        }
-    }
-    
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    @SuppressWarnings("unchecked")
-    public Collection<RuleConfiguration> load() {
-        Collection<String> result = new LinkedHashSet<>();
-        getAllNodes(result, NewGlobalNode.getGlobalRuleRootNode());
-        if (1 == result.size()) {
-            return Collections.emptyList();
-        }
-        return new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(getDataNodes(result));
-    }
-    
-    // TODO Consider merge NewGlobalRulePersistService and NewDatabaseRulePersistService load method.
-    private void getAllNodes(final Collection<String> keys, final String path) {
-        keys.add(path);
-        List<String> childrenKeys = repository.getChildrenKeys(path);
-        if (childrenKeys.isEmpty()) {
-            return;
-        }
-        for (String each : childrenKeys) {
-            getAllNodes(keys, String.join("/", "", path, each));
-        }
-    }
-    
-    private Collection<YamlDataNode> getDataNodes(final Collection<String> keys) {
-        Collection<YamlDataNode> result = new LinkedHashSet<>();
-        for (String each : keys) {
-            result.add(new YamlDataNode(each, repository.getDirectly(each)));
+    public Collection<MetaDataVersion> persistConfig(final Collection<RuleConfiguration> globalRuleConfigs) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
+        Map<RuleConfiguration, NewYamlGlobalRuleConfigurationSwapper> yamlConfigs = new NewYamlGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
+        for (Entry<RuleConfiguration, NewYamlGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+            Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
+            if (dataNodes.isEmpty()) {
+                continue;
+            }
+            result.addAll(persistDataNodes(dataNodes));
         }
         return result;
     }
     
+    private Collection<MetaDataVersion> persistDataNodes(final Collection<YamlDataNode> dataNodes) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
+        for (YamlDataNode each : dataNodes) {
+            List<String> versions = repository.getChildrenKeys(NewGlobalNode.getGlobalRuleVersionsNode(each.getKey()));
+            String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            String persistKey = NewGlobalNode.getGlobalRuleVersionNode(each.getKey(), nextActiveVersion);
+            repository.persist(persistKey, each.getValue());
+            if (Strings.isNullOrEmpty(getActiveVersion(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey())))) {
+                repository.persist(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), DEFAULT_VERSION);
+            }
+            result.add(new MetaDataVersion(NewGlobalNode.getGlobalRuleNode(each.getKey()), getActiveVersion(NewGlobalNode.getGlobalRuleActiveVersionNode(each.getKey())), nextActiveVersion));
+        }
+        return result;
+    }
+    
+    @Override
+    public Collection<RuleConfiguration> load() {
+        Collection<YamlDataNode> dataNodes = getDataNodes(NewGlobalNode.getGlobalRuleRootNode());
+        return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlGlobalRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
+    }
+    
+    @Override
+    public RuleConfiguration load(final String ruleName) {
+        Collection<YamlDataNode> dataNodes = getDataNodes(NewGlobalNode.getGlobalRuleNode(ruleName));
+        return new NewYamlGlobalRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, dataNodes).orElse(null);
+    }
+    
     /**
+     * TODO Avoid load all keys.
      * Load all users.
      * 
      * @return collection of user

@@ -71,7 +71,7 @@ class ImportMetaDataUpdaterTest {
     
     @BeforeEach
     void setup() {
-        featureMap.put(EMPTY, "/conf/import/empty-metadata.data");
+        featureMap.put(EMPTY, "/conf/import/empty-metadata.json");
     }
     
     @Test

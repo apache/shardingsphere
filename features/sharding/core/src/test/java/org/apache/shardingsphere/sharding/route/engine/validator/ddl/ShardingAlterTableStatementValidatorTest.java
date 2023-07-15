@@ -68,19 +68,7 @@ class ShardingAlterTableStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
         SQLStatementContext sqlStatementContext = new AlterTableStatementContext(sqlStatement);
-        when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
-    }
-    
-    @Test
-    void assertPreValidateAlterTableWithRenameTableWithBroadcastTableForPostgreSQL() {
-        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
-        SQLStatementContext sqlStatementContext = new AlterTableStatementContext(sqlStatement);
-        when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
-        when(shardingRule.isBroadcastTable("t_order")).thenReturn(true);
+        when(shardingRule.containsShardingTable(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
                 () -> new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
@@ -107,34 +95,6 @@ class ShardingAlterTableStatementValidatorTest {
         when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertThrows(ShardingDDLRouteException.class,
-                () -> new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement),
-                        new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
-    }
-    
-    @Test
-    void assertPostValidateAlterTableWithSameRouteResultBroadcastTableForPostgreSQL() {
-        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
-        when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
-        when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertDoesNotThrow(() -> new ShardingAlterTableStatementValidator().postValidate(
-                shardingRule, new AlterTableStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
-    }
-    
-    @Test
-    void assertPostValidateAlterTableWithDifferentRouteResultBroadcastTableForPostgreSQL() {
-        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
-        when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
-        when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         assertThrows(ShardingDDLRouteException.class,
                 () -> new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement),

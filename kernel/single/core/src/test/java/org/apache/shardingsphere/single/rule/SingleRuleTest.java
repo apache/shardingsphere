@@ -65,11 +65,15 @@ class SingleRuleTest {
     
     private Map<String, DataSource> dataSourceMap;
     
+    private SingleRuleConfiguration ruleConfig;
+    
     @BeforeEach
     void setUp() throws SQLException {
         dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("foo_ds", mockDataSource("foo_ds", Arrays.asList("employee", "t_order_0")));
         dataSourceMap.put("bar_ds", mockDataSource("bar_ds", Arrays.asList("student", "t_order_1")));
+        Collection<String> configuredTables = new LinkedList<>(Arrays.asList("foo_ds.employee", "foo_ds.t_order_0", "bar_ds.student", "bar_ds.t_order_1"));
+        ruleConfig = new SingleRuleConfiguration(configuredTables, null);
     }
     
     private DataSource mockDataSource(final String dataSourceName, final List<String> tableNames) throws SQLException {
@@ -98,7 +102,7 @@ class SingleRuleTest {
         TableContainedRule tableContainedRule = mock(TableContainedRule.class, RETURNS_DEEP_STUBS);
         when(tableContainedRule.getDistributedTableMapper().getTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(tableContainedRule.getActualTableMapper().getTableNames()).thenReturn(Arrays.asList("t_order_0", "t_order_1"));
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(tableContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(tableContainedRule));
         Map<String, Collection<DataNode>> actual = singleRule.getSingleTableDataNodes();
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("employee"));
@@ -110,7 +114,7 @@ class SingleRuleTest {
         TableContainedRule tableContainedRule = mock(TableContainedRule.class, RETURNS_DEEP_STUBS);
         when(tableContainedRule.getDistributedTableMapper().getTableNames()).thenReturn(Collections.singletonList("T_ORDER"));
         when(tableContainedRule.getActualTableMapper().getTableNames()).thenReturn(Arrays.asList("T_ORDER_0", "T_ORDER_1"));
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(tableContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(tableContainedRule));
         Map<String, Collection<DataNode>> actual = singleRule.getSingleTableDataNodes();
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("employee"));
@@ -120,8 +124,8 @@ class SingleRuleTest {
     @Test
     void assertFindSingleTableDataNode() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
-        Optional<DataNode> actual = singleRule.findSingleTableDataNode(DefaultDatabase.LOGIC_NAME, "employee");
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        Optional<DataNode> actual = singleRule.findTableDataNode(DefaultDatabase.LOGIC_NAME, "employee");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSourceName(), is("foo_ds"));
         assertThat(actual.get().getTableName(), is("employee"));
@@ -130,8 +134,8 @@ class SingleRuleTest {
     @Test
     void assertFindSingleTableDataNodeWithUpperCase() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
-        Optional<DataNode> actual = singleRule.findSingleTableDataNode(DefaultDatabase.LOGIC_NAME, "EMPLOYEE");
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        Optional<DataNode> actual = singleRule.findTableDataNode(DefaultDatabase.LOGIC_NAME, "EMPLOYEE");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSourceName(), is("foo_ds"));
         assertThat(actual.get().getTableName(), is("employee"));
@@ -140,7 +144,7 @@ class SingleRuleTest {
     @Test
     void assertIsSingleTablesInSameDataSource() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         Collection<QualifiedTable> singleTableNames = new LinkedList<>();
         singleTableNames.add(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "employee"));
         assertTrue(singleRule.isSingleTablesInSameDataSource(singleTableNames));
@@ -156,7 +160,7 @@ class SingleRuleTest {
         RouteContext routeContext = new RouteContext();
         routeContext.putRouteUnit(dataSourceMapper, tableMappers);
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         assertTrue(singleRule.isAllTablesInSameDataSource(routeContext, singleTableNames));
     }
     
@@ -172,7 +176,7 @@ class SingleRuleTest {
     @Test
     void assertGetSingleTableNames() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         Collection<QualifiedTable> tableNames = new LinkedList<>();
         tableNames.add(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "employee"));
         assertThat(singleRule.getSingleTableNames(tableNames).iterator().next().getSchemaName(), is(DefaultDatabase.LOGIC_NAME));
@@ -182,7 +186,7 @@ class SingleRuleTest {
     @Test
     void assertPut() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         String tableName = "teacher";
         String dataSourceName = "foo_ds";
         singleRule.put(dataSourceName, DefaultDatabase.LOGIC_NAME, tableName);
@@ -200,7 +204,7 @@ class SingleRuleTest {
     @Test
     void assertRemove() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         String tableName = "employee";
         singleRule.remove(DefaultDatabase.LOGIC_NAME, tableName);
         Collection<QualifiedTable> tableNames = new LinkedList<>();
@@ -214,7 +218,7 @@ class SingleRuleTest {
     @Test
     void assertGetAllDataNodes() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         assertTrue(singleRule.getAllDataNodes().containsKey("employee"));
         assertTrue(singleRule.getAllDataNodes().containsKey("student"));
         assertTrue(singleRule.getAllDataNodes().containsKey("t_order_0"));
@@ -224,7 +228,7 @@ class SingleRuleTest {
     @Test
     void assertGetDataNodesByTableName() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         Collection<DataNode> actual = singleRule.getDataNodesByTableName("EMPLOYEE");
         assertThat(actual.size(), is(1));
         DataNode dataNode = actual.iterator().next();
@@ -235,7 +239,7 @@ class SingleRuleTest {
     @Test
     void assertFindFirstActualTable() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         String logicTable = "employee";
         assertFalse(singleRule.findFirstActualTable(logicTable).isPresent());
     }
@@ -243,14 +247,14 @@ class SingleRuleTest {
     @Test
     void assertIsNeedAccumulate() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         assertFalse(singleRule.isNeedAccumulate(Collections.emptyList()));
     }
     
     @Test
     void assertFindLogicTableByActualTable() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         String actualTable = "student";
         assertFalse(singleRule.findLogicTableByActualTable(actualTable).isPresent());
     }
@@ -258,7 +262,7 @@ class SingleRuleTest {
     @Test
     void assertFindActualTableByCatalog() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
+        SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         String catalog = "employee";
         String logicTable = "t_order_0";
         assertFalse(singleRule.findActualTableByCatalog(catalog, logicTable).isPresent());

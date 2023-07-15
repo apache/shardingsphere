@@ -23,10 +23,15 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,6 +62,18 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
     }
     
     @Override
+    public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final DropEncryptRuleStatement sqlStatement) {
+        Collection<EncryptTableRuleConfiguration> toBeDroppedTables = new LinkedList<>();
+        Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>();
+        for (String each : sqlStatement.getTables()) {
+            toBeDroppedTables.add(new EncryptTableRuleConfiguration(each, Collections.emptyList()));
+            dropRule(currentRuleConfig, each);
+        }
+        findUnusedEncryptors(currentRuleConfig).forEach(each -> toBeDroppedEncryptors.put(each, currentRuleConfig.getEncryptors().get(each)));
+        return new EncryptRuleConfiguration(toBeDroppedTables, toBeDroppedEncryptors);
+    }
+    
+    @Override
     public boolean updateCurrentRuleConfiguration(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         sqlStatement.getTables().forEach(each -> dropRule(currentRuleConfig, each));
         dropUnusedEncryptor(currentRuleConfig);
@@ -69,6 +86,10 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
     }
     
     private void dropUnusedEncryptor(final EncryptRuleConfiguration currentRuleConfig) {
+        findUnusedEncryptors(currentRuleConfig).forEach(each -> currentRuleConfig.getEncryptors().remove(each));
+    }
+    
+    private static Collection<String> findUnusedEncryptors(final EncryptRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedEncryptors = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(optional -> optional.getCipher().getEncryptorName())
                 .collect(Collectors.toSet());
         inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream())
@@ -77,8 +98,7 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
         inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream())
                 .map(optional -> optional.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse(""))
                 .collect(Collectors.toSet()));
-        Collection<String> unusedEncryptors = currentRuleConfig.getEncryptors().keySet().stream().filter(each -> !inUsedEncryptors.contains(each)).collect(Collectors.toSet());
-        unusedEncryptors.forEach(each -> currentRuleConfig.getEncryptors().remove(each));
+        return currentRuleConfig.getEncryptors().keySet().stream().filter(each -> !inUsedEncryptors.contains(each)).collect(Collectors.toSet());
     }
     
     @Override

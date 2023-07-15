@@ -37,7 +37,7 @@ public final class MySQLContainer extends DockerStorageContainer {
     private final StorageContainerConfiguration storageContainerConfig;
     
     public MySQLContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "MySQL"), Strings.isNullOrEmpty(containerImage) ? "mysql/mysql-server:5.7.39" : containerImage, scenario);
+        super(TypedSPILoader.getService(DatabaseType.class, "MySQL"), Strings.isNullOrEmpty(containerImage) ? "mysql:5.7" : containerImage, scenario);
         this.storageContainerConfig = storageContainerConfig;
     }
     

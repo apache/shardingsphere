@@ -90,7 +90,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     }
     
     private void checkAlgorithmCompleteness(final Collection<AlgorithmSegment> algorithmSegments) {
-        Collection<AlgorithmSegment> incompleteAlgorithms = algorithmSegments.stream().filter(each -> each.getName().isEmpty() || each.getProps().isEmpty()).collect(Collectors.toSet());
+        Collection<AlgorithmSegment> incompleteAlgorithms = algorithmSegments.stream().filter(each -> each.getName().isEmpty()).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(incompleteAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("shadow"));
     }
     

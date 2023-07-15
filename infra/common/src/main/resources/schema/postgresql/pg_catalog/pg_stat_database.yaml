@@ -1,0 +1,243 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_stat_database
+columns:
+  datid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: datid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  datname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: datname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  numbackends:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: numbackends
+    primaryKey: false
+    unsigned: false
+    visible: true
+  xact_commit:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: xact_commit
+    primaryKey: false
+    unsigned: false
+    visible: true
+  xact_rollback:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: xact_rollback
+    primaryKey: false
+    unsigned: false
+    visible: true
+  blks_read:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: blks_read
+    primaryKey: false
+    unsigned: false
+    visible: true
+  blks_hit:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: blks_hit
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tup_returned:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tup_returned
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tup_fetched:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tup_fetched
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tup_inserted:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tup_inserted
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tup_updated:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tup_updated
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tup_deleted:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tup_deleted
+    primaryKey: false
+    unsigned: false
+    visible: true
+  conflicts:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: conflicts
+    primaryKey: false
+    unsigned: false
+    visible: true
+  temp_files:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: temp_files
+    primaryKey: false
+    unsigned: false
+    visible: true
+  temp_bytes:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: temp_bytes
+    primaryKey: false
+    unsigned: false
+    visible: true
+  deadlocks:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: deadlocks
+    primaryKey: false
+    unsigned: false
+    visible: true
+  checksum_failures:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: checksum_failures
+    primaryKey: false
+    unsigned: false
+    visible: true
+  checksum_last_failure:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: checksum_last_failure
+    primaryKey: false
+    unsigned: false
+    visible: true
+  blk_read_time:
+    caseSensitive: true
+    dataType: 8
+    generated: false
+    name: blk_read_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  blk_write_time:
+    caseSensitive: true
+    dataType: 8
+    generated: false
+    name: blk_write_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  session_time:
+    caseSensitive: true
+    dataType: 8
+    generated: false
+    name: session_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  active_time:
+    caseSensitive: true
+    dataType: 8
+    generated: false
+    name: active_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  idle_in_transaction_time:
+    caseSensitive: true
+    dataType: 8
+    generated: false
+    name: idle_in_transaction_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sessions:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: sessions
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sessions_abandoned:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: sessions_abandoned
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sessions_fatal:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: sessions_fatal
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sessions_killed:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: sessions_killed
+    primaryKey: false
+    unsigned: false
+    visible: true
+  stats_reset:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: stats_reset
+    primaryKey: false
+    unsigned: false
+    visible: true

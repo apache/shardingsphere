@@ -73,7 +73,7 @@ public final class HeterogeneousSelectStatementChecker extends CommonHeterogeneo
             Preconditions.checkArgument(!limitSegment.get().getOffset().isPresent(), "Do not supported offset segment.");
             Optional<PaginationValueSegment> paginationSegment = selectStatement.getLimit().flatMap(LimitSegment::getRowCount);
             Long maxScanLimitSize = HBaseContext.getInstance().getProps().<Long>getValue(HBasePropertyKey.MAX_SCAN_LIMIT_SIZE);
-            paginationSegment.ifPresent(valueSegment -> Preconditions.checkArgument(((NumberLiteralLimitValueSegment) valueSegment).getValue() <= maxScanLimitSize, "Row count must less than 5000."));
+            paginationSegment.ifPresent(optional -> Preconditions.checkArgument(((NumberLiteralLimitValueSegment) optional).getValue() <= maxScanLimitSize, "Row count must less than 5000."));
         }
     }
     

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLE
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -85,28 +86,23 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         for (ColumnSegment each : columnSegments) {
             String tableName = Optional.ofNullable(columnExpressionTableNames.get(each.getExpression())).orElse("");
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent() || !encryptTable.get().findEncryptColumn(each.getIdentifier().getValue()).isPresent()) {
-                continue;
+            if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(each.getIdentifier().getValue())) {
+                result.add(buildSubstitutableColumnNameToken(encryptTable.get().getEncryptColumn(each.getIdentifier().getValue()), each, whereSegments));
             }
-            result.add(buildSubstitutableColumnNameToken(each, whereSegments, encryptTable.get()));
         }
         return result;
     }
     
-    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final ColumnSegment columnSegment, final Collection<WhereSegment> whereSegments, final EncryptTable encryptTable) {
+    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final EncryptColumn encryptColumn, final ColumnSegment columnSegment, final Collection<WhereSegment> whereSegments) {
         int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
-        String logicColumn = columnSegment.getIdentifier().getValue();
-        // TODO remove foreach loop to improve performance
         if (includesLike(whereSegments, columnSegment)) {
-            Optional<String> likeQueryColumn = encryptTable.findLikeQueryColumn(logicColumn);
-            ShardingSpherePreconditions.checkState(likeQueryColumn.isPresent(), () -> new UnsupportedEncryptSQLException("LIKE"));
-            return new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(likeQueryColumn.get(), columnSegment.getIdentifier().getQuoteCharacter()));
+            ShardingSpherePreconditions.checkState(encryptColumn.getLikeQuery().isPresent(), () -> new UnsupportedEncryptSQLException("LIKE"));
+            return new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptColumn.getLikeQuery().get().getName(), columnSegment.getIdentifier().getQuoteCharacter()));
         }
         Collection<Projection> columnProjections =
-                encryptTable.findAssistedQueryColumn(logicColumn).map(optional -> createColumnProjections(optional, columnSegment.getIdentifier().getQuoteCharacter()))
-                        .orElseGet(() -> createColumnProjections(encryptTable.getCipherColumn(logicColumn),
-                                columnSegment.getIdentifier().getQuoteCharacter()));
+                encryptColumn.getAssistedQuery().map(optional -> createColumnProjections(optional.getName(), columnSegment.getIdentifier().getQuoteCharacter()))
+                        .orElseGet(() -> createColumnProjections(encryptColumn.getCipher().getName(), columnSegment.getIdentifier().getQuoteCharacter()));
         return new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections);
     }
     

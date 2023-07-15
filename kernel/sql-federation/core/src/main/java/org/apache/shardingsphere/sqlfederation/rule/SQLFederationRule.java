@@ -18,40 +18,47 @@
 package org.apache.shardingsphere.sqlfederation.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutor;
+import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContextFactory;
+import org.apache.shardingsphere.sqlfederation.compiler.context.parser.OptimizerParserContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.parser.OptimizerParserContextFactory;
+import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContextFactory;
+
+import java.util.Map;
 
 /**
  * SQL federation rule.
  */
 @Getter
-public final class SQLFederationRule implements GlobalRule {
+public final class SQLFederationRule implements GlobalRule, MetaDataHeldRule {
     
     private final SQLFederationRuleConfiguration configuration;
     
-    private final SQLFederationExecutor sqlFederationExecutor;
+    private final OptimizerContext optimizerContext;
     
-    public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig) {
+    public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         configuration = ruleConfig;
-        sqlFederationExecutor = new SQLFederationExecutor();
+        optimizerContext = OptimizerContextFactory.create(databases, props);
     }
     
-    /**
-     * Init SQL federation executor.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param metaData ShardingSphere meta data
-     * @param shardingSphereData ShardingSphere data
-     * @param jdbcExecutor jdbc executor
-     */
-    public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData shardingSphereData,
-                     final JDBCExecutor jdbcExecutor) {
-        sqlFederationExecutor.init(databaseName, schemaName, metaData, shardingSphereData, jdbcExecutor);
+    @Override
+    public void alterDatabase(final ShardingSphereDatabase database) {
+        OptimizerParserContext parserContext = OptimizerParserContextFactory.create(database.getProtocolType());
+        optimizerContext.putParserContext(database.getName(), parserContext);
+        OptimizerPlannerContext plannerContext = OptimizerPlannerContextFactory.create(database, parserContext, optimizerContext.getSqlParserRule());
+        optimizerContext.putPlannerContext(database.getName(), plannerContext);
+    }
+    
+    @Override
+    public void dropDatabase(final String databaseName) {
+        optimizerContext.removeParserContext(databaseName);
+        optimizerContext.removePlannerContext(databaseName);
     }
     
     @Override

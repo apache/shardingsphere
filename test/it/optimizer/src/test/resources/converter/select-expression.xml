@@ -37,4 +37,11 @@
     <test-cases sql-case-id="select_where_with_predicate_with_in_subquery" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`order_id` NOT IN (SELECT `order_id` FROM `t_order_item` WHERE `status` &gt; ?)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="select_where_with_expr_with_not" expected-sql="SELECT * FROM `t_order` WHERE NOT 1 = `t_order`.`order_id`" db-types="MySQL" sql-case-types="LITERAL" />
     <test-cases sql-case-id="select_where_with_expr_with_not" expected-sql="SELECT * FROM `t_order` WHERE NOT ? = `t_order`.`order_id`" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="select_where_with_expr_with_xor" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`order_id` = 1 XOR (2 = `t_order`.`order_id`)" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_where_with_expr_with_xor" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`order_id` = ? XOR (? = `t_order`.`order_id`)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="select_where_with_predicate_with_regexp" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`order_id` NOT REGEXP '[123]'" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_where_with_predicate_with_sounds_like" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`order_id` SOUNDS LIKE '1%'" db-types="" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_where_with_expr_with_and_sign" expected-sql="SELECT * FROM `t_order` WHERE (`t_order`.`order_id` = 1 &amp;&amp; 2 = `t_order`.`order_id`)" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_where_with_expr_with_and_sign" expected-sql="SELECT * FROM `t_order` WHERE (`t_order`.`order_id` = ? &amp;&amp; ? = `t_order`.`order_id`)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="select_where_with_boolean_primary_with_null_safe" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`status` &lt;=&gt; `t_order`.`order_id`" db-types="MySQL" sql-case-types="LITERAL" />
 </sql-node-converter-test-cases>

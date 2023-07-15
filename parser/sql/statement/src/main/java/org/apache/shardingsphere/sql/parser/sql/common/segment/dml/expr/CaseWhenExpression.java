@@ -40,4 +40,9 @@ public final class CaseWhenExpression implements ExpressionSegment {
     private final Collection<ExpressionSegment> thenExprs;
     
     private final ExpressionSegment elseExpr;
+    
+    @Override
+    public String getText() {
+        return caseExpr.getText();
+    }
 }

@@ -123,6 +123,10 @@ AVG
     : A V G
     ;
 
+ASSIGN_GTIDS_TO_ANONYMOUS_TRANSACTIONS
+    : A S S I G N UL_ G T I D S UL_ T O UL_ A N O N Y M O U S UL_ T R A N S A C T I O N S
+    ;
+
 BIT_XOR
     : B I T UL_ X O R
     ;
@@ -913,6 +917,18 @@ GROUPS
 
 GROUP_REPLICATION
     : G R O U P UL_ R E P L I C A T I O N
+    ;
+
+GET_SOURCE_PUBLIC_KEY
+    : G E T UL_ S O U R C E UL_ P U B L I C UL_ K E Y
+    ;
+
+GTID_ONLY
+    : G T I D UL_ O N L Y
+    ;
+
+GENERATE
+    : G E N E R A T E
     ;
 
 HANDLER
@@ -2075,6 +2091,10 @@ REQUIRE_ROW_FORMAT
     : R E Q U I R E UL_ R O W UL_ F O R M A T
     ;
 
+REQUIRE_TABLE_PRIMARY_KEY_CHECK
+    : R E Q U I R E UL_ T A B L E UL_ P R I M A R Y UL_ K E Y UL_ C H E C K
+    ;
+
 RESET
     : R E S E T
     ;
@@ -2537,6 +2557,114 @@ SWITCHES
 
 SYSTEM
     : S Y S T E M
+    ;
+
+SOURCE_BIND
+    : S O U R C E UL_ B I N D
+    ;
+
+SOURCE_HOST
+    : S O U R C E UL_ H O S T
+    ;
+
+SOURCE_USER
+    : S O U R C E UL_ U S E R
+    ;
+
+SOURCE_PASSWORD
+    : S O U R C E UL_ P A S S W O R D
+    ;
+
+SOURCE_PORT
+    : S O U R C E UL_ P O R T
+    ;
+
+SOURCE_LOG_FILE
+    : S O U R C E UL_ L O G UL_ F I L E
+    ;
+
+SOURCE_LOG_POS
+    : S O U R C E UL_ L O G UL_ P O S
+    ;
+
+SOURCE_AUTO_POSITION
+    : S O U R C E UL_ A U T O UL_ P O S I T I O N
+    ;
+
+SOURCE_HEARTBEAT_PERIOD
+    : S O U R C E UL_ H E A R T B E A T UL_ P E R I O D
+    ;
+
+SOURCE_CONNECT_RETRY
+    : S O U R C E UL_ C O N N E C T UL_ R E T R Y
+    ;
+
+SOURCE_RETRY_COUNT
+    : S O U R C E UL_ R E T R Y UL_ C O U N T
+    ;
+
+SOURCE_CONNECTION_AUTO_FAILOVER
+    : S O U R C E UL_ C O N N E C T I O N UL_ A U T O UL_ F A I L O V E R
+    ;
+
+SOURCE_DELAY
+    : S O U R C E UL_ D E L A Y
+    ;
+
+SOURCE_COMPRESSION_ALGORITHMS
+    : S O U R C E UL_ C O M P R E S S I O N UL_ A L G O R I T H M S
+    ;
+
+SOURCE_ZSTD_COMPRESSION_LEVEL
+    : S O U R C E UL_ Z S T D UL_ C O M P R E S S I O N UL_ L E V E L
+    ;
+
+SOURCE_SSL
+    : S O U R C E UL_ S S L
+    ;
+
+SOURCE_SSL_CA
+    : S O U R C E UL_ S S L UL_ C A
+    ;
+
+SOURCE_SSL_CAPATH
+    : S O U R C E UL_ S S L UL_ C A P A T H
+    ;
+
+SOURCE_SSL_CERT
+    : S O U R C E UL_ S S L UL_ C E R T
+    ;
+
+SOURCE_SSL_CRL
+    : S O U R C E UL_ S S L UL_ C R L
+    ;
+
+SOURCE_SSL_CRLPATH
+    : S O U R C E UL_ S S L UL_ C R L P A T H
+    ;
+
+SOURCE_SSL_KEY
+    : S O U R C E UL_ S S L UL_ K E Y
+    ;
+
+SOURCE_SSL_CIPHER
+    : S O U R C E UL_ S S L UL_ C I P H E R
+    ;
+
+SOURCE_SSL_VERIFY_SERVER_CERT
+    : S O U R C E UL_ S S L UL_ V E R I F Y UL_ S E R V E R UL_ C E R T
+    ;
+
+SOURCE_TLS_VERSION
+    : S O U R C E UL_ T L S UL_ V E R S I O N
+    ;
+
+SOURCE_TLS_CIPHERSUITES
+    : S O U R C E UL_ T L S UL_ C I P H E R S U I T E S
+    ;
+
+SOURCE_PUBLIC_KEY_PATH
+    : S O U R C E UL_ P U B L I C UL_ K E Y UL_ P A T H
     ;
 
 TABLE

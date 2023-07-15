@@ -55,11 +55,13 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Duplica
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EngineRefContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FieldLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FieldsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UdfFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupConcatFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HavingClauseContext;
@@ -102,10 +104,12 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryEx
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionParensContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryPrimaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QuerySpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableValueConstructorContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceValuesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RowConstructorListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectSpecificationContext;
@@ -150,6 +154,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.engine.EngineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -166,10 +171,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhen
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExplicitTableExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -507,6 +514,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.REGEXP()) {
             return createBinaryOperationExpressionFromRegexp(ctx);
         }
+        if (null != ctx.RLIKE()) {
+            return createBinaryOperationExpressionFromRlike(ctx);
+        }
         return visit(ctx.bitExpr(0));
     }
     
@@ -548,6 +558,14 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right = (ExpressionSegment) visit(ctx.bitExpr(1));
         String operator = null != ctx.NOT() ? "NOT REGEXP" : "REGEXP";
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+    }
+    
+    private BinaryOperationExpression createBinaryOperationExpressionFromRlike(final PredicateContext ctx) {
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
+        ExpressionSegment right = (ExpressionSegment) visit(ctx.bitExpr(1));
+        String operator = null != ctx.NOT() ? "NOT RLIKE" : "RLIKE";
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
@@ -606,15 +624,11 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (null != ctx.notOperator()) {
             ASTNode expression = visit(ctx.simpleExpr(0));
-            Boolean notSign = false;
             if (expression instanceof ExistsSubqueryExpression) {
                 ((ExistsSubqueryExpression) expression).setNot(true);
                 return expression;
             }
-            if ("!".equalsIgnoreCase(ctx.notOperator().getText())) {
-                notSign = true;
-            }
-            return new NotExpression(startIndex, stopIndex, (ExpressionSegment) expression, notSign);
+            return new NotExpression(startIndex, stopIndex, (ExpressionSegment) expression, "!".equalsIgnoreCase(ctx.notOperator().getText()));
         }
         if (null != ctx.LP_() && 1 == ctx.expr().size()) {
             return visit(ctx.expr(0));
@@ -660,7 +674,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.lockClauseList()) {
             result.setLock((LockSegment) visit(ctx.lockClauseList()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -718,11 +732,25 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setCombine(createCombineSegment(ctx.combineClause(), left));
             return result;
         }
+        if (null != ctx.queryExpressionParens()) {
+            MySQLSelectStatement result = new MySQLSelectStatement();
+            MySQLSelectStatement left = (MySQLSelectStatement) visit(ctx.queryExpressionParens());
+            result.setProjections(left.getProjections());
+            result.setFrom(left.getFrom());
+            left.getTable().ifPresent(result::setTable);
+            result.setCombine(createCombineSegment(ctx.combineClause(), left));
+            return result;
+        }
         return visit(ctx.queryExpressionParens());
     }
     
     private CombineSegment createCombineSegment(final CombineClauseContext ctx, final MySQLSelectStatement left) {
-        CombineType combineType = null != ctx.combineOption() && null != ctx.combineOption().ALL() ? CombineType.UNION_ALL : CombineType.UNION;
+        CombineType combineType;
+        if (null != ctx.EXCEPT()) {
+            combineType = CombineType.EXCEPT;
+        } else {
+            combineType = null != ctx.combineOption() && null != ctx.combineOption().ALL() ? CombineType.UNION_ALL : CombineType.UNION;
+        }
         MySQLSelectStatement right = null != ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryPrimary()) : (MySQLSelectStatement) visit(ctx.queryExpressionParens());
         return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, right);
     }
@@ -761,14 +789,34 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     }
     
     @Override
+    public ASTNode visitTableValueConstructor(final TableValueConstructorContext ctx) {
+        MySQLSelectStatement result = new MySQLSelectStatement();
+        int startIndex = ctx.getStart().getStartIndex();
+        int stopIndex = ctx.getStop().getStopIndex();
+        ValuesExpression valuesExpression = new ValuesExpression(startIndex, stopIndex);
+        valuesExpression.getRowConstructorList().addAll(createRowConstructorList(ctx.rowConstructorList()));
+        result.setProjections(new ProjectionsSegment(startIndex, stopIndex));
+        result.getProjections().getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), valuesExpression));
+        return result;
+    }
+    
+    private Collection<InsertValuesSegment> createRowConstructorList(final RowConstructorListContext ctx) {
+        Collection<InsertValuesSegment> result = new LinkedList<>();
+        for (AssignmentValuesContext each : ctx.assignmentValues()) {
+            result.add((InsertValuesSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
     public ASTNode visitTableStatement(final TableStatementContext ctx) {
         MySQLSelectStatement result = new MySQLSelectStatement();
-        if (null != ctx.TABLE()) {
-            result.setFrom(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
-                    new IdentifierValue(ctx.tableName().getText()))));
-        } else {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        }
+        int startIndex = ctx.getStart().getStartIndex();
+        int stopIndex = ctx.getStop().getStopIndex();
+        TableNameSegment tableNameSegment = new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().getText()));
+        ExplicitTableExpression explicitTableExpression = new ExplicitTableExpression(startIndex, stopIndex, tableNameSegment);
+        result.setProjections(new ProjectionsSegment(startIndex, stopIndex));
+        result.getProjections().getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), explicitTableExpression));
         return result;
     }
     
@@ -822,7 +870,21 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.jsonFunction()) {
             return visit(ctx.jsonFunction());
         }
-        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction, specialFunction or jsonFunction.");
+        if (null != ctx.udfFunction()) {
+            return visit(ctx.udfFunction());
+        }
+        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction, specialFunction, jsonFunction or udfFunction.");
+    }
+    
+    @Override
+    public ASTNode visitUdfFunction(final UdfFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), getOriginalText(ctx));
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        return result;
     }
     
     @Override
@@ -1263,7 +1325,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -1334,7 +1396,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -1398,7 +1460,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -1465,7 +1527,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -1509,7 +1571,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else {
             result = (MySQLSelectStatement) visit(ctx.getChild(0));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -1658,6 +1720,16 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (projection instanceof BetweenExpression) {
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx.expr()), (BetweenExpression) projection);
+            result.setAlias(alias);
+            return result;
+        }
+        if (projection instanceof InExpression) {
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx.expr()), (InExpression) projection);
+            result.setAlias(alias);
+            return result;
+        }
+        if (projection instanceof CollateExpression) {
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx.expr()), (CollateExpression) projection);
             result.setAlias(alias);
             return result;
         }
@@ -1854,6 +1926,11 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         parameterMarkerSegments.add(segment);
         return segment;
+    }
+    
+    @Override
+    public ASTNode visitEngineRef(final EngineRefContext ctx) {
+        return new EngineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), SQLUtils.getExactlyValue(ctx.textOrIdentifier().getText()));
     }
     
     /**

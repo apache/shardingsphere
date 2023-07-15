@@ -149,7 +149,7 @@ class SingleStandardRouteEngineTest {
     private SingleRule mockSingleRule() {
         SingleRule result = mock(SingleRule.class);
         DataNode dataNode = mock(DataNode.class);
-        when(result.findSingleTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(dataNode));
+        when(result.findTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(dataNode));
         return result;
     }
 }

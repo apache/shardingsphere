@@ -1,0 +1,827 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<integration-test-cases>
+    <test-case sql="SELECT * FROM information_schema._pg_foreign_data_wrappers" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema__pg_foreign_data_wrappers.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema._pg_foreign_servers" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema__pg_foreign_servers.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema._pg_foreign_table_columns" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema__pg_foreign_table_columns.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema._pg_foreign_tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema__pg_foreign_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema._pg_user_mappings" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema__pg_user_mappings.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.administrable_role_authorizations" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_administrable_role_authorizations.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.applicable_roles" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_applicable_roles.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.attributes" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_attributes.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.character_sets" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_character_sets.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.check_constraint_routine_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_check_constraint_routine_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.check_constraints" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_check_constraints.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.collation_character_set_applicability" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_collation_character_set_applicability.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.collations" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_collations.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.column_column_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_column_column_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.column_domain_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_column_domain_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.column_options" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_column_options.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.column_privileges" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_column_privileges.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.column_udt_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_column_udt_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.columns" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_columns.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.constraint_column_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_constraint_column_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.constraint_table_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_constraint_table_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.data_type_privileges" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_data_type_privileges.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.domain_constraints" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_domain_constraints.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.domain_udt_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_domain_udt_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.domains" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_domains.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.element_types" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_element_types.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.enabled_roles" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_enabled_roles.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.foreign_data_wrapper_options" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_foreign_data_wrapper_options.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.foreign_data_wrappers" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_foreign_data_wrappers.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.foreign_server_options" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_foreign_server_options.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.foreign_servers" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_foreign_servers.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.foreign_table_options" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_foreign_table_options.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.foreign_tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_foreign_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.information_schema_catalog_name" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_information_schema_catalog_name.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.key_column_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_key_column_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.parameters" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_parameters.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.referential_constraints" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_referential_constraints.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.role_column_grants" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_role_column_grants.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.role_routine_grants" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_role_routine_grants.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.role_table_grants" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_role_table_grants.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.role_udt_grants" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_role_udt_grants.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.role_usage_grants" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_role_usage_grants.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.routine_column_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_routine_column_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.routine_privileges" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_routine_privileges.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.routine_routine_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_routine_routine_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.routine_sequence_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_routine_sequence_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.routine_table_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_routine_table_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.routines" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_routines.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.schemata" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_schemata.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.sequences" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_sequences.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.sql_features" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_sql_features.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.sql_implementation_info" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_sql_implementation_info.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.sql_parts" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_sql_parts.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.sql_sizing" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_sql_sizing.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.table_constraints" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_table_constraints.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.table_privileges" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_table_privileges.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.transforms" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_transforms.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.triggered_update_columns" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_triggered_update_columns.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.triggers" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_triggers.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.udt_privileges" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_udt_privileges.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.usage_privileges" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_usage_privileges.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.user_defined_types" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_user_defined_types.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.user_mapping_options" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_user_mapping_options.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.user_mappings" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_user_mappings.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.view_column_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_view_column_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.view_routine_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_view_routine_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.view_table_usage" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_view_table_usage.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.views" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_information_schema_views.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_aggregate" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_aggregate.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_am" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_am.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_amop" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_amop.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_amproc" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_amproc.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_attrdef" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_attrdef.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_attribute" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_attribute.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_auth_members" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_auth_members.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_authid" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_authid.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_available_extension_versions" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_available_extension_versions.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_available_extensions" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_available_extensions.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_backend_memory_contexts" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_backend_memory_contexts.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_cast" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_cast.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_collation" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_collation.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_config" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_config.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_constraint" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_constraint.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_conversion" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_conversion.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_cursors" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_cursors.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_database" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_database.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_db_role_setting" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_db_role_setting.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_default_acl" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_default_acl.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_depend" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_depend.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_description" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_description.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_enum" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_enum.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_event_trigger" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_event_trigger.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_extension" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_extension.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_file_settings" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_file_settings.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_foreign_data_wrapper" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_foreign_data_wrapper.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_foreign_server" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_foreign_server.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_foreign_table" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_foreign_table.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_group" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_group.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_hba_file_rules" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_hba_file_rules.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_index" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_index.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_indexes" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_indexes.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_inherits" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_inherits.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_init_privs" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_init_privs.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_language" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_language.xml" />
+    </test-case>
+
+    <!-- TODO ERROR:  Can not find JDBC type `-3` in PostgreSQL column type -->
+    <!--    <test-case sql="SELECT * FROM pg_catalog.pg_largeobject" db-types="PostgreSQL" scenario-types="db">-->
+    <!--        <assertion expected-data-file="select_postgresql_pg_catalog_pg_largeobject.xml" />-->
+    <!--    </test-case>-->
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_largeobject_metadata" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_largeobject_metadata.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_locks" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_locks.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_matviews" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_matviews.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_opclass" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_opclass.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_operator" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_operator.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_opfamily" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_opfamily.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_partitioned_table" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_partitioned_table.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_policies" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_policies.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_policy" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_policy.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_prepared_statements" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_prepared_statements.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_prepared_xacts" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_prepared_xacts.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_proc" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_proc.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_publication" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_publication.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_publication_rel" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_publication_rel.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_publication_tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_publication_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_range" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_range.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_replication_origin" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_replication_origin.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_replication_origin_status" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_replication_origin_status.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_replication_slots" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_replication_slots.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_rewrite" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_rewrite.xml" />
+    </test-case>
+
+    <!-- TODO ERROR:  Index 24 out of bounds for length 24 -->
+    <!--    <test-case sql="SELECT * FROM pg_catalog.pg_roles" db-types="PostgreSQL" scenario-types="db">-->
+    <!--        <assertion expected-data-file="select_postgresql_pg_catalog_pg_roles.xml" />-->
+    <!--    </test-case>-->
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_rules" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_rules.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_seclabel" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_seclabel.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_seclabels" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_seclabels.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_sequence" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_sequence.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_sequences" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_sequences.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_settings" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_settings.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_shadow" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_shadow.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_shdepend" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_shdepend.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_shdescription" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_shdescription.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_shmem_allocations" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_shmem_allocations.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_shseclabel" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_shseclabel.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_activity" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_activity.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_all_indexes" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_all_indexes.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_all_tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_all_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_archiver" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_archiver.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_bgwriter" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_bgwriter.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_database" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_database.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_database_conflicts" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_database_conflicts.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_gssapi" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_gssapi.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_analyze" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_progress_analyze.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_basebackup" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_progress_basebackup.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_cluster" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_progress_cluster.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_copy" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_progress_copy.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_create_index" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_progress_create_index.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_vacuum" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_progress_vacuum.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_replication" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_replication.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_replication_slots" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_replication_slots.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_slru" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_slru.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_ssl" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_ssl.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_subscription" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_subscription.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_sys_indexes" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_sys_indexes.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_sys_tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_sys_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_user_functions" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_user_functions.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_user_indexes" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_user_indexes.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_user_tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_user_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_wal" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_wal.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_wal_receiver" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_wal_receiver.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_xact_all_tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_xact_all_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_xact_sys_tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_xact_sys_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_xact_user_functions" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_xact_user_functions.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_xact_user_tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stat_xact_user_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_statio_all_indexes" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_statio_all_indexes.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_statio_all_sequences" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_statio_all_sequences.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_statio_all_tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_statio_all_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_statio_sys_indexes" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_statio_sys_indexes.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_statio_sys_sequences" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_statio_sys_sequences.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_statio_sys_tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_statio_sys_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_statio_user_indexes" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_statio_user_indexes.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_statio_user_sequences" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_statio_user_sequences.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_statio_user_tables" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_statio_user_tables.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_statistic" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_statistic.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_statistic_ext" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_statistic_ext.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_statistic_ext_data" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_statistic_ext_data.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stats" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stats.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stats_ext" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stats_ext.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_stats_ext_exprs" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_stats_ext_exprs.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_subscription" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_subscription.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_subscription_rel" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_subscription_rel.xml" />
+    </test-case>
+
+    <!-- TODO ERROR: Index: 10, size: 10 -->
+<!--    <test-case sql="SELECT * FROM pg_catalog.pg_tables" db-types="PostgreSQL" scenario-types="db">-->
+<!--        <assertion expected-data-file="select_postgresql_pg_catalog_pg_tables.xml" />-->
+<!--    </test-case>-->
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_tablespace" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_tablespace.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_timezone_abbrevs" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_timezone_abbrevs.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_timezone_names" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_timezone_names.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_transform" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_transform.xml" />
+    </test-case>
+
+    <!-- TODO ERROR:  Can not find JDBC type `-3` in PostgreSQL column type -->
+    <!--    <test-case sql="SELECT * FROM pg_catalog.pg_trigger" db-types="PostgreSQL" scenario-types="db">-->
+    <!--        <assertion expected-data-file="select_postgresql_pg_catalog_pg_trigger.xml" />-->
+    <!--    </test-case>-->
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_ts_config" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_ts_config.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_ts_config_map" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_ts_config_map.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_ts_dict" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_ts_dict.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_ts_parser" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_ts_parser.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_ts_template" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_ts_template.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_type" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_type.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_user" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_user.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_user_mapping" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_user_mapping.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_user_mappings" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_user_mappings.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_views" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_views.xml" />
+    </test-case>
+</integration-test-cases>

@@ -144,6 +144,7 @@ queryExpressionBody
 
 combineClause
     : UNION combineOption? (queryPrimary | queryExpressionParens)
+    | EXCEPT combineOption? (queryPrimary | queryExpressionParens)
     ;
 
 queryExpressionParens
@@ -165,7 +166,7 @@ call
     ;
 
 doStatement
-    : DO expr (COMMA_ expr)*
+    : DO expr (AS? alias)? (COMMA_ expr (AS? alias)?)*
     ;
 
 handlerStatement

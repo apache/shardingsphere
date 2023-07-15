@@ -16,13 +16,12 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e-agent-plugins-logging</artifactId>
-        <version>5.3.3-SNAPSHOT</version>
+        <version>5.4.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-plugins-logging-file</artifactId>
     <name>${project.artifactId}</name>
@@ -194,7 +193,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>copy-resources</id>
+                                <id>copy-app</id>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
@@ -203,16 +202,28 @@
                                     <outputDirectory>${docker.jdbc.context.directory}/shardingsphere-jdbc-app</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>${project.basedir}/../../../jdbc-project/target/</directory>
-                                            <includes>
-                                                <include>${docker.jdbc.distribution.name}.jar</include>
-                                            </includes>
-                                        </resource>
-                                        <resource>
-                                            <directory>${project.basedir}/src/test/resources/docker/jdbc/conf</directory>
+                                            <directory>${project.basedir}/../../../jdbc-project/target/app</directory>
                                         </resource>
                                         <resource>
                                             <directory>${project.basedir}/../../../../../../distribution/agent/target/apache-shardingsphere-${project.version}-shardingsphere-agent-bin/</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-config</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <outputDirectory>${docker.jdbc.context.directory}/shardingsphere-jdbc-app/conf</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/test/resources/docker/jdbc/conf</directory>
+                                            <includes>
+                                                <include>config.yaml</include>
+                                            </includes>
                                         </resource>
                                     </resources>
                                 </configuration>
@@ -225,9 +236,6 @@
                         <configuration>
                             <repository>apache/shardingsphere-jdbc-agent-logging-file-test</repository>
                             <tag>latest</tag>
-                            <buildArgs>
-                                <APP_NAME>${docker.jdbc.distribution.name}</APP_NAME>
-                            </buildArgs>
                             <contextDirectory>${docker.jdbc.context.directory}</contextDirectory>
                             <dockerfile>${docker.jdbc.context.directory}/Dockerfile</dockerfile>
                         </configuration>

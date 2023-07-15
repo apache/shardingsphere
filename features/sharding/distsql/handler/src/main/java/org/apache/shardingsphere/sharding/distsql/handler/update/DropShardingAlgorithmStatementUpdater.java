@@ -94,6 +94,15 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     }
     
     @Override
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropShardingAlgorithmStatement sqlStatement) {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        for (String each : sqlStatement.getNames()) {
+            result.getShardingAlgorithms().put(each, currentRuleConfig.getShardingAlgorithms().get(each));
+        }
+        return result;
+    }
+    
+    @Override
     public boolean updateCurrentRuleConfiguration(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         for (String each : sqlStatement.getNames()) {
             dropShardingAlgorithm(currentRuleConfig, each);

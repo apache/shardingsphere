@@ -37,5 +37,6 @@ PROPERTIES('minPoolSize'='1', 'connectionTimeoutMilliseconds'='30000', 'maxLifet
 CREATE READWRITE_SPLITTING RULE readwrite_ds (
 WRITE_STORAGE_UNIT=write_ds_0,
 READ_STORAGE_UNITS(read_ds_0,read_ds_1),
+TRANSACTIONAL_READ_QUERY_STRATEGY='PRIMARY',
 TYPE(NAME='random')
 );

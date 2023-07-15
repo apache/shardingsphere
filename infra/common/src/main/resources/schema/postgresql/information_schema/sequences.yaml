@@ -1,0 +1,115 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: sequences
+columns:
+  sequence_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: sequence_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sequence_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: sequence_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sequence_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: sequence_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  data_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: data_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  numeric_precision:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: numeric_precision
+    primaryKey: false
+    unsigned: false
+    visible: true
+  numeric_precision_radix:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: numeric_precision_radix
+    primaryKey: false
+    unsigned: false
+    visible: true
+  numeric_scale:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: numeric_scale
+    primaryKey: false
+    unsigned: false
+    visible: true
+  start_value:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: start_value
+    primaryKey: false
+    unsigned: false
+    visible: true
+  minimum_value:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: minimum_value
+    primaryKey: false
+    unsigned: false
+    visible: true
+  maximum_value:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: maximum_value
+    primaryKey: false
+    unsigned: false
+    visible: true
+  increment:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: increment
+    primaryKey: false
+    unsigned: false
+    visible: true
+  cycle_option:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: cycle_option
+    primaryKey: false
+    unsigned: false
+    visible: true

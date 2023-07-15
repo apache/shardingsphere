@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.transaction.yaml.swapper;
 
-import org.apache.shardingsphere.infra.converter.GlobalRuleNodeConverter;
+import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.constant.TransactionOrder;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
@@ -34,11 +34,11 @@ import java.util.Properties;
  * TODO Rename YamlTransactionRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * New YAML Transaction rule configuration swapper.
  */
-public final class NewYamlTransactionRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<TransactionRuleConfiguration> {
+public final class NewYamlTransactionRuleConfigurationSwapper implements NewYamlGlobalRuleConfigurationSwapper<TransactionRuleConfiguration> {
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final TransactionRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(GlobalRuleNodeConverter.getRootNode(getRuleTagName().toLowerCase()), YamlEngine.marshal(swapToYamlConfiguration(data))));
+        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlTransactionRuleConfiguration swapToYamlConfiguration(final TransactionRuleConfiguration data) {
@@ -50,15 +50,19 @@ public final class NewYamlTransactionRuleConfigurationSwapper implements NewYaml
     }
     
     @Override
-    public TransactionRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+    public Optional<TransactionRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
-            Optional<String> version = GlobalRuleNodeConverter.getVersion(getRuleTagName().toLowerCase(), each.getKey());
+            Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
             if (!version.isPresent()) {
                 continue;
             }
-            return YamlEngine.unmarshal(each.getValue(), TransactionRuleConfiguration.class);
+            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTransactionRuleConfiguration.class)));
         }
-        return new TransactionRuleConfiguration("", "", new Properties());
+        return Optional.empty();
+    }
+    
+    private TransactionRuleConfiguration swapToObject(final YamlTransactionRuleConfiguration yamlConfig) {
+        return new TransactionRuleConfiguration(yamlConfig.getDefaultType(), yamlConfig.getProviderType(), null == yamlConfig.getProps() ? new Properties() : yamlConfig.getProps());
     }
     
     @Override

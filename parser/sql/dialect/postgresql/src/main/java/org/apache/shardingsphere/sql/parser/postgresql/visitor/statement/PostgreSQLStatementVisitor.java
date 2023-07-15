@@ -45,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Da
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExecuteStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExprListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExtractArgContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ForLockingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FromListContext;
@@ -132,6 +133,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExtractArgExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
@@ -450,8 +452,16 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getText(), getOriginalText(ctx));
         Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
+        if ("EXTRACT".equalsIgnoreCase(ctx.getChild(0).getText())) {
+            result.getParameters().add((ExpressionSegment) visit(getTargetRuleContextFromParseTree(ctx, ExtractArgContext.class).iterator().next()));
+        }
         result.getParameters().addAll(expressionSegments);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitExtractArg(final ExtractArgContext ctx) {
+        return new ExtractArgExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getText());
     }
     
     private <T extends ParseTree> Collection<T> getTargetRuleContextFromParseTree(final ParseTree parseTree, final Class<? extends T> clazz) {
@@ -687,7 +697,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.returningClause()) {
             result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -848,7 +858,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -866,7 +876,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -879,7 +889,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
         PostgreSQLSelectStatement result = (PostgreSQLSelectStatement) visit(ctx.selectNoParens());
-        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -994,8 +1004,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     }
     
     private Collection<ExpressionSegment> getWindowSpecification(final WindowSpecificationContext ctx) {
-        Collection<ExpressionSegment> result = createInsertValuesSegments(ctx.partitionClause().exprList());
-        return result;
+        return createInsertValuesSegments(ctx.partitionClause().exprList());
     }
     
     @Override

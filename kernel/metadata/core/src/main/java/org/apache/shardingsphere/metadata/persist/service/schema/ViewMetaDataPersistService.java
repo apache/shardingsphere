@@ -20,6 +20,7 @@ package org.apache.shardingsphere.metadata.persist.service.schema;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlViewSwapper;
@@ -45,10 +46,22 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
                 YamlEngine.marshal(new YamlViewSwapper().swapToYamlConfiguration(value))));
     }
     
+    // TODO Remove this when metadata structure adjustment completed. #25485
+    @Override
+    public Collection<MetaDataVersion> persistSchemaMetaData(final String databaseName, final String schemaName, final Map<String, ShardingSphereView> schema) {
+        return Collections.emptyList();
+    }
+    
     @Override
     public Map<String, ShardingSphereView> load(final String databaseName, final String schemaName) {
         Collection<String> viewNames = repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataViewsPath(databaseName, schemaName));
         return viewNames.isEmpty() ? Collections.emptyMap() : getViewMetaDataByViewNames(databaseName, schemaName, viewNames);
+    }
+    
+    // TODO Remove this when metadata structure adjustment completed. #25485
+    @Override
+    public Map<String, ShardingSphereView> load(final String databaseName, final String schemaName, final String tableName) {
+        return Collections.emptyMap();
     }
     
     @Override

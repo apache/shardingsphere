@@ -82,7 +82,13 @@ public final class StandardJdbcUrlParser {
         return Integer.parseInt(port);
     }
     
-    private Properties parseQueryProperties(final String query) {
+    /**
+     * Parse query properties.
+     *
+     * @param query query parameter
+     * @return query properties
+     */
+    public Properties parseQueryProperties(final String query) {
         if (Strings.isNullOrEmpty(query)) {
             return new Properties();
         }

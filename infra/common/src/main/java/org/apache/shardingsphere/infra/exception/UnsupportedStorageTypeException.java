@@ -26,6 +26,10 @@ public final class UnsupportedStorageTypeException extends ConnectionSQLExceptio
     
     private static final long serialVersionUID = 8981789100727786183L;
     
+    public UnsupportedStorageTypeException(final String dataSourceName) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 40, "Unsupported storage type of `%s`.", dataSourceName);
+    }
+    
     public UnsupportedStorageTypeException(final String databaseName, final String dataSourceName) {
         super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 40, "Unsupported storage type of `%s.%s`.", databaseName, dataSourceName);
     }

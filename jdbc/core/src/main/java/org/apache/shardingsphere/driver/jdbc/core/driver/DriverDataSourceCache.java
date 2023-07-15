@@ -34,21 +34,22 @@ public final class DriverDataSourceCache {
     
     /**
      * Get data source.
-     * 
+     *
      * @param url URL
+     * @param urlPrefix url prefix
      * @return got data source
      */
-    public DataSource get(final String url) {
+    public DataSource get(final String url, final String urlPrefix) {
         if (dataSourceMap.containsKey(url)) {
             return dataSourceMap.get(url);
         }
-        return dataSourceMap.computeIfAbsent(url, this::createDataSource);
+        return dataSourceMap.computeIfAbsent(url, driverUrl -> createDataSource(driverUrl, urlPrefix));
     }
     
     @SuppressWarnings("unchecked")
-    private <T extends Throwable> DataSource createDataSource(final String url) throws T {
+    private <T extends Throwable> DataSource createDataSource(final String url, final String urlPrefix) throws T {
         try {
-            return YamlShardingSphereDataSourceFactory.createDataSource(ShardingSphereDriverURLManager.getContent(url));
+            return YamlShardingSphereDataSourceFactory.createDataSource(ShardingSphereDriverURLManager.getContent(url, urlPrefix));
         } catch (final IOException ex) {
             throw (T) new SQLException(ex);
         } catch (final SQLException ex) {

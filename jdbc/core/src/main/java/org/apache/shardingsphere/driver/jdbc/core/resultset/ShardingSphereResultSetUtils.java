@@ -40,12 +40,14 @@ public final class ShardingSphereResultSetUtils {
      * Create column label and index map.
      *
      * @param sqlStatementContext SQL statement context
+     * @param selectContainsEnhancedTable select contains enhanced table
      * @param resultSetMetaData meta data of result set
      * @return column label and index map
      * @throws SQLException SQL exception
      */
-    public static Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
-        if (hasSelectExpandProjections(sqlStatementContext)) {
+    public static Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext sqlStatementContext, final boolean selectContainsEnhancedTable,
+                                                                    final ResultSetMetaData resultSetMetaData) throws SQLException {
+        if (selectContainsEnhancedTable && hasSelectExpandProjections(sqlStatementContext)) {
             return createColumnLabelAndIndexMapWithExpandProjections((SelectStatementContext) sqlStatementContext);
         }
         Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount(), 1);

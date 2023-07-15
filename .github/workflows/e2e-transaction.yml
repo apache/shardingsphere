@@ -67,7 +67,7 @@ jobs:
     env:
       postgresql_version: postgres:12-alpine
       opengauss_version: enmotech/opengauss:2.1.0
-      mysql_version: 5.7
+      mysql_version: mysql:5.7
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3

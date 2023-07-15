@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -77,7 +78,8 @@ class DatabaseConnectorFactoryTest {
     
     private ContextManager mockContextManager(final ShardingSphereDatabase database) {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(Collections.singletonMap("foo_db", database), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(Collections.singletonMap("foo_db", database), mock(ShardingSphereResourceMetaData.class),
+                        mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;

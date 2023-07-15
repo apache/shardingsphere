@@ -26,12 +26,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExplicitTableExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExtractArgExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -45,6 +48,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.generic.DataTypeAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertValuesClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
@@ -53,11 +58,14 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedCaseWhenExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedCollateExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExistsSubquery;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExplicitTableExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExtractArgExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedInExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedListExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedNotExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedTypeCastExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedValuesExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedVariableSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
@@ -70,8 +78,10 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *  Expression assert.
@@ -372,6 +382,49 @@ public final class ExpressionAssert {
         assertThat(assertContext.getText("Actual variable is different with expected variable."), actual.getVariable(), is(expected.getVariable()));
     }
     
+    private static void assertValuesExpression(final SQLCaseAssertContext assertContext, final ValuesExpression actual, final ExpectedValuesExpression expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Values segment should not exist."));
+            return;
+        }
+        assertNotNull(actual, assertContext.getText("Values segment should exist."));
+        if (null == expected.getInsertValuesClause()) {
+            assertTrue(actual.getRowConstructorList().isEmpty(), "Values expression should not exist.");
+        } else {
+            assertFalse(actual.getRowConstructorList().isEmpty(), assertContext.getText("Values expression should exist."));
+            InsertValuesClauseAssert.assertIs(assertContext, actual.getRowConstructorList(), expected.getInsertValuesClause());
+        }
+    }
+    
+    private static void assertExplicitExpression(final SQLCaseAssertContext assertContext, final ExplicitTableExpression actual, final ExpectedExplicitTableExpression expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Table segment should not exist."));
+            return;
+        }
+        assertNotNull(actual, assertContext.getText("Table segment should exist."));
+        if (null == expected.getName()) {
+            assertNull(actual.getTableNameSegment(), assertContext.getText("Table segment should not exist."));
+        } else {
+            assertNotNull(actual.getTableNameSegment(), assertContext.getText("Table segment should exist."));
+            IdentifierValueAssert.assertIs(assertContext, actual.getTableNameSegment().getIdentifier(), expected, "table");
+        }
+    }
+    
+    /**
+     * Assert extract arg expression.
+     *
+     * @param assertContext assert context
+     * @param actual actual extract arg expression
+     * @param expected expected extract arg expression
+     */
+    private static void assertExtractArgExpression(final SQLCaseAssertContext assertContext, final ExtractArgExpression actual, final ExpectedExtractArgExpression expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Extract arg expression should not exist."));
+            return;
+        }
+        assertThat(assertContext.getText("Extract arg expression assertion error: "), actual.getText(), is(expected.getText()));
+    }
+    
     /**
      * Assert expression by actual expression segment class type.
      *
@@ -425,6 +478,12 @@ public final class ExpressionAssert {
             assertTypeCastExpression(assertContext, (TypeCastExpression) actual, expected.getTypeCastExpression());
         } else if (actual instanceof VariableSegment) {
             assertVariableSegment(assertContext, (VariableSegment) actual, expected.getVariableSegment());
+        } else if (actual instanceof ValuesExpression) {
+            assertValuesExpression(assertContext, (ValuesExpression) actual, expected.getValuesExpression());
+        } else if (actual instanceof ExplicitTableExpression) {
+            assertExplicitExpression(assertContext, (ExplicitTableExpression) actual, expected.getExplicitTableExpression());
+        } else if (actual instanceof ExtractArgExpression) {
+            assertExtractArgExpression(assertContext, (ExtractArgExpression) actual, expected.getExtractArgExpression());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
         }

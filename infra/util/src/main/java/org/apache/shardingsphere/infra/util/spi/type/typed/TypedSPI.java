@@ -39,8 +39,8 @@ public interface TypedSPI {
      * 
      * @return type
      */
-    default String getType() {
-        return "";
+    default Object getType() {
+        return null;
     }
     
     /**
@@ -48,7 +48,7 @@ public interface TypedSPI {
      * 
      * @return type aliases
      */
-    default Collection<String> getTypeAliases() {
+    default Collection<Object> getTypeAliases() {
         return Collections.emptyList();
     }
     

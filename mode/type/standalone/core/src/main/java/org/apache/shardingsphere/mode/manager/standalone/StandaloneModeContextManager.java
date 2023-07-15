@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
+import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -72,7 +73,9 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     @Override
     public void createSchema(final String databaseName, final String schemaName) {
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).putSchema(schemaName, schema);
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
+        database.putSchema(schemaName, schema);
+        refreshMetaDataHeldRule(database);
         contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().persist(databaseName, schemaName, schema);
     }
     
@@ -81,6 +84,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(alterSchemaPOJO.getDatabaseName());
         putSchemaMetaData(database, alterSchemaPOJO.getSchemaName(), alterSchemaPOJO.getRenameSchemaName(), alterSchemaPOJO.getLogicDataSourceName());
         removeSchemaMetaData(database, alterSchemaPOJO.getSchemaName());
+        refreshMetaDataHeldRule(database);
         DatabaseMetaDataBasedPersistService databaseMetaDataService = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService();
         databaseMetaDataService.persist(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getRenameSchemaName(), database.getSchema(alterSchemaPOJO.getRenameSchemaName()));
         databaseMetaDataService.getViewMetaDataPersistService().persist(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getRenameSchemaName(),
@@ -175,6 +179,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
             tobeRemovedSchemas.add(each.toLowerCase());
         }
         removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), tobeRemovedSchemas, tobeRemovedTables);
+        refreshMetaDataHeldRule(database);
     }
     
     @Override
@@ -186,11 +191,16 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         Map<String, ShardingSphereView> views = alterSchemaMetaDataPOJO.getAlteredViews().stream().collect(Collectors.toMap(ShardingSphereView::getName, view -> view));
         addDataNode(database, alterSchemaMetaDataPOJO.getLogicDataSourceName(), schemaName, tables, views);
         removeDataNode(database, schemaName, alterSchemaMetaDataPOJO.getDroppedTables(), alterSchemaMetaDataPOJO.getDroppedViews());
+        refreshMetaDataHeldRule(database);
         DatabaseMetaDataBasedPersistService databaseMetaDataService = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService();
         databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, schemaName, tables);
         databaseMetaDataService.getViewMetaDataPersistService().persist(databaseName, schemaName, views);
         alterSchemaMetaDataPOJO.getDroppedTables().forEach(each -> databaseMetaDataService.getTableMetaDataPersistService().delete(databaseName, schemaName, each));
         alterSchemaMetaDataPOJO.getDroppedViews().forEach(each -> databaseMetaDataService.getViewMetaDataPersistService().delete(databaseName, schemaName, each));
+    }
+    
+    private void refreshMetaDataHeldRule(final ShardingSphereDatabase database) {
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(MetaDataHeldRule.class).forEach(each -> each.alterDatabase(database));
     }
     
     @Override
@@ -203,7 +213,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchemas()
                 .forEach((schemaName, schema) -> contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
                         .persist(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().append(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(),
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().append(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(),
                 toBeRegisterStorageUnitProps);
         clearServiceCache();
     }
@@ -215,7 +225,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.createChangedDatabases(databaseName, true, switchingResource, null));
         contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class)
                 .forEach(each -> each.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().append(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(),
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().append(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(),
                 toBeUpdatedStorageUnitProps);
         switchingResource.closeStaleDataSources();
         clearServiceCache();
@@ -223,7 +233,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) throws SQLException {
-        Map<String, DataSourceProperties> dataSourcePropsMap = contextManager.getMetaDataContexts().getPersistService().getDataSourceService()
+        Map<String, DataSourceProperties> dataSourcePropsMap = contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService()
                 .load(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName());
         Map<String, DataSourceProperties> toBeDeletedDataSourcePropsMap = getToBeDeletedDataSourcePropsMap(dataSourcePropsMap, toBeDroppedStorageUnitNames);
         SwitchingResource switchingResource =
@@ -235,18 +245,18 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         contextManager.deletedSchemaNames(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         contextManager.renewMetaDataContexts(reloadMetaDataContexts);
         Map<String, DataSourceProperties> toBeReversedDataSourcePropsMap = getToBeReversedDataSourcePropsMap(dataSourcePropsMap, toBeDroppedStorageUnitNames);
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().persist(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(),
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().persist(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(),
                 toBeReversedDataSourcePropsMap);
         switchingResource.closeStaleDataSources();
         clearServiceCache();
     }
     
     private Map<String, DataSourceProperties> getToBeDeletedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
-        return dataSourcePropsMap.entrySet().stream().filter(entry -> toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return dataSourcePropsMap.entrySet().stream().filter(entry -> toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
     private Map<String, DataSourceProperties> getToBeReversedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
-        return dataSourcePropsMap.entrySet().stream().filter(entry -> !toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return dataSourcePropsMap.entrySet().stream().filter(entry -> !toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
     @Override

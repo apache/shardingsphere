@@ -32,6 +32,30 @@ import java.util.stream.Collectors;
 public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends RuleConfiguration> extends RuleDefinitionUpdater<T, R> {
     
     /**
+     * TODO Remove temporary default implementation
+     * Build to be dropped rule configuration.
+     *
+     * @param currentRuleConfig current rule configuration to be updated
+     * @param sqlStatement SQL statement
+     * @return to be dropped rule configuration
+     */
+    default R buildToBeDroppedRuleConfiguration(R currentRuleConfig, T sqlStatement) {
+        return null;
+    }
+    
+    /**
+     * Build to be altered rule configuration.
+     *
+     * @param currentRuleConfig current rule configuration to be updated
+     * @param sqlStatement SQL statement
+     * @return to be altered rule configuration
+     */
+    default R buildToBeAlteredRuleConfiguration(R currentRuleConfig, T sqlStatement) {
+        return null;
+    }
+    
+    /**
+     * TODO remove this method after remove Compatible_Cluster mode
      * Update current rule configuration.
      *
      * @param sqlStatement SQL statement

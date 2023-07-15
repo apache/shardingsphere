@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+
+<sql-parser-test-cases>
+    <select sql-case-id="values_with_regexp_replace">
+        <projections start-index="7" stop-index="41">
+            <expression-projection text="REGEXP_REPLACE(e, 'pattern', 'xyz')" start-index="7" stop-index="41">
+                <expr>
+                    <function start-index="7" stop-index="41" text="REGEXP_REPLACE(e, 'pattern', 'xyz')" function-name="REGEXP_REPLACE">
+                        <parameter>
+                            <column name="e" start-index="22" stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="25" stop-index="33" value="pattern" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="36" stop-index="40" value="xyz" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <subquery-table alias="v">
+                <subquery>
+                    <select>
+                        <projections start-index="48" stop-index="105">
+                            <expression-projection text="VALUES ROW('Find pattern'), ROW(NULL), ROW('Find pattern')" start-index="48" stop-index="105">
+                                <expr>
+                                    <values-expression>
+                                        <values>
+                                            <value>
+                                                <assignment-value>
+                                                    <literal-expression value="Find pattern" start-index="59" stop-index="72" />
+                                                </assignment-value>
+                                            </value>
+                                            <value>
+                                                <assignment-value>
+                                                    <literal-expression value="null" start-index="80" stop-index="83" />
+                                                </assignment-value>
+                                            </value>
+                                            <value>
+                                                <assignment-value>
+                                                    <literal-expression value="Find pattern" start-index="91" stop-index="104" />
+                                                </assignment-value>
+                                            </value>
+                                        </values>
+                                    </values-expression>
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="values_with_row">
+        <projections start-index="0" stop-index="14">
+            <expression-projection text="values ROW(1,2)" start-index="0" stop-index="14">
+                <expr>
+                    <values-expression>
+                        <values>
+                            <value>
+                                <assignment-value>
+                                    <literal-expression value="1" start-index="11" stop-index="11" />
+                                </assignment-value>
+                                <assignment-value>
+                                    <literal-expression value="2" start-index="13" stop-index="13" />
+                                </assignment-value>
+                            </value>
+                        </values>
+                    </values-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="values_with_order_limit">
+        <projections start-index="0" stop-index="41">
+            <expression-projection text="VALUES ROW(1,-2,3), ROW(5,7,9), ROW(4,6,8)" start-index="0" stop-index="41">
+                <expr>
+                    <values-expression>
+                        <values>
+                            <value>
+                                <assignment-value>
+                                    <literal-expression value="1" start-index="11" stop-index="11" />
+                                </assignment-value>
+                                <assignment-value>
+                                    <literal-expression value="-2" start-index="13" stop-index="14" />
+                                </assignment-value>
+                                <assignment-value>
+                                    <literal-expression value="3" start-index="16" stop-index="16" />
+                                </assignment-value>
+                            </value>
+                            <value>
+                                <assignment-value>
+                                    <literal-expression value="5" start-index="24" stop-index="24" />
+                                </assignment-value>
+                                <assignment-value>
+                                    <literal-expression value="7" start-index="26" stop-index="26" />
+                                </assignment-value>
+                                <assignment-value>
+                                    <literal-expression value="9" start-index="28" stop-index="28" />
+                                </assignment-value>
+                            </value>
+                            <value>
+                                <assignment-value>
+                                    <literal-expression value="4" start-index="36" stop-index="36" />
+                                </assignment-value>
+                                <assignment-value>
+                                    <literal-expression value="6" start-index="38" stop-index="38" />
+                                </assignment-value>
+                                <assignment-value>
+                                    <literal-expression value="8" start-index="40" stop-index="40" />
+                                </assignment-value>
+                            </value>
+                        </values>
+                    </values-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <order-by>
+            <column-item name="column_1" order-direction="DESC" start-index="52" stop-index="59" />
+            <column-item name="column_0" order-direction="DESC" start-index="68" stop-index="75" />
+        </order-by>
+        <limit start-index="82" stop-index="89">
+            <row-count value="10" start-index="88" stop-index="89" />
+        </limit>
+    </select>
+
+    <select sql-case-id="values_with_select">
+        <projections start-index="0" stop-index="24">
+            <expression-projection text="values row((select 1), 2)" start-index="0" stop-index="24">
+                <expr>
+                    <values-expression>
+                        <values>
+                            <value>
+                                <assignment-value>
+                                    <subquery start-index="11" stop-index="20">
+                                        <select>
+                                            <projections start-index="19" stop-index="19">
+                                                <expression-projection text="1" start-index="19" stop-index="19">
+                                                    <literal-expression value="1" start-index="19" stop-index="19" />
+                                                </expression-projection>
+                                            </projections>
+                                        </select>
+                                    </subquery>
+                                </assignment-value>
+                                <assignment-value>
+                                    <literal-expression value="2" start-index="23" stop-index="23" />
+                                </assignment-value>
+                            </value>
+                        </values>
+                    </values-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+</sql-parser-test-cases>

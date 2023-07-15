@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 @SPIDescription("Fixture description.")
 public final class DataConsistencyCalculateAlgorithmFixture implements DataConsistencyCalculateAlgorithm {
@@ -46,8 +45,8 @@ public final class DataConsistencyCalculateAlgorithmFixture implements DataConsi
     }
     
     @Override
-    public Collection<String> getSupportedDatabaseTypes() {
-        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().map(DatabaseType::getType).collect(Collectors.toList());
+    public Collection<DatabaseType> getSupportedDatabaseTypes() {
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
     }
     
     @Override

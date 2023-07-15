@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
-import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
@@ -32,7 +33,7 @@ public final class SQLHintShadowAlgorithm implements HintShadowAlgorithm<String>
     @Override
     public boolean isShadow(final Collection<String> shadowTableNames, final PreciseHintShadowValue<String> noteShadowValue) {
         if (ShadowOperationType.HINT_MATCH == noteShadowValue.getShadowOperationType() || shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
-            return new SQLHintExtractor(noteShadowValue.getValue()).isShadow();
+            return SQLHintUtils.extractHint(noteShadowValue.getValue()).map(HintValueContext::isShadow).orElse(false);
         }
         return false;
     }

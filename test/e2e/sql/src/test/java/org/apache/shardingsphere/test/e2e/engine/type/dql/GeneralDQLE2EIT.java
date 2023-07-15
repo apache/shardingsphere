@@ -50,15 +50,13 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            init(testParam, containerComposer);
-            if (isUseXMLAsExpectedDataset()) {
-                assertExecuteQueryWithXmlExpected(testParam, containerComposer);
-            } else {
-                assertExecuteQueryWithExpectedDataSource(containerComposer);
-            }
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        init(testParam, containerComposer);
+        if (isUseXMLAsExpectedDataset()) {
+            assertExecuteQueryWithXmlExpected(testParam, containerComposer);
+        } else {
+            assertExecuteQueryWithExpectedDataSource(containerComposer);
         }
-        
     }
     
     private void assertExecuteQueryWithXmlExpected(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException {
@@ -122,13 +120,12 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            init(testParam, containerComposer);
-            if (isUseXMLAsExpectedDataset()) {
-                assertExecuteWithXmlExpected(testParam, containerComposer);
-            } else {
-                assertExecuteWithExpectedDataSource(containerComposer);
-            }
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        init(testParam, containerComposer);
+        if (isUseXMLAsExpectedDataset()) {
+            assertExecuteWithXmlExpected(testParam, containerComposer);
+        } else {
+            assertExecuteWithExpectedDataSource(containerComposer);
         }
     }
     

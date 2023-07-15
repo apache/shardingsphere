@@ -28,5 +28,6 @@
     <row values="public | t_order_federate_sharding | table | mock user" />
     <row values="public | t_order_item | table | mock user" />
     <row values="public | t_order_item_federate_sharding | table | mock user" />
+    <row values="public | t_product | table | mock user" />
     <row values="public | t_single_table | table | mock user" />
 </dataset>

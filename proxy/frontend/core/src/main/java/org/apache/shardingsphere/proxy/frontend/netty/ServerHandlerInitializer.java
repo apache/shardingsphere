@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
 import org.apache.shardingsphere.db.protocol.netty.ProxyFlowControlHandler;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**
@@ -38,7 +38,7 @@ public final class ServerHandlerInitializer extends ChannelInitializer<Channel> 
     
     @Override
     protected void initChannel(final Channel socketChannel) {
-        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = TypedSPILoader.getService(DatabaseProtocolFrontendEngine.class, databaseType.getType());
+        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseTypedSPILoader.getService(DatabaseProtocolFrontendEngine.class, databaseType);
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new ChannelAttrInitializer());
         pipeline.addLast(new PacketCodec(databaseProtocolFrontendEngine.getCodecEngine()));

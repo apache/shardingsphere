@@ -25,28 +25,57 @@
     
     <do sql-case-id="do_sleep">
         <parameter>
-            <literal-expression value="SLEEP(1)" start-index="3" stop-index="10" />
+            <function function-name="SLEEP" start-index="3" stop-index="10" text="SLEEP(1)">
+                <parameter>
+                    <literal-expression value="1" start-index="9" stop-index="9" />
+                </parameter>
+            </function>
         </parameter>
     </do>
     
     <do sql-case-id="do_multiple_sleep">
         <parameter>
-            <literal-expression value="SLEEP(1)" start-index="3" stop-index="10" />
+            <function function-name="SLEEP" start-index="3" stop-index="10" text="SLEEP(1)">
+                <parameter>
+                    <literal-expression value="1" start-index="9" stop-index="9" />
+                </parameter>
+            </function>
         </parameter>
         <parameter>
-            <literal-expression value="SLEEP(2)" start-index="13" stop-index="20" />
+            <function function-name="SLEEP" start-index="13" stop-index="20" text="SLEEP(2)">
+                <parameter>
+                    <literal-expression value="2" start-index="19" stop-index="19" />
+                </parameter>
+            </function>
         </parameter>
     </do>
     
     <do sql-case-id="do_with_function_1">
         <parameter>
+            <function function-name="FROM_BASE64" start-index="3" stop-index="54" text="FROM_BASE64(CAST((MID(UUID(),20,64)) AS BINARY(55)))">
+                <parameter>
+                    <function function-name="CAST" start-index="15" stop-index="53" text="CAST((MID(UUID(),20,64)) AS BINARY(55))">
+                        <parameter>
+                            <data-type start-index="43" stop-index="52" value="BINARY"  />
+                        </parameter>
+                    </function>
+                </parameter>
+            </function>
             <literal-expression value="FROM_BASE64(CAST((MID(UUID(),20,64)) AS BINARY(55)))" start-index="3" stop-index="54" />
         </parameter>
     </do>
     
     <do sql-case-id="do_with_function_2">
         <parameter>
-            <literal-expression value="FROM_BASE64(CAST(RIGHT(11,1)AS BINARY(24)))" start-index="3" stop-index="45" />
+            <function function-name="FROM_BASE64" start-index="3" stop-index="45" text="FROM_BASE64(CAST(RIGHT(11,1)AS BINARY(24)))">
+                <parameter>
+                    <function function-name="CAST" start-index="15" stop-index="44" text="CAST(RIGHT(11,1)AS BINARY(24))">
+                        <parameter>
+                            <data-type start-index="34" stop-index="43" value="BINARY"  />
+                        </parameter>
+                    </function>
+                </parameter>
+            </function>
         </parameter>
     </do>
     
@@ -55,10 +84,45 @@
             <literal-expression value="COUNT(DISTINCT ROUND(CAST(SLEEP(0) AS DECIMAL), NULL))" start-index="3" stop-index="56" />
         </parameter>
     </do>
-    
+
+    <do sql-case-id="do_with_function_4">
+        <parameter>
+            <function function-name="ST_AsText" start-index="3" stop-index="28" text="ST_AsText(@centroid_point)">
+                <parameter>
+                    <variable-segment start-index="13" stop-index="27" variable="centroid_point" />
+                </parameter>
+            </function>
+        </parameter>
+    </do>
+
+    <do sql-case-id="do_with_function_5">
+        <parameter>
+            <function function-name="SLEEP" start-index="3" stop-index="10" text="SLEEP(5)">
+                <parameter>
+                    <literal-expression value="5" start-index="9" stop-index="9" />
+                </parameter>
+            </function>
+        </parameter>
+        <parameter>
+            <function function-name="SLEEP" start-index="18" stop-index="25" text="SLEEP(5)">
+                <parameter>
+                    <literal-expression value="5" start-index="24" stop-index="24" />
+                </parameter>
+            </function>
+        </parameter>
+    </do>
+
     <do sql-case-id="do_with_crc32_function">
         <parameter>
-            <literal-expression value="CRC32(CHAR(1.134475E+308))" start-index="3" stop-index="28" />
+            <function function-name="CRC32" start-index="3" stop-index="28" text="CRC32(CHAR(1.134475E+308))">
+                <parameter>
+                    <function function-name="CHAR" start-index="9" stop-index="27" text="CHAR(1.134475E+308)">
+                        <parameter>
+                            <literal-expression value="1.134475E+308" start-index="14" stop-index="26" />
+                        </parameter>
+                    </function>
+                </parameter>
+            </function>
         </parameter>
     </do>
 </sql-parser-test-cases>

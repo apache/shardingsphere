@@ -16,6 +16,9 @@
 #
 
 rules:
+- !SINGLE
+  tables:
+    - "*.*"
 - !SHARDING
   tables:
     t_order:
@@ -62,9 +65,6 @@ rules:
           shardingAlgorithmName: t_product_hint_inline
   bindingTables:
     - ref_0:t_order,t_order_item,t_order_details
-  broadcastTables:
-    - t_broadcast_table
-    - t_broadcast_table_for_ddl
   
   shardingAlgorithms:
     it_standard_fixture:
@@ -91,8 +91,20 @@ rules:
     auditor_constant:
       type: IT.AUDITOR.FIXTURE
 
+- !BROADCAST
+  tables:
+    - t_broadcast_table
+    - t_broadcast_table_for_ddl
+
 sqlFederation:
   sqlFederationEnabled: true
   executionPlanCache:
     initialCapacity: 2000
     maximumSize: 65535
+    
+sqlParser:
+  sqlCommentParseEnabled: true
+
+props:
+  sql-show: true
+

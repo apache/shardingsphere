@@ -20,15 +20,16 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
-import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
+import org.apache.shardingsphere.data.pipeline.common.listener.PipelineElasticJobListener;
+import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
+import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
-import org.apache.shardingsphere.data.pipeline.core.listener.PipelineElasticJobListener;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,7 +65,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected AbstractPipelineJob(final String jobId) {
         this.jobId = jobId;
-        jobAPI = TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName());
+        jobAPI = TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getType());
     }
     
     /**
@@ -121,10 +121,6 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         return new ArrayList<>(tasksRunnerMap.keySet());
     }
     
-    protected Collection<PipelineTasksRunner> getTasksRunners() {
-        return Collections.unmodifiableCollection(tasksRunnerMap.values());
-    }
-    
     protected boolean addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
         if (null != tasksRunnerMap.putIfAbsent(shardingItem, tasksRunner)) {
             log.warn("shardingItem {} tasks runner exists, ignore", shardingItem);
@@ -153,7 +149,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             each.stop();
         }
         Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
-        pipelineJobListener.ifPresent(jobListener -> awaitJobStopped((PipelineElasticJobListener) jobListener, jobId, TimeUnit.SECONDS.toMillis(2)));
+        pipelineJobListener.ifPresent(optional -> awaitJobStopped((PipelineElasticJobListener) optional, jobId, TimeUnit.SECONDS.toMillis(2)));
         if (null != jobBootstrap.get()) {
             jobBootstrap.get().shutdown();
         }
@@ -178,6 +174,9 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private void innerClean() {
         PipelineJobProgressPersistService.remove(jobId);
+        for (PipelineTasksRunner each : tasksRunnerMap.values()) {
+            QuietlyCloser.close(each.getJobItemContext().getJobProcessContext());
+        }
     }
     
     protected abstract void doClean();

@@ -91,8 +91,15 @@ class DatabaseMetaDataNodeTest {
     }
     
     @Test
-    void assertGetVersionByDatabasePath() {
-        Optional<String> actualVersion = DatabaseMetaDataNode.getVersionByDataSourcesPath("/metadata/logic_db/versions/0/data_sources");
+    void assertGetVersionByDataSourceUnitsPath() {
+        Optional<String> actualVersion = DatabaseMetaDataNode.getVersionByDataSourceUnitsPath("/metadata/logic_db/versions/0/data_sources/units");
+        assertTrue(actualVersion.isPresent());
+        assertThat(actualVersion.get(), is("0"));
+    }
+    
+    @Test
+    void assertGetVersionByDataSourceNodesPath() {
+        Optional<String> actualVersion = DatabaseMetaDataNode.getVersionByDataSourceNodesPath("/metadata/logic_db/versions/0/data_sources/nodes");
         assertTrue(actualVersion.isPresent());
         assertThat(actualVersion.get(), is("0"));
     }
@@ -130,7 +137,12 @@ class DatabaseMetaDataNodeTest {
     }
     
     @Test
-    void assertGetMetaDataDataSourcePath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataDataSourcePath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/data_sources"));
+    void assertGetMetaDataDataSourceNodesPath() {
+        assertThat(DatabaseMetaDataNode.getMetaDataDataSourceNodesPath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/data_sources/nodes"));
+    }
+    
+    @Test
+    void assertGetMetaDataDataSourceUnitsPath() {
+        assertThat(DatabaseMetaDataNode.getMetaDataDataSourceUnitsPath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/data_sources/units"));
     }
 }

@@ -20,11 +20,11 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.contex
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtils;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineLazyInitializer;
+import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfigurationUtils;
+import org.apache.shardingsphere.data.pipeline.common.context.PipelineProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.common.util.PipelineLazyInitializer;
 
 /**
  * Consistency check process context.

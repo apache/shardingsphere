@@ -530,7 +530,7 @@ I will process to publish the release and send ANNOUNCE.
 
 ### 1. Move source packages, binary packages and KEYS from the `dev` directory to `release` directory
 
-It needs PMC help to do it.
+> Note: This step requires the help of PMC.
 
 Move release candidates to release area:
 ```shell
@@ -587,6 +587,8 @@ Click `Draft a new release` in [GitHub Releases](https://github.com/apache/shard
 Edit release version and release notes, select `Set as the latest release`, click `Publish release`.
 
 ### 5. Remove previous release from Release Area
+
+> Note: This step requires the help of PMC.
 
 Keep the latest version in [**Release Area**](https://dist.apache.org/repos/dist/release/shardingsphere/) only.
 

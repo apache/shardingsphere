@@ -31,11 +31,9 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
@@ -55,7 +53,6 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
-import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.StorageUnitNotExistedException;
@@ -74,10 +71,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sqlfederation.decider.SQLFederationDecideEngine;
-import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
-import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.sql.Connection;
@@ -89,9 +83,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Database connector.
@@ -100,9 +93,9 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private final ProxySQLExecutor proxySQLExecutor;
     
-    private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
+    private final Collection<Statement> cachedStatements = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
-    private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
+    private final Collection<ResultSet> cachedResultSets = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
     private final String driverType;
     
@@ -113,8 +106,6 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     private final QueryContext queryContext;
     
     private final ProxyDatabaseConnectionManager databaseConnectionManager;
-    
-    private SQLFederationExecutor federationExecutor;
     
     private List<QueryHeader> queryHeaders;
     
@@ -131,7 +122,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         if (sqlStatementContext instanceof CursorAvailable) {
             prepareCursorStatementContext((CursorAvailable) sqlStatementContext, databaseConnectionManager.getConnectionSession());
         }
-        proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this);
+        proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this, queryContext);
     }
     
     private void failedIfBackendNotReady(final ConnectionSession connectionSession, final SQLStatementContext sqlStatementContext) {
@@ -170,9 +161,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     @Override
     public ResponseHeader execute() throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        if (new SQLFederationDecideEngine(database.getRuleMetaData().getRules())
-                .decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
-            prepareFederationExecutor();
+        if (proxySQLExecutor.getSqlFederationEngine().decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
             ResultSet resultSet = doExecuteFederation(queryContext, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);
         }
@@ -218,8 +207,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
             // CHECKSTYLE:ON
             transactionManager.rollback();
             String databaseName = databaseConnectionManager.getConnectionSession().getDatabaseName();
-            throw SQLExceptionTransformEngine.toSQLException(ex, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()
-                    .getDatabase(databaseName).getProtocolType().getType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getProtocolType());
         }
         return result;
     }
@@ -247,27 +235,15 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         return executeResultSample instanceof QueryResult ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample) : processExecuteUpdate(executionContext, result);
     }
     
-    private void prepareFederationExecutor() {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        String databaseName = databaseConnectionManager.getConnectionSession().getDatabaseName();
-        DatabaseType databaseType = queryContext.getSqlStatementContext().getDatabaseType();
-        String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
-        SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        federationExecutor = sqlFederationRule.getSqlFederationExecutor();
-        sqlFederationRule.init(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
-                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), databaseConnectionManager.getConnectionSession().getConnectionContext()));
-    }
-    
     private ResultSet doExecuteFederation(final QueryContext queryContext, final MetaDataContexts metaDataContexts) {
         boolean isReturnGeneratedKeys = queryContext.getSqlStatementContext().getSqlStatement() instanceof MySQLInsertStatement;
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName());
         DatabaseType protocolType = database.getProtocolType();
-        Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
-        ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(driverType, protocolType, storageTypes,
+        ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(driverType, protocolType, database.getResourceMetaData(),
                 queryContext.getSqlStatementContext().getSqlStatement(), this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
         SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, queryContext, metaDataContexts.getMetaData());
-        return federationExecutor.executeQuery(prepareEngine, callback, context);
+        return proxySQLExecutor.getSqlFederationEngine().executeQuery(prepareEngine, callback, context);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaData) {
@@ -418,7 +394,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         Collection<SQLException> result = new LinkedList<>();
         result.addAll(closeResultSets());
         result.addAll(closeStatements());
-        closeFederationExecutor().ifPresent(result::add);
+        closeSQLFederationEngine().ifPresent(result::add);
         if (result.isEmpty()) {
             return;
         }
@@ -454,10 +430,10 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         return result;
     }
     
-    private Optional<SQLException> closeFederationExecutor() {
-        if (null != federationExecutor) {
+    private Optional<SQLException> closeSQLFederationEngine() {
+        if (null != proxySQLExecutor.getSqlFederationEngine()) {
             try {
-                federationExecutor.close();
+                proxySQLExecutor.getSqlFederationEngine().close();
             } catch (final SQLException ex) {
                 return Optional.of(ex);
             }

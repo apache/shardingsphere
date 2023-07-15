@@ -43,7 +43,7 @@ public final class AllPermittedPrivilegesProvider implements AuthorityProvider {
     }
     
     @Override
-    public Collection<String> getTypeAliases() {
+    public Collection<Object> getTypeAliases() {
         return Collections.singleton("ALL_PRIVILEGES_PERMITTED");
     }
 }
