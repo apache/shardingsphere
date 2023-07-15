@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -46,17 +44,9 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
      * @param dataRecord data record
      * @return on duplicate clause of insert SQL
      */
-    default Optional<String> buildInsertSQLOnDuplicateClause(String schemaName, DataRecord dataRecord) {
+    default Optional<String> buildInsertOnDuplicateClause(String schemaName, DataRecord dataRecord) {
         return Optional.empty();
     }
-    
-    /**
-     * Extract updated columns.
-     *
-     * @param dataRecord data record
-     * @return filtered columns
-     */
-    List<Column> extractUpdatedColumns(DataRecord dataRecord);
     
     /**
      * Build check empty SQL.

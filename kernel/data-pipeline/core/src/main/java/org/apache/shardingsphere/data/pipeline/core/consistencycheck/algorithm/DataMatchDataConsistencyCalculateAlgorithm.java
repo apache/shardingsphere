@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLBuilderEngine;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.CommonPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.common.util.JDBCStreamQueryUtils;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
@@ -164,9 +164,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             throw new UnsupportedOperationException("Data consistency of DATA_MATCH type not support table without unique key and primary key now");
         }
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType());
-        PipelineSQLBuilderEngine sqlBuilderEngine = new PipelineSQLBuilderEngine(databaseType);
+        CommonPipelineSQLBuilder pipelineSQLBuilder = new CommonPipelineSQLBuilder(databaseType);
         boolean firstQuery = null == param.getTableCheckPosition();
-        return sqlBuilderEngine.buildQueryAllOrderingSQL(param.getSchemaName(), param.getLogicTableName(), param.getColumnNames(), param.getUniqueKey().getName(), firstQuery);
+        return pipelineSQLBuilder.buildQueryAllOrderingSQL(param.getSchemaName(), param.getLogicTableName(), param.getColumnNames(), param.getUniqueKey().getName(), firstQuery);
     }
     
     @Override

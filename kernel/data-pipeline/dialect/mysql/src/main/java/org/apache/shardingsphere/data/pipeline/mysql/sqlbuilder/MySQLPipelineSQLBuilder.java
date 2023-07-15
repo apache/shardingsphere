@@ -19,12 +19,9 @@ package org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,7 +30,7 @@ import java.util.Optional;
 public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
-    public Optional<String> buildInsertSQLOnDuplicateClause(final String schemaName, final DataRecord dataRecord) {
+    public Optional<String> buildInsertOnDuplicateClause(final String schemaName, final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder("ON DUPLICATE KEY UPDATE ");
         PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
@@ -52,13 +49,14 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
     }
     
     @Override
-    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        return new ArrayList<>(RecordUtils.extractUpdatedColumns(dataRecord));
+    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName));
     }
     
     @Override
-    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName));
+    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
+        return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'",
+                new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName)));
     }
     
     @Override
@@ -66,12 +64,6 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
         PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
         return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM %s",
                 sqlSegmentBuilder.getEscapedIdentifier(column), sqlSegmentBuilder.getEscapedIdentifier(tableName)));
-    }
-    
-    @Override
-    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'",
-                new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName)));
     }
     
     @Override
