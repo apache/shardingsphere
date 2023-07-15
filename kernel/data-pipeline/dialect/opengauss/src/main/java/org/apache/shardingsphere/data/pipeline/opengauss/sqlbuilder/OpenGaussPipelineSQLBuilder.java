@@ -31,8 +31,7 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
     
     @Override
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
-        return Optional.of(String.format("CREATE SCHEMA %s", sqlSegmentBuilder.getEscapedIdentifier(schemaName)));
+        return Optional.of(String.format("CREATE SCHEMA %s", schemaName));
     }
     
     @Override
