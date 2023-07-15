@@ -24,13 +24,13 @@ import java.util.Optional;
 public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
-    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", tableName);
+    public String buildCheckEmptySQL(final String qualifiedTableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
     }
     
     @Override
-    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
-        return Optional.of(String.format("SELECT CRC32(%s) FROM %s", column, tableName));
+    public Optional<String> buildCRC32SQL(final String qualifiedTableName, final String columnName) {
+        return Optional.of(String.format("SELECT CRC32(%s) FROM %s", columnName, qualifiedTableName));
     }
     
     @Override

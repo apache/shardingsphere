@@ -50,32 +50,29 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     /**
      * Build check empty SQL.
      *
-     * @param schemaName schema name
-     * @param tableName table name
+     * @param qualifiedTableName qualified table name
      * @return check SQL
      */
-    String buildCheckEmptySQL(String schemaName, String tableName);
+    String buildCheckEmptySQL(String qualifiedTableName);
     
     /**
      * Build estimated count SQL.
      *
-     * @param schemaName schema name
-     * @param tableName table name
+     * @param qualifiedTableName qualified table name
      * @return estimated count SQL
      */
-    default Optional<String> buildEstimatedCountSQL(String schemaName, String tableName) {
+    default Optional<String> buildEstimatedCountSQL(String qualifiedTableName) {
         return Optional.empty();
     }
     
     /**
      * Build CRC32 SQL.
      *
-     * @param schemaName schema name
-     * @param tableName table Name
-     * @param column column
+     * @param qualifiedTableName qualified table name
+     * @param columnName column name
      * @return CRC32 SQL
      */
-    default Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
+    default Optional<String> buildCRC32SQL(String qualifiedTableName, final String columnName) {
         return Optional.empty();
     }
 }
