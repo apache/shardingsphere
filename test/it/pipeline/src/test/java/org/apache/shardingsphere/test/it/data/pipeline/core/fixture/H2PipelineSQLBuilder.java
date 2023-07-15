@@ -22,8 +22,8 @@ import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQL
 public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
-    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", tableName);
+    public String buildCheckEmptySQL(final String qualifiedTableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
     }
     
     @Override

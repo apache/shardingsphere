@@ -46,7 +46,7 @@ public final class CommonPipelineSQLBuilder {
      * @return create schema SQL
      */
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
-        return dialectSQLBuilder.buildCreateSchemaSQL(schemaName);
+        return dialectSQLBuilder.buildCreateSchemaSQL(sqlSegmentBuilder.getEscapedIdentifier(schemaName));
     }
     
     /**
@@ -79,7 +79,7 @@ public final class CommonPipelineSQLBuilder {
      * @return estimated count SQL
      */
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return dialectSQLBuilder.buildEstimatedCountSQL(schemaName, tableName);
+        return dialectSQLBuilder.buildEstimatedCountSQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
     
     /**
@@ -122,18 +122,18 @@ public final class CommonPipelineSQLBuilder {
      * @return check SQL
      */
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return dialectSQLBuilder.buildCheckEmptySQL(schemaName, tableName);
+        return dialectSQLBuilder.buildCheckEmptySQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
     
     /**
      * Build CRC32 SQL.
      *
      * @param schemaName schema name
-     * @param tableName table Name
-     * @param column column
+     * @param tableName table name
+     * @param columnName column name
      * @return CRC32 SQL
      */
-    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
-        return dialectSQLBuilder.buildCRC32SQL(schemaName, tableName, column);
+    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String columnName) {
+        return dialectSQLBuilder.buildCRC32SQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), sqlSegmentBuilder.getEscapedIdentifier(columnName));
     }
 }
