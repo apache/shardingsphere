@@ -3486,7 +3486,11 @@ dropPluggableDatabase
     : DROP PLUGGABLE DATABASE pdbName ((KEEP | INCLUDING) DATAFILES)?
     ;
 
- dropJava
+dropSequence
+    : DROP SEQUENCE (schemaName DOT_)? sequenceName
+    ;
+
+dropJava
      : DROP JAVA (SOURCE | CLASS | RESOURCE) objectName
      ;
 
@@ -3505,4 +3509,3 @@ dropMaterializedViewLog
 dropMaterializedZonemap
     : DROP MATERIALIZED ZONEMAP zonemapName
     ;
-

@@ -134,5 +134,6 @@ execute
     | dropMaterializedZonemap
     | alterResourceCost
     | alterRole
+    | dropSequence
     ) SEMI_?
     ;
