@@ -41,7 +41,7 @@ public final class MatchExpressionConverter implements SQLSegmentConverter<Match
         List<SqlNode> column = new LinkedList<>();
         column.add(new SqlIdentifier(segment.getColumnName().getIdentifier().getValue(), SqlParserPos.ZERO));
         SqlNode against = new ExpressionConverter().convert(segment.getExpr()).get();
-        String matchSearchModifier = matchSearchModifier(segment.getMatchSearchModifier());
+        String matchSearchModifier = matchSearchModifierExtract(segment.getMatchSearchModifier());
         SqlNode searchModifier = SqlLiteral.createCharString(matchSearchModifier, SqlParserPos.ZERO);
         int sqlNodeSize = column.size() + 2;
         SqlNode[] sqlNodes = new SqlNode[sqlNodeSize];
@@ -54,7 +54,7 @@ public final class MatchExpressionConverter implements SQLSegmentConverter<Match
         return Optional.of(new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO));
     }
     
-    private String matchSearchModifier(final String matchSearchModifier) {
+    private String matchSearchModifierExtract(final String matchSearchModifier) {
         if ("INNATURALLANGUAGEMODE".equalsIgnoreCase(matchSearchModifier)) {
             return "IN NATURAL LANGUAGE MODE";
         }
