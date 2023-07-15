@@ -26,62 +26,45 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class PipelineSQLBuilderEngineTest {
+class PipelineImportSQLBuilderTest {
     
-    private final PipelineSQLBuilderEngine sqlBuilderEngine = new PipelineSQLBuilderEngine(TypedSPILoader.getService(DatabaseType.class, "H2"));
-    
-    @Test
-    void assertBuildQueryAllOrderingSQLFirstQuery() {
-        String actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", true);
-        assertThat(actual, is("SELECT * FROM t_order ORDER BY order_id ASC"));
-        actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", true);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC"));
-    }
-    
-    @Test
-    void assertBuildQueryAllOrderingSQLNonFirstQuery() {
-        String actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", false);
-        assertThat(actual, is("SELECT * FROM t_order WHERE order_id>? ORDER BY order_id ASC"));
-        actual = sqlBuilderEngine.buildQueryAllOrderingSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", false);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC"));
-    }
+    private final PipelineImportSQLBuilder importSQLBuilder = new PipelineImportSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     
     @Test
     void assertBuildInsertSQL() {
-        String actual = sqlBuilderEngine.buildInsertSQL(null, mockDataRecord("t2"));
+        String actual = importSQLBuilder.buildInsertSQL(null, mockDataRecord("t2"));
         assertThat(actual, is("INSERT INTO t2(id,sc,c1,c2,c3) VALUES(?,?,?,?,?)"));
     }
     
     @Test
     void assertBuildUpdateSQLWithPrimaryKey() {
-        String actual = sqlBuilderEngine.buildUpdateSQL(null, mockDataRecord("t2"), RecordUtils.extractPrimaryColumns(mockDataRecord("t2")));
+        String actual = importSQLBuilder.buildUpdateSQL(null, mockDataRecord("t2"), RecordUtils.extractPrimaryColumns(mockDataRecord("t2")));
         assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ?"));
     }
     
     @Test
     void assertBuildUpdateSQLWithShardingColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
-        String actual = sqlBuilderEngine.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
+        String actual = importSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ? AND sc = ?"));
     }
     
     @Test
     void assertBuildDeleteSQLWithPrimaryKey() {
-        String actual = sqlBuilderEngine.buildDeleteSQL(null, mockDataRecord("t3"), RecordUtils.extractPrimaryColumns(mockDataRecord("t3")));
+        String actual = importSQLBuilder.buildDeleteSQL(null, mockDataRecord("t3"), RecordUtils.extractPrimaryColumns(mockDataRecord("t3")));
         assertThat(actual, is("DELETE FROM t3 WHERE id = ?"));
     }
     
     @Test
     void assertBuildDeleteSQLWithConditionColumns() {
         DataRecord dataRecord = mockDataRecord("t3");
-        String actual = sqlBuilderEngine.buildDeleteSQL(null, dataRecord, mockConditionColumns(dataRecord));
+        String actual = importSQLBuilder.buildDeleteSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("DELETE FROM t3 WHERE id = ? AND sc = ?"));
     }
     
@@ -101,7 +84,7 @@ class PipelineSQLBuilderEngineTest {
     
     @Test
     void assertBuildDeleteSQLWithoutUniqueKey() {
-        String actual = sqlBuilderEngine.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey(),
+        String actual = importSQLBuilder.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey(),
                 RecordUtils.extractConditionColumns(mockDataRecordWithoutUniqueKey(), Collections.emptySet()));
         assertThat(actual, is("DELETE FROM t_order WHERE id = ? AND name = ?"));
     }
@@ -109,7 +92,7 @@ class PipelineSQLBuilderEngineTest {
     @Test
     void assertBuildUpdateSQLWithoutShardingColumns() {
         DataRecord dataRecord = mockDataRecordWithoutUniqueKey();
-        String actual = sqlBuilderEngine.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
+        String actual = importSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("UPDATE t_order SET name = ? WHERE id = ? AND name = ?"));
     }
     
