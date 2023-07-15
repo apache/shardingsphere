@@ -34,22 +34,7 @@ env:
   REPOSITORY_NAME: shardingsphere
 
 jobs:
-  detect-changed-files:
-    name: Detect Changed Files
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          token: ${{ github.token }}
-          filters: .github/workflows/resources/filter/filters.yml
-    outputs:
-      changed_operations: ${{ steps.filter.outputs.changes }}
-
   e2e-operation-job:
-    needs: detect-changed-files
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     runs-on: ubuntu-latest
     strategy:
@@ -64,7 +49,15 @@ jobs:
           - operation: showprocesslist
             image: { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" }
     timeout-minutes: 40
+    outputs:
+      changed_operations: ${{ steps.filter.outputs.changes }}
     steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          token: ${{ github.token }}
+          filters: .github/workflows/resources/filter/filters.yml
       - env:
           changed_operations: ${{ needs.detect-changed-files.outputs.changed_operations }}
           current_operation: ${{ matrix.operation }}
