@@ -56,6 +56,9 @@ compilerParametersClause
     : parameterName EQ_ parameterValue
     ;
 
+dropContext
+    : DROP CONTEXT contextName;
+
 dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
@@ -82,6 +85,10 @@ dropEdition
 
 dropOutline
     : DROP OUTLINE outlineName
+    ;
+
+dropCluster
+    : DROP CLUSTER (schemaName DOT_)? clusterName (INCLUDING TABLES (CASCADE CONSTRAINTS)?)?
     ;
 
 alterOutline

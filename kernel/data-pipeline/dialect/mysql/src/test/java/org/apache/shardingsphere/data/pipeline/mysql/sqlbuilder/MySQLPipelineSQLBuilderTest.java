@@ -35,19 +35,19 @@ class MySQLPipelineSQLBuilderTest {
     
     @Test
     void assertBuildInsertSQLOnDuplicateClause() {
-        String actual = sqlBuilder.buildInsertSQLOnDuplicateClause(null, mockDataRecord("t1")).orElse(null);
+        String actual = sqlBuilder.buildInsertOnDuplicateClause(mockDataRecord("t1")).orElse(null);
         assertThat(actual, is("ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test
     void assertBuildInsertSQLOnDuplicateClauseHasShardingColumn() {
-        String actual = sqlBuilder.buildInsertSQLOnDuplicateClause(null, mockDataRecord("t2")).orElse(null);
+        String actual = sqlBuilder.buildInsertOnDuplicateClause(mockDataRecord("t2")).orElse(null);
         assertThat(actual, is("ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test
     void assertBuildSumCrc32SQL() {
-        Optional<String> actual = sqlBuilder.buildCRC32SQL(null, "t2", "id");
+        Optional<String> actual = sqlBuilder.buildCRC32SQL("t2", "id");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("SELECT BIT_XOR(CAST(CRC32(id) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM t2"));
     }
@@ -64,7 +64,7 @@ class MySQLPipelineSQLBuilderTest {
     
     @Test
     void assertBuilderEstimateCountSQLWithoutKeyword() {
-        Optional<String> actual = sqlBuilder.buildEstimatedCountSQL(null, "t_order");
+        Optional<String> actual = sqlBuilder.buildEstimatedCountSQL("t_order");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 't_order'"));
     }

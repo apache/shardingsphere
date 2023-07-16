@@ -17,34 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
-    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        return Collections.emptyList();
+    public String buildCheckEmptySQL(final String qualifiedTableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
     }
     
     @Override
-    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return null;
-    }
-    
-    @Override
-    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
-        return Optional.of(String.format("SELECT CRC32(%s) FROM %s", column, tableName));
+    public Optional<String> buildCRC32SQL(final String qualifiedTableName, final String columnName) {
+        return Optional.of(String.format("SELECT CRC32(%s) FROM %s", columnName, qualifiedTableName));
     }
     
     @Override

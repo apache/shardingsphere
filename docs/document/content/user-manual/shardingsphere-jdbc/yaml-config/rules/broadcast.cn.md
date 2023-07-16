@@ -10,7 +10,7 @@ weight = 2
 ```yaml
 rules:
 - !BROADCAST
-  tables: # Broadcast tables
+  tables: # 广播表规则列表
     - <table_name>
     - <table_name>
 ```
@@ -41,7 +41,7 @@ dataSources:
 
 rules:
 - !BROADCAST
-  tables: # 广播表规则列表
+  tables:
     - t_address
 ```
 
