@@ -63,9 +63,7 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_
-    | unreservedWord
-    | STRING_
+    : IDENTIFIER_ | unreservedWord | STRING_
     ;
 
 unreservedWord

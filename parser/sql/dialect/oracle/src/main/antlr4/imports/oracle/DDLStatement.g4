@@ -1358,8 +1358,7 @@ alterDatabase
     ;
 
 databaseClauses
-    : DATABASE databaseName? 
-    | PLUGGABLE DATABASE pdbName?
+    : DATABASE databaseName? | PLUGGABLE DATABASE pdbName?
     ;
 
 startupClauses
