@@ -135,5 +135,6 @@ execute
     | dropContext
     | alterResourceCost
     | alterRole
+    | createTablespace
     ) SEMI_?
     ;
