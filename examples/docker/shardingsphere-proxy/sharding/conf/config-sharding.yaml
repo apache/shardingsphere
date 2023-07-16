@@ -92,3 +92,7 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
+
+- !BROADCAST
+  tables:
+    - t_address
