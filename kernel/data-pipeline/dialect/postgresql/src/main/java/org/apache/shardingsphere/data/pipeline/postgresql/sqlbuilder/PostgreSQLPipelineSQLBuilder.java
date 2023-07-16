@@ -32,12 +32,11 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     
     @Override
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
-        return Optional.of(String.format("CREATE SCHEMA IF NOT EXISTS %s", sqlSegmentBuilder.getEscapedIdentifier(schemaName)));
+        return Optional.of(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
     }
     
     @Override
-    public Optional<String> buildInsertOnDuplicateClause(final String schemaName, final DataRecord dataRecord) {
+    public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
         // TODO without unique key, job has been interrupted, which may lead to data duplication
         if (dataRecord.getUniqueKeyValue().isEmpty()) {
             return Optional.empty();
@@ -66,14 +65,13 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     }
     
     @Override
-    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName));
+    public String buildCheckEmptySQL(final String qualifiedTableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
     }
     
     @Override
-    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;",
-                new PipelineSQLSegmentBuilder(getType()).getQualifiedTableName(schemaName, tableName)));
+    public Optional<String> buildEstimatedCountSQL(final String qualifiedTableName) {
+        return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
     }
     
     @Override
