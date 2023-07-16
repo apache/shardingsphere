@@ -1668,10 +1668,10 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "drop-materialized-zonemap")
     private final List<DropMaterializedZonemapStatementTestCase> dropMaterializedZonemapTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-cluster")
     private final List<DropClusterStatementTestCase> dropClusterStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-context")
     private final List<DropContextStatementTestCase> dropContextStatementTestCases = new LinkedList<>();
     
