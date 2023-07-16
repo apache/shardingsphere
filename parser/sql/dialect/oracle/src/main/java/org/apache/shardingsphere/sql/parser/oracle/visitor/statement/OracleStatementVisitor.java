@@ -1282,7 +1282,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return null == datetimeExpression.getRight()
                     ? new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(), datetimeExpression.getLeft(), datetimeExpression.getText())
                     : new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(),
-                    datetimeExpression.getLeft(), datetimeExpression.getRight(), datetimeExpression.getText());
+                            datetimeExpression.getLeft(), datetimeExpression.getRight(), datetimeExpression.getText());
         }
         if (projection instanceof XmlQueryAndExistsFunctionSegment || projection instanceof XmlPiFunctionSegment || projection instanceof XmlSerializeFunctionSegment) {
             return projection;
