@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,7 +31,7 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
      * Build create schema SQL.
      *
      * @param schemaName schema name
-     * @return create schema SQL
+     * @return built SQL
      */
     default Optional<String> buildCreateSchemaSQL(String schemaName) {
         return Optional.empty();
@@ -42,49 +40,39 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     /**
      * Build on duplicate clause of insert SQL.
      *
-     * @param schemaName schema name
      * @param dataRecord data record
-     * @return on duplicate clause of insert SQL
+     * @return built SQL clause
      */
-    default Optional<String> buildInsertSQLOnDuplicateClause(String schemaName, DataRecord dataRecord) {
+    default Optional<String> buildInsertOnDuplicateClause(DataRecord dataRecord) {
         return Optional.empty();
     }
     
     /**
-     * Extract updated columns.
-     *
-     * @param dataRecord data record
-     * @return filtered columns
-     */
-    List<Column> extractUpdatedColumns(DataRecord dataRecord);
-    
-    /**
      * Build check empty SQL.
      *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return check SQL
+     * @param qualifiedTableName qualified table name
+     * @return built SQL
      */
-    String buildCheckEmptySQL(String schemaName, String tableName);
+    String buildCheckEmptySQL(String qualifiedTableName);
     
     /**
      * Build estimated count SQL.
      *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return estimated count SQL
+     * @param qualifiedTableName qualified table name
+     * @return built SQL
      */
-    Optional<String> buildEstimatedCountSQL(String schemaName, String tableName);
+    default Optional<String> buildEstimatedCountSQL(String qualifiedTableName) {
+        return Optional.empty();
+    }
     
     /**
      * Build CRC32 SQL.
      *
-     * @param schemaName schema name
-     * @param tableName table Name
-     * @param column column
-     * @return CRC32 SQL
+     * @param qualifiedTableName qualified table name
+     * @param columnName column name
+     * @return built SQL
      */
-    default Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
+    default Optional<String> buildCRC32SQL(String qualifiedTableName, final String columnName) {
         return Optional.empty();
     }
 }

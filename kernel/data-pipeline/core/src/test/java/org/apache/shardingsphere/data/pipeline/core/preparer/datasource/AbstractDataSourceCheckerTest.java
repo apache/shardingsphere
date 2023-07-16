@@ -73,7 +73,7 @@ class AbstractDataSourceCheckerTest {
             
             @Override
             public String getDatabaseType() {
-                return "H2";
+                return "FIXTURE";
             }
         };
         dataSources = new LinkedList<>();
