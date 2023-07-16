@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Pipeline SQL builder of openGauss.
@@ -38,14 +38,9 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
     public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder("ON DUPLICATE KEY UPDATE ");
         PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
-        for (int i = 0; i < dataRecord.getColumnCount(); i++) {
-            Column column = dataRecord.getColumn(i);
-            if (column.isUniqueKey()) {
-                continue;
-            }
-            result.append(sqlSegmentBuilder.getEscapedIdentifier(column.getName())).append("=EXCLUDED.").append(sqlSegmentBuilder.getEscapedIdentifier(column.getName())).append(',');
-        }
-        result.setLength(result.length() - 1);
+        result.append(dataRecord.getColumns().stream()
+                .filter(each -> !each.isUniqueKey()).map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + "=EXCLUDED." + sqlSegmentBuilder.getEscapedIdentifier(each.getName()))
+                .collect(Collectors.joining(",")));
         return Optional.of(result.toString());
     }
     
