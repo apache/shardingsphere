@@ -56,6 +56,9 @@ compilerParametersClause
     : parameterName EQ_ parameterValue
     ;
 
+dropContext
+    : DROP CONTEXT contextName;
+
 dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
