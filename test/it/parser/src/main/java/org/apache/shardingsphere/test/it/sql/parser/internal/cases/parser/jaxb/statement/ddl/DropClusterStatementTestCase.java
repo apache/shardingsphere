@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.sqlbuilder.fixture;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-import java.util.Optional;
-
-public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilder {
-    
-    @Override
-    public String buildCheckEmptySQL(final String qualifiedTableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
-    }
-    
-    @Override
-    public Optional<String> buildCRC32SQL(final String qualifiedTableName, final String columnName) {
-        return Optional.of(String.format("SELECT CRC32(%s) FROM %s", columnName, qualifiedTableName));
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "FIXTURE";
-    }
+/**
+ * Drop cluster statement test case.
+ */
+public final class DropClusterStatementTestCase extends SQLParserTestCase {
 }

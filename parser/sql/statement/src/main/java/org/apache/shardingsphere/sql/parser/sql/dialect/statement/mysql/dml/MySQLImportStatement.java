@@ -15,26 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.sqlbuilder.fixture;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
 
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
-import java.util.Optional;
-
-public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilder {
-    
-    @Override
-    public String buildCheckEmptySQL(final String qualifiedTableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
-    }
-    
-    @Override
-    public Optional<String> buildCRC32SQL(final String qualifiedTableName, final String columnName) {
-        return Optional.of(String.format("SELECT CRC32(%s) FROM %s", columnName, qualifiedTableName));
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "FIXTURE";
-    }
+/**
+ * MySQL import statement.
+ */
+public final class MySQLImportStatement extends AbstractSQLStatement implements DMLStatement, MySQLStatement {
 }

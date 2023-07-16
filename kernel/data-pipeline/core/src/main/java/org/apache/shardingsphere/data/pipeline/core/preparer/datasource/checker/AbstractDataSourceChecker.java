@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.datasource.checker
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.CommonPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
@@ -67,7 +67,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     
     private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, getDatabaseType());
-        CommonPipelineSQLBuilder pipelineSQLBuilder = new CommonPipelineSQLBuilder(databaseType);
+        PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(databaseType);
         String sql = pipelineSQLBuilder.buildCheckEmptySQL(schemaName, tableName);
         try (
                 Connection connection = dataSource.getConnection();

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.CommonPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineDataConsistencyCalculateSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
@@ -53,12 +53,12 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
     @Override
     public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType());
-        CommonPipelineSQLBuilder pipelineSQLBuilder = new CommonPipelineSQLBuilder(databaseType);
+        PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(databaseType);
         List<CalculatedItem> calculatedItems = param.getColumnNames().stream().map(each -> calculateCRC32(pipelineSQLBuilder, param, each)).collect(Collectors.toList());
         return Collections.singletonList(new CalculatedResult(calculatedItems.get(0).getRecordsCount(), calculatedItems.stream().map(CalculatedItem::getCrc32).collect(Collectors.toList())));
     }
     
-    private CalculatedItem calculateCRC32(final CommonPipelineSQLBuilder pipelineSQLBuilder, final DataConsistencyCalculateParameter param, final String columnName) {
+    private CalculatedItem calculateCRC32(final PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder, final DataConsistencyCalculateParameter param, final String columnName) {
         Optional<String> sql = pipelineSQLBuilder.buildCRC32SQL(param.getSchemaName(), param.getLogicTableName(), columnName);
         ShardingSpherePreconditions.checkState(sql.isPresent(), () -> new UnsupportedCRC32DataConsistencyCalculateAlgorithmException(param.getDatabaseType()));
         try (
