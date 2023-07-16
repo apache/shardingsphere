@@ -363,4 +363,33 @@
             </projections>
         </select>
     </describe>
+    
+    <describe sql-case-id="explain_select_alias_as_keyword">
+        <select>
+            <from>
+                <simple-table name="t_order_item" alias="length" start-index="53" stop-index="71" />
+            </from>
+            <projections start-index="24" stop-index="46">
+                <column-projection name="item_id" alias="password" start-index="24" stop-index="46">
+                    <owner name="length" start-index="24" stop-index="29" />
+                </column-projection>>
+            </projections>
+            <where start-index="73" stop-index="96">
+                <expr>
+                    <binary-operation-expression start-index="79" stop-index="96">
+                        <left>
+                            <column name="item_id" start-index="79" stop-index="92">
+                                <owner name="length" start-index="79" stop-index="84" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="1" start-index="96" stop-index="96" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+    
 </sql-parser-test-cases>
