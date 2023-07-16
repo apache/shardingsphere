@@ -87,6 +87,10 @@ dropOutline
     : DROP OUTLINE outlineName
     ;
 
+dropCluster
+    : DROP CLUSTER (schemaName DOT_)? clusterName (INCLUDING TABLES (CASCADE CONSTRAINTS)?)?
+    ;
+
 alterOutline
     : ALTER OUTLINE (PUBLIC | PRIVATE)? outlineName
     ( REBUILD

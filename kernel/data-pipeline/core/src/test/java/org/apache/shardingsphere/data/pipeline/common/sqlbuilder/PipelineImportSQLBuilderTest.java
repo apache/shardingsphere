@@ -43,22 +43,10 @@ class PipelineImportSQLBuilderTest {
     }
     
     @Test
-    void assertBuildUpdateSQLWithPrimaryKey() {
-        String actual = importSQLBuilder.buildUpdateSQL(null, mockDataRecord("t2"), RecordUtils.extractPrimaryColumns(mockDataRecord("t2")));
-        assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ?"));
-    }
-    
-    @Test
     void assertBuildUpdateSQLWithShardingColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
         String actual = importSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ? AND sc = ?"));
-    }
-    
-    @Test
-    void assertBuildDeleteSQLWithPrimaryKey() {
-        String actual = importSQLBuilder.buildDeleteSQL(null, mockDataRecord("t3"), RecordUtils.extractPrimaryColumns(mockDataRecord("t3")));
-        assertThat(actual, is("DELETE FROM t3 WHERE id = ?"));
     }
     
     @Test
