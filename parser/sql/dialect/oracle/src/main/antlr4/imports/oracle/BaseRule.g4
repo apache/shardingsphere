@@ -394,6 +394,10 @@ constraintName
     : identifier
     ;
 
+contextName
+    : identifier
+    ;
+
 savepointName
     : identifier
     ;

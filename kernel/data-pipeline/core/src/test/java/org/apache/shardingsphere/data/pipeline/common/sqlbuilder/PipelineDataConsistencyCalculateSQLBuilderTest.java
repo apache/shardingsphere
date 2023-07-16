@@ -27,9 +27,9 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class PipelineCommonSQLBuilderTest {
+class PipelineDataConsistencyCalculateSQLBuilderTest {
     
-    private final PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+    private final PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     
     @Test
     void assertBuildQueryAllOrderingSQLFirstQuery() {

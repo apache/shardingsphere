@@ -34,31 +34,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class RecordUtilsTest {
     
     @Test
-    void assertExtractPrimaryColumns() {
-        DataRecord dataRecord = mockDataRecord("t2");
-        Collection<Column> actual = RecordUtils.extractPrimaryColumns(dataRecord);
-        assertThat(actual.size(), is(2));
-        assertThat(Arrays.asList("sc", "id"), hasItems(actual.iterator().next().getName()));
-    }
-    
-    @Test
     void assertExtractConditionalColumns() {
-        DataRecord dataRecord = mockDataRecord("t2");
+        DataRecord dataRecord = mockDataRecord();
         Collection<Column> actual = RecordUtils.extractConditionColumns(dataRecord, Collections.singleton("c1"));
         assertThat(actual.size(), is(3));
         assertThat(Arrays.asList("sc", "id", "c1"), hasItems(actual.iterator().next().getName()));
     }
     
-    @Test
-    void assertExtractUpdatedColumns() {
-        DataRecord dataRecord = mockDataRecord("t2");
-        Collection<Column> actual = RecordUtils.extractUpdatedColumns(dataRecord);
-        assertThat(actual.size(), is(3));
-        assertThat(Arrays.asList("c2", "c3", "c1"), hasItems(actual.iterator().next().getName()));
-    }
-    
-    private DataRecord mockDataRecord(final String tableName) {
-        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new PlaceholderPosition(), 4);
+    private DataRecord mockDataRecord() {
+        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, "t2", new PlaceholderPosition(), 4);
         result.addColumn(new Column("id", "", false, true));
         result.addColumn(new Column("sc", "", false, true));
         result.addColumn(new Column("c1", "", true, false));
