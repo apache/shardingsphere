@@ -95,7 +95,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
         if (dataSourcePropertiesMap.isEmpty() && databaseConfigs.getRuleConfigurations().isEmpty()) {
             databaseMetaDataService.addDatabase(databaseName);
         } else {
-            dataSourceService.persist(databaseName, dataSourcePropertiesMap);
+            dataSourceUnitService.persist(databaseName, dataSourcePropertiesMap);
             databaseRulePersistService.persist(databaseName, decorateRuleConfigs(databaseName, dataSources, rules));
         }
     }
