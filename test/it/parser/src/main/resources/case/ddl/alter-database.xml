@@ -57,6 +57,7 @@
     <alter-database sql-case-id="alter_database_clear_logfile_group" />
     <alter-database sql-case-id="alter_database_clear_unarchived_logfile_group" />
     <alter-database sql-case-id="alter_database_activate_logical_standby_database_finish_apply" />
+    <alter-database sql-case-id="alter_database_add_supplemental_log_data_primary_key_unique_index_columns" />
     <alter-database sql-case-id="alter_database_clear_logfile" />
     <alter-database sql-case-id="alter_database_activate_physical_standby_database" />
     <alter-database sql-case-id="alter_database_add_standby_logfile_thread_size_m" />
