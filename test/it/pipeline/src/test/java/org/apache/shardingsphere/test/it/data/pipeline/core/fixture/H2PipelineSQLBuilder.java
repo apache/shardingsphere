@@ -19,18 +19,11 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
-import java.util.Optional;
-
 public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
-    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", tableName);
-    }
-    
-    @Override
-    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return Optional.empty();
+    public String buildCheckEmptySQL(final String qualifiedTableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
     }
     
     @Override

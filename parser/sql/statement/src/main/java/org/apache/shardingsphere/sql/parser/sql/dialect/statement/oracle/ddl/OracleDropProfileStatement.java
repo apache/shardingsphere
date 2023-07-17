@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Expected explicit table expression.
+ * Oracle drop profile statement.
  */
-@Getter
-@Setter
-public final class ExpectedExplicitTableExpression extends AbstractExpectedIdentifierSQLSegment {
+public final class OracleDropProfileStatement extends AbstractSQLStatement implements OracleStatement {
 }

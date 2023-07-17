@@ -44,4 +44,6 @@
     <test-cases sql-case-id="select_where_with_expr_with_and_sign" expected-sql="SELECT * FROM `t_order` WHERE (`t_order`.`order_id` = 1 &amp;&amp; 2 = `t_order`.`order_id`)" db-types="MySQL" sql-case-types="LITERAL" />
     <test-cases sql-case-id="select_where_with_expr_with_and_sign" expected-sql="SELECT * FROM `t_order` WHERE (`t_order`.`order_id` = ? &amp;&amp; ? = `t_order`.`order_id`)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="select_where_with_boolean_primary_with_null_safe" expected-sql="SELECT * FROM `t_order` WHERE `t_order`.`status` &lt;=&gt; `t_order`.`order_id`" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_where_with_simple_expr_with_match" expected-sql="SELECT * FROM `t_order` WHERE MATCH (`order_id`) AGAINST ('keyword' IN NATURAL LANGUAGE MODE)" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_where_with_simple_expr_with_match" expected-sql="SELECT * FROM `t_order` WHERE MATCH (`order_id`) AGAINST (? IN NATURAL LANGUAGE MODE)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
 </sql-node-converter-test-cases>

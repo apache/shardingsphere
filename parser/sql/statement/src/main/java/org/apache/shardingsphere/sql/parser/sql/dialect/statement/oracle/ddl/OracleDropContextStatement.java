@@ -15,31 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer.datasource.checker;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.RequiredArgsConstructor;
-
-import javax.sql.DataSource;
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Basic data source checker.
+ * Oracle drop context statement.
  */
-@RequiredArgsConstructor
-public final class BasicDataSourceChecker extends AbstractDataSourceChecker {
-    
-    private final String databaseType;
-    
-    @Override
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-    }
-    
-    @Override
-    public void checkVariable(final Collection<? extends DataSource> dataSources) {
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return databaseType;
-    }
+public final class OracleDropContextStatement extends AbstractSQLStatement implements OracleStatement {
 }

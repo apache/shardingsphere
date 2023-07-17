@@ -20,7 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.checker.AbstractDataSourceChecker;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,12 +42,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AbstractDataSourceCheckerTest {
+class DataSourceCheckEngineTest {
     
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
     
-    private AbstractDataSourceChecker dataSourceChecker;
+    private DataSourceCheckEngine dataSourceCheckEngine;
     
     private Collection<DataSource> dataSources;
     
@@ -61,21 +62,7 @@ class AbstractDataSourceCheckerTest {
     
     @BeforeEach
     void setUp() {
-        dataSourceChecker = new AbstractDataSourceChecker() {
-            
-            @Override
-            public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-            }
-            
-            @Override
-            public void checkVariable(final Collection<? extends DataSource> dataSources) {
-            }
-            
-            @Override
-            public String getDatabaseType() {
-                return "FIXTURE";
-            }
-        };
+        dataSourceCheckEngine = new DataSourceCheckEngine(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         dataSources = new LinkedList<>();
         dataSources.add(dataSource);
     }
@@ -83,14 +70,14 @@ class AbstractDataSourceCheckerTest {
     @Test
     void assertCheckConnection() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
-        dataSourceChecker.checkConnection(dataSources);
+        dataSourceCheckEngine.checkConnection(dataSources);
         verify(dataSource).getConnection();
     }
     
     @Test
     void assertCheckConnectionFailed() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException("error"));
-        assertThrows(PrepareJobWithInvalidConnectionException.class, () -> dataSourceChecker.checkConnection(dataSources));
+        assertThrows(PrepareJobWithInvalidConnectionException.class, () -> dataSourceCheckEngine.checkConnection(dataSources));
     }
     
     @Test
@@ -98,7 +85,7 @@ class AbstractDataSourceCheckerTest {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        dataSourceChecker.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order"));
+        dataSourceCheckEngine.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order"));
     }
     
     @Test
@@ -108,6 +95,6 @@ class AbstractDataSourceCheckerTest {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         assertThrows(PrepareJobWithTargetTableNotEmptyException.class,
-                () -> dataSourceChecker.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order")));
+                () -> dataSourceCheckEngine.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order")));
     }
 }
