@@ -63,7 +63,7 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord
+    : IDENTIFIER_ | unreservedWord | STRING_
     ;
 
 unreservedWord
@@ -322,6 +322,10 @@ schemaName
     : identifier
     ;
 
+profileName
+    : identifier
+    ;
+
 tableName
     : (owner DOT_)? name
     ;
@@ -391,6 +395,10 @@ directoryName
     ;
 
 constraintName
+    : identifier
+    ;
+
+contextName
     : identifier
     ;
 
@@ -697,7 +705,11 @@ analyticFunction
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction
+    : castFunction  | charFunction | extractFunction | formatFunction
+    ;
+
+formatFunction
+    : (owner DOT_)* name DOT_ FORMAT LP_ expr (COMMA_ expr)* RP_
     ;
 
 castFunction
@@ -1640,7 +1652,7 @@ libraryName
     ;
 
 matchString
-    : IDENTIFIER_ | ASTERISK_
+    : identifier | ASTERISK_
     ;
 
 parameterType

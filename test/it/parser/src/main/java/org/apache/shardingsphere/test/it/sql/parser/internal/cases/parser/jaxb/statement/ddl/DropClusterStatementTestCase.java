@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Explicit table expression.
+ * Drop cluster statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ExplicitTableExpression implements ExpressionSegment {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final TableNameSegment tableNameSegment;
-    
-    @Override
-    public String getText() {
-        return tableNameSegment.getIdentifier().getValue();
-    }
+public final class DropClusterStatementTestCase extends SQLParserTestCase {
 }

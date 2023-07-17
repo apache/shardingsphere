@@ -63,7 +63,7 @@ public final class PipelineImportSQLBuilder {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
             String insertMainClause = buildInsertMainClause(schemaName, dataRecord);
-            sqlCacheMap.put(sqlCacheKey, dialectSQLBuilder.buildInsertOnDuplicateClause(schemaName, dataRecord).map(optional -> insertMainClause + " " + optional).orElse(insertMainClause));
+            sqlCacheMap.put(sqlCacheKey, dialectSQLBuilder.buildInsertOnDuplicateClause(dataRecord).map(optional -> insertMainClause + " " + optional).orElse(insertMainClause));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
@@ -85,16 +85,12 @@ public final class PipelineImportSQLBuilder {
     public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            String updateMainClause = buildUpdateMainClause(schemaName, dataRecord);
+            String updateMainClause = String.format("UPDATE %s SET %%s", sqlSegmentBuilder.getQualifiedTableName(schemaName, dataRecord.getTableName()));
             sqlCacheMap.put(sqlCacheKey, buildWhereClause(conditionColumns).map(optional -> updateMainClause + optional).orElse(updateMainClause));
         }
-        return sqlCacheMap.get(sqlCacheKey);
-    }
-    
-    private String buildUpdateMainClause(final String schemaName, final DataRecord dataRecord) {
         Collection<Column> setColumns = dataRecord.getColumns().stream().filter(Column::isUpdated).collect(Collectors.toList());
         String updateSetClause = setColumns.stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + " = ?").collect(Collectors.joining(","));
-        return String.format("UPDATE %s SET %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, dataRecord.getTableName()), updateSetClause);
+        return String.format(sqlCacheMap.get(sqlCacheKey), updateSetClause);
     }
     
     /**

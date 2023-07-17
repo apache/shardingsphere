@@ -467,6 +467,8 @@ public enum SQLVisitorRule {
     
     CALL("Call", SQLStatementType.DML),
     
+    IMPORT_STATEMENT("ImportStatement", SQLStatementType.DML),
+    
     LOAD_STATEMENT("LoadStatement", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL),
@@ -663,15 +665,21 @@ public enum SQLVisitorRule {
     
     DROP_INDEX_TYPE("DropIndexType", SQLStatementType.DDL),
     
+    DROP_PROFILE("DropProfile", SQLStatementType.DDL),
+    
     DROP_PLUGGABLE_DATABASE("DropPluggableDatabase", SQLStatementType.DDL),
     
     DROP_JAVA("DropJava", SQLStatementType.DDL),
     
     DROP_LIBRARY("DropLibrary", SQLStatementType.DDL),
     
+    DROP_CLUSTER("DropCluster", SQLStatementType.DDL),
+    
     DROP_MATERIALIZED_VIEW_LOG("DropMaterializedViewLog", SQLStatementType.DDL),
     
     DROP_MATERIALIZED_ZONEMAP("DropMaterializedZonemap", SQLStatementType.DDL),
+    
+    DROP_CONTEXT("DropContext", SQLStatementType.DDL),
     
     EMPTY_STATEMENT("EmptyStatement", SQLStatementType.DAL);
     

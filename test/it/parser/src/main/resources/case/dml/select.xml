@@ -3598,7 +3598,12 @@
             <expr>
                 <binary-operation-expression start-index="33" stop-index="116" literal-stop-index="123">
                     <left>
-                        <common-expression text="MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE)" literal-text="MATCH(t_order_item.description) AGAINST ('hello' IN NATURAL LANGUAGE MODE)" start-index="33" stop-index="100" literal-stop-index="106" />
+                        <match-expression start-index="33" stop-index="106">
+                            <expr>
+                                <literal-expression value="hello" start-index="74" stop-index="80" />
+                                <parameter-marker-expression parameter-index="0" start-index="74" stop-index="74" />
+                            </expr>
+                        </match-expression>
                     </left>
                     <operator>AND</operator>
                     <right>
@@ -5536,6 +5541,19 @@
             <column-projection name="rank" start-index="17" stop-index="22" literal-start-index="17" literal-stop-index="22">
                 <owner name="t" start-index="17" stop-index="17" literal-start-index="17" literal-stop-index="17"/>
             </column-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_with_format_function">
+        <from>
+            <simple-table alias="wi" name="warehouse_info" start-index="66" stop-index="82" literal-start-index="66" literal-stop-index="82"/>
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
+            <expression-projection text="wi.code.format(null,'PURE_IDENTITY')" literal-text="wi.code.format(null,'PURE_IDENTITY')" alias="PURE_IDENTITY" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
+                <expr >
+                    <function function-name="wi" text="wi.code.format(null,'PURE_IDENTITY')" literal-text="wi.code.format(null,'PURE_IDENTITY')" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42"/>
+                </expr>
+            </expression-projection>
         </projections>
     </select>
 </sql-parser-test-cases>
