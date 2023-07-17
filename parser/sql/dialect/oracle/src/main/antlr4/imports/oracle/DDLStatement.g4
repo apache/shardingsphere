@@ -1387,7 +1387,7 @@ generalRecovery
     ;
 
 fullDatabaseRecovery
-    : STANDBY? DATABASE
+    : STANDBY? DATABASE?
     ((UNTIL (CANCEL | TIME dateValue | CHANGE NUMBER_ | CONSISTENT)
     | USING BACKUP CONTROLFILE
     | SNAPSHOT TIME dateValue

@@ -68,6 +68,7 @@
     <sql-case id="alter_database_add_logfile_group_size_m_block_size" value="ALTER DATABASE ADD LOGFILE GROUP 10 ('/oracle/dbs/log1c.rdo', '/oracle/dbs/log2c.rdo') SIZE 100M BLOCKSIZE 512" db-types="Oracle" />
     <sql-case id="alter_database_add_logfile_thread_group" value="ALTER DATABASE ADD LOGFILE THREAD 5 GROUP 4 ('diska:log4.log', 'diskb:log4:log')" db-types="Oracle" />
     <sql-case id="alter_database_add_logfile_with_size_m" value="ALTER DATABASE ADD LOGFILE ('/oracle/dbs/log1c.rdo', '/oracle/dbs/log2c.rdo') SIZE 100M" db-types="Oracle" />
+    <sql-case id="alter_database_recover_automatic_until_time" value="ALTER DATABASE RECOVER AUTOMATIC UNTIL TIME '2001-10-27:14:00:00'" db-types="Oracle" />
     <sql-case id="alter_database_add_logfile_member_reuse_to_group" value="ALTER DATABASE ADD LOGFILE MEMBER '/disk1/oradata/trgt/redo02b.log' REUSE TO GROUP 2" db-types="Oracle" />
     <sql-case id="alter_database_add_logfile_group" value="ALTER DATABASE ADD LOGFILE GROUP 3 ('diska:log3.log', 'diskb:log3.log') SIZE 50K" db-types="Oracle" />
     <sql-case id="alter_database_drop_logfile_member" value="ALTER DATABASE DROP LOGFILE MEMBER 'diskb:log3.log'" db-types="Oracle" />

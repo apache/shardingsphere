@@ -68,6 +68,7 @@
     <alter-database sql-case-id="alter_database_add_logfile_group_size_m_block_size" />
     <alter-database sql-case-id="alter_database_add_logfile_thread_group" />
     <alter-database sql-case-id="alter_database_add_logfile_with_size_m" />
+    <alter-database sql-case-id="alter_database_recover_automatic_until_time" />
     <alter-database sql-case-id="alter_database_add_logfile_member_reuse_to_group" />
     <alter-database sql-case-id="alter_database_add_logfile_group" />
     <alter-database sql-case-id="alter_database_drop_logfile_member" />
