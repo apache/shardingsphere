@@ -38,32 +38,23 @@ class PipelineImportSQLBuilderTest {
     
     @Test
     void assertBuildInsertSQL() {
-        String actual = importSQLBuilder.buildInsertSQL(null, mockDataRecord("t2"));
+        String actual = importSQLBuilder.buildInsertSQL(null, mockDataRecord("t2", 3));
         assertThat(actual, is("INSERT INTO t2(id,sc,c1,c2,c3) VALUES(?,?,?,?,?)"));
     }
     
     @Test
-    void assertBuildUpdateSQLWithPrimaryKey() {
-        String actual = importSQLBuilder.buildUpdateSQL(null, mockDataRecord("t2"), RecordUtils.extractPrimaryColumns(mockDataRecord("t2")));
-        assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ?"));
-    }
-    
-    @Test
     void assertBuildUpdateSQLWithShardingColumns() {
-        DataRecord dataRecord = mockDataRecord("t2");
+        DataRecord dataRecord = mockDataRecord("t2", 3);
         String actual = importSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ? AND sc = ?"));
-    }
-    
-    @Test
-    void assertBuildDeleteSQLWithPrimaryKey() {
-        String actual = importSQLBuilder.buildDeleteSQL(null, mockDataRecord("t3"), RecordUtils.extractPrimaryColumns(mockDataRecord("t3")));
-        assertThat(actual, is("DELETE FROM t3 WHERE id = ?"));
+        dataRecord = mockDataRecord("t2", 2);
+        actual = importSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
+        assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ? WHERE id = ? AND sc = ?"));
     }
     
     @Test
     void assertBuildDeleteSQLWithConditionColumns() {
-        DataRecord dataRecord = mockDataRecord("t3");
+        DataRecord dataRecord = mockDataRecord("t3", 3);
         String actual = importSQLBuilder.buildDeleteSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("DELETE FROM t3 WHERE id = ? AND sc = ?"));
     }
@@ -72,13 +63,13 @@ class PipelineImportSQLBuilderTest {
         return RecordUtils.extractConditionColumns(dataRecord, Collections.singleton("sc"));
     }
     
-    private DataRecord mockDataRecord(final String tableName) {
+    private DataRecord mockDataRecord(final String tableName, final int extraColumnCount) {
         DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new PlaceholderPosition(), 4);
         result.addColumn(new Column("id", "", false, true));
         result.addColumn(new Column("sc", "", false, false));
-        result.addColumn(new Column("c1", "", true, false));
-        result.addColumn(new Column("c2", "", true, false));
-        result.addColumn(new Column("c3", "", true, false));
+        for (int i = 1; i <= extraColumnCount; i++) {
+            result.addColumn(new Column("c" + i, "", true, false));
+        }
         return result;
     }
     

@@ -104,4 +104,7 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "extract-arg")
     private ExpectedExtractArgExpression extractArgExpression;
+    
+    @XmlElement(name = "match-expression")
+    private ExpectedMatchExpression matchExpression;
 }

@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
-      max-parallel: 5
+      max-parallel: 20
       fail-fast: false
       matrix:
         include:

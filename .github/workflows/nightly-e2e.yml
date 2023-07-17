@@ -68,7 +68,7 @@ jobs:
     timeout-minutes: 10
     needs: build-it-image
     strategy:
-      max-parallel: 5
+      max-parallel: 20
       fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
@@ -105,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
-      max-parallel: 5
+      max-parallel: 20
       fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
@@ -143,7 +143,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
-      max-parallel: 5
+      max-parallel: 20
       fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]

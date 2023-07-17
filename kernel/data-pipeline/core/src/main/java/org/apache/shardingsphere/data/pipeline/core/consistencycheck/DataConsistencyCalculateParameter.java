@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -44,9 +45,7 @@ public final class DataConsistencyCalculateParameter {
     
     private final List<String> columnNames;
     
-    private final String databaseType;
-    
-    private final String peerDatabaseType;
+    private final DatabaseType databaseType;
     
     /**
      * It could be primary key.

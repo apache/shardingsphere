@@ -192,7 +192,7 @@ handlerCloseStatement
     ;
 
 importStatement
-    : IMPORT TABLE FROM string_ (COMMA_ string_)?
+    : IMPORT TABLE FROM textString (COMMA_ textString)?
     ;
 
 loadStatement
