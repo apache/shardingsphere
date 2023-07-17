@@ -1365,7 +1365,7 @@ alterDatabase
     ;
 
 databaseClauses
-    : DATABASE databaseName | PLUGGABLE DATABASE pdbName
+    : DATABASE databaseName? | PLUGGABLE DATABASE pdbName?
     ;
 
 startupClauses
@@ -1467,13 +1467,13 @@ logfileClauses
     ;
 
 logfileDescriptor
-    : GROUP NUMBER_ | LP_ fileName (COMMA_ fileName)* RP_ | fileName
+    : GROUP INTEGER_ | LP_ fileName (COMMA_ fileName)* RP_ | fileName
     ;
 
 addLogfileClauses
     : ADD STANDBY? LOGFILE
-    (((INSTANCE instanceName)? | (THREAD SQ_ NUMBER_ SQ_)?)
-    (GROUP NUMBER_)? redoLogFileSpec (COMMA_ (GROUP NUMBER_)? redoLogFileSpec)*
+    (((INSTANCE SQ_ instanceName SQ_)? | (THREAD INTEGER_)?)
+    (GROUP INTEGER_)? redoLogFileSpec (COMMA_ (GROUP INTEGER_)? redoLogFileSpec)*
     | MEMBER fileName REUSE? (COMMA_ fileName REUSE?)* TO logfileDescriptor (COMMA_ logfileDescriptor)*)
     ;
 

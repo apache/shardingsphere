@@ -20,6 +20,9 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Not expression.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class NotExpression implements ExpressionSegment {

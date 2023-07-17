@@ -19,28 +19,26 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 /**
- * Xml query and exists function segment.
+ * Match against expression.
  */
 @RequiredArgsConstructor
 @Getter
-public final class XmlQueryAndExistsFunctionSegment implements ComplexExpressionSegment, ProjectionSegment {
+@Setter
+public final class MatchAgainstExpression implements ExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String functionName;
+    private final ColumnSegment columnName;
     
-    private final String xQueryString;
+    private final ExpressionSegment expr;
     
-    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
+    private final String searchModifier;
     
     private final String text;
 }
