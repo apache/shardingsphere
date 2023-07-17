@@ -118,7 +118,7 @@ class ClusterModeContextManagerTest {
         ClusterModeContextManager modeContextManager = new ClusterModeContextManager();
         ContextManager contextManager = new ContextManager(metaDataContexts, new InstanceContext(instance,
                 workerIdGenerator, modeConfiguration, modeContextManager, null, new EventBusContext()));
-        contextManager.addSchema("db", "Schema Name");
+        contextManager.getResourceMetaDataContextManager().addSchema("db", "Schema Name");
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         clusterModeContextManager.setContextManagerAware(contextManager);
         assertDoesNotThrow(() -> clusterModeContextManager.alterSchema(new AlterSchemaPOJO("db", "Schema Name", "Rename Schema Name", new LinkedList<>())));

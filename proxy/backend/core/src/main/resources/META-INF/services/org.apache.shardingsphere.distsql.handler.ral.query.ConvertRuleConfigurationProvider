@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.sharding.distsql.handler.provider.ShardingConvertRuleConfigurationProvider
+org.apache.shardingsphere.readwritesplitting.distsql.handler.provider.ReadwriteSplittingConvertRuleConfigurationProvider

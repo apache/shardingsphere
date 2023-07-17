@@ -18,6 +18,59 @@
 
 
 <sql-parser-test-cases>
+    <select sql-case-id="values_with_regexp_replace">
+        <projections start-index="7" stop-index="41">
+            <expression-projection text="REGEXP_REPLACE(e, 'pattern', 'xyz')" start-index="7" stop-index="41">
+                <expr>
+                    <function start-index="7" stop-index="41" text="REGEXP_REPLACE(e, 'pattern', 'xyz')" function-name="REGEXP_REPLACE">
+                        <parameter>
+                            <column name="e" start-index="22" stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="25" stop-index="33" value="pattern" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="36" stop-index="40" value="xyz" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <subquery-table alias="v">
+                <subquery>
+                    <select>
+                        <projections start-index="48" stop-index="105">
+                            <expression-projection text="VALUES ROW('Find pattern'), ROW(NULL), ROW('Find pattern')" start-index="48" stop-index="105">
+                                <expr>
+                                    <values-expression>
+                                        <values>
+                                            <value>
+                                                <assignment-value>
+                                                    <literal-expression value="Find pattern" start-index="59" stop-index="72" />
+                                                </assignment-value>
+                                            </value>
+                                            <value>
+                                                <assignment-value>
+                                                    <literal-expression value="null" start-index="80" stop-index="83" />
+                                                </assignment-value>
+                                            </value>
+                                            <value>
+                                                <assignment-value>
+                                                    <literal-expression value="Find pattern" start-index="91" stop-index="104" />
+                                                </assignment-value>
+                                            </value>
+                                        </values>
+                                    </values-expression>
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+    </select>
+    
     <select sql-case-id="values_with_row">
         <projections start-index="0" stop-index="14">
             <expression-projection text="values ROW(1,2)" start-index="0" stop-index="14">

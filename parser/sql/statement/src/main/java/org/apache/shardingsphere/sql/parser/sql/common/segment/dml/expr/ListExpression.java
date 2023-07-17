@@ -24,6 +24,9 @@ import lombok.Setter;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * List expression.
+ */
 @RequiredArgsConstructor
 @Getter
 @Setter
