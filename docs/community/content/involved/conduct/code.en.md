@@ -118,5 +118,5 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 - `name` property in workflow file should be same with file name, Words separated by `-`, add space between `-` and words, first letter of every word should be capital. For example: `Nightly - Check`.
 - `name` property in step should describe the usage of step, first letter of every word should be capital, preposition should be lowercase. For example: `Build Project with Maven`.
 - `job` property in workflow should be unique in that workflow file.
-- When using `matrix` property, must add job parallelism limit to 5. For example: `max-parallel: 5`.
+- When using `matrix` property, must add job parallelism limit to 20. For example: `max-parallel: 20`.
 - Must set timeout for job, max timeout is 1 hour. For example: `timeout-minutes: 10`.
