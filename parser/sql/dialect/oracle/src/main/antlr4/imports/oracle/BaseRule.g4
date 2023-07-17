@@ -705,7 +705,11 @@ analyticFunction
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction
+    : castFunction  | charFunction | extractFunction | formatFunction
+    ;
+
+formatFunction
+    : (owner DOT_)* name DOT_ FORMAT LP_ expr (COMMA_ expr)* RP_
     ;
 
 castFunction
