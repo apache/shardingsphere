@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 /**
@@ -44,12 +46,20 @@ public final class PipelineImportSQLBuilder {
     
     private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
     
-    private final ConcurrentMap<String, String> sqlCacheMap;
+    private final Cache<String, String> sqlCache;
     
-    public PipelineImportSQLBuilder(final DatabaseType databaseType) {
+    public PipelineImportSQLBuilder(final DatabaseType databaseType,final ShardingCacheOptionsConfiguration cacheOptions) {
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
         sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
-        sqlCacheMap = new ConcurrentHashMap<>();
+        sqlCache = buildRouteCache(cacheOptions);
+    }
+
+    private Cache<String, String> buildRouteCache(final ShardingCacheOptionsConfiguration cacheOptions) {
+        Caffeine<Object, Object> result = Caffeine.newBuilder().initialCapacity(cacheOptions.getInitialCapacity()).maximumSize(cacheOptions.getMaximumSize());
+        if (cacheOptions.isSoftValues()) {
+            result.softValues();
+        }
+        return result.build();
     }
     
     /**
@@ -61,11 +71,11 @@ public final class PipelineImportSQLBuilder {
      */
     public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
-        if (!sqlCacheMap.containsKey(sqlCacheKey)) {
+        if (null!=sqlCache.getIfPresent(sqlCacheKey)) {
             String insertMainClause = buildInsertMainClause(schemaName, dataRecord);
-            sqlCacheMap.put(sqlCacheKey, dialectSQLBuilder.buildInsertOnDuplicateClause(dataRecord).map(optional -> insertMainClause + " " + optional).orElse(insertMainClause));
+            sqlCache.put(sqlCacheKey, dialectSQLBuilder.buildInsertOnDuplicateClause(dataRecord).map(optional -> insertMainClause + " " + optional).orElse(insertMainClause));
         }
-        return sqlCacheMap.get(sqlCacheKey);
+        return sqlCache.getIfPresent(sqlCacheKey);
     }
     
     private String buildInsertMainClause(final String schemaName, final DataRecord dataRecord) {
@@ -84,13 +94,13 @@ public final class PipelineImportSQLBuilder {
      */
     public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
-        if (!sqlCacheMap.containsKey(sqlCacheKey)) {
+        if (null!=sqlCache.getIfPresent(sqlCacheKey)) {
             String updateMainClause = String.format("UPDATE %s SET %%s", sqlSegmentBuilder.getQualifiedTableName(schemaName, dataRecord.getTableName()));
-            sqlCacheMap.put(sqlCacheKey, buildWhereClause(conditionColumns).map(optional -> updateMainClause + optional).orElse(updateMainClause));
+            sqlCache.put(sqlCacheKey, buildWhereClause(conditionColumns).map(optional -> updateMainClause + optional).orElse(updateMainClause));
         }
         Collection<Column> setColumns = dataRecord.getColumns().stream().filter(Column::isUpdated).collect(Collectors.toList());
         String updateSetClause = setColumns.stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + " = ?").collect(Collectors.joining(","));
-        return String.format(sqlCacheMap.get(sqlCacheKey), updateSetClause);
+        return String.format(Objects.requireNonNull(sqlCache.getIfPresent(sqlCacheKey)), updateSetClause);
     }
     
     /**
@@ -103,11 +113,11 @@ public final class PipelineImportSQLBuilder {
      */
     public String buildDeleteSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
-        if (!sqlCacheMap.containsKey(sqlCacheKey)) {
+        if (null!=sqlCache.getIfPresent(sqlCacheKey)) {
             String deleteMainClause = buildDeleteMainClause(schemaName, dataRecord);
-            sqlCacheMap.put(sqlCacheKey, buildWhereClause(conditionColumns).map(optional -> deleteMainClause + optional).orElse(deleteMainClause));
+            sqlCache.put(sqlCacheKey, buildWhereClause(conditionColumns).map(optional -> deleteMainClause + optional).orElse(deleteMainClause));
         }
-        return sqlCacheMap.get(sqlCacheKey);
+        return sqlCache.getIfPresent(sqlCacheKey);
     }
     
     private String buildDeleteMainClause(final String schemaName, final DataRecord dataRecord) {

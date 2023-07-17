@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.common.ingest.position.Placeholde
 import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -34,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class PipelineImportSQLBuilderTest {
     
-    private final PipelineImportSQLBuilder importSQLBuilder = new PipelineImportSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+    private final PipelineImportSQLBuilder importSQLBuilder = new PipelineImportSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),new ShardingCacheOptionsConfiguration(true, 1, 1));
     
     @Test
     void assertBuildInsertSQL() {
