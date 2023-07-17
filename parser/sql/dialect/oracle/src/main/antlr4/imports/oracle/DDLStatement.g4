@@ -3489,6 +3489,10 @@ dropIndexType
     : DROP INDEXTYPE indexTypeName FORCE?
     ;
 
+dropProfile
+    : DROP PROFILE profileName CASCADE?
+    ;
+
 dropPluggableDatabase
     : DROP PLUGGABLE DATABASE pdbName ((KEEP | INCLUDING) DATAFILES)?
     ;
