@@ -63,7 +63,7 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord
+    : IDENTIFIER_ | unreservedWord | STRING_
     ;
 
 unreservedWord
@@ -1644,7 +1644,7 @@ libraryName
     ;
 
 matchString
-    : IDENTIFIER_ | ASTERISK_
+    : identifier | ASTERISK_
     ;
 
 parameterType
