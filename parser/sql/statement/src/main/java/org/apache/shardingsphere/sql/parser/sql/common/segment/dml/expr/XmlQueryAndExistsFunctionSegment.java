@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Xml Query and Exists Function segment.
+ * Xml query and exists function segment.
  */
 @RequiredArgsConstructor
 @Getter

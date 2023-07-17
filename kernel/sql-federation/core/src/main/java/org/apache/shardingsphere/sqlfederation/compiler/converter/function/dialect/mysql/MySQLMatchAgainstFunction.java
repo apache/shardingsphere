@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl;
+package org.apache.shardingsphere.sqlfederation.compiler.converter.function.dialect.mysql;
 
+import org.apache.calcite.sql.SqlCall;
+import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;
-import org.apache.calcite.sql.SqlWriter;
-import org.apache.calcite.sql.SqlWriter.Frame;
-import org.apache.calcite.sql.SqlWriter.FrameTypeEnum;
-import org.apache.calcite.sql.SqlWriter.FrameType;
-import org.apache.calcite.sql.SqlFunction;
-import org.apache.calcite.sql.SqlCall;
-import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlSyntax;
-import org.apache.calcite.sql.SqlOperandCountRange;
 import org.apache.calcite.sql.SqlLiteral;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOperandCountRange;
+import org.apache.calcite.sql.SqlSyntax;
+import org.apache.calcite.sql.SqlWriter;
+import org.apache.calcite.sql.SqlWriter.FrameType;
+import org.apache.calcite.sql.SqlWriter.FrameTypeEnum;
 import org.apache.calcite.sql.type.InferTypes;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
@@ -42,19 +41,17 @@ import java.util.List;
  */
 public final class MySQLMatchAgainstFunction extends SqlFunction {
     
-    private static final FrameType FRAME_TYPE =
-            FrameTypeEnum.create("MATCH");
+    private static final FrameType FRAME_TYPE = FrameTypeEnum.create("MATCH");
     
     public MySQLMatchAgainstFunction() {
         super("MATCH_AGAINST", SqlKind.OTHER_FUNCTION, ReturnTypes.DOUBLE, InferTypes.FIRST_KNOWN, OperandTypes.ANY, SqlFunctionCategory.STRING);
     }
     
     @Override
-    public void unparse(final SqlWriter writer, final SqlCall call, final int leftPrec, final int rightPrec) {
-        final Frame frame = writer.startList(FRAME_TYPE, "MATCH", "");
+    public void unparse(final SqlWriter writer, final SqlCall call, final int leftPrecedence, final int rightPrecedence) {
         writer.sep("(");
         List<SqlNode> operandList = call.getOperandList();
-        final int size = operandList.size();
+        int size = operandList.size();
         for (int i = 0; i < size - 2; i++) {
             operandList.get(i).unparse(writer, 0, 0);
             if (i != size - 3) {
@@ -65,16 +62,18 @@ public final class MySQLMatchAgainstFunction extends SqlFunction {
         writer.sep("AGAINST");
         writer.sep("(");
         operandList.get(size - 2).unparse(writer, 0, 0);
-        final String searchModifier = ((SqlLiteral) Util.last(operandList)).toValue();
+        String searchModifier = ((SqlLiteral) Util.last(operandList)).toValue();
         writer.sep(searchModifier);
         writer.sep(")");
-        writer.endList(frame);
+        writer.endList(writer.startList(FRAME_TYPE, "MATCH", ""));
     }
     
+    @Override
     public SqlOperandCountRange getOperandCountRange() {
         return SqlOperandCountRanges.any();
     }
     
+    @Override
     public SqlSyntax getSyntax() {
         return SqlSyntax.SPECIAL;
     }

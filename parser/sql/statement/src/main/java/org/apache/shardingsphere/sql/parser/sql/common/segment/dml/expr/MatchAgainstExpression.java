@@ -22,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
+/**
+ * Match against expression.
+ */
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -35,14 +38,7 @@ public final class MatchAgainstExpression implements ExpressionSegment {
     
     private final ExpressionSegment expr;
     
-    private final String matchSearchModifier;
+    private final String searchModifier;
     
-    @Override
-    public String getText() {
-        StringBuilder result = new StringBuilder();
-        result.append(columnName.getText());
-        result.append(expr.getText());
-        result.append(matchSearchModifier);
-        return result.toString();
-    }
+    private final String text;
 }
