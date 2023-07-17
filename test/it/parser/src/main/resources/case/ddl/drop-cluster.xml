@@ -17,8 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-function sql-case-id="drop_function" />
-    <drop-function sql-case-id="drop_functions" />
-    <drop-function sql-case-id="drop_function_without_argument_list" />
-    <drop-function sql-case-id="drop_function_with_schema" />
+    <drop-cluster sql-case-id="drop_cluster" />
+    <drop-cluster sql-case-id="drop_cluster_including_tables" />
+    <drop-cluster sql-case-id="drop_cluster_including_tables_cascade_constraints" />
 </sql-parser-test-cases>

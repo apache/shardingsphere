@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
@@ -90,8 +91,8 @@ public final class SingleTableInventoryDataConsistencyChecker {
     }
     
     private DataConsistencyCheckResult check(final DataConsistencyCalculateAlgorithm calculateAlgorithm, final ThreadPoolExecutor executor) {
-        String sourceDatabaseType = sourceDataSource.getDatabaseType().getType();
-        String targetDatabaseType = targetDataSource.getDatabaseType().getType();
+        DatabaseType sourceDatabaseType = sourceDataSource.getDatabaseType();
+        DatabaseType targetDatabaseType = targetDataSource.getDatabaseType();
         String schemaName = sourceTable.getSchemaName().getOriginal();
         String sourceTableName = sourceTable.getTableName().getOriginal();
         Map<String, Object> tableCheckPositions = progressContext.getTableCheckPositions();
@@ -103,15 +104,15 @@ public final class SingleTableInventoryDataConsistencyChecker {
         Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(sourceParam))).iterator();
         Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(targetParam))).iterator();
         try {
-            return check0(sourceCalculatedResults, targetCalculatedResults, executor);
+            return check(sourceCalculatedResults, targetCalculatedResults, executor);
         } finally {
             QuietlyCloser.close(sourceParam.getCalculationContext());
             QuietlyCloser.close(targetParam.getCalculationContext());
         }
     }
     
-    private DataConsistencyCheckResult check0(final Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults, final Iterator<DataConsistencyCalculatedResult> targetCalculatedResults,
-                                              final ThreadPoolExecutor executor) {
+    private DataConsistencyCheckResult check(final Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults,
+                                             final Iterator<DataConsistencyCalculatedResult> targetCalculatedResults, final ThreadPoolExecutor executor) {
         long sourceRecordsCount = 0;
         long targetRecordsCount = 0;
         boolean contentMatched = true;

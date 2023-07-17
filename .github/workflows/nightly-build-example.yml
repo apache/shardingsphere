@@ -54,7 +54,7 @@ jobs:
     timeout-minutes: 90
     needs: build-cache
     strategy:
-      max-parallel: 5
+      max-parallel: 20
       fail-fast: false
       matrix:
         feature: [ sharding, readwrite-splitting, encrypt, shadow, mask ]

@@ -135,5 +135,7 @@ execute
     | dropContext
     | alterResourceCost
     | alterRole
+    | dropFunction
+    | dropCluster
     ) SEMI_?
     ;

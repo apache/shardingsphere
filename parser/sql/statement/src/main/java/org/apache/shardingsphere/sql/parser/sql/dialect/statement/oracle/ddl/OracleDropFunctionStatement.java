@@ -15,47 +15,13 @@
  * limitations under the License.
  */
 
-lexer grammar Literals;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import Alphabet, Symbol;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-IDENTIFIER_
-    : [A-Za-z\u0080-\uFF0B\uFF0D-\uFFFF]+[A-Za-z_$#0-9\u0080-\uFF0B\uFF0D-\uFFFF]*
-    ;
-
-STRING_
-    : SINGLE_QUOTED_TEXT
-    | DOUBLE_QUOTED_TEXT
-    ;
-
-SINGLE_QUOTED_TEXT
-    : (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
-    ;
-
-DOUBLE_QUOTED_TEXT
-    : (DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_)
-    ;
-
-INTEGER_
-    : INT_
-    ;
-
-NUMBER_
-    : INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
-    ;
-
-HEX_DIGIT_
-    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
-    ;
-
-BIT_NUM_
-    : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
-    ;
-
-fragment INT_
-    : [0-9]+
-    ;
-
-fragment HEX_
-    : [0-9a-fA-F]
-    ;
+/**
+ * Oracle drop function statement.
+ */
+public final class OracleDropFunctionStatement extends AbstractSQLStatement implements OracleStatement {
+}

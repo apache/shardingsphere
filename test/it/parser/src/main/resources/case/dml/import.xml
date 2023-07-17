@@ -17,8 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-function sql-case-id="drop_function" />
-    <drop-function sql-case-id="drop_functions" />
-    <drop-function sql-case-id="drop_function_without_argument_list" />
-    <drop-function sql-case-id="drop_function_with_schema" />
+    <import sql-case-id="import_table_from_file" />
+    <import sql-case-id="import_table_from_files" />
 </sql-parser-test-cases>
