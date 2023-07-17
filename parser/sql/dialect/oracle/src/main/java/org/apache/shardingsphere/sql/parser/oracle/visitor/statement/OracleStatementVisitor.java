@@ -585,6 +585,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.xmlSerializeFunction()) {
             return visit(ctx.xmlSerializeFunction());
         }
+        if (null != ctx.xmlIsSchemaValidFunction()) {
+            return visit(ctx.xmlIsSchemaValidFunction());
+        }
         return visit(ctx.xmlTableFunction());
     }
     
