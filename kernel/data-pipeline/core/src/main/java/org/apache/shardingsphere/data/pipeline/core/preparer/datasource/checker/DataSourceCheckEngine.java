@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource.checker;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -34,13 +33,26 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Abstract data source checker.
+ * Data source check engine.
  */
-@Slf4j
-public abstract class AbstractDataSourceChecker implements DataSourceChecker {
+public final class DataSourceCheckEngine {
     
-    @Override
-    public final void checkConnection(final Collection<? extends DataSource> dataSources) {
+    private final DatabaseType databaseType;
+    
+    private final DataSourceChecker dataSourceChecker;
+    
+    public DataSourceCheckEngine(final DatabaseType databaseType) {
+        this.databaseType = databaseType;
+        dataSourceChecker = DatabaseTypedSPILoader.findService(DataSourceChecker.class, databaseType).orElse(null);
+    }
+    
+    /**
+     * Check data source connections.
+     *
+     * @param dataSources data sources
+     * @throws PrepareJobWithInvalidConnectionException prepare job with invalid connection exception
+     */
+    public void checkConnection(final Collection<? extends DataSource> dataSources) {
         try {
             for (DataSource each : dataSources) {
                 each.getConnection().close();
@@ -50,8 +62,17 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
         }
     }
     
-    @Override
-    public final void checkTargetTable(final Collection<? extends DataSource> dataSources, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final Collection<String> logicTableNames) {
+    /**
+     * Check table is empty.
+     *
+     * @param dataSources data sources
+     * @param tableNameSchemaNameMapping mapping
+     * @param logicTableNames logic table names
+     * @throws PrepareJobWithInvalidConnectionException prepare job with invalid connection exception
+     */
+    // TODO rename to common usage name
+    // TODO Merge schemaName and tableNames
+    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final Collection<String> logicTableNames) {
         try {
             for (DataSource each : dataSources) {
                 for (String tableName : logicTableNames) {
@@ -66,7 +87,6 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     }
     
     private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, getDatabaseType());
         PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(databaseType);
         String sql = pipelineSQLBuilder.buildCheckEmptySQL(schemaName, tableName);
         try (
@@ -74,6 +94,34 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             return !resultSet.next();
+        }
+    }
+    
+    /**
+     * Check user privileges.
+     *
+     * @param dataSources data sources
+     */
+    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
+        if (null == dataSourceChecker) {
+            return;
+        }
+        for (DataSource each : dataSources) {
+            dataSourceChecker.checkPrivilege(each);
+        }
+    }
+    
+    /**
+     * Check data source variables.
+     *
+     * @param dataSources data sources
+     */
+    public void checkVariable(final Collection<? extends DataSource> dataSources) {
+        if (null == dataSourceChecker) {
+            return;
+        }
+        for (DataSource each : dataSources) {
+            dataSourceChecker.checkVariable(each);
         }
     }
 }
