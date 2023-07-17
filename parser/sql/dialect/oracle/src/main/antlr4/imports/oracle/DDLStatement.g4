@@ -3509,4 +3509,3 @@ dropMaterializedViewLog
 dropMaterializedZonemap
     : DROP MATERIALIZED ZONEMAP zonemapName
     ;
-
