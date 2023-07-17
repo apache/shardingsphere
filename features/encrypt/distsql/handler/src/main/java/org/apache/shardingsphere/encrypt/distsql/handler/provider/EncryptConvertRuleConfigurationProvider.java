@@ -36,7 +36,7 @@ import java.util.TreeMap;
 /**
  * Encrypt convert rule configuration provider.
  */
-public class EncryptConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
+public final class EncryptConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
     
     @Override
     public String convert(final RuleConfiguration ruleConfig) {
