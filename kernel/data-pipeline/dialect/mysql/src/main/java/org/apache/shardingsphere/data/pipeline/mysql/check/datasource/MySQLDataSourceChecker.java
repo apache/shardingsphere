@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.check.datasource;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithCheckPrivilegeFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidSourceDataSourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
-import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.spi.check.DialectDataSourceChecker;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Data source checker for MySQL.
  */
-public final class MySQLDataSourceChecker implements DataSourceChecker {
+public final class MySQLDataSourceChecker implements DialectDataSourceChecker {
     
     private static final String SHOW_GRANTS_SQL = "SHOW GRANTS";
     

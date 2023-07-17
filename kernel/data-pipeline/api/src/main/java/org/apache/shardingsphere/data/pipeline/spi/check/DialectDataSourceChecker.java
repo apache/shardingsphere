@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.check.datasource;
+package org.apache.shardingsphere.data.pipeline.spi.check;
 
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import javax.sql.DataSource;
 
 /**
- * Data source checker.
+ * Dialect data source checker.
  */
 @SingletonSPI
-public interface DataSourceChecker extends DatabaseTypedSPI {
+public interface DialectDataSourceChecker extends DatabaseTypedSPI {
     
     /**
      * Check user privileges.
