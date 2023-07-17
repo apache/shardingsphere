@@ -52,6 +52,7 @@
     <alter-database sql-case-id="alter_database_convert_to_snapshot_standby" />
     <alter-database sql-case-id="alter_database_commit_to_switchover_to_primary" />
     <alter-database sql-case-id="alter_database_commit_to_switchover_to_logical_standby" />
+    <alter-database sql-case-id="alter_database_commit_to_switchover_to_primary_with_session_shutdown" />
     <alter-database sql-case-id="alter_database_clear_unarchived_logfile_group_unrecoverable_datafile" />
     <alter-database sql-case-id="alter_database_archivelog" />
     <alter-database sql-case-id="alter_database_clear_logfile_group" />
