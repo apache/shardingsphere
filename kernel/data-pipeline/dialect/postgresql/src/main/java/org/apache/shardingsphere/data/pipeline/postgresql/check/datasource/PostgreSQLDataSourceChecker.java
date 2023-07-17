@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithCheckPrivilegeFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutUserException;
-import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.spi.check.DialectDataSourceChecker;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
@@ -36,7 +36,7 @@ import java.util.Collections;
  * PostgreSQL Data source checker.
  */
 @Slf4j
-public final class PostgreSQLDataSourceChecker implements DataSourceChecker {
+public final class PostgreSQLDataSourceChecker implements DialectDataSourceChecker {
     
     private static final String SHOW_GRANTS_SQL = "SELECT * FROM pg_roles WHERE rolname = ?";
     
