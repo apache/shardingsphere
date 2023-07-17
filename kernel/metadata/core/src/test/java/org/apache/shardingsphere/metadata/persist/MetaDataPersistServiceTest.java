@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourcePersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.datasource.DataSourceUnitPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.rule.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -57,7 +57,7 @@ class MetaDataPersistServiceTest {
     private static final String SCHEMA_RULE_YAML = "yaml/persist/data-database-rule.yaml";
     
     @Mock
-    private DataSourcePersistService dataSourceService;
+    private DataSourceUnitPersistService dataSourceService;
     
     @Mock
     private DatabaseRulePersistService databaseRulePersistService;
@@ -73,7 +73,7 @@ class MetaDataPersistServiceTest {
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         metaDataPersistService = new MetaDataPersistService(mock(PersistRepository.class));
-        setField("dataSourceService", dataSourceService);
+        setField("dataSourceUnitService", dataSourceService);
         setField("databaseRulePersistService", databaseRulePersistService);
         setField("globalRuleService", globalRuleService);
         setField("propsService", propsService);

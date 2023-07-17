@@ -1,0 +1,62 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+ignore:
+  - '**/*.md'
+
+pipeline:
+  - '.github/workflows/e2e-operation.yml'
+  - 'infra/**/src/main/**'
+  - 'mode/**/src/main/**'
+  - 'features/encrypt/src/main/**'
+  - 'features/features/readwrite-splitting/src/main/**'
+  - 'features/sharding/src/main/**'
+  - 'proxy/**/src/main/**'
+  - 'jdbc/core/src/main/**'
+  - '**/*-distsql*/**/src/main/**'
+  - 'kernel/data-pipeline/**/src/main/**'
+  - 'kernel/data-pipeline/**/pom.xml'
+  - '**/src/main/**/data/pipeline/**'
+  - '**/src/main/resources/META-INF/services/*.data.pipeline.*'
+  - 'test/pom.xml'
+  - 'test/e2e/fixture/**'
+  - 'test/e2e/env/**'
+  - 'test/e2e/operation/pipeline/**'
+
+showprocesslist:
+  - '.github/workflows/e2e-operation.yml'
+  - 'infra/common/src/main/**'
+  - 'mode/**/src/main/**'
+  - 'proxy/**/src/main/**'
+  - 'jdbc/core/src/main/**'
+  - 'test/pom.xml'
+  - 'test/e2e/fixture/**'
+  - 'test/e2e/env/**'
+  - 'test/e2e/operation/showprocesslist/**'
+
+transaction:
+  - '.github/workflows/e2e-operation.yml'
+  - 'infra/common/src/main/**'
+  - 'mode/**/src/main/**'
+  - 'proxy/**/src/main/**'
+  - 'jdbc/core/src/main/**'
+  - 'kernel/transaction/**/src/main/**'
+  - 'kernel/transaction/**/pom.xml'
+  - 'test/pom.xml'
+  - 'test/e2e/fixture/**'
+  - 'test/e2e/env/**'
+  - 'test/e2e/operation/transaction/**'

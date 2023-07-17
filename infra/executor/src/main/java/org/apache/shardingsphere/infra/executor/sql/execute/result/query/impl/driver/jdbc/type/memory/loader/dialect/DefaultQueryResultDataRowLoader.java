@@ -38,11 +38,6 @@ public final class DefaultQueryResultDataRowLoader extends AbstractQueryResultDa
     }
     
     @Override
-    public String getType() {
-        return "Default";
-    }
-    
-    @Override
     public boolean isDefault() {
         return true;
     }

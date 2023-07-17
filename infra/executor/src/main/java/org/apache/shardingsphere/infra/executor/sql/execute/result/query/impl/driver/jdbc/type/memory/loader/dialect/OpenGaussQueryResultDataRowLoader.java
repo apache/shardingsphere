@@ -38,7 +38,7 @@ public final class OpenGaussQueryResultDataRowLoader extends AbstractQueryResult
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

@@ -99,7 +99,7 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

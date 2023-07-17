@@ -60,7 +60,7 @@ td {
   vertical-align: top; }
 
 p {
-  text-indent: 2rem; }
+  text-indent: 0rem; }
 
 table {
   width: 100%;
@@ -148,7 +148,7 @@ pre code {
   .post p {
     margin: 0 0 1rem;
     line-height: 2em;
-    text-indent: 2em; }
+    text-indent: 0em; }
   .post li {
     line-height: 2em; }
   .post a:hover {

@@ -20,22 +20,20 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.util.CloseUtils;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineDataConsistencyCalculateSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.common.util.JDBCStreamQueryUtils;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataMatchCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.dumper.ColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,11 +41,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * Data match data consistency calculate algorithm.
@@ -55,9 +53,6 @@ import java.util.stream.Collectors;
 @SPIDescription("Match raw data of records.")
 @Slf4j
 public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
-    
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = ShardingSphereServiceLoader
-            .getServiceInstances(DatabaseType.class).stream().map(DatabaseType::getType).collect(Collectors.toList());
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     
@@ -91,7 +86,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         try {
             Collection<Collection<Object>> records = new LinkedList<>();
             Object maxUniqueKeyValue = null;
-            ColumnValueReader columnValueReader = PipelineTypedSPILoader.getDatabaseTypedService(ColumnValueReader.class, param.getDatabaseType());
+            ColumnValueReaderEngine columnValueReaderEngine = new ColumnValueReaderEngine(param.getDatabaseType());
             ResultSet resultSet = calculationContext.getResultSet();
             while (resultSet.next()) {
                 ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName()));
@@ -99,10 +94,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 int columnCount = resultSetMetaData.getColumnCount();
                 Collection<Object> columnRecord = new LinkedList<>();
                 for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                    columnRecord.add(columnValueReader.readValue(resultSet, resultSetMetaData, columnIndex));
+                    columnRecord.add(columnValueReaderEngine.read(resultSet, resultSetMetaData, columnIndex));
                 }
                 records.add(columnRecord);
-                maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, param.getUniqueKey().getOrdinalPosition());
+                maxUniqueKeyValue = columnValueReaderEngine.read(resultSet, resultSetMetaData, param.getUniqueKey().getOrdinalPosition());
                 if (records.size() == chunkSize) {
                     break;
                 }
@@ -133,7 +128,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
-            CloseUtils.closeQuietly(result);
+            QuietlyCloser.close(result);
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
         }
         return result;
@@ -148,10 +143,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     private void fulfillCalculationContext(final CalculationContext calculationContext, final DataConsistencyCalculateParameter param) throws SQLException {
         String sql = getQuerySQL(param);
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType());
-        PreparedStatement preparedStatement = JDBCStreamQueryUtils.generateStreamQueryPreparedStatement(databaseType, calculationContext.getConnection(), sql);
+        PreparedStatement preparedStatement = JDBCStreamQueryUtils.generateStreamQueryPreparedStatement(param.getDatabaseType(), calculationContext.getConnection(), sql);
         setCurrentStatement(preparedStatement);
-        if (!(databaseType instanceof MySQLDatabaseType)) {
+        if (!(param.getDatabaseType() instanceof MySQLDatabaseType)) {
             preparedStatement.setFetchSize(chunkSize);
         }
         calculationContext.setPreparedStatement(preparedStatement);
@@ -167,9 +161,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         if (null == param.getUniqueKey()) {
             throw new UnsupportedOperationException("Data consistency of DATA_MATCH type not support table without unique key and primary key now");
         }
-        PipelineSQLBuilder sqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, param.getDatabaseType());
+        PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(param.getDatabaseType());
+        Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();
         boolean firstQuery = null == param.getTableCheckPosition();
-        return sqlBuilder.buildQueryAllOrderingSQL(param.getSchemaName(), param.getLogicTableName(), param.getColumnNames(), param.getUniqueKey().getName(), firstQuery);
+        return pipelineSQLBuilder.buildQueryAllOrderingSQL(param.getSchemaName(), param.getLogicTableName(), columnNames, param.getUniqueKey().getName(), firstQuery);
     }
     
     @Override
@@ -178,8 +173,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     @Override
-    public Collection<String> getSupportedDatabaseTypes() {
-        return SUPPORTED_DATABASE_TYPES;
+    public Collection<DatabaseType> getSupportedDatabaseTypes() {
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
     }
     
     @RequiredArgsConstructor
@@ -221,9 +216,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         
         @Override
         public void close() {
-            CloseUtils.closeQuietly(resultSet.get());
-            CloseUtils.closeQuietly(preparedStatement.get());
-            CloseUtils.closeQuietly(connection);
+            QuietlyCloser.close(resultSet.get());
+            QuietlyCloser.close(preparedStatement.get());
+            QuietlyCloser.close(connection);
         }
     }
 }

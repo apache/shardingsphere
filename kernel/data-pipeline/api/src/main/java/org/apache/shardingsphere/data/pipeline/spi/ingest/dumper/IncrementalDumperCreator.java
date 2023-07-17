@@ -22,14 +22,14 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Incremental dumper creator.
  */
 @SingletonSPI
-public interface IncrementalDumperCreator extends TypedSPI {
+public interface IncrementalDumperCreator extends DatabaseTypedSPI {
     
     /**
      * Create incremental dumper.
@@ -41,4 +41,13 @@ public interface IncrementalDumperCreator extends TypedSPI {
      * @return incremental dumper
      */
     IncrementalDumper createIncrementalDumper(DumperConfiguration dumperConfig, IngestPosition position, PipelineChannel channel, PipelineTableMetaDataLoader metaDataLoader);
+    
+    /**
+     * Whether support incremental dump.
+     * 
+     * @return support incremental dump or not
+     */
+    default boolean isSupportIncrementalDump() {
+        return true;
+    }
 }

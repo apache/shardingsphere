@@ -48,8 +48,8 @@ class DCLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
         try (
-                SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
                         new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getActualDataSourceMap(), testParam.getDatabaseType())) {
             assertExecuteUpdate(containerComposer);
@@ -79,8 +79,8 @@ class DCLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
         try (
-                SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
                         new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getActualDataSourceMap(), testParam.getDatabaseType())) {
             assertExecute(containerComposer);

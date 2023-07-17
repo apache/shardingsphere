@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Der
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
@@ -140,7 +139,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     }
     
     private NullsOrderType generateNewNullsOrderType(final DatabaseType databaseType, final OrderDirection orderDirection) {
-        if (databaseType instanceof SchemaSupportedDatabaseType || databaseType instanceof OracleDatabaseType) {
+        if (databaseType.getDefaultSchema().isPresent() || databaseType instanceof OracleDatabaseType) {
             return OrderDirection.ASC == orderDirection ? NullsOrderType.LAST : NullsOrderType.FIRST;
         }
         return OrderDirection.ASC == orderDirection ? NullsOrderType.FIRST : NullsOrderType.LAST;

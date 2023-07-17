@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.common.metadata.node.event.handl
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.common.metadata.node.config.processor.ChangedJobConfigurationProcessor;
+import org.apache.shardingsphere.data.pipeline.common.metadata.node.config.processor.JobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
@@ -53,7 +53,7 @@ public final class ConfigMetaDataChangedEventHandler implements PipelineMetaData
             return;
         }
         log.info("{} job configuration: {}, disabled={}", event.getType(), event.getKey(), jobConfig.isDisabled());
-        TypedSPILoader.findService(ChangedJobConfigurationProcessor.class, PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getTypeName())
+        TypedSPILoader.findService(JobConfigurationChangedProcessor.class, PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getType())
                 .ifPresent(optional -> optional.process(event.getType(), jobConfig));
     }
 }

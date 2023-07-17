@@ -19,11 +19,12 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.datasource.checker
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -65,19 +66,14 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     }
     
     private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
-        String sql = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, getDatabaseType()).buildCheckEmptySQL(schemaName, tableName);
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, getDatabaseType());
+        PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(databaseType);
+        String sql = pipelineSQLBuilder.buildCheckEmptySQL(schemaName, tableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             return !resultSet.next();
         }
-    }
-    
-    protected abstract String getDatabaseType();
-    
-    @Override
-    public String getType() {
-        return getDatabaseType();
     }
 }

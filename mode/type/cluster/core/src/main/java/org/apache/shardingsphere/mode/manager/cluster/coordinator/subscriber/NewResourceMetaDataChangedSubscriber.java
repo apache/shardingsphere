@@ -53,7 +53,7 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DatabaseAddedEvent event) {
-        contextManager.addDatabase(event.getDatabaseName());
+        contextManager.getResourceMetaDataContextManager().addDatabase(event.getDatabaseName());
     }
     
     /**
@@ -63,7 +63,7 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DatabaseDeletedEvent event) {
-        contextManager.dropDatabase(event.getDatabaseName());
+        contextManager.getResourceMetaDataContextManager().dropDatabase(event.getDatabaseName());
     }
     
     /**
@@ -73,7 +73,7 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent event) {
-        contextManager.addSchema(event.getDatabaseName(), event.getSchemaName());
+        contextManager.getResourceMetaDataContextManager().addSchema(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**
@@ -83,7 +83,7 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent event) {
-        contextManager.dropSchema(event.getDatabaseName(), event.getSchemaName());
+        contextManager.getResourceMetaDataContextManager().dropSchema(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**
@@ -93,12 +93,12 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
         Map<String, ShardingSphereTable> tables = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
                 .getTableMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getTableName());
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), tables.values().iterator().next(), null);
+        contextManager.getResourceMetaDataContextManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), tables.values().iterator().next(), null);
     }
     
     /**
@@ -108,7 +108,7 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DropTableEvent event) {
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), null);
+        contextManager.getResourceMetaDataContextManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), null);
     }
     
     /**
@@ -118,12 +118,12 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterViewEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
         Map<String, ShardingSphereView> views = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
                 .getViewMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getViewName());
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, views.values().iterator().next());
+        contextManager.getResourceMetaDataContextManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, views.values().iterator().next());
     }
     
     /**
@@ -133,6 +133,6 @@ public final class NewResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DropViewEvent event) {
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getViewName());
+        contextManager.getResourceMetaDataContextManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getViewName());
     }
 }

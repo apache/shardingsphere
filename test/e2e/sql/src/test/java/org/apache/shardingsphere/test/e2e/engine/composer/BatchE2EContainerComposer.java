@@ -55,7 +55,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Batch E2E container composer.
  */
-public final class BatchE2EContainerComposer extends E2EContainerComposer {
+public final class BatchE2EContainerComposer extends E2EContainerComposer implements AutoCloseable {
     
     private final DatabaseType databaseType;
     
@@ -65,7 +65,7 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer {
     
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
-    public BatchE2EContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException, SQLException {
+    public BatchE2EContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException {
         super(testParam);
         databaseType = testParam.getDatabaseType();
         for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
@@ -185,6 +185,5 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer {
     @Override
     public void close() {
         dataSetEnvironmentManager.cleanData();
-        super.close();
     }
 }

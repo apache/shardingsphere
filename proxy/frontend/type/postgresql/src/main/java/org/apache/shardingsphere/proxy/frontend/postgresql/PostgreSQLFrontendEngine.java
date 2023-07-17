@@ -53,7 +53,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

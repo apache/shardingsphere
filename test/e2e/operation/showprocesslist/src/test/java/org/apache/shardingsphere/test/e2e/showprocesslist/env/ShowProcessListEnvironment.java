@@ -45,10 +45,10 @@ public final class ShowProcessListEnvironment {
     
     private ShowProcessListEnvironment() {
         props = loadProperties();
-        runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
-        itEnvType = ShowProcessListEnvTypeEnum.valueOf(props.getProperty("it.env.type", ShowProcessListEnvTypeEnum.NONE.name()).toUpperCase());
+        runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("showprocesslist.it.run.modes", "Standalone,Cluster"));
+        itEnvType = ShowProcessListEnvTypeEnum.valueOf(props.getProperty("showprocesslist.it.env.type", ShowProcessListEnvTypeEnum.NONE.name()).toUpperCase());
         scenarios = getScenarios(props);
-        governanceCenters = Splitter.on(",").trimResults().splitToList(props.getProperty("it.governance.centers"));
+        governanceCenters = Splitter.on(",").trimResults().splitToList(props.getProperty("showprocesslist.it.governance.centers"));
     }
     
     /**
@@ -73,7 +73,7 @@ public final class ShowProcessListEnvironment {
     }
     
     private Collection<String> getScenarios(final Properties props) {
-        Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("it.scenarios"));
+        Collection<String> result = Splitter.on(",").trimResults().splitToList(props.getProperty("showprocesslist.it.scenarios", "cluster_jdbc_proxy"));
         for (String each : result) {
             new ScenarioCommonPath(each).checkFolderExist();
         }

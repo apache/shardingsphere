@@ -20,7 +20,9 @@ package org.apache.shardingsphere.data.pipeline.common.job.progress.yaml;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 /**
  * YAML job item incremental tasks progress swapper.
@@ -59,7 +61,7 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
             return new JobItemIncrementalTasksProgress(null);
         }
         // TODO consider to remove parameter databaseType
-        PositionInitializer positionInitializer = PipelineTypedSPILoader.getDatabaseTypedService(PositionInitializer.class, databaseType);
+        PositionInitializer positionInitializer = DatabaseTypedSPILoader.getService(PositionInitializer.class, TypedSPILoader.getService(DatabaseType.class, databaseType));
         IncrementalTaskProgress taskProgress = new IncrementalTaskProgress(positionInitializer.init(yamlProgress.getPosition()));
         taskProgress.setIncrementalTaskDelay(yamlProgress.getDelay());
         return new JobItemIncrementalTasksProgress(taskProgress);

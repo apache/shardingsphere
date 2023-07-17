@@ -22,7 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -81,7 +81,7 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         jdbcConfig = YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), YamlJdbcConfiguration.class, true);
         databaseType = DatabaseTypeEngine.getDatabaseType(jdbcConfig.getUrl());
         yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
-        appendJdbcQueryProperties(databaseType.getType(), yamlConfig);
+        appendJdbcQueryProperties(databaseType, yamlConfig);
         dataSourceProperties = new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(yamlConfig);
     }
     
@@ -98,8 +98,8 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         return result;
     }
     
-    private void appendJdbcQueryProperties(final String databaseType, final Map<String, Object> yamlConfig) {
-        Optional<JdbcQueryPropertiesExtension> extension = PipelineTypedSPILoader.findDatabaseTypedService(JdbcQueryPropertiesExtension.class, databaseType);
+    private void appendJdbcQueryProperties(final DatabaseType databaseType, final Map<String, Object> yamlConfig) {
+        Optional<JdbcQueryPropertiesExtension> extension = DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;
         }

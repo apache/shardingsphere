@@ -371,7 +371,7 @@ table{
 }
 
 table td,p,code{
-    word-break:break-all;
+    word-break:break-word;
     white-space: inherit;
 }
 

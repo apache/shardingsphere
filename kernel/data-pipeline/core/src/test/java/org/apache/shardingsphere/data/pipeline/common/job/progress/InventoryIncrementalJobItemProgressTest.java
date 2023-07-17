@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.common.job.progress;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.IntegerPrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
@@ -44,7 +44,7 @@ class InventoryIncrementalJobItemProgressTest {
     void assertInit() {
         InventoryIncrementalJobItemProgress actual = getJobItemProgress(ConfigurationFileUtils.readFile("job-progress.yaml"));
         assertThat(actual.getStatus(), is(JobStatus.RUNNING));
-        assertThat(actual.getSourceDatabaseType(), is("H2"));
+        assertThat(actual.getSourceDatabaseType().getType(), is("H2"));
         assertThat(actual.getInventory().getProgresses().size(), is(4));
         assertNotNull(actual.getIncremental().getIncrementalTaskProgress());
     }

@@ -27,16 +27,14 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorEx
 import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * JDBC executor callback.
@@ -46,11 +44,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCExecutionUnit, T> {
     
-    private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new ConcurrentHashMap<>();
-    
     private final DatabaseType protocolType;
     
-    private final Map<String, DatabaseType> storageTypes;
+    private final ShardingSphereResourceMetaData resourceMetaData;
     
     private final SQLStatement sqlStatement;
     
@@ -78,8 +74,8 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
      */
     private T execute(final JDBCExecutionUnit jdbcExecutionUnit, final boolean isTrunkThread) throws SQLException {
         SQLExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        DatabaseType storageType = storageTypes.get(jdbcExecutionUnit.getExecutionUnit().getDataSourceName());
-        DataSourceMetaData dataSourceMetaData = getDataSourceMetaData(jdbcExecutionUnit.getStorageResource().getConnection().getMetaData(), storageType);
+        DatabaseType storageType = resourceMetaData.getStorageType(jdbcExecutionUnit.getExecutionUnit().getDataSourceName());
+        DataSourceMetaData dataSourceMetaData = resourceMetaData.getDataSourceMetaData(jdbcExecutionUnit.getExecutionUnit().getDataSourceName());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
             SQLUnit sqlUnit = jdbcExecutionUnit.getExecutionUnit().getSqlUnit();
@@ -99,16 +95,6 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
             SQLExecutorExceptionHandler.handleException(ex);
             return null;
         }
-    }
-    
-    private DataSourceMetaData getDataSourceMetaData(final DatabaseMetaData databaseMetaData, final DatabaseType storageType) throws SQLException {
-        String url = databaseMetaData.getURL();
-        if (CACHED_DATASOURCE_METADATA.containsKey(url)) {
-            return CACHED_DATASOURCE_METADATA.get(url);
-        }
-        DataSourceMetaData result = storageType.getDataSourceMetaData(url, databaseMetaData.getUserName());
-        CACHED_DATASOURCE_METADATA.put(url, result);
-        return result;
     }
     
     protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode, DatabaseType storageType) throws SQLException;

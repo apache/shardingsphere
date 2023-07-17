@@ -35,7 +35,7 @@ public final class H2PositionInitializer implements PositionInitializer {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

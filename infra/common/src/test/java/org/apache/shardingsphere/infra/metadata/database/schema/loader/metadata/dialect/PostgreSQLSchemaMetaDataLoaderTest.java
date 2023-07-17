@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Ind
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -173,8 +174,7 @@ class PostgreSQLSchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = TypedSPILoader.findService(
-                DialectSchemaMetaDataLoader.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getType());
+        Optional<DialectSchemaMetaDataLoader> result = DatabaseTypedSPILoader.findService(DialectSchemaMetaDataLoader.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         assertTrue(result.isPresent());
         return result.get();
     }

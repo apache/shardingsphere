@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -39,12 +40,22 @@ public interface DatabaseBasedPersistService<T> {
     void persist(String databaseName, T configs);
     
     /**
-     * Delete configurations.
+     * Load configurations.
      *
      * @param databaseName database name
-     * @param configs configurations
+     * @return configurations
      */
-    default void delete(String databaseName, T configs) {
+    T load(String databaseName);
+    
+    /**
+     * Load configuration.
+     *
+     * @param databaseName database name
+     * @param name name
+     * @return configurations
+     */
+    default T load(String databaseName, String name) {
+        return null;
     }
     
     /**
@@ -57,30 +68,24 @@ public interface DatabaseBasedPersistService<T> {
     }
     
     /**
+     * Delete configurations.
+     *
+     * @param databaseName database name
+     * @param configs configurations
+     */
+    default void delete(String databaseName, T configs) {
+    }
+    
+    /**
      * Persist configurations.
      *
      * @param databaseName database name
      * @param configs configurations
-     * @return meta data version
+     * @return meta data versions
      */
-    Collection<MetaDataVersion> persistConfig(String databaseName, T configs);
-    
-    /**
-     * Load configurations.
-     *
-     * @param databaseName database name
-     * @return configurations
-     */
-    T load(String databaseName);
-    
-    /**
-     * Load configurations based version.
-     * 
-     * @param databaseName database name
-     * @param name name
-     * @return configurations
-     */
-    T load(String databaseName, String name);
+    default Collection<MetaDataVersion> persistConfig(String databaseName, T configs) {
+        return Collections.emptyList();
+    }
     
     /**
      * TODO remove this after meta data refactor completed

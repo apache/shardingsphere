@@ -22,9 +22,12 @@ import org.apache.shardingsphere.mode.event.config.AlterDatabaseRuleConfiguratio
 import org.apache.shardingsphere.mode.event.config.DropDatabaseRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.global.AlterPropertiesEvent;
-import org.apache.shardingsphere.mode.event.datasource.AlterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.datasource.RegisterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.datasource.UnregisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.nodes.AlterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.datasource.nodes.RegisterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.datasource.nodes.UnregisterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.AlterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.RegisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.UnregisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
@@ -48,11 +51,11 @@ public final class NewConfigurationChangedSubscriber {
      */
     @Subscribe
     public void renew(final RegisterStorageUnitEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.registerStorageUnit(event.getDatabaseName(),
-                contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(event.getDatabaseName(), event.getStorageUnitName()));
+        contextManager.getConfigurationContextManager().registerStorageUnit(event.getDatabaseName(),
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
     /**
@@ -62,11 +65,11 @@ public final class NewConfigurationChangedSubscriber {
      */
     @Subscribe
     public void renew(final AlterStorageUnitEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(),
-                contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(event.getDatabaseName(), event.getStorageUnitName()));
+        contextManager.getConfigurationContextManager().alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(),
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
     /**
@@ -79,7 +82,48 @@ public final class NewConfigurationChangedSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
-        contextManager.unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
+        contextManager.getConfigurationContextManager().unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
+    }
+    
+    /**
+     * Renew for register storage node.
+     *
+     * @param event register storage node event
+     */
+    @Subscribe
+    public void renew(final RegisterStorageNodeEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+            return;
+        }
+        contextManager.getConfigurationContextManager().registerStorageNode(event.getDatabaseName(),
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageNodeName()));
+    }
+    
+    /**
+     * Renew for alter storage node.
+     *
+     * @param event register storage node event
+     */
+    @Subscribe
+    public void renew(final AlterStorageNodeEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+            return;
+        }
+        contextManager.getConfigurationContextManager().alterStorageNode(event.getDatabaseName(), event.getStorageNodeName(),
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageNodeName()));
+    }
+    
+    /**
+     * Renew for unregister storage node.
+     *
+     * @param event register storage node event
+     */
+    @Subscribe
+    public void renew(final UnregisterStorageNodeEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        contextManager.getConfigurationContextManager().unregisterStorageNode(event.getDatabaseName(), event.getStorageNodeName());
     }
     
     /**
@@ -92,7 +136,7 @@ public final class NewConfigurationChangedSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
-        contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
+        contextManager.getConfigurationContextManager().alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
     }
     
     /**
@@ -105,7 +149,7 @@ public final class NewConfigurationChangedSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
-        contextManager.dropRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
+        contextManager.getConfigurationContextManager().dropRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
     }
     
     /**
@@ -115,10 +159,10 @@ public final class NewConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterGlobalRuleConfigurationEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.alterGlobalRuleConfiguration(contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().load(event.getRuleSimpleName()));
+        contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().load(event.getRuleSimpleName()));
     }
     
     /**
@@ -128,9 +172,9 @@ public final class NewConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterPropertiesEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getInstanceContext().getModeContextManager().getActiveVersionByKey(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.alterProperties(contextManager.getMetaDataContexts().getPersistService().getPropsService().load());
+        contextManager.getConfigurationContextManager().alterProperties(contextManager.getMetaDataContexts().getPersistService().getPropsService().load());
     }
 }

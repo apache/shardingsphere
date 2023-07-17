@@ -106,6 +106,6 @@ class MySQLSaneQueryResultEngineTest {
     
     @Test
     void assertGetType() {
-        assertThat(new MySQLSaneQueryResultEngine().getType(), is("MySQL"));
+        assertThat(new MySQLSaneQueryResultEngine().getType().getType(), is("MySQL"));
     }
 }

@@ -19,87 +19,50 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.AbstractPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * PostgreSQL pipeline SQL builder.
  */
-public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
-    
-    private static final Set<String> RESERVED_KEYWORDS = new HashSet<>(Arrays.asList(
-            "ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BETWEEN", "BIGINT", "BINARY",
-            "BIT", "BOOLEAN", "BOTH", "CASE", "CAST", "CHAR", "CHARACTER", "CHECK", "COALESCE", "COLLATE", "COLLATION", "COLUMN", "CONCURRENTLY", "CONSTRAINT", "CREATE", "CROSS", "CURRENT_CATALOG",
-            "CURRENT_DATE", "CURRENT_ROLE", "CURRENT_SCHEMA", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEC", "DECIMAL", "DEFAULT", "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE", "END",
-            "EXCEPT", "EXISTS", "EXTRACT", "FALSE", "FETCH", "FLOAT", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GREATEST", "GROUP", "GROUPING", "HAVING", "ILIKE", "IN", "INITIALLY",
-            "INNER", "INOUT", "INT", "INTEGER", "INTERSECT", "INTERVAL", "INTO", "IS", "ISNULL", "JOIN", "LATERAL", "LEADING", "LEAST", "LEFT", "LIKE", "LIMIT", "LOCALTIME", "LOCALTIMESTAMP",
-            "NATIONAL", "NATURAL", "NCHAR", "NONE", "NORMALIZE", "NOT", "NOTNULL", "NULL", "NULLIF", "NUMERIC", "OFFSET", "ON", "ONLY", "OR", "ORDER", "OUT", "OUTER", "OVERLAPS", "OVERLAY", "PLACING",
-            "POSITION", "PRECISION", "PRIMARY", "REAL", "REFERENCES", "RETURNING", "RIGHT", "ROW", "SELECT", "SESSION_USER", "SETOF", "SIMILAR", "SMALLINT", "SOME", "SUBSTRING", "SYMMETRIC", "TABLE",
-            "TABLESAMPLE", "THEN", "TIME", "TIMESTAMP", "TO", "TRAILING", "TREAT", "TRIM", "TRUE", "UNION", "UNIQUE", "USER", "USING", "VALUES", "VARCHAR", "VARIADIC", "VERBOSE", "WHEN", "WHERE",
-            "WINDOW", "WITH", "XMLATTRIBUTES", "XMLCONCAT", "XMLELEMENT", "XMLEXISTS", "XMLFOREST", "XMLNAMESPACES", "XMLPARSE", "XMLPI", "XMLROOT", "XMLSERIALIZE", "XMLTABLE"));
-    
-    @Override
-    protected boolean isKeyword(final String item) {
-        return RESERVED_KEYWORDS.contains(item.toUpperCase());
-    }
-    
-    @Override
-    protected String getLeftIdentifierQuoteString() {
-        return "\"";
-    }
-    
-    @Override
-    protected String getRightIdentifierQuoteString() {
-        return "\"";
-    }
+public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
-        return Optional.of(String.format("CREATE SCHEMA IF NOT EXISTS %s", quote(schemaName)));
+        return Optional.of(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
     }
     
     @Override
-    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
-        String result = super.buildInsertSQL(schemaName, dataRecord);
+    public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
         // TODO without unique key, job has been interrupted, which may lead to data duplication
         if (dataRecord.getUniqueKeyValue().isEmpty()) {
-            return result;
+            return Optional.empty();
         }
-        return result + buildConflictSQL(dataRecord);
-    }
-    
-    // Refer to https://www.postgresql.org/docs/current/sql-insert.html
-    private String buildConflictSQL(final DataRecord dataRecord) {
-        StringBuilder result = new StringBuilder(" ON CONFLICT (");
-        for (Column each : RecordUtils.extractPrimaryColumns(dataRecord)) {
-            result.append(each.getName()).append(',');
-        }
-        result.setLength(result.length() - 1);
+        StringBuilder result = new StringBuilder("ON CONFLICT (");
+        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
+        result.append(dataRecord.getColumns().stream().filter(Column::isUniqueKey).map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName())).collect(Collectors.joining(",")));
         result.append(") DO UPDATE SET ");
-        for (int i = 0; i < dataRecord.getColumnCount(); i++) {
-            Column column = dataRecord.getColumn(i);
-            if (column.isUniqueKey()) {
-                continue;
-            }
-            result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(',');
-        }
-        result.setLength(result.length() - 1);
-        return result.toString();
+        result.append(dataRecord.getColumns().stream()
+                .filter(each -> !each.isUniqueKey()).map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + "=EXCLUDED." + sqlSegmentBuilder.getEscapedIdentifier(each.getName()))
+                .collect(Collectors.joining(",")));
+        return Optional.of(result.toString());
     }
     
     @Override
-    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
+    public String buildCheckEmptySQL(final String qualifiedTableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
+    }
+    
+    @Override
+    public Optional<String> buildEstimatedCountSQL(final String qualifiedTableName) {
         return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

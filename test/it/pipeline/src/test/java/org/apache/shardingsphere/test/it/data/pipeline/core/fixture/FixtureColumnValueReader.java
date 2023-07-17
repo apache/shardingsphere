@@ -17,24 +17,21 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.dumper.AbstractColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.DialectColumnValueReader;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.util.Optional;
 
-/**
- * Basic column value reader.
- */
-public final class FixtureColumnValueReader extends AbstractColumnValueReader {
+public final class FixtureColumnValueReader implements DialectColumnValueReader {
     
     @Override
-    protected Object doReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return super.defaultDoReadValue(resultSet, metaData, columnIndex);
+    public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) {
+        return Optional.empty();
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

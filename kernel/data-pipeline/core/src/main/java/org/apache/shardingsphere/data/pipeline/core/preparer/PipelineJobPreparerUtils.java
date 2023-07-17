@@ -36,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.checker.
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -44,7 +43,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
@@ -66,12 +65,8 @@ public final class PipelineJobPreparerUtils {
      * @param databaseType database type
      * @return true if supported, otherwise false
      */
-    public static boolean isIncrementalSupported(final String databaseType) {
-        // TODO H2 doesn't support incremental, but H2DatabaseType.getTrunkDatabaseType() is MySQL. Ignore trunk database type for H2 for now.
-        if ("H2".equalsIgnoreCase(databaseType)) {
-            return TypedSPILoader.findService(IncrementalDumperCreator.class, databaseType).isPresent();
-        }
-        return PipelineTypedSPILoader.findDatabaseTypedService(IncrementalDumperCreator.class, databaseType).isPresent();
+    public static boolean isIncrementalSupported(final DatabaseType databaseType) {
+        return DatabaseTypedSPILoader.findService(IncrementalDumperCreator.class, databaseType).map(IncrementalDumperCreator::isSupportIncrementalDump).orElse(false);
     }
     
     /**
@@ -81,8 +76,8 @@ public final class PipelineJobPreparerUtils {
      * @param prepareTargetSchemasParam prepare target schemas parameter
      * @throws SQLException if prepare target schema fail
      */
-    public static void prepareTargetSchema(final String databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
-        Optional<DataSourcePreparer> dataSourcePreparer = PipelineTypedSPILoader.findDatabaseTypedService(DataSourcePreparer.class, databaseType);
+    public static void prepareTargetSchema(final DatabaseType databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
+        Optional<DataSourcePreparer> dataSourcePreparer = DatabaseTypedSPILoader.findService(DataSourcePreparer.class, databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
@@ -113,8 +108,8 @@ public final class PipelineJobPreparerUtils {
      * @param prepareTargetTablesParam prepare target tables parameter
      * @throws SQLException SQL exception
      */
-    public static void prepareTargetTables(final String databaseType, final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
-        Optional<DataSourcePreparer> dataSourcePreparer = PipelineTypedSPILoader.findDatabaseTypedService(DataSourcePreparer.class, databaseType);
+    public static void prepareTargetTables(final DatabaseType databaseType, final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
+        Optional<DataSourcePreparer> dataSourcePreparer = DatabaseTypedSPILoader.findService(DataSourcePreparer.class, databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
@@ -141,9 +136,9 @@ public final class PipelineJobPreparerUtils {
                 return position.get();
             }
         }
-        String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getType();
+        DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-        return PipelineTypedSPILoader.getDatabaseTypedService(PositionInitializer.class, databaseType).init(dataSource, dumperConfig.getJobId());
+        return DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType).init(dataSource, dumperConfig.getJobId());
     }
     
     /**
@@ -152,11 +147,11 @@ public final class PipelineJobPreparerUtils {
      * @param databaseType database type
      * @param dataSources data source
      */
-    public static void checkSourceDataSource(final String databaseType, final Collection<? extends DataSource> dataSources) {
+    public static void checkSourceDataSource(final DatabaseType databaseType, final Collection<? extends DataSource> dataSources) {
         if (dataSources.isEmpty()) {
             return;
         }
-        DataSourceChecker dataSourceChecker = PipelineTypedSPILoader.findDatabaseTypedService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType));
+        DataSourceChecker dataSourceChecker = DatabaseTypedSPILoader.findService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType.getType()));
         dataSourceChecker.checkConnection(dataSources);
         dataSourceChecker.checkPrivilege(dataSources);
         dataSourceChecker.checkVariable(dataSources);
@@ -169,12 +164,12 @@ public final class PipelineJobPreparerUtils {
      * @param importerConfig importer config
      * @param targetDataSources target data sources
      */
-    public static void checkTargetDataSource(final String databaseType, final ImporterConfiguration importerConfig, final Collection<? extends DataSource> targetDataSources) {
+    public static void checkTargetDataSource(final DatabaseType databaseType, final ImporterConfiguration importerConfig, final Collection<? extends DataSource> targetDataSources) {
         if (null == targetDataSources || targetDataSources.isEmpty()) {
             log.info("target data source is empty, skip check");
             return;
         }
-        DataSourceChecker dataSourceChecker = PipelineTypedSPILoader.findDatabaseTypedService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType));
+        DataSourceChecker dataSourceChecker = DatabaseTypedSPILoader.findService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType.getType()));
         dataSourceChecker.checkConnection(targetDataSources);
         dataSourceChecker.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
     }
@@ -188,7 +183,7 @@ public final class PipelineJobPreparerUtils {
      */
     public static void destroyPosition(final String jobId, final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         DatabaseType databaseType = pipelineDataSourceConfig.getDatabaseType();
-        PositionInitializer positionInitializer = PipelineTypedSPILoader.getDatabaseTypedService(PositionInitializer.class, databaseType.getType());
+        PositionInitializer positionInitializer = DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType);
         final long startTimeMillis = System.currentTimeMillis();
         log.info("Cleanup database type:{}, data source type:{}", databaseType.getType(), pipelineDataSourceConfig.getType());
         if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {

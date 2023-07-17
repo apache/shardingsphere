@@ -10,7 +10,7 @@ From emerging technologies like generative AI to discussions on cloud-native tec
 
 Among the participants, the[ ShardingSphere](https://shardingsphere.apache.org/) open-source community and its PMC and[ SphereEx](https://www.sphere-ex.com/) co-founder and CTO[ Trista Pan](https://github.com/tristaZero), made their mark in the Developer Lounge, engaging with enthusiasts and sharing experiences. In this blog post, we will delve into the DevLounge's roundtable discussion on unlocking data value with open source and explore ShardingSphere's approach to data security.
 
-![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China1.jpeg") ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China2.jpeg") ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China3.jpeg") 
+![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China1.jpg) ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China2.jpeg) ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China3.jpeg) 
 
 ## Roundtable Discussion: How Developers Can Unlock Data Value with Open Source
 
@@ -31,9 +31,9 @@ Trista discussed the evolving perception of open source and its value for develo
 Addressing the challenges in data value mining, Trista highlighted data security as a significant concern. With the rise of big data and artificial intelligence, ensuring data security has become paramount. ShardingSphere acknowledges user and customer expectations regarding data security and is actively working on enhancing it across various application scenarios.
 
 <figure class="third">
-    <img src="https://shardingsphere.apache.org/blog/img/AWS_Summit_China4.jpeg" width="600" high="816.29">
-    <img src="https://shardingsphere.apache.org/blog/img/AWS_Summit_China5.jpeg" width="600" high="369">
-    <img src="https://shardingsphere.apache.org/blog/img/AWS_Summit_China6.jpeg" width="600" high="369">
+    <img src="https://shardingsphere.apache.org/blog/img/AWS_Summit_China4.jpg" width="600" high="816.29">
+    <img src="https://shardingsphere.apache.org/blog/img/AWS_Summit_China5.jpg" width="600" high="369">
+    <img src="https://shardingsphere.apache.org/blog/img/AWS_Summit_China6.jpg" width="600" high="369">
 </figure>
 
 ## ShardingSphere: Providing Robust Data Security Features
@@ -50,9 +50,9 @@ Addressing the challenges in data value mining, Trista highlighted data security
 
 At the event, ShardingSphere's lightweight open-source distributed SQL transaction & query engine garnered significant attention. Database developers, operations engineers, and architects showed great interest in ShardingSphere's technical framework, implementation, feature highlights, and its joint solution with AWS Aurora. Many expressed a desire to join the ShardingSphere community to gain hands-on experience and expand their knowledge.
 
-![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China7.jpeg") ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China8.jpeg")
+![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China7.jpg) ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China8.jpg)
 
-![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China9.jpeg") ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China10.jpeg")
+![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China9.jpg) ![img](https://shardingsphere.apache.org/blog/img/AWS_Summit_China10.jpg)
 
 ## Conclusion
 

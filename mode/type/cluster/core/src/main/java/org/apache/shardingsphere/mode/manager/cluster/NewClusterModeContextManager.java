@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
@@ -100,19 +99,19 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     
     @Override
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeRegisterStorageUnitProps) {
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().persistConfig(databaseName, toBeRegisterStorageUnitProps);
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().persistConfig(databaseName, toBeRegisterStorageUnitProps);
     }
     
     @Override
     public void alterStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeUpdatedStorageUnitProps) {
-        DatabaseBasedPersistService<Map<String, DataSourceProperties>> dataSourceService = contextManager.getMetaDataContexts().getPersistService().getDataSourceService();
+        DatabaseBasedPersistService<Map<String, DataSourceProperties>> dataSourceService = contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService();
         contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(dataSourceService.persistConfig(databaseName, toBeUpdatedStorageUnitProps));
     }
     
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) {
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().delete(databaseName,
-                getToBeDroppedDataSourcePropsMap(contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(databaseName), toBeDroppedStorageUnitNames));
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().delete(databaseName,
+                getToBeDroppedDataSourcePropsMap(contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(databaseName), toBeDroppedStorageUnitNames));
     }
     
     private Map<String, DataSourceProperties> getToBeDroppedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
@@ -128,7 +127,8 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     @Override
     public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
         ruleConfigs.removeIf(each -> !each.getClass().isAssignableFrom(SingleRuleConfiguration.class));
-        contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persist(databaseName, ruleConfigs);
+        contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService()
+                .switchActiveVersion(contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persistConfig(databaseName, ruleConfigs));
     }
     
     @Override
@@ -166,16 +166,6 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     public void alterProperties(final Properties props) {
         Collection<MetaDataVersion> versions = contextManager.getMetaDataContexts().getPersistService().getPropsService().persistConfig(props);
         contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(versions);
-    }
-    
-    @Override
-    public String getActiveVersionByKey(final String key) {
-        return contextManager.getMetaDataContexts().getPersistService().getRepository().getDirectly(key);
-    }
-    
-    @Override
-    public String getVersionPathByActiveVersionKey(final String key, final String activeVersion) {
-        return contextManager.getMetaDataContexts().getPersistService().getRepository().getDirectly(NewDatabaseMetaDataNode.getVersionNodeByActiveVersionPath(key, activeVersion));
     }
     
     @Override

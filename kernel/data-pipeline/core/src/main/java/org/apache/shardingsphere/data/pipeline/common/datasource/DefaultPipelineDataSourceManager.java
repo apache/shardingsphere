@@ -50,9 +50,6 @@ public final class DefaultPipelineDataSourceManager implements PipelineDataSourc
     }
     
     // TODO monitor each DataSource close
-    /**
-     * Close, close cached data source.
-     */
     @Override
     public void close() {
         for (PipelineDataSourceWrapper each : cachedDataSources.values()) {

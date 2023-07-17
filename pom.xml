@@ -16,8 +16,7 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache</groupId>
@@ -26,7 +25,7 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>5.3.3-SNAPSHOT</version>
+    <version>5.4.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Apache ShardingSphere</name>
     <description>Build criterion and ecosystem above multi-model databases</description>
@@ -48,7 +47,6 @@
         <module>test</module>
         
         <module>distribution</module>
-        <module>report</module>
     </modules>
     
     <properties>
@@ -154,7 +152,6 @@
         <spotbugs-maven-plugin.version>4.7.2.1</spotbugs-maven-plugin.version>
         <fb-contrib.version>7.6.0</fb-contrib.version>
         <findsecbugs.version>1.12.0</findsecbugs.version>
-        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         
         <!-- Report plugin versions -->
@@ -867,7 +864,7 @@
                                 <nrOfIndentSpace>4</nrOfIndentSpace>
                                 <keepBlankLines>true</keepBlankLines>
                                 <indentBlankLines>true</indentBlankLines>
-                                <indentSchemaLocation>true</indentSchemaLocation>
+                                <indentSchemaLocation>false</indentSchemaLocation>
                                 <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
                                 <sortModules>false</sortModules>
                                 <sortExecutions>false</sortExecutions>
@@ -934,29 +931,6 @@
                             </plugin>
                         </plugins>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>${jacoco-maven-plugin.version}</version>
-                    <configuration>
-                        <excludes>**/*.jar</excludes>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>prepare-agent</id>
-                            <goals>
-                                <goal>prepare-agent</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>report</id>
-                            <goals>
-                                <goal>report</goal>
-                            </goals>
-                            <phase>verify</phase>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
@@ -1160,7 +1134,7 @@
         <connection>scm:git:https://github.com/apache/shardingsphere.git</connection>
         <developerConnection>scm:git:https://github.com/apache/shardingsphere.git</developerConnection>
         <url>https://github.com/apache/shardingsphere.git</url>
-        <tag>HEAD</tag>
+        <tag>5.4.0</tag>
     </scm>
     
     <distributionManagement>
@@ -1263,18 +1237,6 @@
                                 <phase>package</phase>
                             </execution>
                         </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>coverage</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>${jacoco-maven-plugin.version}</version>
                     </plugin>
                 </plugins>
             </build>

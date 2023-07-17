@@ -21,15 +21,16 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
-import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
+import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourcePersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.datasource.DataSourceNodePersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.datasource.DataSourceUnitPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.rule.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
@@ -53,7 +54,9 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     
     private final PersistRepository repository;
     
-    private final DataSourcePersistService dataSourceService;
+    private final DataSourceUnitPersistService dataSourceUnitService;
+    
+    private final DataSourceNodePersistService dataSourceNodeService;
     
     private final DatabaseMetaDataPersistService databaseMetaDataService;
     
@@ -69,7 +72,8 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
-        dataSourceService = new DataSourcePersistService(repository);
+        dataSourceUnitService = new DataSourceUnitPersistService(repository);
+        dataSourceNodeService = new DataSourceNodePersistService(repository);
         databaseMetaDataService = new DatabaseMetaDataPersistService(repository);
         databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
@@ -127,7 +131,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     
     @Override
     public Map<String, DataSourceConfiguration> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(databaseName);
+        Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceUnitService.load(databaseName);
         if (databaseConfigs.containsKey(databaseName) && !databaseConfigs.get(databaseName).getDataSources().isEmpty()) {
             databaseConfigs.get(databaseName).getStorageResource().getStorageNodes().values().forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
         }

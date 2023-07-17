@@ -69,12 +69,11 @@ exceptionHandler
     ;
 
 declareSection
-    : itemList1 itemList2?
-    | itemList2
+    : declareItem+
     ;
-
-itemList2
-    : cursorDeclaration | cursorDefinition | functionDeclaration | functionDefinition | procedureDeclaration | procedureDefinition
+    
+declareItem
+    : typeDefinition | cursorDeclaration | itemDeclaration | functionDeclaration | procedureDeclaration | cursorDefinition | functionDefinition | procedureDefinition
     ;
 
 cursorDefinition
@@ -87,10 +86,6 @@ functionDefinition
 
 procedureDefinition
     : procedureDeclaration (IS | AS) (callSpec | declareSection? body)
-    ;
-
-itemList1
-    :(typeDefinition | cursorDeclaration | itemDeclaration | functionDeclaration | procedureDeclaration)*
     ;
 
 cursorDeclaration
