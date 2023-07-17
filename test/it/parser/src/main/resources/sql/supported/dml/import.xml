@@ -16,9 +16,7 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <drop-function sql-case-id="drop_function" />
-    <drop-function sql-case-id="drop_functions" />
-    <drop-function sql-case-id="drop_function_without_argument_list" />
-    <drop-function sql-case-id="drop_function_with_schema" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="import_table_from_file" value="IMPORT TABLE FROM 's1/t1*.sdi'" db-types="MySQL" />
+    <sql-case id="import_table_from_files" value="IMPORT TABLE FROM '/tmp/mysql-files/employees.sdi','/tmp/mysql-files/managers.sdi'" db-types="MySQL" />
+</sql-cases>

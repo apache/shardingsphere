@@ -16,9 +16,8 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <drop-function sql-case-id="drop_function" />
-    <drop-function sql-case-id="drop_functions" />
-    <drop-function sql-case-id="drop_function_without_argument_list" />
-    <drop-function sql-case-id="drop_function_with_schema" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="drop_context_empno" value="DROP CONTEXT empno_ctx;" db-types="Oracle" />
+    <sql-case id="drop_context_provider" value="DROP CONTEXT provider_ctx;" db-types="Oracle" />
+    <sql-case id="drop_context_global_cust" value="DROP CONTEXT global_cust_ctx;" db-types="Oracle" />
+</sql-cases>

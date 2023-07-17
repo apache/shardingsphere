@@ -56,6 +56,9 @@ compilerParametersClause
     : parameterName EQ_ parameterValue
     ;
 
+dropContext
+    : DROP CONTEXT contextName;
+
 dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
@@ -82,6 +85,10 @@ dropEdition
 
 dropOutline
     : DROP OUTLINE outlineName
+    ;
+
+dropCluster
+    : DROP CLUSTER (schemaName DOT_)? clusterName (INCLUDING TABLES (CASCADE CONSTRAINTS)?)?
     ;
 
 alterOutline
@@ -3486,7 +3493,7 @@ dropPluggableDatabase
     : DROP PLUGGABLE DATABASE pdbName ((KEEP | INCLUDING) DATAFILES)?
     ;
 
- dropJava
+dropJava
      : DROP JAVA (SOURCE | CLASS | RESOURCE) objectName
      ;
 
@@ -3506,3 +3513,6 @@ dropMaterializedZonemap
     : DROP MATERIALIZED ZONEMAP zonemapName
     ;
 
+dropFunction
+    : DROP FUNCTION (schemaName DOT_)? function
+    ;
