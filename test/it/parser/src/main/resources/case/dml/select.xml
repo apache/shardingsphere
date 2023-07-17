@@ -5543,4 +5543,17 @@
             </column-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_with_format_function">
+        <from>
+            <simple-table alias="wi" name="warehouse_info" start-index="66" stop-index="82" literal-start-index="66" literal-stop-index="82"/>
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
+            <expression-projection text="wi.code.format(null,'PURE_IDENTITY')" literal-text="wi.code.format(null,'PURE_IDENTITY')" alias="PURE_IDENTITY" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
+                <expr >
+                    <function function-name="wi" text="wi.code.format(null,'PURE_IDENTITY')" literal-text="wi.code.format(null,'PURE_IDENTITY')" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
