@@ -47,8 +47,6 @@ public final class DataConsistencyCalculateParameter {
     
     private final DatabaseType databaseType;
     
-    private final DatabaseType peerDatabaseType;
-    
     /**
      * It could be primary key.
      * It could be used in order by clause.

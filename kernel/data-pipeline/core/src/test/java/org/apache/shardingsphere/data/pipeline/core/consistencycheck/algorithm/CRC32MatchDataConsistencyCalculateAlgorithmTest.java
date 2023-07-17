@@ -64,8 +64,7 @@ class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     void setUp() throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true);
-        parameter = new DataConsistencyCalculateParameter(pipelineDataSource, null,
-                "foo_tbl", Arrays.asList("foo_col", "bar_col"), databaseType, databaseType, uniqueKey, Collections.emptyMap());
+        parameter = new DataConsistencyCalculateParameter(pipelineDataSource, null, "foo_tbl", Arrays.asList("foo_col", "bar_col"), databaseType, uniqueKey, Collections.emptyMap());
         when(pipelineDataSource.getConnection()).thenReturn(connection);
     }
     
