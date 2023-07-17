@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.check.datasource;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithCheckPrivilegeFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidSourceDataSourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.checker.AbstractDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
@@ -29,7 +29,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Data source checker for MySQL.
  */
-public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
+public final class MySQLDataSourceChecker implements DataSourceChecker {
     
     private static final String SHOW_GRANTS_SQL = "SHOW GRANTS";
     
@@ -57,13 +56,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     }
     
     @Override
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-        for (DataSource each : dataSources) {
-            checkPrivilege(each);
-        }
-    }
-    
-    private void checkPrivilege(final DataSource dataSource) {
+    public void checkPrivilege(final DataSource dataSource) {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SHOW_GRANTS_SQL);
@@ -85,13 +78,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     }
     
     @Override
-    public void checkVariable(final Collection<? extends DataSource> dataSources) {
-        for (DataSource each : dataSources) {
-            checkVariable(each);
-        }
-    }
-    
-    private void checkVariable(final DataSource dataSource) {
+    public void checkVariable(final DataSource dataSource) {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SHOW_VARIABLES_SQL)) {

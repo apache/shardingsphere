@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.check.datasource;
 
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 
 /**
  * Data source checker.
@@ -31,34 +29,16 @@ import java.util.Collection;
 public interface DataSourceChecker extends DatabaseTypedSPI {
     
     /**
-     * Check data source connections.
-     *
-     * @param dataSources data sources
-     */
-    void checkConnection(Collection<? extends DataSource> dataSources);
-    
-    /**
      * Check user privileges.
      *
-     * @param dataSources data sources
+     * @param dataSource data source to be checked
      */
-    void checkPrivilege(Collection<? extends DataSource> dataSources);
+    void checkPrivilege(DataSource dataSource);
     
     /**
-     * Check data source variables.
+     * Check variables.
      *
-     * @param dataSources data sources
+     * @param dataSource data source to be checked
      */
-    void checkVariable(Collection<? extends DataSource> dataSources);
-    
-    /**
-     * Check table is empty.
-     *
-     * @param dataSources data sources
-     * @param tableNameSchemaNameMapping mapping
-     * @param logicTableNames logic table names
-     */
-    // TODO rename to common usage name
-    // TODO Merge schemaName and tableNames
-    void checkTargetTable(Collection<? extends DataSource> dataSources, TableNameSchemaNameMapping tableNameSchemaNameMapping, Collection<String> logicTableNames);
+    void checkVariable(DataSource dataSource);
 }

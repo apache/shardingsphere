@@ -17,28 +17,18 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 
 public final class FixtureDataSourceChecker implements DataSourceChecker {
     
     @Override
-    public void checkConnection(final Collection<? extends DataSource> dataSources) {
+    public void checkPrivilege(final DataSource dataSource) {
     }
     
     @Override
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-    }
-    
-    @Override
-    public void checkVariable(final Collection<? extends DataSource> dataSources) {
-    }
-    
-    @Override
-    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final Collection<String> tableNames) {
+    public void checkVariable(final DataSource dataSource) {
     }
     
     @Override
