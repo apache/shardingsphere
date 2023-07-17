@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <drop-sequence sql-case-id="drop_sequence" />
-    <drop-sequence sql-case-id="drop_sequence_with_schema" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="drop_profile" value="DROP PROFILE app_user;" db-types="Oracle" />
+    <sql-case id="drop_profile_cascade" value="DROP PROFILE app_user CASCADE;" db-types="Oracle" />
+</sql-cases>

@@ -17,6 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-sequence sql-case-id="drop_sequence" />
-    <drop-sequence sql-case-id="drop_sequence_with_schema" />
+    <drop-profile sql-case-id="drop_profile" />
+    <drop-profile sql-case-id="drop_profile_cascade" />
 </sql-parser-test-cases>
