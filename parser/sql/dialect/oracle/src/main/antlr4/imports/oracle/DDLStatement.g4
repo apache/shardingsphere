@@ -3521,6 +3521,14 @@ dropMaterializedZonemap
     : DROP MATERIALIZED ZONEMAP zonemapName
     ;
 
+createTablespace
+    : CREATE (BIGFILE|SMALLFILE)? permanentTablespaceClause
+    ;
+
+permanentTablespaceClause
+    : TABLESPACE tablespaceName (ONLINE|OFFLINE)
+    ;
+
 dropFunction
     : DROP FUNCTION (schemaName DOT_)? function
     ;

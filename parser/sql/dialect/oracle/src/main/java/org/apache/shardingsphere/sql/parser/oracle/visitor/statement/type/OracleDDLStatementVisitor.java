@@ -85,6 +85,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSynonymContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DisassociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropClusterContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropColumnSpecificationContext;
@@ -220,6 +221,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropClusterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropContextStatement;
@@ -1077,5 +1079,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitDropMaterializedZonemap(final DropMaterializedZonemapContext ctx) {
         return new OracleDropMaterializedZonemapStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
+        return new OracleCreateTablespaceStatement();
     }
 }
