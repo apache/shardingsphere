@@ -63,7 +63,7 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord
+    : IDENTIFIER_ | unreservedWord | STRING_
     ;
 
 unreservedWord
@@ -319,6 +319,10 @@ unreservedWord3
     ;
 
 schemaName
+    : identifier
+    ;
+
+profileName
     : identifier
     ;
 
@@ -701,7 +705,11 @@ analyticFunction
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction
+    : castFunction  | charFunction | extractFunction | formatFunction
+    ;
+
+formatFunction
+    : (owner DOT_)* name DOT_ FORMAT LP_ expr (COMMA_ expr)* RP_
     ;
 
 castFunction
@@ -1644,7 +1652,7 @@ libraryName
     ;
 
 matchString
-    : IDENTIFIER_ | ASTERISK_
+    : identifier | ASTERISK_
     ;
 
 parameterType

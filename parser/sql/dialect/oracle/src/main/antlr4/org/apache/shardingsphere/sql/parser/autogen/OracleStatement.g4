@@ -136,5 +136,9 @@ execute
     | alterResourceCost
     | alterRole
     | createTablespace
+    | dropSequence
+    | dropProfile
+    | dropFunction
+    | dropCluster
     ) SEMI_?
     ;

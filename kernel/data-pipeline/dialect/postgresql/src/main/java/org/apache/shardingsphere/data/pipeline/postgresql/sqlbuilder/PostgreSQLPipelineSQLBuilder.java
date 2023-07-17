@@ -19,11 +19,11 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * PostgreSQL pipeline SQL builder.
@@ -41,27 +41,14 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
         if (dataRecord.getUniqueKeyValue().isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(buildConflictSQL(dataRecord));
-    }
-    
-    // Refer to https://www.postgresql.org/docs/current/sql-insert.html
-    private String buildConflictSQL(final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder("ON CONFLICT (");
-        for (Column each : RecordUtils.extractPrimaryColumns(dataRecord)) {
-            result.append(each.getName()).append(',');
-        }
-        result.setLength(result.length() - 1);
-        result.append(") DO UPDATE SET ");
         PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
-        for (int i = 0; i < dataRecord.getColumnCount(); i++) {
-            Column column = dataRecord.getColumn(i);
-            if (column.isUniqueKey()) {
-                continue;
-            }
-            result.append(sqlSegmentBuilder.getEscapedIdentifier(column.getName())).append("=EXCLUDED.").append(sqlSegmentBuilder.getEscapedIdentifier(column.getName())).append(',');
-        }
-        result.setLength(result.length() - 1);
-        return result.toString();
+        result.append(dataRecord.getColumns().stream().filter(Column::isUniqueKey).map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName())).collect(Collectors.joining(",")));
+        result.append(") DO UPDATE SET ");
+        result.append(dataRecord.getColumns().stream()
+                .filter(each -> !each.isUniqueKey()).map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + "=EXCLUDED." + sqlSegmentBuilder.getEscapedIdentifier(each.getName()))
+                .collect(Collectors.joining(",")));
+        return Optional.of(result.toString());
     }
     
     @Override

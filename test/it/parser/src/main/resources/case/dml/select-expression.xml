@@ -1875,7 +1875,12 @@
         </projections>
         <where start-index="22" stop-index="80" literal-stop-index="88">
             <expr>
-                <common-expression text="MATCH (order_id) AGAINST (? IN NATURAL LANGUAGE MODE)" literal-text="MATCH (order_id) AGAINST ('keyword' IN NATURAL LANGUAGE MODE)" start-index="28" stop-index="80" literal-stop-index="88" />
+                <match-expression start-index="28" stop-index="88">
+                    <expr>
+                        <literal-expression value="keyword" start-index="54" stop-index="62" />
+                        <parameter-marker-expression parameter-index="0" start-index="54" stop-index="54" />
+                    </expr>
+                </match-expression>
             </expr>
         </where>
     </select>

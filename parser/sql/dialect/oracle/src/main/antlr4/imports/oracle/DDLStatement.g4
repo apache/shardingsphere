@@ -87,6 +87,10 @@ dropOutline
     : DROP OUTLINE outlineName
     ;
 
+dropCluster
+    : DROP CLUSTER (schemaName DOT_)? clusterName (INCLUDING TABLES (CASCADE CONSTRAINTS)?)?
+    ;
+
 alterOutline
     : ALTER OUTLINE (PUBLIC | PRIVATE)? outlineName
     ( REBUILD
@@ -1361,7 +1365,7 @@ alterDatabase
     ;
 
 databaseClauses
-    : DATABASE databaseName | PLUGGABLE DATABASE pdbName
+    : DATABASE databaseName? | PLUGGABLE DATABASE pdbName?
     ;
 
 startupClauses
@@ -1463,13 +1467,13 @@ logfileClauses
     ;
 
 logfileDescriptor
-    : GROUP NUMBER_ | LP_ fileName (COMMA_ fileName)* RP_ | fileName
+    : GROUP INTEGER_ | LP_ fileName (COMMA_ fileName)* RP_ | fileName
     ;
 
 addLogfileClauses
     : ADD STANDBY? LOGFILE
-    (((INSTANCE instanceName)? | (THREAD SQ_ NUMBER_ SQ_)?)
-    (GROUP NUMBER_)? redoLogFileSpec (COMMA_ (GROUP NUMBER_)? redoLogFileSpec)*
+    (((INSTANCE SQ_ instanceName SQ_)? | (THREAD INTEGER_)?)
+    (GROUP INTEGER_)? redoLogFileSpec (COMMA_ (GROUP INTEGER_)? redoLogFileSpec)*
     | MEMBER fileName REUSE? (COMMA_ fileName REUSE?)* TO logfileDescriptor (COMMA_ logfileDescriptor)*)
     ;
 
@@ -3485,11 +3489,19 @@ dropIndexType
     : DROP INDEXTYPE indexTypeName FORCE?
     ;
 
+dropProfile
+    : DROP PROFILE profileName CASCADE?
+    ;
+
 dropPluggableDatabase
     : DROP PLUGGABLE DATABASE pdbName ((KEEP | INCLUDING) DATAFILES)?
     ;
 
- dropJava
+dropSequence
+    : DROP SEQUENCE (schemaName DOT_)? sequenceName
+    ;
+
+dropJava
      : DROP JAVA (SOURCE | CLASS | RESOURCE) objectName
      ;
 
@@ -3515,4 +3527,8 @@ createTablespace
 
 permanentTablespaceClause
     : TABLESPACE tablespaceName (ONLINE|OFFLINE)
+    ;
+
+dropFunction
+    : DROP FUNCTION (schemaName DOT_)? function
     ;

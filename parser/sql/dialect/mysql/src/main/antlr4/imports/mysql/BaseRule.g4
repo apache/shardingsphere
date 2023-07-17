@@ -206,6 +206,7 @@ identifierKeywordsUnambiguous
     | DISK
     | DUMPFILE
     | DUPLICATE
+    | DROP
     | DYNAMIC
     | ENABLE
     | ENCRYPTION

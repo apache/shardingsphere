@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlPrefixOperator;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.function.dialect.mysql.MySQLMatchAgainstFunction;
 
 /**
  * SQL extension operator table.
@@ -50,4 +51,6 @@ public final class SQLExtensionOperatorTable {
     public static final SqlBinaryOperator NOT_REGEXP = new SqlBinaryOperator("NOT REGEXP", SqlKind.OTHER, 30, true, null, null, null);
     
     public static final SqlBinaryOperator SOUNDS_LIKE = new SqlBinaryOperator("SOUNDS LIKE", SqlKind.OTHER, 30, true, null, null, null);
+    
+    public static final MySQLMatchAgainstFunction MATCH_AGAINST = new MySQLMatchAgainstFunction();
 }

@@ -15,31 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer.datasource.checker;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
-import javax.sql.DataSource;
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Basic data source checker.
+ * Expected match expression.
  */
-@RequiredArgsConstructor
-public final class BasicDataSourceChecker extends AbstractDataSourceChecker {
+@Getter
+@Setter
+public class ExpectedMatchExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
     
-    private final String databaseType;
-    
-    @Override
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-    }
-    
-    @Override
-    public void checkVariable(final Collection<? extends DataSource> dataSources) {
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return databaseType;
-    }
+    @XmlElement
+    private ExpectedExpression expr;
 }
