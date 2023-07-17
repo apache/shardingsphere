@@ -114,6 +114,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropPl
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropRestorePointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropRollbackSegmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropSynonymContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTriggerContext;
@@ -246,6 +247,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropProfileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropRestorePointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTriggerStatement;
@@ -940,6 +942,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitDropOperator(final DropOperatorContext ctx) {
         return new OracleDropOperatorStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropSequence(final DropSequenceContext ctx) {
+        return new OracleDropSequenceStatement();
     }
     
     @Override

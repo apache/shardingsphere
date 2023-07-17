@@ -3497,6 +3497,10 @@ dropPluggableDatabase
     : DROP PLUGGABLE DATABASE pdbName ((KEEP | INCLUDING) DATAFILES)?
     ;
 
+dropSequence
+    : DROP SEQUENCE (schemaName DOT_)? sequenceName
+    ;
+
 dropJava
      : DROP JAVA (SOURCE | CLASS | RESOURCE) objectName
      ;

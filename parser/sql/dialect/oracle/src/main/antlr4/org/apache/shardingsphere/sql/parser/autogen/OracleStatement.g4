@@ -135,6 +135,7 @@ execute
     | dropContext
     | alterResourceCost
     | alterRole
+    | dropSequence
     | dropProfile
     | dropFunction
     | dropCluster
