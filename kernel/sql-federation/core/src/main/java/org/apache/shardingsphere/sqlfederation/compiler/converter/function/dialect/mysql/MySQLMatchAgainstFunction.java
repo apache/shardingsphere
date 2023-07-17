@@ -26,6 +26,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperandCountRange;
 import org.apache.calcite.sql.SqlSyntax;
 import org.apache.calcite.sql.SqlWriter;
+import org.apache.calcite.sql.SqlWriter.Frame;
 import org.apache.calcite.sql.SqlWriter.FrameType;
 import org.apache.calcite.sql.SqlWriter.FrameTypeEnum;
 import org.apache.calcite.sql.type.InferTypes;
@@ -49,6 +50,12 @@ public final class MySQLMatchAgainstFunction extends SqlFunction {
     
     @Override
     public void unparse(final SqlWriter writer, final SqlCall call, final int leftPrecedence, final int rightPrecedence) {
+        Frame frame = writer.startList(FRAME_TYPE, "MATCH", "");
+        writeParameters(writer, call);
+        writer.endList(frame);
+    }
+    
+    private void writeParameters(final SqlWriter writer, final SqlCall call) {
         writer.sep("(");
         List<SqlNode> operandList = call.getOperandList();
         int size = operandList.size();
@@ -65,7 +72,6 @@ public final class MySQLMatchAgainstFunction extends SqlFunction {
         String searchModifier = ((SqlLiteral) Util.last(operandList)).toValue();
         writer.sep(searchModifier);
         writer.sep(")");
-        writer.endList(writer.startList(FRAME_TYPE, "MATCH", ""));
     }
     
     @Override
