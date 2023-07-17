@@ -3598,7 +3598,12 @@
             <expr>
                 <binary-operation-expression start-index="33" stop-index="116" literal-stop-index="123">
                     <left>
-                        <common-expression text="MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE)" literal-text="MATCH(t_order_item.description) AGAINST ('hello' IN NATURAL LANGUAGE MODE)" start-index="33" stop-index="100" literal-stop-index="106" />
+                        <match-expression start-index="33" stop-index="106">
+                            <expr>
+                                <literal-expression value="hello" start-index="74" stop-index="80" />
+                                <parameter-marker-expression parameter-index="0" start-index="74" stop-index="74" />
+                            </expr>
+                        </match-expression>
                     </left>
                     <operator>AND</operator>
                     <right>
