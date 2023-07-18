@@ -33,4 +33,5 @@
     <create-procedure sql-case-id="create_procedure_with_update_statement_oracle" />
     <create-procedure sql-case-id="create_procedure_with_prepare_commit" />
     <create-procedure sql-case-id="create_procedure_with_cursor_definition" />
+    <create-procedure sql-case-id="create_procedure_with_collection_type_definition" />
 </sql-parser-test-cases>
