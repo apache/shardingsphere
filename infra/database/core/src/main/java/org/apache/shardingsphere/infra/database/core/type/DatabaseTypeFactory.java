@@ -41,7 +41,7 @@ public final class DatabaseTypeFactory {
     public static DatabaseType get(final String url) {
         Collection<DatabaseType> databaseTypes = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().filter(each -> matchURLs(url, each)).collect(Collectors.toList());
         if (databaseTypes.isEmpty()) {
-            return TypedSPILoader.getService(DatabaseType.class, "SQL92");
+            return TypedSPILoader.getService(DatabaseType.class, null);
         }
         for (DatabaseType each : databaseTypes) {
             if (each instanceof BranchDatabaseType) {

@@ -42,7 +42,7 @@ public final class InfraBranchDatabaseTypeFixture implements BranchDatabaseType 
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return null;
+        return new DataSourceMetaDataFixture(url);
     }
     
     @Override
