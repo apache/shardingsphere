@@ -132,7 +132,13 @@ execute
     | dropMaterializedView
     | dropMaterializedViewLog
     | dropMaterializedZonemap
+    | dropContext
     | alterResourceCost
     | alterRole
+    | createTablespace
+    | dropSequence
+    | dropProfile
+    | dropFunction
+    | dropCluster
     ) SEMI_?
     ;

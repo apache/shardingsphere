@@ -56,6 +56,9 @@ compilerParametersClause
     : parameterName EQ_ parameterValue
     ;
 
+dropContext
+    : DROP CONTEXT contextName;
+
 dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
@@ -82,6 +85,10 @@ dropEdition
 
 dropOutline
     : DROP OUTLINE outlineName
+    ;
+
+dropCluster
+    : DROP CLUSTER (schemaName DOT_)? clusterName (INCLUDING TABLES (CASCADE CONSTRAINTS)?)?
     ;
 
 alterOutline
@@ -1240,7 +1247,7 @@ supplementalLogGrpClause
     ;
 
 supplementalIdKeyClause
-    : DATA LP_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY) (COMMA_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY))* RP_ COLUMNS
+    : DATA LP_ (ALL | PRIMARY KEY | UNIQUE INDEX? | FOREIGN KEY) (COMMA_ (ALL | PRIMARY KEY | UNIQUE INDEX? | FOREIGN KEY))* RP_ COLUMNS
     ;
 
 alterSession
@@ -1358,7 +1365,7 @@ alterDatabase
     ;
 
 databaseClauses
-    : DATABASE databaseName | PLUGGABLE DATABASE pdbName
+    : DATABASE databaseName? | PLUGGABLE DATABASE pdbName?
     ;
 
 startupClauses
@@ -1380,7 +1387,7 @@ generalRecovery
     ;
 
 fullDatabaseRecovery
-    : STANDBY? DATABASE
+    : STANDBY? DATABASE?
     ((UNTIL (CANCEL | TIME dateValue | CHANGE NUMBER_ | CONSISTENT)
     | USING BACKUP CONTROLFILE
     | SNAPSHOT TIME dateValue
@@ -1460,13 +1467,13 @@ logfileClauses
     ;
 
 logfileDescriptor
-    : GROUP NUMBER_ | LP_ fileName (COMMA_ fileName)* RP_ | fileName
+    : GROUP INTEGER_ | LP_ fileName (COMMA_ fileName)* RP_ | fileName
     ;
 
 addLogfileClauses
     : ADD STANDBY? LOGFILE
-    (((INSTANCE instanceName)? | (THREAD SQ_ NUMBER_ SQ_)?)
-    (GROUP NUMBER_)? redoLogFileSpec (COMMA_ (GROUP NUMBER_)? redoLogFileSpec)*
+    (((INSTANCE SQ_ instanceName SQ_)? | (THREAD INTEGER_)?)
+    (GROUP INTEGER_)? redoLogFileSpec (COMMA_ (GROUP INTEGER_)? redoLogFileSpec)*
     | MEMBER fileName REUSE? (COMMA_ fileName REUSE?)* TO logfileDescriptor (COMMA_ logfileDescriptor)*)
     ;
 
@@ -1530,7 +1537,7 @@ registerLogfileClause
 
 commitSwitchoverClause
     : (PREPARE | COMMIT) TO SWITCHOVER
-    ( TO (((PHYSICAL | LOGICAL)? PRIMARY | PHYSICAL? STANDBY) ((WITH | WITHOUT) SESSION SHUTDOWN (WAIT | NOWAIT))?
+    ( TO (((PHYSICAL | LOGICAL)? PRIMARY | PHYSICAL? STANDBY) ((WITH | WITHOUT) SESSION SHUTDOWN (WAIT | NOWAIT)?)?
     | LOGICAL STANDBY)
     | CANCEL
     )?
@@ -3482,11 +3489,19 @@ dropIndexType
     : DROP INDEXTYPE indexTypeName FORCE?
     ;
 
+dropProfile
+    : DROP PROFILE profileName CASCADE?
+    ;
+
 dropPluggableDatabase
     : DROP PLUGGABLE DATABASE pdbName ((KEEP | INCLUDING) DATAFILES)?
     ;
 
- dropJava
+dropSequence
+    : DROP SEQUENCE (schemaName DOT_)? sequenceName
+    ;
+
+dropJava
      : DROP JAVA (SOURCE | CLASS | RESOURCE) objectName
      ;
 
@@ -3506,3 +3521,14 @@ dropMaterializedZonemap
     : DROP MATERIALIZED ZONEMAP zonemapName
     ;
 
+createTablespace
+    : CREATE (BIGFILE|SMALLFILE)? permanentTablespaceClause
+    ;
+
+permanentTablespaceClause
+    : TABLESPACE tablespaceName (ONLINE|OFFLINE)
+    ;
+
+dropFunction
+    : DROP FUNCTION (schemaName DOT_)? function
+    ;

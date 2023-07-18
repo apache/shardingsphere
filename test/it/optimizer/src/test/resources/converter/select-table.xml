@@ -17,5 +17,5 @@
   -->
 
 <sql-node-converter-test-cases>
-    <test-cases sql-case-id="select_from_with_table" expected-sql="SELECT * FROM (TABLE `t0`) AS `dt`" db-types="MySQL" />
+    <test-cases sql-case-id="select_from_with_table" expected-sql="SELECT * FROM (SELECT * FROM `t0`) AS `dt`" db-types="MySQL" />
 </sql-node-converter-test-cases>

@@ -35,6 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
+      max-parallel: 20
       fail-fast: false
       matrix:
         java-version: [ 11 ]
@@ -52,9 +53,9 @@ jobs:
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-cache-
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Build prod with Maven
+      - name: Build Project with Maven
         run: ./mvnw -T1C -B -ntp clean install
-      - name: Run SQL parser
+      - name: Run SQL Parser
         run: ./mvnw -nsu -B install -f parser/sql/dialect/${{ matrix.database }}/pom.xml -Dsql.parser.external.it.enabled=true
       - uses: actions/upload-artifact@v3
         with:
