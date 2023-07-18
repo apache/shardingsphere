@@ -30,5 +30,11 @@
     <modules>
         <module>mysql</module>
         <module>mariadb</module>
+        <module>postgresql</module>
+        <module>opengauss</module>
+        <module>oracle</module>
+        <module>sqlserver</module>
+        <module>h2</module>
+        <module>sql92</module>
     </modules>
 </project>

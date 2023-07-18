@@ -29,9 +29,9 @@ class JdbcUrlAppenderTest {
     
     @Test
     void assertAppendQueryPropertiesWithoutOriginalQueryProperties() {
-        String actual = new JdbcUrlAppender().appendQueryProperties("jdbc:mysql://192.168.0.1:3306/foo_ds",
+        String actual = new JdbcUrlAppender().appendQueryProperties("jdbc:infra.fixture://192.168.0.1:3306/foo_ds",
                 PropertiesBuilder.build(new Property("useSSL", Boolean.FALSE.toString()), new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
-        assertThat(actual, startsWith("jdbc:mysql://192.168.0.1:3306/foo_ds?"));
+        assertThat(actual, startsWith("jdbc:infra.fixture://192.168.0.1:3306/foo_ds?"));
         assertThat(actual, containsString("rewriteBatchedStatements=true"));
         assertThat(actual, containsString("useSSL=false"));
     }
@@ -39,9 +39,9 @@ class JdbcUrlAppenderTest {
     @Test
     void assertAppendQueryPropertiesWithOriginalQueryProperties() {
         String actual = new JdbcUrlAppender().appendQueryProperties(
-                "jdbc:mysql://192.168.0.1:3306/foo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true",
+                "jdbc:infra.fixture://192.168.0.1:3306/foo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true",
                 PropertiesBuilder.build(new Property("useSSL", Boolean.FALSE.toString()), new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
-        assertThat(actual, startsWith("jdbc:mysql://192.168.0.1:3306/foo_ds?"));
+        assertThat(actual, startsWith("jdbc:infra.fixture://192.168.0.1:3306/foo_ds?"));
         assertThat(actual, containsString("serverTimezone=UTC"));
         assertThat(actual, containsString("rewriteBatchedStatements=true"));
         assertThat(actual, containsString("useSSL=false"));

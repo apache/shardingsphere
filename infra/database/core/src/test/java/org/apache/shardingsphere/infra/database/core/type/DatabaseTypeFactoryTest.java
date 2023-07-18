@@ -36,6 +36,6 @@ class DatabaseTypeFactoryTest {
     
     @Test
     void assertGetDatabaseTypeWithUnrecognizedURL() {
-        assertThat(DatabaseTypeFactory.get("jdbc:sqlite:test").getType(), is("SQL92"));
+        assertThat(DatabaseTypeFactory.get("jdbc:not-existed:test").getType(), is("INFRA.TRUNK.FIXTURE"));
     }
 }

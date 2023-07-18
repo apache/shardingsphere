@@ -45,7 +45,7 @@ public final class InfraTrunkDatabaseTypeFixture implements TrunkDatabaseType {
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return null;
+        return new DataSourceMetaDataFixture(url);
     }
     
     @Override
@@ -61,5 +61,10 @@ public final class InfraTrunkDatabaseTypeFixture implements TrunkDatabaseType {
     @Override
     public String getType() {
         return "INFRA.TRUNK.FIXTURE";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }
