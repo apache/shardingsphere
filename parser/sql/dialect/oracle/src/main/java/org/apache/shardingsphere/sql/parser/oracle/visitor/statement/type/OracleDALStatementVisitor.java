@@ -39,14 +39,16 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
         OracleExplainStatement result = new OracleExplainStatement();
+        OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor();
+        visitor.setParameterMarkerSegments(getParameterMarkerSegments());
         if (null != ctx.insert()) {
-            result.setStatement((SQLStatement) visit(ctx.insert()));
+            result.setStatement((SQLStatement) visitor.visit(ctx.insert()));
         } else if (null != ctx.delete()) {
-            result.setStatement((SQLStatement) visit(ctx.delete()));
+            result.setStatement((SQLStatement) visitor.visit(ctx.delete()));
         } else if (null != ctx.update()) {
-            result.setStatement((SQLStatement) visit(ctx.update()));
+            result.setStatement((SQLStatement) visitor.visit(ctx.update()));
         } else if (null != ctx.select()) {
-            result.setStatement((SQLStatement) visit(ctx.select()));
+            result.setStatement((SQLStatement) visitor.visit(ctx.select()));
         }
         return result;
     }
