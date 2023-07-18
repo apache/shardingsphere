@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.common.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.spi.BranchDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.dialect.MySQLDatabaseType;

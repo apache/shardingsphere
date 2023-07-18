@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.core.type.dialect;
 
 import org.apache.shardingsphere.infra.database.core.metadata.dialect.H2DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.spi.BranchDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
