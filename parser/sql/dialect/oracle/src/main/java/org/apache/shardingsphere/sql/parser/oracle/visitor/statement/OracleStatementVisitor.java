@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyticFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitExprContext;
@@ -585,6 +586,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.xmlSerializeFunction()) {
             return visit(ctx.xmlSerializeFunction());
         }
+        if (null != ctx.xmlIsSchemaValidFunction()) {
+            return visit(ctx.xmlIsSchemaValidFunction());
+        }
         return visit(ctx.xmlTableFunction());
     }
     
@@ -701,6 +705,17 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         String path = null == ctx.STRING_() ? null : ctx.STRING_().getText();
         ExpressionSegment defaultExpr = null == ctx.expr() ? null : (ExpressionSegment) visit(ctx.expr());
         return new XmlTableColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.columnName().getText(), dataType, path, defaultExpr, getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitXmlIsSchemaValidFunction(final OracleStatementParser.XmlIsSchemaValidFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.ISSCHEMAVALID().getText(), getOriginalText(ctx));
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        return result;
     }
     
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
