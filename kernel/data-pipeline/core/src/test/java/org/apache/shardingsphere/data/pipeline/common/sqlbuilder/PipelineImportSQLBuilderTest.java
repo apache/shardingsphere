@@ -75,7 +75,8 @@ class PipelineImportSQLBuilderTest {
     
     @Test
     void assertBuildDeleteSQLWithoutUniqueKey() {
-        String actual = importSQLBuilder.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey(), RecordUtils.extractConditionColumns(mockDataRecordWithoutUniqueKey(), Collections.emptySet()));
+        String actual = importSQLBuilder.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey(),
+                RecordUtils.extractConditionColumns(mockDataRecordWithoutUniqueKey(), Collections.emptySet()));
         assertThat(actual, is("DELETE FROM t_order WHERE id = ? AND name = ?"));
     }
     
