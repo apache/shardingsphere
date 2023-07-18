@@ -57,6 +57,7 @@
     <sql-case id="alter_database_clear_logfile_group" value="ALTER DATABASE CLEAR LOGFILE GROUP 3" db-types="Oracle" />
     <sql-case id="alter_database_clear_unarchived_logfile_group" value="ALTER DATABASE CLEAR UNARCHIVED LOGFILE GROUP 2" db-types="Oracle" />
     <sql-case id="alter_database_activate_logical_standby_database_finish_apply" value="ALTER DATABASE ACTIVATE LOGICAL STANDBY DATABASE FINISH APPLY" db-types="Oracle" />
+    <sql-case id="alter_database_add_supplemental_log_data_primary_key_unique_index_columns" value="ALTER DATABASE ADD SUPPLEMENTAL LOG DATA (PRIMARY KEY, UNIQUE INDEX) COLUMNS" db-types="Oracle" />
     <sql-case id="alter_database_clear_logfile" value="ALTER DATABASE CLEAR LOGFILE 'diskc:log3.log'" db-types="Oracle" />
     <sql-case id="alter_database_activate_physical_standby_database" value="ALTER DATABASE ACTIVATE PHYSICAL STANDBY DATABASE" db-types="Oracle" />
     <sql-case id="alter_database_add_standby_logfile_thread_size_m" value="ALTER DATABASE ADD STANDBY LOGFILE THREAD 1 SIZE 500M" db-types="Oracle" />

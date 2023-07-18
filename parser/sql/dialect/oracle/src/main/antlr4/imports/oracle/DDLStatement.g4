@@ -1247,7 +1247,7 @@ supplementalLogGrpClause
     ;
 
 supplementalIdKeyClause
-    : DATA LP_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY) (COMMA_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY))* RP_ COLUMNS
+    : DATA LP_ (ALL | PRIMARY KEY | UNIQUE INDEX? | FOREIGN KEY) (COMMA_ (ALL | PRIMARY KEY | UNIQUE INDEX? | FOREIGN KEY))* RP_ COLUMNS
     ;
 
 alterSession
