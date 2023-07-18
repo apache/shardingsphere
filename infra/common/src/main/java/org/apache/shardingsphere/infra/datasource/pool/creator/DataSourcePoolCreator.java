@@ -20,11 +20,10 @@ package org.apache.shardingsphere.infra.datasource.pool.creator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.core.url.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.url.StandardJdbcUrlParser;
-import org.apache.shardingsphere.infra.database.core.type.DataSourceAggregatableDatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.url.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
@@ -119,7 +118,7 @@ public final class DataSourcePoolCreator {
     private static void appendStorageUnit(final Map<String, StorageUnit> storageUnits, final StorageNodeProperties storageNodeProperties,
                                           final String unitName, final DataSourceProperties dataSourceProps) {
         String url = dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        if (storageNodeProperties.getDatabaseType() instanceof DataSourceAggregatableDatabaseType) {
+        if (storageNodeProperties.getDatabaseType().isInstanceConnectionAvailable()) {
             storageUnits.put(unitName, new StorageUnit(unitName, storageNodeProperties.getName(), storageNodeProperties.getDatabase(), url));
         } else {
             storageUnits.put(unitName, new StorageUnit(unitName, storageNodeProperties.getName(), url));
@@ -134,7 +133,7 @@ public final class DataSourcePoolCreator {
         StorageNodeProperties storageNodeProperties;
         try {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-            String nodeName = databaseType instanceof DataSourceAggregatableDatabaseType ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
+            String nodeName = databaseType.isInstanceConnectionAvailable() ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
             storageNodeProperties = new StorageNodeProperties(nodeName, databaseType, dataSourceProperties, jdbcUrl.getDatabase());
         } catch (final UnrecognizedDatabaseURLException ex) {
             storageNodeProperties = new StorageNodeProperties(dataSourceName, databaseType, dataSourceProperties, null);
