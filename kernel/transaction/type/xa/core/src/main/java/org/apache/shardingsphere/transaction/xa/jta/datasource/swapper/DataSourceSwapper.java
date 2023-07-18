@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 import com.google.common.base.CaseFormat;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XADataSourceInitializeException;
@@ -78,9 +79,29 @@ public final class DataSourceSwapper {
     }
     
     private Map<String, Object> getDatabaseAccessConfiguration(final DataSource dataSource) {
-        Map<String, Object> result = new HashMap<>(3, 1F);
+        if (dataSource instanceof ShardingSphereStorageDataSourceWrapper) {
+            ShardingSphereStorageDataSourceWrapper dataSourceWrapper = (ShardingSphereStorageDataSourceWrapper) dataSource;
+            return getDatabaseAccessConfiguration(dataSourceWrapper, TypedSPILoader.getService(DataSourcePropertyProvider.class, dataSourceWrapper.getDataSource().getClass().getName()));
+        }
         DataSourcePropertyProvider provider = TypedSPILoader.getService(DataSourcePropertyProvider.class, dataSource.getClass().getName());
+        return getDatabaseAccessConfiguration(dataSource, provider);
+    }
+    
+    private Map<String, Object> getDatabaseAccessConfiguration(final ShardingSphereStorageDataSourceWrapper dataSourceWrapper, final DataSourcePropertyProvider provider) {
         try {
+            Map<String, Object> result = new HashMap<>(3, 1F);
+            result.put("url", dataSourceWrapper.getUrl());
+            result.put("user", findGetterMethod(dataSourceWrapper.getDataSource(), provider.getUsernamePropertyName()).invoke(dataSourceWrapper.getDataSource()));
+            result.put("password", findGetterMethod(dataSourceWrapper.getDataSource(), provider.getPasswordPropertyName()).invoke(dataSourceWrapper.getDataSource()));
+            return result;
+        } catch (final ReflectiveOperationException ignored) {
+            throw new XADataSourceInitializeException(xaDataSourceDefinition);
+        }
+    }
+    
+    private Map<String, Object> getDatabaseAccessConfiguration(final DataSource dataSource, final DataSourcePropertyProvider provider) {
+        try {
+            Map<String, Object> result = new HashMap<>(3, 1F);
             result.put("url", findGetterMethod(dataSource, provider.getURLPropertyName()).invoke(dataSource));
             result.put("user", findGetterMethod(dataSource, provider.getUsernamePropertyName()).invoke(dataSource));
             result.put("password", findGetterMethod(dataSource, provider.getPasswordPropertyName()).invoke(dataSource));

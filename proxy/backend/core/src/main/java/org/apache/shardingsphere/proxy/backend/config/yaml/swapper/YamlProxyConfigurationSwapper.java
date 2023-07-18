@@ -66,7 +66,7 @@ public final class YamlProxyConfigurationSwapper {
     
     private Map<String, DataSource> swapDataSources(final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceConfigs) {
         Map<String, DataSourceConfiguration> dataSourceConfigs = swapDataSourceConfigurations(yamlDataSourceConfigs);
-        return DataSourcePoolCreator.create(DataSourcePropertiesCreator.create(dataSourceConfigs));
+        return DataSourcePoolCreator.create(DataSourcePropertiesCreator.createFromConfiguration(dataSourceConfigs));
     }
     
     private Map<String, DatabaseConfiguration> swapDatabaseConfigurations(final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations) {

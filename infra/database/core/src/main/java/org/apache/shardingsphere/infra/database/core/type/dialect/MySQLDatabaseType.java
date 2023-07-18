@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.database.core.type.dialect;
 
 import org.apache.shardingsphere.infra.database.core.metadata.dialect.MySQLDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DataSourceAggregatableDatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.TrunkDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 
@@ -32,7 +33,7 @@ import java.util.Set;
 /**
  * Database type of MySQL.
  */
-public final class MySQLDatabaseType implements TrunkDatabaseType {
+public final class MySQLDatabaseType implements TrunkDatabaseType, DataSourceAggregatableDatabaseType {
     
     private static final Set<String> RESERVED_WORDS = new HashSet<>(Arrays.asList(
             "ADD", "ALL", "ALTER", "ANALYZE", "AND", "AS", "ASC", "BEFORE", "BETWEEN", "BIGINT", "BINARY", "BLOB", "BOTH", "BY", "CALL",
@@ -80,6 +81,11 @@ public final class MySQLDatabaseType implements TrunkDatabaseType {
     @Override
     public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new MySQLDataSourceMetaData(url);
+    }
+    
+    @Override
+    public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username, final String catalog) {
+        return new MySQLDataSourceMetaData(url, catalog);
     }
     
     @Override

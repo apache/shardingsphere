@@ -15,38 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.switcher;
+package org.apache.shardingsphere.infra.datasource.storage;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 
+import javax.sql.DataSource;
 import java.util.Map;
-import java.util.Objects;
 
 /**
- * Switching resource.
+ * Storage resource with data source properties.
  */
-@RequiredArgsConstructor
-public final class SwitchingResource {
+@Getter
+public final class StorageResourceWithProperties extends StorageResource {
     
-    private final ShardingSphereResourceMetaData resourceMetaData;
+    private final Map<String, DataSourceProperties> dataSourcePropertiesMap;
     
-    @Getter
-    private final StorageResource newStorageResource;
-    
-    @Getter
-    private final StorageResource staleStorageResource;
-    
-    @Getter
-    private final Map<String, DataSourceProperties> dataSourcePropsMap;
-    
-    /**
-     * Close stale data sources.
-     */
-    public void closeStaleDataSources() {
-        staleStorageResource.getStorageNodes().values().stream().filter(Objects::nonNull).forEach(resourceMetaData::close);
+    public StorageResourceWithProperties(final Map<String, DataSource> storageNodes, final Map<String, StorageUnit> storageUnits, final Map<String, DataSourceProperties> dataSourcePropertiesMap) {
+        super(storageNodes, storageUnits);
+        this.dataSourcePropertiesMap = dataSourcePropertiesMap;
     }
 }

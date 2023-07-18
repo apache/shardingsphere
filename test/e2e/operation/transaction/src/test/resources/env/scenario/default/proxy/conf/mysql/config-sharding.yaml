@@ -30,7 +30,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 4
     minPoolSize: 2
   ds_1:
     url: jdbc:mysql://mysql.default.host:3306/transaction_it_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
@@ -39,7 +39,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 4
     minPoolSize: 2
 rules:
   - !SINGLE
