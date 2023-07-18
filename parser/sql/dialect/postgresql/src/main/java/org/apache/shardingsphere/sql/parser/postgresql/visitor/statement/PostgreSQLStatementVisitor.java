@@ -1028,7 +1028,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(),
                         Integer.parseInt(index.getLiterals().toString()), OrderDirection.ASC, null);
             }
-            return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, null);
+            return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, null, (ExpressionSegment) visit(ctx.aExpr()));
         }
         return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, null);
     }
