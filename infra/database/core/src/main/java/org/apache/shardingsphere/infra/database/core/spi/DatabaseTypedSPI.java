@@ -15,14 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.fixture.impl;
+package org.apache.shardingsphere.infra.database.core.spi;
 
-import org.apache.shardingsphere.infra.spi.fixture.DatabaseTypedSPIFixture;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
-public final class FooDatabaseTypedSPIFixture implements DatabaseTypedSPIFixture {
+/**
+ * Database typed SPI.
+ */
+public interface DatabaseTypedSPI extends TypedSPI {
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    default String getDatabaseType() {
+        return null;
+    }
     
     @Override
-    public String getDatabaseType() {
-        return "MySQL";
+    default DatabaseType getType() {
+        return null == getDatabaseType() ? null : TypedSPILoader.getService(DatabaseType.class, getDatabaseType());
     }
 }
