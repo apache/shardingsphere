@@ -43,6 +43,7 @@
     <sql-case id="alter_database_disable_block_change_tracking" value="ALTER DATABASE DISABLE BLOCK CHANGE TRACKING" db-types="Oracle" />
     <sql-case id="alter_database_recover_managed_standby_database_cancel" value="ALTER DATABASE RECOVER MANAGED STANDBY DATABASE CANCEL" db-types="Oracle" />
     <sql-case id="alter_database_prepare_to_switchover_to_primary" value="ALTER DATABASE PREPARE TO SWITCHOVER TO PRIMARY" db-types="Oracle" />
+    <sql-case id="alter_database_recover_managed_standby_database_using_current_logfile_disconnect_from_session" value="ALTER DATABASE RECOVER MANAGED STANDBY DATABASE USING CURRENT LOGFILE DISCONNECT FROM SESSION" db-types="Oracle" />
     <sql-case id="alter_database_prepare_to_switchover_to_logical_standby" value="ALTER DATABASE PREPARE TO SWITCHOVER TO LOGICAL STANDBY" db-types="Oracle" />
     <sql-case id="alter_database_prepare_to_switchover_cancel" value="ALTER DATABASE PREPARE TO SWITCHOVER CANCEL" db-types="Oracle" />
     <sql-case id="alter_database_drop_logfile_group" value="ALTER DATABASE DROP LOGFILE GROUP 3" db-types="Oracle" />
@@ -52,11 +53,13 @@
     <sql-case id="alter_database_convert_to_snapshot_standby" value="ALTER DATABASE CONVERT TO SNAPSHOT STANDBY" db-types="Oracle" />
     <sql-case id="alter_database_commit_to_switchover_to_primary" value="ALTER DATABASE COMMIT TO SWITCHOVER TO PRIMARY" db-types="Oracle" />
     <sql-case id="alter_database_commit_to_switchover_to_logical_standby" value="ALTER DATABASE COMMIT TO SWITCHOVER TO LOGICAL STANDBY" db-types="Oracle" />
+    <sql-case id="alter_database_commit_to_switchover_to_primary_with_session_shutdown" value="ALTER DATABASE COMMIT TO SWITCHOVER TO PRIMARY WITH SESSION SHUTDOWN" db-types="Oracle" />
     <sql-case id="alter_database_clear_unarchived_logfile_group_unrecoverable_datafile" value="ALTER DATABASE CLEAR UNARCHIVED LOGFILE GROUP 2 UNRECOVERABLE DATAFILE" db-types="Oracle" />
     <sql-case id="alter_database_archivelog" value="ALTER DATABASE ARCHIVELOG" db-types="Oracle" />
     <sql-case id="alter_database_clear_logfile_group" value="ALTER DATABASE CLEAR LOGFILE GROUP 3" db-types="Oracle" />
     <sql-case id="alter_database_clear_unarchived_logfile_group" value="ALTER DATABASE CLEAR UNARCHIVED LOGFILE GROUP 2" db-types="Oracle" />
     <sql-case id="alter_database_activate_logical_standby_database_finish_apply" value="ALTER DATABASE ACTIVATE LOGICAL STANDBY DATABASE FINISH APPLY" db-types="Oracle" />
+    <sql-case id="alter_database_add_supplemental_log_data_primary_key_unique_index_columns" value="ALTER DATABASE ADD SUPPLEMENTAL LOG DATA (PRIMARY KEY, UNIQUE INDEX) COLUMNS" db-types="Oracle" />
     <sql-case id="alter_database_clear_logfile" value="ALTER DATABASE CLEAR LOGFILE 'diskc:log3.log'" db-types="Oracle" />
     <sql-case id="alter_database_activate_physical_standby_database" value="ALTER DATABASE ACTIVATE PHYSICAL STANDBY DATABASE" db-types="Oracle" />
     <sql-case id="alter_database_add_standby_logfile_thread_size_m" value="ALTER DATABASE ADD STANDBY LOGFILE THREAD 1 SIZE 500M" db-types="Oracle" />
@@ -68,6 +71,7 @@
     <sql-case id="alter_database_add_logfile_group_size_m_block_size" value="ALTER DATABASE ADD LOGFILE GROUP 10 ('/oracle/dbs/log1c.rdo', '/oracle/dbs/log2c.rdo') SIZE 100M BLOCKSIZE 512" db-types="Oracle" />
     <sql-case id="alter_database_add_logfile_thread_group" value="ALTER DATABASE ADD LOGFILE THREAD 5 GROUP 4 ('diska:log4.log', 'diskb:log4:log')" db-types="Oracle" />
     <sql-case id="alter_database_add_logfile_with_size_m" value="ALTER DATABASE ADD LOGFILE ('/oracle/dbs/log1c.rdo', '/oracle/dbs/log2c.rdo') SIZE 100M" db-types="Oracle" />
+    <sql-case id="alter_database_recover_automatic_until_time" value="ALTER DATABASE RECOVER AUTOMATIC UNTIL TIME '2001-10-27:14:00:00'" db-types="Oracle" />
     <sql-case id="alter_database_add_logfile_member_reuse_to_group" value="ALTER DATABASE ADD LOGFILE MEMBER '/disk1/oradata/trgt/redo02b.log' REUSE TO GROUP 2" db-types="Oracle" />
     <sql-case id="alter_database_add_logfile_group" value="ALTER DATABASE ADD LOGFILE GROUP 3 ('diska:log3.log', 'diskb:log3.log') SIZE 50K" db-types="Oracle" />
     <sql-case id="alter_database_drop_logfile_member" value="ALTER DATABASE DROP LOGFILE MEMBER 'diskb:log3.log'" db-types="Oracle" />

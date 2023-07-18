@@ -15,30 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.check.datasource;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-
-import javax.sql.DataSource;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Data source checker.
+ * Oracle create tablespace statement.
  */
-@SingletonSPI
-public interface DataSourceChecker extends DatabaseTypedSPI {
-    
-    /**
-     * Check user privileges.
-     *
-     * @param dataSource data source to be checked
-     */
-    void checkPrivilege(DataSource dataSource);
-    
-    /**
-     * Check variables.
-     *
-     * @param dataSource data source to be checked
-     */
-    void checkVariable(DataSource dataSource);
+@Setter
+public final class OracleCreateTablespaceStatement extends CreateProcedureStatement implements OracleStatement {
 }

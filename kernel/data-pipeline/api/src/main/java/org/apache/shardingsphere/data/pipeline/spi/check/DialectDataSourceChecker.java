@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.spi.check;
 
-import org.apache.shardingsphere.data.pipeline.spi.check.DialectDataSourceChecker;
+import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 import javax.sql.DataSource;
 
-public final class FixtureDataSourceChecker implements DialectDataSourceChecker {
+/**
+ * Dialect data source checker.
+ */
+@SingletonSPI
+public interface DialectDataSourceChecker extends DatabaseTypedSPI {
     
-    @Override
-    public void checkPrivilege(final DataSource dataSource) {
-    }
+    /**
+     * Check user privileges.
+     *
+     * @param dataSource data source to be checked
+     */
+    void checkPrivilege(DataSource dataSource);
     
-    @Override
-    public void checkVariable(final DataSource dataSource) {
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "H2";
-    }
+    /**
+     * Check variables.
+     *
+     * @param dataSource data source to be checked
+     */
+    void checkVariable(DataSource dataSource);
 }

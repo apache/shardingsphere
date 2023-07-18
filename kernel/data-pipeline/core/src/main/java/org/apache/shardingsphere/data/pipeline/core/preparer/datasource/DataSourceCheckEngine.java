@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer.datasource.checker;
+package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
-import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.spi.check.DialectDataSourceChecker;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 
@@ -39,11 +39,11 @@ public final class DataSourceCheckEngine {
     
     private final DatabaseType databaseType;
     
-    private final DataSourceChecker dataSourceChecker;
+    private final DialectDataSourceChecker dialectDataSourceChecker;
     
     public DataSourceCheckEngine(final DatabaseType databaseType) {
         this.databaseType = databaseType;
-        dataSourceChecker = DatabaseTypedSPILoader.findService(DataSourceChecker.class, databaseType).orElse(null);
+        dialectDataSourceChecker = DatabaseTypedSPILoader.findService(DialectDataSourceChecker.class, databaseType).orElse(null);
     }
     
     /**
@@ -103,11 +103,11 @@ public final class DataSourceCheckEngine {
      * @param dataSources data sources
      */
     public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-        if (null == dataSourceChecker) {
+        if (null == dialectDataSourceChecker) {
             return;
         }
         for (DataSource each : dataSources) {
-            dataSourceChecker.checkPrivilege(each);
+            dialectDataSourceChecker.checkPrivilege(each);
         }
     }
     
@@ -117,11 +117,11 @@ public final class DataSourceCheckEngine {
      * @param dataSources data sources
      */
     public void checkVariable(final Collection<? extends DataSource> dataSources) {
-        if (null == dataSourceChecker) {
+        if (null == dialectDataSourceChecker) {
             return;
         }
         for (DataSource each : dataSources) {
-            dataSourceChecker.checkVariable(each);
+            dialectDataSourceChecker.checkVariable(each);
         }
     }
 }

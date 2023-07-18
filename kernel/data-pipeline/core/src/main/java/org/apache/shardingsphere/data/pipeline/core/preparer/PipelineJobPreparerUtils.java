@@ -32,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.JobItemIncrem
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.checker.DataSourceCheckEngine;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourceCheckEngine;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;

@@ -15,12 +15,11 @@
 # limitations under the License.
 #
 
-name: E2E - Operation
+name: Nightly - E2E Operation
 
 on:
-  push:
-    branches: [ master, dev ]
-  pull_request:
+  schedule:
+    - cron: '0 21 */1 * *'  # once a day. UTC time
   workflow_dispatch:
 
 concurrency:
@@ -32,58 +31,25 @@ env:
   REPOSITORY_NAME: shardingsphere
 
 jobs:
-  detect-changed-files:
-    name: Detect Changed Files
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          token: ${{ github.token }}
-          filters: .github/workflows/resources/filter/filters.yml
-    outputs:
-      changed_operations: ${{ steps.filter.outputs.changes }}
-
   e2e-operation-job:
-    needs: detect-changed-files
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 20
+      max-parallel: 5
       fail-fast: false
       matrix:
         operation: [ transaction, pipeline, showprocesslist ]
-        image: [ { type: "it.docker.mysql.version", version: "mysql:5.7" }, { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }, { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" } ]
+        image: [ { type: "it.docker.mysql.version", version: "mysql:5.7,mysql:8.0" }, { type: "it.docker.postgresql.version", version: "postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine" }, { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0,enmotech/opengauss:3.0.0" } ]
         exclude:
           - operation: showprocesslist
-            image: { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }
+            image: { type: "it.docker.postgresql.version", version: "postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine" }
           - operation: showprocesslist
-            image: { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" }
+            image: { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0,enmotech/opengauss:3.0.0" }
     timeout-minutes: 40
     steps:
-      - env:
-          changed_operations: ${{ needs.detect-changed-files.outputs.changed_operations }}
-          current_operation: ${{ matrix.operation }}
-        run: |
-          echo "skip_current_step=false" >> $GITHUB_ENV
-          if [[ ${changed_operations} == '["ignore"]' ]]; then
-            echo "${current_operation} is ignore by ignore filter"
-            echo "skip_current_step=true" >> $GITHUB_ENV
-          fi
-          
-          if [[ ${changed_operations} == *""$current_operation""* ]]; then
-            echo "${current_operation} is detected by changed filter"
-            else
-              echo "${current_operation} is ignore by filter"
-              echo "skip_current_step=true" >> $GITHUB_ENV
-          fi
       - name: Checkout Project
-        if: (env.skip_current_step == 'false')
         uses: actions/checkout@v3
       - name: Retrieve Maven Caches
-        if: (env.skip_current_step == 'false')
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -92,20 +58,16 @@ jobs:
             ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Setup JDK 11
-        if: (env.skip_current_step == 'false')
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 11
       - name: Build ${{ matrix.operation }} E2E Image
-        if: (env.skip_current_step == 'false')
         run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pit.env.docker -DskipTests
       - name: Setup JDK 8 for Test
-        if: (env.skip_current_step == 'false')
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
-        if: (env.skip_current_step == 'false')
         run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.${{ matrix.image.type }}=${{ matrix.image.version }}
