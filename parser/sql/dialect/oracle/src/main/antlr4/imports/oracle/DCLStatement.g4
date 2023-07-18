@@ -303,7 +303,7 @@ createUser
     ;
 
 dropUser
-    : DROP USER
+    : DROP USER username CASCADE?
     ;
 
 alterUser
