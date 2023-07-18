@@ -48,17 +48,14 @@ public final class PipelineImportSQLBuilder {
     
     private final Cache<String, String> sqlCache;
     
-    public PipelineImportSQLBuilder(final DatabaseType databaseType,final ShardingCacheOptionsConfiguration cacheOptions) {
+    public PipelineImportSQLBuilder(final DatabaseType databaseType) {
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
         sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
-        sqlCache = buildRouteCache(cacheOptions);
+        sqlCache = buildPipelineCache();
     }
-
-    private Cache<String, String> buildRouteCache(final ShardingCacheOptionsConfiguration cacheOptions) {
-        Caffeine<Object, Object> result = Caffeine.newBuilder().initialCapacity(cacheOptions.getInitialCapacity()).maximumSize(cacheOptions.getMaximumSize());
-        if (cacheOptions.isSoftValues()) {
-            result.softValues();
-        }
+    
+    private Cache<String, String> buildPipelineCache() {
+        Caffeine<Object, Object> result = Caffeine.newBuilder().initialCapacity(128).maximumSize(1024).softValues();
         return result.build();
     }
     
@@ -71,7 +68,7 @@ public final class PipelineImportSQLBuilder {
      */
     public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
-        if (null!=sqlCache.getIfPresent(sqlCacheKey)) {
+        if (null == sqlCache.getIfPresent(sqlCacheKey)) {
             String insertMainClause = buildInsertMainClause(schemaName, dataRecord);
             sqlCache.put(sqlCacheKey, dialectSQLBuilder.buildInsertOnDuplicateClause(dataRecord).map(optional -> insertMainClause + " " + optional).orElse(insertMainClause));
         }
@@ -94,7 +91,7 @@ public final class PipelineImportSQLBuilder {
      */
     public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
-        if (null!=sqlCache.getIfPresent(sqlCacheKey)) {
+        if (null == sqlCache.getIfPresent(sqlCacheKey)) {
             String updateMainClause = String.format("UPDATE %s SET %%s", sqlSegmentBuilder.getQualifiedTableName(schemaName, dataRecord.getTableName()));
             sqlCache.put(sqlCacheKey, buildWhereClause(conditionColumns).map(optional -> updateMainClause + optional).orElse(updateMainClause));
         }
@@ -113,7 +110,7 @@ public final class PipelineImportSQLBuilder {
      */
     public String buildDeleteSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
-        if (null!=sqlCache.getIfPresent(sqlCacheKey)) {
+        if (null == sqlCache.getIfPresent(sqlCacheKey)) {
             String deleteMainClause = buildDeleteMainClause(schemaName, dataRecord);
             sqlCache.put(sqlCacheKey, buildWhereClause(conditionColumns).map(optional -> deleteMainClause + optional).orElse(deleteMainClause));
         }

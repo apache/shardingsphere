@@ -79,7 +79,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
         rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
-        importSQLBuilder = new PipelineImportSQLBuilder(importerConfig.getDataSourceConfig().getDatabaseType(),new ShardingCacheOptionsConfiguration(true, 1, 1));
+        importSQLBuilder = new PipelineImportSQLBuilder(importerConfig.getDataSourceConfig().getDatabaseType());
     }
     
     @Override

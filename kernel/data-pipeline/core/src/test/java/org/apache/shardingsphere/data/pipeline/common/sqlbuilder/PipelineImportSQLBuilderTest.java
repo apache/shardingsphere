@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class PipelineImportSQLBuilderTest {
     
-    private final PipelineImportSQLBuilder importSQLBuilder = new PipelineImportSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),new ShardingCacheOptionsConfiguration(true, 1, 1));
+    private final PipelineImportSQLBuilder importSQLBuilder = new PipelineImportSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     
     @Test
     void assertBuildInsertSQL() {
