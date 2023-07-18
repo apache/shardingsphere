@@ -322,10 +322,6 @@ schemaName
     : identifier
     ;
 
-profileName
-    : identifier
-    ;
-
 tableName
     : (owner DOT_)? name
     ;
@@ -717,7 +713,7 @@ respectOrIgnoreNulls
     ;
 
 overClause
-    : OVER analyticClause
+    : OVER LP_ analyticClause RP_
     ;
 
 formatFunction
