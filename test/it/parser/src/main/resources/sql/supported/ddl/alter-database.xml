@@ -43,6 +43,7 @@
     <sql-case id="alter_database_disable_block_change_tracking" value="ALTER DATABASE DISABLE BLOCK CHANGE TRACKING" db-types="Oracle" />
     <sql-case id="alter_database_recover_managed_standby_database_cancel" value="ALTER DATABASE RECOVER MANAGED STANDBY DATABASE CANCEL" db-types="Oracle" />
     <sql-case id="alter_database_prepare_to_switchover_to_primary" value="ALTER DATABASE PREPARE TO SWITCHOVER TO PRIMARY" db-types="Oracle" />
+    <sql-case id="alter_database_recover_managed_standby_database_using_current_logfile_disconnect_from_session" value="ALTER DATABASE RECOVER MANAGED STANDBY DATABASE USING CURRENT LOGFILE DISCONNECT FROM SESSION" db-types="Oracle" />
     <sql-case id="alter_database_prepare_to_switchover_to_logical_standby" value="ALTER DATABASE PREPARE TO SWITCHOVER TO LOGICAL STANDBY" db-types="Oracle" />
     <sql-case id="alter_database_prepare_to_switchover_cancel" value="ALTER DATABASE PREPARE TO SWITCHOVER CANCEL" db-types="Oracle" />
     <sql-case id="alter_database_drop_logfile_group" value="ALTER DATABASE DROP LOGFILE GROUP 3" db-types="Oracle" />
