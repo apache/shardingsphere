@@ -322,10 +322,6 @@ schemaName
     : identifier
     ;
 
-profileName
-    : identifier
-    ;
-
 tableName
     : (owner DOT_)? name
     ;
@@ -705,7 +701,19 @@ analyticFunction
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction | formatFunction
+    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction
+    ;
+
+firstOrLastValueFunction
+    : (FIRST_VALUE | LAST_VALUE)  (LP_ expr respectOrIgnoreNulls? RP_ | LP_ expr RP_ respectOrIgnoreNulls?) overClause
+    ;
+
+respectOrIgnoreNulls
+    : (RESPECT | IGNORE) NULLS
+    ;
+
+overClause
+    : OVER LP_ analyticClause RP_
     ;
 
 formatFunction

@@ -5576,4 +5576,17 @@
             <simple-table alias="x" name="po_tab" start-index="93" stop-index="100" literal-start-index="93" literal-stop-index="100"/>
         </from>
     </select>
+
+    <select sql-case-id="select_with_last_value_function">
+        <projections start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+            <expression-projection text="LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+                <expr>
+                    <function function-name="LAST_VALUE" text="LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="TEST" start-index="78" stop-index="81" literal-start-index="78" literal-stop-index="81"/>
+        </from>
+    </select>
 </sql-parser-test-cases>
