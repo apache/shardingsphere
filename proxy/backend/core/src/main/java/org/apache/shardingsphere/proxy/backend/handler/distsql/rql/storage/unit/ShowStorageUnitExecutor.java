@@ -22,7 +22,9 @@ import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
+import org.apache.shardingsphere.infra.database.core.type.DataSourceAggregatableDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -98,18 +100,34 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     
     private Map<String, DataSourceProperties> getDataSourcePropsMap(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(database.getResourceMetaData().getDataSources().size(), 1F);
+        Map<String, DataSourceProperties> dataSourcePropsMap = database.getResourceMetaData().getDataSourcePropsMap();
+        Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
         Optional<Integer> usageCountOptional = sqlStatement.getUsageCount();
         if (usageCountOptional.isPresent()) {
             Multimap<String, String> inUsedMultiMap = getInUsedResources(database.getRuleMetaData());
             for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
                 Integer currentUsageCount = inUsedMultiMap.containsKey(entry.getKey()) ? inUsedMultiMap.get(entry.getKey()).size() : 0;
                 if (usageCountOptional.get().equals(currentUsageCount)) {
-                    result.put(entry.getKey(), getDataSourceProperties(entry.getValue()));
+                    result.put(entry.getKey(), getDataSourceProperties(dataSourcePropsMap, entry.getKey(), storageTypes.get(entry.getKey()), entry.getValue()));
                 }
             }
         } else {
             for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
-                result.put(entry.getKey(), getDataSourceProperties(entry.getValue()));
+                result.put(entry.getKey(), getDataSourceProperties(dataSourcePropsMap, entry.getKey(), storageTypes.get(entry.getKey()), entry.getValue()));
+            }
+        }
+        return result;
+    }
+    
+    private DataSourceProperties getDataSourceProperties(final Map<String, DataSourceProperties> dataSourcePropsMap, final String storageUnitName,
+                                                         final DatabaseType databaseType, final DataSource dataSource) {
+        DataSourceProperties result = getDataSourceProperties(dataSource);
+        if (databaseType instanceof DataSourceAggregatableDatabaseType && dataSourcePropsMap.containsKey(storageUnitName)) {
+            DataSourceProperties unitDataSourceProperties = dataSourcePropsMap.get(storageUnitName);
+            for (final Entry<String, Object> entry : unitDataSourceProperties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
+                if (null != entry.getValue()) {
+                    result.getPoolPropertySynonyms().getStandardProperties().put(entry.getKey(), entry.getValue());
+                }
             }
         }
         return result;

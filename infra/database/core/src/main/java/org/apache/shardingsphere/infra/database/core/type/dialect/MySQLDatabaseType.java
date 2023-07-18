@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.database.core.type.dialect;
 
 import org.apache.shardingsphere.infra.database.core.metadata.dialect.MySQLDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DataSourceAggregatableDatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.TrunkDatabaseType;
-import org.apache.shardingsphere.infra.database.spi.DataSourceAggregatableDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 
 import java.util.Arrays;
