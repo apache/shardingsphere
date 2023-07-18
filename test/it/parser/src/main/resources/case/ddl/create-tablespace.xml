@@ -23,4 +23,7 @@
     <create-tablespace sql-case-id="create_tablespace_for_myisam" />
     <create-tablespace sql-case-id="create_undo_tablespace_for_innodb" />
     <create-tablespace sql-case-id="create_undo_tablespace_for_myisam" />
+    <create-tablespace sql-case-id="create_permanent_tablespace_online" />
+    <create-tablespace sql-case-id="create_permanent_tablespace_offline" />
+
 </sql-parser-test-cases>

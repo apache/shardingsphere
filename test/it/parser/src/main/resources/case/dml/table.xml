@@ -18,23 +18,21 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="explicit_table">
-        <projections start-index="0" stop-index="6">
-            <expression-projection text="table f" start-index="0" stop-index="6">
-                <expr>
-                    <explicit-table start-index="0" stop-index="6" name="f" />
-                </expr>
-            </expression-projection>
+        <projections start-index="0" stop-index="0">
+            <shorthand-projection start-index="0" stop-index="0" />
         </projections>
+        <from>
+            <simple-table name="f" start-index="0" stop-index="6" />
+        </from>
     </select>
 
     <select sql-case-id="table_with_order_by_limit_offset">
-        <projections start-index="0" stop-index="12">
-            <expression-projection text="TABLE t_order" start-index="0" stop-index="12">
-                <expr>
-                    <explicit-table start-index="0" stop-index="12" name="t_order" />
-                </expr>
-            </expression-projection>
+        <projections start-index="0" stop-index="0">
+            <shorthand-projection start-index="0" stop-index="0" />
         </projections>
+        <from>
+            <simple-table name="t_order" start-index="0" stop-index="12" />
+        </from>
         <order-by>
             <column-item name="order_id" start-index="23" stop-index="30" />
         </order-by>
@@ -45,31 +43,28 @@
     </select>
     
     <select sql-case-id="table_union">
-        <projections start-index="0" stop-index="7">
-            <expression-projection text="TABLE T1" start-index="0" stop-index="7">
-                <expr>
-                    <explicit-table start-index="0" stop-index="7" name="T1" />
-                </expr>
-            </expression-projection>
+        <projections start-index="0" stop-index="0">
+            <shorthand-projection start-index="0" stop-index="0" />
         </projections>
+        <from>
+            <simple-table name="T1" start-index="0" stop-index="7" />
+        </from>
         <combine combine-type="UNION" start-index="9" stop-index="22">
             <left>
-                <projections start-index="0" stop-index="7">
-                    <expression-projection text="TABLE T1" start-index="0" stop-index="7">
-                        <expr>
-                            <explicit-table start-index="0" stop-index="7" name="T1" />
-                        </expr>
-                    </expression-projection>
+                <projections start-index="0" stop-index="0">
+                    <shorthand-projection start-index="0" stop-index="0" />
                 </projections>
+                <from>
+                    <simple-table name="T1" start-index="0" stop-index="7" />
+                </from>
             </left>
             <right>
-                <projections start-index="15" stop-index="22">
-                    <expression-projection text="TABLE T2" start-index="15" stop-index="22">
-                        <expr>
-                            <explicit-table start-index="15" stop-index="22" name="T2" />
-                        </expr>
-                    </expression-projection>
+                <projections start-index="15" stop-index="15">
+                    <shorthand-projection start-index="15" stop-index="15" />
                 </projections>
+                <from>
+                    <simple-table name="T2" start-index="15" stop-index="22" />
+                </from>
             </right>
         </combine>
     </select>
@@ -82,13 +77,12 @@
             <subquery-table alias="dt">
                 <subquery>
                     <select>
-                        <projections start-index="15" stop-index="22">
-                            <expression-projection text="TABLE t0" start-index="15" stop-index="22">
-                                <expr>
-                                    <explicit-table start-index="15" stop-index="22" name="t0" />
-                                </expr>
-                            </expression-projection>
+                        <projections start-index="15" stop-index="15">
+                            <shorthand-projection start-index="15" stop-index="15" />
                         </projections>
+                        <from>
+                            <simple-table name="t0" start-index="15" stop-index="22" />
+                        </from>
                     </select>
                 </subquery>
             </subquery-table>

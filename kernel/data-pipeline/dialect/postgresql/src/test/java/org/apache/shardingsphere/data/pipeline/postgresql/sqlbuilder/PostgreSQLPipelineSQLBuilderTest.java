@@ -25,21 +25,17 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Post
 import org.junit.jupiter.api.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PostgreSQLPipelineSQLBuilderTest {
     
     private final PostgreSQLPipelineSQLBuilder sqlBuilder = new PostgreSQLPipelineSQLBuilder();
     
     @Test
-    void assertBuildInsertSQL() {
-        String actual = sqlBuilder.buildInsertSQL("schema1", mockDataRecord());
-        assertThat(actual, is("INSERT INTO schema1.t_order(order_id,user_id,status) VALUES(?,?,?) ON CONFLICT (order_id)"
-                + " DO UPDATE SET user_id=EXCLUDED.user_id,status=EXCLUDED.status"));
+    void assertBuildInsertSQLOnDuplicateClause() {
+        String actual = sqlBuilder.buildInsertOnDuplicateClause(mockDataRecord()).orElse(null);
+        assertThat(actual, is("ON CONFLICT (order_id) DO UPDATE SET user_id=EXCLUDED.user_id,status=EXCLUDED.status"));
     }
     
     private DataRecord mockDataRecord() {
@@ -48,22 +44,5 @@ class PostgreSQLPipelineSQLBuilderTest {
         result.addColumn(new Column("user_id", 2, true, false));
         result.addColumn(new Column("status", "ok", true, false));
         return result;
-    }
-    
-    @Test
-    void assertQuoteKeyword() {
-        String schemaName = "all";
-        Optional<String> actualCreateSchemaSql = sqlBuilder.buildCreateSchemaSQL(schemaName);
-        assertTrue(actualCreateSchemaSql.isPresent());
-        assertThat(actualCreateSchemaSql.get(), is(String.format("CREATE SCHEMA IF NOT EXISTS %s", sqlBuilder.quote(schemaName))));
-        String actualDropSQL = sqlBuilder.buildDropSQL(schemaName, "ALL");
-        String expectedDropSQL = String.format("DROP TABLE IF EXISTS %s", String.join(".", sqlBuilder.quote(schemaName), sqlBuilder.quote("ALL")));
-        assertThat(actualDropSQL, is(expectedDropSQL));
-    }
-    
-    @Test
-    void assertBuilderDropSQLWithoutKeyword() {
-        String actualDropSQL = sqlBuilder.buildDropSQL("test_normal", "t_order");
-        assertThat(actualDropSQL, is("DROP TABLE IF EXISTS test_normal.t_order"));
     }
 }

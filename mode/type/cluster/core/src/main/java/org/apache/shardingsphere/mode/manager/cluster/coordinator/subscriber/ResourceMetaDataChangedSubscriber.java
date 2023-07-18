@@ -46,7 +46,7 @@ public final class ResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DatabaseAddedEvent event) {
-        contextManager.addDatabase(event.getDatabaseName());
+        contextManager.getResourceMetaDataContextManager().addDatabase(event.getDatabaseName());
     }
     
     /**
@@ -56,7 +56,7 @@ public final class ResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DatabaseDeletedEvent event) {
-        contextManager.dropDatabase(event.getDatabaseName());
+        contextManager.getResourceMetaDataContextManager().dropDatabase(event.getDatabaseName());
     }
     
     /**
@@ -66,7 +66,7 @@ public final class ResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent event) {
-        contextManager.addSchema(event.getDatabaseName(), event.getSchemaName());
+        contextManager.getResourceMetaDataContextManager().addSchema(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**
@@ -76,7 +76,7 @@ public final class ResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent event) {
-        contextManager.dropSchema(event.getDatabaseName(), event.getSchemaName());
+        contextManager.getResourceMetaDataContextManager().dropSchema(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**
@@ -86,8 +86,8 @@ public final class ResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final TableMetaDataChangedEvent event) {
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData(), null);
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable(), null);
+        contextManager.getResourceMetaDataContextManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData(), null);
+        contextManager.getResourceMetaDataContextManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable(), null);
     }
     
     /**
@@ -97,7 +97,7 @@ public final class ResourceMetaDataChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final ViewMetaDataChangedEvent event) {
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getChangedViewMetaData());
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getDeletedView());
+        contextManager.getResourceMetaDataContextManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getChangedViewMetaData());
+        contextManager.getResourceMetaDataContextManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getDeletedView());
     }
 }

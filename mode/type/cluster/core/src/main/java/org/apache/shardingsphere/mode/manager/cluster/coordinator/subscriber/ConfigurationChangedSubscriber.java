@@ -61,7 +61,7 @@ public final class ConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DataSourceUnitsChangedEvent event) {
-        contextManager.alterDataSourceUnitsConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
+        contextManager.getConfigurationContextManager().alterDataSourceUnitsConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
         disableDataSources();
     }
     
@@ -72,7 +72,7 @@ public final class ConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DataSourceNodesChangedEvent event) {
-        contextManager.alterDataSourceNodesConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
+        contextManager.getConfigurationContextManager().alterDataSourceNodesConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
         disableDataSources();
     }
     
@@ -83,7 +83,7 @@ public final class ConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) {
-        contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigs());
+        contextManager.getConfigurationContextManager().alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigs());
         disableDataSources();
     }
     
@@ -94,7 +94,7 @@ public final class ConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final GlobalRuleConfigurationsChangedEvent event) {
-        contextManager.alterGlobalRuleConfiguration(event.getRuleConfigs());
+        contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(event.getRuleConfigs());
         disableDataSources();
     }
     
@@ -105,7 +105,7 @@ public final class ConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
-        contextManager.alterProperties(event.getProps());
+        contextManager.getConfigurationContextManager().alterProperties(event.getProps());
     }
     
     private void disableDataSources() {

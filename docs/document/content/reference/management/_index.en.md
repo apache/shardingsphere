@@ -23,12 +23,19 @@ namespace
    ├     ├     ├──0                  
    ├──metadata                                           # Metadata configuration
    ├     ├──${databaseName} 
-   ├     ├     ├──data_sources                           # Storage unit configuration
-   ├     ├     ├     ├──${dataSourceName}                        
-   ├     ├     ├     ├     ├──active_verison             # Active version                                 
-   ├     ├     ├     ├     ├──versions                   # version list
-   ├     ├     ├     ├     ├     ├──0
-   ├     ├     ├     ├──...                                
+   ├     ├     ├──data_sources                          
+   ├     ├     ├     ├──units 							 # Storage unit configuration
+   ├     ├     ├     ├    ├──${dataSourceName}                        
+   ├     ├     ├     ├    ├     ├──active_verison             # Active version                                 
+   ├     ├     ├     ├    ├     ├──versions                   # version list
+   ├     ├     ├     ├    ├     ├     ├──0
+   ├     ├     ├     ├    ├──...   
+   ├     ├     ├     ├──nodes 							 # Storage node configuration
+   ├     ├     ├     ├    ├──${dataSourceName}                        
+   ├     ├     ├     ├    ├     ├──active_verison             # Active version                                 
+   ├     ├     ├     ├    ├     ├──versions                   # version list
+   ├     ├     ├     ├    ├     ├     ├──0
+   ├     ├     ├     ├    ├──...                             
    ├     ├     ├──schemas                                # Schema list
    ├     ├     ├     ├──${schemaName}                    
    ├     ├     ├     ├     ├──tables                     # Table configuration
@@ -116,7 +123,7 @@ kernel-executor-size: 20
 sql-show: true
 ```
 
-### /metadata/${databaseName}/data_sources/ds_0/versions/0
+### /metadata/${databaseName}/data_sources/units/ds_0/versions/0
 
 Database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are to be configured by the user.
 
@@ -136,6 +143,28 @@ ds_0:
   username: root
   poolName: HikariPool-1
 ```
+
+### /metadata/${databaseName}/data_sources/nodes/ds_0/versions/0
+
+Database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are to be configured by the user.
+
+```yaml
+ds_0:
+  initializationFailTimeout: 1
+  validationTimeout: 5000
+  maxLifetime: 1800000
+  leakDetectionThreshold: 0
+  minimumIdle: 1
+  password: root
+  idleTimeout: 60000
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  maximumPoolSize: 50
+  connectionTimeout: 30000
+  username: root
+  poolName: HikariPool-1
+```
+
 
 ### /metadata/${databaseName}/rules/sharding/tables/t_order/versions/0
 
