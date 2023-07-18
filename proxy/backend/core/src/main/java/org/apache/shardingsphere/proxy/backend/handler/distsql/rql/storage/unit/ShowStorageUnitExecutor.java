@@ -17,36 +17,28 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.storage.unit;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.database.core.type.DataSourceAggregatableDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.proxy.backend.util.StorageUnitUtils;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Show storage unit executor.
@@ -104,9 +96,9 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
         Optional<Integer> usageCountOptional = sqlStatement.getUsageCount();
         if (usageCountOptional.isPresent()) {
-            Multimap<String, String> inUsedMultiMap = getInUsedResources(database.getRuleMetaData());
+            Map<String, Collection<String>> inUsedStorageUnits = StorageUnitUtils.getInUsedStorageUnits(database.getRuleMetaData(), database.getResourceMetaData().getDataSources().size());
             for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
-                Integer currentUsageCount = inUsedMultiMap.containsKey(entry.getKey()) ? inUsedMultiMap.get(entry.getKey()).size() : 0;
+                Integer currentUsageCount = inUsedStorageUnits.containsKey(entry.getKey()) ? inUsedStorageUnits.get(entry.getKey()).size() : 0;
                 if (usageCountOptional.get().equals(currentUsageCount)) {
                     result.put(entry.getKey(), getDataSourceProperties(dataSourcePropsMap, entry.getKey(), storageTypes.get(entry.getKey()), entry.getValue()));
                 }
@@ -137,33 +129,6 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         return dataSource instanceof ShardingSphereStorageDataSourceWrapper
                 ? DataSourcePropertiesCreator.create(((ShardingSphereStorageDataSourceWrapper) dataSource).getDataSource())
                 : DataSourcePropertiesCreator.create(dataSource);
-    }
-    
-    private Multimap<String, String> getInUsedResources(final ShardingSphereRuleMetaData ruleMetaData) {
-        Multimap<String, String> result = LinkedListMultimap.create();
-        for (DataSourceContainedRule each : ruleMetaData.findRules(DataSourceContainedRule.class)) {
-            getInUsedResourceNames(each).forEach(eachResource -> result.put(eachResource, each.getType()));
-        }
-        for (DataNodeContainedRule each : ruleMetaData.findRules(DataNodeContainedRule.class)) {
-            getInUsedResourceNames(each).forEach(eachResource -> result.put(eachResource, each.getType()));
-        }
-        return result;
-    }
-    
-    private Collection<String> getInUsedResourceNames(final DataSourceContainedRule rule) {
-        Set<String> result = new HashSet<>();
-        for (Collection<String> each : rule.getDataSourceMapper().values()) {
-            result.addAll(each);
-        }
-        return result;
-    }
-    
-    private Collection<String> getInUsedResourceNames(final DataNodeContainedRule rule) {
-        Set<String> result = new HashSet<>();
-        for (Collection<DataNode> each : rule.getAllDataNodes().values()) {
-            result.addAll(each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()));
-        }
-        return result;
     }
     
     private String getStandardProperty(final Map<String, Object> standardProps, final String key) {
