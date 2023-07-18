@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.url;
+package org.apache.shardingsphere.infra.database.core.url;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.database.core.metadata.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Properties;

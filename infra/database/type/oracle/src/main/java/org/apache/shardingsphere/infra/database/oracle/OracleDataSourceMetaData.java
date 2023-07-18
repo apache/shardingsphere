@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.database.oracle;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.url.UnrecognizedDatabaseURLException;
 
 import java.util.Arrays;
 import java.util.List;

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.database.mysql;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.metadata.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.core.url.JdbcUrl;
+import org.apache.shardingsphere.infra.database.core.url.StandardJdbcUrlParser;
 
 import java.util.Properties;
 
