@@ -2179,6 +2179,10 @@ dropDirectory
     : DROP DIRECTORY directoryName
     ;
 
+dropType
+    : DROP TYPE typeName (FORCE|VALIDATE)?
+    ;
+
 createFunction
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
     ;
