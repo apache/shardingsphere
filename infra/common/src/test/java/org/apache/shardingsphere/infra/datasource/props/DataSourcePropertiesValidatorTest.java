@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.datasource.props;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(DatabaseTypeEngine.class)
+@StaticMockSettings(DatabaseTypeFactory.class)
 class DataSourcePropertiesValidatorTest {
     
     @BeforeAll
@@ -48,14 +48,14 @@ class DataSourcePropertiesValidatorTest {
     
     @Test
     void assertValidateSuccess() {
-        when(DatabaseTypeEngine.getDatabaseType("mock:jdbc").getDataSourceMetaData("mock:jdbc", null)).thenReturn(mock(DataSourceMetaData.class, RETURNS_DEEP_STUBS));
+        when(DatabaseTypeFactory.get("mock:jdbc").getDataSourceMetaData("mock:jdbc", null)).thenReturn(mock(DataSourceMetaData.class, RETURNS_DEEP_STUBS));
         assertTrue(new DataSourcePropertiesValidator().validate(
                 Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), Collections.singletonMap("jdbcUrl", "mock:jdbc")))).isEmpty());
     }
     
     @Test
     void assertValidateFailed() {
-        when(DatabaseTypeEngine.getDatabaseType("mock:jdbc:invalid").getDataSourceMetaData("mock:jdbc:invalid", null)).thenReturn(mock(DataSourceMetaData.class, RETURNS_DEEP_STUBS));
+        when(DatabaseTypeFactory.get("mock:jdbc:invalid").getDataSourceMetaData("mock:jdbc:invalid", null)).thenReturn(mock(DataSourceMetaData.class, RETURNS_DEEP_STUBS));
         Collection<String> actual = new DataSourcePropertiesValidator().validate(
                 Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), Collections.singletonMap("jdbcUrl", "mock:jdbc:invalid"))));
         assertThat(actual, is(Collections.singletonList("Invalid data source `name`, error message is: Invalid URL.")));

@@ -34,7 +34,7 @@ import java.util.TreeMap;
 /**
  * Readwrite-splitting convert rule configuration provider.
  */
-public class ReadwriteSplittingConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
+public final class ReadwriteSplittingConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
     
     @Override
     public String convert(final RuleConfiguration ruleConfig) {

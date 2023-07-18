@@ -108,6 +108,7 @@ execute
     | createRestorePoint
     | dropRestorePoint
     | dropOperator
+    | dropType
     | alterLibrary
     | alterMaterializedZonemap
     | alterJava
@@ -135,6 +136,8 @@ execute
     | dropContext
     | alterResourceCost
     | alterRole
+    | createTablespace
+    | dropSequence
     | dropProfile
     | dropFunction
     | dropCluster

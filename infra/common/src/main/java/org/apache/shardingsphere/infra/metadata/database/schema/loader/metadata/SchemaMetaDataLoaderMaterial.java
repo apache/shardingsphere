@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 
 import javax.sql.DataSource;
 import java.util.Collection;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.dumper;
 
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.DialectColumnValueReader;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 
 import java.sql.ResultSet;

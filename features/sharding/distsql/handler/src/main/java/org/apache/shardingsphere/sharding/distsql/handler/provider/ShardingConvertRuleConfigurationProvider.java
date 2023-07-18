@@ -42,7 +42,7 @@ import java.util.TreeMap;
 /**
  * Sharding convert rule configuration provider.
  */
-public class ShardingConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
+public final class ShardingConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
     
     @Override
     public String convert(final RuleConfiguration ruleConfig) {

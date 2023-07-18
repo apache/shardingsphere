@@ -1247,7 +1247,7 @@ supplementalLogGrpClause
     ;
 
 supplementalIdKeyClause
-    : DATA LP_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY) (COMMA_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY))* RP_ COLUMNS
+    : DATA LP_ (ALL | PRIMARY KEY | UNIQUE INDEX? | FOREIGN KEY) (COMMA_ (ALL | PRIMARY KEY | UNIQUE INDEX? | FOREIGN KEY))* RP_ COLUMNS
     ;
 
 alterSession
@@ -1387,7 +1387,7 @@ generalRecovery
     ;
 
 fullDatabaseRecovery
-    : STANDBY? DATABASE
+    : STANDBY? DATABASE?
     ((UNTIL (CANCEL | TIME dateValue | CHANGE NUMBER_ | CONSISTENT)
     | USING BACKUP CONTROLFILE
     | SNAPSHOT TIME dateValue
@@ -1401,7 +1401,7 @@ partialDatabaseRecovery
 
 managedStandbyRecovery
     : RECOVER (MANAGED STANDBY DATABASE
-    ((USING ARCHIVED LOGFILE | DISCONNECT (FROM SESSION)?
+    ((USING (ARCHIVED | CURRENT) LOGFILE | DISCONNECT (FROM SESSION)?
     | NODELAY
     | UNTIL CHANGE NUMBER_
     | UNTIL CONSISTENT | USING INSTANCES (ALL | NUMBER_) | parallelClause)+
@@ -1537,7 +1537,7 @@ registerLogfileClause
 
 commitSwitchoverClause
     : (PREPARE | COMMIT) TO SWITCHOVER
-    ( TO (((PHYSICAL | LOGICAL)? PRIMARY | PHYSICAL? STANDBY) ((WITH | WITHOUT) SESSION SHUTDOWN (WAIT | NOWAIT))?
+    ( TO (((PHYSICAL | LOGICAL)? PRIMARY | PHYSICAL? STANDBY) ((WITH | WITHOUT) SESSION SHUTDOWN (WAIT | NOWAIT)?)?
     | LOGICAL STANDBY)
     | CANCEL
     )?
@@ -2177,6 +2177,10 @@ dropDimension
 
 dropDirectory
     : DROP DIRECTORY directoryName
+    ;
+
+dropType
+    : DROP TYPE typeName (FORCE|VALIDATE)?
     ;
 
 createFunction
@@ -3497,6 +3501,10 @@ dropPluggableDatabase
     : DROP PLUGGABLE DATABASE pdbName ((KEEP | INCLUDING) DATAFILES)?
     ;
 
+dropSequence
+    : DROP SEQUENCE (schemaName DOT_)? sequenceName
+    ;
+
 dropJava
      : DROP JAVA (SOURCE | CLASS | RESOURCE) objectName
      ;
@@ -3515,6 +3523,14 @@ dropMaterializedViewLog
 
 dropMaterializedZonemap
     : DROP MATERIALIZED ZONEMAP zonemapName
+    ;
+
+createTablespace
+    : CREATE (BIGFILE|SMALLFILE)? permanentTablespaceClause
+    ;
+
+permanentTablespaceClause
+    : TABLESPACE tablespaceName (ONLINE|OFFLINE)
     ;
 
 dropFunction

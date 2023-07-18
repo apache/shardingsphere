@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.route.engine;
 
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;

@@ -45,7 +45,7 @@ import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidP
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.PrivilegeNotGrantedException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.UnknownUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;

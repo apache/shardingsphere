@@ -705,7 +705,11 @@ analyticFunction
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction
+    : castFunction  | charFunction | extractFunction | formatFunction
+    ;
+
+formatFunction
+    : (owner DOT_)* name DOT_ FORMAT LP_ expr (COMMA_ expr)* RP_
     ;
 
 castFunction
@@ -773,7 +777,7 @@ lobItemList
     ;
 
 dataType
-    : dataTypeName dataTypeLength? | specialDatatype | dataTypeName dataTypeLength? datetimeTypeSuffix
+    : dataTypeName dataTypeLength? | specialDatatype | dataTypeName dataTypeLength? datetimeTypeSuffix | typeAttribute
     ;
 
 specialDatatype
@@ -790,6 +794,10 @@ dataTypeName
 
 datetimeTypeSuffix
     : (WITH LOCAL? TIME ZONE)? | TO MONTH | TO SECOND (LP_ NUMBER_ RP_)?
+    ;
+    
+typeAttribute
+    : (variableName | objectName) MOD_ TYPE
     ;
 
 treatFunction

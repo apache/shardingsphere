@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.fixture;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;

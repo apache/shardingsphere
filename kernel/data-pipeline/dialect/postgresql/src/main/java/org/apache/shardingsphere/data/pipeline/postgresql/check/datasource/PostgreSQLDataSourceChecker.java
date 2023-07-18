@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithCheckPrivilegeFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutUserException;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.checker.AbstractDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.spi.check.DialectDataSourceChecker;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
@@ -30,25 +30,18 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
  * PostgreSQL Data source checker.
  */
 @Slf4j
-public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
+public final class PostgreSQLDataSourceChecker implements DialectDataSourceChecker {
     
     private static final String SHOW_GRANTS_SQL = "SELECT * FROM pg_roles WHERE rolname = ?";
     
     @Override
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-        for (DataSource each : dataSources) {
-            checkPrivilege(each);
-        }
-    }
-    
-    private void checkPrivilege(final DataSource dataSource) {
+    public void checkPrivilege(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SHOW_GRANTS_SQL)) {
             DatabaseMetaData metaData = connection.getMetaData();
             preparedStatement.setString(1, metaData.getUserName());
@@ -67,7 +60,7 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
     }
     
     @Override
-    public void checkVariable(final Collection<? extends DataSource> dataSources) {
+    public void checkVariable(final DataSource dataSource) {
     }
     
     @Override

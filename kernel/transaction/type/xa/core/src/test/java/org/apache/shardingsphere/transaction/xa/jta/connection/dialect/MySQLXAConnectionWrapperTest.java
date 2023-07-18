@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import com.mysql.jdbc.jdbc2.optional.JDBC4MysqlXAConnection;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
