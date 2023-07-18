@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.postgresql;
 
-import org.apache.shardingsphere.infra.database.core.metadata.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.url.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;

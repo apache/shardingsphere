@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.url;
+package org.apache.shardingsphere.infra.database.core.url;
 
-import org.apache.shardingsphere.infra.database.core.metadata.UnrecognizedDatabaseURLException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
