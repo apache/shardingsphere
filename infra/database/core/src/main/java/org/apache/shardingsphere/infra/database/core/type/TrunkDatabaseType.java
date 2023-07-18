@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.spi;
+package org.apache.shardingsphere.infra.database.core.type;
+
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 
 /**
- * Branch database type.
+ * Trunk database type.
  */
-public interface BranchDatabaseType extends DatabaseType {
-    
-    /**
-     * Get trunk database type.
-     * 
-     * @return trunk database type
-     */
-    DatabaseType getTrunkDatabaseType();
+public interface TrunkDatabaseType extends DatabaseType {
 }
