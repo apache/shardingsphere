@@ -17,6 +17,10 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_case_when_with_mul_condition" value="select case 1*0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_case_when_with_sub_condition" value="select case 1-0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_case_when_with_add_condition" value="select case 1+0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_case_when_with_div_condition" value="select case 1/0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
     <sql-case id="select_with_expression" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="MySQL, H2, SQL92, SQLServer" />
     <sql-case id="select_with_expression_for_postgresql" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_date_function" value="SELECT DATE(i.creation_date) AS creation_date FROM `t_order_item` AS i ORDER BY DATE(i.creation_date) DESC" db-types="MySQL" />

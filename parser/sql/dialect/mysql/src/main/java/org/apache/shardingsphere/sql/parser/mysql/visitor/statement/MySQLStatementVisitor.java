@@ -1191,7 +1191,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             whenExprs.add((ExpressionSegment) visit(each.expr(0)));
             thenExprs.add((ExpressionSegment) visit(each.expr(1)));
         }
-        ExpressionSegment caseExpr = null == ctx.simpleExpr() ? null : (ExpressionSegment) visit(ctx.simpleExpr());
+        ExpressionSegment caseExpr = null == ctx.expr() ? null : (ExpressionSegment) visit(ctx.expr());
         ExpressionSegment elseExpr = null == ctx.caseElse() ? null : (ExpressionSegment) visit(ctx.caseElse().expr());
         return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr);
     }
