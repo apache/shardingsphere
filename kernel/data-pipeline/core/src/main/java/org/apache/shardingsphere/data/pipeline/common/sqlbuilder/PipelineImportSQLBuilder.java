@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
 
 import java.util.Collection;
 import java.util.Objects;

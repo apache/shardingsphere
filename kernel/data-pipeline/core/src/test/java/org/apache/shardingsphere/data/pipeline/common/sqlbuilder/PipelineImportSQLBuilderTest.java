@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.common.ingest.position.Placeholde
 import org.apache.shardingsphere.data.pipeline.common.ingest.record.RecordUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -76,8 +75,7 @@ class PipelineImportSQLBuilderTest {
     
     @Test
     void assertBuildDeleteSQLWithoutUniqueKey() {
-        String actual = importSQLBuilder.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey(),
-                RecordUtils.extractConditionColumns(mockDataRecordWithoutUniqueKey(), Collections.emptySet()));
+        String actual = importSQLBuilder.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey(), RecordUtils.extractConditionColumns(mockDataRecordWithoutUniqueKey(), Collections.emptySet()));
         assertThat(actual, is("DELETE FROM t_order WHERE id = ? AND name = ?"));
     }
     

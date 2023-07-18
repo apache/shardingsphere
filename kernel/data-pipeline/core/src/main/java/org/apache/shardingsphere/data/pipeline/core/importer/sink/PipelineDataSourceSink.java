@@ -37,7 +37,6 @@ import org.apache.shardingsphere.data.pipeline.common.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
 import org.apache.shardingsphere.data.pipeline.core.importer.DataRecordMerger;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -259,8 +258,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     private void executeBatchDelete(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         DataRecord dataRecord = dataRecords.get(0);
-        String deleteSQL = importSQLBuilder.buildDeleteSQL(getSchemaName(dataRecord.getTableName()), dataRecord,
-                RecordUtils.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName())));
+        String deleteSQL = importSQLBuilder.buildDeleteSQL(getSchemaName(dataRecord.getTableName()), dataRecord, RecordUtils.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName())));
         try (PreparedStatement preparedStatement = connection.prepareStatement(deleteSQL)) {
             batchDeleteStatement.set(preparedStatement);
             preparedStatement.setQueryTimeout(30);
