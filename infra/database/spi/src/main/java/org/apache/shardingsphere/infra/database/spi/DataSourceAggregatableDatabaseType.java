@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.type;
+package org.apache.shardingsphere.infra.database.spi;
 
 /**
  * Data source aggregatable database type.

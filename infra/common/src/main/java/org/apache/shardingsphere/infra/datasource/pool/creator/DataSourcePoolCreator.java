@@ -20,12 +20,12 @@ package org.apache.shardingsphere.infra.datasource.pool.creator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
-import org.apache.shardingsphere.infra.database.type.DataSourceAggregatableDatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.metadata.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.metadata.url.JdbcUrl;
+import org.apache.shardingsphere.infra.database.core.metadata.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.spi.DataSourceAggregatableDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
@@ -130,7 +130,7 @@ public final class DataSourcePoolCreator {
         Map<String, Object> standardProperties = dataSourceProperties.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProperties.get("url").toString();
         String username = standardProperties.get("username").toString();
-        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(url);
+        DatabaseType databaseType = DatabaseTypeFactory.get(url);
         StorageNodeProperties storageNodeProperties;
         try {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
