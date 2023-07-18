@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;

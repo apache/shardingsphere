@@ -16,7 +16,6 @@
 #
 
 org.apache.shardingsphere.infra.database.core.type.dialect.SQL92DatabaseType
-org.apache.shardingsphere.infra.database.core.type.dialect.MySQLDatabaseType
 org.apache.shardingsphere.infra.database.core.type.dialect.MariaDBDatabaseType
 org.apache.shardingsphere.infra.database.core.type.dialect.PostgreSQLDatabaseType
 org.apache.shardingsphere.infra.database.core.type.dialect.OpenGaussDatabaseType

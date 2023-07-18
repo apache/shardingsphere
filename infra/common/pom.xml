@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-core</artifactId>
+            <artifactId>shardingsphere-infra-database-mysql</artifactId>
             <version>${project.version}</version>
         </dependency>
         

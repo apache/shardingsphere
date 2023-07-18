@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.type.dialect;
+package org.apache.shardingsphere.infra.database.mysql;
 
-import org.apache.shardingsphere.infra.database.core.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,7 +42,7 @@ class MySQLDatabaseTypeTest {
     
     @Test
     void assertGetDataSourceMetaData() {
-        assertThat(new MySQLDatabaseType().getDataSourceMetaData("jdbc:mysql://127.0.0.1/foo_ds", "root"), instanceOf(MySQLDataSourceMetaData.class));
+        assertThat(new MySQLDatabaseType().getDataSourceMetaData("jdbc:mysql://127.0.0.1/foo_ds", "root"), CoreMatchers.instanceOf(MySQLDataSourceMetaData.class));
     }
     
     @Test
