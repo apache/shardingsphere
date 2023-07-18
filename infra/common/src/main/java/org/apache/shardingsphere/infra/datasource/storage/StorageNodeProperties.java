@@ -15,38 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.switcher;
+package org.apache.shardingsphere.infra.datasource.storage;
 
+import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-
-import java.util.Map;
-import java.util.Objects;
 
 /**
- * Switching resource.
+ * Storage node properties.
  */
 @RequiredArgsConstructor
-public final class SwitchingResource {
+@Getter
+public final class StorageNodeProperties {
     
-    private final ShardingSphereResourceMetaData resourceMetaData;
+    private final String name;
     
-    @Getter
-    private final StorageResource newStorageResource;
+    private final DatabaseType databaseType;
     
-    @Getter
-    private final StorageResource staleStorageResource;
+    private final DataSourceProperties dataSourceProperties;
     
-    @Getter
-    private final Map<String, DataSourceProperties> dataSourcePropsMap;
+    private final String database;
     
-    /**
-     * Close stale data sources.
-     */
-    public void closeStaleDataSources() {
-        staleStorageResource.getStorageNodes().values().stream().filter(Objects::nonNull).forEach(resourceMetaData::close);
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof StorageNodeProperties) {
+            StorageNodeProperties storageNodeProperties = (StorageNodeProperties) obj;
+            return storageNodeProperties.name.equals(name);
+        }
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name.toUpperCase());
     }
 }

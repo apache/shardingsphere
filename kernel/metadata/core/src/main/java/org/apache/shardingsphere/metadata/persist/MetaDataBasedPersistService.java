@@ -19,6 +19,7 @@ package org.apache.shardingsphere.metadata.persist;
 
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataBasedPersistService;
@@ -127,5 +128,5 @@ public interface MetaDataBasedPersistService {
      * @param databaseConfigs database configurations
      * @return effective data sources
      */
-    Map<String, DataSource> getEffectiveDataSources(String databaseName, Map<String, ? extends DatabaseConfiguration> databaseConfigs);
+    Map<String, DataSourceConfiguration> getEffectiveDataSources(String databaseName, Map<String, ? extends DatabaseConfiguration> databaseConfigs);
 }

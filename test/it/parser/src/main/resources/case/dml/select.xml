@@ -5556,4 +5556,24 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_xml_is_schema_valid_function">
+        <projections start-index="7" stop-index="86" literal-start-index="7" literal-stop-index="86">
+            <expression-projection text="x.xmlcol.isSchemaValid('http://www.example.com/schemas/ipo.xsd','purchaseOrder')" start-index="7" stop-index="86" literal-start-index="7" literal-stop-index="86">
+                <expr>
+                    <function function-name="isSchemaValid" text="x.xmlcol.isSchemaValid('http://www.example.com/schemas/ipo.xsd','purchaseOrder')" start-index="7" stop-index="86" literal-start-index="7" literal-stop-index="86">
+                        <parameter>
+                            <literal-expression value="http://www.example.com/schemas/ipo.xsd" start-index="30" stop-index="69" literal-start-index="30" literal-stop-index="69"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="purchaseOrder" start-index="71" stop-index="85" literal-start-index="71" literal-stop-index="85"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table alias="x" name="po_tab" start-index="93" stop-index="100" literal-start-index="93" literal-stop-index="100"/>
+        </from>
+    </select>
 </sql-parser-test-cases>

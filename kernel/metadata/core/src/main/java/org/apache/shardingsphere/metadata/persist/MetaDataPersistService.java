@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
+import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -44,6 +44,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Meta data persist service.
@@ -90,11 +91,11 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     @Override
     public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs,
                                       final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
-        Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(databaseConfigs.getDataSources());
+        Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(databaseConfigs);
         if (dataSourcePropertiesMap.isEmpty() && databaseConfigs.getRuleConfigurations().isEmpty()) {
             databaseMetaDataService.addDatabase(databaseName);
         } else {
-            dataSourceUnitService.persist(databaseName, getDataSourcePropertiesMap(databaseConfigs.getDataSources()));
+            dataSourceUnitService.persist(databaseName, dataSourcePropertiesMap);
             databaseRulePersistService.persist(databaseName, decorateRuleConfigs(databaseName, dataSources, rules));
         }
     }
@@ -113,6 +114,13 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
         return result;
     }
     
+    private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final DatabaseConfiguration databaseConfigs) {
+        if (!databaseConfigs.getDataSources().isEmpty() && databaseConfigs.getDataSourcePropsMap().isEmpty()) {
+            return getDataSourcePropertiesMap(databaseConfigs.getStorageResource().getStorageNodes());
+        }
+        return databaseConfigs.getDataSourcePropsMap();
+    }
+    
     private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceMap.size(), 1F);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
@@ -122,28 +130,12 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     }
     
     @Override
-    public Map<String, DataSource> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+    public Map<String, DataSourceConfiguration> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceUnitService.load(databaseName);
-        return databaseConfigs.containsKey(databaseName)
-                ? mergeEffectiveDataSources(persistedDataPropsMap, databaseConfigs.get(databaseName).getDataSources())
-                : DataSourcePoolCreator.create(persistedDataPropsMap);
-    }
-    
-    private Map<String, DataSource> mergeEffectiveDataSources(final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) {
-        Map<String, DataSource> result = new LinkedHashMap<>(persistedDataSourcePropsMap.size(), 1F);
-        for (Entry<String, DataSourceProperties> entry : persistedDataSourcePropsMap.entrySet()) {
-            String dataSourceName = entry.getKey();
-            DataSourceProperties persistedDataSourceProps = entry.getValue();
-            DataSource localConfiguredDataSource = localConfiguredDataSources.get(dataSourceName);
-            if (null == localConfiguredDataSource) {
-                result.put(dataSourceName, DataSourcePoolCreator.create(persistedDataSourceProps));
-            } else if (DataSourcePropertiesCreator.create(localConfiguredDataSource).equals(persistedDataSourceProps)) {
-                result.put(dataSourceName, localConfiguredDataSource);
-            } else {
-                result.put(dataSourceName, DataSourcePoolCreator.create(persistedDataSourceProps));
-                new DataSourcePoolDestroyer(localConfiguredDataSource).asyncDestroy();
-            }
+        if (databaseConfigs.containsKey(databaseName) && !databaseConfigs.get(databaseName).getDataSources().isEmpty()) {
+            databaseConfigs.get(databaseName).getStorageResource().getStorageNodes().values().forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
         }
-        return result;
+        return persistedDataPropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
+                entry -> DataSourcePropertiesCreator.createConfiguration(entry.getValue()), (key, value) -> value, LinkedHashMap::new));
     }
 }

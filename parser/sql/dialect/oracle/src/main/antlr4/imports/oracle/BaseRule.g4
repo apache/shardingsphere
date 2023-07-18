@@ -1799,6 +1799,7 @@ xmlFunction
     | xmlRootFunction
     | xmlSerializeFunction
     | xmlTableFunction
+    | xmlIsSchemaValidFunction
     ;
 
 xmlAggFunction
@@ -1843,6 +1844,10 @@ xmlSerializeFunction
 
 xmlTableFunction
     : XMLTABLE LP_ (xmlNameSpacesClause COMMA_)? STRING_ xmlTableOptions RP_
+    ;
+
+xmlIsSchemaValidFunction
+    : (owner DOT_)* name DOT_ ISSCHEMAVALID LP_ expr (COMMA_ expr)* RP_ 
     ;
 
 xmlNameSpacesClause

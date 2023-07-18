@@ -45,10 +45,14 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     private final Properties defaultQueryProperties = new Properties();
     
     public MySQLDataSourceMetaData(final String url) {
+        this(url, null);
+    }
+    
+    public MySQLDataSourceMetaData(final String url, final String catalog) {
         JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
         hostname = jdbcUrl.getHostname();
         port = -1 == jdbcUrl.getPort() ? DEFAULT_PORT : jdbcUrl.getPort();
-        catalog = jdbcUrl.getDatabase();
+        this.catalog = null == catalog ? jdbcUrl.getDatabase() : catalog;
         schema = null;
         queryProperties = jdbcUrl.getQueryProperties();
         buildDefaultQueryProperties();
