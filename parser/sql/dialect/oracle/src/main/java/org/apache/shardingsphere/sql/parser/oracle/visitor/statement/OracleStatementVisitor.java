@@ -709,7 +709,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     @Override
-    public ASTNode visitXmlIsSchemaValidFunction(OracleStatementParser.XmlIsSchemaValidFunctionContext ctx) {
+    public ASTNode visitXmlIsSchemaValidFunction(final OracleStatementParser.XmlIsSchemaValidFunctionContext ctx) {
         return new XmlIsSchemaValidFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.ISSCHEMAVALID().getText(), getOriginalText(ctx));
     }
     
