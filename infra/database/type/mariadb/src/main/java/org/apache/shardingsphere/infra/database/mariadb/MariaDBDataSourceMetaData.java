@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.dialect;
+package org.apache.shardingsphere.infra.database.mariadb;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;

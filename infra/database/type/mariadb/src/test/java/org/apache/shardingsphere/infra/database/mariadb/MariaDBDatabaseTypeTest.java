@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.type.dialect;
+package org.apache.shardingsphere.infra.database.mariadb;
 
-import org.apache.shardingsphere.infra.database.core.metadata.dialect.MariaDBDataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 import org.junit.jupiter.api.Test;
 

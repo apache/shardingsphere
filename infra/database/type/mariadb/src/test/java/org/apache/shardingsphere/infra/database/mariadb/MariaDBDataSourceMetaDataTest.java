@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.dialect;
+package org.apache.shardingsphere.infra.database.mariadb;
 
 import org.apache.shardingsphere.infra.database.core.metadata.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -30,24 +31,26 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.util.Properties;
 import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class MariaDBDataSourceMetaDataTest extends AbstractDataSourceMetaDataTest {
+class MariaDBDataSourceMetaDataTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
     void assertNewConstructorWithSimpleJdbcUrl(final String name, final String url, final String hostname, final int port, final String catalog, final String schema, final Properties queryProps) {
-        assertDataSourceMetaData(url, hostname, port, catalog, schema, queryProps);
+        DataSourceMetaData actual = new MariaDBDataSourceMetaData(url);
+        assertThat(actual.getHostname(), is(hostname));
+        assertThat(actual.getPort(), is(port));
+        assertThat(actual.getCatalog(), is(catalog));
+        assertThat(actual.getSchema(), is(schema));
+        assertThat(actual.getQueryProperties(), is(queryProps));
     }
     
     @Test
     void assertNewConstructorFailure() {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new MariaDBDataSourceMetaData("jdbc:mariadb:xxxxxxxx"));
-    }
-    
-    @Override
-    protected MariaDBDataSourceMetaData createDataSourceMetaData(final String url) {
-        return new MariaDBDataSourceMetaData(url);
     }
     
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {

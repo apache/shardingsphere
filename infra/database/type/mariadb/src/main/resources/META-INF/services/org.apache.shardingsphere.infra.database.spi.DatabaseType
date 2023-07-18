@@ -15,9 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.core.type.dialect.SQL92DatabaseType
-org.apache.shardingsphere.infra.database.core.type.dialect.PostgreSQLDatabaseType
-org.apache.shardingsphere.infra.database.core.type.dialect.OpenGaussDatabaseType
-org.apache.shardingsphere.infra.database.core.type.dialect.OracleDatabaseType
-org.apache.shardingsphere.infra.database.core.type.dialect.SQLServerDatabaseType
-org.apache.shardingsphere.infra.database.core.type.dialect.H2DatabaseType
+org.apache.shardingsphere.infra.database.mariadb.MariaDBDatabaseType
