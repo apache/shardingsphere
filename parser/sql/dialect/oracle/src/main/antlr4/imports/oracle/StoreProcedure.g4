@@ -210,10 +210,6 @@ assocArrayTypeDef
     : TABLE OF dataType (NOT NULL)?  INDEX BY (PLS_INTEGER | BINARY_INTEGER | (VARCHAR2 | VARCHAR2 | STRING) LP_ INTEGER_ RP_ | LONG | typeAttribute | rowtypeAttribute)
     ;
 
-typeAttribute
-    : (variableName | objectName) MOD_ TYPE
-    ;
-
 rowtypeAttribute
     : (variableName | objectName) MOD_ ROWTYPE
     ;

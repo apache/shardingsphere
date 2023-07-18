@@ -777,7 +777,7 @@ lobItemList
     ;
 
 dataType
-    : dataTypeName dataTypeLength? | specialDatatype | dataTypeName dataTypeLength? datetimeTypeSuffix
+    : dataTypeName dataTypeLength? | specialDatatype | dataTypeName dataTypeLength? datetimeTypeSuffix | typeAttribute
     ;
 
 specialDatatype
@@ -794,6 +794,10 @@ dataTypeName
 
 datetimeTypeSuffix
     : (WITH LOCAL? TIME ZONE)? | TO MONTH | TO SECOND (LP_ NUMBER_ RP_)?
+    ;
+    
+typeAttribute
+    : (variableName | objectName) MOD_ TYPE
     ;
 
 treatFunction
