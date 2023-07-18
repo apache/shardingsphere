@@ -26,7 +26,9 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.sqlfederation.compiler.operator.logical.LogicalScan;
 import org.immutables.value.Value;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Push filter into scan rule.
@@ -34,7 +36,7 @@ import java.util.Collection;
 @Value.Enclosing
 public final class PushFilterIntoScanRule extends RelRule<PushFilterIntoScanRule.Config> implements TransformationRule {
     
-    private static final String PG_CATALOG = "pg_catalog";
+    private static final Collection<String> SYSTEM_SCHEMAS = new HashSet<>(Arrays.asList("information_schema", "performance_schema", "mysql", "sys", "shardingsphere", "pg_catalog"));
     
     private static final String CORRELATE_REFERENCE = "$cor";
     
@@ -46,7 +48,7 @@ public final class PushFilterIntoScanRule extends RelRule<PushFilterIntoScanRule
     public boolean matches(final RelOptRuleCall call) {
         LogicalScan logicalScan = call.rel(1);
         for (String each : logicalScan.getTable().getQualifiedName()) {
-            if (PG_CATALOG.equalsIgnoreCase(each)) {
+            if (SYSTEM_SCHEMAS.contains(each.toLowerCase())) {
                 return false;
             }
         }

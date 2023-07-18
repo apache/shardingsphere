@@ -26,13 +26,17 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.sqlfederation.compiler.operator.logical.LogicalScan;
 import org.immutables.value.Value;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
  * Push project into scan rule.
  */
 @Value.Enclosing
 public final class PushProjectIntoScanRule extends RelRule<PushProjectIntoScanRule.Config> implements TransformationRule {
     
-    private static final String PG_CATALOG = "pg_catalog";
+    private static final Collection<String> SYSTEM_SCHEMAS = new HashSet<>(Arrays.asList("information_schema", "performance_schema", "mysql", "sys", "shardingsphere", "pg_catalog"));
     
     private static final String CASE_FUNCTION_NAME = "CAST";
     
@@ -44,7 +48,7 @@ public final class PushProjectIntoScanRule extends RelRule<PushProjectIntoScanRu
     public boolean matches(final RelOptRuleCall call) {
         LogicalScan logicalScan = call.rel(1);
         for (String each : logicalScan.getTable().getQualifiedName()) {
-            if (PG_CATALOG.equalsIgnoreCase(each)) {
+            if (SYSTEM_SCHEMAS.contains(each.toLowerCase())) {
                 return false;
             }
         }
