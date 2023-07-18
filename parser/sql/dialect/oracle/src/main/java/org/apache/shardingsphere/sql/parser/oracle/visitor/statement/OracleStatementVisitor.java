@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyticFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitExprContext;
@@ -101,6 +102,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Function
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlIsSchemaValidFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlNameSpaceStringAsIdentifierSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlNameSpacesClauseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
@@ -704,6 +706,11 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         String path = null == ctx.STRING_() ? null : ctx.STRING_().getText();
         ExpressionSegment defaultExpr = null == ctx.expr() ? null : (ExpressionSegment) visit(ctx.expr());
         return new XmlTableColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.columnName().getText(), dataType, path, defaultExpr, getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitXmlIsSchemaValidFunction(OracleStatementParser.XmlIsSchemaValidFunctionContext ctx) {
+        return new XmlIsSchemaValidFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.ISSCHEMAVALID().getText(), getOriginalText(ctx));
     }
     
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {

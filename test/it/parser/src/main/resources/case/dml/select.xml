@@ -5556,4 +5556,13 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_xml_is_schema_valid_function">
+        <projections start-index="7" stop-index="86" literal-start-index="7" literal-stop-index="86">
+            <expression-projection start-index="7" stop-index="86" literal-start-index="7" literal-stop-index="86"/>
+        </projections>
+        <from>
+            <simple-table alias="x" name="po_tab" start-index="93" stop-index="100" literal-start-index="93" literal-stop-index="100"/>
+        </from>
+    </select>
 </sql-parser-test-cases>
