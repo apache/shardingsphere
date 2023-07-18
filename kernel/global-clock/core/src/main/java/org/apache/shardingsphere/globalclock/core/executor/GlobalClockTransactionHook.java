@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.globalclock.core.executor;
 
 import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;

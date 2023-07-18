@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

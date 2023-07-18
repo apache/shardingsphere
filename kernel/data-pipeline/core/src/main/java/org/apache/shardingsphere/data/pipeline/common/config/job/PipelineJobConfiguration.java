@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.config.job;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 
 /**
  * Pipeline job configuration.

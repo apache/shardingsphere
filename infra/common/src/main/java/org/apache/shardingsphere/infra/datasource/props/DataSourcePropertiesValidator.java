@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.props;
 
-import org.apache.shardingsphere.infra.database.type.checker.DatabaseTypeChecker;
+import org.apache.shardingsphere.infra.database.core.type.checker.DatabaseTypeChecker;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;

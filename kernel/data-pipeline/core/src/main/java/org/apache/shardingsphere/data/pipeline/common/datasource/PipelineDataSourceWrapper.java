@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.common.datasource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
