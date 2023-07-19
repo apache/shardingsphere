@@ -47,7 +47,7 @@ public final class OrderItemRepository {
     }
     
     public void dropTable() throws SQLException {
-        String sql = "DROP TABLE t_order_item";
+        String sql = "DROP TABLE IF EXISTS t_order_item";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
