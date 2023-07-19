@@ -137,13 +137,13 @@ public interface DatabaseType extends TypedSPI {
     }
     
     /**
-     * Handle rollback only.
+     * Allow SQL operation if exception occur during SQL executing.
      *
-     * @param rollbackOnly rollback only
+     * @param isExceptionOccur is exception occur during SQL executing
      * @param statement statement
      * @throws SQLException SQL exception
      */
-    default void handleRollbackOnly(final boolean rollbackOnly, final SQLStatement statement) throws SQLException {
+    default void allowSQLOperationIfExceptionOccur(final boolean isExceptionOccur, final SQLStatement statement) throws SQLException {
     }
     
     /**

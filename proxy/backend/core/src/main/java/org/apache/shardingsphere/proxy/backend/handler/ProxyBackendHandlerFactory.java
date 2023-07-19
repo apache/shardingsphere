@@ -128,7 +128,7 @@ public final class ProxyBackendHandlerFactory {
                                                   final boolean preferPreparedStatement) throws SQLException {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
+        databaseType.allowSQLOperationIfExceptionOccur(connectionSession.getTransactionStatus().isExceptionOccur(), sqlStatement);
         checkUnsupportedSQLStatement(sqlStatement);
         checkClusterState(sqlStatement);
         if (sqlStatement instanceof EmptyStatement) {

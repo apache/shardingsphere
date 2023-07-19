@@ -56,22 +56,22 @@ class OpenGaussDatabaseTypeTest {
     
     @Test
     void assertHandleRollbackOnlyForNotRollbackOnly() {
-        assertDoesNotThrow(() -> new OpenGaussDatabaseType().handleRollbackOnly(false, mock(CommitStatement.class)));
+        assertDoesNotThrow(() -> new OpenGaussDatabaseType().allowSQLOperationIfExceptionOccur(false, mock(CommitStatement.class)));
     }
     
     @Test
     void assertHandleRollbackOnlyForRollbackOnlyAndCommitStatement() {
-        assertDoesNotThrow(() -> new OpenGaussDatabaseType().handleRollbackOnly(true, mock(CommitStatement.class)));
+        assertDoesNotThrow(() -> new OpenGaussDatabaseType().allowSQLOperationIfExceptionOccur(true, mock(CommitStatement.class)));
     }
     
     @Test
     void assertHandleRollbackOnlyForRollbackOnlyAndRollbackStatement() {
-        assertDoesNotThrow(() -> new OpenGaussDatabaseType().handleRollbackOnly(true, mock(RollbackStatement.class)));
+        assertDoesNotThrow(() -> new OpenGaussDatabaseType().allowSQLOperationIfExceptionOccur(true, mock(RollbackStatement.class)));
     }
     
     @Test
     void assertHandleRollbackOnlyForRollbackOnlyAndNotTCLStatement() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> new OpenGaussDatabaseType().handleRollbackOnly(true, mock(SelectStatement.class)));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> new OpenGaussDatabaseType().allowSQLOperationIfExceptionOccur(true, mock(SelectStatement.class)));
     }
     
     @Test

@@ -128,7 +128,7 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     
     private SQLStatement getSQLStatementByCommit() {
         SQLStatement result = tclStatement;
-        if (connectionSession.getTransactionStatus().isRollbackOnly()) {
+        if (connectionSession.getTransactionStatus().isExceptionOccur()) {
             if (tclStatement instanceof OpenGaussCommitStatement) {
                 result = new OpenGaussRollbackStatement();
             } else if (tclStatement instanceof PostgreSQLCommitStatement) {

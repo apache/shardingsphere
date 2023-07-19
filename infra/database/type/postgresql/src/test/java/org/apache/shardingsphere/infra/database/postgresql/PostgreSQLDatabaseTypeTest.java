@@ -56,22 +56,22 @@ class PostgreSQLDatabaseTypeTest {
     
     @Test
     void assertHandleRollbackOnlyForNotRollbackOnly() {
-        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().handleRollbackOnly(false, mock(CommitStatement.class)));
+        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().allowSQLOperationIfExceptionOccur(false, mock(CommitStatement.class)));
     }
     
     @Test
     void assertHandleRollbackOnlyForRollbackOnlyAndCommitStatement() {
-        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(CommitStatement.class)));
+        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().allowSQLOperationIfExceptionOccur(true, mock(CommitStatement.class)));
     }
     
     @Test
     void assertHandleRollbackOnlyForRollbackOnlyAndRollbackStatement() {
-        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(RollbackStatement.class)));
+        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().allowSQLOperationIfExceptionOccur(true, mock(RollbackStatement.class)));
     }
     
     @Test
     void assertHandleRollbackOnlyForRollbackOnlyAndNotTCLStatement() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(SelectStatement.class)));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> new PostgreSQLDatabaseType().allowSQLOperationIfExceptionOccur(true, mock(SelectStatement.class)));
     }
     
     @Test
