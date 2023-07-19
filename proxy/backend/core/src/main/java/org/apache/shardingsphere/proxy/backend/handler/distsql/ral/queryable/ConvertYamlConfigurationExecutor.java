@@ -44,9 +44,6 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceCo
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,8 +90,6 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
                 ConvertRuleConfigurationProvider convertRuleConfigProvider = TypedSPILoader.getService(ConvertRuleConfigurationProvider.class,
                         ((CompatibleEncryptRuleConfiguration) each).convertToEncryptRuleConfiguration().getClass().getName());
                 result.append(convertRuleConfigProvider.convert(each));
-            } else if (each instanceof ShadowRuleConfiguration) {
-                appendShadowDistSQL((ShadowRuleConfiguration) each, result);
             } else if (each instanceof MaskRuleConfiguration) {
                 appendMaskDistSQL((MaskRuleConfiguration) each, result);
             } else {
@@ -178,53 +173,6 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
                 stringBuilder.append(DistSQLScriptConstants.COMMA).append(' ');
             }
         }
-    }
-    
-    private void appendShadowDistSQL(final ShadowRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        if (ruleConfig.getDataSources().isEmpty()) {
-            return;
-        }
-        stringBuilder.append(DistSQLScriptConstants.CREATE_SHADOW);
-        Iterator<ShadowDataSourceConfiguration> iterator = ruleConfig.getDataSources().iterator();
-        while (iterator.hasNext()) {
-            ShadowDataSourceConfiguration dataSourceConfig = iterator.next();
-            String shadowRuleName = dataSourceConfig.getName();
-            String shadowTables = getShadowTables(shadowRuleName, ruleConfig.getTables(), ruleConfig.getShadowAlgorithms());
-            stringBuilder.append(
-                    String.format(DistSQLScriptConstants.SHADOW, shadowRuleName, dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), shadowTables));
-            if (iterator.hasNext()) {
-                stringBuilder.append(DistSQLScriptConstants.COMMA);
-            }
-        }
-        stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
-    }
-    
-    private String getShadowTables(final String shadowRuleName, final Map<String, ShadowTableConfiguration> ruleConfig, final Map<String, AlgorithmConfiguration> algorithmConfigs) {
-        StringBuilder result = new StringBuilder();
-        Iterator<Entry<String, ShadowTableConfiguration>> iterator = ruleConfig.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<String, ShadowTableConfiguration> shadowTableConfig = iterator.next();
-            if (shadowTableConfig.getValue().getDataSourceNames().contains(shadowRuleName)) {
-                String shadowTableTypes = getShadowTableTypes(shadowTableConfig.getValue().getShadowAlgorithmNames(), algorithmConfigs);
-                result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE, shadowTableConfig.getKey(), shadowTableTypes));
-            }
-            if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
-            }
-        }
-        return result.toString();
-    }
-    
-    private String getShadowTableTypes(final Collection<String> shadowAlgorithmNames, final Map<String, AlgorithmConfiguration> algorithmConfigs) {
-        StringBuilder result = new StringBuilder();
-        Iterator<String> iterator = shadowAlgorithmNames.iterator();
-        while (iterator.hasNext()) {
-            result.append(getAlgorithmType(algorithmConfigs.get(iterator.next())));
-            if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA).append(' ');
-            }
-        }
-        return result.toString();
     }
     
     private void appendMaskDistSQL(final MaskRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
