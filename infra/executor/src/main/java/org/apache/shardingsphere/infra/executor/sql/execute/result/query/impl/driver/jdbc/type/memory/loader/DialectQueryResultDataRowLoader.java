@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 import java.sql.ResultSet;

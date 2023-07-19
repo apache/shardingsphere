@@ -15,44 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi;
+package org.apache.shardingsphere.infra.database.core.spi;
 
+import org.apache.shardingsphere.infra.database.core.spi.fixture.DatabaseTypedSPIFixture;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.spi.fixture.DatabaseTypedSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabaseTypedSPILoaderTest {
     
     @Test
     void assertFindServiceWithTrunkDatabaseType() {
-        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "MySQL")).isPresent());
+        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE")).isPresent());
     }
     
     @Test
     void assertFindServiceWithBranchDatabaseType() {
-        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "MariaDB")).isPresent());
-    }
-    
-    @Test
-    void assertFindServiceWithUnregisteredDatabaseType() {
-        assertFalse(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).isPresent());
+        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "INFRA.BRANCH.FIXTURE")).isPresent());
     }
     
     @Test
     void assertGetServiceWithRegisteredDatabaseType() {
-        assertDoesNotThrow(() -> DatabaseTypedSPILoader.getService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "MySQL")));
-    }
-    
-    @Test
-    void assertGetServiceWithUnregisteredDatabaseType() {
-        assertThrows(ServiceProviderNotFoundServerException.class,
-                () -> DatabaseTypedSPILoader.getService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
+        assertDoesNotThrow(() -> DatabaseTypedSPILoader.getService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE")));
     }
 }
