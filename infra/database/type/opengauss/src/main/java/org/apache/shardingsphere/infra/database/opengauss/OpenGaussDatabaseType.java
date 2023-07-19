@@ -18,14 +18,8 @@
 package org.apache.shardingsphere.infra.database.opengauss;
 
 import org.apache.shardingsphere.infra.database.core.type.TrunkDatabaseType;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -81,12 +75,6 @@ public final class OpenGaussDatabaseType implements TrunkDatabaseType {
     @Override
     public OpenGaussDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new OpenGaussDataSourceMetaData(url);
-    }
-    
-    @Override
-    public void handleRollbackOnly(final boolean rollbackOnly, final SQLStatement statement) throws SQLException {
-        ShardingSpherePreconditions.checkState(!rollbackOnly || statement instanceof CommitStatement || statement instanceof RollbackStatement,
-                () -> new SQLFeatureNotSupportedException("Current transaction is aborted, commands ignored until end of transaction block."));
     }
     
     @Override

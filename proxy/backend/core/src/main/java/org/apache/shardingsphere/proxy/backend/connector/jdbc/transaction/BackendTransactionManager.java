@@ -91,14 +91,14 @@ public final class BackendTransactionManager implements TransactionManager {
                 if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
                     localTransactionManager.commit();
                 } else {
-                    shardingSphereTransactionManager.commit(connection.getConnectionSession().getTransactionStatus().isRollbackOnly());
+                    shardingSphereTransactionManager.commit(connection.getConnectionSession().getTransactionStatus().isExceptionOccur());
                 }
             } finally {
                 for (TransactionHook each : transactionHooks) {
                     each.afterCommit(connection.getCachedConnections().values(), getTransactionContext(), ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext());
                 }
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
-                connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
+                connection.getConnectionSession().getTransactionStatus().setExceptionOccur(false);
                 connection.getConnectionSession().getConnectionContext().clearTransactionConnectionContext();
                 connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
             }
@@ -122,7 +122,7 @@ public final class BackendTransactionManager implements TransactionManager {
                     each.afterRollback(connection.getCachedConnections().values(), getTransactionContext());
                 }
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
-                connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
+                connection.getConnectionSession().getTransactionStatus().setExceptionOccur(false);
                 connection.getConnectionSession().getConnectionContext().clearTransactionConnectionContext();
                 connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
             }
@@ -151,8 +151,8 @@ public final class BackendTransactionManager implements TransactionManager {
                 result.add(ex);
             }
         }
-        if (result.isEmpty() && connection.getConnectionSession().getTransactionStatus().isRollbackOnly()) {
-            connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
+        if (result.isEmpty() && connection.getConnectionSession().getTransactionStatus().isExceptionOccur()) {
+            connection.getConnectionSession().getTransactionStatus().setExceptionOccur(false);
         }
         throwSQLExceptionIfNecessary(result);
     }
