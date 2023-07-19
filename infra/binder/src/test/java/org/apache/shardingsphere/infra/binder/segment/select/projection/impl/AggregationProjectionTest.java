@@ -36,7 +36,7 @@ class AggregationProjectionTest {
     @Test
     void assertGetExpression() {
         Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, mock(DatabaseType.class));
-        assertThat(projection.getExpression(), is("COUNT( A.\"DIRECTION\" )"));
+        assertThat(projection.getColumnName(), is("COUNT( A.\"DIRECTION\" )"));
     }
     
     @Test

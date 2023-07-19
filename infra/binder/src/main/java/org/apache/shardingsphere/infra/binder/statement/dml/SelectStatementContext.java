@@ -293,7 +293,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         String rawName = SQLUtils.getExactlyValue(((TextOrderByItemSegment) orderByItem).getText());
         for (Projection each : projectionsContext.getProjections()) {
             Optional<String> result = each.getAlias().map(IdentifierValue::getValue);
-            if (SQLUtils.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtils.getExactlyExpression(SQLUtils.getExactlyValue(each.getExpression())))) {
+            if (SQLUtils.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtils.getExactlyExpression(SQLUtils.getExactlyValue(each.getColumnName())))) {
                 return result;
             }
             if (rawName.equalsIgnoreCase(result.orElse(null))) {

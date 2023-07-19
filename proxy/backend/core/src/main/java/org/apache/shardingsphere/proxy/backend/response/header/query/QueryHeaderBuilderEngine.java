@@ -71,7 +71,7 @@ public final class QueryHeaderBuilderEngine {
     
     private String getColumnLabel(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {
         Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : queryResultMetaData.getColumnLabel(columnIndex);
+        return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getColumnName() : queryResultMetaData.getColumnLabel(columnIndex);
     }
     
     private String getColumnName(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {

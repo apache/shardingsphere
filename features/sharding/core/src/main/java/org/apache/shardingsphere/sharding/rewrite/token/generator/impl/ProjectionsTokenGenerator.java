@@ -100,7 +100,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         if (projection instanceof AggregationDistinctProjection) {
             return ((AggregationDistinctProjection) projection).getDistinctInnerExpression() + " AS " + projection.getAlias().get().getValue() + " ";
         }
-        return projection.getExpression() + " AS " + projection.getAlias().get().getValue() + " ";
+        return projection.getColumnName() + " AS " + projection.getAlias().get().getValue() + " ";
     }
     
     private String getDerivedProjectionTextFromColumnOrderByItemSegment(final DerivedProjection projection, final TableExtractor tableExtractor, final RouteUnit routeUnit,

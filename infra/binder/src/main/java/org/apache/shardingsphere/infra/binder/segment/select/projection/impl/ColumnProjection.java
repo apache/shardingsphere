@@ -72,7 +72,7 @@ public final class ColumnProjection implements Projection {
     }
     
     @Override
-    public String getExpression() {
+    public String getColumnName() {
         return null == owner ? name.getValue() : owner.getValue() + "." + name.getValue();
     }
     

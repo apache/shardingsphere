@@ -54,23 +54,18 @@ public class AggregationProjection implements Projection {
     private int index = -1;
     
     @Override
-    public final String getExpression() {
+    public final String getColumnName() {
         return type.name() + innerExpression;
+    }
+    
+    @Override
+    public String getColumnLabel() {
+        return getAlias().map(IdentifierValue::getValue).orElseGet(() -> databaseType.getDefaultSchema().isPresent() ? type.name().toLowerCase() : getColumnName());
     }
     
     @Override
     public final Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias);
-    }
-    
-    /**
-     * Get column label.
-     *
-     * @return column label
-     */
-    @Override
-    public String getColumnLabel() {
-        return getAlias().map(IdentifierValue::getValue).orElseGet(() -> databaseType.getDefaultSchema().isPresent() ? type.name().toLowerCase() : getExpression());
     }
     
     @Override

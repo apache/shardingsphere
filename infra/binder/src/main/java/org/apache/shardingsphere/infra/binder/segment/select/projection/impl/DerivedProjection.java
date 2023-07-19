@@ -43,13 +43,18 @@ public final class DerivedProjection implements Projection {
     private final SQLSegment derivedProjectionSegment;
     
     @Override
-    public Optional<IdentifierValue> getAlias() {
-        return Optional.ofNullable(alias);
+    public String getColumnName() {
+        return expression;
     }
     
     @Override
     public String getColumnLabel() {
         return getAlias().map(IdentifierValue::getValue).orElse(expression);
+    }
+    
+    @Override
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias);
     }
     
     @Override

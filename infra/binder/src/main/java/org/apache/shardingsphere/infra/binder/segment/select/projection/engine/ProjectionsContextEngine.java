@@ -150,6 +150,6 @@ public final class ProjectionsContextEngine {
     }
     
     private boolean isSameQualifiedName(final Projection projection, final String text) {
-        return SQLUtils.getExactlyValue(text).equalsIgnoreCase(SQLUtils.getExactlyValue(projection.getExpression()));
+        return SQLUtils.getExactlyValue(text).equalsIgnoreCase(SQLUtils.getExactlyValue(projection.getColumnName()));
     }
 }
