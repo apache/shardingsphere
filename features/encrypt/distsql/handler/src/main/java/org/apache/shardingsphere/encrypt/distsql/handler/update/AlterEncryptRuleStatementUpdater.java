@@ -72,7 +72,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     private void checkToColumnNames(final AlterEncryptRuleStatement sqlStatement) {
         for (EncryptRuleSegment rule : sqlStatement.getRules()) {
             ShardingSpherePreconditions.checkState(rule.getColumns().stream().noneMatch(
-                            each -> each.getName().equals(each.getLikeQuery().getName()) || each.getName().equals(each.getAssistedQuery().getName())),
+                    each -> each.getName().equals(each.getLikeQuery().getName()) || each.getName().equals(each.getAssistedQuery().getName())),
                     () -> new InvalidRuleConfigurationException("encrypt", "assisted query column and like query column are conflicts with logic column"));
         }
     }
