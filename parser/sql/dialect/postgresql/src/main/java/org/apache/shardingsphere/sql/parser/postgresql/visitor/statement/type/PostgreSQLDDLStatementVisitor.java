@@ -1107,6 +1107,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
         Optional<NameSegment> columnName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
         columnName.ifPresent(optional -> result.setColumn(new ColumnSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())));
+        result.setComment(new IdentifierValue(ctx.commentClauses().commentText().getText()));
         setTableSegment(result, nameSegmentIterator);
         return result;
     }
@@ -1115,6 +1116,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     private PostgreSQLCommentStatement commentOnTable(final CommentContext ctx) {
         PostgreSQLCommentStatement result = new PostgreSQLCommentStatement();
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
+        result.setComment(new IdentifierValue(ctx.commentClauses().commentText().getText()));
         setTableSegment(result, nameSegmentIterator);
         return result;
     }
