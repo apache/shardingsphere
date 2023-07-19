@@ -1054,8 +1054,8 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public final ASTNode visitPositionFunction(final PositionFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.POSITION().getText(), getOriginalText(ctx));
-        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr(0)));
-        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr(1)));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
         return result;
     }
     
