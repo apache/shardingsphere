@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.core.type.fixture;
 
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.type.TrunkDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 
 import java.util.Collection;
@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class InfraTrunkDatabaseTypeFixture implements TrunkDatabaseType {
+public final class InfraTrunkDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {

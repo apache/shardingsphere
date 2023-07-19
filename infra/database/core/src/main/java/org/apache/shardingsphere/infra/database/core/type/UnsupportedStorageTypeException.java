@@ -17,10 +17,21 @@
 
 package org.apache.shardingsphere.infra.database.core.type;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 
 /**
- * Trunk database type.
+ * Unsupported storage type exception.
  */
-public interface TrunkDatabaseType extends DatabaseType {
+public final class UnsupportedStorageTypeException extends KernelSQLException {
+    
+    private static final long serialVersionUID = 8981789100727786183L;
+    
+    public UnsupportedStorageTypeException(final String dataSourceName) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 3, 40, "Unsupported storage type of `%s`.", dataSourceName);
+    }
+    
+    public UnsupportedStorageTypeException(final String databaseName, final String dataSourceName) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 3, 40, "Unsupported storage type of `%s.%s`.", databaseName, dataSourceName);
+    }
 }

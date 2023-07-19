@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.core.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
@@ -141,7 +140,7 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getTrunkDatabaseType(final String name) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, name);
-        return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType() : databaseType;
+        return databaseType.getTrunkDatabaseType().orElse(databaseType);
     }
     
     /**
@@ -151,7 +150,7 @@ public final class DatabaseTypeEngine {
      * @return name of trunk database type
      */
     public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
-        return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getType() : databaseType.getType();
+        return databaseType.getTrunkDatabaseType().map(DatabaseType::getType).orElse(databaseType.getType());
     }
     
     /**
@@ -174,7 +173,7 @@ public final class DatabaseTypeEngine {
     public static Collection<DatabaseType> getTrunkAndBranchDatabaseTypes(final Collection<String> trunkDatabaseTypes) {
         Collection<DatabaseType> result = new LinkedList<>();
         for (DatabaseType each : ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)) {
-            if (trunkDatabaseTypes.contains(each.getType()) || each instanceof BranchDatabaseType && trunkDatabaseTypes.contains(((BranchDatabaseType) each).getTrunkDatabaseType().getType())) {
+            if (trunkDatabaseTypes.contains(each.getType()) || each.getTrunkDatabaseType().map(optional -> trunkDatabaseTypes.contains(optional.getType())).orElse(false)) {
                 result.add(each);
             }
         }
