@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -48,6 +49,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
         String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
+        checkToColumnNames(sqlStatement);
         checkToBeAlteredEncryptors(sqlStatement);
     }
     
@@ -65,6 +67,14 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     
     private Collection<String> getToBeAlteredEncryptTableNames(final AlterEncryptRuleStatement sqlStatement) {
         return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).collect(Collectors.toList());
+    }
+    
+    private void checkToColumnNames(final AlterEncryptRuleStatement sqlStatement) {
+        for (EncryptRuleSegment rule : sqlStatement.getRules()) {
+            ShardingSpherePreconditions.checkState(rule.getColumns().stream().noneMatch(
+                            each -> each.getName().equals(each.getLikeQuery().getName()) || each.getName().equals(each.getAssistedQuery().getName())),
+                    () -> new InvalidRuleConfigurationException("encrypt", "assisted query column and like query column are conflicts with logic column"));
+        }
     }
     
     private void checkToBeAlteredEncryptors(final AlterEncryptRuleStatement sqlStatement) {

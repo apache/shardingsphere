@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -46,24 +47,9 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
         if (!sqlStatement.isIfNotExists()) {
             checkDuplicateRuleNames(database.getName(), sqlStatement, currentRuleConfig);
         }
+        checkToColumnNames(sqlStatement);
         checkToBeCreatedEncryptors(sqlStatement);
         checkDataSources(database);
-    }
-    
-    @Override
-    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final CreateEncryptRuleStatement sqlStatement) {
-        Collection<EncryptRuleSegment> segments = sqlStatement.getRules();
-        if (sqlStatement.isIfNotExists()) {
-            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
-            segments.removeIf(each -> duplicatedRuleNames.contains(each.getTableName()));
-        }
-        return EncryptRuleStatementConverter.convert(segments);
-    }
-    
-    @Override
-    public void updateCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
-        currentRuleConfig.getEncryptors().putAll(toBeCreatedRuleConfig.getEncryptors());
     }
     
     private void checkDuplicateRuleNames(final String databaseName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
@@ -77,6 +63,14 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
             currentRuleNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
         }
         return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toSet());
+    }
+    
+    private void checkToColumnNames(final CreateEncryptRuleStatement sqlStatement) {
+        for (EncryptRuleSegment rule : sqlStatement.getRules()) {
+            ShardingSpherePreconditions.checkState(rule.getColumns().stream().noneMatch(
+                    each -> each.getName().equals(each.getLikeQuery().getName()) || each.getName().equals(each.getAssistedQuery().getName())),
+                    () -> new InvalidRuleConfigurationException("encrypt", "assisted query column and like query column are conflicts with logic column"));
+        }
     }
     
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) {
@@ -95,6 +89,22 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     
     private void checkDataSources(final ShardingSphereDatabase database) {
         ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getDataSources().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
+    }
+    
+    @Override
+    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final CreateEncryptRuleStatement sqlStatement) {
+        Collection<EncryptRuleSegment> segments = sqlStatement.getRules();
+        if (sqlStatement.isIfNotExists()) {
+            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
+            segments.removeIf(each -> duplicatedRuleNames.contains(each.getTableName()));
+        }
+        return EncryptRuleStatementConverter.convert(segments);
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
+        currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
+        currentRuleConfig.getEncryptors().putAll(toBeCreatedRuleConfig.getEncryptors());
     }
     
     @Override
