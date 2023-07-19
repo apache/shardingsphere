@@ -186,7 +186,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
         if (projection instanceof ColumnProjection) {
             Map<String, String> tableNamesByColumnProjection =
                     selectStatementContext.getTablesContext().findTableNamesByColumnProjection(Collections.singletonList((ColumnProjection) projection), schema);
-            return Optional.of(tableNamesByColumnProjection.get(projection.getExpression()));
+            return Optional.of(tableNamesByColumnProjection.get(projection.getColumnName()));
         }
         return Optional.empty();
     }

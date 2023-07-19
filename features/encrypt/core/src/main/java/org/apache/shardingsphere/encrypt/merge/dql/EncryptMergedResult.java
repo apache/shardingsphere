@@ -78,7 +78,7 @@ public final class EncryptMergedResult implements MergedResult {
     }
     
     private Optional<String> findTableName(final ColumnProjection columnProjection, final Map<String, String> columnTableNames) {
-        String tableName = columnTableNames.get(columnProjection.getExpression());
+        String tableName = columnTableNames.get(columnProjection.getColumnName());
         if (null != tableName) {
             return Optional.of(tableName);
         }

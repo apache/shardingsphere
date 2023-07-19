@@ -151,7 +151,7 @@ class ProjectionsTokenGeneratorTest {
         DerivedProjection result = mock(DerivedProjection.class);
         when(result.getDerivedProjectionSegment()).thenReturn(null);
         when(result.getAlias()).thenReturn(Optional.of(new IdentifierValue(TEST_OTHER_DERIVED_PROJECTION_ALIAS)));
-        when(result.getExpression()).thenReturn(TEST_OTHER_DERIVED_PROJECTION_EXPRESSION);
+        when(result.getColumnName()).thenReturn(TEST_OTHER_DERIVED_PROJECTION_EXPRESSION);
         return result;
     }
 }

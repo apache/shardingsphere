@@ -181,13 +181,13 @@ public final class TablesContext {
         }
         Map<String, String> result = new LinkedHashMap<>(columns.size(), 1F);
         for (ColumnProjection each : columns) {
-            if (ownerTableNames.containsKey(each.getExpression())) {
+            if (ownerTableNames.containsKey(each.getColumnName())) {
                 continue;
             }
-            Collection<SubqueryTableContext> subqueryTableContexts = subqueryTables.getOrDefault(each.getOwner(), Collections.emptyList());
+            Collection<SubqueryTableContext> subqueryTableContexts = each.getOwner().map(optional -> subqueryTables.get(each.getOwner().get().getValue())).orElseGet(Collections::emptyList);
             for (SubqueryTableContext subqueryTableContext : subqueryTableContexts) {
-                if (subqueryTableContext.getColumnNames().contains(each.getName())) {
-                    result.put(each.getExpression(), subqueryTableContext.getTableName());
+                if (subqueryTableContext.getColumnNames().contains(each.getName().getValue())) {
+                    result.put(each.getColumnName(), subqueryTableContext.getTableName());
                 }
             }
         }
@@ -207,7 +207,7 @@ public final class TablesContext {
         String tableName = simpleTableSegments.iterator().next().getTableName().getIdentifier().getValue();
         Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnProjection each : columns) {
-            result.putIfAbsent(each.getExpression(), tableName);
+            result.putIfAbsent(each.getColumnName(), tableName);
         }
         return result;
     }
@@ -227,7 +227,7 @@ public final class TablesContext {
         Map<String, Collection<String>> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnProjection each : columns) {
             if (each.getOwner().isPresent()) {
-                result.computeIfAbsent(each.getOwner().get().getValue(), unused -> new LinkedList<>()).add(each.getExpression());
+                result.computeIfAbsent(each.getOwner().get().getValue(), unused -> new LinkedList<>()).add(each.getColumnName());
             }
         }
         return result;

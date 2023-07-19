@@ -43,7 +43,7 @@ public final class ParameterMarkerProjection implements Projection {
     private final IdentifierValue alias;
     
     @Override
-    public String getExpression() {
+    public String getColumnName() {
         return String.valueOf(parameterMarkerIndex);
     }
     

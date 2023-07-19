@@ -40,13 +40,18 @@ public final class ExpressionProjection implements Projection {
     private final IdentifierValue alias;
     
     @Override
-    public Optional<IdentifierValue> getAlias() {
-        return Optional.ofNullable(alias);
+    public String getColumnName() {
+        return expression;
     }
     
     @Override
     public String getColumnLabel() {
         return getAlias().map(IdentifierValue::getValue).orElse(expression);
+    }
+    
+    @Override
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias);
     }
     
     @Override

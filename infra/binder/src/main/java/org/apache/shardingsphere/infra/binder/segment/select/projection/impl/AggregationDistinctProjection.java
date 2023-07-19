@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 /**
  * Aggregation distinct projection.
  */
+@EqualsAndHashCode(callSuper = true)
 @Getter
 public final class AggregationDistinctProjection extends AggregationProjection {
     
@@ -54,9 +56,7 @@ public final class AggregationDistinctProjection extends AggregationProjection {
     
     @Override
     public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        if (getAlias().isPresent()) {
-            return new ColumnProjection(subqueryTableAlias, getAlias().get(), null);
-        }
-        return new AggregationDistinctProjection(startIndex, stopIndex, getType(), getInnerExpression(), null, distinctInnerExpression, getDatabaseType());
+        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, getAlias().get(), null)
+                : new AggregationDistinctProjection(startIndex, stopIndex, getType(), getInnerExpression(), null, distinctInnerExpression, getDatabaseType());
     }
 }
