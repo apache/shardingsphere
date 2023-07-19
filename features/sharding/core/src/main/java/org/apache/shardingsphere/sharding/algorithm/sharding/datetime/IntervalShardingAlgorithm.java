@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -94,7 +95,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     
     private String getDateTimePattern(final Properties props) {
         ShardingSpherePreconditions.checkState(props.containsKey(DATE_TIME_PATTERN_KEY),
-                () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s can not be null.", DATE_TIME_PATTERN_KEY)));
+                () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s can not be null", DATE_TIME_PATTERN_KEY)));
         return props.getProperty(DATE_TIME_PATTERN_KEY);
     }
     
@@ -117,9 +118,10 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private DateTimeFormatter getTableSuffixPattern(final Properties props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(SHARDING_SUFFIX_FORMAT_KEY),
-                () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s can not be null.", SHARDING_SUFFIX_FORMAT_KEY)));
-        return DateTimeFormatter.ofPattern(props.getProperty(SHARDING_SUFFIX_FORMAT_KEY));
+        String suffix = props.getProperty(SHARDING_SUFFIX_FORMAT_KEY);
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(suffix),
+                () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s can not be null or empty.", SHARDING_SUFFIX_FORMAT_KEY)));
+        return DateTimeFormatter.ofPattern(suffix);
     }
     
     private ChronoUnit getStepUnit(final String stepUnit) {
