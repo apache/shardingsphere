@@ -17,6 +17,18 @@
   -->
 
 <sql-parser-test-cases>
+    <insert sql-case-id="insert_into_values">
+        <table name="test_nested" start-index="12" stop-index="22" />
+        <columns start-index="23" stop-index="23" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="31" stop-index="31" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
     <insert sql-case-id="insert_with_all_placeholders" parameters="1, 1, 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="46">

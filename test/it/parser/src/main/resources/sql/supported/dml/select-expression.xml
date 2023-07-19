@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_udf_function_mysqltest1_f1" value="select mysqltest1.f1()" db-types="MySQL" />
     <sql-case id="select_case_when_with_mul_condition" value="select case 1*0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
     <sql-case id="select_case_when_with_sub_condition" value="select case 1-0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
     <sql-case id="select_case_when_with_add_condition" value="select case 1+0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />

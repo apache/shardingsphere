@@ -17,6 +17,14 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_udf_function_mysqltest1_f1">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="mysqltest1.f1()" start-index="7" stop-index="21">
+                <function function-name="mysqltest1.f1()" alias="creation_date" start-index="7" stop-index="21" text="mysqltest1.f1()" />
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_case_when_with_mul_condition">
         <projections start-index="7" stop-index="52">
             <expression-projection text="case 1*0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" start-index="7" stop-index="52">
