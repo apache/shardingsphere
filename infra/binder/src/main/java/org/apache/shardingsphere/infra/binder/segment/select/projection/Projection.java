@@ -27,25 +27,25 @@ import java.util.Optional;
 public interface Projection {
     
     /**
-     * Get expression.
+     * Get column name.
      * 
-     * @return expression
+     * @return column name
      */
-    String getExpression();
+    String getColumnName();
+    
+    /**
+     * Get column label.
+     *
+     * @return column label
+     */
+    String getColumnLabel();
     
     /**
      * Get alias.
-     * 
+     *
      * @return alias
      */
-    Optional<String> getAlias();
-    
-    /**
-     * Get columnLabel.
-     *
-     * @return columnLabel
-     */
-    String getColumnLabel();
+    Optional<IdentifierValue> getAlias();
     
     /**
      * Transform subquery projection.

@@ -775,6 +775,10 @@ SHOW
 XMLTABLE
     : X M L T A B L E
     ;
+    
+ISSCHEMAVALID
+    : I S S C H E M A V A L I D
+    ;
 
 XMLNAMESPACES
     : X M L N A M E S P A C E S
@@ -790,4 +794,16 @@ PATH
 
 EXTRACT
     : E X T R A C T
+    ;
+    
+ANYDATA
+    : A N Y D A T A
+    ;
+    
+ANYTYPE
+    : A N Y T Y P E
+    ;
+    
+ANYDATASET
+    : A N Y D A T A S E T
     ;

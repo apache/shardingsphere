@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
@@ -46,7 +46,7 @@ class OpenGaussXAConnectionWrapperTest {
     
     @Test
     void assertWrap() throws SQLException {
-        XAConnection actual = TypedSPILoader.getService(XAConnectionWrapper.class, databaseType.getType()).wrap(createXADataSource(), mockConnection());
+        XAConnection actual = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(PGXAConnection.class));
     }
     

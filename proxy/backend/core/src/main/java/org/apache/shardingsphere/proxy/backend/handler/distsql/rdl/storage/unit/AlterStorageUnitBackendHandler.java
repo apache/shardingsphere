@@ -27,13 +27,13 @@ import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedData
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.converter.DataSourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.url.JdbcUrl;
+import org.apache.shardingsphere.infra.database.core.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -71,7 +71,7 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
         validateHandler.validate(dataSourcePropsMap);
         try {
             ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterStorageUnits(databaseName, dataSourcePropsMap);
-        } catch (final SQLException | ShardingSphereServerException ex) {
+        } catch (final SQLException | ShardingSphereExternalException ex) {
             log.error("Alter storage unit failed", ex);
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }

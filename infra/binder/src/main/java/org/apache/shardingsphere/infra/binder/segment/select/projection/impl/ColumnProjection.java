@@ -38,11 +38,11 @@ import java.util.Optional;
 @ToString
 public final class ColumnProjection implements Projection {
     
-    private final IdentifierValue ownerIdentifier;
+    private final IdentifierValue owner;
     
-    private final IdentifierValue nameIdentifier;
+    private final IdentifierValue name;
     
-    private final IdentifierValue aliasIdentifier;
+    private final IdentifierValue alias;
     
     private IdentifierValue originalOwner;
     
@@ -58,8 +58,8 @@ public final class ColumnProjection implements Projection {
      * 
      * @return column name
      */
-    public String getName() {
-        return nameIdentifier.getValue();
+    public IdentifierValue getName() {
+        return name;
     }
     
     /**
@@ -67,28 +67,28 @@ public final class ColumnProjection implements Projection {
      * 
      * @return owner
      */
-    public String getOwner() {
-        return null == ownerIdentifier ? null : ownerIdentifier.getValue();
+    public Optional<IdentifierValue> getOwner() {
+        return Optional.ofNullable(owner);
     }
     
     @Override
-    public String getExpression() {
-        return null == getOwner() ? getName() : getOwner() + "." + getName();
+    public String getColumnName() {
+        return null == owner ? name.getValue() : owner.getValue() + "." + name.getValue();
     }
     
     @Override
     public String getColumnLabel() {
-        return getAlias().orElse(getName());
+        return getAlias().map(IdentifierValue::getValue).orElse(name.getValue());
     }
     
     @Override
-    public Optional<String> getAlias() {
-        return Optional.ofNullable(aliasIdentifier).map(IdentifierValue::getValue);
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias);
     }
     
     @Override
     public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        ColumnProjection result = null == aliasIdentifier ? new ColumnProjection(subqueryTableAlias, nameIdentifier, null) : new ColumnProjection(subqueryTableAlias, aliasIdentifier, null);
+        ColumnProjection result = null == alias ? new ColumnProjection(subqueryTableAlias, name, null) : new ColumnProjection(subqueryTableAlias, alias, null);
         result.setOriginalOwner(originalOwner);
         result.setOriginalName(originalName);
         return result;
@@ -100,7 +100,7 @@ public final class ColumnProjection implements Projection {
      * @return original owner
      */
     public IdentifierValue getOriginalOwner() {
-        return null == originalOwner ? ownerIdentifier : originalOwner;
+        return null == originalOwner ? owner : originalOwner;
     }
     
     /**
@@ -109,6 +109,6 @@ public final class ColumnProjection implements Projection {
      * @return original name
      */
     public IdentifierValue getOriginalName() {
-        return null == originalName ? nameIdentifier : originalName;
+        return null == originalName ? name : originalName;
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
-import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
@@ -28,12 +27,14 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Substitutable column name token.
@@ -118,13 +119,14 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     }
     
     private static void appendColumnProjection(final ColumnProjection columnProjection, final Map<String, String> logicActualTableNames, final StringBuilder builder) {
-        if (!Strings.isNullOrEmpty(columnProjection.getOwner())) {
-            String lowerCaseOwner = columnProjection.getOwner().toLowerCase();
-            builder.append(columnProjection.getOwnerIdentifier().getQuoteCharacter().wrap(logicActualTableNames.getOrDefault(lowerCaseOwner, columnProjection.getOwner()))).append('.');
+        if (columnProjection.getOwner().isPresent()) {
+            Optional<IdentifierValue> owner = columnProjection.getOwner();
+            String lowerCaseOwner = owner.get().getValue().toLowerCase();
+            builder.append(owner.get().getQuoteCharacter().wrap(logicActualTableNames.getOrDefault(lowerCaseOwner, owner.get().getValue()))).append('.');
         }
-        builder.append(columnProjection.getNameIdentifier().getQuoteCharacter().wrap(columnProjection.getName()));
+        builder.append(columnProjection.getName().getValueWithQuoteCharacters());
         if (columnProjection.getAlias().isPresent()) {
-            builder.append(" AS ").append(columnProjection.getAliasIdentifier().getQuoteCharacter().wrap(columnProjection.getAlias().get()));
+            builder.append(" AS ").append(columnProjection.getAlias().get().getValueWithQuoteCharacters());
         }
     }
 }

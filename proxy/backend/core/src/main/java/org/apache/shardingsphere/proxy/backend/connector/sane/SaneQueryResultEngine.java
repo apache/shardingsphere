@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.connector.sane;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -29,7 +29,7 @@ import java.util.Optional;
  * Sane query result engine.
  */
 @SingletonSPI
-public interface SaneQueryResultEngine extends TypedSPI {
+public interface SaneQueryResultEngine extends DatabaseTypedSPI {
     
     /**
      * Get sane query result.

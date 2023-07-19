@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.timeservice.type.database.provider;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Timestamp loading SQL provider.
  */
 @SingletonSPI
-public interface TimestampLoadingSQLProvider extends TypedSPI {
+public interface TimestampLoadingSQLProvider extends DatabaseTypedSPI {
     
     /**
      * Get SQL for timestamp loading.

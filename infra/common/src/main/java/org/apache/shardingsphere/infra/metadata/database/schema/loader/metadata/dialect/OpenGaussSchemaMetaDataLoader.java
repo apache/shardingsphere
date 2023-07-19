@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
@@ -98,7 +98,7 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
                                                                                 final Collection<String> schemaNames) throws SQLException {
         Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables)); ResultSet resultSet = preparedStatement.executeQuery()) {
-            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPILoader.getService(DatabaseType.class, getType()));
+            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), getType());
             Collection<String> primaryKeys = loadPrimaryKeys(connection, schemaNames);
             while (resultSet.next()) {
                 String tableName = resultSet.getString("table_name");
@@ -157,7 +157,7 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

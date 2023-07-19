@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.checker;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 
 import javax.sql.DataSource;
 
 /**
  * Data source privilege checker.
  */
-public interface DataSourcePrivilegeChecker extends TypedSPI {
+public interface DataSourcePrivilegeChecker extends DatabaseTypedSPI {
     
     /**
      * Check privilege.

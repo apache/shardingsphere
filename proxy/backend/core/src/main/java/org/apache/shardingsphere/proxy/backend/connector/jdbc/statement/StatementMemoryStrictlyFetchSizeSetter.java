@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.statement;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -27,7 +27,7 @@ import java.sql.Statement;
  * Statement memory strictly fetch size setter.
  */
 @SingletonSPI
-public interface StatementMemoryStrictlyFetchSizeSetter extends TypedSPI {
+public interface StatementMemoryStrictlyFetchSizeSetter extends DatabaseTypedSPI {
     
     /**
      * Set fetch size.

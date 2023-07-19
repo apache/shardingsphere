@@ -19,14 +19,14 @@ package org.apache.shardingsphere.infra.metadata.statistics.builder;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * ShardingSphere statistics builder.
  */
 @SingletonSPI
-public interface ShardingSphereStatisticsBuilder extends TypedSPI {
+public interface ShardingSphereStatisticsBuilder extends DatabaseTypedSPI {
     
     /**
      * Build ShardingSphere data.

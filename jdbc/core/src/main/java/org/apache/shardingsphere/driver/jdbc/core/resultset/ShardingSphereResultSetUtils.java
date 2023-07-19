@@ -62,7 +62,7 @@ public final class ShardingSphereResultSetUtils {
         Map<String, Integer> result = new CaseInsensitiveMap<>(actualProjections.size(), 1F);
         for (int columnIndex = actualProjections.size(); columnIndex > 0; columnIndex--) {
             Projection projection = actualProjections.get(columnIndex - 1);
-            result.put(DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : projection.getColumnLabel(), columnIndex);
+            result.put(DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getColumnName() : projection.getColumnLabel(), columnIndex);
         }
         return result;
     }

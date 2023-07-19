@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.segment.table;
 
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -51,7 +51,7 @@ class TablesContextTest {
     @Test
     void assertGetTableNames() {
         TablesContext tablesContext = new TablesContext(Arrays.asList(createTableSegment("table_1", "tbl_1"),
-                createTableSegment("table_2", "tbl_2")), DatabaseTypeEngine.getDatabaseType("MySQL"));
+                createTableSegment("table_2", "tbl_2")), DatabaseTypeFactory.get("MySQL"));
         assertThat(tablesContext.getTableNames(), is(new HashSet<>(Arrays.asList("table_1", "table_2"))));
     }
     
@@ -59,7 +59,7 @@ class TablesContextTest {
     void assertInstanceCreatedWhenNoExceptionThrown() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("tbl")));
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
-        TablesContext tablesContext = new TablesContext(Collections.singleton(tableSegment), DatabaseTypeEngine.getDatabaseType("MySQL"));
+        TablesContext tablesContext = new TablesContext(Collections.singleton(tableSegment), DatabaseTypeFactory.get("MySQL"));
         assertThat(tablesContext.getDatabaseName(), is(Optional.of("schema")));
         assertThat(tablesContext.getSchemaName(), is(Optional.of("schema")));
         assertThat(tablesContext.getTableNames(), is(Collections.singleton("tbl")));
@@ -70,7 +70,7 @@ class TablesContextTest {
     void assertFindTableNameWhenSingleTable() {
         SimpleTableSegment tableSegment = createTableSegment("table_1", "tbl_1");
         ColumnSegment columnSegment = createColumnSegment(null, "col");
-        Map<String, String> actual = new TablesContext(Collections.singletonList(tableSegment), DatabaseTypeEngine.getDatabaseType("MySQL"))
+        Map<String, String> actual = new TablesContext(Collections.singletonList(tableSegment), DatabaseTypeFactory.get("MySQL"))
                 .findTableNamesByColumnSegment(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
@@ -81,7 +81,7 @@ class TablesContextTest {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ColumnSegment columnSegment = createColumnSegment("table_1", "col");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL"))
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeFactory.get("MySQL"))
                 .findTableNamesByColumnSegment(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
         assertFalse(actual.isEmpty());
         assertThat(actual.get("table_1.col"), is("table_1"));
@@ -92,7 +92,7 @@ class TablesContextTest {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ColumnSegment columnSegment = createColumnSegment(null, "col");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL"))
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeFactory.get("MySQL"))
                 .findTableNamesByColumnSegment(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
         assertTrue(actual.isEmpty());
     }
@@ -105,7 +105,7 @@ class TablesContextTest {
         when(schema.getAllColumnNames("table_1")).thenReturn(Collections.singletonList("col"));
         ColumnSegment columnSegment = createColumnSegment(null, "col");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2),
-                DatabaseTypeEngine.getDatabaseType("MySQL")).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
+                DatabaseTypeFactory.get("MySQL")).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
     }
@@ -119,7 +119,7 @@ class TablesContextTest {
         ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(table).collect(Collectors.toMap(ShardingSphereTable::getName, value -> value)), Collections.emptyMap());
         ColumnSegment columnSegment = createColumnSegment(null, "COL");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2),
-                DatabaseTypeEngine.getDatabaseType("MySQL")).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
+                DatabaseTypeFactory.get("MySQL")).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("TABLE_1"));
     }
@@ -128,7 +128,7 @@ class TablesContextTest {
     void assertFindTableNameWhenColumnProjectionWhenSingleTable() {
         SimpleTableSegment tableSegment = createTableSegment("table_1", "tbl_1");
         ColumnProjection columnProjection = new ColumnProjection(null, "col", "cl");
-        Map<String, String> actual = new TablesContext(Collections.singletonList(tableSegment), DatabaseTypeEngine.getDatabaseType("MySQL"))
+        Map<String, String> actual = new TablesContext(Collections.singletonList(tableSegment), DatabaseTypeFactory.get("MySQL"))
                 .findTableNamesByColumnProjection(Collections.singletonList(columnProjection), mock(ShardingSphereSchema.class));
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
@@ -139,7 +139,7 @@ class TablesContextTest {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ColumnProjection columnProjection = new ColumnProjection("table_1", "col", "cl");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL"))
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeFactory.get("MySQL"))
                 .findTableNamesByColumnProjection(Collections.singletonList(columnProjection), mock(ShardingSphereSchema.class));
         assertFalse(actual.isEmpty());
         assertThat(actual.get("table_1.col"), is("table_1"));
@@ -150,7 +150,7 @@ class TablesContextTest {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ColumnProjection columnProjection = new ColumnProjection(null, "col", "cl");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL"))
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeFactory.get("MySQL"))
                 .findTableNamesByColumnProjection(Collections.singletonList(columnProjection), mock(ShardingSphereSchema.class));
         assertTrue(actual.isEmpty());
     }
@@ -162,7 +162,7 @@ class TablesContextTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("table_1")).thenReturn(Collections.singletonList("col"));
         ColumnProjection columnProjection = new ColumnProjection(null, "col", "cl");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL"))
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeFactory.get("MySQL"))
                 .findTableNamesByColumnProjection(Collections.singletonList(columnProjection), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
@@ -176,7 +176,7 @@ class TablesContextTest {
                 new ShardingSphereColumn("COL", 0, false, false, true, true, false)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(table).collect(Collectors.toMap(ShardingSphereTable::getName, value -> value)), Collections.emptyMap());
         ColumnProjection columnProjection = new ColumnProjection(null, "COL", "CL");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL"))
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeFactory.get("MySQL"))
                 .findTableNamesByColumnProjection(Collections.singletonList(columnProjection), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("TABLE_1"));
@@ -203,7 +203,7 @@ class TablesContextTest {
         tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
         SimpleTableSegment tableSegment2 = createTableSegment("table_1", "tbl_1");
         tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
-        TablesContext tablesContext = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL"));
+        TablesContext tablesContext = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeFactory.get("MySQL"));
         assertTrue(tablesContext.getDatabaseName().isPresent());
         assertThat(tablesContext.getDatabaseName().get(), is("sharding_db_1"));
     }
@@ -214,7 +214,7 @@ class TablesContextTest {
         tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
-        TablesContext tablesContext = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL"));
+        TablesContext tablesContext = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeFactory.get("MySQL"));
         assertTrue(tablesContext.getDatabaseName().isPresent());
         assertThat(tablesContext.getDatabaseName().get(), is("sharding_db_1"));
     }
@@ -225,7 +225,7 @@ class TablesContextTest {
         tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
         SimpleTableSegment tableSegment2 = createTableSegment("table_1", "tbl_1");
         tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_2")));
-        assertThrows(IllegalStateException.class, () -> new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL")).getDatabaseName());
+        assertThrows(IllegalStateException.class, () -> new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeFactory.get("MySQL")).getDatabaseName());
     }
     
     @Test
@@ -234,7 +234,7 @@ class TablesContextTest {
         tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_2")));
-        assertThrows(IllegalStateException.class, () -> new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL")).getDatabaseName());
+        assertThrows(IllegalStateException.class, () -> new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeFactory.get("MySQL")).getDatabaseName());
     }
     
     @Test
@@ -243,7 +243,7 @@ class TablesContextTest {
         tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
-        TablesContext tablesContext = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL"));
+        TablesContext tablesContext = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeFactory.get("MySQL"));
         assertTrue(tablesContext.getSchemaName().isPresent());
         assertThat(tablesContext.getSchemaName().get(), is("sharding_db_1"));
     }

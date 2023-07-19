@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider;
 
 import io.netty.util.DefaultAttributeMap;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;

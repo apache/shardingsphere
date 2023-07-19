@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -29,7 +29,7 @@ import java.util.Collection;
  * Dialect schema meta data loader.
  */
 @SingletonSPI
-public interface DialectSchemaMetaDataLoader extends TypedSPI {
+public interface DialectSchemaMetaDataLoader extends DatabaseTypedSPI {
     
     /**
      * Load schema meta data.

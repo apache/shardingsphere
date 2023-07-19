@@ -19,10 +19,10 @@ package org.apache.shardingsphere.test.e2e.env;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
@@ -90,7 +90,7 @@ public final class DataSetEnvironmentManager {
             }
             String insertSQL;
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(connection.getMetaData().getURL());
+                DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
                 insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetaData.getColumns(), databaseType);
             }
             fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
@@ -216,7 +216,7 @@ public final class DataSetEnvironmentManager {
         public Void call() throws SQLException {
             try (Connection connection = dataSource.getConnection()) {
                 for (String each : tableNames) {
-                    DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(connection.getMetaData().getURL());
+                    DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
                     try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", databaseType.getQuoteCharacter().wrap(each)))) {
                         preparedStatement.execute();
                     }

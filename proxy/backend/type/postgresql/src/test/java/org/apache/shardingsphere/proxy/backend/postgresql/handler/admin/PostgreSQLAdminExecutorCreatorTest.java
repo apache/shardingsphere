@@ -161,9 +161,4 @@ class PostgreSQLAdminExecutorCreatorTest {
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(new PostgreSQLDeleteStatement());
         assertThat(new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "delete from t where id = 1", "", Collections.emptyList()), is(Optional.empty()));
     }
-    
-    @Test
-    void assertGetType() {
-        assertThat(new PostgreSQLAdminExecutorCreator().getType(), is("PostgreSQL"));
-    }
 }

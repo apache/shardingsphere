@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

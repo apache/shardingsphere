@@ -23,8 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
@@ -87,7 +86,7 @@ public final class DataNode {
     }
     
     private String getSchemaName(final String databaseName, final DatabaseType databaseType, final boolean containsSchema, final List<String> segments) {
-        if (databaseType instanceof SchemaSupportedDatabaseType) {
+        if (databaseType.getDefaultSchema().isPresent()) {
             return containsSchema ? segments.get(1) : ASTERISK;
         }
         return databaseName;
@@ -117,7 +116,7 @@ public final class DataNode {
      * @return formatted data node
      */
     public String format(final DatabaseType databaseType) {
-        return databaseType instanceof SchemaSupportedDatabaseType ? dataSourceName + DELIMITER + schemaName + DELIMITER + tableName : dataSourceName + DELIMITER + tableName;
+        return databaseType.getDefaultSchema().isPresent() ? dataSourceName + DELIMITER + schemaName + DELIMITER + tableName : dataSourceName + DELIMITER + tableName;
     }
     
     @Override

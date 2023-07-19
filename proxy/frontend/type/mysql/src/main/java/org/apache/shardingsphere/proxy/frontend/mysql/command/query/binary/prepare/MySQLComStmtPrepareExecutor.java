@@ -34,8 +34,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -149,7 +149,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         for (Projection each : projections) {
             // TODO Calculate column definition flag for other projection types
             if (each instanceof ColumnProjection && null != ((ColumnProjection) each).getOriginalName()) {
-                result.add(Optional.ofNullable(columnToTableMap.get(each.getExpression())).map(schema::getTable)
+                result.add(Optional.ofNullable(columnToTableMap.get(each.getColumnName())).map(schema::getTable)
                         .map(table -> table.getColumns().get(((ColumnProjection) each).getOriginalName().getValue()))
                         .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column), MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
                         .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING)));

@@ -37,21 +37,25 @@ public final class ExpressionProjection implements Projection {
     
     private final String expression;
     
-    private final String alias;
+    private final IdentifierValue alias;
     
     @Override
-    public Optional<String> getAlias() {
-        return Optional.ofNullable(alias);
+    public String getColumnName() {
+        return expression;
     }
     
     @Override
     public String getColumnLabel() {
-        return getAlias().orElse(expression);
+        return getAlias().map(IdentifierValue::getValue).orElse(expression);
+    }
+    
+    @Override
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias);
     }
     
     @Override
     public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        // TODO replace getAlias with aliasIdentifier
-        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null) : new ExpressionProjection(expression, alias);
+        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, getAlias().get(), null) : new ExpressionProjection(expression, alias);
     }
 }

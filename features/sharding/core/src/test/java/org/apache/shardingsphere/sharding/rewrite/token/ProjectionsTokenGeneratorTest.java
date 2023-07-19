@@ -127,7 +127,7 @@ class ProjectionsTokenGeneratorTest {
     private AggregationProjection getAggregationProjection() {
         AggregationDistinctProjection derivedAggregationDistinctProjection = mock(AggregationDistinctProjection.class);
         when(derivedAggregationDistinctProjection.getDistinctInnerExpression()).thenReturn(TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION);
-        when(derivedAggregationDistinctProjection.getAlias()).thenReturn(Optional.of(TEST_AGGREGATION_DISTINCT_PROJECTION_ALIAS));
+        when(derivedAggregationDistinctProjection.getAlias()).thenReturn(Optional.of(new IdentifierValue(TEST_AGGREGATION_DISTINCT_PROJECTION_ALIAS)));
         AggregationProjection result = mock(AggregationProjection.class);
         when(result.getDerivedAggregationProjections()).thenReturn(Collections.singletonList(derivedAggregationDistinctProjection));
         return result;
@@ -142,7 +142,7 @@ class ProjectionsTokenGeneratorTest {
         when(oldColumnOrderByItemSegment.getOrderDirection()).thenReturn(mock(OrderDirection.class));
         when(oldColumnOrderByItemSegment.getColumn().getIdentifier()).thenReturn(mock(IdentifierValue.class));
         DerivedProjection result = mock(DerivedProjection.class);
-        when(result.getAlias()).thenReturn(Optional.of(TEST_DERIVED_PROJECTION_ALIAS));
+        when(result.getAlias()).thenReturn(Optional.of(new IdentifierValue(TEST_DERIVED_PROJECTION_ALIAS)));
         when(result.getDerivedProjectionSegment()).thenReturn(oldColumnOrderByItemSegment);
         return result;
     }
@@ -150,8 +150,8 @@ class ProjectionsTokenGeneratorTest {
     private DerivedProjection getOtherDerivedProjection() {
         DerivedProjection result = mock(DerivedProjection.class);
         when(result.getDerivedProjectionSegment()).thenReturn(null);
-        when(result.getAlias()).thenReturn(Optional.of(TEST_OTHER_DERIVED_PROJECTION_ALIAS));
-        when(result.getExpression()).thenReturn(TEST_OTHER_DERIVED_PROJECTION_EXPRESSION);
+        when(result.getAlias()).thenReturn(Optional.of(new IdentifierValue(TEST_OTHER_DERIVED_PROJECTION_ALIAS)));
+        when(result.getColumnName()).thenReturn(TEST_OTHER_DERIVED_PROJECTION_EXPRESSION);
         return result;
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.exception.data;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
@@ -27,7 +28,7 @@ public final class UnsupportedCRC32DataConsistencyCalculateAlgorithmException ex
     
     private static final long serialVersionUID = 580323508713524816L;
     
-    public UnsupportedCRC32DataConsistencyCalculateAlgorithmException(final String databaseType) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 53, String.format("Unsupported CRC32 data consistency calculate algorithm with database type `%s`.", databaseType));
+    public UnsupportedCRC32DataConsistencyCalculateAlgorithmException(final DatabaseType databaseType) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 53, String.format("Unsupported CRC32 data consistency calculate algorithm with database type `%s`.", databaseType.getType()));
     }
 }

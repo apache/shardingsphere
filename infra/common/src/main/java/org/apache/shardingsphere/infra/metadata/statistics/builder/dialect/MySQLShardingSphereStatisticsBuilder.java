@@ -64,7 +64,7 @@ public final class MySQLShardingSphereStatisticsBuilder implements ShardingSpher
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

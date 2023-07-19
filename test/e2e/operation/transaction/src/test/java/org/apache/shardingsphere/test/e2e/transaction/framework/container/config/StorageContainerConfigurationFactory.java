@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.framework.container.confi
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.opengauss.OpenGaussContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.postgresql.PostgreSQLContainerConfigurationFactory;

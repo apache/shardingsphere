@@ -71,7 +71,7 @@ public final class MySQLDataSourcePrivilegeChecker implements DataSourcePrivileg
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

@@ -22,7 +22,8 @@ import io.netty.channel.socket.SocketChannel;
 import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
 import org.apache.shardingsphere.db.protocol.netty.ProxyFlowControlHandler;
-import org.apache.shardingsphere.test.fixture.infra.database.type.MockedDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.ConstructionMockSettings;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ class ServerHandlerInitializerTest {
         SocketChannel channel = mock(SocketChannel.class);
         ChannelPipeline pipeline = mock(ChannelPipeline.class);
         when(channel.pipeline()).thenReturn(pipeline);
-        new ServerHandlerInitializer(new MockedDatabaseType()).initChannel(channel);
+        new ServerHandlerInitializer(TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).initChannel(channel);
         verify(pipeline).addLast(any(ChannelAttrInitializer.class));
         verify(pipeline).addLast(any(PacketCodec.class));
         verify(pipeline).addLast(any(FrontendChannelLimitationInboundHandler.class));

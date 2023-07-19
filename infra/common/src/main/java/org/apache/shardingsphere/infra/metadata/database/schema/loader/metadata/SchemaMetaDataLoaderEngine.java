@@ -24,8 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -77,7 +77,7 @@ public final class SchemaMetaDataLoaderEngine {
     }
     
     private static Collection<SchemaMetaData> load(final SchemaMetaDataLoaderMaterial material) throws SQLException {
-        Optional<DialectSchemaMetaDataLoader> dialectSchemaMetaDataLoader = TypedSPILoader.findService(DialectSchemaMetaDataLoader.class, material.getStorageType().getType());
+        Optional<DialectSchemaMetaDataLoader> dialectSchemaMetaDataLoader = DatabaseTypedSPILoader.findService(DialectSchemaMetaDataLoader.class, material.getStorageType());
         if (dialectSchemaMetaDataLoader.isPresent()) {
             try {
                 return dialectSchemaMetaDataLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());

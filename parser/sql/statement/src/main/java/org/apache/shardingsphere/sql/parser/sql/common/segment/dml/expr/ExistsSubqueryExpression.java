@@ -22,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 
+/**
+ * Exists subquery expression.
+ */
 @RequiredArgsConstructor
 @Getter
 public class ExistsSubqueryExpression implements ExpressionSegment {

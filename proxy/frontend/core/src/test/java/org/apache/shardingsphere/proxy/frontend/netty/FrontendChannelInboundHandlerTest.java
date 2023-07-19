@@ -23,8 +23,10 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -74,7 +76,7 @@ class FrontendChannelInboundHandlerTest {
     @BeforeEach
     void setup() {
         when(frontendEngine.getAuthenticationEngine()).thenReturn(authenticationEngine);
-        when(frontendEngine.getType()).thenReturn("MySQL");
+        when(frontendEngine.getType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(authenticationEngine.handshake(any(ChannelHandlerContext.class))).thenReturn(CONNECTION_ID);
         channel = new EmbeddedChannel(false, true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);

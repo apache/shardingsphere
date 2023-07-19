@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.dialect;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Con
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -105,7 +103,7 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
-            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPILoader.getService(DatabaseType.class, getType()));
+            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), getType());
             String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tables.iterator().next()) : connection.getCatalog();
             preparedStatement.setString(1, databaseName);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -165,7 +163,7 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

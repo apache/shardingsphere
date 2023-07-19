@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.dialect;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.adapter.MetaDataLoaderConnectionAdapter;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
@@ -93,7 +93,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>(tables.size(), 1F);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
-            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPILoader.getService(DatabaseType.class, getType()));
+            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), getType());
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -194,7 +194,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "Oracle";
     }
 }

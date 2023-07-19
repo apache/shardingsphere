@@ -32,18 +32,17 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.JobItemIncrem
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.checker.BasicDataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourceCheckEngine;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
-import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.BranchDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
@@ -151,10 +150,10 @@ public final class PipelineJobPreparerUtils {
         if (dataSources.isEmpty()) {
             return;
         }
-        DataSourceChecker dataSourceChecker = DatabaseTypedSPILoader.findService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType.getType()));
-        dataSourceChecker.checkConnection(dataSources);
-        dataSourceChecker.checkPrivilege(dataSources);
-        dataSourceChecker.checkVariable(dataSources);
+        DataSourceCheckEngine dataSourceCheckEngine = new DataSourceCheckEngine(databaseType);
+        dataSourceCheckEngine.checkConnection(dataSources);
+        dataSourceCheckEngine.checkPrivilege(dataSources);
+        dataSourceCheckEngine.checkVariable(dataSources);
     }
     
     /**
@@ -169,9 +168,9 @@ public final class PipelineJobPreparerUtils {
             log.info("target data source is empty, skip check");
             return;
         }
-        DataSourceChecker dataSourceChecker = DatabaseTypedSPILoader.findService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType.getType()));
-        dataSourceChecker.checkConnection(targetDataSources);
-        dataSourceChecker.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
+        DataSourceCheckEngine dataSourceCheckEngine = new DataSourceCheckEngine(databaseType);
+        dataSourceCheckEngine.checkConnection(targetDataSources);
+        dataSourceCheckEngine.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
     }
     
     /**

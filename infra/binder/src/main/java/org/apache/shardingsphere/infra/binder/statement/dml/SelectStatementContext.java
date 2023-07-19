@@ -70,6 +70,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUti
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -291,21 +292,22 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         }
         String rawName = SQLUtils.getExactlyValue(((TextOrderByItemSegment) orderByItem).getText());
         for (Projection each : projectionsContext.getProjections()) {
-            if (SQLUtils.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtils.getExactlyExpression(SQLUtils.getExactlyValue(each.getExpression())))) {
-                return each.getAlias();
+            Optional<String> result = each.getAlias().map(IdentifierValue::getValue);
+            if (SQLUtils.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtils.getExactlyExpression(SQLUtils.getExactlyValue(each.getColumnName())))) {
+                return result;
             }
-            if (rawName.equalsIgnoreCase(each.getAlias().orElse(null))) {
+            if (rawName.equalsIgnoreCase(result.orElse(null))) {
                 return Optional.of(rawName);
             }
             if (isSameColumnName(each, rawName)) {
-                return each.getAlias();
+                return result;
             }
         }
         return Optional.empty();
     }
     
     private boolean isSameColumnName(final Projection projection, final String name) {
-        return projection instanceof ColumnProjection && name.equalsIgnoreCase(((ColumnProjection) projection).getName());
+        return projection instanceof ColumnProjection && name.equalsIgnoreCase(((ColumnProjection) projection).getName().getValue());
     }
     
     private String getOrderItemText(final TextOrderByItemSegment orderByItemSegment) {

@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.statement;
 
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -70,7 +70,7 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     }
     
     private void setFetchSize(final Statement statement, final DatabaseType databaseType) throws SQLException {
-        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = TypedSPILoader.findService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getType());
+        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = DatabaseTypedSPILoader.findService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType);
         if (fetchSizeSetter.isPresent()) {
             fetchSizeSetter.get().setFetchSize(statement);
         }

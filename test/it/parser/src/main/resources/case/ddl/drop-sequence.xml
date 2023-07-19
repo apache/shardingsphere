@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <drop-sequence sql-case-id="drop_sequence" />
+    <drop-sequence sql-case-id="drop_sequence_with_schema" />
 </sql-parser-test-cases>

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sqlfederation.compiler.context.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect.OptimizerSQLDialectBuilder;
 
 import java.util.Map;
@@ -62,6 +62,6 @@ public final class OptimizerParserContextFactory {
     }
     
     private static Properties createSQLDialectProperties(final DatabaseType databaseType) {
-        return TypedSPILoader.getService(OptimizerSQLDialectBuilder.class, databaseType.getType()).build();
+        return DatabaseTypedSPILoader.getService(OptimizerSQLDialectBuilder.class, databaseType).build();
     }
 }

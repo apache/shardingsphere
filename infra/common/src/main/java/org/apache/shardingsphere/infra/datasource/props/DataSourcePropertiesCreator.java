@@ -19,9 +19,14 @@ package org.apache.shardingsphere.infra.datasource.props;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourceReflection;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.synonym.ConnectionPropertySynonyms;
+import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
@@ -29,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -43,7 +49,7 @@ public final class DataSourcePropertiesCreator {
      * @param dataSourceConfigs data source configurations
      * @return created data source properties
      */
-    public static Map<String, DataSourceProperties> create(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
+    public static Map<String, DataSourceProperties> createFromConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
         return dataSourceConfigs.entrySet().stream().collect(Collectors
                 .toMap(Entry::getKey, entry -> create("com.zaxxer.hikari.HikariDataSource", entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
@@ -57,6 +63,20 @@ public final class DataSourcePropertiesCreator {
      */
     public static DataSourceProperties create(final String dataSourcePoolClassName, final DataSourceConfiguration dataSourceConfig) {
         return new DataSourceProperties(dataSourcePoolClassName, createProperties(dataSourceConfig));
+    }
+    
+    /**
+     * Create data source properties.
+     *
+     * @param dataSources data sources
+     * @return created data source properties
+     */
+    public static Map<String, DataSourceProperties> create(final Map<String, DataSource> dataSources) {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            result.put(entry.getKey(), create(entry.getValue()));
+        }
+        return result;
     }
     
     /**
@@ -102,5 +122,36 @@ public final class DataSourcePropertiesCreator {
     
     private static boolean isValidProperty(final String key, final Object value, final DataSourcePoolMetaData poolMetaData) {
         return !poolMetaData.getInvalidProperties().containsKey(key) || null == value || !value.equals(poolMetaData.getInvalidProperties().get(key));
+    }
+    
+    /**
+     * Create data source configuration.
+     *
+     * @param dataSourceProps data source properties
+     * @return created data source configuration
+     */
+    public static DataSourceConfiguration createConfiguration(final DataSourceProperties dataSourceProps) {
+        return new DataSourceConfiguration(getConnectionConfiguration(dataSourceProps.getConnectionPropertySynonyms()),
+                getPoolConfiguration(dataSourceProps.getPoolPropertySynonyms(), dataSourceProps.getCustomDataSourceProperties()));
+    }
+    
+    private static ConnectionConfiguration getConnectionConfiguration(final ConnectionPropertySynonyms connectionPropertySynonyms) {
+        Map<String, Object> standardProperties = connectionPropertySynonyms.getStandardProperties();
+        return new ConnectionConfiguration((String) standardProperties.get("url"), (String) standardProperties.get("username"), (String) standardProperties.get("password"));
+    }
+    
+    private static PoolConfiguration getPoolConfiguration(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourceProperties customDataSourceProperties) {
+        Map<String, Object> standardProperties = poolPropertySynonyms.getStandardProperties();
+        Long connectionTimeoutMilliseconds = standardProperties.containsKey("connectionTimeoutMilliseconds")
+                ? Long.valueOf(String.valueOf(standardProperties.get("connectionTimeoutMilliseconds")))
+                : null;
+        Long idleTimeoutMilliseconds = standardProperties.containsKey("idleTimeoutMilliseconds") ? Long.valueOf(String.valueOf(standardProperties.get("idleTimeoutMilliseconds"))) : null;
+        Long maxLifetimeMilliseconds = standardProperties.containsKey("maxLifetimeMilliseconds") ? Long.valueOf(String.valueOf(standardProperties.get("maxLifetimeMilliseconds"))) : null;
+        Integer maxPoolSize = standardProperties.containsKey("maxPoolSize") ? Integer.valueOf(String.valueOf(standardProperties.get("maxPoolSize"))) : null;
+        Integer minPoolSize = standardProperties.containsKey("minPoolSize") ? Integer.valueOf(String.valueOf(standardProperties.get("minPoolSize"))) : null;
+        Boolean readOnly = standardProperties.containsKey("readOnly") ? Boolean.valueOf(String.valueOf(standardProperties.get("readOnly"))) : null;
+        Properties customProperties = new Properties();
+        customProperties.putAll(customDataSourceProperties.getProperties());
+        return new PoolConfiguration(connectionTimeoutMilliseconds, idleTimeoutMilliseconds, maxLifetimeMilliseconds, maxPoolSize, minPoolSize, readOnly, customProperties);
     }
 }

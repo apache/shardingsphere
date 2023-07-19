@@ -25,7 +25,7 @@ import org.apache.calcite.schema.Table;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 
 import java.sql.ResultSetMetaData;
@@ -118,7 +118,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
         }
         Projection projection = expandProjections.get(column - 1);
         if (projection instanceof ColumnProjection) {
-            return ((ColumnProjection) projection).getName();
+            return ((ColumnProjection) projection).getName().getValue();
         }
         return getColumnLabel(column);
     }
@@ -186,7 +186,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
         if (projection instanceof ColumnProjection) {
             Map<String, String> tableNamesByColumnProjection =
                     selectStatementContext.getTablesContext().findTableNamesByColumnProjection(Collections.singletonList((ColumnProjection) projection), schema);
-            return Optional.of(tableNamesByColumnProjection.get(projection.getExpression()));
+            return Optional.of(tableNamesByColumnProjection.get(projection.getColumnName()));
         }
         return Optional.empty();
     }

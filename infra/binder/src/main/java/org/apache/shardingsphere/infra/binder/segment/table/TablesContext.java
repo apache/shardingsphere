@@ -24,8 +24,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.subquery.SubqueryTableContext;
 import org.apache.shardingsphere.infra.binder.segment.select.subquery.engine.SubqueryTableContextEngine;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -91,7 +90,7 @@ public final class TablesContext {
     }
     
     private Optional<String> findDatabaseName(final SimpleTableSegment tableSegment, final DatabaseType databaseType) {
-        Optional<OwnerSegment> owner = databaseType instanceof SchemaSupportedDatabaseType ? tableSegment.getOwner().flatMap(OwnerSegment::getOwner) : tableSegment.getOwner();
+        Optional<OwnerSegment> owner = databaseType.getDefaultSchema().isPresent() ? tableSegment.getOwner().flatMap(OwnerSegment::getOwner) : tableSegment.getOwner();
         return owner.map(optional -> optional.getIdentifier().getValue());
     }
     
@@ -182,13 +181,13 @@ public final class TablesContext {
         }
         Map<String, String> result = new LinkedHashMap<>(columns.size(), 1F);
         for (ColumnProjection each : columns) {
-            if (ownerTableNames.containsKey(each.getExpression())) {
+            if (ownerTableNames.containsKey(each.getColumnName())) {
                 continue;
             }
-            Collection<SubqueryTableContext> subqueryTableContexts = subqueryTables.getOrDefault(each.getOwner(), Collections.emptyList());
+            Collection<SubqueryTableContext> subqueryTableContexts = each.getOwner().map(optional -> subqueryTables.get(each.getOwner().get().getValue())).orElseGet(Collections::emptyList);
             for (SubqueryTableContext subqueryTableContext : subqueryTableContexts) {
-                if (subqueryTableContext.getColumnNames().contains(each.getName())) {
-                    result.put(each.getExpression(), subqueryTableContext.getTableName());
+                if (subqueryTableContext.getColumnNames().contains(each.getName().getValue())) {
+                    result.put(each.getColumnName(), subqueryTableContext.getTableName());
                 }
             }
         }
@@ -208,7 +207,7 @@ public final class TablesContext {
         String tableName = simpleTableSegments.iterator().next().getTableName().getIdentifier().getValue();
         Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnProjection each : columns) {
-            result.putIfAbsent(each.getExpression(), tableName);
+            result.putIfAbsent(each.getColumnName(), tableName);
         }
         return result;
     }
@@ -227,8 +226,8 @@ public final class TablesContext {
     private Map<String, Collection<String>> getOwnerColumnNamesByColumnProjection(final Collection<ColumnProjection> columns) {
         Map<String, Collection<String>> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnProjection each : columns) {
-            if (null != each.getOwner()) {
-                result.computeIfAbsent(each.getOwner(), unused -> new LinkedList<>()).add(each.getExpression());
+            if (each.getOwner().isPresent()) {
+                result.computeIfAbsent(each.getOwner().get().getValue(), unused -> new LinkedList<>()).add(each.getColumnName());
             }
         }
         return result;
@@ -281,8 +280,8 @@ public final class TablesContext {
     private Collection<String> getNoOwnerColumnNamesByColumnProjection(final Collection<ColumnProjection> columns) {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnProjection each : columns) {
-            if (null == each.getOwner()) {
-                result.add(each.getName());
+            if (!each.getOwner().isPresent()) {
+                result.add(each.getName().getValue());
             }
         }
         return result;

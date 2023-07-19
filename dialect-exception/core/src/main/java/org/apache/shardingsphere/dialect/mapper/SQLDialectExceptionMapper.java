@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.dialect.mapper;
 
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
 
@@ -27,7 +27,7 @@ import java.sql.SQLException;
  * SQL dialect exception mapper.
  */
 @SingletonSPI
-public interface SQLDialectExceptionMapper extends TypedSPI {
+public interface SQLDialectExceptionMapper extends DatabaseTypedSPI {
     
     /**
      * Convert SQL dialect exception into SQL exception.

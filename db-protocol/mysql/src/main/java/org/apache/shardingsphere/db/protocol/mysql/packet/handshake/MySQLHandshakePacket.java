@@ -26,6 +26,8 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 /**
  * Handshake packet protocol for MySQL.
@@ -54,7 +56,7 @@ public final class MySQLHandshakePacket extends MySQLPacket {
     private String authPluginName;
     
     public MySQLHandshakePacket(final int connectionId, final boolean sslEnabled, final MySQLAuthenticationPluginData authPluginData) {
-        serverVersion = DatabaseProtocolServerInfo.getDefaultProtocolVersion("MySQL");
+        serverVersion = DatabaseProtocolServerInfo.getDefaultProtocolVersion(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         this.connectionId = connectionId;
         capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower() | (sslEnabled ? MySQLCapabilityFlag.CLIENT_SSL.getValue() : 0);
         characterSet = MySQLConstants.DEFAULT_CHARSET.getId();

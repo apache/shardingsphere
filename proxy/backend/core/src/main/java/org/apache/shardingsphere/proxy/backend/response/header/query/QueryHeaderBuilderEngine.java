@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedC
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 
 import java.sql.SQLException;
 
@@ -49,7 +49,7 @@ public final class QueryHeaderBuilderEngine {
     public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
         String columnName = queryResultMetaData.getColumnName(columnIndex);
         String columnLabel = queryResultMetaData.getColumnLabel(columnIndex);
-        return TypedSPILoader.getService(QueryHeaderBuilder.class, databaseType.getType()).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
+        return DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
     }
     
     /**
@@ -66,16 +66,16 @@ public final class QueryHeaderBuilderEngine {
                              final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
         String columnName = getColumnName(projectionsContext, queryResultMetaData, columnIndex);
         String columnLabel = getColumnLabel(projectionsContext, queryResultMetaData, columnIndex);
-        return TypedSPILoader.getService(QueryHeaderBuilder.class, databaseType.getType()).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
+        return DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
     }
     
     private String getColumnLabel(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {
         Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : queryResultMetaData.getColumnLabel(columnIndex);
+        return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getColumnName() : queryResultMetaData.getColumnLabel(columnIndex);
     }
     
     private String getColumnName(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {
         Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName() : queryResultMetaData.getColumnName(columnIndex);
+        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName().getValue() : queryResultMetaData.getColumnName(columnIndex);
     }
 }

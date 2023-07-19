@@ -48,8 +48,9 @@ public final class ExampleScenarioFactory {
     }
     
     private Collection<FeatureExampleScenario> getFeatureScenarios(final String feature) {
-        return null == feature ? Collections.emptyList() : 
-                Arrays.stream(feature.split(",")).map(each -> TypedSPILoader.getService(FeatureExampleScenario.class, each.trim())).collect(Collectors.toList());
+        return null == feature
+                ? Collections.emptyList()
+                : Arrays.stream(feature.split(",")).map(each -> TypedSPILoader.getService(FeatureExampleScenario.class, each.trim())).collect(Collectors.toList());
     }
     
     private FrameworkExampleScenario getFrameworkScenario(final String framework) {

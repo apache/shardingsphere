@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.framework.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.test.e2e.framework.database.impl.PostgreSQLDatabaseAssertionMetaData;
 
 import java.util.Optional;

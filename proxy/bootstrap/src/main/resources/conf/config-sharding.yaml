@@ -103,6 +103,10 @@
 #  auditors:
 #    sharding_key_required_auditor:
 #      type: DML_SHARDING_CONDITIONS
+#
+#- !BROADCAST
+#  tables:
+#    - t_address
 
 ######################################################################################################
 #
@@ -191,3 +195,7 @@
 #  auditors:
 #    sharding_key_required_auditor:
 #      type: DML_SHARDING_CONDITIONS
+#
+#- !BROADCAST
+#  tables:
+#    - t_address

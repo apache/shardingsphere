@@ -20,8 +20,7 @@ package org.apache.shardingsphere.single.util;
 import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -154,7 +153,7 @@ public final class SingleTableLoadUtils {
      * @return node string for all tables
      */
     public static String getAllTablesNodeStr(final DatabaseType databaseType) {
-        return databaseType instanceof SchemaSupportedDatabaseType ? SingleTableConstants.ALL_SCHEMA_TABLES : SingleTableConstants.ALL_TABLES;
+        return databaseType.getDefaultSchema().isPresent() ? SingleTableConstants.ALL_SCHEMA_TABLES : SingleTableConstants.ALL_TABLES;
     }
     
     /**
@@ -166,9 +165,7 @@ public final class SingleTableLoadUtils {
      * @return node string for all tables
      */
     public static String getAllTablesNodeStrFromDataSource(final DatabaseType databaseType, final String dataSourceName, final String schemaName) {
-        return databaseType instanceof SchemaSupportedDatabaseType
-                ? formatDataNode(dataSourceName, schemaName, SingleTableConstants.ASTERISK)
-                : formatDataNode(dataSourceName, SingleTableConstants.ASTERISK);
+        return databaseType.getDefaultSchema().isPresent() ? formatDataNode(dataSourceName, schemaName, SingleTableConstants.ASTERISK) : formatDataNode(dataSourceName, SingleTableConstants.ASTERISK);
     }
     
     /**
@@ -181,9 +178,7 @@ public final class SingleTableLoadUtils {
      * @return data node string
      */
     public static String getDataNodeString(final DatabaseType databaseType, final String dataSourceName, final String schemaName, final String tableName) {
-        return databaseType instanceof SchemaSupportedDatabaseType
-                ? formatDataNode(dataSourceName, schemaName, tableName)
-                : formatDataNode(dataSourceName, tableName);
+        return databaseType.getDefaultSchema().isPresent() ? formatDataNode(dataSourceName, schemaName, tableName) : formatDataNode(dataSourceName, tableName);
     }
     
     private static String formatDataNode(final String dataSourceName, final String tableName) {

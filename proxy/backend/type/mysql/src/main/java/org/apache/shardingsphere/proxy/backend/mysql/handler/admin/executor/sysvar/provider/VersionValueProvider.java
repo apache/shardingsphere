@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider;
 
 import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariableValueProvider;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
@@ -30,6 +32,6 @@ public final class VersionValueProvider implements MySQLSystemVariableValueProvi
     
     @Override
     public String get(final Scope scope, final ConnectionSession connectionSession, final MySQLSystemVariable variable) {
-        return DatabaseProtocolServerInfo.getProtocolVersion(connectionSession.getDefaultDatabaseName(), "MySQL");
+        return DatabaseProtocolServerInfo.getProtocolVersion(connectionSession.getDefaultDatabaseName(), TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }
 }

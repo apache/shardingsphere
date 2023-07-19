@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,7 +29,7 @@ import java.util.Collection;
  * Dialect query result data row loader.
  */
 @SingletonSPI
-public interface DialectQueryResultDataRowLoader extends TypedSPI {
+public interface DialectQueryResultDataRowLoader extends DatabaseTypedSPI {
     
     /**
      * Load rows.

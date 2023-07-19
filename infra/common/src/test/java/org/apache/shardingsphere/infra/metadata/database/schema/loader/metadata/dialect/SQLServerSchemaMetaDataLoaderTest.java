@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.dialect;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -72,8 +73,6 @@ class SQLServerSchemaMetaDataLoaderTest {
     
     private static final String LOAD_INDEX_META_DATA = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')";
-    
-    private static final String LOAD_VIEW_META_DATA = "SELECT TABLE_NAME, VIEW_DEFINITION FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_CATALOG = ?";
     
     @Test
     void assertLoadWithoutTablesWithHighVersion() throws SQLException {
@@ -181,17 +180,8 @@ class SQLServerSchemaMetaDataLoaderTest {
         return result;
     }
     
-    private ResultSet mockViewMetaDataResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("TABLE_NAME")).thenReturn("v_order");
-        when(result.getString("VIEW_DEFINITION")).thenReturn("create view v_order as select * from t_order;");
-        return result;
-    }
-    
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = TypedSPILoader.findService(
-                DialectSchemaMetaDataLoader.class, TypedSPILoader.getService(DatabaseType.class, "SQLServer").getType());
+        Optional<DialectSchemaMetaDataLoader> result = DatabaseTypedSPILoader.findService(DialectSchemaMetaDataLoader.class, TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
         assertTrue(result.isPresent());
         return result.get();
     }

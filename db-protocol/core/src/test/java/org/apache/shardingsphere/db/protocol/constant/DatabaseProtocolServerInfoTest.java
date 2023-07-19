@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.constant;
 
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,12 +30,12 @@ class DatabaseProtocolServerInfoTest {
     void assertGetServerVersionWithDatabase() {
         CommonConstants.PROXY_VERSION.set("5.0.0");
         DatabaseProtocolServerInfo.setProtocolVersion("foo_db", "2.0");
-        assertThat(DatabaseProtocolServerInfo.getProtocolVersion("foo_db", "FIXTURE"), is("2.0-ShardingSphere-Proxy 5.0.0"));
+        assertThat(DatabaseProtocolServerInfo.getProtocolVersion("foo_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE")), is("2.0-ShardingSphere-Proxy 5.0.0"));
     }
     
     @Test
     void assertGetServerVersionWithoutDatabase() {
         CommonConstants.PROXY_VERSION.set("5.0.0");
-        assertThat(DatabaseProtocolServerInfo.getProtocolVersion(null, "FIXTURE"), is("1.0-ShardingSphere-Proxy 5.0.0"));
+        assertThat(DatabaseProtocolServerInfo.getProtocolVersion(null, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")), is("1.0-ShardingSphere-Proxy 5.0.0"));
     }
 }

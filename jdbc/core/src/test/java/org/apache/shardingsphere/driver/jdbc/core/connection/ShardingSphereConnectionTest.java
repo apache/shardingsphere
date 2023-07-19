@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;

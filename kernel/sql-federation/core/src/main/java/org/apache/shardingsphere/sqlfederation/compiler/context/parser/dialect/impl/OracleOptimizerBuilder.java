@@ -41,7 +41,7 @@ public final class OracleOptimizerBuilder implements OptimizerSQLDialectBuilder 
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "Oracle";
     }
 }
