@@ -141,5 +141,6 @@ execute
     | dropProfile
     | dropFunction
     | dropCluster
+    | systemAction
     ) SEMI_?
     ;

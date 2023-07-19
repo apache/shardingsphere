@@ -681,6 +681,8 @@ public enum SQLVisitorRule {
     
     DROP_CONTEXT("DropContext", SQLStatementType.DDL),
     
+    SYSTEM_ACTION("SystemAction", SQLStatementType.DDL),
+    
     EMPTY_STATEMENT("EmptyStatement", SQLStatementType.DAL);
     
     private final String name;
