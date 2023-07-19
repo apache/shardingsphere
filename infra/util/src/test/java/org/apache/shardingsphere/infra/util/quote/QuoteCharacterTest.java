@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.enums;
+package org.apache.shardingsphere.infra.util.quote;
 
 import org.junit.jupiter.api.Test;
 
