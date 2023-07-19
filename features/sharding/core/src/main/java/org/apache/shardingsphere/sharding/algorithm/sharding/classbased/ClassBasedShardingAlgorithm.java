@@ -66,7 +66,7 @@ public final class ClassBasedShardingAlgorithm implements StandardShardingAlgori
         String shardingAlgorithmStrategyType = strategy.toUpperCase().trim();
         ShardingSpherePreconditions.checkState(
                 Arrays.stream(ClassBasedShardingAlgorithmStrategyType.values()).anyMatch(each -> each.name().equals(shardingAlgorithmStrategyType)),
-                () -> new ShardingAlgorithmInitializationException(getType(), String.format("Sharding strategy `%s` not support", strategy)));
+                () -> new ShardingAlgorithmInitializationException(getType(), String.format("Unsupported sharding strategy `%s`", strategy)));
         return ClassBasedShardingAlgorithmStrategyType.valueOf(shardingAlgorithmStrategyType);
     }
     
