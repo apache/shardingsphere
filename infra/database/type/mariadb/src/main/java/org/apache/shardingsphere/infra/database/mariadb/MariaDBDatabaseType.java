@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.infra.database.mariadb;
 
-import org.apache.shardingsphere.infra.database.core.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database type of MariaDB.
  */
-public final class MariaDBDatabaseType implements BranchDatabaseType {
+public final class MariaDBDatabaseType implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -47,8 +47,8 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     }
     
     @Override
-    public DatabaseType getTrunkDatabaseType() {
-        return TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    public Optional<DatabaseType> getTrunkDatabaseType() {
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }
     
     @Override

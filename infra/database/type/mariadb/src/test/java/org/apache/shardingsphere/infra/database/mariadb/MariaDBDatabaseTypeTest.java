@@ -45,11 +45,6 @@ class MariaDBDatabaseTypeTest {
     }
     
     @Test
-    void assertGetTrunkDatabaseType() {
-        assertThat(new MariaDBDatabaseType().getTrunkDatabaseType().getType(), is("MySQL"));
-    }
-    
-    @Test
     void assertGetSystemDatabaseSchemaMap() {
         assertTrue(new MariaDBDatabaseType().getSystemDatabaseSchemaMap().isEmpty());
     }

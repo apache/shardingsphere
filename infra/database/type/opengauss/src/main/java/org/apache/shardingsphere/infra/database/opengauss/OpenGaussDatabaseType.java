@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.opengauss;
 
-import org.apache.shardingsphere.infra.database.core.type.TrunkDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 
 import java.util.Arrays;
@@ -32,7 +32,7 @@ import java.util.Set;
 /**
  * Database type of openGauss.
  */
-public final class OpenGaussDatabaseType implements TrunkDatabaseType {
+public final class OpenGaussDatabaseType implements DatabaseType {
     
     private static final Set<String> RESERVED_WORDS = new HashSet<>(Arrays.asList(
             "ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHID", "AUTHORIZATION", "BETWEEN", "BIGINT",

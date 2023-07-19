@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.type.checker;
+package org.apache.shardingsphere.infra.database.core.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

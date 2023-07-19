@@ -44,7 +44,7 @@ public final class DatabaseTypeFactory {
             return TypedSPILoader.getService(DatabaseType.class, null);
         }
         for (DatabaseType each : databaseTypes) {
-            if (each instanceof BranchDatabaseType) {
+            if (each.getTrunkDatabaseType().isPresent()) {
                 return each;
             }
         }

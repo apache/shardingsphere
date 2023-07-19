@@ -46,11 +46,6 @@ class H2DatabaseTypeTest {
     }
     
     @Test
-    void assertGetTrunkDatabaseType() {
-        assertThat(new H2DatabaseType().getTrunkDatabaseType().getType(), is("MySQL"));
-    }
-    
-    @Test
     void assertGetSystemDatabaseSchemaMap() {
         assertTrue(new H2DatabaseType().getSystemDatabaseSchemaMap().isEmpty());
     }

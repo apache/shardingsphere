@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.database.core.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -45,8 +44,8 @@ public final class DatabaseTypedSPILoader {
         if (result.isPresent()) {
             return result;
         }
-        if (databaseType instanceof BranchDatabaseType) {
-            return TypedSPILoader.findService(spiClass, ((BranchDatabaseType) databaseType).getTrunkDatabaseType());
+        if (databaseType.getTrunkDatabaseType().isPresent()) {
+            return TypedSPILoader.findService(spiClass, databaseType.getTrunkDatabaseType().get());
         }
         return result;
     }

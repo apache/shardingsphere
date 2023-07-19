@@ -144,6 +144,15 @@ public interface DatabaseType extends TypedSPI {
         return false;
     }
     
+    /**
+     * Get trunk database type.
+     * 
+     * @return trunk database type
+     */
+    default Optional<DatabaseType> getTrunkDatabaseType() {
+        return Optional.empty();
+    }
+    
     @Override
     String getType();
 }
