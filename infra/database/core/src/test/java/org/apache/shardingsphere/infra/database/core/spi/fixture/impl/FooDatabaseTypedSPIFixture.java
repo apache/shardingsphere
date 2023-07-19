@@ -15,23 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect;
+package org.apache.shardingsphere.infra.database.core.spi.fixture.impl;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.database.core.spi.fixture.DatabaseTypedSPIFixture;
 
-import java.util.Properties;
-
-/**
- * Optimizer SQL dialect properties builder.
- */
-@SingletonSPI
-public interface OptimizerSQLDialectBuilder extends DatabaseTypedSPI {
+public final class FooDatabaseTypedSPIFixture implements DatabaseTypedSPIFixture {
     
-    /**
-     * Build optimizer SQL dialect properties.
-     * 
-     * @return built properties
-     */
-    Properties build();
+    @Override
+    public String getDatabaseType() {
+        return "FIXTURE";
+    }
 }

@@ -25,10 +25,6 @@ import org.apache.shardingsphere.distsql.handler.ral.query.ConvertRuleConfigurat
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlCompatibleEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.swapper.YamlCompatibleEncryptRuleConfigurationSwapper;
-import org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -36,20 +32,23 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
-import org.apache.shardingsphere.mask.yaml.swapper.YamlMaskRuleConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.YamlReadwriteSplittingRuleConfigurationSwapper;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.YamlShadowRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -110,28 +109,13 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         return result.toString();
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private Map<Integer, RuleConfiguration> swapToRuleConfigs(final YamlProxyDatabaseConfiguration yamlConfig) {
         Map<Integer, RuleConfiguration> result = new TreeMap<>(Comparator.reverseOrder());
         for (YamlRuleConfiguration each : yamlConfig.getRules()) {
-            if (each instanceof YamlShardingRuleConfiguration) {
-                YamlShardingRuleConfigurationSwapper swapper = new YamlShardingRuleConfigurationSwapper();
-                result.put(swapper.getOrder(), swapper.swapToObject((YamlShardingRuleConfiguration) each));
-            } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
-                YamlReadwriteSplittingRuleConfigurationSwapper swapper = new YamlReadwriteSplittingRuleConfigurationSwapper();
-                result.put(swapper.getOrder(), swapper.swapToObject((YamlReadwriteSplittingRuleConfiguration) each));
-            } else if (each instanceof YamlEncryptRuleConfiguration) {
-                YamlEncryptRuleConfigurationSwapper swapper = new YamlEncryptRuleConfigurationSwapper();
-                result.put(swapper.getOrder(), swapper.swapToObject((YamlEncryptRuleConfiguration) each));
-            } else if (each instanceof YamlCompatibleEncryptRuleConfiguration) {
-                YamlCompatibleEncryptRuleConfigurationSwapper swapper = new YamlCompatibleEncryptRuleConfigurationSwapper();
-                result.put(swapper.getOrder(), swapper.swapToObject((YamlCompatibleEncryptRuleConfiguration) each));
-            } else if (each instanceof YamlShadowRuleConfiguration) {
-                YamlShadowRuleConfigurationSwapper swapper = new YamlShadowRuleConfigurationSwapper();
-                result.put(swapper.getOrder(), swapper.swapToObject((YamlShadowRuleConfiguration) each));
-            } else if (each instanceof YamlMaskRuleConfiguration) {
-                YamlMaskRuleConfigurationSwapper swapper = new YamlMaskRuleConfigurationSwapper();
-                result.put(swapper.getOrder(), swapper.swapToObject((YamlMaskRuleConfiguration) each));
-            }
+            YamlRuleConfigurationSwapper swapper = OrderedSPILoader.getServicesByClass(YamlRuleConfigurationSwapper.class, Collections.singleton(each.getRuleConfigurationType()))
+                    .get(each.getRuleConfigurationType());
+            result.put(swapper.getOrder(), (RuleConfiguration) swapper.swapToObject(each));
         }
         return result;
     }

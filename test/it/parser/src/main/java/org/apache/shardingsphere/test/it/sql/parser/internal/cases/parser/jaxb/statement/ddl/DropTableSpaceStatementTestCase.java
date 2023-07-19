@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.fixture;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-public interface DatabaseTypedSPIFixture extends DatabaseTypedSPI {
+/**
+ * Drop table space statement test case.
+ */
+public final class DropTableSpaceStatementTestCase extends SQLParserTestCase {
 }

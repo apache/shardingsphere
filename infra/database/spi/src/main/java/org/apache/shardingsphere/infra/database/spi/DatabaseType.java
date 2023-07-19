@@ -146,6 +146,15 @@ public interface DatabaseType extends TypedSPI {
     default void handleRollbackOnly(final boolean rollbackOnly, final SQLStatement statement) throws SQLException {
     }
     
+    /**
+     * Is instance connection available.
+     *
+     * @return true or false
+     */
+    default boolean isInstanceConnectionAvailable() {
+        return false;
+    }
+    
     @Override
     String getType();
 }

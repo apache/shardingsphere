@@ -15,28 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropOperatorStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Database typed SPI.
+ * Oracle drop table space statement.
  */
-public interface DatabaseTypedSPI extends TypedSPI {
-    
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    default String getDatabaseType() {
-        return null;
-    }
-    
-    @Override
-    default DatabaseType getType() {
-        return null == getDatabaseType() ? null : TypedSPILoader.getService(DatabaseType.class, getDatabaseType());
-    }
+public final class OracleDropTableSpaceStatement extends DropOperatorStatement implements OracleStatement {
 }

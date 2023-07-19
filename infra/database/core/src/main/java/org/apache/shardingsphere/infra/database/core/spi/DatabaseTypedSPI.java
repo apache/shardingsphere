@@ -15,10 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.type;
+package org.apache.shardingsphere.infra.database.core.spi;
+
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 /**
- * Data source aggregatable database type.
+ * Database typed SPI.
  */
-public interface DataSourceAggregatableDatabaseType {
+public interface DatabaseTypedSPI extends TypedSPI {
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    default String getDatabaseType() {
+        return null;
+    }
+    
+    @Override
+    default DatabaseType getType() {
+        return null == getDatabaseType() ? null : TypedSPILoader.getService(DatabaseType.class, getDatabaseType());
+    }
 }

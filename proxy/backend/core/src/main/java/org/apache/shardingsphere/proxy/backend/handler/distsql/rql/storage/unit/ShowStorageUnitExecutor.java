@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.storage.unit
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
-import org.apache.shardingsphere.infra.database.core.type.DataSourceAggregatableDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
@@ -114,7 +113,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     private DataSourceProperties getDataSourceProperties(final Map<String, DataSourceProperties> dataSourcePropsMap, final String storageUnitName,
                                                          final DatabaseType databaseType, final DataSource dataSource) {
         DataSourceProperties result = getDataSourceProperties(dataSource);
-        if (databaseType instanceof DataSourceAggregatableDatabaseType && dataSourcePropsMap.containsKey(storageUnitName)) {
+        if (databaseType.isInstanceConnectionAvailable() && dataSourcePropsMap.containsKey(storageUnitName)) {
             DataSourceProperties unitDataSourceProperties = dataSourcePropsMap.get(storageUnitName);
             for (final Entry<String, Object> entry : unitDataSourceProperties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
                 if (null != entry.getValue()) {
