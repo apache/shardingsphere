@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlTableFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -51,7 +52,7 @@ public final class XmlTableSegment implements TableSegment {
     }
     
     @Override
-    public Optional<AliasSegment> getAlias() {
+    public Optional<IdentifierValue> getAlias() {
         return Optional.empty();
     }
     

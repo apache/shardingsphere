@@ -226,8 +226,8 @@ public final class TablesContext {
     private Map<String, Collection<String>> getOwnerColumnNamesByColumnProjection(final Collection<ColumnProjection> columns) {
         Map<String, Collection<String>> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnProjection each : columns) {
-            if (null != each.getOwner()) {
-                result.computeIfAbsent(each.getOwner(), unused -> new LinkedList<>()).add(each.getExpression());
+            if (each.getOwner().isPresent()) {
+                result.computeIfAbsent(each.getOwner().get().getValue(), unused -> new LinkedList<>()).add(each.getExpression());
             }
         }
         return result;
@@ -280,8 +280,8 @@ public final class TablesContext {
     private Collection<String> getNoOwnerColumnNamesByColumnProjection(final Collection<ColumnProjection> columns) {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnProjection each : columns) {
-            if (null == each.getOwner()) {
-                result.add(each.getName());
+            if (!each.getOwner().isPresent()) {
+                result.add(each.getName().getValue());
             }
         }
         return result;

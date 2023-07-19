@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
-import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.database.oracle.OracleDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -42,30 +41,29 @@ public final class SubqueryProjection implements Projection {
     
     private final Projection projection;
     
-    private final String alias;
+    private final IdentifierValue alias;
     
     private final DatabaseType databaseType;
     
     @Override
-    public Optional<String> getAlias() {
-        return Strings.isNullOrEmpty(alias) ? buildDefaultAlias(databaseType) : Optional.of(alias);
+    public Optional<IdentifierValue> getAlias() {
+        return null == alias ? buildDefaultAlias(databaseType) : Optional.of(alias);
     }
     
-    private Optional<String> buildDefaultAlias(final DatabaseType databaseType) {
+    private Optional<IdentifierValue> buildDefaultAlias(final DatabaseType databaseType) {
         if (databaseType instanceof OracleDatabaseType) {
-            return Optional.of(expression.replace(" ", "").toUpperCase());
+            return Optional.of(new IdentifierValue(expression.replace(" ", "").toUpperCase()));
         }
-        return Optional.of(expression);
+        return Optional.of(new IdentifierValue(expression));
     }
     
     @Override
     public String getColumnLabel() {
-        return getAlias().orElse(expression);
+        return getAlias().map(IdentifierValue::getValue).orElse(expression);
     }
     
     @Override
     public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        // TODO replace getAlias with aliasIdentifier
-        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null) : new SubqueryProjection(expression, projection, alias, databaseType);
+        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, getAlias().get(), null) : new SubqueryProjection(expression, projection, alias, databaseType);
     }
 }

@@ -118,7 +118,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
         }
         Projection projection = expandProjections.get(column - 1);
         if (projection instanceof ColumnProjection) {
-            return ((ColumnProjection) projection).getName();
+            return ((ColumnProjection) projection).getName().getValue();
         }
         return getColumnLabel(column);
     }

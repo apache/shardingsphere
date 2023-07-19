@@ -63,7 +63,7 @@ class SubstitutableColumnNameTokenTest {
     void assertToStringWithSubqueryProjection() {
         Collection<Projection> projections = Arrays.asList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.BACK_QUOTE),
                 new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE)),
-                new SubqueryProjection("(SELECT name FROM t_order)", new ColumnProjection(null, "name", null), "name", new OracleDatabaseType()));
+                new SubqueryProjection("(SELECT name FROM t_order)", new ColumnProjection(null, "name", null), new IdentifierValue("name"), new OracleDatabaseType()));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)),
                 is("`temp`.`id` AS `id`, `name`"));
     }
