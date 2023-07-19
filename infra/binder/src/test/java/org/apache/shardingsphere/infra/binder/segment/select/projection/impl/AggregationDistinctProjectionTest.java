@@ -32,11 +32,6 @@ class AggregationDistinctProjectionTest {
             0, 0, AggregationType.COUNT, "(DISTINCT order_id)", new IdentifierValue("c"), "order_id", mock(DatabaseType.class));
     
     @Test
-    void assertGetDistinctColumnLabel() {
-        assertThat(aggregationDistinctProjection.getDistinctColumnLabel(), is("c"));
-    }
-    
-    @Test
     void assertGetDistinctColumnName() {
         assertThat(aggregationDistinctProjection.getDistinctInnerExpression(), is("order_id"));
     }

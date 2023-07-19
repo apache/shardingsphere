@@ -45,15 +45,6 @@ public final class AggregationDistinctProjection extends AggregationProjection {
         this.distinctInnerExpression = distinctInnerExpression;
     }
     
-    /**
-     * Get distinct column label.
-     *
-     * @return distinct column label
-     */
-    public String getDistinctColumnLabel() {
-        return getAlias().map(IdentifierValue::getValue).orElse(distinctInnerExpression);
-    }
-    
     @Override
     public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
         return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, getAlias().get(), null)

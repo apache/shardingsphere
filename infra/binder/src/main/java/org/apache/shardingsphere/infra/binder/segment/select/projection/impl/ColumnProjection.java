@@ -53,24 +53,6 @@ public final class ColumnProjection implements Projection {
                 null == alias ? null : new IdentifierValue(alias, QuoteCharacter.NONE));
     }
     
-    /**
-     * Get column name.
-     * 
-     * @return column name
-     */
-    public IdentifierValue getName() {
-        return name;
-    }
-    
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
-    public Optional<IdentifierValue> getOwner() {
-        return Optional.ofNullable(owner);
-    }
-    
     @Override
     public String getColumnName() {
         return null == owner ? name.getValue() : owner.getValue() + "." + name.getValue();
@@ -92,6 +74,15 @@ public final class ColumnProjection implements Projection {
         result.setOriginalOwner(originalOwner);
         result.setOriginalName(originalName);
         return result;
+    }
+    
+    /**
+     * Get owner.
+     *
+     * @return owner
+     */
+    public Optional<IdentifierValue> getOwner() {
+        return Optional.ofNullable(owner);
     }
     
     /**
