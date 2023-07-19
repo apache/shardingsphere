@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.postgresql;
 
 import org.apache.shardingsphere.infra.database.core.type.TrunkDatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.core.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
