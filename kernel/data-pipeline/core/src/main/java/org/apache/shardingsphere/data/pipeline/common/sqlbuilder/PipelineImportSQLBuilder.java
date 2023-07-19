@@ -50,12 +50,7 @@ public final class PipelineImportSQLBuilder {
     public PipelineImportSQLBuilder(final DatabaseType databaseType) {
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
         sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
-        sqlCache = buildPipelineCache();
-    }
-    
-    private Cache<String, String> buildPipelineCache() {
-        Caffeine<Object, Object> result = Caffeine.newBuilder().initialCapacity(128).maximumSize(1024).softValues();
-        return result.build();
+        sqlCache = Caffeine.newBuilder().initialCapacity(16).maximumSize(1024).build();
     }
     
     /**
