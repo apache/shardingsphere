@@ -142,50 +142,6 @@ public final class ConfigurationContextManager {
     }
     
     /**
-     * Alter data source nodes configuration.
-     *
-     * @param databaseName database name
-     * @param dataSourcePropsMap altered data source properties map
-     */
-    public synchronized void alterDataSourceNodesConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        // TODO Support for registering storage node #25447
-    }
-    
-    /**
-     * Register storage node.
-     *
-     * @param databaseName database name
-     * @param dataSourceProps data source properties
-     */
-    @SuppressWarnings("rawtypes")
-    public synchronized void registerStorageNode(final String databaseName, final Map<String, DataSourceProperties> dataSourceProps) {
-        // TODO Support for registering storage node #25447
-    }
-    
-    /**
-     * Alter storage node.
-     *
-     * @param databaseName database name
-     * @param storageUnitName storage unit name
-     * @param dataSourceProps data source properties
-     */
-    @SuppressWarnings("rawtypes")
-    public synchronized void alterStorageNode(final String databaseName, final String storageUnitName, final Map<String, DataSourceProperties> dataSourceProps) {
-        // TODO Support for registering storage node #25447
-    }
-    
-    /**
-     * Unregister storage node.
-     *
-     * @param databaseName database name
-     * @param storageUnitName storage unit name
-     */
-    @SuppressWarnings("rawtypes")
-    public synchronized void unregisterStorageNode(final String databaseName, final String storageUnitName) {
-        // TODO Support for registering storage node #25447
-    }
-    
-    /**
      * Alter rule configuration.
      *
      * @param databaseName database name
