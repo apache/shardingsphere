@@ -67,6 +67,6 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     
     @Override
     public Optional<IdentifierValue> getAlias() {
-        return Optional.ofNullable(alias.getIdentifier());
+        return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
     }
 }

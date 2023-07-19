@@ -48,7 +48,7 @@ public final class ColumnProjectionSegment implements ProjectionSegment, AliasAv
     
     @Override
     public Optional<IdentifierValue> getAlias() {
-        return Optional.ofNullable(alias.getIdentifier());
+        return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
     }
     
     @Override
