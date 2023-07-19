@@ -106,15 +106,6 @@ public interface ExampleGenerator extends TypedSPI {
         return result;
     }
     
-    /**
-     * Generate.
-     * @param templateConfig template configuration
-     * @param dataModel data model
-     * @throws IOException IO exception
-     * @throws TemplateException template exception
-     */
-    void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String outputPath) throws IOException, TemplateException;
-    
     @Override
     String getType();
 }
