@@ -44,7 +44,7 @@ public class AggregationProjection implements Projection {
     
     private final String innerExpression;
     
-    private final String alias;
+    private final IdentifierValue alias;
     
     private final DatabaseType databaseType;
     
@@ -59,7 +59,7 @@ public class AggregationProjection implements Projection {
     }
     
     @Override
-    public final Optional<String> getAlias() {
+    public final Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias);
     }
     
@@ -70,14 +70,13 @@ public class AggregationProjection implements Projection {
      */
     @Override
     public String getColumnLabel() {
-        return getAlias().orElseGet(() -> databaseType.getDefaultSchema().isPresent() ? type.name().toLowerCase() : getExpression());
+        return getAlias().map(IdentifierValue::getValue).orElseGet(() -> databaseType.getDefaultSchema().isPresent() ? type.name().toLowerCase() : getExpression());
     }
     
     @Override
     public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        // TODO replace getAlias with aliasIdentifier
         if (getAlias().isPresent()) {
-            return new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null);
+            return new ColumnProjection(subqueryTableAlias, getAlias().get(), null);
         }
         AggregationProjection result = new AggregationProjection(type, innerExpression, alias, databaseType);
         result.setIndex(index);

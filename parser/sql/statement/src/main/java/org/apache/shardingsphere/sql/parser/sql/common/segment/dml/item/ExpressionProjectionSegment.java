@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -64,8 +65,8 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     }
     
     @Override
-    public Optional<AliasSegment> getAlias() {
-        return Optional.ofNullable(alias);
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
     }
     
     @Override

@@ -178,7 +178,7 @@ class ProjectionEngineTest {
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), parameterMarkerExpressionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ParameterMarkerProjection.class));
-        assertThat(actual.get().getAlias().orElse(null), is("alias"));
+        assertThat(actual.get().getAlias().map(IdentifierValue::getValue).orElse(null), is("alias"));
     }
     
     @Test

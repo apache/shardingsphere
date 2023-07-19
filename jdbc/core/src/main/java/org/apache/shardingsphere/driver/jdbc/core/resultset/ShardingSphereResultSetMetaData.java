@@ -114,7 +114,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
             checkColumnIndex(column);
             Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
             if (projection instanceof ColumnProjection) {
-                return ((ColumnProjection) projection).getName();
+                return ((ColumnProjection) projection).getName().getValue();
             }
             if (projection instanceof AggregationDistinctProjection) {
                 return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : projection.getColumnLabel();

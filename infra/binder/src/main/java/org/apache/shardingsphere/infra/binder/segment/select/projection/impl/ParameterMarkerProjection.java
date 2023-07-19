@@ -40,7 +40,7 @@ public final class ParameterMarkerProjection implements Projection {
     
     private final ParameterMarkerType parameterMarkerType;
     
-    private final String alias;
+    private final IdentifierValue alias;
     
     @Override
     public String getExpression() {
@@ -49,18 +49,16 @@ public final class ParameterMarkerProjection implements Projection {
     
     @Override
     public String getColumnLabel() {
-        return getAlias().orElseGet(() -> String.valueOf(parameterMarkerIndex));
+        return getAlias().map(IdentifierValue::getValue).orElseGet(() -> String.valueOf(parameterMarkerIndex));
     }
     
     @Override
-    public Optional<String> getAlias() {
+    public Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias);
     }
     
     @Override
     public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        // TODO replace getAlias with aliasIdentifier
-        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null)
-                : new ParameterMarkerProjection(parameterMarkerIndex, parameterMarkerType, alias);
+        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, getAlias().get(), null) : new ParameterMarkerProjection(parameterMarkerIndex, parameterMarkerType, alias);
     }
 }

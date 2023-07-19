@@ -38,7 +38,7 @@ public interface Projection {
      * 
      * @return alias
      */
-    Optional<String> getAlias();
+    Optional<IdentifierValue> getAlias();
     
     /**
      * Get columnLabel.
