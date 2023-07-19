@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.database.spi;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -134,16 +133,6 @@ public interface DatabaseType extends TypedSPI {
      */
     default String formatTableNamePattern(final String tableNamePattern) {
         return tableNamePattern;
-    }
-    
-    /**
-     * Allow SQL operation if exception occur during SQL executing.
-     *
-     * @param isExceptionOccur is exception occur during SQL executing
-     * @param statement statement
-     * @throws SQLException SQL exception
-     */
-    default void allowSQLOperationIfExceptionOccur(final boolean isExceptionOccur, final SQLStatement statement) throws SQLException {
     }
     
     /**
