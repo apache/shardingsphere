@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -35,15 +36,20 @@ import java.util.Map;
 @Getter
 public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseConfiguration {
     
-    private final Map<String, DataSource> dataSources;
+    private final StorageResource storageResource;
     
     private final Collection<RuleConfiguration> ruleConfigurations;
     
-    private final Map<String, DataSourceProperties> dataSourceProperties;
+    private final Map<String, DataSourceProperties> dataSourcePropsMap;
     
     public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs) {
-        dataSourceProperties = DataSourcePropertiesCreator.create(dataSourceConfigs);
-        this.dataSources = DataSourcePoolCreator.create(dataSourceProperties);
         ruleConfigurations = ruleConfigs;
+        dataSourcePropsMap = DataSourcePropertiesCreator.createFromConfiguration(dataSourceConfigs);
+        this.storageResource = DataSourcePoolCreator.createStorageResource(dataSourcePropsMap);
+    }
+    
+    @Override
+    public Map<String, DataSource> getDataSources() {
+        return storageResource.getWrappedDataSources();
     }
 }

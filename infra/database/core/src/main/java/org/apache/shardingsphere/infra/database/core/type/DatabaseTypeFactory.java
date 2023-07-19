@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.database.core.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -42,7 +41,7 @@ public final class DatabaseTypeFactory {
     public static DatabaseType get(final String url) {
         Collection<DatabaseType> databaseTypes = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().filter(each -> matchURLs(url, each)).collect(Collectors.toList());
         if (databaseTypes.isEmpty()) {
-            return TypedSPILoader.getService(DatabaseType.class, "SQL92");
+            return TypedSPILoader.getService(DatabaseType.class, null);
         }
         for (DatabaseType each : databaseTypes) {
             if (each instanceof BranchDatabaseType) {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect;
 
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 import java.util.Properties;

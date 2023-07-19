@@ -609,6 +609,8 @@ public enum SQLVisitorRule {
     
     DROP_RESTORE_POINT("DropRestorePoint", SQLStatementType.DDL),
     
+    DROP_TABLE_SPACE("DropTableSpace", SQLStatementType.DDL),
+    
     ALTER_LIBRARY("AlterLibrary", SQLStatementType.DDL),
     
     ALTER_MATERIALIZED_ZONEMAP("AlterMaterializedZonemap", SQLStatementType.DDL),

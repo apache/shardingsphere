@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.core.type.fixture;
 
-import org.apache.shardingsphere.infra.database.spi.BranchDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -42,7 +42,7 @@ public final class InfraBranchDatabaseTypeFixture implements BranchDatabaseType 
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return null;
+        return new DataSourceMetaDataFixture(url);
     }
     
     @Override

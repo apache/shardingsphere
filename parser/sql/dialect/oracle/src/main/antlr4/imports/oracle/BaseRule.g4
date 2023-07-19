@@ -322,10 +322,6 @@ schemaName
     : identifier
     ;
 
-profileName
-    : identifier
-    ;
-
 tableName
     : (owner DOT_)? name
     ;
@@ -705,7 +701,19 @@ analyticFunction
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction | formatFunction
+    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction
+    ;
+
+firstOrLastValueFunction
+    : (FIRST_VALUE | LAST_VALUE)  (LP_ expr respectOrIgnoreNulls? RP_ | LP_ expr RP_ respectOrIgnoreNulls?) overClause
+    ;
+
+respectOrIgnoreNulls
+    : (RESPECT | IGNORE) NULLS
+    ;
+
+overClause
+    : OVER LP_ analyticClause RP_
     ;
 
 formatFunction
@@ -1799,6 +1807,7 @@ xmlFunction
     | xmlRootFunction
     | xmlSerializeFunction
     | xmlTableFunction
+    | xmlIsSchemaValidFunction
     ;
 
 xmlAggFunction
@@ -1843,6 +1852,10 @@ xmlSerializeFunction
 
 xmlTableFunction
     : XMLTABLE LP_ (xmlNameSpacesClause COMMA_)? STRING_ xmlTableOptions RP_
+    ;
+
+xmlIsSchemaValidFunction
+    : (owner DOT_)* name DOT_ ISSCHEMAVALID LP_ expr (COMMA_ expr)* RP_ 
     ;
 
 xmlNameSpacesClause
