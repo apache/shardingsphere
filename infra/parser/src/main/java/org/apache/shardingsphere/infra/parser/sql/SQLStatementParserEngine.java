@@ -21,7 +21,6 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -43,9 +42,9 @@ public final class SQLStatementParserEngine {
     @Getter
     private final boolean isParseComment;
     
-    public SQLStatementParserEngine(final String databaseType, final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
-        sqlStatementParserExecutor = new SQLStatementParserExecutor(TypedSPILoader.getService(DatabaseType.class, databaseType), parseTreeCacheOption, isParseComment);
-        sqlStatementCache = SQLStatementCacheBuilder.build(TypedSPILoader.getService(DatabaseType.class, databaseType), sqlStatementCacheOption, parseTreeCacheOption, isParseComment);
+    public SQLStatementParserEngine(final DatabaseType databaseType, final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
+        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption, isParseComment);
+        sqlStatementCache = SQLStatementCacheBuilder.build(databaseType, sqlStatementCacheOption, parseTreeCacheOption, isParseComment);
         this.sqlStatementCacheOption = sqlStatementCacheOption;
         this.parseTreeCacheOption = parseTreeCacheOption;
         this.isParseComment = isParseComment;
