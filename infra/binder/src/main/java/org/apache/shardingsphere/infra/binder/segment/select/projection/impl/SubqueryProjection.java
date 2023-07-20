@@ -66,9 +66,4 @@ public final class SubqueryProjection implements Projection {
         }
         return Optional.of(new IdentifierValue(expression));
     }
-    
-    @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, getAlias().get(), null) : new SubqueryProjection(expression, projection, alias, databaseType);
-    }
 }

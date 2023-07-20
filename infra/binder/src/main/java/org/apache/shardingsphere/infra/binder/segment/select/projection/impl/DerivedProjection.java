@@ -56,9 +56,4 @@ public final class DerivedProjection implements Projection {
     public Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias);
     }
-    
-    @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, getAlias().get(), null) : new DerivedProjection(expression, alias, derivedProjectionSegment);
-    }
 }
