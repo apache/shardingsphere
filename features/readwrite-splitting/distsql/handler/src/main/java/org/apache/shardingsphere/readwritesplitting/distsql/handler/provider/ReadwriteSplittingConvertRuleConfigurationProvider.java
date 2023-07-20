@@ -45,8 +45,7 @@ public final class ReadwriteSplittingConvertRuleConfigurationProvider implements
         if (ruleConfig.getDataSources().isEmpty()) {
             return "";
         }
-        StringBuilder result = new StringBuilder();
-        result.append(DistSQLScriptConstants.CREATE_READWRITE_SPLITTING_RULE);
+        StringBuilder result = new StringBuilder(DistSQLScriptConstants.CREATE_READWRITE_SPLITTING_RULE);
         Iterator<ReadwriteSplittingDataSourceRuleConfiguration> iterator = ruleConfig.getDataSources().iterator();
         while (iterator.hasNext()) {
             appendStaticReadWriteSplittingRule(ruleConfig.getLoadBalancers(), iterator.next(), result);
