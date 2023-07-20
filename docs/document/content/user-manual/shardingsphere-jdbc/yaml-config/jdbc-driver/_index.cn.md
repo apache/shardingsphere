@@ -42,7 +42,6 @@ ShardingSphere-JDBC 提供了 JDBC 驱动，可以仅通过配置变更即可使
     <groupId>com.ctrip.framework.apollo</groupId>
     <artifactId>apollo-client</artifactId>
     <version>${apollo-client.version}</version>
-    <scope>provided</scope>
 </dependency>
 ```
 

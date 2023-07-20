@@ -42,7 +42,6 @@ If you use the apollo configuration method, you also need to introduce the `apol
     <groupId>com.ctrip.framework.apollo</groupId>
     <artifactId>apollo-client</artifactId>
     <version>${apollo-client.version}</version>
-    <scope>provided</scope>
 </dependency>
 ```
 
