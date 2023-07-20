@@ -64,6 +64,11 @@ public final class ColumnProjection implements Projection {
     }
     
     @Override
+    public String getExpression() {
+        return null == owner ? name.getValue() : owner.getValue() + "." + name.getValue();
+    }
+    
+    @Override
     public Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias);
     }

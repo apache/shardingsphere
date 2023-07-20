@@ -52,6 +52,11 @@ public final class ShorthandProjection implements Projection {
     }
     
     @Override
+    public String getExpression() {
+        return null == owner ? "*" : owner.getValue() + ".*";
+    }
+    
+    @Override
     public Optional<IdentifierValue> getAlias() {
         return Optional.empty();
     }

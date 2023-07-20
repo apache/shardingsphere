@@ -53,6 +53,11 @@ public final class ParameterMarkerProjection implements Projection {
     }
     
     @Override
+    public String getExpression() {
+        return String.valueOf(parameterMarkerIndex);
+    }
+    
+    @Override
     public Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias);
     }

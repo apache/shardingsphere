@@ -41,6 +41,13 @@ public interface Projection {
     String getColumnLabel();
     
     /**
+     * Get expression.
+     *
+     * @return expression
+     */
+    String getExpression();
+    
+    /**
      * Get alias.
      *
      * @return alias
