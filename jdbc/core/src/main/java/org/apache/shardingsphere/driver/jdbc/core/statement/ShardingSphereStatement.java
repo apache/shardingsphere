@@ -495,7 +495,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         String sql = sqlParserRule.isSqlCommentParseEnabled() ? originSQL : SQLHintUtils.removeHint(originSQL);
         DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(protocolType.getTrunkDatabaseType().orElse(protocolType).getType()).parse(sql, false);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(protocolType.getTrunkDatabaseType().orElse(protocolType)).parse(sql, false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), sqlStatement, connection.getDatabaseName());
         HintValueContext hintValueContext = sqlParserRule.isSqlCommentParseEnabled() ? new HintValueContext() : SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);

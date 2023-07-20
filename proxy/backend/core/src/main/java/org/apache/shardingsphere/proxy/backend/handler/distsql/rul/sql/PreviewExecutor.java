@@ -94,7 +94,7 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         SQLParserRule sqlParserRule = globalRuleMetaData.getSingleRule(SQLParserRule.class);
         String sql = sqlParserRule.isSqlCommentParseEnabled() ? sqlStatement.getSql() : SQLHintUtils.removeHint(sqlStatement.getSql());
         DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType();
-        SQLStatement previewedStatement = sqlParserRule.getSQLParserEngine(protocolType.getTrunkDatabaseType().orElse(protocolType).getType()).parse(sql, false);
+        SQLStatement previewedStatement = sqlParserRule.getSQLParserEngine(protocolType.getTrunkDatabaseType().orElse(protocolType)).parse(sql, false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), previewedStatement, databaseName);
         HintValueContext hintValueContext = sqlParserRule.isSqlCommentParseEnabled() ? new HintValueContext() : SQLHintUtils.extractHint(sqlStatement.getSql()).orElseGet(HintValueContext::new);
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);

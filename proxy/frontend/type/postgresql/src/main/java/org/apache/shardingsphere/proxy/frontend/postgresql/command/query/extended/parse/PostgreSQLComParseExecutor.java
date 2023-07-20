@@ -84,7 +84,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType();
-        return sqlParserRule.getSQLParserEngine(protocolType.getTrunkDatabaseType().orElse(protocolType).getType());
+        return sqlParserRule.getSQLParserEngine(protocolType.getTrunkDatabaseType().orElse(protocolType));
     }
     
     private String convertSQLToJDBCStyle(final List<ParameterMarkerSegment> parameterMarkerSegments, final String sql) {
