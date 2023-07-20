@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.spi;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 /**
  * Database type based SQL parser facade.
  */
 @SingletonSPI
-public interface SQLDialectParserFacade extends SQLParserFacade {
+public interface SQLDialectParserFacade extends SQLParserFacade, DatabaseTypedSPI {
 }
