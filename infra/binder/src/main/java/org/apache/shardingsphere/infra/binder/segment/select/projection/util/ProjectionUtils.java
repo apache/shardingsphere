@@ -19,10 +19,11 @@ package org.apache.shardingsphere.infra.binder.segment.select.projection.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.oracle.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
@@ -42,7 +43,7 @@ public final class ProjectionUtils {
         if (QuoteCharacter.NONE != alias.getQuoteCharacter()) {
             return alias.getValue();
         }
-        if (databaseType instanceof PostgreSQLDatabaseType) {
+        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
             return alias.getValue().toLowerCase();
         }
         if (databaseType instanceof OracleDatabaseType) {
@@ -60,7 +61,7 @@ public final class ProjectionUtils {
      * @return column name
      */
     public static String getColumnNameFromFunction(final String functionName, final String functionExpression, final DatabaseType databaseType) {
-        if (databaseType instanceof PostgreSQLDatabaseType) {
+        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
             return functionName.toLowerCase();
         }
         if (databaseType instanceof OracleDatabaseType) {
