@@ -134,23 +134,10 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         for (ModifyColumnDefinitionSegment each : segments) {
             String columnName = each.getColumnDefinition().getColumnName().getIdentifier().getValue();
             if (encryptTable.isEncryptColumn(columnName)) {
-                result.addAll(getModifyColumnTokens(encryptTable.getEncryptColumn(columnName), each));
+                throw new UnsupportedOperationException("Unsupported operation 'modify' for the cipher column");
             }
             each.getColumnPosition().flatMap(optional -> getColumnPositionToken(encryptTable, optional)).ifPresent(result::add);
         }
-        return result;
-    }
-    
-    private Collection<SQLToken> getModifyColumnTokens(final EncryptColumn encryptColumn, final ModifyColumnDefinitionSegment segment) {
-        Collection<SQLToken> result = new LinkedList<>();
-        ColumnDefinitionSegment columnDefinitionSegment = segment.getColumnDefinition();
-        result.add(new RemoveToken(columnDefinitionSegment.getColumnName().getStartIndex(), columnDefinitionSegment.getColumnName().getStopIndex()));
-        result.add(new EncryptAlterTableToken(columnDefinitionSegment.getColumnName().getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(),
-                encryptColumn.getCipher().getName(), null));
-        encryptColumn.getAssistedQuery().map(optional -> new EncryptAlterTableToken(segment.getStopIndex() + 1,
-                columnDefinitionSegment.getColumnName().getStopIndex(), optional.getName(), ", MODIFY COLUMN")).ifPresent(result::add);
-        encryptColumn.getLikeQuery().map(optional -> new EncryptAlterTableToken(segment.getStopIndex() + 1,
-                columnDefinitionSegment.getColumnName().getStopIndex(), optional.getName(), ", MODIFY COLUMN")).ifPresent(result::add);
         return result;
     }
     
@@ -165,6 +152,10 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     private Collection<SQLToken> getChangeColumnTokens(final EncryptTable encryptTable, final Collection<ChangeColumnDefinitionSegment> segments) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ChangeColumnDefinitionSegment each : segments) {
+            String columnName = each.getPreviousColumn().getIdentifier().getValue();
+            if (encryptTable.isEncryptColumn(columnName)) {
+                throw new UnsupportedOperationException("Unsupported operation 'change' for the cipher column");
+            }
             result.addAll(getChangeColumnTokens(encryptTable, each));
             each.getColumnPosition().flatMap(optional -> getColumnPositionToken(encryptTable, optional)).ifPresent(result::add);
         }
@@ -240,7 +231,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         for (ColumnSegment each : segment.getColumns()) {
             String columnName = each.getQualifiedName();
             if (encryptTable.isEncryptColumn(columnName)) {
-                result.addAll(getDropColumnTokens(encryptTable.getEncryptColumn(columnName), each, segment));
+                throw new UnsupportedOperationException("Unsupported operation 'drop' for the cipher column");
             }
         }
         return result;
