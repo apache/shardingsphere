@@ -27,9 +27,7 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.h2.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -247,9 +245,8 @@ class SQLStatementCompilerIT {
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertCompile(final TestCase testcase) {
-        String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType());
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(testcase.getSql(), false);
-        String actual = sqlStatementCompiler.compile(sqlStatement, databaseType).getPhysicalPlan().explain().replaceAll("[\r\n]", " ");
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine("MySQL").parse(testcase.getSql(), false);
+        String actual = sqlStatementCompiler.compile(sqlStatement, "MySQL").getPhysicalPlan().explain().replaceAll("[\r\n]", " ");
         assertThat(actual, is(testcase.getAssertion().getExpectedResult()));
     }
     
