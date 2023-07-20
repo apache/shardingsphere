@@ -29,4 +29,12 @@
     <properties>
         <dialect.parser>sqlserver</dialect.parser>
     </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-database-sqlserver</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
