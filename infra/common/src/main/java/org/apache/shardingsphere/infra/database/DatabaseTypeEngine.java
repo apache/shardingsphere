@@ -144,16 +144,6 @@ public final class DatabaseTypeEngine {
     }
     
     /**
-     * Get name of trunk database type.
-     *
-     * @param databaseType database type
-     * @return name of trunk database type
-     */
-    public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
-        return databaseType.getTrunkDatabaseType().map(DatabaseType::getType).orElse(databaseType.getType());
-    }
-    
-    /**
      * Get default schema name.
      * 
      * @param protocolType protocol type
