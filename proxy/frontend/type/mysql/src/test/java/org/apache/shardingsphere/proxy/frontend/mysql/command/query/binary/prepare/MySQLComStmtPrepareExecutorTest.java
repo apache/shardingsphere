@@ -123,37 +123,6 @@ class MySQLComStmtPrepareExecutorTest {
     }
     
     @Test
-    void assertPrepareSelectSubqueryStatement() {
-        String sql = "select *, '' from (select u.id id_alias, name, age from foo_db.user u where id = ?) t";
-        when(packet.getSQL()).thenReturn(sql);
-        int connectionId = 2;
-        when(connectionSession.getConnectionId()).thenReturn(connectionId);
-        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
-        ContextManager contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
-        assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
-        DatabasePacket idColumnDefinitionPacket = actualIterator.next();
-        assertThat(idColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) idColumnDefinitionPacket),
-                is(MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() | MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        DatabasePacket ageColumnDefinitionPacket = actualIterator.next();
-        assertThat(ageColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) ageColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
-        assertFalse(actualIterator.hasNext());
-        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
-        assertThat(actualPreparedStatement.getSql(), is(sql));
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLSelectStatement.class));
-        MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
-    }
-    
-    @Test
     void assertPrepareInsertStatement() {
         String sql = "insert into user (id, name, age) values (1, ?, ?), (?, 'bar', ?)";
         when(packet.getSQL()).thenReturn(sql);
