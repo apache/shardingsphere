@@ -73,14 +73,6 @@ public final class ColumnProjection implements Projection {
         return Optional.ofNullable(alias);
     }
     
-    @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        ColumnProjection result = null == alias ? new ColumnProjection(subqueryTableAlias, name, null) : new ColumnProjection(subqueryTableAlias, alias, null);
-        result.setOriginalOwner(originalOwner);
-        result.setOriginalName(originalName);
-        return result;
-    }
-    
     /**
      * Get owner.
      *

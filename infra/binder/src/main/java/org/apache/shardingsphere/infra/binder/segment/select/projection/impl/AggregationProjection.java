@@ -73,15 +73,4 @@ public class AggregationProjection implements Projection {
     public final Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias);
     }
-    
-    @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        if (getAlias().isPresent()) {
-            return new ColumnProjection(subqueryTableAlias, getAlias().get(), null);
-        }
-        AggregationProjection result = new AggregationProjection(type, innerExpression, alias, databaseType);
-        result.setIndex(index);
-        result.getDerivedAggregationProjections().addAll(derivedAggregationProjections);
-        return result;
-    }
 }
