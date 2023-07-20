@@ -149,14 +149,10 @@ import java.util.stream.Collectors;
 /**
  * Statement visitor for Oracle.
  */
-@Getter(AccessLevel.PROTECTED)
+@Getter
 public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<ASTNode> {
     
-    private Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
-    
-    public void setParameterMarkerSegments(final Collection<ParameterMarkerSegment> parameterMarkerSegments) {
-        this.parameterMarkerSegments = parameterMarkerSegments;
-    }
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {

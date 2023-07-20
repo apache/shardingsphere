@@ -40,7 +40,7 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitExplain(final ExplainContext ctx) {
         OracleExplainStatement result = new OracleExplainStatement();
         OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor();
-        visitor.setParameterMarkerSegments(getParameterMarkerSegments());
+        visitor.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         if (null != ctx.insert()) {
             result.setStatement((SQLStatement) visitor.visit(ctx.insert()));
         } else if (null != ctx.delete()) {
@@ -50,6 +50,7 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
         } else if (null != ctx.select()) {
             result.setStatement((SQLStatement) visitor.visit(ctx.select()));
         }
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
 }
