@@ -61,7 +61,7 @@ public final class DatabaseTypedSPILoader {
      * @return found service
      */
     public static <T extends DatabaseTypedSPI> Optional<T> findService(final Class<T> spiClass, final DatabaseType databaseType, final Properties props) {
-        Optional<T> result = TypedSPILoader.findService(spiClass, databaseType);
+        Optional<T> result = TypedSPILoader.findService(spiClass, databaseType, props);
         if (result.isPresent()) {
             return result;
         }
