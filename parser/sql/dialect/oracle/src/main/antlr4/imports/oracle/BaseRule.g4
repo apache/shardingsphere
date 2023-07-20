@@ -35,7 +35,11 @@ literals
     ;
 
 intervalLiterals
-    : INTERVAL stringLiterals intervalUnit (LP_ INTEGER_ RP_)? (TO intervalUnit)?
+    : INTERVAL stringLiterals intervalUnit (intervalPrecision)? (TO intervalUnit (intervalPrecision)?)?
+    ;
+
+intervalPrecision
+    : LP_ INTEGER_ RP_
     ;
 
 intervalUnit
