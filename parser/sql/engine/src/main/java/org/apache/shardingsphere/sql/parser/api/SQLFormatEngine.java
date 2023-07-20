@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.api;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.visitor.format.SQLFormatVisitor;
 
@@ -44,6 +46,6 @@ public final class SQLFormatEngine {
      */
     public String format(final String sql, final boolean useCache, final Properties props) {
         ParseTree parseTree = new SQLParserEngine(databaseType, cacheOption).parse(sql, useCache).getRootNode();
-        return TypedSPILoader.getService(SQLFormatVisitor.class, databaseType, props).visit(parseTree);
+        return DatabaseTypedSPILoader.getService(SQLFormatVisitor.class, TypedSPILoader.getService(DatabaseType.class, databaseType), props).visit(parseTree);
     }
 }
