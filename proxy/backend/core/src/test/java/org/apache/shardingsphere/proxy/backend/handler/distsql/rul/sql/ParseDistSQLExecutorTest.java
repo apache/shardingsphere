@@ -21,8 +21,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -73,7 +71,7 @@ class ParseDistSQLExecutorTest {
     @Test
     void assertGetRowDataForMySQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
-        when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
         handler.init(new ParseStatement(sql), connectionSession);
         handler.execute();
@@ -86,7 +84,7 @@ class ParseDistSQLExecutorTest {
     @Test
     void assertGetRowDataForPostgreSQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
-        when(connectionSession.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
         handler.init(new ParseStatement(sql), connectionSession);
         handler.execute();
@@ -98,7 +96,7 @@ class ParseDistSQLExecutorTest {
     @Test
     void assertExecute() {
         String sql = "wrong sql";
-        when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
         handler.init(new ParseStatement(sql), connectionSession);
         assertThrows(SQLParsingException.class, handler::execute);
