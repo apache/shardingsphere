@@ -22,7 +22,6 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -44,6 +43,6 @@ public final class SQLStatementCacheBuilder {
     public static LoadingCache<String, SQLStatement> build(final DatabaseType databaseType, final CacheOption sqlStatementCacheOption,
                                                            final CacheOption parseTreeCacheOption, final boolean isParseComment) {
         return Caffeine.newBuilder().softValues().initialCapacity(sqlStatementCacheOption.getInitialCapacity()).maximumSize(sqlStatementCacheOption.getMaximumSize())
-                .build(new SQLStatementCacheLoader(TypedSPILoader.getService(DatabaseType.class, databaseType), parseTreeCacheOption, isParseComment));
+                .build(new SQLStatementCacheLoader(databaseType, parseTreeCacheOption, isParseComment));
     }
 }
