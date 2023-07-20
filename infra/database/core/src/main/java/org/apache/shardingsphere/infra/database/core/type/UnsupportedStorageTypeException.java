@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.type.checker;
+package org.apache.shardingsphere.infra.database.core.type;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;

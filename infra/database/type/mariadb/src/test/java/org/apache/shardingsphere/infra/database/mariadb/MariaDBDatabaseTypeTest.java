@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.mariadb;
 
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -42,11 +42,6 @@ class MariaDBDatabaseTypeTest {
     @Test
     void assertGetDataSourceMetaData() {
         assertThat(new MariaDBDatabaseType().getDataSourceMetaData("jdbc:mariadb://localhost:3306/foo_ds", "root"), instanceOf(MariaDBDataSourceMetaData.class));
-    }
-    
-    @Test
-    void assertGetTrunkDatabaseType() {
-        assertThat(new MariaDBDatabaseType().getTrunkDatabaseType().getType(), is("MySQL"));
     }
     
     @Test

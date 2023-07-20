@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.mysql;
 
-import org.apache.shardingsphere.infra.database.core.type.TrunkDatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,7 +31,7 @@ import java.util.Set;
 /**
  * Database type of MySQL.
  */
-public final class MySQLDatabaseType implements TrunkDatabaseType {
+public final class MySQLDatabaseType implements DatabaseType {
     
     private static final Set<String> RESERVED_WORDS = new HashSet<>(Arrays.asList(
             "ADD", "ALL", "ALTER", "ANALYZE", "AND", "AS", "ASC", "BEFORE", "BETWEEN", "BIGINT", "BINARY", "BLOB", "BOTH", "BY", "CALL",

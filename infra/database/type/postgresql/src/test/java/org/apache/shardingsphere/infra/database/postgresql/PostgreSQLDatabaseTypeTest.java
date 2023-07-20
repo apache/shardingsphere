@@ -17,13 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.postgresql;
 
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,10 +28,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class PostgreSQLDatabaseTypeTest {
     
@@ -52,26 +45,6 @@ class PostgreSQLDatabaseTypeTest {
     @Test
     void assertGetDataSourceMetaData() {
         assertThat(new PostgreSQLDatabaseType().getDataSourceMetaData("jdbc:postgresql://localhost:5432/demo_ds_0", "postgres"), instanceOf(PostgreSQLDataSourceMetaData.class));
-    }
-    
-    @Test
-    void assertHandleRollbackOnlyForNotRollbackOnly() {
-        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().handleRollbackOnly(false, mock(CommitStatement.class)));
-    }
-    
-    @Test
-    void assertHandleRollbackOnlyForRollbackOnlyAndCommitStatement() {
-        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(CommitStatement.class)));
-    }
-    
-    @Test
-    void assertHandleRollbackOnlyForRollbackOnlyAndRollbackStatement() {
-        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(RollbackStatement.class)));
-    }
-    
-    @Test
-    void assertHandleRollbackOnlyForRollbackOnlyAndNotTCLStatement() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(SelectStatement.class)));
     }
     
     @Test

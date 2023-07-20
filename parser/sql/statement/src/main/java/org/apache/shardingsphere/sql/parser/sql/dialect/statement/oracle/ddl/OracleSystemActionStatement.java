@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.type;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Branch database type.
+ * Oracle drop database link statement.
  */
-public interface BranchDatabaseType extends DatabaseType {
-    
-    /**
-     * Get trunk database type.
-     * 
-     * @return trunk database type
-     */
-    DatabaseType getTrunkDatabaseType();
+public final class OracleSystemActionStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

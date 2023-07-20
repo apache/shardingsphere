@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.h2;
 
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -43,11 +43,6 @@ class H2DatabaseTypeTest {
     void assertGetDataSourceMetaData() {
         assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:~:foo_ds", "sa"), instanceOf(H2DataSourceMetaData.class));
         assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:mem:foo_ds", "sa"), instanceOf(H2DataSourceMetaData.class));
-    }
-    
-    @Test
-    void assertGetTrunkDatabaseType() {
-        assertThat(new H2DatabaseType().getTrunkDatabaseType().getType(), is("MySQL"));
     }
     
     @Test

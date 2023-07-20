@@ -28,6 +28,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -48,6 +49,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHan
 import org.apache.shardingsphere.proxy.backend.handler.extra.ExtraProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionalErrorAllowedSQLStatementHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -128,7 +130,7 @@ public final class ProxyBackendHandlerFactory {
                                                   final boolean preferPreparedStatement) throws SQLException {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
+        allowExecutingWhenTransactionalError(databaseType, connectionSession, sqlStatement);
         checkUnsupportedSQLStatement(sqlStatement);
         checkClusterState(sqlStatement);
         if (sqlStatement instanceof EmptyStatement) {
@@ -168,6 +170,16 @@ public final class ProxyBackendHandlerFactory {
                 database, connectionSession.getGrantee(), queryContext.getHintValueContext());
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
+    }
+    
+    private static void allowExecutingWhenTransactionalError(final DatabaseType databaseType, final ConnectionSession connectionSession, final SQLStatement sqlStatement) throws SQLException {
+        if (!connectionSession.getTransactionStatus().isExceptionOccur()) {
+            return;
+        }
+        Optional<TransactionalErrorAllowedSQLStatementHandler> allowedSQLStatementHandler = DatabaseTypedSPILoader.findService(TransactionalErrorAllowedSQLStatementHandler.class, databaseType);
+        if (allowedSQLStatementHandler.isPresent()) {
+            allowedSQLStatementHandler.get().judgeContinueToExecute(sqlStatement);
+        }
     }
     
     private static void checkUnsupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {

@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.type;
+package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.sql.SQLException;
 
 /**
- * Trunk database type.
+ * Transactional error allowed SQL statement handler.
  */
-public interface TrunkDatabaseType extends DatabaseType {
+@SingletonSPI
+public interface TransactionalErrorAllowedSQLStatementHandler extends DatabaseTypedSPI {
+    
+    /**
+     * Judge SQL statement can be executed continuously if exception occur during transactional SQL executing.
+     *
+     * @param statement statement to be judged
+     * @throws SQLException SQL exception
+     */
+    void judgeContinueToExecute(SQLStatement statement) throws SQLException;
 }

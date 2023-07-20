@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.mysql;
 
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
