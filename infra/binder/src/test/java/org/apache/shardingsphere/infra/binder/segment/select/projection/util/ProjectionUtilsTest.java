@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class ProjectionUtilsTest {
-
+    
     @Test
     void assertGetColumnLabelFromAlias() {
         IdentifierValue alias = null;
@@ -47,7 +47,7 @@ public class ProjectionUtilsTest {
         databaseType = new MySQLDatabaseType();
         assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, databaseType), is(alias.getValue()));
     }
-
+    
     @Test
     void assertGetColumnNameFromFunction() {
         String functionName = "Function";
