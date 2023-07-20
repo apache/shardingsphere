@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sql.parser.core.database.visitor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -40,7 +42,7 @@ public final class SQLStatementVisitorFactory {
      * @return created instance
      */
     public static SQLStatementVisitor newInstance(final String databaseType, final SQLVisitorRule visitorRule) {
-        SQLStatementVisitorFacade facade = TypedSPILoader.getService(SQLStatementVisitorFacade.class, databaseType);
+        SQLStatementVisitorFacade facade = DatabaseTypedSPILoader.getService(SQLStatementVisitorFacade.class, TypedSPILoader.getService(DatabaseType.class, databaseType));
         return createParseTreeVisitor(facade, visitorRule.getType());
     }
     
