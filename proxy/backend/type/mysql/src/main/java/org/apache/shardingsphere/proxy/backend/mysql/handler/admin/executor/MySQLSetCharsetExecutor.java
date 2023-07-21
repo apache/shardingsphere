@@ -37,7 +37,7 @@ public final class MySQLSetCharsetExecutor implements SetCharsetExecutor {
     public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
         if ("charset".equalsIgnoreCase(variableName) || "character_set_client".equalsIgnoreCase(variableName)) {
             String value = formatValue(assignValue);
-            connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(value));    
+            connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(value));
         }
     }
     
