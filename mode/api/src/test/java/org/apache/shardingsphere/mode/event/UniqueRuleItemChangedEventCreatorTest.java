@@ -20,26 +20,20 @@ package org.apache.shardingsphere.mode.event;
 import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterUniqueRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropUniqueRuleItemEvent;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class UniqueRuleItemChangedEventCreatorTest {
+class UniqueRuleItemChangedEventCreatorTest {
     
-    private UniqueRuleItemChangedEventCreator eventCreater;
-    
-    @BeforeEach
-    void setup() {
-        eventCreater = new UniqueRuleItemChangedEventCreator();
-    }
+    private final UniqueRuleItemChangedEventCreator eventCreator = new UniqueRuleItemChangedEventCreator();
     
     @Test
     void assertCreateWithEventTypeAdded() {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("test_key", "test_value", DataChangedEvent.Type.ADDED);
-        RuleItemChangedEvent ruleItemChangedEvent = eventCreater.create("test_db", dataChangedEvent, "test_type_added");
+        RuleItemChangedEvent ruleItemChangedEvent = eventCreator.create("test_db", dataChangedEvent, "test_type_added");
         assertThat(ruleItemChangedEvent, instanceOf(AlterUniqueRuleItemEvent.class));
         assertThat(ruleItemChangedEvent.getType(), is("test_type_added"));
     }
@@ -47,7 +41,7 @@ public class UniqueRuleItemChangedEventCreatorTest {
     @Test
     void assertCreateWithEventTypeDeleted() {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("test_key", "test_value", DataChangedEvent.Type.DELETED);
-        RuleItemChangedEvent ruleItemChangedEvent = eventCreater.create("test_db", dataChangedEvent, "test_type_deleted");
+        RuleItemChangedEvent ruleItemChangedEvent = eventCreator.create("test_db", dataChangedEvent, "test_type_deleted");
         assertThat(ruleItemChangedEvent, instanceOf(DropUniqueRuleItemEvent.class));
         assertThat(ruleItemChangedEvent.getType(), is("test_type_deleted"));
     }
