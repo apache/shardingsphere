@@ -99,6 +99,7 @@ jobs:
     timeout-minutes: 10
     needs: build-e2e-image
     strategy:
+      max-parallel: 20
       fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
