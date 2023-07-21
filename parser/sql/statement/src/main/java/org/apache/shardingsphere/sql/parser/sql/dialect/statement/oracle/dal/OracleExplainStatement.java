@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
-grammar DALStatement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal;
 
-import BaseRule;
-import DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-alterResourceCost
-    : ALTER RESOURCE COST ((CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA) INTEGER_)+
-    ;
-
-explain
-    : EXPLAIN PLAN (SET STATEMENT_ID EQ_ stringLiterals)? (INTO (schemaName DOT_)? tableName (AT_ dbLink)? )? FOR (insert | delete | update | select)
-    ;
+/**
+ * Oracle explain statement.
+ */
+public final class OracleExplainStatement extends ExplainStatement implements OracleStatement {
+}
