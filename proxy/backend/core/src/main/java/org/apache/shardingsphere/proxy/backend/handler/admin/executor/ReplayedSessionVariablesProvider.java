@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 
@@ -26,7 +26,7 @@ import java.util.Collection;
  * Provide session variables need to be replayed on session connected.
  */
 @SingletonSPI
-public interface ReplayedSessionVariablesProvider extends TypedSPI {
+public interface ReplayedSessionVariablesProvider extends DatabaseTypedSPI {
     
     /**
      * Get need to be replayed session variables.

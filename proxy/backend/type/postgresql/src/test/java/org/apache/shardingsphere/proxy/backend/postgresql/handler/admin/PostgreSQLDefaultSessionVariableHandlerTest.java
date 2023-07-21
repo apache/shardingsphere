@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayedSessionVariablesProvider;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -46,10 +48,11 @@ class PostgreSQLDefaultSessionVariableHandlerTest {
     void assertHandleRecord() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(mock(RequiredSessionVariableRecorder.class));
-        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+        try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             ReplayedSessionVariablesProvider variablesProvider = mock(ReplayedSessionVariablesProvider.class);
             when(variablesProvider.getVariables()).thenReturn(Collections.singleton("datestyle"));
-            typedSPILoader.when(() -> TypedSPILoader.findService(ReplayedSessionVariablesProvider.class, "PostgreSQL")).thenReturn(Optional.of(variablesProvider));
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(
+                    ReplayedSessionVariablesProvider.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))).thenReturn(Optional.of(variablesProvider));
             new PostgreSQLDefaultSessionVariableHandler().handle(connectionSession, "datestyle", "postgres");
             verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("datestyle", "postgres");
         }
