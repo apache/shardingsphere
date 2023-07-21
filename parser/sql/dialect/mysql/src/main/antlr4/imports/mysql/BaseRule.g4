@@ -916,7 +916,7 @@ simpleExpr
     | parameterMarker
     | literals
     | columnRef
-    | simpleExpr collateClause
+    | columnRef collateClause
     | variable
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | notOperator | BINARY) simpleExpr

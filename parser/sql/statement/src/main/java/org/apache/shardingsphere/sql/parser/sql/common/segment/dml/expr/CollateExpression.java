@@ -19,7 +19,10 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
+
+import javax.annotation.Nullable;
 
 /**
  * Collate expression.
@@ -33,6 +36,9 @@ public final class CollateExpression implements ExpressionSegment {
     private final int stopIndex;
     
     private final SimpleExpressionSegment collateName;
+
+    @Nullable
+    private final ColumnSegment tableName;
     
     @Override
     public String getText() {

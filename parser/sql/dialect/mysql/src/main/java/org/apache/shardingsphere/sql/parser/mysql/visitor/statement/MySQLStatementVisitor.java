@@ -614,7 +614,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return visit(ctx.functionCall());
         }
         if (null != ctx.collateClause()) {
-            return new CollateExpression(startIndex, stopIndex, (SimpleExpressionSegment) visit(ctx.collateClause()));
+            if (null != ctx.columnRef()) {
+                return new CollateExpression(startIndex, stopIndex, (SimpleExpressionSegment) visit(ctx.collateClause()), (ColumnSegment) visit(ctx.columnRef()));
+            }
+            return new CollateExpression(startIndex, stopIndex, (SimpleExpressionSegment) visit(ctx.collateClause()), null);
         }
         if (null != ctx.columnRef()) {
             return visit(ctx.columnRef());
