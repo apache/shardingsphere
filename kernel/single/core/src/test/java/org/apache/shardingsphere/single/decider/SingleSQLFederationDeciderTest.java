@@ -113,7 +113,7 @@ class SingleSQLFederationDeciderTest {
     }
     
     private ShardingSphereDatabase createDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(result.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         return result;

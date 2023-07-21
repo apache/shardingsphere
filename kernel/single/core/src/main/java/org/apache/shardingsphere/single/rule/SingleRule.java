@@ -104,10 +104,10 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
             return false;
         }
         QualifiedTable sampleTable = singleTables.iterator().next();
-        Optional<DataNode> dataNode = findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
-        if (dataNode.isPresent()) {
+        Optional<DataNode> sampleDataNode = findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
+        if (sampleDataNode.isPresent()) {
             for (DataNode each : dataNodes) {
-                if (!each.getDataSourceName().equalsIgnoreCase(dataNode.get().getDataSourceName())) {
+                if (!isSameComputeNode(sampleDataNode.get().getDataSourceName(), each.getDataSourceName())) {
                     return false;
                 }
             }
@@ -115,18 +115,22 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
         return true;
     }
     
+    private boolean isSameComputeNode(final String sampleDataSourceName, final String dataSourceName) {
+        return sampleDataSourceName.equalsIgnoreCase(dataSourceName);
+    }
+    
     private boolean isSingleTablesInSameComputeNode(final Collection<QualifiedTable> singleTables) {
-        String firstFoundDataSourceName = null;
+        String sampleDataSourceName = null;
         for (QualifiedTable each : singleTables) {
             Optional<DataNode> dataNode = findTableDataNode(each.getSchemaName(), each.getTableName());
             if (!dataNode.isPresent()) {
                 continue;
             }
-            if (null == firstFoundDataSourceName) {
-                firstFoundDataSourceName = dataNode.get().getDataSourceName();
+            if (null == sampleDataSourceName) {
+                sampleDataSourceName = dataNode.get().getDataSourceName();
                 continue;
             }
-            if (!firstFoundDataSourceName.equals(dataNode.get().getDataSourceName())) {
+            if (!isSameComputeNode(sampleDataSourceName, dataNode.get().getDataSourceName())) {
                 return false;
             }
         }
