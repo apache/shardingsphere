@@ -64,7 +64,7 @@ rules:
         shardingStrategy:
           standard:
             shardingColumn: order_id
-            shardingAlgorithmName: auto-mod
+            shardingAlgorithmName: auto_mod
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: snowflake
@@ -90,7 +90,7 @@ rules:
         type: INLINE
         props:
           algorithm-expression: t_order_item_${order_id % 2}
-      auto-mod:
+      auto_mod:
         type: MOD
         props:
           sharding-count: 4
