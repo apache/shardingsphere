@@ -674,7 +674,7 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | caseExpression
-    | columnName
+    | columnName joinOperator?
     | privateExprOfDb
     | PRIOR identifier
     ;
@@ -756,6 +756,10 @@ regularFunction
 
 regularFunctionName
     : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL | DECODE
+    ;
+
+joinOperator
+    : LP_ PLUS_  RP_
     ;
 
 caseExpression
