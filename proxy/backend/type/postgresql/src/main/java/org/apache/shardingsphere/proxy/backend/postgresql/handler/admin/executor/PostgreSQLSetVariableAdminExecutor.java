@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
+package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;

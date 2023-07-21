@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLReplayedSessionVariableProvider
+org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.session.MySQLReplayedSessionVariableProvider

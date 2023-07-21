@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
+package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset;
 
 import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 

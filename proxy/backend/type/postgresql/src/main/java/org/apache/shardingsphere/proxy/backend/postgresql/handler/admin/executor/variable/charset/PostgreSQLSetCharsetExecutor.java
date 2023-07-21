@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset;
 
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.dialect.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.SetCharsetExecutor;
-import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.nio.charset.Charset;
