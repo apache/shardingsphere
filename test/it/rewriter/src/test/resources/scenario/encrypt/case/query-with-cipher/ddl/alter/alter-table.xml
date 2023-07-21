@@ -17,16 +17,6 @@
   -->
 
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
-    <rewrite-assertion id="alter_table_modify_column_amount_for_cipher" db-types="MySQL">
-        <input sql="ALTER TABLE t_account MODIFY COLUMN amount text" />
-        <output sql="ALTER TABLE t_account MODIFY COLUMN cipher_amount text" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="alter_table_change_column_amount_for_cipher" db-types="MySQL">
-        <input sql="ALTER TABLE t_account CHANGE COLUMN amount amount_new text" />
-        <output sql="ALTER TABLE t_account CHANGE COLUMN cipher_amount amount_new_cipher text" />
-    </rewrite-assertion>
-
     <rewrite-assertion id="alter_table_add_column_with_position_cipher" db-types="MySQL">
         <input sql="ALTER TABLE t_account ADD COLUMN status text AFTER amount" />
         <output sql="ALTER TABLE t_account ADD COLUMN status text AFTER cipher_amount" />
@@ -46,32 +36,7 @@
         <input sql="ALTER TABLE t_account_bak ADD COLUMN id int not null, ADD COLUMN password varchar(255) not null default ''" />
         <output sql="ALTER TABLE t_account_bak ADD COLUMN id int not null, ADD COLUMN cipher_password varchar(255) not null default '', ADD COLUMN assisted_query_password varchar(255) not null default '', ADD COLUMN like_query_password varchar(255) not null default ''" />
     </rewrite-assertion>
-
-    <rewrite-assertion id="alter_table_modify_column_for_cipher" db-types="MySQL">
-        <input sql="ALTER TABLE t_account_bak MODIFY COLUMN password varchar(255) not null default ''" />
-        <output sql="ALTER TABLE t_account_bak MODIFY COLUMN cipher_password varchar(255) not null default '', MODIFY COLUMN assisted_query_password varchar(255) not null default '', MODIFY COLUMN like_query_password varchar(255) not null default ''" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="alter_table_change_column_for_cipher" db-types="MySQL">
-        <input sql="ALTER TABLE t_account_bak CHANGE COLUMN password password_new varchar(255) not null default ''" />
-        <output sql="ALTER TABLE t_account_bak CHANGE COLUMN cipher_password password_new_cipher varchar(255) not null default '', CHANGE COLUMN assisted_query_password password_new_assisted varchar(255) not null default '', CHANGE COLUMN like_query_password password_new_like varchar(255) not null default ''" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="alter_table_drop_column_for_cipher" db-types="MySQL">
-        <input sql="ALTER TABLE t_account_bak DROP COLUMN password" />
-        <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password, DROP COLUMN assisted_query_password, DROP COLUMN like_query_password" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="alter_table_drop_columns_for_cipher" db-types="MySQL">
-        <input sql="ALTER TABLE t_account_bak DROP COLUMN password, DROP COLUMN amount" />
-        <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password, DROP COLUMN assisted_query_password, DROP COLUMN like_query_password, DROP COLUMN cipher_amount" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="alter_table_drop_mix_columns_for_cipher" db-types="MySQL">
-        <input sql="ALTER TABLE t_account_bak DROP COLUMN password, DROP COLUMN id" />
-        <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password, DROP COLUMN assisted_query_password, DROP COLUMN like_query_password, DROP COLUMN id" />
-    </rewrite-assertion>
-
+    
     <rewrite-assertion id="alter_table_add_index_for_cipher" db-types="MySQL">
         <input sql="ALTER TABLE t_account_bak ADD INDEX t_account_bak_amount(`amount`)" />
         <output sql="ALTER TABLE t_account_bak ADD INDEX t_account_bak_amount(`cipher_amount`)" />
