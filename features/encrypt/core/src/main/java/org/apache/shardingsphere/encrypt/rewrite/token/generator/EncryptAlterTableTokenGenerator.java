@@ -133,9 +133,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         Collection<SQLToken> result = new LinkedList<>();
         for (ModifyColumnDefinitionSegment each : segments) {
             String columnName = each.getColumnDefinition().getColumnName().getIdentifier().getValue();
-            if (encryptTable.isEncryptColumn(columnName)) {
-                throw new UnsupportedOperationException("Unsupported operation 'modify' for the cipher column");
-            }
+            ShardingSpherePreconditions.checkState(!encryptTable.isEncryptColumn(columnName), () -> new UnsupportedOperationException("Unsupported operation 'modify' for the cipher column"));
             each.getColumnPosition().flatMap(optional -> getColumnPositionToken(encryptTable, optional)).ifPresent(result::add);
         }
         return result;
@@ -153,9 +151,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         Collection<SQLToken> result = new LinkedList<>();
         for (ChangeColumnDefinitionSegment each : segments) {
             String columnName = each.getPreviousColumn().getIdentifier().getValue();
-            if (encryptTable.isEncryptColumn(columnName)) {
-                throw new UnsupportedOperationException("Unsupported operation 'change' for the cipher column");
-            }
+            ShardingSpherePreconditions.checkState(!encryptTable.isEncryptColumn(columnName), () -> new UnsupportedOperationException("Unsupported operation 'change' for the cipher column"));
             result.addAll(getChangeColumnTokens(encryptTable, each));
             each.getColumnPosition().flatMap(optional -> getColumnPositionToken(encryptTable, optional)).ifPresent(result::add);
         }
@@ -229,10 +225,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     private Collection<SQLToken> getDropColumnTokens(final EncryptTable encryptTable, final DropColumnDefinitionSegment segment) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : segment.getColumns()) {
-            String columnName = each.getQualifiedName();
-            if (encryptTable.isEncryptColumn(columnName)) {
-                throw new UnsupportedOperationException("Unsupported operation 'drop' for the cipher column");
-            }
+            ShardingSpherePreconditions.checkState(!encryptTable.isEncryptColumn(each.getQualifiedName()), () -> new UnsupportedOperationException("Unsupported operation 'drop' for the cipher column"));
         }
         return result;
     }
