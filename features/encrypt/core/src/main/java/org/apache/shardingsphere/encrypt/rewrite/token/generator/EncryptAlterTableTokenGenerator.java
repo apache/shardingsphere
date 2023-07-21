@@ -225,19 +225,9 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     private Collection<SQLToken> getDropColumnTokens(final EncryptTable encryptTable, final DropColumnDefinitionSegment segment) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : segment.getColumns()) {
-            ShardingSpherePreconditions.checkState(!encryptTable.isEncryptColumn(each.getQualifiedName()), () -> new UnsupportedOperationException("Unsupported operation 'drop' for the cipher column"));
+            ShardingSpherePreconditions.checkState(!encryptTable.isEncryptColumn(each.getQualifiedName()),
+                    () -> new UnsupportedOperationException("Unsupported operation 'drop' for the cipher column"));
         }
-        return result;
-    }
-    
-    private Collection<SQLToken> getDropColumnTokens(final EncryptColumn encryptColumn, final ColumnSegment columnSegment, final DropColumnDefinitionSegment dropColumnDefinitionSegment) {
-        Collection<SQLToken> result = new LinkedList<>();
-        result.add(new RemoveToken(columnSegment.getStartIndex(), columnSegment.getStopIndex()));
-        result.add(new EncryptAlterTableToken(columnSegment.getStopIndex() + 1, columnSegment.getStopIndex(), encryptColumn.getCipher().getName(), null));
-        encryptColumn.getAssistedQuery().map(optional -> new EncryptAlterTableToken(dropColumnDefinitionSegment.getStopIndex() + 1,
-                dropColumnDefinitionSegment.getStopIndex(), optional.getName(), ", DROP COLUMN")).ifPresent(result::add);
-        encryptColumn.getLikeQuery().map(optional -> new EncryptAlterTableToken(dropColumnDefinitionSegment.getStopIndex() + 1,
-                dropColumnDefinitionSegment.getStopIndex(), optional.getName(), ", DROP COLUMN")).ifPresent(result::add);
         return result;
     }
     
