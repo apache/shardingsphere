@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executo
 
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.dialect.exception.data.InvalidParameterValueException;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLCharacterSets;
-import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLSessionVariableHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.nio.charset.Charset;
@@ -30,11 +30,13 @@ import java.util.Locale;
 /**
  * Set charset executor of PostgreSQL.
  */
-public final class PostgreSQLSetCharsetExecutor implements PostgreSQLSessionVariableHandler {
+public final class PostgreSQLSetCharsetExecutor implements SetCharsetExecutor {
     
     @Override
     public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
-        connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(assignValue.trim()));
+        if ("client_encoding".equalsIgnoreCase(variableName)) {
+            connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(assignValue.trim()));
+        }
     }
     
     private Charset parseCharset(final String value) {
@@ -47,7 +49,7 @@ public final class PostgreSQLSetCharsetExecutor implements PostgreSQLSessionVari
     }
     
     @Override
-    public String getType() {
-        return "client_encoding";
+    public String getDatabaseType() {
+        return "PostgreSQL";
     }
 }
