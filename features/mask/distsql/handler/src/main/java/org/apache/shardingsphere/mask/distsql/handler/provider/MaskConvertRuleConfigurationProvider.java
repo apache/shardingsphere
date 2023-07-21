@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.handler.provider;
+package org.apache.shardingsphere.mask.distsql.handler.provider;
 
 import org.apache.shardingsphere.distsql.handler.ral.constant.DistSQLScriptConstants;
 import org.apache.shardingsphere.distsql.handler.ral.query.ConvertRuleConfigurationProvider;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,60 +32,44 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 /**
- * Shadow convert rule configuration provider.
+ * Mask convert rule configuration provider.
  */
-public final class ShadowConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
+public final class MaskConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
     
     @Override
     public String convert(final RuleConfiguration ruleConfig) {
-        return getShadowDistSQL((ShadowRuleConfiguration) ruleConfig);
+        return getMaskDistSQL((MaskRuleConfiguration) ruleConfig);
     }
     
-    private String getShadowDistSQL(final ShadowRuleConfiguration ruleConfig) {
-        if (ruleConfig.getDataSources().isEmpty()) {
+    private String getMaskDistSQL(final MaskRuleConfiguration ruleConfig) {
+        if (ruleConfig.getTables().isEmpty()) {
             return "";
         }
-        StringBuilder result = new StringBuilder(DistSQLScriptConstants.CREATE_SHADOW);
-        Iterator<ShadowDataSourceConfiguration> iterator = ruleConfig.getDataSources().iterator();
+        StringBuilder result = new StringBuilder(DistSQLScriptConstants.CREATE_MASK);
+        Iterator<MaskTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
         while (iterator.hasNext()) {
-            ShadowDataSourceConfiguration dataSourceConfig = iterator.next();
-            String shadowRuleName = dataSourceConfig.getName();
-            String shadowTables = getShadowTables(shadowRuleName, ruleConfig.getTables(), ruleConfig.getShadowAlgorithms());
-            result.append(String.format(DistSQLScriptConstants.SHADOW, shadowRuleName, dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), shadowTables));
+            MaskTableRuleConfiguration tableRuleConfig = iterator.next();
+            result.append(String.format(DistSQLScriptConstants.MASK, tableRuleConfig.getName(), getMaskColumns(tableRuleConfig.getColumns(), ruleConfig.getMaskAlgorithms())));
             if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA);
+                result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
             }
         }
         result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
         return result.toString();
     }
     
-    private String getShadowTables(final String shadowRuleName, final Map<String, ShadowTableConfiguration> ruleConfig, final Map<String, AlgorithmConfiguration> algorithmConfigs) {
+    private String getMaskColumns(final Collection<MaskColumnRuleConfiguration> columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
         StringBuilder result = new StringBuilder();
-        Iterator<Map.Entry<String, ShadowTableConfiguration>> iterator = ruleConfig.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, ShadowTableConfiguration> shadowTableConfig = iterator.next();
-            if (shadowTableConfig.getValue().getDataSourceNames().contains(shadowRuleName)) {
-                String shadowTableTypes = getShadowTableTypes(shadowTableConfig.getValue().getShadowAlgorithmNames(), algorithmConfigs);
-                result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE, shadowTableConfig.getKey(), shadowTableTypes));
-            }
-            if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
-            }
+        Iterator<MaskColumnRuleConfiguration> iterator = columnRuleConfig.iterator();
+        if (iterator.hasNext()) {
+            MaskColumnRuleConfiguration column = iterator.next();
+            result.append(String.format(DistSQLScriptConstants.MASK_COLUMN, column.getLogicColumn(), getMaskAlgorithms(column, maskAlgorithms)));
         }
         return result.toString();
     }
     
-    private String getShadowTableTypes(final Collection<String> shadowAlgorithmNames, final Map<String, AlgorithmConfiguration> algorithmConfigs) {
-        StringBuilder result = new StringBuilder();
-        Iterator<String> iterator = shadowAlgorithmNames.iterator();
-        while (iterator.hasNext()) {
-            result.append(getAlgorithmType(algorithmConfigs.get(iterator.next())));
-            if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA).append(' ');
-            }
-        }
-        return result.toString();
+    private String getMaskAlgorithms(final MaskColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
+        return getAlgorithmType(maskAlgorithms.get(columnRuleConfig.getMaskAlgorithm()));
     }
     
     private String getAlgorithmType(final AlgorithmConfiguration algorithmConfig) {
@@ -122,6 +106,6 @@ public final class ShadowConvertRuleConfigurationProvider implements ConvertRule
     
     @Override
     public String getType() {
-        return ShadowRuleConfiguration.class.getName();
+        return MaskRuleConfiguration.class.getName();
     }
 }
