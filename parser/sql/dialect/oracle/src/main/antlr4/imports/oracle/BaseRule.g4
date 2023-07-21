@@ -684,7 +684,7 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? (OVER LP_ analyticClause RP_)? (OVER LP_ analyticClause RP_)?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? overClause? overClause?
     ;
 
 aggregationFunctionName
@@ -710,7 +710,12 @@ windowingClause
     ;
 
 analyticFunction
-    : analyticFunctionName LP_ dataType* RP_ OVER LP_ analyticClause RP_
+    : specifiedAnalyticFunctionName = (LEAD | LAG) ((LP_ expr leadLagInfo? RP_ respectOrIgnoreNulls?) | (LP_ expr respectOrIgnoreNulls? leadLagInfo? RP_)) overClause
+    | analyticFunctionName LP_ dataType* RP_ overClause
+    ;
+
+leadLagInfo
+    : COMMA_ expr (COMMA_ expr)?
     ;
 
 specialFunction

@@ -391,4 +391,39 @@
             <simple-table name="t_order" start-index="29" stop-index="35" />
         </from>
     </select>
+    
+    <select sql-case-id="select_with_lead_and_lag_function">
+        <projections start-index="7" stop-index="123" literal-start-index="7" literal-stop-index="123">
+            <column-projection name="hire_date" start-index="7" stop-index="15" literal-start-index="7" literal-stop-index="15" />
+            <expression-projection text="LAG(hire_date, 1) OVER (ORDER BY hire_date)" alias="LAG1" start-index="18" stop-index="68" literal-start-index="18" literal-stop-index="68">
+                <expr>
+                    <function function-name="LAG" text="LAG(hire_date, 1) OVER (ORDER BY hire_date)" start-index="18" stop-index="60" literal-start-index="18" literal-stop-index="60" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" literal-text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" alias="LEAD1" start-index="71" stop-index="123" literal-start-index="71" literal-stop-index="123">
+                <expr>
+                    <function function-name="LEAD" text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" literal-text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" start-index="71" stop-index="114" literal-start-index="71" literal-stop-index="114" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="130" stop-index="138" literal-start-index="130" literal-stop-index="138" />
+        </from>
+        <where start-index="140" stop-index="163" literal-start-index="140" literal-stop-index="163">
+            <expr>
+                <binary-operation-expression start-index="146" stop-index="163" literal-start-index="146" literal-stop-index="163">
+                    <left>
+                        <column name="department_id" start-index="146" stop-index="158" literal-start-index="146" literal-stop-index="158" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="30" start-index="162" stop-index="163" literal-start-index="162" literal-stop-index="163" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="hire_date" order-direction="ASC" start-index="174" stop-index="182" literal-start-index="174" literal-stop-index="182" />
+        </order-by>
+    </select>
 </sql-parser-test-cases>
