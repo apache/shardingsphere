@@ -63,7 +63,7 @@ public final class CharsetSetExecutor {
         for (Entry<String, String> entry : variables.entrySet()) {
             if (charsetVariableProvider.get().isCharsetVariable(entry.getKey())) {
                 connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(charsetVariableProvider.get().parseCharset(entry.getValue()));
-            }    
+            }
         }
     }
 }
