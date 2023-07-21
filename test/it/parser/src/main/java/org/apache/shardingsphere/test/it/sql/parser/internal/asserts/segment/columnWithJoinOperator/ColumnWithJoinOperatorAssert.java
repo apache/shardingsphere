@@ -28,8 +28,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Column assert.
+ * Column with join operator assert.
  */
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnWithJoinOperatorAssert {
     
@@ -40,8 +41,8 @@ public final class ColumnWithJoinOperatorAssert {
      * @param actual actual column with join operator segment
      * @param expected expected column with join operator segment
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnWithJoinOperatorSegment actual, final ExpectedColumnWithJoinOperatorSegment expected) {
     
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnWithJoinOperatorSegment actual, final ExpectedColumnWithJoinOperatorSegment expected) {
         ColumnAssert.assertIs(assertContext, actual.getColumnName(), expected.getColumn());
         assertEquals(actual.getJoinOperator(), expected.getJoinOperator());
     }
