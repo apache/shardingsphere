@@ -21,7 +21,7 @@ import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SetCharsetExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.SetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.nio.charset.Charset;

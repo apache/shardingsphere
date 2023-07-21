@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayedSessionVariableProvider;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.ReplayedSessionVariableProvider;
 
 /**
  * Replayed session variables provider of MySQL.

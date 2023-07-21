@@ -30,8 +30,8 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableReplayExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SetCharsetExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.SetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
@@ -69,7 +69,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
                 setCharsetExecutor.get().handle(connectionSession, entry.getKey(), sessionVariables.get(entry.getKey()));
             }
         }
-        new SessionVariableReplayExecutor(databaseType).handle(connectionSession, sessionVariables);
+        new SessionVariableRecordExecutor(databaseType, connectionSession).record(sessionVariables);
         executeSetGlobalVariablesIfPresent(connectionSession);
     }
     

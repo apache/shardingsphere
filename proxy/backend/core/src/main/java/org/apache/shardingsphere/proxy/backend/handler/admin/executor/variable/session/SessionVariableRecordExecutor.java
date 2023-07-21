@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,22 +28,23 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Session variable replay executor.
+ * Session variable record executor.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class SessionVariableReplayExecutor {
+public final class SessionVariableRecordExecutor {
     
     private final DatabaseType databaseType;
     
+    private final ConnectionSession connectionSession;
+    
     /**
-     * Handle replayed variable.
+     * Record replayed variable.
      * 
-     * @param connectionSession connection session
      * @param variableName variable name
      * @param assignValue assign value
      */
-    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
+    public void record(final String variableName, final String assignValue) {
         if (DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType).map(optional -> optional.isNeedToReplay(variableName)).orElse(false)) {
             connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
         } else {
@@ -52,12 +53,11 @@ public final class SessionVariableReplayExecutor {
     }
     
     /**
-     * Handle replayed variable.
+     * Record replayed variable.
      *
-     * @param connectionSession connection session
      * @param variables variables
      */
-    public void handle(final ConnectionSession connectionSession, final Map<String, String> variables) {
+    public void record(final Map<String, String> variables) {
         Optional<ReplayedSessionVariableProvider> replayedSessionVariableProvider = DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType);
         if (!replayedSessionVariableProvider.isPresent()) {
             log.debug("Set statement {} was discarded.", variables);
