@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executo
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.SetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.ReplayedSessionVariableProvider;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
@@ -34,6 +34,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class PostgreSQLSetVariableAdminExecutorTest {
     
@@ -49,14 +50,14 @@ class PostgreSQLSetVariableAdminExecutorTest {
         setStatement.getVariableAssigns().add(variableAssignSegment);
         PostgreSQLSetVariableAdminExecutor executor = new PostgreSQLSetVariableAdminExecutor(setStatement);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
+        RequiredSessionVariableRecorder requiredSessionVariableRecorder = mock(RequiredSessionVariableRecorder.class);
+        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(requiredSessionVariableRecorder);
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            SetCharsetExecutor setCharsetExecutor = mock(SetCharsetExecutor.class);
-            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(SetCharsetExecutor.class, databaseType)).thenReturn(Optional.of(setCharsetExecutor));
             ReplayedSessionVariableProvider replayedSessionVariableProvider = mock(ReplayedSessionVariableProvider.class);
+            when(replayedSessionVariableProvider.isNeedToReplay("key")).thenReturn(true);
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType)).thenReturn(Optional.of(replayedSessionVariableProvider));
             executor.execute(connectionSession);
-            verify(setCharsetExecutor).handle(connectionSession, "key", "value");
-            verify(connectionSession).getRequiredSessionVariableRecorder().setVariable("key", "value");
+            verify(requiredSessionVariableRecorder).setVariable("key", "value");
         }
     }
 }

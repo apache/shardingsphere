@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -30,8 +29,8 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.SetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
@@ -45,8 +44,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -63,12 +60,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         Map<String, String> sessionVariables = extractSessionVariables();
         validateSessionVariables(sessionVariables.keySet());
-        Optional<SetCharsetExecutor> setCharsetExecutor = DatabaseTypedSPILoader.findService(SetCharsetExecutor.class, databaseType);
-        if (setCharsetExecutor.isPresent()) {
-            for (Entry<String, String> entry : sessionVariables.entrySet()) {
-                setCharsetExecutor.get().handle(connectionSession, entry.getKey(), sessionVariables.get(entry.getKey()));
-            }
-        }
+        new CharsetSetExecutor(databaseType, connectionSession).set(sessionVariables);
         new SessionVariableRecordExecutor(databaseType, connectionSession).record(sessionVariables);
         executeSetGlobalVariablesIfPresent(connectionSession);
     }

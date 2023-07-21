@@ -19,20 +19,28 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+
+import java.nio.charset.Charset;
 
 /**
- * Set charset executor.
+ * Charset variable provider.
  */
 @SingletonSPI
-public interface SetCharsetExecutor extends DatabaseTypedSPI {
+public interface CharsetVariableProvider extends DatabaseTypedSPI {
     
     /**
-     * Handle charset.
+     * Judge whether charset variable name.
      *
-     * @param connectionSession connection session
      * @param variableName variable name
-     * @param assignValue assign value
+     * @return is charset variable or not
      */
-    void handle(ConnectionSession connectionSession, String variableName, String assignValue);
+    boolean isCharsetVariable(String variableName);
+    
+    /**
+     * Parse charset from variable.
+     * 
+     * @param variableValue variable value
+     * @return charset
+     */
+    Charset parseCharset(String variableValue);
 }
