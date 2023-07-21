@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableHandler;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableReplayExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SetCharsetExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
@@ -50,11 +50,11 @@ class PostgreSQLSetVariableAdminExecutorTest {
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             SetCharsetExecutor setCharsetExecutor = mock(SetCharsetExecutor.class);
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(SetCharsetExecutor.class, databaseType)).thenReturn(Optional.of(setCharsetExecutor));
-            SessionVariableHandler sessionVariableHandler = mock(SessionVariableHandler.class);
-            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(SessionVariableHandler.class, databaseType)).thenReturn(Optional.of(sessionVariableHandler));
+            SessionVariableReplayExecutor sessionVariableReplayExecutor = mock(SessionVariableReplayExecutor.class);
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(SessionVariableReplayExecutor.class, databaseType)).thenReturn(Optional.of(sessionVariableReplayExecutor));
             executor.execute(null);
             verify(setCharsetExecutor).handle(null, "key", "value");
-            verify(sessionVariableHandler).handle(null, "key", "value");
+            verify(sessionVariableReplayExecutor).handle(null, "key", "value");
         }
     }
 }

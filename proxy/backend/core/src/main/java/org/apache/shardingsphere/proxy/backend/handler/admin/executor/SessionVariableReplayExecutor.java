@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
- * Session variable handler.
+ * Session variable replay executor.
  */
 @SingletonSPI
-public interface SessionVariableHandler extends DatabaseTypedSPI {
+public interface SessionVariableReplayExecutor extends DatabaseTypedSPI {
     
     /**
      * Handle session variable for specific connection session.

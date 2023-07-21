@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayedSessionVariablesProvider;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableHandler;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableReplayExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.junit.jupiter.api.Test;
@@ -36,27 +36,27 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-class PostgreSQLDefaultSessionVariableHandlerTest {
+class PostgreSQLSessionVariableReplayExecutorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     @Test
     void assertHandleDiscard() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        DatabaseTypedSPILoader.getService(SessionVariableHandler.class, databaseType).handle(connectionSession, "", "");
+        DatabaseTypedSPILoader.getService(SessionVariableReplayExecutor.class, databaseType).handle(connectionSession, "", "");
         verifyNoInteractions(connectionSession);
     }
     
     @Test
     void assertHandleRecord() {
-        SessionVariableHandler sessionVariableHandler = DatabaseTypedSPILoader.getService(SessionVariableHandler.class, databaseType);
+        SessionVariableReplayExecutor sessionVariableReplayExecutor = DatabaseTypedSPILoader.getService(SessionVariableReplayExecutor.class, databaseType);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(mock(RequiredSessionVariableRecorder.class));
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             ReplayedSessionVariablesProvider variablesProvider = mock(ReplayedSessionVariablesProvider.class);
             when(variablesProvider.getVariables()).thenReturn(Collections.singleton("datestyle"));
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(ReplayedSessionVariablesProvider.class, databaseType)).thenReturn(Optional.of(variablesProvider));
-            sessionVariableHandler.handle(connectionSession, "datestyle", "postgres");
+            sessionVariableReplayExecutor.handle(connectionSession, "datestyle", "postgres");
             verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("datestyle", "postgres");
         }
     }

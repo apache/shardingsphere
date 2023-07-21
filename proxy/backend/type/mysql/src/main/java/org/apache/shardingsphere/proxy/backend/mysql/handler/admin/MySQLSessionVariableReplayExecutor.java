@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayedSessionVariablesProvider;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableHandler;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableReplayExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
- * Default session variable handler for PostgreSQL.
+ * Session variable replay executor for MySQL.
  */
 @Slf4j
-public final class PostgreSQLDefaultSessionVariableHandler implements SessionVariableHandler {
+public final class MySQLSessionVariableReplayExecutor implements SessionVariableReplayExecutor {
     
     @Override
     public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
-        if (DatabaseTypedSPILoader.findService(ReplayedSessionVariablesProvider.class, getType()).map(optional -> optional.getVariables().contains(variableName)).orElse(false)) {
+        if (variableName.startsWith("@")
+                || DatabaseTypedSPILoader.findService(ReplayedSessionVariablesProvider.class, getType()).map(optional -> optional.getVariables().contains(variableName)).orElse(false)) {
             connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
         } else {
             log.debug("Set statement {} = {} was discarded.", variableName, assignValue);
@@ -40,6 +41,6 @@ public final class PostgreSQLDefaultSessionVariableHandler implements SessionVar
     
     @Override
     public String getDatabaseType() {
-        return "PostgreSQL";
+        return "MySQL";
     }
 }

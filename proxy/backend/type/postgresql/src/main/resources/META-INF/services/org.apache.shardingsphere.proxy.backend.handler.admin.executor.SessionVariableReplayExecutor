@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLDefaultSessionVariableHandler
+org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLSessionVariableReplayExecutor

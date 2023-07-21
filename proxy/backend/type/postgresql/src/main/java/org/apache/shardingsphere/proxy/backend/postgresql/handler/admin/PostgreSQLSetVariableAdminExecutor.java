@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableHandler;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableReplayExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
@@ -44,6 +44,6 @@ public final class PostgreSQLSetVariableAdminExecutor implements DatabaseAdminEx
         String variableName = variableAssignSegment.getVariable().getVariable().toLowerCase();
         String assignValue = variableAssignSegment.getAssignValue();
         DatabaseTypedSPILoader.findService(SetCharsetExecutor.class, databaseType).ifPresent(optional -> optional.handle(connectionSession, variableName, assignValue));
-        DatabaseTypedSPILoader.findService(SessionVariableHandler.class, databaseType).ifPresent(optional -> optional.handle(connectionSession, variableName, assignValue));
+        DatabaseTypedSPILoader.findService(SessionVariableReplayExecutor.class, databaseType).ifPresent(optional -> optional.handle(connectionSession, variableName, assignValue));
     }
 }

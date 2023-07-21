@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayedSessionVariablesProvider;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableHandler;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableReplayExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.junit.jupiter.api.Test;
@@ -36,16 +36,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-class MySQLDefaultSessionVariableHandlerTest {
+class MySQLSessionVariableReplayExecutorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
-    private final SessionVariableHandler sessionVariableHandler = DatabaseTypedSPILoader.getService(SessionVariableHandler.class, databaseType);
+    private final SessionVariableReplayExecutor sessionVariableReplayExecutor = DatabaseTypedSPILoader.getService(SessionVariableReplayExecutor.class, databaseType);
     
     @Test
     void assertHandleDiscard() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        sessionVariableHandler.handle(connectionSession, "", "");
+        sessionVariableReplayExecutor.handle(connectionSession, "", "");
         verifyNoInteractions(connectionSession);
     }
     
@@ -57,9 +57,9 @@ class MySQLDefaultSessionVariableHandlerTest {
             ReplayedSessionVariablesProvider variablesProvider = mock(ReplayedSessionVariablesProvider.class);
             when(variablesProvider.getVariables()).thenReturn(Collections.singleton("sql_mode"));
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(ReplayedSessionVariablesProvider.class, databaseType)).thenReturn(Optional.of(variablesProvider));
-            sessionVariableHandler.handle(connectionSession, "sql_mode", "''");
+            sessionVariableReplayExecutor.handle(connectionSession, "sql_mode", "''");
             verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("sql_mode", "''");
-            sessionVariableHandler.handle(connectionSession, "@variable_name", "'variable_value'");
+            sessionVariableReplayExecutor.handle(connectionSession, "@variable_name", "'variable_value'");
             verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("@variable_name", "'variable_value'");
         }
     }
