@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableHandler;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
@@ -42,6 +43,6 @@ public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdmin
     public void execute(final ConnectionSession connectionSession) {
         String variableName = resetParameterStatement.getConfigurationParameter();
         DatabaseTypedSPILoader.findService(SetCharsetExecutor.class, databaseType).ifPresent(optional -> optional.handle(connectionSession, variableName, DEFAULT));
-        TypedSPILoader.getService(PostgreSQLSessionVariableHandler.class, variableName).handle(connectionSession, variableName, DEFAULT);
+        DatabaseTypedSPILoader.findService(SessionVariableHandler.class, databaseType).ifPresent(optional -> optional.handle(connectionSession, variableName, DEFAULT));
     }
 }

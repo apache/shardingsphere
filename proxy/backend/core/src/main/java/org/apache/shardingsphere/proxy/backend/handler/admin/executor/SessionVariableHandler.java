@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Session variable handler.
  */
-public interface SessionVariableHandler extends TypedSPI {
+@SingletonSPI
+public interface SessionVariableHandler extends DatabaseTypedSPI {
     
     /**
      * Handle session variable for specific connection session.

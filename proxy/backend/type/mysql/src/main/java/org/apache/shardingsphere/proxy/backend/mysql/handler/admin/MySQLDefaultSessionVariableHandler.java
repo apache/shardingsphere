@@ -17,19 +17,30 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DefaultSessionVariableHandler;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayedSessionVariablesProvider;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableHandler;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
  * Default session variable handler for MySQL.
  */
-public final class MySQLDefaultSessionVariableHandler extends DefaultSessionVariableHandler implements MySQLSessionVariableHandler {
+@Slf4j
+public final class MySQLDefaultSessionVariableHandler implements SessionVariableHandler {
     
-    public MySQLDefaultSessionVariableHandler() {
-        super("MySQL");
+    @Override
+    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
+        if (variableName.startsWith("@")
+                || DatabaseTypedSPILoader.findService(ReplayedSessionVariablesProvider.class, getType()).map(optional -> optional.getVariables().contains(variableName)).orElse(false)) {
+            connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
+        } else {
+            log.debug("Set statement {} = {} was discarded.", variableName, assignValue);
+        }
     }
     
     @Override
-    protected boolean isNeedHandle(final String variableName) {
-        return variableName.startsWith("@");
+    public String getDatabaseType() {
+        return "MySQL";
     }
 }

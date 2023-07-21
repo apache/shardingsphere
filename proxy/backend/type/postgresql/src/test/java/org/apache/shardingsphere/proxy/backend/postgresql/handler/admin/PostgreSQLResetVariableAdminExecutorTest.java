@@ -17,10 +17,16 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableHandler;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SetCharsetExecutor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+
+import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -28,14 +34,19 @@ import static org.mockito.Mockito.verify;
 
 class PostgreSQLResetVariableAdminExecutorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     @Test
     void assertExecute() {
         PostgreSQLResetVariableAdminExecutor executor = new PostgreSQLResetVariableAdminExecutor(new PostgreSQLResetParameterStatement("key"));
-        try (MockedStatic<TypedSPILoader> mockStatic = mockStatic(TypedSPILoader.class)) {
-            PostgreSQLSessionVariableHandler mockHandler = mock(PostgreSQLSessionVariableHandler.class);
-            mockStatic.when(() -> TypedSPILoader.getService(PostgreSQLSessionVariableHandler.class, "key")).thenReturn(mockHandler);
+        try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            SetCharsetExecutor setCharsetExecutor = mock(SetCharsetExecutor.class);
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(SetCharsetExecutor.class, databaseType)).thenReturn(Optional.of(setCharsetExecutor));
+            SessionVariableHandler sessionVariableHandler = mock(SessionVariableHandler.class);
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(SessionVariableHandler.class, databaseType)).thenReturn(Optional.of(sessionVariableHandler));
             executor.execute(null);
-            verify(mockHandler).handle(null, "key", "DEFAULT");
+            verify(setCharsetExecutor).handle(null, "key", "DEFAULT");
+            verify(sessionVariableHandler).handle(null, "key", "DEFAULT");
         }
     }
 }
