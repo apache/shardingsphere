@@ -43,6 +43,6 @@ public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdmin
     public void execute(final ConnectionSession connectionSession) {
         String variableName = resetParameterStatement.getConfigurationParameter();
         DatabaseTypedSPILoader.findService(SetCharsetExecutor.class, databaseType).ifPresent(optional -> optional.handle(connectionSession, variableName, DEFAULT));
-        DatabaseTypedSPILoader.findService(SessionVariableReplayExecutor.class, databaseType).ifPresent(optional -> optional.handle(connectionSession, variableName, DEFAULT));
+        new SessionVariableReplayExecutor(databaseType).handle(connectionSession, variableName, DEFAULT);
     }
 }

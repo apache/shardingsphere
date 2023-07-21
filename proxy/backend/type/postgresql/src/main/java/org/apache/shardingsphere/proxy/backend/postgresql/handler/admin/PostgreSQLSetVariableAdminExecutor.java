@@ -44,6 +44,6 @@ public final class PostgreSQLSetVariableAdminExecutor implements DatabaseAdminEx
         String variableName = variableAssignSegment.getVariable().getVariable().toLowerCase();
         String assignValue = variableAssignSegment.getAssignValue();
         DatabaseTypedSPILoader.findService(SetCharsetExecutor.class, databaseType).ifPresent(optional -> optional.handle(connectionSession, variableName, assignValue));
-        DatabaseTypedSPILoader.findService(SessionVariableReplayExecutor.class, databaseType).ifPresent(optional -> optional.handle(connectionSession, variableName, assignValue));
+        new SessionVariableReplayExecutor(databaseType).handle(connectionSession, variableName, assignValue);
     }
 }

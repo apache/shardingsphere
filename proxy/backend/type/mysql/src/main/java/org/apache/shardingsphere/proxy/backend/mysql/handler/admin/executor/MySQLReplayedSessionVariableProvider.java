@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-
-import java.util.Collection;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayedSessionVariableProvider;
 
 /**
- * Provide session variables need to be replayed on session connected.
+ * Replayed session variables provider of MySQL.
  */
-@SingletonSPI
-public interface ReplayedSessionVariablesProvider extends DatabaseTypedSPI {
+public final class MySQLReplayedSessionVariableProvider implements ReplayedSessionVariableProvider {
     
-    /**
-     * Get need to be replayed session variables.
-     *
-     * @return variables
-     */
-    Collection<String> getVariables();
+    @Override
+    public boolean isNeedToReplay(final String variableName) {
+        return variableName.startsWith("@");
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
+    }
 }

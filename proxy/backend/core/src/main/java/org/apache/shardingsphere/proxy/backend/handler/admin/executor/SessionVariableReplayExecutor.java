@@ -17,22 +17,58 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Session variable replay executor.
  */
-@SingletonSPI
-public interface SessionVariableReplayExecutor extends DatabaseTypedSPI {
+@RequiredArgsConstructor
+@Slf4j
+public final class SessionVariableReplayExecutor {
+    
+    private final DatabaseType databaseType;
     
     /**
-     * Handle session variable for specific connection session.
-     *
+     * Handle replayed variable.
+     * 
      * @param connectionSession connection session
      * @param variableName variable name
      * @param assignValue assign value
      */
-    void handle(ConnectionSession connectionSession, String variableName, String assignValue);
+    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
+        if (DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType).map(optional -> optional.isNeedToReplay(variableName)).orElse(false)) {
+            connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
+        } else {
+            log.debug("Set statement {} = {} was discarded.", variableName, assignValue);
+        }
+    }
+    
+    /**
+     * Handle replayed variable.
+     *
+     * @param connectionSession connection session
+     * @param variables variables
+     */
+    public void handle(final ConnectionSession connectionSession, final Map<String, String> variables) {
+        Optional<ReplayedSessionVariableProvider> replayedSessionVariableProvider = DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType);
+        if (!replayedSessionVariableProvider.isPresent()) {
+            log.debug("Set statement {} was discarded.", variables);
+            return;
+        }
+        for (Entry<String, String> entry : variables.entrySet()) {
+            if (replayedSessionVariableProvider.get().isNeedToReplay(entry.getKey())) {
+                connectionSession.getRequiredSessionVariableRecorder().setVariable(entry.getKey(), entry.getValue());
+            } else {
+                log.debug("Set statement {} = {} was discarded.", entry.getKey(), entry.getValue());
+            }
+        }
+    }
 }

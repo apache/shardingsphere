@@ -69,12 +69,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
                 setCharsetExecutor.get().handle(connectionSession, entry.getKey(), sessionVariables.get(entry.getKey()));
             }
         }
-        Optional<SessionVariableReplayExecutor> sessionVariableHandler = DatabaseTypedSPILoader.findService(SessionVariableReplayExecutor.class, databaseType);
-        if (sessionVariableHandler.isPresent()) {
-            for (Entry<String, String> entry : sessionVariables.entrySet()) {
-                sessionVariableHandler.get().handle(connectionSession, entry.getKey(), sessionVariables.get(entry.getKey()));
-            }
-        }
+        new SessionVariableReplayExecutor(databaseType).handle(connectionSession, sessionVariables);
         executeSetGlobalVariablesIfPresent(connectionSession);
     }
     
