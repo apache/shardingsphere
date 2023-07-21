@@ -55,6 +55,7 @@ env:
   REPOSITORY_NAME: shardingsphere
 
 jobs:
+  # TODO need add the test-coverage job back
   ci:
     name: CI - Compile by JDK 11 and Run on JDK 8
     runs-on: ubuntu-latest
@@ -81,26 +82,3 @@ jobs:
           java-version: 8
       - name: Run Tests with JDK 8
         run: ./mvnw -T1C -B -ntp -fae test
-
-  test-coverage:
-    if: github.repository == 'apache/shardingsphere'
-    name: Upload Test Coverage Report
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cache Maven Repos
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 11
-      - name: Build with Maven
-        run: ./mvnw -T1C -B -ntp clean install -DskipTests
-      - name: Upload to Codecov
-        run: bash <(curl -s https://codecov.io/bash)
