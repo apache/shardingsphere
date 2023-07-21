@@ -25,5 +25,9 @@
     <create-tablespace sql-case-id="create_undo_tablespace_for_myisam" />
     <create-tablespace sql-case-id="create_permanent_tablespace_online" />
     <create-tablespace sql-case-id="create_permanent_tablespace_offline" />
-
+    <create-tablespace sql-case-id="create_permanent_tablespace_bigfile" />
+    <create-tablespace sql-case-id="create_permanent_tablespace_smallfile" />
+    <create-tablespace sql-case-id="create_tablespace_with_multi_filespecification" />
+    <create-tablespace sql-case-id="create_tablespace_with_filespecification_next" />
+    <create-tablespace sql-case-id="create_tablespace_with_filespecification" />
 </sql-parser-test-cases>

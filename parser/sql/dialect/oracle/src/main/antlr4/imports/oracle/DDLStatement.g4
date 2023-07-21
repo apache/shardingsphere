@@ -3530,7 +3530,7 @@ dropMaterializedZonemap
     ;
 
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? permanentTablespaceClause
+    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
     ;
 
 permanentTablespaceClause
