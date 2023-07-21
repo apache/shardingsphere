@@ -96,7 +96,7 @@ jobs:
   e2e-sql:
     name: ${{ matrix.adapter }} - ${{ matrix.scenario }} - ${{ matrix.mode }} on ${{ matrix.database }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     needs: build-e2e-image
     strategy:
       max-parallel: 20
