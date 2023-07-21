@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
 import org.junit.jupiter.api.Test;
@@ -32,16 +31,16 @@ class SystemSchemaBuilderRuleTest {
     
     @Test
     void assertValueOfSchemaPathSuccess() {
-        SystemSchemaBuilderRule actualInformationSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "information_schema");
+        SystemSchemaBuilderRule actualInformationSchema = SystemSchemaBuilderRule.valueOf("MySQL", "information_schema");
         assertThat(actualInformationSchema, is(SystemSchemaBuilderRule.MYSQL_INFORMATION_SCHEMA));
         assertThat(actualInformationSchema.getTables().size(), is(61));
-        SystemSchemaBuilderRule actualMySQLSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "mysql");
+        SystemSchemaBuilderRule actualMySQLSchema = SystemSchemaBuilderRule.valueOf("MySQL", "mysql");
         assertThat(actualMySQLSchema, is(SystemSchemaBuilderRule.MYSQL_MYSQL));
         assertThat(actualMySQLSchema.getTables().size(), is(31));
-        SystemSchemaBuilderRule actualPerformanceSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "performance_schema");
+        SystemSchemaBuilderRule actualPerformanceSchema = SystemSchemaBuilderRule.valueOf("MySQL", "performance_schema");
         assertThat(actualPerformanceSchema, is(SystemSchemaBuilderRule.MYSQL_PERFORMANCE_SCHEMA));
         assertThat(actualPerformanceSchema.getTables().size(), is(87));
-        SystemSchemaBuilderRule actualSysSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "sys");
+        SystemSchemaBuilderRule actualSysSchema = SystemSchemaBuilderRule.valueOf("MySQL", "sys");
         assertThat(actualSysSchema, is(SystemSchemaBuilderRule.MYSQL_SYS));
         assertThat(actualSysSchema.getTables().size(), is(53));
         SystemSchemaBuilderRule actualPgInformationSchema = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "information_schema");
@@ -60,7 +59,7 @@ class SystemSchemaBuilderRuleTest {
     
     @Test
     void assertValueOfSchemaPathFailure() {
-        assertThrows(NullPointerException.class, () -> SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "test"));
+        assertThrows(NullPointerException.class, () -> SystemSchemaBuilderRule.valueOf("MySQL", "test"));
     }
     
     @Test

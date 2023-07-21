@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
 
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,7 +89,7 @@ class SchemaMetaDataLoaderTest {
     @Test
     void assertLoadSchemaTableNamesForMySQL() throws SQLException {
         Map<String, Collection<String>> schemaTableNames = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, Collections.singletonList("tbl"));
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), dataSource), is(schemaTableNames));
+        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), dataSource), is(schemaTableNames));
     }
     
     private Map<String, Collection<String>> createSchemaTableNames() {
@@ -111,6 +112,6 @@ class SchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaNamesForMySQL() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), new MySQLDatabaseType()), is(Collections.singletonList("public")));
+        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), TypedSPILoader.getService(DatabaseType.class, "MySQL")), is(Collections.singletonList("public")));
     }
 }

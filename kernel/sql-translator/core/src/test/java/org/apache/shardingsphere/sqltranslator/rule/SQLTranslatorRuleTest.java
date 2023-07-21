@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sqltranslator.rule;
 
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.exception.syntax.UnsupportedTranslatedDatabaseException;
 import org.junit.jupiter.api.Test;
@@ -49,21 +50,24 @@ class SQLTranslatorRuleTest {
     @Test
     void assertTranslateWithProtocolDifferentWithStorage() {
         String input = "select 1";
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(input, null, new PostgreSQLDatabaseType(), new MySQLDatabaseType());
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(
+                input, null, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         assertThat(actual, is(input.toUpperCase(Locale.ROOT)));
     }
     
     @Test
     void assertUseOriginalSQLWhenTranslatingFailed() {
         String expected = "select 1";
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", true)).translate(expected, null, new PostgreSQLDatabaseType(), new MySQLDatabaseType());
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", true)).translate(expected, null,
+                TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         assertThat(actual, is(expected));
     }
     
     @Test
     void assertNotUseOriginalSQLWhenTranslatingFailed() {
         assertThrows(UnsupportedTranslatedDatabaseException.class,
-                () -> new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", false)).translate("", null, new PostgreSQLDatabaseType(), new MySQLDatabaseType()));
+                () -> new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", false)).translate("", null,
+                        TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), TypedSPILoader.getService(DatabaseType.class, "MySQL")));
     }
     
     @Test
