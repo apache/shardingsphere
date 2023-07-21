@@ -75,4 +75,3 @@ jobs:
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Run Tests
         run: ./mvnw -T1C -B -ntp -fae clean test
-
