@@ -117,9 +117,9 @@ public abstract class SQLRewriterIT {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         mockDataSource(databaseConfig.getDataSources());
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
         Map<String, DatabaseType> storageTypes = createStorageTypes(databaseConfig, databaseType);
+        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         when(resourceMetaData.getStorageTypes()).thenReturn(storageTypes);
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, DefaultDatabase.LOGIC_NAME);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
