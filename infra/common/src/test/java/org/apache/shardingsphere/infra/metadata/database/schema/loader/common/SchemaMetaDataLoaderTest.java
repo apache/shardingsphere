@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
 
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,12 +76,12 @@ class SchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaTableNamesForPostgreSQL() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, new PostgreSQLDatabaseType(), dataSource), is(createSchemaTableNames()));
+        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), dataSource), is(createSchemaTableNames()));
     }
     
     @Test
     void assertLoadSchemaTableNamesForOpenGauss() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, new OpenGaussDatabaseType(), dataSource), is(createSchemaTableNames()));
+        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "openGauss"), dataSource), is(createSchemaTableNames()));
     }
     
     @Test
@@ -102,12 +100,12 @@ class SchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaNamesForPostgreSQL() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), new PostgreSQLDatabaseType()), is(Arrays.asList("public", "schema_1", "schema_2")));
+        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), is(Arrays.asList("public", "schema_1", "schema_2")));
     }
     
     @Test
     void assertLoadSchemaNamesForOpenGauss() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), new OpenGaussDatabaseType()), is(Arrays.asList("public", "schema_1", "schema_2")));
+        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), TypedSPILoader.getService(DatabaseType.class, "openGauss")), is(Arrays.asList("public", "schema_1", "schema_2")));
     }
     
     @Test

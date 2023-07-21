@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqltranslator.rule;
 
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
@@ -35,7 +34,7 @@ class SQLTranslatorRuleTest {
     @Test
     void assertTranslateWhenProtocolSameAsStorage() {
         String expected = "select 1";
-        PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, null, databaseType, databaseType);
         assertThat(actual, is(expected));
     }
@@ -43,7 +42,8 @@ class SQLTranslatorRuleTest {
     @Test
     void assertTranslateWhenNoStorage() {
         String expected = "select 1";
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, null, new PostgreSQLDatabaseType(), null);
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(
+                expected, null, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), null);
         assertThat(actual, is(expected));
     }
     

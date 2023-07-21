@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.h2;
 
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -31,27 +33,27 @@ class H2DatabaseTypeTest {
     
     @Test
     void assertGetQuoteCharacter() {
-        assertThat(new H2DatabaseType().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "H2").getQuoteCharacter(), is(QuoteCharacter.QUOTE));
     }
     
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(new H2DatabaseType().getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:h2:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "H2").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:h2:")));
     }
     
     @Test
     void assertGetDataSourceMetaData() {
-        assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:~:foo_ds", "sa"), instanceOf(H2DataSourceMetaData.class));
-        assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:mem:foo_ds", "sa"), instanceOf(H2DataSourceMetaData.class));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "H2").getDataSourceMetaData("jdbc:h2:~:foo_ds", "sa"), instanceOf(H2DataSourceMetaData.class));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "H2").getDataSourceMetaData("jdbc:h2:mem:foo_ds", "sa"), instanceOf(H2DataSourceMetaData.class));
     }
     
     @Test
     void assertGetSystemDatabaseSchemaMap() {
-        assertTrue(new H2DatabaseType().getSystemDatabaseSchemaMap().isEmpty());
+        assertTrue(TypedSPILoader.getService(DatabaseType.class, "H2").getSystemDatabaseSchemaMap().isEmpty());
     }
     
     @Test
     void assertGetSystemSchemas() {
-        assertTrue(new H2DatabaseType().getSystemSchemas().isEmpty());
+        assertTrue(TypedSPILoader.getService(DatabaseType.class, "H2").getSystemSchemas().isEmpty());
     }
 }

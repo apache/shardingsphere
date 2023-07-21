@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.h2.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -103,7 +102,7 @@ class ClusterModeContextManagerTest {
     @Test
     void assertAlterSchema() {
         ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData();
-        shardingSphereMetaData.addDatabase("db", new H2DatabaseType(), new ConfigurationProperties(new Properties()));
+        shardingSphereMetaData.addDatabase("db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), new ConfigurationProperties(new Properties()));
         MetaDataContexts metaDataContexts = new MetaDataContexts(new MetaDataPersistService(new ClusterPersistRepositoryFixture()), shardingSphereMetaData);
         ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
         WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.cdc.util;
 
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
-import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -46,7 +45,7 @@ class CDCSchemaTableUtilsTest {
         Map<String, ShardingSphereSchema> schemas = new HashMap<>();
         schemas.put("public", mockedPublicSchema());
         schemas.put("test", mockedTestSchema());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", new OpenGaussDatabaseType(), null, null, schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", TypedSPILoader.getService(DatabaseType.class, "openGauss"), null, null, schemas);
         List<SchemaTable> schemaTables = Arrays.asList(SchemaTable.newBuilder().setSchema("public").setTable("t_order").build(),
                 SchemaTable.newBuilder().setSchema("test").setTable("*").build());
         Map<String, Set<String>> expected = new HashMap<>();
