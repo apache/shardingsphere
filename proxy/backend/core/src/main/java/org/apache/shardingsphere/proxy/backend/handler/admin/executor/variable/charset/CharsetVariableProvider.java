@@ -15,21 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
+package org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset;
 
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DefaultSessionVariableHandler;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+
+import java.nio.charset.Charset;
 
 /**
- * Default session variable handler for MySQL.
+ * Charset variable provider.
  */
-public final class MySQLDefaultSessionVariableHandler extends DefaultSessionVariableHandler implements MySQLSessionVariableHandler {
+@SingletonSPI
+public interface CharsetVariableProvider extends DatabaseTypedSPI {
     
-    public MySQLDefaultSessionVariableHandler() {
-        super("MySQL");
-    }
+    /**
+     * Judge whether charset variable name.
+     *
+     * @param variableName variable name
+     * @return is charset variable or not
+     */
+    boolean isCharsetVariable(String variableName);
     
-    @Override
-    protected boolean isNeedHandle(final String variableName) {
-        return variableName.startsWith("@");
-    }
+    /**
+     * Parse charset from variable.
+     * 
+     * @param variableValue variable value
+     * @return charset
+     */
+    Charset parseCharset(String variableValue);
 }

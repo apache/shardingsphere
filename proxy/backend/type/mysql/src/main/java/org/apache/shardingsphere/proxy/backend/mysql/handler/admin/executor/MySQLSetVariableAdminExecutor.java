@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownSystemVariableException;
@@ -29,6 +29,8 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
@@ -42,8 +44,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -52,17 +52,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecutor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     private final SetStatement setStatement;
     
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         Map<String, String> sessionVariables = extractSessionVariables();
         validateSessionVariables(sessionVariables.keySet());
-        Map<String, MySQLSessionVariableHandler> handlers = sessionVariables.keySet().stream()
-                .collect(Collectors.toMap(Function.identity(), value -> TypedSPILoader.getService(MySQLSessionVariableHandler.class, value)));
-        for (Entry<String, MySQLSessionVariableHandler> entry : handlers.entrySet()) {
-            entry.getValue().handle(connectionSession, entry.getKey(), sessionVariables.get(entry.getKey()));
-        }
+        new CharsetSetExecutor(databaseType, connectionSession).set(sessionVariables);
+        new SessionVariableRecordExecutor(databaseType, connectionSession).record(sessionVariables);
         executeSetGlobalVariablesIfPresent(connectionSession);
     }
     

@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
+package org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session;
 
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DefaultSessionVariableHandler;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 /**
- * Default session variable handler for PostgreSQL.
+ * Provide session variable need to be replayed on session connected.
  */
-public final class PostgreSQLDefaultSessionVariableHandler extends DefaultSessionVariableHandler implements PostgreSQLSessionVariableHandler {
+@SingletonSPI
+public interface ReplayedSessionVariableProvider extends DatabaseTypedSPI {
     
-    public PostgreSQLDefaultSessionVariableHandler() {
-        super("PostgreSQL");
-    }
+    /**
+     * Judge variable whether to need replay.
+     *
+     * @param variableName variable name to be judged 
+     * @return variable need to replay or not
+     */
+    boolean isNeedToReplay(String variableName);
 }

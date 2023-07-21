@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
+package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
@@ -30,6 +33,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatemen
 @RequiredArgsConstructor
 public final class PostgreSQLSetVariableAdminExecutor implements DatabaseAdminExecutor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     private final SetStatement setStatement;
     
     @Override
@@ -37,7 +42,7 @@ public final class PostgreSQLSetVariableAdminExecutor implements DatabaseAdminEx
         VariableAssignSegment variableAssignSegment = setStatement.getVariableAssigns().iterator().next();
         String variableName = variableAssignSegment.getVariable().getVariable().toLowerCase();
         String assignValue = variableAssignSegment.getAssignValue();
-        PostgreSQLSessionVariableHandler variableHandler = TypedSPILoader.getService(PostgreSQLSessionVariableHandler.class, variableName);
-        variableHandler.handle(connectionSession, variableName, assignValue);
+        new CharsetSetExecutor(databaseType, connectionSession).set(variableName, assignValue);
+        new SessionVariableRecordExecutor(databaseType, connectionSession).record(variableName, assignValue);
     }
 }

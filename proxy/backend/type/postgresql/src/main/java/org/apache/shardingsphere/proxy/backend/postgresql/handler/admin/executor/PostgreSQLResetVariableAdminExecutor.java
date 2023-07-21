@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
+package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 
@@ -31,12 +34,14 @@ public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdmin
     
     private static final String DEFAULT = "DEFAULT";
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     private final ResetParameterStatement resetParameterStatement;
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
         String variableName = resetParameterStatement.getConfigurationParameter();
-        PostgreSQLSessionVariableHandler variableHandler = TypedSPILoader.getService(PostgreSQLSessionVariableHandler.class, variableName);
-        variableHandler.handle(connectionSession, variableName, DEFAULT);
+        new CharsetSetExecutor(databaseType, connectionSession).set(variableName, DEFAULT);
+        new SessionVariableRecordExecutor(databaseType, connectionSession).record(variableName, DEFAULT);
     }
 }

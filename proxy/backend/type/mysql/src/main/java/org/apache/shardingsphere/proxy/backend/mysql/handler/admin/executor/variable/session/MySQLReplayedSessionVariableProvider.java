@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.session;
 
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableHandler;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.ReplayedSessionVariableProvider;
 
 /**
- * Session variable handler for PostgreSQL.
+ * Replayed session variables provider of MySQL.
  */
-@SingletonSPI
-public interface PostgreSQLSessionVariableHandler extends SessionVariableHandler {
+public final class MySQLReplayedSessionVariableProvider implements ReplayedSessionVariableProvider {
+    
+    @Override
+    public boolean isNeedToReplay(final String variableName) {
+        return variableName.startsWith("@");
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
+    }
 }

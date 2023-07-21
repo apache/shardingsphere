@@ -15,58 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.charset;
 
-import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCharsetException;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.MySQLSessionVariableHandler;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetVariableProvider;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Locale;
 
 /**
  * Set charset executor of MySQL.
  */
-public final class MySQLSetCharsetExecutor implements MySQLSessionVariableHandler {
+public final class MySQLSetCharsetExecutor implements CharsetVariableProvider {
     
     @Override
-    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
-        String value = formatValue(assignValue);
-        connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(value));
+    public boolean isCharsetVariable(final String variableName) {
+        return "charset".equalsIgnoreCase(variableName) || "character_set_client".equalsIgnoreCase(variableName);
     }
     
-    private String formatValue(final String value) {
-        return QuoteCharacter.SINGLE_QUOTE.isWrapped(value) || QuoteCharacter.QUOTE.isWrapped(value) ? value.substring(1, value.length() - 1) : value.trim();
-    }
-    
-    private Charset parseCharset(final String value) {
-        switch (value.toLowerCase(Locale.ROOT)) {
+    @Override
+    public Charset parseCharset(final String variableValue) {
+        String formattedValue = formatValue(variableValue);
+        switch (formattedValue.toLowerCase(Locale.ROOT)) {
             case "default":
                 return MySQLConstants.DEFAULT_CHARSET.getCharset();
             case "utf8mb4":
                 return StandardCharsets.UTF_8;
             default:
                 try {
-                    return Charset.forName(value);
+                    return Charset.forName(formattedValue);
                 } catch (final IllegalArgumentException ex) {
-                    throw new UnknownCharsetException(value.toLowerCase());
+                    throw new UnknownCharsetException(formattedValue.toLowerCase(Locale.ROOT));
                 }
         }
     }
     
-    @Override
-    public String getType() {
-        return "charset";
+    private String formatValue(final String variableValue) {
+        return QuoteCharacter.SINGLE_QUOTE.isWrapped(variableValue) || QuoteCharacter.QUOTE.isWrapped(variableValue) ? variableValue.substring(1, variableValue.length() - 1) : variableValue.trim();
     }
     
     @Override
-    public Collection<Object> getTypeAliases() {
-        return Collections.singleton("character_set_client");
+    public String getDatabaseType() {
+        return "MySQL";
     }
 }

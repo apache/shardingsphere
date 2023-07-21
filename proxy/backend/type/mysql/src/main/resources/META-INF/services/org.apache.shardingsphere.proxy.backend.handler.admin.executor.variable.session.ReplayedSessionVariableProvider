@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLDefaultSessionVariableHandler
-org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.PostgreSQLSetCharsetExecutor
+org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.session.MySQLReplayedSessionVariableProvider
