@@ -51,7 +51,7 @@ public final class AggregationDistinctTokenGenerator implements CollectionSQLTok
     
     private AggregationDistinctToken generateSQLToken(final AggregationDistinctProjection projection) {
         Preconditions.checkArgument(projection.getAlias().isPresent());
-        String derivedAlias = DerivedColumn.isDerivedColumnName(projection.getAlias().get()) ? projection.getAlias().get() : null;
+        String derivedAlias = DerivedColumn.isDerivedColumnName(projection.getAlias().get().getValue()) ? projection.getAlias().get().getValue() : null;
         return new AggregationDistinctToken(projection.getStartIndex(), projection.getStopIndex(), projection.getDistinctInnerExpression(), derivedAlias);
     }
 }

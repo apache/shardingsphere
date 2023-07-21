@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -92,7 +93,8 @@ public final class ProjectionsContextEngine {
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderItems) {
             if (!containsProjection(each.getSegment(), projections)) {
-                result.add(new DerivedProjection(((TextOrderByItemSegment) each.getSegment()).getText(), derivedColumn.getDerivedColumnAlias(derivedColumnOffset++), each.getSegment()));
+                result.add(new DerivedProjection(((TextOrderByItemSegment) each.getSegment()).getText(), new IdentifierValue(derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)),
+                        each.getSegment()));
             }
         }
         return result;
@@ -140,14 +142,14 @@ public final class ProjectionsContextEngine {
     }
     
     private boolean isSameName(final ColumnProjection projection, final String text) {
-        return SQLUtils.getExactlyValue(text).equalsIgnoreCase(projection.getName());
+        return SQLUtils.getExactlyValue(text).equalsIgnoreCase(projection.getName().getValue());
     }
     
     private boolean isSameAlias(final Projection projection, final String text) {
-        return projection.getAlias().isPresent() && SQLUtils.getExactlyValue(text).equalsIgnoreCase(SQLUtils.getExactlyValue(projection.getAlias().get()));
+        return projection.getAlias().isPresent() && SQLUtils.getExactlyValue(text).equalsIgnoreCase(SQLUtils.getExactlyValue(projection.getAlias().get().getValue()));
     }
     
     private boolean isSameQualifiedName(final Projection projection, final String text) {
-        return SQLUtils.getExactlyValue(text).equalsIgnoreCase(SQLUtils.getExactlyValue(projection.getExpression()));
+        return SQLUtils.getExactlyValue(text).equalsIgnoreCase(SQLUtils.getExactlyValue(projection.getColumnName()));
     }
 }

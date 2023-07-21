@@ -54,7 +54,7 @@ public final class NewConfigurationChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.registerStorageUnit(event.getDatabaseName(),
+        contextManager.getConfigurationContextManager().registerStorageUnit(event.getDatabaseName(),
                 contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
@@ -68,7 +68,7 @@ public final class NewConfigurationChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(),
+        contextManager.getConfigurationContextManager().alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(),
                 contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
@@ -82,7 +82,7 @@ public final class NewConfigurationChangedSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
-        contextManager.unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
+        contextManager.getConfigurationContextManager().unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
     }
     
     /**
@@ -95,7 +95,7 @@ public final class NewConfigurationChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.registerStorageNode(event.getDatabaseName(),
+        contextManager.getConfigurationContextManager().registerStorageNode(event.getDatabaseName(),
                 contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageNodeName()));
     }
     
@@ -109,7 +109,7 @@ public final class NewConfigurationChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.alterStorageNode(event.getDatabaseName(), event.getStorageNodeName(),
+        contextManager.getConfigurationContextManager().alterStorageNode(event.getDatabaseName(), event.getStorageNodeName(),
                 contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageNodeName()));
     }
     
@@ -123,7 +123,7 @@ public final class NewConfigurationChangedSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
-        contextManager.unregisterStorageNode(event.getDatabaseName(), event.getStorageNodeName());
+        contextManager.getConfigurationContextManager().unregisterStorageNode(event.getDatabaseName(), event.getStorageNodeName());
     }
     
     /**
@@ -136,7 +136,7 @@ public final class NewConfigurationChangedSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
-        contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
+        contextManager.getConfigurationContextManager().alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
     }
     
     /**
@@ -149,7 +149,7 @@ public final class NewConfigurationChangedSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
-        contextManager.dropRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
+        contextManager.getConfigurationContextManager().dropRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
     }
     
     /**
@@ -162,7 +162,7 @@ public final class NewConfigurationChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.alterGlobalRuleConfiguration(contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().load(event.getRuleSimpleName()));
+        contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().load(event.getRuleSimpleName()));
     }
     
     /**
@@ -175,6 +175,6 @@ public final class NewConfigurationChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.alterProperties(contextManager.getMetaDataContexts().getPersistService().getPropsService().load());
+        contextManager.getConfigurationContextManager().alterProperties(contextManager.getMetaDataContexts().getPersistService().getPropsService().load());
     }
 }

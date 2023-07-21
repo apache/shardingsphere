@@ -118,5 +118,5 @@ chapter = true
 - Workflow 文件内的 `name` 属性命名与文件名一致，单词以 `-` 作为分隔符，分隔符两侧要加空格，每个单词首字母大写。例如：`Nightly - Check`。
 - Step 下的 `name` 属性应该描述 step 的功能，每个单词首字母大写，介词小写。例如：`Build Project with Maven`。
 - Workflow 中的 `job` 属性命名，须在 Workflow 中保持唯一。
-- 使用 `matrix` 的时候，必须添加作业并行度限制为 5。例如：`max-parallel: 5`。
+- 使用 `matrix` 的时候，必须添加作业并行度限制为 20。例如：`max-parallel: 20`。
 - 必须为作业设置超时时间，最大不超过 1 小时。例如：`timeout-minutes: 10`。

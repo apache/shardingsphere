@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
@@ -69,21 +69,21 @@ public final class EncryptMergedResult implements MergedResult {
         if (!tableName.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
-        if (!encryptRule.findEncryptTable(tableName.get()).map(optional -> optional.isEncryptColumn(originalColumn.getName())).orElse(false)) {
+        if (!encryptRule.findEncryptTable(tableName.get()).map(optional -> optional.isEncryptColumn(originalColumn.getName().getValue())).orElse(false)) {
             return mergedResult.getValue(columnIndex, type);
         }
         Object cipherValue = mergedResult.getValue(columnIndex, Object.class);
-        EncryptColumn encryptColumn = encryptRule.getEncryptTable(tableName.get()).getEncryptColumn(originalColumn.getName());
-        return encryptColumn.getCipher().decrypt(database.getName(), schemaName, tableName.get(), originalColumn.getName(), cipherValue);
+        EncryptColumn encryptColumn = encryptRule.getEncryptTable(tableName.get()).getEncryptColumn(originalColumn.getName().getValue());
+        return encryptColumn.getCipher().decrypt(database.getName(), schemaName, tableName.get(), originalColumn.getName().getValue(), cipherValue);
     }
     
     private Optional<String> findTableName(final ColumnProjection columnProjection, final Map<String, String> columnTableNames) {
-        String tableName = columnTableNames.get(columnProjection.getExpression());
+        String tableName = columnTableNames.get(columnProjection.getColumnName());
         if (null != tableName) {
             return Optional.of(tableName);
         }
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            if (encryptRule.findEncryptTable(each).map(optional -> optional.isEncryptColumn(columnProjection.getName())).orElse(false)) {
+            if (encryptRule.findEncryptTable(each).map(optional -> optional.isEncryptColumn(columnProjection.getName().getValue())).orElse(false)) {
                 return Optional.of(each);
             }
         }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;

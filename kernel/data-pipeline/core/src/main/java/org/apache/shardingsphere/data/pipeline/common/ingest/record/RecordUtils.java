@@ -26,29 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Record utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RecordUtils {
-    
-    /**
-     * Extract primary columns from data record.
-     *
-     * @param dataRecord data record
-     * @return primary columns
-     */
-    public static List<Column> extractPrimaryColumns(final DataRecord dataRecord) {
-        List<Column> result = new ArrayList<>(dataRecord.getColumns().size());
-        for (Column each : dataRecord.getColumns()) {
-            if (each.isUniqueKey()) {
-                result.add(each);
-            }
-        }
-        return result;
-    }
     
     /**
      * Extract condition columns(include primary and sharding columns) from data record.
@@ -69,15 +52,5 @@ public final class RecordUtils {
             return result;
         }
         return dataRecord.getColumns();
-    }
-    
-    /**
-     * Extract updated columns from data record.
-     *
-     * @param dataRecord data record
-     * @return updated columns
-     */
-    public static List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        return dataRecord.getColumns().stream().filter(Column::isUpdated).collect(Collectors.toList());
     }
 }

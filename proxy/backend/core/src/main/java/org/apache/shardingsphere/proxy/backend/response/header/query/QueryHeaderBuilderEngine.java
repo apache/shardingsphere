@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedC
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 
 import java.sql.SQLException;
 
@@ -71,11 +71,11 @@ public final class QueryHeaderBuilderEngine {
     
     private String getColumnLabel(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {
         Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : queryResultMetaData.getColumnLabel(columnIndex);
+        return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getColumnName() : queryResultMetaData.getColumnLabel(columnIndex);
     }
     
     private String getColumnName(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {
         Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName() : queryResultMetaData.getColumnName(columnIndex);
+        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName().getValue() : queryResultMetaData.getColumnName(columnIndex);
     }
 }

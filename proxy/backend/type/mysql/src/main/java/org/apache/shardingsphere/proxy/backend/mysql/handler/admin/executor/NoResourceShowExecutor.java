@@ -61,7 +61,7 @@ public final class NoResourceShowExecutor implements DatabaseAdminQueryExecutor 
         TableSegment tableSegment = sqlStatement.getFrom();
         expressions = sqlStatement.getProjections().getProjections().stream().filter(each -> !(each instanceof ShorthandProjectionSegment))
                 .map(each -> new ProjectionEngine(null, Collections.emptyMap(), null).createProjection(tableSegment, each))
-                .filter(Optional::isPresent).map(each -> each.get().getAlias().isPresent() ? each.get().getAlias().get() : each.get().getExpression()).collect(Collectors.toList());
+                .filter(Optional::isPresent).map(each -> each.get().getAlias().isPresent() ? each.get().getAlias().get() : each.get().getColumnName()).collect(Collectors.toList());
         mergedResult = new TransparentMergedResult(getQueryResult());
     }
     

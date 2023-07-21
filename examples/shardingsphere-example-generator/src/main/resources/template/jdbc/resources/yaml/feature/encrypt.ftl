@@ -21,19 +21,21 @@
         status:
           cipher: 
             name: status
-            encryptorName: string_encryptor
+            encryptorName: standard_encryptor
           assistedQuery: 
-            name: assisted_query_status
-            encryptorName: string_encryptor
+            name: status_assisted
+            encryptorName: assisted_encryptor
+    t_order_item:
+      columns:
         phone:
           cipher: 
             name: phone
-            encryptorName: phone_encryptor
+            encryptorName: standard_encryptor
 
   encryptors:
-    string_encryptor:
-      type: assistedTest
-    phone_encryptor:
+    standard_encryptor:
       type: AES
       props:
         aes-key-value: 123456
+    assisted_encryptor:
+      type: assistedTest

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.compiler.context.parser;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 
 import java.util.Properties;
 

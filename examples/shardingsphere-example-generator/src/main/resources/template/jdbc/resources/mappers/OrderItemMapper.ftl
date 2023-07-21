@@ -49,7 +49,7 @@
     </update>
     
     <update id="dropTableShadow">
-        DROP TABLE IF EXISTS t_order_item;
+        DROP TABLE IF EXISTS t_order_item /* SHARDINGSPHERE_HINT:shadow=true,foo=bar*/;
     </update>
  </#if>
     

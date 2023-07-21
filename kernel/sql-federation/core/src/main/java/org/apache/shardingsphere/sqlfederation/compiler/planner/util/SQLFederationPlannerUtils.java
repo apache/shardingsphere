@@ -48,7 +48,7 @@ import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.view.ShardingSphereViewExpander;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.converter.EnumerableScanConverterRule;

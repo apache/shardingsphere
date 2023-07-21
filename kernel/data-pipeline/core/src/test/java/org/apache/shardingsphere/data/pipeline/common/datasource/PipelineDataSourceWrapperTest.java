@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.datasource;
 
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.h2.H2DatabaseType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

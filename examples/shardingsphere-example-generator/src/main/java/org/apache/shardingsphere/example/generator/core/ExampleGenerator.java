@@ -40,6 +40,12 @@ public interface ExampleGenerator extends TypedSPI {
     
     String RESOURCES_PATH = "src/main/resources";
     
+    /**
+     * Build output path.
+     * 
+     * @param exampleConfig example configuration
+     * @return built output path
+     */
     default String buildOutputPath(YamlExampleConfiguration exampleConfig) {
         if (Strings.isNullOrEmpty(exampleConfig.getOutput())) {
             return DEFAULT_OUTPUT + PROJECT_PATH;
@@ -47,6 +53,14 @@ public interface ExampleGenerator extends TypedSPI {
         return exampleConfig.getOutput() + PROJECT_PATH;
     }
     
+    /**
+     * Generate example.
+     * 
+     * @param templateConfig template configuration
+     * @param exampleConfig example configuration
+     * @throws IOException IO exception
+     * @throws TemplateException template exception
+     */
     default void generate(final Configuration templateConfig, final YamlExampleConfiguration exampleConfig) throws IOException, TemplateException {
         for (String eachMode : exampleConfig.getModes()) {
             for (String eachTransaction : exampleConfig.getTransactions()) {
@@ -58,7 +72,28 @@ public interface ExampleGenerator extends TypedSPI {
             }
         }
     }
-
+    
+    /**
+     * Generate example.
+     *
+     * @param templateConfig template configuration
+     * @param dataModel data model
+     * @param outputPath output path
+     * @throws IOException IO exception
+     * @throws TemplateException template exception
+     */
+    void generate(Configuration templateConfig, Map<String, String> dataModel, String outputPath) throws IOException, TemplateException;
+    
+    /**
+     * Build data model.
+     * 
+     * @param props properties
+     * @param mode mode
+     * @param transaction transaction
+     * @param framework framework
+     * @param feature feature
+     * @return built data model
+     */
     default Map<String, String> buildDataModel(final Properties props, final String mode, final String transaction, final String framework, final String feature) {
         Map<String, String> result = new LinkedHashMap<>();
         props.forEach((key, value) -> result.put(key.toString(), value.toString()));
@@ -71,12 +106,6 @@ public interface ExampleGenerator extends TypedSPI {
         return result;
     }
     
-    /**
-     * Generate.
-     * @param templateConfig template configuration
-     * @param dataModel data model
-     * @throws IOException IO exception
-     * @throws TemplateException template exception
-     */
-    void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String outputPath) throws IOException, TemplateException;
+    @Override
+    String getType();
 }

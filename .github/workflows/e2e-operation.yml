@@ -21,8 +21,6 @@ on:
   push:
     branches: [ master, dev ]
   pull_request:
-  schedule:
-    - cron: '0 22 */1 * *'  # once a day. UTC time
   workflow_dispatch:
 
 concurrency:
@@ -53,7 +51,7 @@ jobs:
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 5
+      max-parallel: 20
       fail-fast: false
       matrix:
         operation: [ transaction, pipeline, showprocesslist ]

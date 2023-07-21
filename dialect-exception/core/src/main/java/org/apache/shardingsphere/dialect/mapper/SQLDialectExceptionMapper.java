@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.dialect.mapper;
 
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 import java.sql.SQLException;

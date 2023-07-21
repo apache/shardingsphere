@@ -27,9 +27,10 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.h2.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -235,7 +236,7 @@ class SQLStatementCompilerIT {
     private SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(new Properties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType("H2");
+        DatabaseType databaseType = DatabaseTypeFactory.get("H2");
         SQLFederationSchema sqlFederationSchema = new SQLFederationSchema(SCHEMA_NAME, schema, databaseType, new JavaTypeFactoryImpl());
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtils.createCatalogReader(SCHEMA_NAME, sqlFederationSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = SQLFederationPlannerUtils.createSqlValidator(catalogReader, relDataTypeFactory, databaseType, connectionConfig);

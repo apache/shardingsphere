@@ -23,8 +23,9 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -76,14 +77,14 @@ class ProjectionsContextTest {
     void assertFindAlias() {
         Projection projection = getColumnProjectionWithAlias();
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
-        assertTrue(projectionsContext.findAlias(projection.getExpression()).isPresent());
+        assertTrue(projectionsContext.findAlias(projection.getColumnName()).isPresent());
     }
     
     @Test
     void assertFindProjectionIndex() {
         Projection projection = getColumnProjection();
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
-        Optional<Integer> actual = projectionsContext.findProjectionIndex(projection.getExpression());
+        Optional<Integer> actual = projectionsContext.findProjectionIndex(projection.getColumnName());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(1));
     }
@@ -113,7 +114,7 @@ class ProjectionsContextTest {
     }
     
     private ShorthandProjection getShorthandProjection() {
-        return new ShorthandProjection("table", Collections.emptyList());
+        return new ShorthandProjection(new IdentifierValue("table"), Collections.emptyList());
     }
     
     private ColumnProjection getColumnProjection() {
@@ -125,12 +126,12 @@ class ProjectionsContextTest {
     }
     
     private AggregationProjection getAggregationProjection() {
-        return new AggregationProjection(AggregationType.COUNT, "(column)", "c", mock(DatabaseType.class));
+        return new AggregationProjection(AggregationType.COUNT, "(column)", new IdentifierValue("c"), mock(DatabaseType.class));
     }
     
     private AggregationDistinctProjection getAggregationDistinctProjection() {
         return new AggregationDistinctProjection(
-                0, 0, AggregationType.COUNT, "(DISTINCT column)", "c", "column", mock(DatabaseType.class));
+                0, 0, AggregationType.COUNT, "(DISTINCT column)", new IdentifierValue("c"), "column", mock(DatabaseType.class));
     }
     
     @Test
@@ -138,7 +139,7 @@ class ProjectionsContextTest {
         ColumnProjection columnProjection1 = new ColumnProjection(null, "col1", null);
         ColumnProjection columnProjection2 = new ColumnProjection(null, "col2", null);
         ColumnProjection columnProjection3 = new ColumnProjection(null, "col3", null);
-        DerivedProjection derivedProjection = new DerivedProjection("col3", "a3", null);
+        DerivedProjection derivedProjection = new DerivedProjection("col3", new IdentifierValue("a3"), null);
         ShorthandProjection shorthandProjection = new ShorthandProjection(null, Arrays.asList(columnProjection2, columnProjection3));
         ProjectionsContext actual = new ProjectionsContext(0, 0, false, Arrays.asList(columnProjection1, shorthandProjection, derivedProjection));
         assertThat(actual.getExpandProjections().size(), is(3));
@@ -149,9 +150,9 @@ class ProjectionsContextTest {
     
     @Test
     void assertIsContainsLastInsertIdProjection() {
-        ProjectionsContext lastInsertIdProjection = new ProjectionsContext(0, 0, false, Collections.singletonList(new ExpressionProjection("LAST_INSERT_ID()", "id")));
+        ProjectionsContext lastInsertIdProjection = new ProjectionsContext(0, 0, false, Collections.singletonList(new ExpressionProjection("LAST_INSERT_ID()", new IdentifierValue("id"))));
         assertTrue(lastInsertIdProjection.isContainsLastInsertIdProjection());
-        ProjectionsContext maxProjection = new ProjectionsContext(0, 0, false, Collections.singletonList(new ExpressionProjection("MAX(id)", "max")));
+        ProjectionsContext maxProjection = new ProjectionsContext(0, 0, false, Collections.singletonList(new ExpressionProjection("MAX(id)", new IdentifierValue("max"))));
         assertFalse(maxProjection.isContainsLastInsertIdProjection());
     }
 }

@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -35,20 +36,20 @@ class AggregationProjectionTest {
     @Test
     void assertGetExpression() {
         Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, mock(DatabaseType.class));
-        assertThat(projection.getExpression(), is("COUNT( A.\"DIRECTION\" )"));
+        assertThat(projection.getColumnName(), is("COUNT( A.\"DIRECTION\" )"));
     }
     
     @Test
     void assertGetAlias() {
-        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", "AVG_DERIVED_COUNT_0", mock(DatabaseType.class));
-        Optional<String> actual = projection.getAlias();
+        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", new IdentifierValue("AVG_DERIVED_COUNT_0"), mock(DatabaseType.class));
+        Optional<IdentifierValue> actual = projection.getAlias();
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("AVG_DERIVED_COUNT_0"));
+        assertThat(actual.get().getValue(), is("AVG_DERIVED_COUNT_0"));
     }
     
     @Test
     void assertGetColumnLabelWithAlias() {
-        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", "AVG_DERIVED_COUNT_0", mock(DatabaseType.class));
+        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", new IdentifierValue("AVG_DERIVED_COUNT_0"), mock(DatabaseType.class));
         assertThat(projection.getColumnLabel(), is("AVG_DERIVED_COUNT_0"));
     }
     

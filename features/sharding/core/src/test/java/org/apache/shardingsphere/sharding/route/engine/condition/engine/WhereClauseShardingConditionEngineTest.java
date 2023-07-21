@@ -21,8 +21,8 @@ import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
@@ -77,7 +77,7 @@ class WhereClauseShardingConditionEngineTest {
     @BeforeEach
     void setUp() {
         shardingConditionEngine = new WhereClauseShardingConditionEngine(
-                ShardingSphereDatabase.create("test_db", DatabaseTypeEngine.getDatabaseType("MySQL"), new ConfigurationProperties(new Properties())), shardingRule, mock(TimestampServiceRule.class));
+                ShardingSphereDatabase.create("test_db", DatabaseTypeFactory.get("MySQL"), new ConfigurationProperties(new Properties())), shardingRule, mock(TimestampServiceRule.class));
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));

@@ -21,8 +21,8 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 
@@ -43,8 +43,8 @@ public abstract class TracingJDBCExecutorCallbackAdvice<T> implements InstanceMe
         ShardingSphereResourceMetaData resourceMetaData = AgentReflectionUtils.getFieldValue(target, "resourceMetaData");
         DataSourceMetaData metaData = resourceMetaData.getDataSourceMetaData(executionUnit.getExecutionUnit().getDataSourceName());
         DatabaseType storageType = resourceMetaData.getStorageType(executionUnit.getExecutionUnit().getDataSourceName());
-        recordExecuteInfo(RootSpanContext.get(), target, executionUnit, (boolean) args[1], metaData, storageType.getType());
+        recordExecuteInfo(RootSpanContext.get(), target, executionUnit, (boolean) args[1], metaData, storageType);
     }
     
-    protected abstract void recordExecuteInfo(T parentSpan, TargetAdviceObject target, JDBCExecutionUnit executionUnit, boolean isTrunkThread, DataSourceMetaData metaData, String databaseType);
+    protected abstract void recordExecuteInfo(T parentSpan, TargetAdviceObject target, JDBCExecutionUnit executionUnit, boolean isTrunkThread, DataSourceMetaData metaData, DatabaseType databaseType);
 }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -60,8 +61,8 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     }
     
     @Override
-    public final Optional<AliasSegment> getAlias() {
-        return Optional.ofNullable(alias);
+    public final Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
     }
     
     @Override

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 
 /**
  * Pipeline SQL segment builder.

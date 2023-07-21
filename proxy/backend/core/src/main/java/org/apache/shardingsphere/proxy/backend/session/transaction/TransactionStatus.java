@@ -35,7 +35,7 @@ public final class TransactionStatus {
     private volatile TransactionType transactionType;
     
     @Setter
-    private volatile boolean rollbackOnly;
+    private volatile boolean exceptionOccur;
     
     public TransactionStatus(final TransactionType initialTransactionType) {
         transactionType = initialTransactionType;

@@ -17,9 +17,11 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_type" value="DROP TYPE base_type" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_type" value="DROP TYPE base_type" db-types="PostgreSQL,openGauss,Oracle" />
     <sql-case id="drop_type_cascade" value="DROP TYPE base_type CASCADE" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_type_restrict" value="DROP TYPE base_type RESTRICT" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_type_if_exists" value="DROP TYPE IF EXISTS base_type RESTRICT" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_type_namelist" value="DROP TYPE IF EXISTS t1,t2 RESTRICT" db-types="openGauss" />
+    <sql-case id="drop_type_schema_force" value="DROP TYPE test_schema.base_type FORCE" db-types="Oracle" />
+    <sql-case id="drop_type_schema_validate" value="DROP TYPE test_schema.base_type VALIDATE" db-types="Oracle" />
 </sql-cases>

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.env;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;

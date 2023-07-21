@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.common.datasource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -33,13 +33,12 @@ import java.util.logging.Logger;
  * Pipeline data source wrapper is for abstract standard jdbc and sharding jdbc.
  */
 @RequiredArgsConstructor
+@Getter
 @Slf4j
 public final class PipelineDataSourceWrapper implements DataSource, AutoCloseable {
     
-    @Getter
     private final DataSource dataSource;
     
-    @Getter
     private final DatabaseType databaseType;
     
     @Override

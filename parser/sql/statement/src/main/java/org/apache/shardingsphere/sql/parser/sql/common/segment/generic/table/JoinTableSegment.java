@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +56,7 @@ public final class JoinTableSegment implements TableSegment {
     }
     
     @Override
-    public Optional<AliasSegment> getAlias() {
-        return Optional.ofNullable(alias);
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
     }
 }

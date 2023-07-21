@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -30,21 +31,21 @@ class ShorthandProjectionTest {
     
     @Test
     void assertGetExpression() {
-        assertThat(new ShorthandProjection("owner", Collections.emptyList()).getExpression(), is("owner.*"));
+        assertThat(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getColumnName(), is("owner.*"));
     }
     
     @Test
     void assertGetAliasWhenAbsent() {
-        assertFalse(new ShorthandProjection("owner", Collections.emptyList()).getAlias().isPresent());
+        assertFalse(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getAlias().isPresent());
     }
     
     @Test
     void assertGetColumnLabel() {
-        assertTrue(new ShorthandProjection("owner", Collections.emptyList()).getColumnLabel().contains("*"));
+        assertTrue(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getColumnLabel().contains("*"));
     }
     
     @Test
     void assertContains() {
-        assertTrue(new ShorthandProjection("owner", Collections.emptyList()).getOwner().isPresent());
+        assertTrue(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getOwner().isPresent());
     }
 }

@@ -28,6 +28,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>database</module>
         <module>binder</module>
         <module>common</module>
         <module>context</module>

@@ -48,8 +48,9 @@ public final class ExampleScenarioFactory {
     }
     
     private Collection<FeatureExampleScenario> getFeatureScenarios(final String feature) {
-        return null == feature ? Collections.emptyList() : 
-                Arrays.stream(feature.split(",")).map(each -> TypedSPILoader.getService(FeatureExampleScenario.class, each.trim())).collect(Collectors.toList());
+        return null == feature
+                ? Collections.emptyList()
+                : Arrays.stream(feature.split(",")).map(each -> TypedSPILoader.getService(FeatureExampleScenario.class, each.trim())).collect(Collectors.toList());
     }
     
     private FrameworkExampleScenario getFrameworkScenario(final String framework) {
@@ -74,7 +75,7 @@ public final class ExampleScenarioFactory {
         for (FeatureExampleScenario each : featureScenarios) {
             result.putAll(each.getJavaClassTemplateMap());
         }
-        if (frameworkScenario.getType().contains("spring-boot-starter") && transactionScenario.getType().contains("xa")) {
+        if (frameworkScenario.getType().contains("spring-boot-starter") && (transactionScenario.getType().contains("xa"))) {
             result.put("java/TransactionConfiguration.ftl", "TransactionConfiguration.java");
         }
         result.putAll(frameworkScenario.getJavaClassTemplateMap());

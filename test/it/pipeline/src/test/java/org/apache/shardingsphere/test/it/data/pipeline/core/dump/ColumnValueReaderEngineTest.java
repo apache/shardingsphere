@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.dump;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shardingsphere.data.pipeline.core.dumper.ColumnValueReaderEngine;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;

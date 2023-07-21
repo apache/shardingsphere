@@ -47,8 +47,6 @@
             shardingAlgorithmName: t_order_inline
     bindingTables:
       - t_order,t_order_item
-    broadcastTables:
-      - t_address
     defaultDatabaseStrategy:
       standard:
         shardingColumn: user_id

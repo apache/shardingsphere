@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
+import org.apache.shardingsphere.infra.database.oracle.OracleDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -98,9 +98,9 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     private String getDerivedProjectionText(final Projection projection) {
         Preconditions.checkState(projection.getAlias().isPresent());
         if (projection instanceof AggregationDistinctProjection) {
-            return ((AggregationDistinctProjection) projection).getDistinctInnerExpression() + " AS " + projection.getAlias().get() + " ";
+            return ((AggregationDistinctProjection) projection).getDistinctInnerExpression() + " AS " + projection.getAlias().get().getValue() + " ";
         }
-        return projection.getExpression() + " AS " + projection.getAlias().get() + " ";
+        return projection.getColumnName() + " AS " + projection.getAlias().get().getValue() + " ";
     }
     
     private String getDerivedProjectionTextFromColumnOrderByItemSegment(final DerivedProjection projection, final TableExtractor tableExtractor, final RouteUnit routeUnit,
@@ -109,7 +109,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         Preconditions.checkState(projection.getDerivedProjectionSegment() instanceof ColumnOrderByItemSegment);
         ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) projection.getDerivedProjectionSegment();
         ColumnOrderByItemSegment newColumnOrderByItem = generateNewColumnOrderByItem(columnOrderByItemSegment, routeUnit, tableExtractor, databaseType);
-        return newColumnOrderByItem.getText() + " AS " + projection.getAlias().get() + " ";
+        return newColumnOrderByItem.getText() + " AS " + projection.getAlias().get().getValue() + " ";
     }
     
     private Optional<String> getActualTables(final RouteUnit routeUnit, final String logicalTableName) {

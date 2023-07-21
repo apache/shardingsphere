@@ -775,6 +775,10 @@ SHOW
 XMLTABLE
     : X M L T A B L E
     ;
+    
+ISSCHEMAVALID
+    : I S S C H E M A V A L I D
+    ;
 
 XMLNAMESPACES
     : X M L N A M E S P A C E S

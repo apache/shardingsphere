@@ -23,7 +23,7 @@ import org.apache.calcite.schema.Schema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -98,7 +98,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     private String getColumnLabel(final Projection projection, final DatabaseType databaseType) {
         if (projection instanceof AggregationDistinctProjection) {
-            return databaseType.getDefaultSchema().isPresent() ? ((AggregationDistinctProjection) projection).getType().name().toLowerCase() : projection.getExpression();
+            return databaseType.getDefaultSchema().isPresent() ? ((AggregationDistinctProjection) projection).getType().name().toLowerCase() : projection.getColumnName();
         }
         return projection.getColumnLabel();
     }

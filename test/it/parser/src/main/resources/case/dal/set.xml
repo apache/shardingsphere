@@ -17,6 +17,11 @@
   -->
 
 <sql-parser-test-cases>
+    <set-parameter sql-case-id="set_user_variable">
+        <parameter-assign value="IF(@have_ndb=0,@drop_cmd,'SET @dummy = 0')">
+            <parameter name="@drop" />
+        </parameter-assign>
+    </set-parameter>
     <set-parameter sql-case-id="set_parameter_equal">
         <parameter-assign value="'value'">
             <parameter name="configuration_parameter" />
