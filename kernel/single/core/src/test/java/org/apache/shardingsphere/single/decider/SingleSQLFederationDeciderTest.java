@@ -54,52 +54,52 @@ class SingleSQLFederationDeciderTest {
     }
     
     @Test
-    void assertDecideWhenAllSingleTablesInSameDataSource() {
+    void assertDecideWhenAllSingleTablesInSameComputeNode() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
-        when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>();
+        when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(true);
         assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(2));
     }
     
     @Test
-    void assertDecideWhenAllSingleTablesNotInSameDataSource() {
+    void assertDecideWhenAllSingleTablesNotInSameComputeNode() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
-        when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(false);
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>();
+        when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(false);
         assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(2));
     }
     
     @Test
-    void assertDecideWhenAllTablesInSameDataSource() {
+    void assertDecideWhenAllTablesInSameComputeNode() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
-        when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_0", "t_user")));
+        when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(true);
         assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(3));
     }
     
     @Test
-    void assertDecideWhenAllTablesNotInSameDataSource() {
+    void assertDecideWhenAllTablesNotInSameComputeNode() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
-        when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_1", "t_user")));
+        when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(false);
         assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(3));
     }
     
     private SingleRule createSingleRule(final Collection<QualifiedTable> qualifiedTables) {
         SingleRule result = mock(SingleRule.class);
-        when(result.getSingleTableNames(any())).thenReturn(qualifiedTables);
+        when(result.getSingleTables(any())).thenReturn(qualifiedTables);
         when(result.findTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(new DataNode("ds_0", "t_order")));
         when(result.findTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order_item")).thenReturn(Optional.of(new DataNode("ds_0", "t_order_item")));
         return result;
