@@ -32,13 +32,14 @@ import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStat
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -197,15 +198,15 @@ class MySQLComStmtPrepareExecutorTest {
         CacheOption cacheOption = new CacheOption(1024, 1024);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
                 .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
-        when(result.getMetaDataContexts().getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(result.getMetaDataContexts().getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereTable table = new ShardingSphereTable();
         table.putColumn(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));
         table.putColumn(new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false));
         table.putColumn(new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true));
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("user", table);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", new MySQLDatabaseType(), new ShardingSphereResourceMetaData("foo_db", Collections.emptyMap()),
-                new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.singletonMap("foo_db", schema));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"),
+                new ShardingSphereResourceMetaData("foo_db", Collections.emptyMap()), new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.singletonMap("foo_db", schema));
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         return result;
     }
