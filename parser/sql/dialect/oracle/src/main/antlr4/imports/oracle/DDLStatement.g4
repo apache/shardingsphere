@@ -3540,6 +3540,9 @@ tableCompressionTableSpace
     | NOCOMPRESS
     ;
 
+segmentManagementClause
+    : SEGMENT SPACE MANAGEMENT (AUTO|MANUAL);
+
 createTablespace
     : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
     ;
@@ -3553,6 +3556,8 @@ permanentTablespaceClause
     | ENCRYPTION tablespaceEncryptionSpec
     | DEFAULT tableCompressionTableSpace? storageClause?
     | (ONLINE|OFFLINE)
+    | extentManagementClause
+    | segmentManagementClause
     )
     ;
 
