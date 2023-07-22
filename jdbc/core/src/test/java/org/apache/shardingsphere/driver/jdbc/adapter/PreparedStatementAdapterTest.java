@@ -74,9 +74,9 @@ class PreparedStatementAdapterTest {
                         new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap(), mock(ConfigurationProperties.class)))));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(
-                connection.getDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+                connection.getDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes())
-                .thenReturn(Collections.singletonMap("ds_0", TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
+                .thenReturn(Collections.singletonMap("ds_0", TypedSPILoader.getService(DatabaseType.class, "MySQL")));
         shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1");
     }
     
