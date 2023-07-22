@@ -42,4 +42,14 @@
     <create-tablespace sql-case-id="create_tablespace_with_filesystem_like_logging" />
     <create-tablespace sql-case-id="create_tablespace_with_force_logging" />
     <create-tablespace sql-case-id="create_tablespace_with_encrypt" />
+    <create-tablespace sql-case-id="create_tablespace_with_compress" />
+    <create-tablespace sql-case-id="create_tablespace_with_nocompress" />
+    <create-tablespace sql-case-id="create_tablespace_with_compress_basic" />
+    <create-tablespace sql-case-id="create_tablespace_with_query_low" />
+    <create-tablespace sql-case-id="create_tablespace_with_query_high" />
+    <create-tablespace sql-case-id="create_tablespace_with_query" />
+    <create-tablespace sql-case-id="create_tablespace_with_archive_high" />
+    <create-tablespace sql-case-id="create_tablespace_with_archive_low" />
+    <create-tablespace sql-case-id="create_tablespace_with_archive" />
+    <create-tablespace sql-case-id="create_tablespace_with_oltp" />
 </sql-parser-test-cases>

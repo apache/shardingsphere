@@ -51,4 +51,14 @@
     <sql-case id="create_tablespace_with_filesystem_like_logging" value="CREATE TABLESPACE test_space FILESYSTEM_LIKE_LOGGING" db-types="Oracle" />
     <sql-case id="create_tablespace_with_force_logging" value="CREATE TABLESPACE test_space FORCE LOGGING" db-types="Oracle" />
     <sql-case id="create_tablespace_with_encrypt" value="CREATE TABLESPACE test_space ENCRYPTION USING 'encrypt_algorithm'" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_compress" value="CREATE TABLESPACE test_space DEFAULT COMPRESS" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_nocompress" value="CREATE TABLESPACE test_space DEFAULT NOCOMPRESS" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_compress_basic" value="CREATE TABLESPACE test_space DEFAULT COMPRESS BASIC" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_query_low" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR QUERY LOW" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_query_high" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR QUERY HIGH" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_query" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR QUERY" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_archive_high" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR ARCHIVE HIGH" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_archive_low" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR ARCHIVE LOW" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_archive" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR ARCHIVE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_oltp" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR OLTP" db-types="Oracle" />
 </sql-cases>
