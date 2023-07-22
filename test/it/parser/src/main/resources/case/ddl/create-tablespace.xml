@@ -80,4 +80,11 @@
     <create-tablespace sql-case-id="create_tablespace_with_segment_manual" />
     <create-tablespace sql-case-id="create_tablespace_with_flashback_on" />
     <create-tablespace sql-case-id="create_tablespace_with_flashback_off" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_spec" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_tablespace_group" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_extent" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_extent_autoallocate" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_extent_uniform_size" />
+    <create-tablespace sql-case-id="create_tablespace_with_temporary_extent_uniform" />
 </sql-parser-test-cases>

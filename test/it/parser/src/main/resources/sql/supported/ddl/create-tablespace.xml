@@ -89,4 +89,11 @@
     <sql-case id="create_tablespace_with_segment_manual" value="CREATE TABLESPACE test_space SEGMENT SPACE MANAGEMENT MANUAL" db-types="Oracle" />
     <sql-case id="create_tablespace_with_flashback_on" value="CREATE TABLESPACE test_space FLASHBACK ON" db-types="Oracle" />
     <sql-case id="create_tablespace_with_flashback_off" value="CREATE TABLESPACE test_space FLASHBACK OFF" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary" value="CREATE TEMPORARY TABLESPACE test_space" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_spec" value="CREATE TEMPORARY TABLESPACE test_space TEMPFILE file_specification1, file_specification2" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_tablespace_group" value="CREATE TEMPORARY TABLESPACE test_space ON TABLESPACE GROUP tablespace_group_name" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_extent" value="CREATE TEMPORARY TABLESPACE test_space EXTENT MANAGEMENT LOCAL" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_extent_autoallocate" value="CREATE TEMPORARY TABLESPACE test_space EXTENT MANAGEMENT LOCAL AUTOALLOCATE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_extent_uniform_size" value="CREATE TEMPORARY TABLESPACE test_space EXTENT MANAGEMENT LOCAL UNIFORM SIZE 5K" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_extent_uniform" value="CREATE TEMPORARY TABLESPACE test_space EXTENT MANAGEMENT LOCAL UNIFORM" db-types="Oracle" />
 </sql-cases>
