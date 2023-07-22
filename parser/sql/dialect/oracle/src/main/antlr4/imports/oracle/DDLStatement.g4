@@ -3624,6 +3624,7 @@ permanentTablespaceClause
     | (ONLINE|OFFLINE)
     | extentManagementClause
     | segmentManagementClause
+    | flashbackModeClause
     )
     ;
 

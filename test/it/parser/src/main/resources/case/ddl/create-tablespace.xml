@@ -78,4 +78,6 @@
     <create-tablespace sql-case-id="create_tablespace_with_extent_management_uniform" />
     <create-tablespace sql-case-id="create_tablespace_with_segment_auto" />
     <create-tablespace sql-case-id="create_tablespace_with_segment_manual" />
+    <create-tablespace sql-case-id="create_tablespace_with_flashback_on" />
+    <create-tablespace sql-case-id="create_tablespace_with_flashback_off" />
 </sql-parser-test-cases>
