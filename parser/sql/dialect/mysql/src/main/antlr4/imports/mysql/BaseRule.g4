@@ -972,7 +972,7 @@ jsonFunctionName
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG | BIT_XOR
+    : MAX | MIN | SUM | COUNT | AVG | BIT_XOR | GROUP_CONCAT
     ;
     
 distinct

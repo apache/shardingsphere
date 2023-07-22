@@ -43,4 +43,5 @@
     <sql-case id="explain_create_materialized_view_with_data" value="EXPLAIN (ANALYZE, COSTS OFF, SUMMARY OFF, TIMING OFF) CREATE MATERIALIZED VIEW matview_schema.mv_withdata2 (a) AS SELECT generate_series(1, 10) WITH DATA;" db-types="PostgreSQL" />
     <sql-case id="explain_create_materialized_view_with_no_data" value="EXPLAIN (ANALYZE, COSTS OFF, SUMMARY OFF, TIMING OFF) CREATE MATERIALIZED VIEW matview_schema.mv_nodata2 (a) AS SELECT generate_series(1, 10) WITH NO DATA;" db-types="PostgreSQL" />
     <sql-case id="explain_performance" value="EXPLAIN PERFORMANCE SELECT 1" db-types="openGauss" />
+    <sql-case id="explain_select_alias_as_keyword" value="EXPLAIN PLAN FOR SELECT length.item_id password FROM t_order_item length where length.item_id = 1;" db-types="Oracle" />
 </sql-cases>

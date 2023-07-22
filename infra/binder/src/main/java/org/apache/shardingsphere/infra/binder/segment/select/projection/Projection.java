@@ -27,33 +27,30 @@ import java.util.Optional;
 public interface Projection {
     
     /**
-     * Get expression.
+     * Get column name.
      * 
+     * @return column name
+     */
+    String getColumnName();
+    
+    /**
+     * Get column label.
+     *
+     * @return column label
+     */
+    String getColumnLabel();
+    
+    /**
+     * Get expression.
+     *
      * @return expression
      */
     String getExpression();
     
     /**
      * Get alias.
-     * 
+     *
      * @return alias
      */
-    Optional<String> getAlias();
-    
-    /**
-     * Get columnLabel.
-     *
-     * @return columnLabel
-     */
-    String getColumnLabel();
-    
-    /**
-     * Transform subquery projection.
-     * 
-     * @param subqueryTableAlias subquery table alias
-     * @param originalOwner original owner
-     * @param originalName original name
-     * @return new projection
-     */
-    Projection transformSubqueryProjection(IdentifierValue subqueryTableAlias, IdentifierValue originalOwner, IdentifierValue originalName);
+    Optional<IdentifierValue> getAlias();
 }

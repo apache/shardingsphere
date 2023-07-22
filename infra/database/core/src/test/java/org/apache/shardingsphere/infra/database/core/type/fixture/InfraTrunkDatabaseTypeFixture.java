@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.infra.database.core.type.fixture;
 
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.spi.TrunkDatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class InfraTrunkDatabaseTypeFixture implements TrunkDatabaseType {
+public final class InfraTrunkDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -45,7 +45,7 @@ public final class InfraTrunkDatabaseTypeFixture implements TrunkDatabaseType {
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return null;
+        return new DataSourceMetaDataFixture(url);
     }
     
     @Override
@@ -61,5 +61,10 @@ public final class InfraTrunkDatabaseTypeFixture implements TrunkDatabaseType {
     @Override
     public String getType() {
         return "INFRA.TRUNK.FIXTURE";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

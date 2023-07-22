@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -38,11 +38,11 @@ import java.util.Optional;
 @ToString
 public final class ColumnProjection implements Projection {
     
-    private final IdentifierValue ownerIdentifier;
+    private final IdentifierValue owner;
     
-    private final IdentifierValue nameIdentifier;
+    private final IdentifierValue name;
     
-    private final IdentifierValue aliasIdentifier;
+    private final IdentifierValue alias;
     
     private IdentifierValue originalOwner;
     
@@ -53,45 +53,33 @@ public final class ColumnProjection implements Projection {
                 null == alias ? null : new IdentifierValue(alias, QuoteCharacter.NONE));
     }
     
-    /**
-     * Get column name.
-     * 
-     * @return column name
-     */
-    public String getName() {
-        return nameIdentifier.getValue();
-    }
-    
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
-    public String getOwner() {
-        return null == ownerIdentifier ? null : ownerIdentifier.getValue();
-    }
-    
     @Override
-    public String getExpression() {
-        return null == getOwner() ? getName() : getOwner() + "." + getName();
+    public String getColumnName() {
+        return null == owner ? name.getValue() : owner.getValue() + "." + name.getValue();
     }
     
     @Override
     public String getColumnLabel() {
-        return getAlias().orElse(getName());
+        return getAlias().map(IdentifierValue::getValue).orElse(name.getValue());
     }
     
     @Override
-    public Optional<String> getAlias() {
-        return Optional.ofNullable(aliasIdentifier).map(IdentifierValue::getValue);
+    public String getExpression() {
+        return null == owner ? name.getValue() : owner.getValue() + "." + name.getValue();
     }
     
     @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        ColumnProjection result = null == aliasIdentifier ? new ColumnProjection(subqueryTableAlias, nameIdentifier, null) : new ColumnProjection(subqueryTableAlias, aliasIdentifier, null);
-        result.setOriginalOwner(originalOwner);
-        result.setOriginalName(originalName);
-        return result;
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias);
+    }
+    
+    /**
+     * Get owner.
+     *
+     * @return owner
+     */
+    public Optional<IdentifierValue> getOwner() {
+        return Optional.ofNullable(owner);
     }
     
     /**
@@ -100,7 +88,7 @@ public final class ColumnProjection implements Projection {
      * @return original owner
      */
     public IdentifierValue getOriginalOwner() {
-        return null == originalOwner ? ownerIdentifier : originalOwner;
+        return null == originalOwner ? owner : originalOwner;
     }
     
     /**
@@ -109,6 +97,6 @@ public final class ColumnProjection implements Projection {
      * @return original name
      */
     public IdentifierValue getOriginalName() {
-        return null == originalName ? nameIdentifier : originalName;
+        return null == originalName ? name : originalName;
     }
 }

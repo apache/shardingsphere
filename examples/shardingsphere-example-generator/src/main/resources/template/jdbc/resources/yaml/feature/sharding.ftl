@@ -36,8 +36,6 @@
           keyGeneratorName: snowflake_generator
     bindingTables:
       - t_order,t_order_item
-    broadcastTables:
-      - t_address
     defaultDatabaseStrategy:
       standard:
         shardingColumn: user_id
@@ -60,3 +58,7 @@
     keyGenerators:
       snowflake_generator:
         type: SNOWFLAKE
+    
+- !BROADCAST
+    tables:
+      - t_address

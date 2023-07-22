@@ -229,7 +229,7 @@ export GPG_TTY=$(tty)
 ```
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
+./mvnw release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
 -Prelease：选择 release 的 profile，这个 profile 会打包所有源码、jar 文件以及 ShardingSphere-Proxy 的可执行二进制包。
@@ -243,11 +243,11 @@ mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=tru
 首先清理发布预校验本地信息。
 
 ```shell
-mvn release:clean
+./mvnw release:clean
 ```
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
+./mvnw release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
 ```
 
 和上一步演练的命令基本相同，去掉了 -DdryRun=true 参数。
@@ -266,7 +266,7 @@ git push origin ${RELEASE.VERSION}
 使用稳定的网络环境，本过程可能持续`1`个小时以上。
 
 ```shell
-mvn release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DlocalCheckout=true -Dusername=${Github 用户名}
+./mvnw release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DlocalCheckout=true -Dusername=${Github 用户名}
 ```
 
 -DlocalCheckout=true：从本地 checkout 代替从远程仓库拉取代码。

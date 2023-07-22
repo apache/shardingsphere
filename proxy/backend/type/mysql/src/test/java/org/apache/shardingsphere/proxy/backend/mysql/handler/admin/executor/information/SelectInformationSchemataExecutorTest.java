@@ -20,15 +20,16 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.inf
 import org.apache.shardingsphere.authority.provider.database.model.privilege.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -83,7 +84,8 @@ class SelectInformationSchemataExecutorTest {
     @BeforeEach
     void setUp() {
         when(connectionSession.getGrantee()).thenReturn(grantee);
-        statement = (SelectStatement) new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).getSQLParserEngine("MySQL").parse(sql, false);
+        statement = (SelectStatement) new SQLParserRule(
+                new DefaultSQLParserRuleConfigurationBuilder().build()).getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
     }
     
     @Test
@@ -152,7 +154,7 @@ class SelectInformationSchemataExecutorTest {
     }
     
     private ShardingSphereDatabase createDatabase(final String databaseName, final ShardingSphereResourceMetaData resourceMetaData) {
-        return new ShardingSphereDatabase(databaseName, new MySQLDatabaseType(), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+        return new ShardingSphereDatabase(databaseName, TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
     }
     
     private ShardingSphereDatabase createDatabase(final String databaseName) {

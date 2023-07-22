@@ -21,10 +21,9 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.dialect.MariaDBDatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -129,16 +128,6 @@ class DatabaseTypeEngineTest {
     @Test
     void assertGetTrunkDatabaseTypeWithBranchDatabaseType() {
         assertThat(DatabaseTypeEngine.getTrunkDatabaseType("H2").getType(), is("MySQL"));
-    }
-    
-    @Test
-    void assertGetTrunkDatabaseTypeNameWithTrunkDatabaseType() {
-        assertThat(DatabaseTypeEngine.getTrunkDatabaseTypeName(new MySQLDatabaseType()), is("MySQL"));
-    }
-    
-    @Test
-    void assertGetTrunkDatabaseTypeNameWithBranchDatabaseType() {
-        assertThat(DatabaseTypeEngine.getTrunkDatabaseTypeName(new MariaDBDatabaseType()), is("MySQL"));
     }
     
     @Test

@@ -19,8 +19,7 @@ package org.apache.shardingsphere.infra.database.spi;
 
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -66,6 +65,18 @@ public interface DatabaseType extends TypedSPI {
      * @return data source meta data
      */
     DataSourceMetaData getDataSourceMetaData(String url, String username);
+    
+    /**
+     * Get data source meta data.
+     *
+     * @param url URL of data source
+     * @param username username of data source
+     * @param catalog catalog of data source
+     * @return data source meta data
+     */
+    default DataSourceMetaData getDataSourceMetaData(String url, String username, String catalog) {
+        return getDataSourceMetaData(url, username);
+    }
     
     /**
      * Get system database schema map.
@@ -125,13 +136,21 @@ public interface DatabaseType extends TypedSPI {
     }
     
     /**
-     * Handle rollback only.
+     * Is instance connection available.
      *
-     * @param rollbackOnly rollback only
-     * @param statement statement
-     * @throws SQLException SQL exception
+     * @return true or false
      */
-    default void handleRollbackOnly(final boolean rollbackOnly, final SQLStatement statement) throws SQLException {
+    default boolean isInstanceConnectionAvailable() {
+        return false;
+    }
+    
+    /**
+     * Get trunk database type.
+     * 
+     * @return trunk database type
+     */
+    default Optional<DatabaseType> getTrunkDatabaseType() {
+        return Optional.empty();
     }
     
     @Override

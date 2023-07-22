@@ -106,7 +106,7 @@ class ShowStorageUnitExecutorTest {
     
     @Test
     void assertAllStorageUnit() {
-        RQLExecutor<ShowStorageUnitsStatement> executor = new ShowStorageUnitExecutor();
+        ShowStorageUnitExecutor executor = new ShowStorageUnitExecutor();
         ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), null);
         Map<Integer, String> nameMap = new HashMap<>(3, 1F);
         nameMap.put(0, "ds_2");

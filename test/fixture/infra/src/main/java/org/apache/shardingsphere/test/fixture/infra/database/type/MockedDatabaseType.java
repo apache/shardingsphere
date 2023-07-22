@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.fixture.infra.database.type;
 
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.spi.TrunkDatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Mocked database type.
  */
-public final class MockedDatabaseType implements TrunkDatabaseType {
+public final class MockedDatabaseType implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {

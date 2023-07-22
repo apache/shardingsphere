@@ -63,6 +63,10 @@ dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
 
+dropTableSpace
+    : DROP TABLESPACE tablespaceName (INCLUDING CONTENTS ((AND | KEEP) DATAFILES)? (CASCADE CONSTRAINTS)? )?
+    ;
+
 dropPackage
     : DROP PACKAGE BODY? packageName
     ;
@@ -3526,7 +3530,7 @@ dropMaterializedZonemap
     ;
 
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? permanentTablespaceClause
+    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
     ;
 
 permanentTablespaceClause

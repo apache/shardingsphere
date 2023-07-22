@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.globalclock.core.executor;
 
-import org.apache.shardingsphere.infra.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 import java.sql.Connection;

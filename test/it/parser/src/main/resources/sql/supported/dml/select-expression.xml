@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_with_performance_schema_global_status" value="SELECT 1 AS STATUS FROM performance_schema.global_status WHERE VARIABLE_NAME= 'MAX_EXECUTION_TIME_SET_FAILED' AND CONVERT(VARIABLE_VALUE, UNSIGNED) > @time_set_failed" db-types="MySQL" />
     <sql-case id="select_udf_function_mysqltest1_f1" value="select mysqltest1.f1()" db-types="MySQL" />
     <sql-case id="select_case_when_with_mul_condition" value="select case 1*0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
     <sql-case id="select_case_when_with_sub_condition" value="select case 1-0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />

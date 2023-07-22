@@ -54,8 +54,8 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
     public ClusterShowProcessListContainerComposer(final ShowProcessListTestParameter testParam) {
         containers = new ITContainers(testParam.getScenario());
         governanceContainer = isClusterMode(testParam.getRunMode()) ? containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper")) : null;
-        StorageContainer storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "", testParam.getScenario(),
-                StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType())));
+        StorageContainer storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "",
+                StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType(), testParam.getScenario())));
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(),
                 getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode(), testParam.getGovernanceCenter()), AdapterContainerUtils.getAdapterContainerImage());
         jdbcContainer = AdapterContainerFactory.newInstance(

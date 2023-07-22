@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 </#if>
 <#if feature?contains("readwrite-splitting")>
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -139,6 +140,7 @@ public final class Configuration {
     </#if>
     <#if feature?contains("sharding")>
         result.add(createShardingRuleConfiguration());
+        result.add(createBroadcastRuleConfiguration());
     </#if>
     <#if feature?contains("mask")>
         result.add(createMaskRuleConfiguration());

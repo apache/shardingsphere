@@ -2352,4 +2352,34 @@
             </where>
         </select-subquery>
     </insert>
+    
+    <insert sql-case-id="insert_with_interval">
+        <table name="test" start-index="12" stop-index="15" literal-start-index="12" literal-stop-index="15" />
+        <columns start-index="16" stop-index="16" literal-start-index="16" literal-stop-index="16" />
+        <values>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '123-2' YEAR(3) TO MONTH" text="INTERVAL '123-2' YEAR(3) TO MONTH" start-index="25" stop-index="57" literal-start-index="25" literal-stop-index="57" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '123' YEAR(3)" text="INTERVAL '123' YEAR(3)" start-index="60" stop-index="81" literal-start-index="60" literal-stop-index="81" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '300' MONTH(3)" text="INTERVAL '300' MONTH(3)" start-index="84" stop-index="106" literal-start-index="84" literal-stop-index="106" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '4' YEAR" text="INTERVAL '4' YEAR" start-index="109" stop-index="125" literal-start-index="109" literal-stop-index="125" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '50' MONTH" text="INTERVAL '50' MONTH" start-index="128" stop-index="146" literal-start-index="128" literal-stop-index="146" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '4 5:12:10.222' DAY TO SECOND(3)" text="INTERVAL '4 5:12:10.222' DAY TO SECOND(3)" start-index="149" stop-index="189" literal-start-index="149" literal-stop-index="189" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '4 5:12' DAY TO MINUTE" text="INTERVAL '4 5:12' DAY TO MINUTE" start-index="192" stop-index="222" literal-start-index="192" literal-stop-index="222" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

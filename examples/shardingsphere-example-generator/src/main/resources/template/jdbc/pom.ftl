@@ -54,12 +54,12 @@
         <dependency>
             <groupId>org.jboss.narayana.jta</groupId>
             <artifactId>jta</artifactId>
-            <version>5.9.1.Final</version>
+            <version>5.12.4.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.narayana.jts</groupId>
             <artifactId>narayana-jts-integration</artifactId>
-            <version>5.9.1.Final</version>
+            <version>5.12.4.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss</groupId>

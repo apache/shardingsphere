@@ -23,8 +23,9 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowCreateTableStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -108,7 +109,7 @@ class MergedEncryptShowCreateTableMergedResultTest {
         TableNameSegment tableNameSegment = new TableNameSegment(1, 4, identifierValue);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
         when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
-        when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         return new MergedEncryptShowCreateTableMergedResult(queryResult, sqlStatementContext, encryptRule);
     }
 }

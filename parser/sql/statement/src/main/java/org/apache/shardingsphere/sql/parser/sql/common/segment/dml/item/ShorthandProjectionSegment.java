@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvai
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -54,7 +55,7 @@ public final class ShorthandProjectionSegment implements ProjectionSegment, Owne
     }
     
     @Override
-    public Optional<AliasSegment> getAlias() {
-        return Optional.ofNullable(alias);
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
     }
 }

@@ -17,6 +17,75 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_position_function">
+        <projections start-index="7" stop-index="97">
+            <expression-projection text="position(&quot;0&quot; in &quot;baaa&quot; in (1))" start-index="7" stop-index="36">
+                <expr>
+                    <function start-index="7" stop-index="36" text="position(&quot;0&quot; in &quot;baaa&quot; in (1))" function-name="position">
+                        <parameter>
+                            <literal-expression start-index="16" stop-index="18" value="0" />
+                        </parameter>
+                        <parameter>
+                            <in-expression start-index="23" stop-index="35">
+                                <left>
+                                    <literal-expression start-index="23" stop-index="28" value="baaa" />
+                                </left>
+                                <right>
+                                    <list-expression start-index="33" stop-index="35">
+                                        <items>
+                                            <literal-expression start-index="34" stop-index="34" value="1" />
+                                        </items>
+                                    </list-expression>
+                                </right>
+                            </in-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="position(&quot;0&quot; in &quot;1&quot; in (1,2,3))" start-index="38" stop-index="68">
+                <expr>
+                    <function start-index="38" stop-index="68" text="position(&quot;0&quot; in &quot;1&quot; in (1,2,3))" function-name="position">
+                        <parameter>
+                            <literal-expression start-index="47" stop-index="49" value="0" />
+                        </parameter>
+                        <parameter>
+                            <in-expression start-index="54" stop-index="67">
+                                <left>
+                                    <literal-expression start-index="54" stop-index="56" value="1" />
+                                </left>
+                                <right>
+                                    <list-expression start-index="61" stop-index="67">
+                                        <items>
+                                            <literal-expression start-index="62" stop-index="62" value="1" />
+                                        </items>
+                                        <items>
+                                            <literal-expression start-index="64" stop-index="64" value="2" />
+                                        </items>
+                                        <items>
+                                            <literal-expression start-index="66" stop-index="66" value="3" />
+                                        </items>
+                                    </list-expression>
+                                </right>
+                            </in-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="position(&quot;sql&quot; in (&quot;mysql&quot;))" start-index="70" stop-index="97">
+                <expr>
+                    <function start-index="70" stop-index="97" text="position(&quot;sql&quot; in (&quot;mysql&quot;))" function-name="position">
+                        <parameter>
+                            <literal-expression start-index="79" stop-index="83" value="sql" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="89" stop-index="95" value="mysql" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
     <select sql-case-id="select_with_latin1">
         <projections start-index="7" stop-index="62">
             <expression-projection text="_latin1'B' collate latin1_bin in (_latin1'a',_latin1'b')" start-index="7" stop-index="62">
@@ -5555,5 +5624,38 @@
                 </expr>
             </expression-projection>
         </projections>
+    </select>
+
+    <select sql-case-id="select_with_xml_is_schema_valid_function">
+        <projections start-index="7" stop-index="86" literal-start-index="7" literal-stop-index="86">
+            <expression-projection text="x.xmlcol.isSchemaValid('http://www.example.com/schemas/ipo.xsd','purchaseOrder')" start-index="7" stop-index="86" literal-start-index="7" literal-stop-index="86">
+                <expr>
+                    <function function-name="isSchemaValid" text="x.xmlcol.isSchemaValid('http://www.example.com/schemas/ipo.xsd','purchaseOrder')" start-index="7" stop-index="86" literal-start-index="7" literal-stop-index="86">
+                        <parameter>
+                            <literal-expression value="http://www.example.com/schemas/ipo.xsd" start-index="30" stop-index="69" literal-start-index="30" literal-stop-index="69"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="purchaseOrder" start-index="71" stop-index="85" literal-start-index="71" literal-stop-index="85"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table alias="x" name="po_tab" start-index="93" stop-index="100" literal-start-index="93" literal-stop-index="100"/>
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_last_value_function">
+        <projections start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+            <expression-projection text="LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+                <expr>
+                    <function function-name="LAST_VALUE" text="LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="TEST" start-index="78" stop-index="81" literal-start-index="78" literal-stop-index="81"/>
+        </from>
     </select>
 </sql-parser-test-cases>
