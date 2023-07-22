@@ -124,6 +124,7 @@ execute
     | alterHierarchy
     | alterLockdownProfile
     | alterPluggableDatabase
+    | explain
     | createProcedure
     | dropProcedure
     | alterProcedure
@@ -142,5 +143,6 @@ execute
     | dropProfile
     | dropFunction
     | dropCluster
+    | systemAction
     ) SEMI_?
     ;

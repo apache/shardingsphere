@@ -36,12 +36,6 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Run CheckStyle and Spotless
         run: ./mvnw checkstyle:check spotless:check -T1C
   

@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.infra.database.core.type.fixture;
 
-import org.apache.shardingsphere.infra.database.core.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-public final class InfraBranchDatabaseTypeFixture implements BranchDatabaseType {
+public final class InfraBranchDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -56,8 +56,8 @@ public final class InfraBranchDatabaseTypeFixture implements BranchDatabaseType 
     }
     
     @Override
-    public DatabaseType getTrunkDatabaseType() {
-        return TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE");
+    public Optional<DatabaseType> getTrunkDatabaseType() {
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"));
     }
     
     @Override

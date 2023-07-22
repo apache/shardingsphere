@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.infra.database.postgresql;
 
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,65 +30,43 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class PostgreSQLDatabaseTypeTest {
     
     @Test
     void assertGetQuoteCharacter() {
-        assertThat(new PostgreSQLDatabaseType().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getQuoteCharacter(), is(QuoteCharacter.QUOTE));
     }
     
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(new PostgreSQLDatabaseType().getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:postgresql:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:postgresql:")));
     }
     
     @Test
     void assertGetDataSourceMetaData() {
-        assertThat(new PostgreSQLDatabaseType().getDataSourceMetaData("jdbc:postgresql://localhost:5432/demo_ds_0", "postgres"), instanceOf(PostgreSQLDataSourceMetaData.class));
-    }
-    
-    @Test
-    void assertHandleRollbackOnlyForNotRollbackOnly() {
-        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().handleRollbackOnly(false, mock(CommitStatement.class)));
-    }
-    
-    @Test
-    void assertHandleRollbackOnlyForRollbackOnlyAndCommitStatement() {
-        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(CommitStatement.class)));
-    }
-    
-    @Test
-    void assertHandleRollbackOnlyForRollbackOnlyAndRollbackStatement() {
-        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(RollbackStatement.class)));
-    }
-    
-    @Test
-    void assertHandleRollbackOnlyForRollbackOnlyAndNotTCLStatement() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(SelectStatement.class)));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getDataSourceMetaData("jdbc:postgresql://localhost:5432/demo_ds_0", "postgres"),
+                instanceOf(PostgreSQLDataSourceMetaData.class));
     }
     
     @Test
     void assertGetSystemDatabases() {
-        assertTrue(new PostgreSQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("postgres"));
+        assertTrue(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getSystemDatabaseSchemaMap().containsKey("postgres"));
     }
     
     @Test
     void assertGetSystemSchemas() {
-        assertThat(new PostgreSQLDatabaseType().getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "pg_catalog", "shardingsphere"))));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "pg_catalog", "shardingsphere"))));
     }
     
     @Test
     void assertIsSchemaAvailable() {
-        assertTrue(new PostgreSQLDatabaseType().isSchemaAvailable());
+        assertTrue(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").isSchemaAvailable());
     }
     
     @Test
     void assertGetDefaultSchema() {
-        assertThat(new PostgreSQLDatabaseType().getDefaultSchema(), is(Optional.of("public")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getDefaultSchema(), is(Optional.of("public")));
     }
 }

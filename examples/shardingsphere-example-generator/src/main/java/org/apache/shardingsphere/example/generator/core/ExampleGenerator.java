@@ -97,7 +97,7 @@ public interface ExampleGenerator extends TypedSPI {
     default Map<String, String> buildDataModel(final Properties props, final String mode, final String transaction, final String framework, final String feature) {
         Map<String, String> result = new LinkedHashMap<>();
         props.forEach((key, value) -> result.put(key.toString(), value.toString()));
-        result.put("product", getType().toString());
+        result.put("product", getType());
         result.put("mode", mode);
         result.put("transaction", transaction);
         result.put("feature", feature);
@@ -105,4 +105,7 @@ public interface ExampleGenerator extends TypedSPI {
         result.put("shardingsphereVersion", ShardingSphereVersion.VERSION);
         return result;
     }
+    
+    @Override
+    String getType();
 }

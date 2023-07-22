@@ -54,4 +54,7 @@ public interface ExampleScenario extends TypedSPI {
      * @return resource paths
      */
     Collection<String> getResourcePaths();
+    
+    @Override
+    String getType();
 }

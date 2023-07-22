@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_with_performance_schema_global_status" value="SELECT 1 AS STATUS FROM performance_schema.global_status WHERE VARIABLE_NAME= 'MAX_EXECUTION_TIME_SET_FAILED' AND CONVERT(VARIABLE_VALUE, UNSIGNED) > @time_set_failed" db-types="MySQL" />
     <sql-case id="select_with_expression" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="MySQL, H2, SQL92, SQLServer" />
     <sql-case id="select_with_expression_for_postgresql" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_date_function" value="SELECT DATE(i.creation_date) AS creation_date FROM `t_order_item` AS i ORDER BY DATE(i.creation_date) DESC" db-types="MySQL" />

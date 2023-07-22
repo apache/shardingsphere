@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.sql92;
 
-import org.apache.shardingsphere.infra.database.core.type.TrunkDatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * Database type of SQL92.
  */
-public final class SQL92DatabaseType implements TrunkDatabaseType {
+public final class SQL92DatabaseType implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {

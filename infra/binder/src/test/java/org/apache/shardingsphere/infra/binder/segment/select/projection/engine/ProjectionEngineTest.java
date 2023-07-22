@@ -28,29 +28,25 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -178,7 +174,7 @@ class ProjectionEngineTest {
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), parameterMarkerExpressionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ParameterMarkerProjection.class));
-        assertThat(actual.get().getAlias().orElse(null), is("alias"));
+        assertThat(actual.get().getAlias().map(IdentifierValue::getValue).orElse(null), is("alias"));
     }
     
     @Test
@@ -214,35 +210,6 @@ class ProjectionEngineTest {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
         assertThrows(SchemaNotFoundException.class, () -> new ProjectionEngine(
                 DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(tableSegment, shorthandProjectionSegment));
-    }
-    
-    @Test
-    void assertCreateProjectionWhenShorthandProjectionContainsColumnProjectionAndExpressionProjection() {
-        ProjectionsSegment subQuerySegment = new ProjectionsSegment(0, 0);
-        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
-        subQuerySegment.getProjections().add(new ColumnProjectionSegment(columnSegment));
-        ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "nvl(leave_date, '20991231')");
-        expressionProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("leave_date")));
-        subQuerySegment.getProjections().add(expressionProjectionSegment);
-        OracleSelectStatement subSelectStatement = new OracleSelectStatement();
-        subSelectStatement.setProjections(subQuerySegment);
-        subSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("staff_info"))));
-        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
-        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, subSelectStatement));
-        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType)
-                .createProjection(subqueryTableSegment, shorthandProjectionSegment);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShorthandProjection.class));
-        assertThat(((ShorthandProjection) actual.get()).getColumnProjections().size(), is(2));
-        assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(2));
-        Collection<ColumnProjection> columnProjections = new LinkedList<>();
-        columnProjections.add(new ColumnProjection(null, "name", null));
-        columnProjections.add(new ColumnProjection(null, "leave_date", null));
-        assertThat(((ShorthandProjection) actual.get()).getColumnProjections(), is(columnProjections));
-        Collection<Projection> expectedColumnProjections = new LinkedHashSet<>();
-        expectedColumnProjections.add(new ColumnProjection(null, "name", null));
-        expectedColumnProjections.add(new ColumnProjection(null, "leave_date", null));
-        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(expectedColumnProjections));
     }
     
     @Test

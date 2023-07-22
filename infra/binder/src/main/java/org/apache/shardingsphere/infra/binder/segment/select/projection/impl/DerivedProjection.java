@@ -38,23 +38,22 @@ public final class DerivedProjection implements Projection {
     
     private final String expression;
     
-    private final String alias;
+    private final IdentifierValue alias;
     
     private final SQLSegment derivedProjectionSegment;
     
     @Override
-    public Optional<String> getAlias() {
-        return Optional.ofNullable(alias);
+    public String getColumnName() {
+        return expression;
     }
     
     @Override
     public String getColumnLabel() {
-        return getAlias().orElse(expression);
+        return getAlias().map(IdentifierValue::getValue).orElse(expression);
     }
     
     @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        // TODO replace getAlias with aliasIdentifier
-        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null) : new DerivedProjection(expression, alias, derivedProjectionSegment);
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias);
     }
 }

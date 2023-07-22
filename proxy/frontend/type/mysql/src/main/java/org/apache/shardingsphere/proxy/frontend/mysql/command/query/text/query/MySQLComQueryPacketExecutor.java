@@ -77,7 +77,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         }
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule rule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return rule.getSQLParserEngine(databaseType.getType()).parse(sql, false);
+        return rule.getSQLParserEngine(databaseType).parse(sql, false);
     }
     
     private boolean areMultiStatements(final ConnectionSession connectionSession, final SQLStatement sqlStatement, final String sql) {

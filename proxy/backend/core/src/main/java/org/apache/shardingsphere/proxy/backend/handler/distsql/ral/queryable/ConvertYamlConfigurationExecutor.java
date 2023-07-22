@@ -25,7 +25,6 @@ import org.apache.shardingsphere.distsql.handler.ral.query.ConvertRuleConfigurat
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -37,16 +36,10 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +49,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.TreeMap;
 
 /**
@@ -89,18 +81,12 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         StringBuilder result = new StringBuilder();
         appendResourceDistSQL(yamlConfig, result);
         for (RuleConfiguration each : swapToRuleConfigs(yamlConfig).values()) {
+            String type = each.getClass().getName();
             if (each instanceof CompatibleEncryptRuleConfiguration) {
-                ConvertRuleConfigurationProvider convertRuleConfigProvider = TypedSPILoader.getService(ConvertRuleConfigurationProvider.class,
-                        ((CompatibleEncryptRuleConfiguration) each).convertToEncryptRuleConfiguration().getClass().getName());
-                result.append(convertRuleConfigProvider.convert(each));
-            } else if (each instanceof ShadowRuleConfiguration) {
-                appendShadowDistSQL((ShadowRuleConfiguration) each, result);
-            } else if (each instanceof MaskRuleConfiguration) {
-                appendMaskDistSQL((MaskRuleConfiguration) each, result);
-            } else {
-                ConvertRuleConfigurationProvider convertRuleConfigProvider = TypedSPILoader.getService(ConvertRuleConfigurationProvider.class, each.getClass().getName());
-                result.append(convertRuleConfigProvider.convert(each));
+                type = ((CompatibleEncryptRuleConfiguration) each).convertToEncryptRuleConfiguration().getClass().getName();
             }
+            ConvertRuleConfigurationProvider convertRuleConfigProvider = TypedSPILoader.getService(ConvertRuleConfigurationProvider.class, type);
+            result.append(convertRuleConfigProvider.convert(each));
         }
         return result.toString();
     }
@@ -178,115 +164,6 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
                 stringBuilder.append(DistSQLScriptConstants.COMMA).append(' ');
             }
         }
-    }
-    
-    private void appendShadowDistSQL(final ShadowRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        if (ruleConfig.getDataSources().isEmpty()) {
-            return;
-        }
-        stringBuilder.append(DistSQLScriptConstants.CREATE_SHADOW);
-        Iterator<ShadowDataSourceConfiguration> iterator = ruleConfig.getDataSources().iterator();
-        while (iterator.hasNext()) {
-            ShadowDataSourceConfiguration dataSourceConfig = iterator.next();
-            String shadowRuleName = dataSourceConfig.getName();
-            String shadowTables = getShadowTables(shadowRuleName, ruleConfig.getTables(), ruleConfig.getShadowAlgorithms());
-            stringBuilder.append(
-                    String.format(DistSQLScriptConstants.SHADOW, shadowRuleName, dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), shadowTables));
-            if (iterator.hasNext()) {
-                stringBuilder.append(DistSQLScriptConstants.COMMA);
-            }
-        }
-        stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
-    }
-    
-    private String getShadowTables(final String shadowRuleName, final Map<String, ShadowTableConfiguration> ruleConfig, final Map<String, AlgorithmConfiguration> algorithmConfigs) {
-        StringBuilder result = new StringBuilder();
-        Iterator<Entry<String, ShadowTableConfiguration>> iterator = ruleConfig.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<String, ShadowTableConfiguration> shadowTableConfig = iterator.next();
-            if (shadowTableConfig.getValue().getDataSourceNames().contains(shadowRuleName)) {
-                String shadowTableTypes = getShadowTableTypes(shadowTableConfig.getValue().getShadowAlgorithmNames(), algorithmConfigs);
-                result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE, shadowTableConfig.getKey(), shadowTableTypes));
-            }
-            if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
-            }
-        }
-        return result.toString();
-    }
-    
-    private String getShadowTableTypes(final Collection<String> shadowAlgorithmNames, final Map<String, AlgorithmConfiguration> algorithmConfigs) {
-        StringBuilder result = new StringBuilder();
-        Iterator<String> iterator = shadowAlgorithmNames.iterator();
-        while (iterator.hasNext()) {
-            result.append(getAlgorithmType(algorithmConfigs.get(iterator.next())));
-            if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA).append(' ');
-            }
-        }
-        return result.toString();
-    }
-    
-    private void appendMaskDistSQL(final MaskRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        if (ruleConfig.getTables().isEmpty()) {
-            return;
-        }
-        stringBuilder.append(DistSQLScriptConstants.CREATE_MASK);
-        Iterator<MaskTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
-        while (iterator.hasNext()) {
-            MaskTableRuleConfiguration tableRuleConfig = iterator.next();
-            stringBuilder.append(String.format(DistSQLScriptConstants.MASK, tableRuleConfig.getName(), getMaskColumns(tableRuleConfig.getColumns(), ruleConfig.getMaskAlgorithms())));
-            if (iterator.hasNext()) {
-                stringBuilder.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
-            }
-        }
-        stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
-    }
-    
-    private String getMaskColumns(final Collection<MaskColumnRuleConfiguration> columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        StringBuilder result = new StringBuilder();
-        Iterator<MaskColumnRuleConfiguration> iterator = columnRuleConfig.iterator();
-        if (iterator.hasNext()) {
-            MaskColumnRuleConfiguration column = iterator.next();
-            result.append(String.format(DistSQLScriptConstants.MASK_COLUMN, column.getLogicColumn(), getMaskAlgorithms(column, maskAlgorithms)));
-        }
-        return result.toString();
-    }
-    
-    private String getMaskAlgorithms(final MaskColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        return getAlgorithmType(maskAlgorithms.get(columnRuleConfig.getMaskAlgorithm()));
-    }
-    
-    private String getAlgorithmType(final AlgorithmConfiguration algorithmConfig) {
-        StringBuilder result = new StringBuilder();
-        if (null == algorithmConfig) {
-            return result.toString();
-        }
-        String type = algorithmConfig.getType().toLowerCase();
-        if (algorithmConfig.getProps().isEmpty()) {
-            result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE_WITHOUT_PROPS, type));
-        } else {
-            result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE, type, getAlgorithmProperties(algorithmConfig.getProps())));
-        }
-        return result.toString();
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private String getAlgorithmProperties(final Properties props) {
-        StringBuilder result = new StringBuilder();
-        Iterator<String> iterator = new TreeMap(props).keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            Object value = props.get(key);
-            if (null == value) {
-                continue;
-            }
-            result.append(String.format(DistSQLScriptConstants.PROPERTY, key, value));
-            if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA).append(' ');
-            }
-        }
-        return result.toString();
     }
     
     @Override

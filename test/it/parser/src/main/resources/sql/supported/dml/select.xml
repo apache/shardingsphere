@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_position_function" value="select position(&quot;0&quot; in &quot;baaa&quot; in (1)),position(&quot;0&quot; in &quot;1&quot; in (1,2,3)),position(&quot;sql&quot; in (&quot;mysql&quot;))" db-types="MySQL" />
     <sql-case id="select_extract_function_with_day_hour" value="select extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" db-types="MySQL" />
     <sql-case id="select_with_latin1" value="select _latin1'B' collate latin1_bin in (_latin1'a',_latin1'b')" db-types="MySQL" />
     <sql-case id="select_with_default_str" value="select * from t1 where str &lt;&gt; default(str)" db-types="MySQL" />
@@ -188,4 +189,5 @@
     <sql-case id="select_with_format_function" value="SELECT wi.code.format(null,'PURE_IDENTITY') as PURE_IDENTITY FROM warehouse_info wi;" db-types="Oracle" />
     <sql-case id="select_with_xml_is_schema_valid_function" value="SELECT x.xmlcol.isSchemaValid('http://www.example.com/schemas/ipo.xsd','purchaseOrder') FROM po_tab x;" db-types="Oracle" />
     <sql-case id="select_with_last_value_function" value="SELECT LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE) from TEST;" db-types="Oracle" />
+    <sql-case id="select_with_lead_and_lag_function" value="SELECT hire_date, LAG(hire_date, 1) OVER (ORDER BY hire_date) AS LAG1, LEAD(hire_date, 1) OVER (ORDER BY hire_date) AS LEAD1 FROM employees WHERE department_id = 30 ORDER BY hire_date;" db-types="Oracle" />
 </sql-cases>
