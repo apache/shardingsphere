@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.database.oracle;
 
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.util.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.enums;
+package org.apache.shardingsphere.infra.database.enums;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,7 +29,7 @@ class QuoteCharacterTest {
     
     @Test
     void assertGetQuoteCharacterWithNullValue() {
-        assertThat(QuoteCharacter.getQuoteCharacter(null), is(QuoteCharacter.NONE));
+        MatcherAssert.assertThat(QuoteCharacter.getQuoteCharacter(null), is(QuoteCharacter.NONE));
     }
     
     @Test
