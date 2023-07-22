@@ -29,6 +29,7 @@
     
     <modules>
         <module>jdbc</module>
+        <module>database</module>
         <module>infra</module>
     </modules>
 </project>
