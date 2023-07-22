@@ -1201,7 +1201,7 @@ orderByItem
 dataType
     : dataTypeName = (INTEGER | INT | TINYINT | SMALLINT | MIDDLEINT | MEDIUMINT | BIGINT) fieldLength? fieldOptions?
     | (dataTypeName = REAL | dataTypeName = DOUBLE PRECISION?) precision? fieldOptions?
-    | dataTypeName = (FLOAT | DECIMAL | NUMERIC | FIXED) (fieldLength | precision)? fieldOptions?
+    | dataTypeName = (FLOAT | DECIMAL | DEC | NUMERIC | FIXED) (fieldLength | precision)? fieldOptions?
     | dataTypeName = BIT fieldLength?
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?
