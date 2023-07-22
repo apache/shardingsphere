@@ -449,4 +449,36 @@
             </where>
         </select>
     </describe>
+    
+    <describe sql-case-id="explain_for_update_without_condition">
+        <update>
+            <table start-index="24" stop-index="30">
+                <simple-table name="t_order" start-index="24" stop-index="30" />
+            </table>
+            <set start-index="32" stop-index="54">
+                <assignment start-index="32" stop-index="54">
+                    <column name="status" start-index="36" stop-index="41" />
+                    <assignment-value>
+                        <literal-expression value="finished" start-index="45" stop-index="54" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </describe>
+    
+    <describe sql-case-id="explain_for_update">
+        <update>
+            <table start-index="8" stop-index="14">
+                <simple-table name="t_order" start-index="24" stop-index="30" />
+            </table>
+            <set start-index="32" stop-index="41" literal-stop-index="41">
+                <assignment start-index="36" stop-index="41" literal-stop-index="41">
+                    <column name="id" start-index="36" stop-index="37" />
+                    <assignment-value>
+                        <literal-expression value="1" start-index="41" stop-index="41" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </describe>
 </sql-parser-test-cases>
