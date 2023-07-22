@@ -39,4 +39,11 @@
          DATAFILE '/u01/app/oracle/oradata/pdbseed/usertbs01.dbf'
          SIZE 200M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED
          TABLESPACE test_space ONLINE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_minimum_extend_k" value="CREATE TABLESPACE test_space MINIMUM EXTEND 1K" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_minimum_extend_m" value="CREATE TABLESPACE test_space MINIMUM EXTEND 12M" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_minimum_extend_g" value="CREATE TABLESPACE test_space MINIMUM EXTEND 31G" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_minimum_extend_t" value="CREATE TABLESPACE test_space MINIMUM EXTEND 13T" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_minimum_extend_p" value="CREATE TABLESPACE test_space MINIMUM EXTEND 41P" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_minimum_extend_e" value="CREATE TABLESPACE test_space MINIMUM EXTEND 14E" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_blocksize" value="CREATE TABLESPACE test_space BLOCKSIZE 8K" db-types="Oracle" />
 </sql-cases>

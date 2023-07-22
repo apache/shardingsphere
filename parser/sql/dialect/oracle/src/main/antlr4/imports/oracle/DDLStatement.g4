@@ -3534,7 +3534,11 @@ createTablespace
     ;
 
 permanentTablespaceClause
-    : TABLESPACE tablespaceName (ONLINE|OFFLINE)
+    : TABLESPACE tablespaceName (
+    (MINIMUM EXTEND sizeClause)
+    | (BLOCKSIZE INTEGER_ K?)
+    | (ONLINE|OFFLINE)
+    )
     ;
 
 dropFunction
