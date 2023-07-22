@@ -45,7 +45,7 @@ public final class MockedDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:fixture");
+        return Collections.singleton("jdbc:mock");
     }
     
     @Override
