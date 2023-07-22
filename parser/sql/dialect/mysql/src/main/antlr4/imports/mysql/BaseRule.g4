@@ -1153,7 +1153,7 @@ matchSearchModifier
     ;
     
 caseExpression
-    : CASE simpleExpr? caseWhen+ caseElse? END
+    : CASE expr? caseWhen+ caseElse? END
     ;
     
 datetimeExpr
