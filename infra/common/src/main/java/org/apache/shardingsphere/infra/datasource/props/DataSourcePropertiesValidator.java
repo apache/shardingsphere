@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.datasource.props;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeChecker;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
@@ -25,8 +24,6 @@ import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPr
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -74,21 +71,14 @@ public final class DataSourcePropertiesValidator {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(dataSourceProps);
-            checkFailFast(dataSourceName, dataSource);
             // CHECKSTYLE:OFF
-        } catch (final SQLException | RuntimeException ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
         } finally {
             if (null != dataSource) {
                 new DataSourcePoolDestroyer(dataSource).asyncDestroy();
             }
-        }
-    }
-    
-    private void checkFailFast(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            DatabaseTypeChecker.checkSupportedStorageType(connection.getMetaData().getURL(), dataSourceName);
         }
     }
 }

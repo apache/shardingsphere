@@ -78,21 +78,4 @@ public final class DatabaseTypeChecker {
                 .anyMatch(each -> each.getClass().equals(value.getClass())), () -> new UnsupportedStorageTypeException(databaseName, key)));
         isChecked = true;
     }
-    
-    /**
-     * Check supported storage type.
-     *
-     * @param url URL
-     * @param dataSourceName data source name
-     */
-    public static void checkSupportedStorageType(final String url, final String dataSourceName) {
-        if (MOCKED_URL_PREFIXES.stream().anyMatch(url::startsWith)) {
-            return;
-        }
-        ShardingSpherePreconditions.checkState(UNSUPPORTED_URL_PREFIXES.stream()
-                .noneMatch(url::startsWith), () -> new UnsupportedStorageTypeException(dataSourceName));
-        ShardingSpherePreconditions.checkState(SUPPORTED_STORAGE_TYPES.stream()
-                .flatMap(storageType -> storageType.getJdbcUrlPrefixes().stream())
-                .anyMatch(url::startsWith), () -> new UnsupportedStorageTypeException(dataSourceName));
-    }
 }
