@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.quote;
+package org.apache.shardingsphere.infra.util.enums;
 
 import com.google.common.base.Strings;
 import lombok.Getter;

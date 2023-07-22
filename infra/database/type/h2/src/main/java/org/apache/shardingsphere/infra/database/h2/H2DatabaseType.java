@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.infra.database.h2;
 
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.util.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -34,6 +35,11 @@ public final class H2DatabaseType implements DatabaseType {
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
+    }
+    
+    @Override
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.FIRST;
     }
     
     @Override

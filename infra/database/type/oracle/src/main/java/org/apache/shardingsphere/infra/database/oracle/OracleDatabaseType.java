@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.infra.database.oracle;
 
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.util.enums.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -45,6 +46,11 @@ public final class OracleDatabaseType implements DatabaseType {
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
+    }
+    
+    @Override
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.LAST;
     }
     
     @Override

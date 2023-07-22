@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.enums;
+package org.apache.shardingsphere.infra.util.enums;
 
 /**
  * Nulls order type.
@@ -30,5 +30,14 @@ public enum NullsOrderType {
     /**
      * Nulls last.
      */
-    LAST
+    LAST;
+    
+    /**
+     * Get reversed order type.
+     * 
+     * @return reversed order type
+     */
+    public NullsOrderType getReversedOrderType() {
+        return this == FIRST ? LAST : FIRST;
+    }
 }
