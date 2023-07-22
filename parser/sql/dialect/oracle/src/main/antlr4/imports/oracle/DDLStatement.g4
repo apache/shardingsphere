@@ -3529,6 +3529,10 @@ dropMaterializedZonemap
     : DROP MATERIALIZED ZONEMAP zonemapName
     ;
 
+tablespaceEncryptionSpec
+    : USING encryptAlgorithmName
+    ;
+
 createTablespace
     : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
     ;
@@ -3539,6 +3543,7 @@ permanentTablespaceClause
     | (BLOCKSIZE INTEGER_ K?)
     | loggingClause
     | (FORCE LOGGING)
+    | ENCRYPTION tablespaceEncryptionSpec
     | (ONLINE|OFFLINE)
     )
     ;

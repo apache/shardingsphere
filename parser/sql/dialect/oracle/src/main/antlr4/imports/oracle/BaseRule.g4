@@ -526,6 +526,10 @@ subpartitionKeyValue
     : INTEGER_ | dateTimeLiterals
     ;
 
+encryptAlgorithmName
+    : STRING_
+    ;
+
 zonemapName
     : identifier
     ;

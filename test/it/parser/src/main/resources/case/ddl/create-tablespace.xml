@@ -41,4 +41,5 @@
     <create-tablespace sql-case-id="create_tablespace_with_nologging_clause" />
     <create-tablespace sql-case-id="create_tablespace_with_filesystem_like_logging" />
     <create-tablespace sql-case-id="create_tablespace_with_force_logging" />
+    <create-tablespace sql-case-id="create_tablespace_with_encrypt" />
 </sql-parser-test-cases>
