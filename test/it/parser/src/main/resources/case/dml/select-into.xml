@@ -201,4 +201,13 @@
             <expression-projection text="1" start-index="7" stop-index="7" />
         </projections>
     </select>
+
+    <select sql-case-id="select_into_with_variable">
+        <projections start-index="7" stop-index="17" literal-start-index="7" literal-stop-index="17">
+            <column-projection name="select_list" start-index="7" stop-index="17" literal-start-index="7" literal-stop-index="17" />
+        </projections>
+        <from>
+            <simple-table name="table_or_view_name" start-index="50" stop-index="67" literal-start-index="50" literal-stop-index="67" />
+        </from>
+    </select>
 </sql-parser-test-cases>

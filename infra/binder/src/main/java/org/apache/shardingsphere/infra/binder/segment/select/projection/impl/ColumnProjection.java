@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -53,24 +53,6 @@ public final class ColumnProjection implements Projection {
                 null == alias ? null : new IdentifierValue(alias, QuoteCharacter.NONE));
     }
     
-    /**
-     * Get column name.
-     * 
-     * @return column name
-     */
-    public IdentifierValue getName() {
-        return name;
-    }
-    
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
-    public Optional<IdentifierValue> getOwner() {
-        return Optional.ofNullable(owner);
-    }
-    
     @Override
     public String getColumnName() {
         return null == owner ? name.getValue() : owner.getValue() + "." + name.getValue();
@@ -82,16 +64,22 @@ public final class ColumnProjection implements Projection {
     }
     
     @Override
+    public String getExpression() {
+        return null == owner ? name.getValue() : owner.getValue() + "." + name.getValue();
+    }
+    
+    @Override
     public Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias);
     }
     
-    @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        ColumnProjection result = null == alias ? new ColumnProjection(subqueryTableAlias, name, null) : new ColumnProjection(subqueryTableAlias, alias, null);
-        result.setOriginalOwner(originalOwner);
-        result.setOriginalName(originalName);
-        return result;
+    /**
+     * Get owner.
+     *
+     * @return owner
+     */
+    public Optional<IdentifierValue> getOwner() {
+        return Optional.ofNullable(owner);
     }
     
     /**

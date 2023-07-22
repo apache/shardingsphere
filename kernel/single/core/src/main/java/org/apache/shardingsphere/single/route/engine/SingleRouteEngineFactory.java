@@ -37,15 +37,15 @@ public final class SingleRouteEngineFactory {
     /**
      * Create new instance of single route engine.
      *
-     * @param singleTableNames single table names
+     * @param singleTables single tables
      * @param sqlStatement SQL statement
      * @return created instance
      */
-    public static Optional<SingleRouteEngine> newInstance(final Collection<QualifiedTable> singleTableNames, final SQLStatement sqlStatement) {
-        // TODO Consider to add route logic for more statements
-        if (!singleTableNames.isEmpty()) {
-            return Optional.of(new SingleStandardRouteEngine(singleTableNames, sqlStatement));
+    public static Optional<SingleRouteEngine> newInstance(final Collection<QualifiedTable> singleTables, final SQLStatement sqlStatement) {
+        if (!singleTables.isEmpty()) {
+            return Optional.of(new SingleStandardRouteEngine(singleTables, sqlStatement));
         }
+        // TODO move this logic to common route logic
         if (isSchemaDDLStatement(sqlStatement)) {
             return Optional.of(new SingleDatabaseBroadcastRouteEngine());
         }

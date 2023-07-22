@@ -20,9 +20,10 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.SubqueryProjection;
-import org.apache.shardingsphere.infra.database.oracle.OracleDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -63,7 +64,7 @@ class SubstitutableColumnNameTokenTest {
     void assertToStringWithSubqueryProjection() {
         Collection<Projection> projections = Arrays.asList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.BACK_QUOTE),
                 new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE)),
-                new SubqueryProjection("(SELECT name FROM t_order)", new ColumnProjection(null, "name", null), new IdentifierValue("name"), new OracleDatabaseType()));
+                new SubqueryProjection("(SELECT name FROM t_order)", new ColumnProjection(null, "name", null), new IdentifierValue("name"), TypedSPILoader.getService(DatabaseType.class, "Oracle")));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)),
                 is("`temp`.`id` AS `id`, `name`"));
     }

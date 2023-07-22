@@ -29,4 +29,12 @@
     <properties>
         <dialect.parser>postgresql</dialect.parser>
     </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-database-postgresql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
