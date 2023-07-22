@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.database.spi;
 
+import org.apache.shardingsphere.infra.util.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.util.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -39,6 +40,13 @@ public interface DatabaseType extends TypedSPI {
      * @return quote character
      */
     QuoteCharacter getQuoteCharacter();
+    
+    /**
+     * Get default nulls order type.
+     * 
+     * @return default nulls order type
+     */
+    NullsOrderType getDefaultNullsOrderType();
     
     /**
      * Judge whether identifier is reserved word.

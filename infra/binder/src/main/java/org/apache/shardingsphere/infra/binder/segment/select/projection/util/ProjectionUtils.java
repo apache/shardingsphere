@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.oracle.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.quote;
+package org.apache.shardingsphere.infra.util.enums;
 
 import org.junit.jupiter.api.Test;
 
