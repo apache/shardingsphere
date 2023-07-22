@@ -86,6 +86,23 @@
         </projections>
     </select>
     
+    <select sql-case-id="select_extract_function_with_day_hour">
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" start-index="7" stop-index="50">
+                <expr>
+                    <function start-index="7" stop-index="50" text="extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" function-name="extract">
+                        <parameter>
+                            <literal-expression start-index="15" stop-index="22" value="DAY_HOUR" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="29" stop-index="49" value="1999-01-02 10:11:12" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
     <select sql-case-id="select_with_latin1">
         <projections start-index="7" stop-index="62">
             <expression-projection text="_latin1'B' collate latin1_bin in (_latin1'a',_latin1'b')" start-index="7" stop-index="62">

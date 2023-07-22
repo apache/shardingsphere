@@ -1095,7 +1095,7 @@ substringFunction
     ;
     
 extractFunction
-    : EXTRACT LP_ identifier FROM expr RP_
+    : EXTRACT LP_ intervalUnit FROM expr RP_
     ;
     
 charFunction
