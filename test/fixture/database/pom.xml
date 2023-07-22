@@ -20,34 +20,27 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-cluster-mode-repository-provider</artifactId>
+        <artifactId>shardingsphere-test-fixture</artifactId>
         <version>5.4.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-cluster-mode-repository-nacos</artifactId>
+    <artifactId>shardingsphere-test-fixture-database</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
-        <nacos.version>1.4.2</nacos.version>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-cluster-mode-repository-api</artifactId>
+            <artifactId>shardingsphere-infra-database-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-util</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-client</artifactId>
-            <version>${nacos.version}</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
