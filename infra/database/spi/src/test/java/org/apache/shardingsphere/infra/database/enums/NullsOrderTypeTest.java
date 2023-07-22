@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item;
+package org.apache.shardingsphere.infra.database.enums;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
+import org.junit.jupiter.api.Test;
 
-/**
- * Order by item segment for index.
- */
-@Getter
-public final class IndexOrderByItemSegment extends OrderByItemSegment {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class NullsOrderTypeTest {
     
-    private final int columnIndex;
-    
-    public IndexOrderByItemSegment(final int startIndex, final int stopIndex, final int columnIndex, final OrderDirection orderDirection, final NullsOrderType nullsOrderType) {
-        super(startIndex, stopIndex, orderDirection, nullsOrderType);
-        this.columnIndex = columnIndex;
+    @Test
+    void assertGetReversedOrderType() {
+        assertThat(NullsOrderType.FIRST.getReversedOrderType(), is(NullsOrderType.LAST));
+        assertThat(NullsOrderType.LAST.getReversedOrderType(), is(NullsOrderType.FIRST));
     }
 }

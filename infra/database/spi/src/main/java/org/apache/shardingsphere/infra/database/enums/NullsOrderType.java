@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.enums;
+package org.apache.shardingsphere.infra.database.enums;
 
 /**
  * Nulls order type.

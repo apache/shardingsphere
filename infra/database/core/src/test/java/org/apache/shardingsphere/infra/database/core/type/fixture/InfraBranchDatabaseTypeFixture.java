@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.database.core.type.fixture;
 
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.util.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;

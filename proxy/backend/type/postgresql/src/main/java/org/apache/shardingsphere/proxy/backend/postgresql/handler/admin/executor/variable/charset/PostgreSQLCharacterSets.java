@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset;
 
-import org.apache.shardingsphere.infra.util.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
