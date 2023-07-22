@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -70,7 +69,7 @@ class ShowTablesExecutorTest {
     
     @Test
     void assertShowTablesExecutorWithoutFilter() throws SQLException {
-        ShowTablesExecutor executor = new ShowTablesExecutor(new MySQLShowTablesStatement(), DatabaseTypeFactory.get("MySQL"));
+        ShowTablesExecutor executor = new ShowTablesExecutor(new MySQLShowTablesStatement(), TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         Map<String, ShardingSphereDatabase> databases = getDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -92,7 +91,7 @@ class ShowTablesExecutorTest {
     void assertShowTablesExecutorWithFull() throws SQLException {
         MySQLShowTablesStatement showTablesStatement = mock(MySQLShowTablesStatement.class);
         when(showTablesStatement.isContainsFull()).thenReturn(true);
-        ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, DatabaseTypeFactory.get("MySQL"));
+        ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         Map<String, ShardingSphereDatabase> databases = getDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
