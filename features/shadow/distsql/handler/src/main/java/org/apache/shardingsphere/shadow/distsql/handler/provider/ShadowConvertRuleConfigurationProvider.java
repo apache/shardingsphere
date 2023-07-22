@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.provider;
 
-import org.apache.shardingsphere.distsql.handler.ral.constant.DistSQLScriptConstants;
 import org.apache.shardingsphere.distsql.handler.ral.query.ConvertRuleConfigurationProvider;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.distsql.handler.constant.ShadowDistSQLConstants;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -45,18 +45,18 @@ public final class ShadowConvertRuleConfigurationProvider implements ConvertRule
         if (ruleConfig.getDataSources().isEmpty()) {
             return "";
         }
-        StringBuilder result = new StringBuilder(DistSQLScriptConstants.CREATE_SHADOW);
+        StringBuilder result = new StringBuilder(ShadowDistSQLConstants.CREATE_SHADOW);
         Iterator<ShadowDataSourceConfiguration> iterator = ruleConfig.getDataSources().iterator();
         while (iterator.hasNext()) {
             ShadowDataSourceConfiguration dataSourceConfig = iterator.next();
             String shadowRuleName = dataSourceConfig.getName();
             String shadowTables = getShadowTables(shadowRuleName, ruleConfig.getTables(), ruleConfig.getShadowAlgorithms());
-            result.append(String.format(DistSQLScriptConstants.SHADOW, shadowRuleName, dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), shadowTables));
+            result.append(String.format(ShadowDistSQLConstants.SHADOW, shadowRuleName, dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), shadowTables));
             if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA);
+                result.append(ShadowDistSQLConstants.COMMA);
             }
         }
-        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+        result.append(ShadowDistSQLConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
         return result.toString();
     }
     
@@ -67,10 +67,10 @@ public final class ShadowConvertRuleConfigurationProvider implements ConvertRule
             Map.Entry<String, ShadowTableConfiguration> shadowTableConfig = iterator.next();
             if (shadowTableConfig.getValue().getDataSourceNames().contains(shadowRuleName)) {
                 String shadowTableTypes = getShadowTableTypes(shadowTableConfig.getValue().getShadowAlgorithmNames(), algorithmConfigs);
-                result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE, shadowTableConfig.getKey(), shadowTableTypes));
+                result.append(String.format(ShadowDistSQLConstants.SHADOW_TABLE, shadowTableConfig.getKey(), shadowTableTypes));
             }
             if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
+                result.append(ShadowDistSQLConstants.COMMA).append(System.lineSeparator());
             }
         }
         return result.toString();
@@ -82,7 +82,7 @@ public final class ShadowConvertRuleConfigurationProvider implements ConvertRule
         while (iterator.hasNext()) {
             result.append(getAlgorithmType(algorithmConfigs.get(iterator.next())));
             if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA).append(' ');
+                result.append(ShadowDistSQLConstants.COMMA).append(' ');
             }
         }
         return result.toString();
@@ -95,9 +95,9 @@ public final class ShadowConvertRuleConfigurationProvider implements ConvertRule
         }
         String type = algorithmConfig.getType().toLowerCase();
         if (algorithmConfig.getProps().isEmpty()) {
-            result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE_WITHOUT_PROPS, type));
+            result.append(String.format(ShadowDistSQLConstants.ALGORITHM_TYPE_WITHOUT_PROPS, type));
         } else {
-            result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE, type, getAlgorithmProperties(algorithmConfig.getProps())));
+            result.append(String.format(ShadowDistSQLConstants.ALGORITHM_TYPE, type, getAlgorithmProperties(algorithmConfig.getProps())));
         }
         return result.toString();
     }
@@ -112,9 +112,9 @@ public final class ShadowConvertRuleConfigurationProvider implements ConvertRule
             if (null == value) {
                 continue;
             }
-            result.append(String.format(DistSQLScriptConstants.PROPERTY, key, value));
+            result.append(String.format(ShadowDistSQLConstants.PROPERTY, key, value));
             if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA).append(' ');
+                result.append(ShadowDistSQLConstants.COMMA).append(' ');
             }
         }
         return result.toString();

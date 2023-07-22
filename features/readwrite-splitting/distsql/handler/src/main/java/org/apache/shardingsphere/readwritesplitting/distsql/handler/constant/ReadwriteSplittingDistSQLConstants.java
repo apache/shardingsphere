@@ -15,53 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.ral.constant;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * DistSQL script constants.
+ * Readwrite-splitting DistSQL constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DistSQLScriptConstants {
+public final class ReadwriteSplittingDistSQLConstants {
     
     public static final String COMMA = ",";
     
     public static final String SEMI = ";";
     
-    public static final String CREATE_DATABASE = "CREATE DATABASE %s;";
-    
-    public static final String USE_DATABASE = "USE %s;";
-    
-    public static final String REGISTER_STORAGE_UNIT = "REGISTER STORAGE UNIT";
-    
-    public static final String KEY_URL = "url";
-    
-    public static final String KEY_USERNAME = "username";
-    
-    public static final String KEY_PASSWORD = "password";
-    
-    public static final String RESOURCE_DEFINITION = " %s ("
-            + System.lineSeparator()
-            + "URL='%s',"
-            + System.lineSeparator()
-            + "USER='%s',"
-            + System.lineSeparator()
-            + "PASSWORD='%s',"
-            + System.lineSeparator()
-            + "PROPERTIES(%s)"
-            + System.lineSeparator()
-            + ")";
-    
-    public static final String RESOURCE_DEFINITION_WITHOUT_PASSWORD = " %s ("
-            + System.lineSeparator()
-            + "URL='%s',"
-            + System.lineSeparator()
-            + "USER='%s',"
-            + System.lineSeparator()
-            + "PROPERTIES(%s)"
-            + ")";
-    
     public static final String PROPERTY = "'%s'='%s'";
+    
+    public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
+    
+    public static final String READWRITE_SPLITTING_FOR_STATIC = " %s ("
+            + System.lineSeparator()
+            + "WRITE_STORAGE_UNIT=%s,"
+            + System.lineSeparator()
+            + "READ_STORAGE_UNITS(%s),"
+            + System.lineSeparator()
+            + "TRANSACTIONAL_READ_QUERY_STRATEGY='%s'%s"
+            + System.lineSeparator()
+            + ")";
+    
+    public static final String READ_RESOURCE = "%s";
+    
+    public static final String ALGORITHM_TYPE = "TYPE(NAME='%s', PROPERTIES(%s))";
+    
+    public static final String ALGORITHM_TYPE_WITHOUT_PROPS = "TYPE(NAME='%s')";
 }
