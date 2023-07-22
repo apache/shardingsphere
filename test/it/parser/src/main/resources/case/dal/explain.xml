@@ -363,7 +363,7 @@
         </select>
     </describe>
     
-    <describe sql-case-id="explain_select_alias_as_keyword">
+    <describe sql-case-id="explain_for_select_alias_as_keyword">
         <select>
             <from>
                 <simple-table name="t_order_item" alias="length" start-index="53" stop-index="71" />
@@ -391,4 +391,62 @@
         </select>
     </describe>
     
+    <describe sql-case-id="explain_for_select_with_binding_tables">
+        <select>
+            <from>
+                <join-table join-type="INNER">
+                    <left>
+                        <simple-table name="t_order" alias="o" start-index="33" stop-index="41" />
+                    </left>
+                    <right>
+                        <simple-table name="t_order_item" alias="i" start-index="48" stop-index="61" />
+                    </right>
+                    <using-columns name="order_id" start-index="69" stop-index="76" />
+                </join-table>
+            </from>
+            <projections start-index="24" stop-index="26">
+                <shorthand-projection start-index="24" stop-index="26">
+                    <owner name="i" start-index="24" stop-index="24" />
+                </shorthand-projection>
+            </projections>
+            <where start-index="79" stop-index="99">
+                <expr>
+                    <binary-operation-expression start-index="85" stop-index="99">
+                        <left>
+                            <column name="order_id" start-index="85" stop-index="94">
+                                <owner name="o" start-index="85" stop-index="85" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="10" start-index="98" stop-index="99" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+    <describe sql-case-id="explain_for_select_with_analyze">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="31" stop-index="37" />
+            </from>
+            <where start-index="39" stop-index="56">
+                <expr>
+                    <binary-operation-expression start-index="45" stop-index="56">
+                        <left>
+                            <column name="order_id" start-index="45" stop-index="52" />
+                        </left>
+                        <operator>></operator>
+                        <right>
+                            <literal-expression value="8" start-index="56" stop-index="56" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
 </sql-parser-test-cases>
