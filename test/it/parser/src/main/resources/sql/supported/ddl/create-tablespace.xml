@@ -46,4 +46,8 @@
     <sql-case id="create_tablespace_with_minimum_extend_p" value="CREATE TABLESPACE test_space MINIMUM EXTEND 41P" db-types="Oracle" />
     <sql-case id="create_tablespace_with_minimum_extend_e" value="CREATE TABLESPACE test_space MINIMUM EXTEND 14E" db-types="Oracle" />
     <sql-case id="create_tablespace_with_blocksize" value="CREATE TABLESPACE test_space BLOCKSIZE 8K" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_logging_clause" value="CREATE TABLESPACE test_space LOGGING" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_nologging_clause" value="CREATE TABLESPACE test_space NOLOGGING" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_filesystem_like_logging" value="CREATE TABLESPACE test_space FILESYSTEM_LIKE_LOGGING" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_force_logging" value="CREATE TABLESPACE test_space FORCE LOGGING" db-types="Oracle" />
 </sql-cases>
