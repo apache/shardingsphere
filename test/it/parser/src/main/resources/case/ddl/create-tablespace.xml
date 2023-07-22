@@ -52,4 +52,24 @@
     <create-tablespace sql-case-id="create_tablespace_with_archive_low" />
     <create-tablespace sql-case-id="create_tablespace_with_archive" />
     <create-tablespace sql-case-id="create_tablespace_with_oltp" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_initial" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_next" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_minextents" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_maxextents" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_maxextents_unlimited" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_maxsize_unlimited" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_maxsize" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_pctincrease" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_freelists" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_freelist_group" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_optimal_integer" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_optimal" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_optimal_null" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_buffer_pool_keep" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_buffer_pool_recycle" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_buffer_pool_default" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_flashcache_keep" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_flashcache_none" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_flashcache_default" />
+    <create-tablespace sql-case-id="create_tablespace_with_storage_encrypt" />
 </sql-parser-test-cases>

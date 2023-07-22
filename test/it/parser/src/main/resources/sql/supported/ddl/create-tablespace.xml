@@ -61,4 +61,24 @@
     <sql-case id="create_tablespace_with_archive_low" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR ARCHIVE LOW" db-types="Oracle" />
     <sql-case id="create_tablespace_with_archive" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR ARCHIVE" db-types="Oracle" />
     <sql-case id="create_tablespace_with_oltp" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR OLTP" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_initial" value="CREATE TABLESPACE test_space DEFAULT STORAGE (INITIAL 1K)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_next" value="CREATE TABLESPACE test_space DEFAULT STORAGE (NEXT 1K)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_minextents" value="CREATE TABLESPACE test_space DEFAULT STORAGE (MINEXTENTS 2)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_maxextents" value="CREATE TABLESPACE test_space DEFAULT STORAGE (MAXEXTENTS 2)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_maxextents_unlimited" value="CREATE TABLESPACE test_space DEFAULT STORAGE (MAXEXTENTS UNLIMITED)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_maxsize_unlimited" value="CREATE TABLESPACE test_space DEFAULT STORAGE (MAXSIZE UNLIMITED)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_maxsize" value="CREATE TABLESPACE test_space DEFAULT STORAGE (MAXSIZE 3)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_pctincrease" value="CREATE TABLESPACE test_space DEFAULT STORAGE (PCTINCREASE 3)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_freelists" value="CREATE TABLESPACE test_space DEFAULT STORAGE (FREELISTS 3)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_freelist_group" value="CREATE TABLESPACE test_space DEFAULT STORAGE (FREELIST GROUPS 3)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_optimal_integer" value="CREATE TABLESPACE test_space DEFAULT STORAGE (OPTIMAL 34M)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_optimal" value="CREATE TABLESPACE test_space DEFAULT STORAGE (OPTIMAL)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_optimal_null" value="CREATE TABLESPACE test_space DEFAULT STORAGE (OPTIMAL NULL)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_buffer_pool_keep" value="CREATE TABLESPACE test_space DEFAULT STORAGE (BUFFER_POOL KEEP)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_buffer_pool_recycle" value="CREATE TABLESPACE test_space DEFAULT STORAGE (BUFFER_POOL RECYCLE)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_buffer_pool_default" value="CREATE TABLESPACE test_space DEFAULT STORAGE (BUFFER_POOL DEFAULT)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_flashcache_keep" value="CREATE TABLESPACE test_space DEFAULT STORAGE (FLASH_CACHE KEEP)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_flashcache_none" value="CREATE TABLESPACE test_space DEFAULT STORAGE (FLASH_CACHE NONE)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_flashcache_default" value="CREATE TABLESPACE test_space DEFAULT STORAGE (FLASH_CACHE DEFAULT)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_encrypt" value="CREATE TABLESPACE test_space DEFAULT STORAGE (ENCRYPT)" db-types="Oracle" />
 </sql-cases>
