@@ -96,4 +96,11 @@
     <sql-case id="create_tablespace_with_temporary_extent_autoallocate" value="CREATE TEMPORARY TABLESPACE test_space EXTENT MANAGEMENT LOCAL AUTOALLOCATE" db-types="Oracle" />
     <sql-case id="create_tablespace_with_temporary_extent_uniform_size" value="CREATE TEMPORARY TABLESPACE test_space EXTENT MANAGEMENT LOCAL UNIFORM SIZE 5K" db-types="Oracle" />
     <sql-case id="create_tablespace_with_temporary_extent_uniform" value="CREATE TEMPORARY TABLESPACE test_space EXTENT MANAGEMENT LOCAL UNIFORM" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace" value="CREATE UNDO TABLESPACE tablespaceName" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace_spec" value="CREATE UNDO TABLESPACE tablespaceName DATATFILE file_specification" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace_extent" value="CREATE UNDO TABLESPACE tablespaceName EXTENT MANAGEMENT LOCAL" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace_extent_autoallocate" value="CREATE UNDO TABLESPACE tablespaceName EXTENT MANAGEMENT LOCAL AUTOALLOCATE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace_extent_uniform" value="CREATE UNDO TABLESPACE tablespaceName EXTENT MANAGEMENT LOCAL UNIFORM SIZE 5K" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace_retention_guarantee" value="CREATE UNDO TABLESPACE tablespaceName RETENTION GUARANTEE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace_retention_noguarantee" value="CREATE UNDO TABLESPACE tablespaceName RETENTION NOGUARANTEE" db-types="Oracle" />
 </sql-cases>
