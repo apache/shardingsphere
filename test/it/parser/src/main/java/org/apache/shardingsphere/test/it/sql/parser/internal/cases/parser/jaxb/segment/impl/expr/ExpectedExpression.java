@@ -104,4 +104,7 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "match-expression")
     private ExpectedMatchExpression matchExpression;
+    
+    @XmlElement(name = "colum-with-join-operator-segment")
+    private ExpectedColumnWithJoinOperatorSegment columnWithJoinOperatorSegment;
 }
