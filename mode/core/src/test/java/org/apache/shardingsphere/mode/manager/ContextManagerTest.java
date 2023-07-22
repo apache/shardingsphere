@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.fixture.FixtureDistributedRuleConfiguration;
@@ -94,8 +94,8 @@ class ContextManagerTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        when(result.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
+        when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
         MutableDataNodeRule mutableDataNodeRule = mock(MutableDataNodeRule.class, RETURNS_DEEP_STUBS);
         when(mutableDataNodeRule.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(mock(DataNode.class)));
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mutableDataNodeRule)));
@@ -216,7 +216,8 @@ class ContextManagerTest {
         Map<String, DataSource> dataSources = Collections.singletonMap("ds_0", new MockedDataSource());
         when(resourceMetaData.getStorageNodeMetaData().getDataSources()).thenReturn(dataSources);
         when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(StorageUtils.getStorageUnits(dataSources));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", new MySQLDatabaseType(), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
+                TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         when(metaDataContexts.getPersistService()).thenReturn(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS));
@@ -227,7 +228,7 @@ class ContextManagerTest {
     @Test
     void assertAlterDataSourceConfiguration() {
         ShardingSphereDatabase originalDatabaseMetaData = new ShardingSphereDatabase(
-                "foo_db", new MySQLDatabaseType(), createOriginalResource(), createOriginalRuleMetaData(), Collections.emptyMap());
+                "foo_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), createOriginalResource(), createOriginalRuleMetaData(), Collections.emptyMap());
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(originalDatabaseMetaData);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         contextManager.getConfigurationContextManager().alterDataSourceUnitsConfiguration("foo_db",

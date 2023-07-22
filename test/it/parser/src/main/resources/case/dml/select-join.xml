@@ -555,4 +555,40 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_with_join_operator">
+        <projections start-index="7" stop-index="7">
+        <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="t_order" start-index="14" stop-index="22" alias="o"/>
+                </left>
+                <right>
+                    <simple-table name="t_order_item" start-index="26" stop-index="39" alias="i" />
+                </right>
+            </join-table>
+        </from>
+        <where start-index="41" stop-index="72">
+            <expr>
+                <binary-operation-expression start-index="47" stop-index="72">
+                    <left>
+                        <colum-with-join-operator-segment start-index="47" stop-index="48">
+                            <column name="order_id" start-index="47" stop-index="56">
+                                <owner name="o" start-index="47" stop-index="47" />
+                            </column>
+                            <join-operator>(+)</join-operator>
+                        </colum-with-join-operator-segment>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="order_id" start-index="63" stop-index="72">
+                            <owner name="i" start-index="63" stop-index="63" />
+                        </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

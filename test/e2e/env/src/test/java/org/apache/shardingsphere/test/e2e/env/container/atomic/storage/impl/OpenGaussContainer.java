@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -42,8 +43,8 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     private final StorageContainerConfiguration storageContainerConfig;
     
-    public OpenGaussContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "openGauss"), Strings.isNullOrEmpty(containerImage) ? "enmotech/opengauss:3.0.0" : containerImage, scenario);
+    public OpenGaussContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
+        super(TypedSPILoader.getService(DatabaseType.class, "openGauss"), Strings.isNullOrEmpty(containerImage) ? "enmotech/opengauss:3.0.0" : containerImage);
         this.storageContainerConfig = storageContainerConfig;
     }
     
@@ -55,6 +56,16 @@ public final class OpenGaussContainer extends DockerStorageContainer {
         withPrivilegedMode(true);
         super.configure();
         withStartupTimeout(Duration.of(120, ChronoUnit.SECONDS));
+    }
+    
+    @Override
+    protected Collection<String> getDatabaseNames() {
+        return storageContainerConfig.getDatabaseNames();
+    }
+    
+    @Override
+    protected Collection<String> getExpectedDatabaseNames() {
+        return storageContainerConfig.getExpectedDatabaseNames();
     }
     
     @Override

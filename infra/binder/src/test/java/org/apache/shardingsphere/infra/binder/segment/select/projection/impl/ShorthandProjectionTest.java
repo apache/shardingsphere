@@ -31,7 +31,7 @@ class ShorthandProjectionTest {
     
     @Test
     void assertGetExpression() {
-        assertThat(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getColumnName(), is("owner.*"));
+        assertThat(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getExpression(), is("owner.*"));
     }
     
     @Test
