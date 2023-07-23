@@ -52,7 +52,7 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
         }
         return Optional.of(tableNameSQLNode);
     }
-
+    
     private void addOwnerNames(List<String> names, OwnerSegment owner) {
         if (owner != null) {
             addOwnerNames(names, owner.getOwner().orElse(null));
