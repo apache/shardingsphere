@@ -36,7 +36,7 @@ class ParseTreeCacheLoaderTest {
     @Test
     void assertParseTreeCacheLoader() throws ReflectiveOperationException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class, RETURNS_DEEP_STUBS);
-        ParseTreeCacheLoader loader = new ParseTreeCacheLoader(TypedSPILoader.getService(DatabaseType.class, "PARSER.FIXTURE"));
+        ParseTreeCacheLoader loader = new ParseTreeCacheLoader(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         Plugins.getMemberAccessor().set(loader.getClass().getDeclaredField("sqlParserExecutor"), loader, sqlParserExecutor);
         assertThat(loader.load(SQL), isA(ParseASTNode.class));
     }
