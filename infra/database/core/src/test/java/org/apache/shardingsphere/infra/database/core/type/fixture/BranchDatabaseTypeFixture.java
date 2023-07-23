@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public final class InfraBranchDatabaseTypeFixture implements DatabaseType {
+public final class BranchDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -43,7 +43,7 @@ public final class InfraBranchDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:infra.fixture:branch:");
+        return Collections.singleton("jdbc:trunk:branch:");
     }
     
     @Override
@@ -63,11 +63,11 @@ public final class InfraBranchDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE"));
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "TRUNK"));
     }
     
     @Override
     public String getType() {
-        return "INFRA.BRANCH.FIXTURE";
+        return "BRANCH";
     }
 }
