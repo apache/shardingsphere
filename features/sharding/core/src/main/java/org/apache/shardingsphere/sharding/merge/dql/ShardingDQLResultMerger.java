@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.pagination.Paginati
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
@@ -34,9 +35,7 @@ import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResul
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByMemoryMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
-import org.apache.shardingsphere.sharding.merge.dql.pagination.LimitDecoratorMergedResult;
-import org.apache.shardingsphere.sharding.merge.dql.pagination.RowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.sharding.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
+import org.apache.shardingsphere.sharding.merge.dql.pagination.builder.PaginationDecoratorMergedResultBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
@@ -44,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 /**
@@ -130,16 +130,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         if (!paginationContext.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;
         }
-        String trunkDatabaseName = DatabaseTypeEngine.getTrunkDatabaseType(protocolType.getType()).getType();
-        if ("MySQL".equals(trunkDatabaseName) || "PostgreSQL".equals(trunkDatabaseName) || "openGauss".equals(trunkDatabaseName)) {
-            return new LimitDecoratorMergedResult(mergedResult, paginationContext);
-        }
-        if ("Oracle".equals(trunkDatabaseName)) {
-            return new RowNumberDecoratorMergedResult(mergedResult, paginationContext);
-        }
-        if ("SQLServer".equals(trunkDatabaseName)) {
-            return new TopAndRowNumberDecoratorMergedResult(mergedResult, paginationContext);
-        }
-        return mergedResult;
+        Optional<PaginationDecoratorMergedResultBuilder> paginationDecoratorMergedResultBuilder = DatabaseTypedSPILoader.findService(PaginationDecoratorMergedResultBuilder.class, protocolType);
+        return paginationDecoratorMergedResultBuilder.isPresent() ? paginationDecoratorMergedResultBuilder.get().build(mergedResult, paginationContext) : mergedResult;
     }
 }
