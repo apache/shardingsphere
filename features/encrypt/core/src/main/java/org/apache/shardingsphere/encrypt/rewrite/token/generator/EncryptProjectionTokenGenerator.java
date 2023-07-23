@@ -91,7 +91,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
             if (each instanceof ColumnProjectionSegment) {
                 ColumnProjectionSegment columnSegment = (ColumnProjectionSegment) each;
                 ColumnProjection columnProjection = buildColumnProjection(columnSegment);
-                String tableName = columnTableNames.get(columnProjection.getColumnName());
+                String tableName = columnTableNames.get(columnProjection.getExpression());
                 if (null == tableName) {
                     continue;
                 }
@@ -122,7 +122,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                                                           final SelectStatementContext selectStatementContext, final SubqueryType subqueryType, final Map<String, String> columnTableNames) {
         List<Projection> projections = new LinkedList<>();
         for (Projection each : actualColumns) {
-            String tableName = columnTableNames.get(each.getColumnName());
+            String tableName = columnTableNames.get(each.getExpression());
             Optional<EncryptTable> encryptTable = null == tableName ? Optional.empty() : encryptRule.findEncryptTable(tableName);
             if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(each.getColumnLabel()) || containsTableSubquery(selectStatementContext)) {
                 projections.add(each.getAlias().map(optional -> (Projection) new ColumnProjection(null, optional, null)).orElse(each));
