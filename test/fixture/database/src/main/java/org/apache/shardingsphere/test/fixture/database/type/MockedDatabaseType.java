@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -50,7 +51,7 @@ public final class MockedDatabaseType implements DatabaseType {
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return mock(DataSourceMetaData.class);
+        return mock(DataSourceMetaData.class, RETURNS_DEEP_STUBS);
     }
     
     @Override
