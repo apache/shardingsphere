@@ -3537,6 +3537,8 @@ permanentTablespaceClause
     : TABLESPACE tablespaceName (
     (MINIMUM EXTEND sizeClause)
     | (BLOCKSIZE INTEGER_ K?)
+    | loggingClause
+    | (FORCE LOGGING)
     | (ONLINE|OFFLINE)
     )
     ;
