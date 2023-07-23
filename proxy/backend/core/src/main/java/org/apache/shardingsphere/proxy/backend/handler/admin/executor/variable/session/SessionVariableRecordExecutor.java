@@ -44,7 +44,7 @@ public final class SessionVariableRecordExecutor {
      * @param variableName variable name
      * @param assignValue assign value
      */
-    public void record(final String variableName, final String assignValue) {
+    public void recordVariable(final String variableName, final String assignValue) {
         if (DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType).map(optional -> optional.isNeedToReplay(variableName)).orElse(false)) {
             connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
         } else {
@@ -57,7 +57,7 @@ public final class SessionVariableRecordExecutor {
      *
      * @param variables variables
      */
-    public void record(final Map<String, String> variables) {
+    public void recordVariable(final Map<String, String> variables) {
         Optional<ReplayedSessionVariableProvider> replayedSessionVariableProvider = DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType);
         if (!replayedSessionVariableProvider.isPresent()) {
             log.debug("Set statement {} was discarded.", variables);

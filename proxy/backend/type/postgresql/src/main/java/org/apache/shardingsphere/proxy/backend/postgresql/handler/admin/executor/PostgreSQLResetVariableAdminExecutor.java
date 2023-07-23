@@ -42,6 +42,6 @@ public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdmin
     public void execute(final ConnectionSession connectionSession) {
         String variableName = resetParameterStatement.getConfigurationParameter();
         new CharsetSetExecutor(databaseType, connectionSession).set(variableName, DEFAULT);
-        new SessionVariableRecordExecutor(databaseType, connectionSession).record(variableName, DEFAULT);
+        new SessionVariableRecordExecutor(databaseType, connectionSession).recordVariable(variableName, DEFAULT);
     }
 }
