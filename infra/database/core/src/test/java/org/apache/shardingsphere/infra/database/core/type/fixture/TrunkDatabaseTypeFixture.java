@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class InfraTrunkDatabaseTypeFixture implements DatabaseType {
+public final class TrunkDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -46,7 +46,7 @@ public final class InfraTrunkDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:infra.fixture:");
+        return Collections.singleton("jdbc:trunk:");
     }
     
     @Override
@@ -66,7 +66,7 @@ public final class InfraTrunkDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public String getType() {
-        return "INFRA.TRUNK.FIXTURE";
+        return "TRUNK";
     }
     
     @Override

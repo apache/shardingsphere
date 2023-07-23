@@ -30,7 +30,7 @@ public final class DataSourceMetaDataFixture implements DataSourceMetaData {
     
     private static final int DEFAULT_PORT = -1;
     
-    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:infra", Pattern.CASE_INSENSITIVE);
+    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:trunk", Pattern.CASE_INSENSITIVE);
     
     private final String hostname;
     

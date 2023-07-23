@@ -27,12 +27,12 @@ class DatabaseTypeFactoryTest {
     
     @Test
     void assertGetDatabaseTypeWithTrunkURL() {
-        assertThat(DatabaseTypeFactory.get("jdbc:infra.fixture://localhost:3306/test").getType(), is("INFRA.TRUNK.FIXTURE"));
+        assertThat(DatabaseTypeFactory.get("jdbc:trunk://localhost:3306/test").getType(), is("TRUNK"));
     }
     
     @Test
     void assertGetDatabaseTypeWithBranchURL() {
-        assertThat(DatabaseTypeFactory.get("jdbc:infra.fixture:branch://localhost:3306/test").getType(), is("INFRA.BRANCH.FIXTURE"));
+        assertThat(DatabaseTypeFactory.get("jdbc:trunk:branch://localhost:3306/test").getType(), is("BRANCH"));
     }
     
     @Test
