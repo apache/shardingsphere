@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.showprocesslist.engine;
 
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.showprocesslist.container.composer.ClusterShowProcessListContainerComposer;
 import org.apache.shardingsphere.test.e2e.showprocesslist.env.ShowProcessListEnvironment;
 import org.apache.shardingsphere.test.e2e.showprocesslist.env.enums.ShowProcessListEnvTypeEnum;
@@ -54,7 +55,7 @@ class ShowProcessListE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertShowProcessList(final ShowProcessListTestParameter testParam) throws SQLException, InterruptedException {
+    void assertShowProcessList(final ShowProcessListTestParameter testParam) throws SQLException {
         try (ClusterShowProcessListContainerComposer containerComposer = new ClusterShowProcessListContainerComposer(testParam)) {
             containerComposer.start();
             CompletableFuture<Void> executeSelectSleep = CompletableFuture.runAsync(getExecuteSleepThread("proxy", containerComposer));
@@ -122,7 +123,7 @@ class ShowProcessListE2EIT {
             for (String each : ENV.getScenarios()) {
                 for (String runMode : ENV.getRunModes()) {
                     for (String governanceType : ENV.getGovernanceCenters()) {
-                        result.add(Arguments.of(new ShowProcessListTestParameter(new MySQLDatabaseType(), each, runMode, governanceType)));
+                        result.add(Arguments.of(new ShowProcessListTestParameter(TypedSPILoader.getService(DatabaseType.class, "MySQL"), each, runMode, governanceType)));
                     }
                 }
             }

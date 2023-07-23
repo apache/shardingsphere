@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.runtime.scenario.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
@@ -39,10 +40,8 @@ public final class DatabaseEnvironmentManager {
      *
      * @param scenario scenario
      * @return database names
-     * @throws IOException IO exception
-     * @throws JAXBException JAXB exception
      */
-    public static Collection<String> getDatabaseNames(final String scenario) throws IOException, JAXBException {
+    public static Collection<String> getDatabaseNames(final String scenario) {
         return unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.ACTUAL)).getDatabases();
     }
     
@@ -51,14 +50,13 @@ public final class DatabaseEnvironmentManager {
      *
      * @param scenario scenario
      * @return expected database names
-     * @throws IOException IO exception
-     * @throws JAXBException JAXB exception
      */
-    public static Collection<String> getExpectedDatabaseNames(final String scenario) throws IOException, JAXBException {
+    public static Collection<String> getExpectedDatabaseNames(final String scenario) {
         return unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.EXPECTED)).getDatabases();
     }
     
-    private static DatabaseNameEnvironment unmarshal(final String databasesFile) throws IOException, JAXBException {
+    @SneakyThrows({IOException.class, JAXBException.class})
+    private static DatabaseNameEnvironment unmarshal(final String databasesFile) {
         try (FileReader reader = new FileReader(databasesFile)) {
             return (DatabaseNameEnvironment) JAXBContext.newInstance(DatabaseNameEnvironment.class).createUnmarshaller().unmarshal(reader);
         }

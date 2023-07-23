@@ -21,9 +21,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -71,12 +71,12 @@ class ParseDistSQLExecutorTest {
     @Test
     void assertGetRowDataForMySQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
-        when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
         handler.init(new ParseStatement(sql), connectionSession);
         handler.execute();
         handler.next();
-        SQLStatement statement = sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false);
+        SQLStatement statement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
         assertThat(new LinkedList<>(handler.getRowData().getData()).getFirst(), is("MySQLSelectStatement"));
         assertThat(JsonParser.parseString(new LinkedList<>(handler.getRowData().getData()).getLast().toString()), is(JsonParser.parseString(new Gson().toJson(statement))));
     }
@@ -84,19 +84,19 @@ class ParseDistSQLExecutorTest {
     @Test
     void assertGetRowDataForPostgreSQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
-        when(connectionSession.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
         handler.init(new ParseStatement(sql), connectionSession);
         handler.execute();
         handler.next();
-        SQLStatement statement = sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false);
+        SQLStatement statement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).parse(sql, false);
         assertThat(JsonParser.parseString(new LinkedList<>(handler.getRowData().getData()).getLast().toString()), is(JsonParser.parseString(new Gson().toJson(statement))));
     }
     
     @Test
     void assertExecute() {
         String sql = "wrong sql";
-        when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
         handler.init(new ParseStatement(sql), connectionSession);
         assertThrows(SQLParsingException.class, handler::execute);

@@ -17,21 +17,19 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.adapter;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,9 +39,7 @@ class MetaDataLoaderConnectionAdapterTest {
     
     private static final String TEST_SCHEMA = "schema";
     
-    private final DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType("MySQL");
-    
-    private final DatabaseType oracleDatabaseType = DatabaseTypeEngine.getTrunkDatabaseType("Oracle");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Mock
     private Connection connection;
@@ -67,15 +63,6 @@ class MetaDataLoaderConnectionAdapterTest {
         when(connection.getSchema()).thenReturn(TEST_SCHEMA);
         MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, connection);
         assertThat(connectionAdapter.getSchema(), is(TEST_SCHEMA));
-    }
-    
-    @Test
-    void assertGetSchemaByOracleSPI() throws SQLException {
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getUserName()).thenReturn(TEST_SCHEMA);
-        MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(oracleDatabaseType, connection);
-        assertThat(connectionAdapter.getSchema(), is(TEST_SCHEMA.toUpperCase()));
     }
     
     @Test

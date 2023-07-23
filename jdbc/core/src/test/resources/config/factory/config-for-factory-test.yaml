@@ -33,9 +33,9 @@ rules:
       shardingStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: auto-mod
+          shardingAlgorithmName: auto_mod
   shardingAlgorithms:
-    auto-mod:
+    auto_mod:
       type: MOD
       props:
         sharding-count: 4

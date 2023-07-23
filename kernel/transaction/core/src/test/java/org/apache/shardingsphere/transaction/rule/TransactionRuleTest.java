@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.transaction.rule;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.fixture.ShardingSphereTransactionManagerFixture;
 import org.junit.jupiter.api.Test;
 
@@ -106,8 +105,8 @@ class TransactionRuleTest {
         dataSourceMap.put("ds_1", new MockedDataSource());
         when(result.getDataSources()).thenReturn(dataSourceMap);
         Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
-        databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
-        databaseTypes.put("ds_1", new OpenGaussDatabaseType());
+        databaseTypes.put("ds_0", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        databaseTypes.put("ds_1", TypedSPILoader.getService(DatabaseType.class, "openGauss"));
         when(result.getStorageTypes()).thenReturn(databaseTypes);
         return result;
     }
@@ -127,8 +126,8 @@ class TransactionRuleTest {
         dataSourceMap.put("ds_1", new MockedDataSource());
         when(result.getDataSources()).thenReturn(dataSourceMap);
         Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
-        databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
-        databaseTypes.put("ds_1", new OpenGaussDatabaseType());
+        databaseTypes.put("ds_0", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        databaseTypes.put("ds_1", TypedSPILoader.getService(DatabaseType.class, "openGauss"));
         when(result.getStorageTypes()).thenReturn(databaseTypes);
         return result;
     }

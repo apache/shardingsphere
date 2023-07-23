@@ -49,13 +49,13 @@ public final class SubqueryTableContextEngine {
             if (!(each instanceof ColumnProjection)) {
                 continue;
             }
-            String columnName = ((ColumnProjection) each).getName();
+            String columnName = ((ColumnProjection) each).getName().getValue();
             if (tableSegment instanceof SimpleTableSegment) {
                 String tableName = ((SimpleTableSegment) tableSegment).getTableName().getIdentifier().getValue();
                 result.computeIfAbsent(tableName.toLowerCase(), unused -> new SubqueryTableContext(tableName, aliasName)).getColumnNames().add(columnName);
             }
-            if (tableSegment instanceof JoinTableSegment && null != ((ColumnProjection) each).getOwner()) {
-                Optional<String> tableName = getTableNameByOwner(subqueryContext.getTablesContext().getSimpleTableSegments(), ((ColumnProjection) each).getOwner());
+            if (tableSegment instanceof JoinTableSegment && ((ColumnProjection) each).getOwner().isPresent()) {
+                Optional<String> tableName = getTableNameByOwner(subqueryContext.getTablesContext().getSimpleTableSegments(), ((ColumnProjection) each).getOwner().get().getValue());
                 tableName.ifPresent(optional -> result.computeIfAbsent(optional.toLowerCase(), unused -> new SubqueryTableContext(optional, aliasName)).getColumnNames().add(columnName));
             }
         }

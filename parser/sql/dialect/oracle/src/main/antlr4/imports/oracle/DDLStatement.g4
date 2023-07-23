@@ -63,6 +63,10 @@ dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
 
+dropTableSpace
+    : DROP TABLESPACE tablespaceName (INCLUDING CONTENTS ((AND | KEEP) DATAFILES)? (CASCADE CONSTRAINTS)? )?
+    ;
+
 dropPackage
     : DROP PACKAGE BODY? packageName
     ;
@@ -2179,6 +2183,10 @@ dropDirectory
     : DROP DIRECTORY directoryName
     ;
 
+dropType
+    : DROP TYPE typeName (FORCE|VALIDATE)?
+    ;
+
 createFunction
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
     ;
@@ -3522,13 +3530,23 @@ dropMaterializedZonemap
     ;
 
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? permanentTablespaceClause
+    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
     ;
 
 permanentTablespaceClause
-    : TABLESPACE tablespaceName (ONLINE|OFFLINE)
+    : TABLESPACE tablespaceName (
+    (MINIMUM EXTEND sizeClause)
+    | (BLOCKSIZE INTEGER_ K?)
+    | loggingClause
+    | (FORCE LOGGING)
+    | (ONLINE|OFFLINE)
+    )
     ;
 
 dropFunction
     : DROP FUNCTION (schemaName DOT_)? function
+    ;
+
+alterType
+    : ALTER TYPE typeName
     ;

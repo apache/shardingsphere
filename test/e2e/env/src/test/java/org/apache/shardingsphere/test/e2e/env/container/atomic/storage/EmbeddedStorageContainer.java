@@ -18,16 +18,13 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -53,7 +50,6 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
         expectedDataSourceMap = createExpectedDataSourceMap();
     }
     
-    @SneakyThrows({IOException.class, JAXBException.class})
     private Map<String, DataSource> createActualDataSourceMap() {
         Collection<String> databaseNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
         Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1F);
@@ -62,7 +58,6 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
         return result;
     }
     
-    @SneakyThrows({IOException.class, JAXBException.class})
     private Map<String, DataSource> createExpectedDataSourceMap() {
         Collection<String> databaseNames = DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario);
         Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1F);

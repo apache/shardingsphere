@@ -46,7 +46,7 @@ public final class AddressRepository {
     }
     
     public void dropTable() throws SQLException {
-        String sql = "DROP TABLE t_address";
+        String sql = "DROP TABLE IF EXISTS t_address";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.route.engine;
 
 import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsException;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;

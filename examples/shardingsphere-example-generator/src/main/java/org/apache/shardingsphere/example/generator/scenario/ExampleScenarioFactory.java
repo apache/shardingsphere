@@ -75,7 +75,7 @@ public final class ExampleScenarioFactory {
         for (FeatureExampleScenario each : featureScenarios) {
             result.putAll(each.getJavaClassTemplateMap());
         }
-        if (frameworkScenario.getType().toString().contains("spring-boot-starter") && transactionScenario.getType().toString().contains("xa")) {
+        if (frameworkScenario.getType().contains("spring-boot-starter") && (transactionScenario.getType().contains("xa"))) {
             result.put("java/TransactionConfiguration.ftl", "TransactionConfiguration.java");
         }
         result.putAll(frameworkScenario.getJavaClassTemplateMap());

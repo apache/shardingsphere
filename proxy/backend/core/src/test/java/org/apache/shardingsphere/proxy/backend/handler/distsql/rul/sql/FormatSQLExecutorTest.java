@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.RULBackendHandler;
@@ -52,7 +53,7 @@ class FormatSQLExecutorTest {
     void assertExecute() throws SQLException {
         String sql = "SELECT * FROM t_order WHERE order_id=1";
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
         handler.init(new FormatStatement(sql), connectionSession);
         handler.execute();

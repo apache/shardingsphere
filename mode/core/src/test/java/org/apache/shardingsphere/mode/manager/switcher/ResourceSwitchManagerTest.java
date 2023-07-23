@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -51,8 +52,8 @@ class ResourceSwitchManagerTest {
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         SwitchingResource actual = new ResourceSwitchManager().createByAlterDataSourceProps(new ShardingSphereResourceMetaData("sharding_db", dataSourceMap), Collections.emptyMap());
-        assertTrue(actual.getNewDataSources().isEmpty());
-        assertThat(actual.getStaleDataSources().size(), is(2));
+        assertTrue(actual.getNewStorageResource().getStorageNodes().isEmpty());
+        assertThat(actual.getStaleStorageResource().getStorageNodes().size(), is(2));
         actual.closeStaleDataSources();
         assertStaleDataSource((MockedDataSource) dataSourceMap.get("ds_0"));
         assertStaleDataSource((MockedDataSource) dataSourceMap.get("ds_1"));
@@ -67,17 +68,26 @@ class ResourceSwitchManagerTest {
     
     private Map<String, DataSourceProperties> createToBeChangedDataSourcePropsMap() {
         Map<String, DataSourceProperties> result = new HashMap<>(3, 1F);
-        result.put("new", new DataSourceProperties(MockedDataSource.class.getName(), Collections.emptyMap()));
-        result.put("not_change", new DataSourceProperties(MockedDataSource.class.getName(), Collections.emptyMap()));
-        result.put("replace", new DataSourceProperties(MockedDataSource.class.getName(), Collections.singletonMap("password", "new_pwd")));
+        result.put("new", new DataSourceProperties(MockedDataSource.class.getName(), getDataSourceProps(2)));
+        result.put("not_change", new DataSourceProperties(MockedDataSource.class.getName(), getDataSourceProps(2)));
+        Map<String, Object> replaceProps = getDataSourceProps(3);
+        replaceProps.put("password", "new_pwd");
+        result.put("replace", new DataSourceProperties(MockedDataSource.class.getName(), replaceProps));
+        return result;
+    }
+    
+    private Map<String, Object> getDataSourceProps(final int initialCapacity) {
+        Map<String, Object> result = new LinkedHashMap<>(initialCapacity, 1F);
+        result.put("url", new MockedDataSource().getUrl());
+        result.put("username", "root");
         return result;
     }
     
     private void assertNewDataSources(final SwitchingResource actual) {
-        assertThat(actual.getNewDataSources().size(), is(3));
-        assertTrue(actual.getNewDataSources().containsKey("not_change"));
-        assertTrue(actual.getNewDataSources().containsKey("new"));
-        assertTrue(actual.getNewDataSources().containsKey("replace"));
+        assertThat(actual.getNewStorageResource().getStorageNodes().size(), is(3));
+        assertTrue(actual.getNewStorageResource().getStorageNodes().containsKey("not_change"));
+        assertTrue(actual.getNewStorageResource().getStorageNodes().containsKey("new"));
+        assertTrue(actual.getNewStorageResource().getStorageNodes().containsKey("replace"));
     }
     
     private void assertStaleDataSources(final Map<String, DataSource> originalDataSourceMap) {

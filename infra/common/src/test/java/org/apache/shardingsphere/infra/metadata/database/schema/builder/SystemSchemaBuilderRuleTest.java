@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,35 +29,35 @@ class SystemSchemaBuilderRuleTest {
     
     @Test
     void assertValueOfSchemaPathSuccess() {
-        SystemSchemaBuilderRule actualInformationSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "information_schema");
+        SystemSchemaBuilderRule actualInformationSchema = SystemSchemaBuilderRule.valueOf("MySQL", "information_schema");
         assertThat(actualInformationSchema, is(SystemSchemaBuilderRule.MYSQL_INFORMATION_SCHEMA));
         assertThat(actualInformationSchema.getTables().size(), is(61));
-        SystemSchemaBuilderRule actualMySQLSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "mysql");
+        SystemSchemaBuilderRule actualMySQLSchema = SystemSchemaBuilderRule.valueOf("MySQL", "mysql");
         assertThat(actualMySQLSchema, is(SystemSchemaBuilderRule.MYSQL_MYSQL));
         assertThat(actualMySQLSchema.getTables().size(), is(31));
-        SystemSchemaBuilderRule actualPerformanceSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "performance_schema");
+        SystemSchemaBuilderRule actualPerformanceSchema = SystemSchemaBuilderRule.valueOf("MySQL", "performance_schema");
         assertThat(actualPerformanceSchema, is(SystemSchemaBuilderRule.MYSQL_PERFORMANCE_SCHEMA));
         assertThat(actualPerformanceSchema.getTables().size(), is(87));
-        SystemSchemaBuilderRule actualSysSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "sys");
+        SystemSchemaBuilderRule actualSysSchema = SystemSchemaBuilderRule.valueOf("MySQL", "sys");
         assertThat(actualSysSchema, is(SystemSchemaBuilderRule.MYSQL_SYS));
         assertThat(actualSysSchema.getTables().size(), is(53));
-        SystemSchemaBuilderRule actualPgInformationSchema = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "information_schema");
+        SystemSchemaBuilderRule actualPgInformationSchema = SystemSchemaBuilderRule.valueOf("PostgreSQL", "information_schema");
         assertThat(actualPgInformationSchema, is(SystemSchemaBuilderRule.POSTGRESQL_INFORMATION_SCHEMA));
         assertThat(actualPgInformationSchema.getTables().size(), is(69));
-        SystemSchemaBuilderRule actualPgCatalog = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "pg_catalog");
+        SystemSchemaBuilderRule actualPgCatalog = SystemSchemaBuilderRule.valueOf("PostgreSQL", "pg_catalog");
         assertThat(actualPgCatalog, is(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG));
         assertThat(actualPgCatalog.getTables().size(), is(134));
-        SystemSchemaBuilderRule actualOgInformationSchema = SystemSchemaBuilderRule.valueOf(new OpenGaussDatabaseType().getType(), "information_schema");
+        SystemSchemaBuilderRule actualOgInformationSchema = SystemSchemaBuilderRule.valueOf("openGauss", "information_schema");
         assertThat(actualOgInformationSchema, is(SystemSchemaBuilderRule.OPEN_GAUSS_INFORMATION_SCHEMA));
         assertThat(actualOgInformationSchema.getTables().size(), is(66));
-        SystemSchemaBuilderRule actualOgPgCatalog = SystemSchemaBuilderRule.valueOf(new OpenGaussDatabaseType().getType(), "pg_catalog");
+        SystemSchemaBuilderRule actualOgPgCatalog = SystemSchemaBuilderRule.valueOf("openGauss", "pg_catalog");
         assertThat(actualOgPgCatalog, is(SystemSchemaBuilderRule.OPEN_GAUSS_PG_CATALOG));
         assertThat(actualOgPgCatalog.getTables().size(), is(240));
     }
     
     @Test
     void assertValueOfSchemaPathFailure() {
-        assertThrows(NullPointerException.class, () -> SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "test"));
+        assertThrows(NullPointerException.class, () -> SystemSchemaBuilderRule.valueOf("MySQL", "test"));
     }
     
     @Test
@@ -93,6 +90,5 @@ class SystemSchemaBuilderRuleTest {
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_stat_progress_basebackup"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_stat_progress_cluster"));
         assertFalse(SystemSchemaBuilderRule.isSystemTable("sharding_db", "t_order"));
-        
     }
 }

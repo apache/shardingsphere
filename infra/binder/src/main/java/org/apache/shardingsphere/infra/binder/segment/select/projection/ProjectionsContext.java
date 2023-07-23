@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -116,7 +117,7 @@ public final class ProjectionsContext {
                 }
             }
             if (projectionName.equalsIgnoreCase(SQLUtils.getExactlyValue(each.getExpression()))) {
-                return each.getAlias();
+                return each.getAlias().map(IdentifierValue::getValue);
             }
         }
         return Optional.empty();

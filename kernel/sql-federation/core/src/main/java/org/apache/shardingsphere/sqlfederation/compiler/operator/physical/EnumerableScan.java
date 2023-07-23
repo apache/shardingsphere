@@ -91,7 +91,7 @@ public final class EnumerableScan extends TableScan implements EnumerableRel {
     }
     
     private SqlString createSQLString(final RelNode scanContext, final String databaseType) {
-        final SqlDialect sqlDialect = SQLDialectFactory.getSQLDialect(databaseType);
+        SqlDialect sqlDialect = SQLDialectFactory.getSQLDialect(databaseType);
         return new RelToSqlConverter(sqlDialect).visitRoot(scanContext).asStatement().toSqlString(sqlDialect);
     }
     

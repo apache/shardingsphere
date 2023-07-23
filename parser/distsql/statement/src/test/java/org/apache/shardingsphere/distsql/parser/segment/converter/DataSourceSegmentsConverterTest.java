@@ -20,8 +20,9 @@ package org.apache.shardingsphere.distsql.parser.segment.converter;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class DataSourceSegmentsConverterTest {
     
     @Test
     void assertConvert() {
-        Map<String, DataSourceProperties> actual = DataSourceSegmentsConverter.convert(new MySQLDatabaseType(), createDataSourceSegments());
+        Map<String, DataSourceProperties> actual = DataSourceSegmentsConverter.convert(TypedSPILoader.getService(DatabaseType.class, "MySQL"), createDataSourceSegments());
         assertThat(actual.size(), is(2));
         assertTrue(actual.keySet().containsAll(Arrays.asList("ds0", "ds1")));
         assertThat(actual.values().iterator().next().getAllLocalProperties().get("username"), is("root0"));
