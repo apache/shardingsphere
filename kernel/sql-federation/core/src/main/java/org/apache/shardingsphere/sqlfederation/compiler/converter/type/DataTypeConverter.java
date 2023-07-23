@@ -39,7 +39,7 @@ public class DataTypeConverter {
     private static void registerDataType() {
         REGISTRY.put("INT", SqlTypeName.INTEGER);
         REGISTRY.put("INT2", SqlTypeName.SMALLINT);
-        REGISTRY.put("IN4", SqlTypeName.INTEGER);
+        REGISTRY.put("INT4", SqlTypeName.INTEGER);
         REGISTRY.put("INT8", SqlTypeName.BIGINT);
         REGISTRY.put("MONEY", SqlTypeName.DECIMAL);
     }
