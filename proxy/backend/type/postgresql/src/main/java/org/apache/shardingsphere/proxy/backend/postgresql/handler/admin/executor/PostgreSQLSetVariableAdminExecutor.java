@@ -43,6 +43,6 @@ public final class PostgreSQLSetVariableAdminExecutor implements DatabaseAdminEx
         String variableName = variableAssignSegment.getVariable().getVariable().toLowerCase();
         String assignValue = variableAssignSegment.getAssignValue();
         new CharsetSetExecutor(databaseType, connectionSession).set(variableName, assignValue);
-        new SessionVariableRecordExecutor(databaseType, connectionSession).record(variableName, assignValue);
+        new SessionVariableRecordExecutor(databaseType, connectionSession).recordVariable(variableName, assignValue);
     }
 }
