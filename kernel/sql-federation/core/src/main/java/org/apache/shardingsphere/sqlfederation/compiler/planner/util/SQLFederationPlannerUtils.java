@@ -222,7 +222,7 @@ public final class SQLFederationPlannerUtils {
                 .withConformance(connectionConfig.conformance())
                 .withDefaultNullCollation(connectionConfig.defaultNullCollation())
                 .withIdentifierExpansion(true);
-        SqlOperatorTable sqlOperatorTable = getSQLOperatorTable(catalogReader, databaseType);
+        SqlOperatorTable sqlOperatorTable = getSQLOperatorTable(catalogReader, databaseType.getTrunkDatabaseType().orElse(databaseType));
         return SqlValidatorUtil.newValidator(sqlOperatorTable, catalogReader, relDataTypeFactory, validatorConfig);
     }
     
