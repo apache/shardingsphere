@@ -71,6 +71,11 @@ public final class DatabaseTypeEngine {
         return configuredDatabaseType.orElseGet(() -> getStorageType(getEnabledDataSources(databaseConfigs).values()));
     }
     
+    private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
+        DatabaseType configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
+        return null == configuredDatabaseType ? Optional.empty() : Optional.of(configuredDatabaseType.getTrunkDatabaseType().orElse(configuredDatabaseType));
+    }
+    
     private static Map<String, DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
@@ -125,11 +130,6 @@ public final class DatabaseTypeEngine {
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
-    }
-    
-    private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
-        DatabaseType configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        return null == configuredDatabaseType ? Optional.empty() : Optional.of(configuredDatabaseType.getTrunkDatabaseType().orElse(configuredDatabaseType));
     }
     
     /**
