@@ -24,10 +24,10 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlTypeNameSpec;
 import org.apache.calcite.sql.fun.SqlCastFunction;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.type.DataTypeConverter;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -43,25 +43,7 @@ public final class TypeCastExpressionConverter implements SQLSegmentConverter<Ty
         if (!expression.isPresent()) {
             return Optional.empty();
         }
-        String typeName = segment.getDataType().toUpperCase();
-        switch (typeName) {
-            case "INT2":
-                typeName = "SMALLINT";
-                break;
-            case "INT":
-            case "INT4":
-                typeName = "INTEGER";
-                break;
-            case "INT8":
-                typeName = "BIGINT";
-                break;
-            case "MONEY":
-                typeName = "DECIMAL";
-                break;
-            default:
-                break;
-        }
-        SqlTypeNameSpec sqlTypeName = new SqlBasicTypeNameSpec(SqlTypeName.valueOf(typeName), SqlParserPos.ZERO);
+        SqlTypeNameSpec sqlTypeName = new SqlBasicTypeNameSpec(DataTypeConverter.convert(segment.getDataType().toUpperCase()), SqlParserPos.ZERO);
         return Optional.of(new SqlBasicCall(new SqlCastFunction(), Arrays.asList(expression.get(), new SqlDataTypeSpec(sqlTypeName, SqlParserPos.ZERO)), SqlParserPos.ZERO));
     }
 }
