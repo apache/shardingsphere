@@ -1074,7 +1074,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public final ASTNode visitExtractFunction(final ExtractFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.EXTRACT().getText(), getOriginalText(ctx));
-        result.getParameters().add(new LiteralExpressionSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), ctx.identifier().getText()));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.intervalUnit().getStart().getStartIndex(), ctx.intervalUnit().getStop().getStopIndex(), ctx.intervalUnit().getText()));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
@@ -1191,7 +1191,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             whenExprs.add((ExpressionSegment) visit(each.expr(0)));
             thenExprs.add((ExpressionSegment) visit(each.expr(1)));
         }
-        ExpressionSegment caseExpr = null == ctx.simpleExpr() ? null : (ExpressionSegment) visit(ctx.simpleExpr());
+        ExpressionSegment caseExpr = null == ctx.expr() ? null : (ExpressionSegment) visit(ctx.expr());
         ExpressionSegment elseExpr = null == ctx.caseElse() ? null : (ExpressionSegment) visit(ctx.caseElse().expr());
         return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr);
     }

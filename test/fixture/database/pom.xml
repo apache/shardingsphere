@@ -23,7 +23,7 @@
         <artifactId>shardingsphere-test-fixture</artifactId>
         <version>5.4.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-fixture-jdbc</artifactId>
+    <artifactId>shardingsphere-test-fixture-database</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
@@ -32,13 +32,14 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>compile</scope>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-database-spi</artifactId>
+            <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
+            <artifactId>mockito-core</artifactId>
             <scope>compile</scope>
         </dependency>
     </dependencies>

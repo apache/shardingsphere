@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.infra.util.props;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 /**
  * Typed property value.
@@ -53,6 +56,9 @@ public final class TypedPropertyValue {
         if (Enum.class.isAssignableFrom(key.getType())) {
             return getEnumValue(key, value);
         }
+        if (TypedSPI.class.isAssignableFrom(key.getType())) {
+            return getTypedSPI(key, value);
+        }
         return value;
     }
     
@@ -62,5 +68,10 @@ public final class TypedPropertyValue {
         } catch (final ReflectiveOperationException | IllegalArgumentException ignored) {
             throw new TypedPropertyValueException(key, value);
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private TypedSPI getTypedSPI(final TypedPropertyKey key, final String value) {
+        return Strings.isNullOrEmpty(value) ? null : TypedSPILoader.getService((Class<? extends TypedSPI>) key.getType(), value);
     }
 }

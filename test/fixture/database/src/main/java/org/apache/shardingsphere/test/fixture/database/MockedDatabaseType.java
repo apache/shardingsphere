@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.database.fixture;
+package org.apache.shardingsphere.test.fixture.database;
 
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
@@ -23,13 +23,20 @@ import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
-public final class ParserDatabaseTypeFixture implements DatabaseType {
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+
+/**
+ * Mocked database type.
+ */
+public final class MockedDatabaseType implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return null;
+        return QuoteCharacter.NONE;
     }
     
     @Override
@@ -39,26 +46,26 @@ public final class ParserDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return null;
+        return Collections.singleton("jdbc:mock");
     }
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return null;
+        return mock(DataSourceMetaData.class, RETURNS_DEEP_STUBS);
     }
     
     @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return null;
+        return Collections.emptyMap();
     }
     
     @Override
     public Collection<String> getSystemSchemas() {
-        return null;
+        return Collections.emptyList();
     }
     
     @Override
     public String getType() {
-        return "PARSER.FIXTURE";
+        return "FIXTURE";
     }
 }

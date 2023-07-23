@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.fixture.infra.database.type;
+package org.apache.shardingsphere.infra.database.core.type.fixture;
 
 import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
@@ -24,18 +24,14 @@ import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Mockito.mock;
-
-/**
- * Mocked database type.
- */
-public final class MockedDatabaseType implements DatabaseType {
+public final class TrunkDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.NONE;
+        return QuoteCharacter.BACK_QUOTE;
     }
     
     @Override
@@ -44,18 +40,23 @@ public final class MockedDatabaseType implements DatabaseType {
     }
     
     @Override
+    public boolean isReservedWord(final String identifier) {
+        return "SELECT".equalsIgnoreCase(identifier);
+    }
+    
+    @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:mock");
+        return Collections.singleton("jdbc:trunk:");
     }
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return mock(DataSourceMetaData.class);
+        return new DataSourceMetaDataFixture(url);
     }
     
     @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
+        return new HashMap<>();
     }
     
     @Override
@@ -65,6 +66,11 @@ public final class MockedDatabaseType implements DatabaseType {
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "TRUNK";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }
