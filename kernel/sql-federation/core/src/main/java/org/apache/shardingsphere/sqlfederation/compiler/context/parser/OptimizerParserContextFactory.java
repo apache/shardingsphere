@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sqlfederation.compiler.context.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -44,8 +43,7 @@ public final class OptimizerParserContextFactory {
     public static Map<String, OptimizerParserContext> create(final Map<String, ShardingSphereDatabase> databases) {
         Map<String, OptimizerParserContext> result = new ConcurrentHashMap<>();
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
-            DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(entry.getValue().getProtocolType().getType());
-            result.put(entry.getKey(), create(databaseType));
+            result.put(entry.getKey(), create(entry.getValue().getProtocolType()));
         }
         return result;
     }
