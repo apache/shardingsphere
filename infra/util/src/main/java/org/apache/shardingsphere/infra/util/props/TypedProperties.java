@@ -51,7 +51,8 @@ public abstract class TypedProperties<E extends Enum<?> & TypedPropertyKey> {
         for (E each : enumConstants) {
             TypedPropertyValue value = null;
             try {
-                value = new TypedPropertyValue(each, props.getOrDefault(each.getKey(), each.getDefaultValue()).toString());
+                Object propsValue = props.getOrDefault(each.getKey(), each.getDefaultValue());
+                value = new TypedPropertyValue(each, null == propsValue ? "" : propsValue.toString());
             } catch (final TypedPropertyValueException ex) {
                 errorMessages.add(ex.getMessage());
             }

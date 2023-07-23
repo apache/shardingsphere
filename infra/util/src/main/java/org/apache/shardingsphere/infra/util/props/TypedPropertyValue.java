@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.props;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
@@ -71,6 +72,6 @@ public final class TypedPropertyValue {
     
     @SuppressWarnings("unchecked")
     private TypedSPI getTypedSPI(final TypedPropertyKey key, final String value) {
-        return TypedSPILoader.getService((Class<? extends TypedSPI>) key.getType(), value);
+        return Strings.isNullOrEmpty(value) ? null : TypedSPILoader.getService((Class<? extends TypedSPI>) key.getType(), value);
     }
 }
