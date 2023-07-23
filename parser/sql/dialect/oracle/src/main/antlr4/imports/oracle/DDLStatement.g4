@@ -3544,3 +3544,7 @@ permanentTablespaceClause
 dropFunction
     : DROP FUNCTION (schemaName DOT_)? function
     ;
+
+alterType
+    : ALTER TYPE typeName
+    ;
