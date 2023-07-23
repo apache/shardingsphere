@@ -121,16 +121,6 @@ class DatabaseTypeEngineTest {
     }
     
     @Test
-    void assertGetTrunkDatabaseTypeWithTrunkDatabaseType() {
-        assertThat(DatabaseTypeEngine.getTrunkDatabaseType("MySQL").getType(), is("MySQL"));
-    }
-    
-    @Test
-    void assertGetTrunkDatabaseTypeWithBranchDatabaseType() {
-        assertThat(DatabaseTypeEngine.getTrunkDatabaseType("H2").getType(), is("MySQL"));
-    }
-    
-    @Test
     void assertGetDefaultSchemaName() {
         DatabaseType schemaSupportDatabaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
         assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaSupportDatabaseType, ""), is("public"));

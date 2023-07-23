@@ -133,17 +133,6 @@ public final class DatabaseTypeEngine {
     }
     
     /**
-     * Get trunk database type.
-     *
-     * @param name database name 
-     * @return trunk database type
-     */
-    public static DatabaseType getTrunkDatabaseType(final String name) {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, name);
-        return databaseType.getTrunkDatabaseType().orElse(databaseType);
-    }
-    
-    /**
      * Get default schema name.
      * 
      * @param protocolType protocol type
