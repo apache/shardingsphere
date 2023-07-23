@@ -143,5 +143,6 @@ execute
     | dropFunction
     | dropCluster
     | systemAction
+    | alterType
     ) SEMI_?
     ;
