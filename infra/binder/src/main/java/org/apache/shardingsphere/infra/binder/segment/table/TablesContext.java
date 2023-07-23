@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -54,7 +55,7 @@ public final class TablesContext {
     
     private final Collection<SimpleTableSegment> simpleTableSegments = new LinkedList<>();
     
-    private final Collection<String> tableNames = new HashSet<>();
+    private final Collection<String> tableNames = new LinkedHashSet<>();
     
     private final Collection<String> schemaNames = new HashSet<>();
     
