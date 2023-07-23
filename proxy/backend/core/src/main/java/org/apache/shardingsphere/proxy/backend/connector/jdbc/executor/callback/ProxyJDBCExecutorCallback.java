@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -121,6 +120,6 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     private Optional<DatabaseType> findConfiguredDatabaseType() {
         String configuredDatabaseType = ProxyContext.getInstance()
                 .getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeEngine.getTrunkDatabaseType(configuredDatabaseType));
+        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(TypedSPILoader.getService(DatabaseType.class, configuredDatabaseType));
     }
 }
