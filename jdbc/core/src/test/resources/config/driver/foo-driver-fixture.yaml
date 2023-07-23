@@ -39,12 +39,12 @@ rules:
         shardingStrategy:
           standard:
             shardingColumn: order_id
-            shardingAlgorithmName: auto-mod
+            shardingAlgorithmName: auto_mod
         keyGenerateStrategy:
           column: user_id
           keyGeneratorName: snowflake
     shardingAlgorithms:
-      auto-mod:
+      auto_mod:
         type: HASH_MOD
         props:
           sharding-count: 2

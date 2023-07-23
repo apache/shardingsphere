@@ -77,14 +77,14 @@ class ProjectionsContextTest {
     void assertFindAlias() {
         Projection projection = getColumnProjectionWithAlias();
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
-        assertTrue(projectionsContext.findAlias(projection.getColumnName()).isPresent());
+        assertTrue(projectionsContext.findAlias(projection.getExpression()).isPresent());
     }
     
     @Test
     void assertFindProjectionIndex() {
         Projection projection = getColumnProjection();
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
-        Optional<Integer> actual = projectionsContext.findProjectionIndex(projection.getColumnName());
+        Optional<Integer> actual = projectionsContext.findProjectionIndex(projection.getExpression());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(1));
     }

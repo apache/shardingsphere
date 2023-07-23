@@ -3530,11 +3530,15 @@ dropMaterializedZonemap
     ;
 
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? permanentTablespaceClause
+    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
     ;
 
 permanentTablespaceClause
-    : TABLESPACE tablespaceName (ONLINE|OFFLINE)
+    : TABLESPACE tablespaceName (
+    (MINIMUM EXTEND sizeClause)
+    | (BLOCKSIZE INTEGER_ K?)
+    | (ONLINE|OFFLINE)
+    )
     ;
 
 dropFunction
