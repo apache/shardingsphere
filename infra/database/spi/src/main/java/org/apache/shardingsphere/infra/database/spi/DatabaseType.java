@@ -59,9 +59,9 @@ public interface DatabaseType extends TypedSPI {
     }
     
     /**
-     * Get alias of JDBC URL prefixes.
+     * Get JDBC URL prefixes.
      * 
-     * @return Alias of JDBC URL prefixes
+     * @return prefixes of JDBC URL
      */
     Collection<String> getJdbcUrlPrefixes();
     
