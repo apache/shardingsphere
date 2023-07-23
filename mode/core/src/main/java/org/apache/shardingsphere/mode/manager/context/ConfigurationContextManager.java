@@ -92,11 +92,10 @@ public final class ConfigurationContextManager {
      * Alter storage unit.
      *
      * @param databaseName database name
-     * @param storageUnitName storage unit name
      * @param dataSourceProps data source properties
      */
     @SuppressWarnings("rawtypes")
-    public synchronized void alterStorageUnit(final String databaseName, final String storageUnitName, final Map<String, DataSourceProperties> dataSourceProps) {
+    public synchronized void alterStorageUnit(final String databaseName, final Map<String, DataSourceProperties> dataSourceProps) {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
