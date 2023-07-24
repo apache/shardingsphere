@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.oracle.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -29,36 +28,26 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class ProjectionUtilsTest {
+class ProjectionUtilsTest {
+    
+    private final IdentifierValue alias = new IdentifierValue("Data", QuoteCharacter.NONE);
     
     @Test
     void assertGetColumnLabelFromAlias() {
-        IdentifierValue alias = null;
-        DatabaseType databaseType = null;
-        alias = new IdentifierValue("Data", QuoteCharacter.NONE);
-        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, databaseType), is(alias.getValue()));
-        alias = new IdentifierValue("Data");
-        databaseType = new PostgreSQLDatabaseType();
-        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, databaseType), is(alias.getValue().toLowerCase()));
-        databaseType = new OpenGaussDatabaseType();
-        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, databaseType), is(alias.getValue().toLowerCase()));
-        databaseType = new OracleDatabaseType();
-        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, databaseType), is(alias.getValue().toUpperCase()));
-        databaseType = new MySQLDatabaseType();
-        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, databaseType), is(alias.getValue()));
+        assertThat(ProjectionUtils.getColumnLabelFromAlias(new IdentifierValue("Data", QuoteCharacter.QUOTE), new PostgreSQLDatabaseType()), is("Data"));
+        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, new PostgreSQLDatabaseType()), is("data"));
+        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, new OpenGaussDatabaseType()), is("data"));
+        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, new OracleDatabaseType()), is("DATA"));
+        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, new MySQLDatabaseType()), is("Data"));
     }
     
     @Test
     void assertGetColumnNameFromFunction() {
         String functionName = "Function";
         String functionExpression = "FunctionExpression";
-        DatabaseType databaseType = new PostgreSQLDatabaseType();
-        assertThat(ProjectionUtils.getColumnNameFromFunction(functionName, functionExpression, databaseType), is(functionName.toLowerCase()));
-        databaseType = new OpenGaussDatabaseType();
-        assertThat(ProjectionUtils.getColumnNameFromFunction(functionName, functionExpression, databaseType), is(functionName.toLowerCase()));
-        databaseType = new OracleDatabaseType();
-        assertThat(ProjectionUtils.getColumnNameFromFunction(functionName, functionExpression, databaseType), is(functionExpression.replace(" ", "").toUpperCase()));
-        databaseType = new MySQLDatabaseType();
-        assertThat(ProjectionUtils.getColumnNameFromFunction(functionName, functionExpression, databaseType), is(functionExpression));
+        assertThat(ProjectionUtils.getColumnNameFromFunction(functionName, functionExpression, new PostgreSQLDatabaseType()), is("function"));
+        assertThat(ProjectionUtils.getColumnNameFromFunction(functionName, functionExpression, new OpenGaussDatabaseType()), is("function"));
+        assertThat(ProjectionUtils.getColumnNameFromFunction(functionName, functionExpression, new OracleDatabaseType()), is("FUNCTIONEXPRESSION"));
+        assertThat(ProjectionUtils.getColumnNameFromFunction(functionName, functionExpression, new MySQLDatabaseType()), is("FunctionExpression"));
     }
 }
