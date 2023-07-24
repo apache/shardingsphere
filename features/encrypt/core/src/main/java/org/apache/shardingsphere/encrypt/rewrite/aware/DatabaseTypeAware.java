@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item;
+package org.apache.shardingsphere.encrypt.rewrite.aware;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
- * Aggregation distinct projection segment.
+ * Database type aware.
  */
-@Getter
-public final class AggregationDistinctProjectionSegment extends AggregationProjectionSegment {
+public interface DatabaseTypeAware {
     
-    private final String distinctInnerExpression;
-    
-    public AggregationDistinctProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String expression, final String distinctExpression) {
-        super(startIndex, stopIndex, type, expression);
-        this.distinctInnerExpression = SQLUtils.getExpressionWithoutOutsideParentheses(distinctExpression);
-    }
+    /**
+     * Set database type.
+     * 
+     * @param databaseType database type
+     */
+    void setDatabaseType(DatabaseType databaseType);
 }

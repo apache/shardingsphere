@@ -22,7 +22,7 @@
             <simple-table name="t_order" start-index="40" stop-index="46" />
         </from>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="SUM" inner-expression="(user_id)" alias="user_id_sum" start-index="7" stop-index="18" />
+            <aggregation-projection type="SUM" expression="SUM(user_id)" alias="user_id_sum" start-index="7" stop-index="18" />
         </projections>
     </select>
 
@@ -31,7 +31,7 @@
             <simple-table name="t_order" start-index="48" stop-index="54" />
         </from>
         <projections start-index="7" stop-index="41">
-            <aggregation-projection type="SUM" inner-expression="(t_order.user_id)" alias="user_id_sum" start-index="7" stop-index="26">
+            <aggregation-projection type="SUM" expression="SUM(t_order.user_id)" alias="user_id_sum" start-index="7" stop-index="26">
                 <paramters>
                     <column name="user_id" start-index="17" stop-index="25">
                         <owner name="t_order" start-index="8" stop-index="16" />
@@ -46,7 +46,7 @@
             <simple-table name="t_order" start-index="37" stop-index="43" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(*)" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" alias="orders_count" expression="COUNT(*)" start-index="7" stop-index="14" />
         </projections>
     </select>
 
@@ -55,7 +55,7 @@
             <simple-table name="t_order" start-index="37" stop-index="43" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(*)" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" alias="orders_count" expression="COUNT(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="45" stop-index="64">
             <expr>
@@ -85,7 +85,7 @@
             <simple-table name="t_order" start-index="37" stop-index="43" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(*)" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" alias="orders_count" expression="COUNT(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="45" stop-index="66">
             <expr>
@@ -116,7 +116,7 @@
             <simple-table name="t_order" start-index="40" stop-index="46" />
         </from>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="MAX" inner-expression="(user_id)" alias="max_user_id" start-index="7" stop-index="18" />
+            <aggregation-projection type="MAX" expression="MAX(user_id)" alias="max_user_id" start-index="7" stop-index="18" />
         </projections>
     </select>
 
@@ -125,7 +125,7 @@
             <simple-table name="t_order" start-index="40" stop-index="46" />
         </from>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="MIN" inner-expression="(user_id)" alias="min_user_id" start-index="7" stop-index="18" />
+            <aggregation-projection type="MIN" expression="MIN(user_id)" alias="min_user_id" start-index="7" stop-index="18" />
         </projections>
     </select>
 
@@ -134,7 +134,7 @@
             <simple-table name="t_order" start-index="40" stop-index="46" />
         </from>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="AVG" inner-expression="(user_id)" alias="user_id_avg" start-index="7" stop-index="18" />
+            <aggregation-projection type="AVG" expression="AVG(user_id)" alias="user_id_avg" start-index="7" stop-index="18" />
         </projections>
     </select>
 
@@ -150,7 +150,7 @@
             </join-table>
         </from>
         <projections start-index="7" stop-index="29">
-            <aggregation-projection type="COUNT" inner-expression="(*)" alias="items_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="COUNT(*)" alias="items_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="62" stop-index="171" literal-stop-index="172">
             <expr>
@@ -288,7 +288,7 @@
             </join-table>
         </from>
         <projections start-index="7" stop-index="29">
-            <aggregation-projection type="COUNT" inner-expression="(*)" alias="items_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="COUNT(*)" alias="items_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="119" stop-index="174" literal-stop-index="175">
             <expr>
@@ -344,7 +344,7 @@
             <simple-table name="t_order" start-index="46" stop-index="52" />
         </from>
         <projections start-index="7" stop-index="39">
-            <aggregation-projection type="COUNT" inner-expression="(`order_id`)" alias="orders_count" start-index="7" stop-index="23" />
+            <aggregation-projection type="COUNT" expression="COUNT(`order_id`)" alias="orders_count" start-index="7" stop-index="23" />
         </projections>
     </select>
 
@@ -371,7 +371,7 @@
             <simple-table name="t_order" start-index="21" stop-index="27" />
         </from>
         <projections start-index="7" stop-index="14">
-            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="29" stop-index="54">
             <expr>
@@ -402,7 +402,7 @@
             <simple-table name="t_order" start-index="21" stop-index="27" />
         </from>
         <projections start-index="7" stop-index="14">
-            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="29" stop-index="81">
             <expr>
@@ -458,7 +458,7 @@
             <simple-table name="t_order" start-index="29" stop-index="35" />
         </from>
         <projections start-index="7" stop-index="22">
-            <aggregation-projection type="BIT_XOR" inner-expression="(user_id)" start-index="7" stop-index="22" />
+            <aggregation-projection type="BIT_XOR" expression="BIT_XOR(user_id)" start-index="7" stop-index="22" />
         </projections>
     </select>
 </sql-parser-test-cases>

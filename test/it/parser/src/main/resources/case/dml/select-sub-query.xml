@@ -367,7 +367,7 @@
                 <subquery>
                     <select>
                         <projections start-index="68" stop-index="81">
-                            <aggregation-projection type="COUNT" inner-expression="(user_id)" start-index="68" stop-index="81" />
+                            <aggregation-projection type="COUNT" expression="COUNT(user_id)" start-index="68" stop-index="81" />
                         </projections>
                         <from start-index="83" stop-index="98">
                             <simple-table name="t_user_info" start-index="88" stop-index="98" />
