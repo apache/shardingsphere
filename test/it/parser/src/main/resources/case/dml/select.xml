@@ -1378,7 +1378,7 @@
             <simple-table name="t_order" start-index="21" stop-index="27" />
         </from>
         <projections start-index="7" stop-index="14">
-            <aggregation-projection type="COUNT" expression="(*)" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="29" stop-index="65" literal-stop-index="70">
             <expr>
