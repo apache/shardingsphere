@@ -296,7 +296,7 @@ public final class ProjectionEngine {
     private void appendAverageDistinctDerivedProjection(final AggregationDistinctProjection averageDistinctProjection) {
         String distinctInnerExpression = averageDistinctProjection.getDistinctInnerExpression();
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
-        String innerExpression = averageDistinctProjection.getExpression().substring(averageDistinctProjection.getExpression().indexOf(Paren.PARENTHESES.getLeftParen()));;
+        String innerExpression = averageDistinctProjection.getExpression().substring(averageDistinctProjection.getExpression().indexOf(Paren.PARENTHESES.getLeftParen()));
         AggregationDistinctProjection countDistinctProjection =
                 new AggregationDistinctProjection(0, 0, AggregationType.COUNT, AggregationType.COUNT.name() + innerExpression, new IdentifierValue(countAlias), distinctInnerExpression, databaseType);
         String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
