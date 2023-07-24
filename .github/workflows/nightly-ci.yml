@@ -94,3 +94,11 @@ jobs:
           java-version: 8
       - name: Run Tests with JDK 8
         run: ./mvnw -T1C -B -ntp -fae test
+  
+  check-license:
+    name: Check - License with SkyWalking Eyes
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: apache/skywalking-eyes@v0.4.0
