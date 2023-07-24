@@ -18,14 +18,23 @@
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLAdminExecutorCreator;
+import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -42,8 +51,11 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     
     static {
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("VERSION()");
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("opengauss_version()");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("intervaltonum(gs_password_deadline())");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("gs_password_notifytime()");
+        SYSTEM_CATALOG_TABLES.add("pg_class");
+        SYSTEM_CATALOG_TABLES.add("pg_namespace");
         SYSTEM_CATALOG_TABLES.add("pg_database");
         SYSTEM_CATALOG_TABLES.add("pg_tables");
         SYSTEM_CATALOG_TABLES.add("pg_roles");
@@ -58,23 +70,44 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
-        if (isSystemCatalogQuery(sqlStatementContext)) {
-            return Optional.of(new OpenGaussSystemCatalogAdminQueryExecutor(sqlStatementContext, sql, databaseName, parameters));
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        if (sqlStatement instanceof SelectStatement) {
+            Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);
+            if (SYSTEM_CATALOG_TABLES.containsAll(selectedTableNames) || isSystemCatalogQueryExpressions((SelectStatement) sqlStatementContext.getSqlStatement())) {
+                return Optional.of(new OpenGaussSystemCatalogAdminQueryExecutor(sqlStatementContext, sql, databaseName, parameters));
+            }
+            if (SystemSchemaBuilderRule.OPEN_GAUSS_INFORMATION_SCHEMA.getTables().containsAll(selectedTableNames)
+                    || SystemSchemaBuilderRule.OPEN_GAUSS_PG_CATALOG.getTables().containsAll(selectedTableNames)) {
+                return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
+            }
         }
         return delegated.create(sqlStatementContext, sql, databaseName, parameters);
     }
     
-    private boolean isSystemCatalogQuery(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext.getTablesContext().getTableNames().stream().anyMatch(SYSTEM_CATALOG_TABLES::contains)) {
-            return true;
-        }
-        if (!(sqlStatementContext.getSqlStatement() instanceof SelectStatement)) {
-            return false;
-        }
-        SelectStatement selectStatement = (SelectStatement) sqlStatementContext.getSqlStatement();
+    private boolean isSystemCatalogQueryExpressions(final SelectStatement selectStatement) {
         Collection<ProjectionSegment> projections = selectStatement.getProjections().getProjections();
         return 1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment
                 && SYSTEM_CATALOG_QUERY_EXPRESSIONS.contains(((ExpressionProjectionSegment) projections.iterator().next()).getText());
+    }
+    
+    private Collection<String> getSelectedTableNames(final SelectStatement sqlStatement) {
+        TableExtractor extractor = new TableExtractor();
+        extractor.extractTablesFromSelect(sqlStatement);
+        List<TableSegment> extracted = new LinkedList<>(extractor.getTableContext());
+        for (TableSegment each : extractor.getTableContext()) {
+            if (each instanceof SubqueryTableSegment) {
+                TableExtractor subExtractor = new TableExtractor();
+                subExtractor.extractTablesFromSelect(((SubqueryTableSegment) each).getSubquery().getSelect());
+                extracted.addAll(subExtractor.getTableContext());
+            }
+        }
+        List<String> result = new ArrayList<>(extracted.size());
+        for (TableSegment each : extracted) {
+            if (each instanceof SimpleTableSegment) {
+                result.add(((SimpleTableSegment) each).getTableName().getIdentifier().getValue().toLowerCase());
+            }
+        }
+        return result;
     }
     
     @Override
