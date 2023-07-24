@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.storage.unit
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
-import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;

@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.url;
+package org.apache.shardingsphere.infra.database.core.datasource;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Properties;
 
 /**
- * Data source meta data builder.
+ * JDBC URL.
  */
-@SingletonSPI
-public interface DataSourceMetaDataBuilder extends DatabaseTypedSPI {
+@RequiredArgsConstructor
+@Getter
+public final class JdbcUrl {
     
-    /**
-     * Build data source meta data.
-     *
-     * @param url URL of data source
-     * @param username username of data source
-     * @param catalog catalog of data source
-     * @return built meta data
-     */
-    DataSourceMetaData build(String url, String username, String catalog);
+    private final String hostname;
+    
+    private final int port;
+    
+    private final String database;
+    
+    private final Properties queryProperties;
 }

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.mysql;
 
-import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
 
 /**
  * Data source meta data builder of MySQL.

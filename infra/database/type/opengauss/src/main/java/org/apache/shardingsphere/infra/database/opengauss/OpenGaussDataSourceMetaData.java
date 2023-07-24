@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.database.opengauss;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.JdbcUrl;
+import org.apache.shardingsphere.infra.database.core.datasource.StandardJdbcUrlParser;
 
 import java.util.Properties;
 

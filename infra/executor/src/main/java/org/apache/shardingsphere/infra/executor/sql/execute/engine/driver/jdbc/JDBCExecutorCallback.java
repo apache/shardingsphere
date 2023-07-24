@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;

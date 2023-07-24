@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.url;
+package org.apache.shardingsphere.infra.database.core.datasource;
 
-import java.util.Properties;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-public final class DataSourceMetaDataBuilderFixture implements DataSourceMetaDataBuilder {
+/**
+ * Data source meta data builder.
+ */
+@SingletonSPI
+public interface DataSourceMetaDataBuilder extends DatabaseTypedSPI {
     
-    @Override
-    public DataSourceMetaData build(final String url, final String username, final String catalog) {
-        DataSourceMetaData result = mock(DataSourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getQueryProperties()).thenReturn(new Properties());
-        return result;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "FIXTURE";
-    }
+    /**
+     * Build data source meta data.
+     *
+     * @param url URL of data source
+     * @param username username of data source
+     * @param catalog catalog of data source
+     * @return built meta data
+     */
+    DataSourceMetaData build(String url, String username, String catalog);
 }

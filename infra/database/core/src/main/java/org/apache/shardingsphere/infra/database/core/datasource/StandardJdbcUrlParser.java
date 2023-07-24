@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.url;
+package org.apache.shardingsphere.infra.database.core.datasource;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;

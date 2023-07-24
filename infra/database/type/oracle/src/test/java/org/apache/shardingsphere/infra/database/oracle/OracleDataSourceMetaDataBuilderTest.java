@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.database.oracle;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 

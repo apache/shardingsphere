@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.fixture.datasource;
 
-import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;

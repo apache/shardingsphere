@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.oracle;
 
-import org.apache.shardingsphere.infra.database.core.url.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;

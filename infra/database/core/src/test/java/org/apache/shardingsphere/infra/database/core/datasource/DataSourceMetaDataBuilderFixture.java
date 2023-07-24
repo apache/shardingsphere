@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.url;
+package org.apache.shardingsphere.infra.database.core.datasource;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
+import java.util.Properties;
 
-/**
- * Unrecognized database URL exception.
- */
-public final class UnrecognizedDatabaseURLException extends KernelSQLException {
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public final class DataSourceMetaDataBuilderFixture implements DataSourceMetaDataBuilder {
     
-    private static final long serialVersionUID = -1551117178863766353L;
+    @Override
+    public DataSourceMetaData build(final String url, final String username, final String catalog) {
+        DataSourceMetaData result = mock(DataSourceMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getQueryProperties()).thenReturn(new Properties());
+        return result;
+    }
     
-    public UnrecognizedDatabaseURLException(final String url, final String pattern) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 0, 1, "The URL `%s` is not recognized, please refer to the pattern `%s`.", url, pattern);
+    @Override
+    public String getDatabaseType() {
+        return "FIXTURE";
     }
 }

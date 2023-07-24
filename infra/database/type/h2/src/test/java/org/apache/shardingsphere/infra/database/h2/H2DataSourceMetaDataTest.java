@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.h2;
 
-import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

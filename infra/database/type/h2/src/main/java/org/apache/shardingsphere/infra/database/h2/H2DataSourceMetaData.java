@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.database.h2;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.url.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.UnrecognizedDatabaseURLException;
 
 import java.util.Objects;
 import java.util.Properties;

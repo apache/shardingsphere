@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.mariadb;
 
-import org.apache.shardingsphere.infra.database.core.url.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
