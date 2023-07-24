@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;

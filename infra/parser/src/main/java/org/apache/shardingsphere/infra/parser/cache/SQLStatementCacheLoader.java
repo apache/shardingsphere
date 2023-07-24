@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.parser.cache;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;

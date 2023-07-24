@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.mysql.MySQLIncrementalDumperCreator
+org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.MySQLIncrementalDumperCreator
 

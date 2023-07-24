@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.parser.sql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 import java.util.Map;

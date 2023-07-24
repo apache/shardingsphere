@@ -63,7 +63,8 @@ public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQ
         for (ColumnSegment each : insertColumnsSegment.get().getColumns()) {
             String columnName = each.getIdentifier().getValue();
             if (encryptTable.isEncryptColumn(columnName)) {
-                Collection<Projection> projections = Collections.singleton(new ColumnProjection(null, encryptTable.getEncryptColumn(columnName).getCipher().getName(), null));
+                Collection<Projection> projections =
+                        Collections.singleton(new ColumnProjection(null, encryptTable.getEncryptColumn(columnName).getCipher().getName(), null, insertStatementContext.getDatabaseType()));
                 result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), projections));
             }
         }

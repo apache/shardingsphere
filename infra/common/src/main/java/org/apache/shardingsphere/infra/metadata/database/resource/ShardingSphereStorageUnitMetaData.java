@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;

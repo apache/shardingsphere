@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumn
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;

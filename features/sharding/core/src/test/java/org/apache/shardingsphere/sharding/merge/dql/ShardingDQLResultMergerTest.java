@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -40,7 +40,7 @@ import org.apache.shardingsphere.sharding.merge.dql.pagination.LimitDecoratorMer
 import org.apache.shardingsphere.sharding.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
-import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -407,7 +407,7 @@ class ShardingDQLResultMergerTest {
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         selectStatement.setProjections(projectionsSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
@@ -420,7 +420,7 @@ class ShardingDQLResultMergerTest {
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
@@ -453,7 +453,7 @@ class ShardingDQLResultMergerTest {
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         OracleSelectStatement selectStatement = (OracleSelectStatement) buildSelectStatement(new OracleSelectStatement());
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setFrom(subqueryTableSegment);
@@ -472,7 +472,7 @@ class ShardingDQLResultMergerTest {
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) buildSelectStatement(new SQLServerSelectStatement());
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),

@@ -36,7 +36,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.Consistency
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.SingleTableInventoryDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;

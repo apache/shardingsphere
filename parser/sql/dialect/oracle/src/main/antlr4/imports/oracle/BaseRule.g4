@@ -630,6 +630,7 @@ notOperator
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
     | PRIOR predicate
+    | CONNECT_BY_ROOT predicate
     | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
@@ -684,7 +685,11 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? overClause? overClause?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? keepClause? overClause? overClause?
+    ;
+
+keepClause
+    : KEEP LP_ DENSE_RANK (FIRST | LAST) orderByClause RP_ overClause?
     ;
 
 aggregationFunctionName
@@ -711,6 +716,9 @@ windowingClause
 
 analyticFunction
     : specifiedAnalyticFunctionName = (LEAD | LAG) ((LP_ expr leadLagInfo? RP_ respectOrIgnoreNulls?) | (LP_ expr respectOrIgnoreNulls? leadLagInfo? RP_)) overClause
+    | specifiedAnalyticFunctionName = NTILE LP_ expr RP_ overClause
+    | specifiedAnalyticFunctionName = (PERCENTILE_CONT | PERCENTILE_DISC) LP_ expr RP_ WITHIN GROUP LP_ orderByClause RP_ overClause
+    | specifiedAnalyticFunctionName = CORR LP_ expr COMMA_ expr RP_ overClause
     | analyticFunctionName LP_ dataType* RP_ overClause
     ;
 

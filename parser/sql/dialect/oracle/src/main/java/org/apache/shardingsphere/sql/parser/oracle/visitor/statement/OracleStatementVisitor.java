@@ -22,6 +22,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
@@ -83,7 +84,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTab
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableOptionsContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
-import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -550,14 +550,13 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
-        String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
         if (null != ctx.DISTINCT()) {
-            AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                    type, innerExpression, getDistinctExpression(ctx));
+            AggregationDistinctProjectionSegment result =
+                    new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), getDistinctExpression(ctx));
             result.getParameters().addAll(getExpressions(ctx));
             return result;
         }
-        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx));
         return result;
     }

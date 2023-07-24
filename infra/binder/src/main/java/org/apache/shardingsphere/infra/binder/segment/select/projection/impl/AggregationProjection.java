@@ -24,7 +24,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.util.ProjectionUtils;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
@@ -43,7 +43,7 @@ public class AggregationProjection implements Projection {
     
     private final AggregationType type;
     
-    private final String innerExpression;
+    private final String expression;
     
     private final IdentifierValue alias;
     
@@ -56,17 +56,12 @@ public class AggregationProjection implements Projection {
     
     @Override
     public String getColumnName() {
-        return ProjectionUtils.getColumnNameFromFunction(type.name(), type.name() + innerExpression, databaseType);
+        return ProjectionUtils.getColumnNameFromFunction(type.name(), expression, databaseType);
     }
     
     @Override
     public String getColumnLabel() {
         return getAlias().isPresent() ? ProjectionUtils.getColumnLabelFromAlias(getAlias().get(), databaseType) : getColumnName();
-    }
-    
-    @Override
-    public String getExpression() {
-        return type.name() + innerExpression;
     }
     
     @Override

@@ -23,7 +23,7 @@ on:
   workflow_dispatch:
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
   REPOSITORY_NAME: shardingsphere
 
 jobs:
@@ -86,7 +86,7 @@ jobs:
             ${{ env.REPOSITORY_NAME }}-maven-third-party-cache-
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Build prod with Maven
-        run: ./mvnw -T1C -B -ntp clean install
+        run: ./mvnw -T1C -B -ntp clean install -DskipTests
       - name: Setup JDK 8 for Test
         uses: actions/setup-java@v3
         with:
@@ -94,3 +94,11 @@ jobs:
           java-version: 8
       - name: Run Tests with JDK 8
         run: ./mvnw -T1C -B -ntp -fae test
+  
+  check-license:
+    name: Check - License with SkyWalking Eyes
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: apache/skywalking-eyes@v0.4.0

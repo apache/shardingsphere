@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.opengauss;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 

@@ -118,7 +118,7 @@ class SubqueryExtractUtilsTest {
         subqueryLeftSelectStatement.setWhere(new WhereSegment(73, 91, leftStatusCondition));
         subqueryLeftSelectStatement.setProjections(new ProjectionsSegment(34, 58));
         subqueryLeftSelectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(34, 41, new IdentifierValue("order_id"))));
-        subqueryLeftSelectStatement.getProjections().getProjections().add(new AggregationProjectionSegment(44, 51, AggregationType.COUNT, "(*)"));
+        subqueryLeftSelectStatement.getProjections().getProjections().add(new AggregationProjectionSegment(44, 51, AggregationType.COUNT, "COUNT(*)"));
         MySQLSelectStatement subqueryRightSelectStatement = new MySQLSelectStatement();
         subqueryRightSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(143, 154, new IdentifierValue("t_order_item"))));
         ColumnSegment rightColumnSegment = new ColumnSegment(162, 167, new IdentifierValue("status"));
@@ -127,7 +127,7 @@ class SubqueryExtractUtilsTest {
         subqueryRightSelectStatement.setWhere(new WhereSegment(156, 174, rightStatusCondition));
         subqueryRightSelectStatement.setProjections(new ProjectionsSegment(112, 136));
         subqueryRightSelectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(112, 119, new IdentifierValue("order_id"))));
-        subqueryRightSelectStatement.getProjections().getProjections().add(new AggregationProjectionSegment(122, 129, AggregationType.COUNT, "(*)"));
+        subqueryRightSelectStatement.getProjections().getProjections().add(new AggregationProjectionSegment(122, 129, AggregationType.COUNT, "COUNT(*)"));
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(7, 19));
         selectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 11, new IdentifierValue("cnt"))));

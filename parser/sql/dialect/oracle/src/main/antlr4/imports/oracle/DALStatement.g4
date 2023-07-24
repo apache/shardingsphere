@@ -17,8 +17,7 @@
 
 grammar DALStatement;
 
-import BaseRule;
-import DMLStatement;
+import BaseRule, DMLStatement;
 
 alterResourceCost
     : ALTER RESOURCE COST ((CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA) INTEGER_)+

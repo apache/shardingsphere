@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJd
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.infra.database.core.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.url.StandardJdbcUrlParser;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.opengauss.PGProperty;
 import org.opengauss.jdbc.PgConnection;
