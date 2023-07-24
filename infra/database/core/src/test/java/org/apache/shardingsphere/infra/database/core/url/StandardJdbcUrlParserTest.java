@@ -28,7 +28,7 @@ class StandardJdbcUrlParserTest {
     
     @Test
     void assertParseSimpleJdbcUrl() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("mock:jdbc://127.0.0.1/");
+        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mock://127.0.0.1/");
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(-1));
         assertThat(actual.getDatabase(), is(""));

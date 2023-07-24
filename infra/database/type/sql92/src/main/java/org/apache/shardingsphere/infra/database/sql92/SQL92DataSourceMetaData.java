@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.sql92;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.type.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.core.url.UnrecognizedDatabaseURLException;
 
 import java.util.Properties;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.type;
+package org.apache.shardingsphere.infra.database.core.url;
 
 import java.util.Properties;
 

@@ -47,11 +47,6 @@ public final class SQLServerDatabaseType implements DatabaseType {
     }
     
     @Override
-    public SQLServerDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new SQLServerDataSourceMetaData(url);
-    }
-    
-    @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
         return Collections.emptyMap();
     }

@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,12 +41,6 @@ class PostgreSQLDatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:postgresql:")));
-    }
-    
-    @Test
-    void assertGetDataSourceMetaData() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getDataSourceMetaData("jdbc:postgresql://localhost:5432/demo_ds_0", "postgres"),
-                instanceOf(PostgreSQLDataSourceMetaData.class));
     }
     
     @Test

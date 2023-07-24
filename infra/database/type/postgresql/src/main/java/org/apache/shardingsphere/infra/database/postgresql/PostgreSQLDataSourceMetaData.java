@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.postgresql;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.type.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.url.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.core.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.url.StandardJdbcUrlParser;
 

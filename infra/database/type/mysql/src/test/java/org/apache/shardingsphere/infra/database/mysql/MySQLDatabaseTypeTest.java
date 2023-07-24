@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.database.mysql;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -42,11 +41,6 @@ class MySQLDatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(databaseType.getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:")));
-    }
-    
-    @Test
-    void assertGetDataSourceMetaData() {
-        assertThat(databaseType.getDataSourceMetaData("jdbc:mysql://127.0.0.1/foo_ds", "root"), CoreMatchers.instanceOf(MySQLDataSourceMetaData.class));
     }
     
     @Test

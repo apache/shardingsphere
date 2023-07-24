@@ -83,16 +83,6 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new MySQLDataSourceMetaData(url);
-    }
-    
-    @Override
-    public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username, final String catalog) {
-        return new MySQLDataSourceMetaData(url, catalog);
-    }
-    
-    @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
         return SYSTEM_DATABASE_SCHEMA_MAP;
     }
