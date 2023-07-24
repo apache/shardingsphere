@@ -41,8 +41,9 @@ jobs:
   
   check-license:
     name: Check - License
-    timeout-minutes: 10
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-      - uses: apache/skywalking-eyes@v0.4.0
+      - name: Run Apache Rat
+        run: ./mvnw apache-rat:check -T1C
