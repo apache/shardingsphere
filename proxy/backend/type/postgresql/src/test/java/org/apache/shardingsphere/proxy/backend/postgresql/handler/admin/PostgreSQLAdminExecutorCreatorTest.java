@@ -101,7 +101,7 @@ class PostgreSQLAdminExecutorCreatorTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn((SelectStatement) sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, PSQL_SELECT_DATABASES, "", Collections.emptyList());
-        assertFalse(actual.isPresent());
+        assertTrue(actual.isPresent());
     }
     
     @Test
@@ -110,7 +110,7 @@ class PostgreSQLAdminExecutorCreatorTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn((SelectStatement) sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, PSQL_SELECT_TABLESPACES, "", Collections.emptyList());
-        assertFalse(actual.isPresent());
+        assertTrue(actual.isPresent());
     }
     
     @Test
