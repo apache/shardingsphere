@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoun
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Database typed SPI loader.
@@ -51,6 +52,26 @@ public final class DatabaseTypedSPILoader {
     }
     
     /**
+     * Find service.
+     *
+     * @param spiClass typed SPI class
+     * @param databaseType database type
+     * @param props properties
+     * @param <T> SPI class type
+     * @return found service
+     */
+    public static <T extends DatabaseTypedSPI> Optional<T> findService(final Class<T> spiClass, final DatabaseType databaseType, final Properties props) {
+        Optional<T> result = TypedSPILoader.findService(spiClass, databaseType, props);
+        if (result.isPresent()) {
+            return result;
+        }
+        if (databaseType.getTrunkDatabaseType().isPresent()) {
+            return TypedSPILoader.findService(spiClass, databaseType.getTrunkDatabaseType().get(), props);
+        }
+        return result;
+    }
+    
+    /**
      * Get service.
      *
      * @param spiClass typed SPI class
@@ -60,5 +81,18 @@ public final class DatabaseTypedSPILoader {
      */
     public static <T extends DatabaseTypedSPI> T getService(final Class<T> spiClass, final DatabaseType databaseType) {
         return findService(spiClass, databaseType).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, databaseType.getType()));
+    }
+    
+    /**
+     * Get service.
+     *
+     * @param spiClass typed SPI class
+     * @param databaseType database type
+     * @param props properties
+     * @param <T> SPI class type
+     * @return found service
+     */
+    public static <T extends DatabaseTypedSPI> T getService(final Class<T> spiClass, final DatabaseType databaseType, final Properties props) {
+        return findService(spiClass, databaseType, props).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, databaseType.getType()));
     }
 }

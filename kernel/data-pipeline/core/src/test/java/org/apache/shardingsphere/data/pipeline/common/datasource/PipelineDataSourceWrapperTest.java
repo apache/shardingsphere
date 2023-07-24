@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.common.datasource;
 
-import org.apache.shardingsphere.infra.database.h2.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -73,7 +74,7 @@ class PipelineDataSourceWrapperTest {
     
     @Test
     void assertGetConnection() throws SQLException {
-        PipelineDataSourceWrapper dataSourceWrapper = new PipelineDataSourceWrapper(dataSource, new H2DatabaseType());
+        PipelineDataSourceWrapper dataSourceWrapper = new PipelineDataSourceWrapper(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         assertThat(dataSourceWrapper.getConnection(), is(connection));
         assertThat(dataSourceWrapper.getConnection(CLIENT_USERNAME, CLIENT_PASSWORD), is(connection));
         assertGetLogWriter(dataSourceWrapper.getLogWriter());
@@ -101,24 +102,24 @@ class PipelineDataSourceWrapperTest {
     @Test
     void assertSetLoginTimeoutFailure() throws SQLException {
         doThrow(new SQLException("")).when(dataSource).setLoginTimeout(LOGIN_TIMEOUT);
-        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).setLoginTimeout(LOGIN_TIMEOUT));
+        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).setLoginTimeout(LOGIN_TIMEOUT));
     }
     
     @Test
     void assertSetLogWriterFailure() throws SQLException {
         doThrow(new SQLException("")).when(dataSource).setLogWriter(printWriter);
-        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).setLogWriter(printWriter));
+        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).setLogWriter(printWriter));
     }
     
     @Test
     void assertCloseExceptionFailure() throws Exception {
         doThrow(new Exception("")).when((AutoCloseable) dataSource).close();
-        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).close());
+        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).close());
     }
     
     @Test
     void assertCloseSQLExceptionFailure() throws Exception {
         doThrow(new SQLException("")).when((AutoCloseable) dataSource).close();
-        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).close());
+        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).close());
     }
 }

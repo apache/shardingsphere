@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -50,7 +51,8 @@ public final class GlobalClockRule implements GlobalRule {
     
     private Properties getProps(final Map<String, ShardingSphereDatabase> databases) {
         Properties result = new Properties();
-        result.setProperty("trunkType", DatabaseTypeEngine.getTrunkDatabaseTypeName(DatabaseTypeEngine.getStorageType(getDataSources(databases))));
+        DatabaseType storageType = DatabaseTypeEngine.getStorageType(getDataSources(databases));
+        result.setProperty("trunkType", storageType.getTrunkDatabaseType().orElse(storageType).getType());
         result.setProperty("enabled", String.valueOf(configuration.isEnabled()));
         result.setProperty("type", configuration.getType());
         result.setProperty("provider", configuration.getProvider());

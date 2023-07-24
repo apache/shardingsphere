@@ -29,4 +29,12 @@
     <properties>
         <dialect.parser>opengauss</dialect.parser>
     </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-database-opengauss</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

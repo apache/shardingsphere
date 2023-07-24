@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.database.spi;
 
+import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,6 +42,13 @@ public interface DatabaseType extends TypedSPI {
     QuoteCharacter getQuoteCharacter();
     
     /**
+     * Get default nulls order type.
+     * 
+     * @return default nulls order type
+     */
+    NullsOrderType getDefaultNullsOrderType();
+    
+    /**
      * Judge whether identifier is reserved word.
      *
      * @param identifier identifier to be judged
@@ -51,9 +59,9 @@ public interface DatabaseType extends TypedSPI {
     }
     
     /**
-     * Get alias of JDBC URL prefixes.
+     * Get JDBC URL prefixes.
      * 
-     * @return Alias of JDBC URL prefixes
+     * @return prefixes of JDBC URL
      */
     Collection<String> getJdbcUrlPrefixes();
     
