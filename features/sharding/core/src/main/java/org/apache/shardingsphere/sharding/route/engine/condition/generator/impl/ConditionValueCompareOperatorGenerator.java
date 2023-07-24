@@ -59,7 +59,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     
     @Override
     public Optional<ShardingConditionValue> generate(final BinaryOperationExpression predicate, final Column column, final List<Object> params, final TimestampServiceRule timestampServiceRule) {
-        String operator = predicate.getOperator();
+        String operator = predicate.getOperator().toUpperCase();
         if (!isSupportedOperator(operator)) {
             return Optional.empty();
         }
