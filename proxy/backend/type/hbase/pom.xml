@@ -43,6 +43,7 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-test-util</artifactId>

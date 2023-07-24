@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -55,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -561,7 +561,7 @@ class ShardingRuleTest {
     void assertIsAllBindingTableWithJoinQueryWithoutJoinCondition() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLSelectStatement.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -607,7 +607,7 @@ class ShardingRuleTest {
         Collection<SimpleTableSegment> tableSegments = Arrays.asList(
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("LOGIC_TABLE"))),
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("SUB_LOGIC_TABLE"))));
-        TablesContext tablesContext = new TablesContext(tableSegments, Collections.emptyMap(), DatabaseTypeFactory.get("MySQL"));
+        TablesContext tablesContext = new TablesContext(tableSegments, Collections.emptyMap(), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
