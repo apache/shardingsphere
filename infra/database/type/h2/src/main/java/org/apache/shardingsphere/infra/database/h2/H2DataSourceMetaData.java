@@ -67,7 +67,7 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         if (!isSameModel(getModel(), ((H2DataSourceMetaData) dataSourceMetaData).getModel())) {
             return false;
         }
-        return DataSourceMetaData.super.isInSameDatabaseInstance(dataSourceMetaData);
+        return hostname.equals(dataSourceMetaData.getHostname()) && port == dataSourceMetaData.getPort();
     }
     
     private boolean isSameModel(final String model1, final String model2) {
