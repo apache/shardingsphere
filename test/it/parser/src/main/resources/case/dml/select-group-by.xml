@@ -160,7 +160,7 @@
             </join-table>
         </from>
         <projections start-index="7" stop-index="29">
-            <aggregation-projection type="COUNT" expression="COUNT(*)" alias="items_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="count(*)" alias="items_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="119" stop-index="174" literal-stop-index="175">
             <expr>
@@ -291,7 +291,7 @@
                     </function>
                 </expr>
             </expression-projection>
-            <aggregation-projection type="COUNT" expression="COUNT(*)" alias="c_number" start-index="65" stop-index="72" />
+            <aggregation-projection type="COUNT" expression="count(*)" alias="c_number" start-index="65" stop-index="72" />
         </projections>
         <where start-index="106" stop-index="129" literal-stop-index="135">
             <expr>

@@ -1456,7 +1456,7 @@
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" expression="COUNT(0)" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="count(0)" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="47" stop-index="142" literal-stop-index="148">
             <expr>
@@ -1546,7 +1546,7 @@
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" expression="COUNT(0)" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="count(0)" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="47" stop-index="142" literal-stop-index="148">
             <expr>
@@ -1661,7 +1661,7 @@
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" expression="COUNT(0)" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="count(0)" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="47" stop-index="140" literal-stop-index="146">
             <expr>
@@ -3068,7 +3068,7 @@
             <simple-table  name="t_order" start-index="37" stop-index="43" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id)" distinct-expression="order_id" alias="s" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id)" distinct-inner-expression="order_id" alias="s" start-index="7" stop-index="28" />
         </projections>
         <where start-index="45" stop-index="65">
             <expr>
@@ -3090,7 +3090,7 @@
             <simple-table name="t_order" start-index="39" stop-index="45" />
         </from>
         <projections start-index="7" stop-index="32">
-            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-inner-expression="order_id" alias="c" start-index="7" stop-index="30" />
         </projections>
         <where start-index="47" stop-index="67">
             <expr>
@@ -3112,7 +3112,7 @@
             <simple-table name="t_order" start-index="35" stop-index="41" />
         </from>
         <projections start-index="7" stop-index="28">
-            <aggregation-distinct-projection type="AVG" expression="AVG(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="AVG" expression="AVG(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="7" stop-index="28" />
         </projections>
         <where start-index="43" stop-index="63">
             <expr>
@@ -3134,8 +3134,8 @@
             <simple-table name="t_order" start-index="61" stop-index="67" />
         </from>
         <projections start-index="7" stop-index="54">
-            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="30" />
-            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id)" distinct-expression="order_id" start-index="33" stop-index="54" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="33" stop-index="54" />
         </projections>
         <where start-index="69" stop-index="89">
             <expr>
@@ -3158,7 +3158,7 @@
         </from>
         <projections start-index="7" stop-index="42">
             <column-projection name="order_id" start-index="7" stop-index="14" />
-            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="17" stop-index="40" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-inner-expression="order_id" alias="c" start-index="17" stop-index="40" />
         </projections>
         <where start-index="57" stop-index="77">
             <expr>
@@ -3186,7 +3186,7 @@
             <simple-table name="t_order" start-index="49" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="42">
-            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-inner-expression="order_id" alias="c" start-index="7" stop-index="30" />
             <column-projection name="order_id" start-index="35" stop-index="42" />
         </projections>
         <group-by>
@@ -3226,7 +3226,7 @@
             <simple-table name="t_order" start-index="49" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="42">
-            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT user_id + order_id)" distinct-expression="user_id+order_id" alias="c" start-index="7" stop-index="40" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT user_id + order_id)" distinct-inner-expression="user_id+order_id" alias="c" start-index="7" stop-index="40" />
         </projections>
         <where start-index="57" stop-index="77">
             <expr>
@@ -3248,9 +3248,9 @@
             <simple-table  name="t_order" start-index="77" stop-index="83" />
         </from>
         <projections start-index="7" stop-index="69">
-            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="28" />
-            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-expression="order_id" start-index="30" stop-index="53" />
-            <aggregation-projection type="COUNT" expression="COUNT(order_id)" start-index="55" stop-index="69" />
+            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="COUNT" expression="count(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="30" stop-index="53" />
+            <aggregation-projection type="COUNT" expression="count(order_id)" start-index="55" stop-index="69" />
         </projections>
         <where start-index="85" stop-index="105">
             <expr>
@@ -3427,7 +3427,7 @@
             <simple-table name="t_order" start-index="48" stop-index="54" />
         </from>
         <projections start-index="7" stop-index="41">
-            <aggregation-projection type="SUM" expression="SUM(if(status=0, 1, 0))" alias="func_status" start-index="7" stop-index="29" />
+            <aggregation-projection type="SUM" expression="sum(if(status=0, 1, 0))" alias="func_status" start-index="7" stop-index="29" />
         </projections>
         <where start-index="56" stop-index="89" literal-stop-index="93">
             <expr>
