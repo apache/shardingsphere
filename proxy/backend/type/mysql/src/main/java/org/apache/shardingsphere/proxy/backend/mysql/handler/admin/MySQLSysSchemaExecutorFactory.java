@@ -43,6 +43,9 @@ public final class MySQLSysSchemaExecutorFactory {
      * @return executor
      */
     public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatement sqlStatement, final String sql, final List<Object> parameters) {
+        if (!(sqlStatement.getFrom() instanceof SimpleTableSegment)) {
+            return Optional.empty();
+        }
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom()).getTableName().getIdentifier().getValue();
         if (SystemSchemaBuilderRule.MYSQL_SYS.getTables().contains(tableName.toLowerCase())) {
             return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
