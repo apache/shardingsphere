@@ -182,7 +182,9 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     private Optional<String> findTableName(final int column) {
         List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
-        Projection projection = expandProjections.size() < column ? new ColumnProjection(null, resultColumnType.getFieldList().get(column - 1).getName(), null) : expandProjections.get(column - 1);
+        Projection projection =
+                expandProjections.size() < column ? new ColumnProjection(null, resultColumnType.getFieldList().get(column - 1).getName(), null, selectStatementContext.getDatabaseType())
+                        : expandProjections.get(column - 1);
         if (projection instanceof ColumnProjection) {
             Map<String, String> tableNamesByColumnProjection =
                     selectStatementContext.getTablesContext().findTableNamesByColumnProjection(Collections.singletonList((ColumnProjection) projection), schema);

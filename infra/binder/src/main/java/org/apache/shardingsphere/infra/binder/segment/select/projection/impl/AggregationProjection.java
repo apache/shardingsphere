@@ -65,11 +65,6 @@ public class AggregationProjection implements Projection {
     }
     
     @Override
-    public String getExpression() {
-        return expression;
-    }
-    
-    @Override
     public final Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias);
     }

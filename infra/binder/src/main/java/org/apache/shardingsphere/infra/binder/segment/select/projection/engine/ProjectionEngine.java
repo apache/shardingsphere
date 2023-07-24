@@ -128,7 +128,8 @@ public final class ProjectionEngine {
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
         IdentifierValue owner = projectionSegment.getColumn().getOwner().isPresent() ? projectionSegment.getColumn().getOwner().get().getIdentifier() : null;
-        return new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier(), projectionSegment.getAliasName().isPresent() ? projectionSegment.getAlias().orElse(null) : null);
+        return new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier(), projectionSegment.getAliasName().isPresent() ? projectionSegment.getAlias().orElse(null) : null,
+                databaseType);
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {
@@ -168,10 +169,11 @@ public final class ProjectionEngine {
         ShardingSpherePreconditions.checkNotNull(schema, () -> new SchemaNotFoundException(schemaName));
         Collection<ColumnProjection> result = new LinkedList<>();
         if (null == owner) {
-            schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(table.getAlias()
-                    .orElse(((SimpleTableSegment) table).getTableName().getIdentifier()), new IdentifierValue(each, databaseType.getQuoteCharacter()), null)).forEach(result::add);
+            schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(table.getAlias().orElse(((SimpleTableSegment) table).getTableName().getIdentifier()),
+                    new IdentifierValue(each, databaseType.getQuoteCharacter()), null, databaseType)).forEach(result::add);
         } else if (owner.getValue().equalsIgnoreCase(tableAlias)) {
-            schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, new IdentifierValue(each, databaseType.getQuoteCharacter()), null)).forEach(result::add);
+            schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, new IdentifierValue(each, databaseType.getQuoteCharacter()), null, databaseType))
+                    .forEach(result::add);
         }
         return result;
     }

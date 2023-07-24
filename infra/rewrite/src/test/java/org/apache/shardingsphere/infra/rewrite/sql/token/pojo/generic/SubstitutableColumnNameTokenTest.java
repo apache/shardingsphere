@@ -39,32 +39,33 @@ class SubstitutableColumnNameTokenTest {
     
     @Test
     void assertToString() {
-        Collection<Projection> projections = Collections.singletonList(new ColumnProjection(null, "id", null));
+        Collection<Projection> projections = Collections.singletonList(new ColumnProjection(null, "id", null, mock(DatabaseType.class)));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections).toString(mock(RouteUnit.class)), is("id"));
     }
     
     @Test
     void assertToStringWithQuote() {
         Collection<Projection> projections = Collections.singletonList(new ColumnProjection(null,
-                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE)));
+                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("`id` AS `id`"));
     }
     
     @Test
     void assertToStringWithOwnerQuote() {
         Collection<Projection> projectionsWithOwnerQuote = Collections.singletonList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.BACK_QUOTE),
-                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE)));
+                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)));
         assertThat(new SubstitutableColumnNameToken(0, 1, projectionsWithOwnerQuote, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("`temp`.`id` AS `id`"));
         Collection<Projection> projectionsWithoutOwnerQuote = Collections.singletonList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.NONE),
-                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE)));
+                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)));
         assertThat(new SubstitutableColumnNameToken(0, 1, projectionsWithoutOwnerQuote, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("temp.`id` AS `id`"));
     }
     
     @Test
     void assertToStringWithSubqueryProjection() {
         Collection<Projection> projections = Arrays.asList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.BACK_QUOTE),
-                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE)),
-                new SubqueryProjection("(SELECT name FROM t_order)", new ColumnProjection(null, "name", null), new IdentifierValue("name"), TypedSPILoader.getService(DatabaseType.class, "Oracle")));
+                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)),
+                new SubqueryProjection("(SELECT name FROM t_order)", new ColumnProjection(null, "name", null, mock(DatabaseType.class)), new IdentifierValue("name"),
+                        TypedSPILoader.getService(DatabaseType.class, "Oracle")));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)),
                 is("`temp`.`id` AS `id`, `name`"));
     }
