@@ -45,8 +45,7 @@ public final class ShadowConvertRuleConfigurationProvider implements ConvertRule
         if (ruleConfig.getDataSources().isEmpty()) {
             return "";
         }
-        StringBuilder result = new StringBuilder();
-        result.append(DistSQLScriptConstants.CREATE_SHADOW);
+        StringBuilder result = new StringBuilder(DistSQLScriptConstants.CREATE_SHADOW);
         Iterator<ShadowDataSourceConfiguration> iterator = ruleConfig.getDataSources().iterator();
         while (iterator.hasNext()) {
             ShadowDataSourceConfiguration dataSourceConfig = iterator.next();

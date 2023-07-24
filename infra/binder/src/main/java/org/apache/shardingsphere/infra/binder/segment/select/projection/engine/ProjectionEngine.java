@@ -48,9 +48,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -59,9 +57,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Projection engine.
@@ -125,7 +121,6 @@ public final class ProjectionEngine {
         IdentifierValue owner = projectionSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null);
         Collection<Projection> projections = new LinkedHashSet<>();
         projections.addAll(getShorthandColumnsFromSimpleTableSegment(table, owner));
-        projections.addAll(getShorthandColumnsFromSubqueryTableSegment(table, owner));
         projections.addAll(getShorthandColumnsFromJoinTableSegment(table, owner, projectionSegment));
         return new ShorthandProjection(owner, projections);
     }
@@ -144,7 +139,7 @@ public final class ProjectionEngine {
         IdentifierValue alias =
                 projectionSegment.getAlias().orElseGet(() -> new IdentifierValue(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++)));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
-                projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), innerExpression, alias, projectionSegment.getDistinctExpression(), databaseType);
+                projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), innerExpression, alias, projectionSegment.getDistinctInnerExpression(), databaseType);
         if (AggregationType.AVG == result.getType()) {
             appendAverageDistinctDerivedProjection(result);
         }
@@ -181,35 +176,6 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Collection<Projection> getShorthandColumnsFromSubqueryTableSegment(final TableSegment table, final IdentifierValue owner) {
-        if (!(table instanceof SubqueryTableSegment) || isOwnerNotSameWithTableAlias(owner, table)) {
-            return Collections.emptyList();
-        }
-        SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
-        Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
-                .filter(Objects::nonNull).collect(Collectors.toList());
-        IdentifierValue subqueryTableAlias = table.getAlias().orElse(null);
-        return getSubqueryTableActualProjections(projections, subqueryTableAlias);
-    }
-    
-    private boolean isOwnerNotSameWithTableAlias(final IdentifierValue owner, final TableSegment table) {
-        return null != owner && table.getAliasName().isPresent() && !table.getAliasName().get().equals(owner.getValue());
-    }
-    
-    private Collection<Projection> getSubqueryTableActualProjections(final Collection<Projection> projections, final IdentifierValue subqueryTableAlias) {
-        Collection<Projection> result = new LinkedList<>();
-        for (Projection each : projections) {
-            if (each instanceof ShorthandProjection) {
-                result.addAll(getSubqueryTableActualProjections(((ShorthandProjection) each).getActualColumns(), subqueryTableAlias));
-            } else if (!(each instanceof DerivedProjection)) {
-                IdentifierValue originalOwner = each instanceof ColumnProjection ? ((ColumnProjection) each).getOriginalOwner() : null;
-                IdentifierValue originalName = each instanceof ColumnProjection ? ((ColumnProjection) each).getOriginalName() : null;
-                result.add(each.transformSubqueryProjection(subqueryTableAlias, originalOwner, originalName));
-            }
-        }
-        return result;
-    }
-    
     private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final IdentifierValue owner, final ProjectionSegment projectionSegment) {
         if (!(table instanceof JoinTableSegment)) {
             return Collections.emptyList();
@@ -219,7 +185,7 @@ public final class ProjectionEngine {
         Collection<Projection> remainingProjections = new LinkedList<>();
         for (Projection each : getOriginalProjections(joinTable, projectionSegment)) {
             Collection<Projection> actualProjections = getActualProjections(Collections.singletonList(each));
-            if (joinTable.getUsing().isEmpty() && !joinTable.isNatural() || null != owner && each.getColumnName().contains(owner.getValue())) {
+            if (joinTable.getUsing().isEmpty() && !joinTable.isNatural() || null != owner && each.getExpression().contains(owner.getValue())) {
                 result.addAll(actualProjections);
             } else {
                 remainingProjections.addAll(actualProjections);

@@ -148,7 +148,19 @@ parenthesisSelectSubquery
     ;
 
 queryBlock
-    : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    : withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    ;
+
+selectIntoClause
+    : (BULK COLLECT)? INTO variableNames
+    ;
+
+variableNames
+    : variableName (COMMA_ variableName)*
+    ;
+
+variableName
+    : identifier | stringLiterals
     ;
 
 withClause

@@ -60,26 +60,26 @@ class ShardingSphereProxyVersionTest {
         assertThat(DatabaseProtocolServerInfo.getProtocolVersion("foo_db", TypedSPILoader.getService(DatabaseType.class, "MySQL")), startsWith("5.7.22"));
     }
     
-    private ContextManager mockContextManager(final String databaseType, final String databaseProductVersion) throws SQLException {
+    private ContextManager mockContextManager(final String databaseProductName, final String databaseProductVersion) throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mockDatabase(databaseType, databaseProductVersion);
+        ShardingSphereDatabase database = mockDatabase(databaseProductName, databaseProductVersion);
         when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("foo_db", database));
         return result;
     }
     
-    private ShardingSphereDatabase mockDatabase(final String databaseType, final String databaseProductVersion) throws SQLException {
+    private ShardingSphereDatabase mockDatabase(final String databaseProductName, final String databaseProductVersion) throws SQLException {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn("foo_db");
         when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        ShardingSphereResourceMetaData resourceMetaData = mockResourceMetaData(databaseType, databaseProductVersion);
+        ShardingSphereResourceMetaData resourceMetaData = mockResourceMetaData(databaseProductName, databaseProductVersion);
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         return result;
     }
     
-    private ShardingSphereResourceMetaData mockResourceMetaData(final String databaseType, final String databaseProductVersion) throws SQLException {
+    private ShardingSphereResourceMetaData mockResourceMetaData(final String databaseProductName, final String databaseProductVersion) throws SQLException {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        when(result.getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, databaseType)));
-        DataSource dataSource = createDataSource(databaseType, databaseProductVersion);
+        when(result.getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, databaseProductName)));
+        DataSource dataSource = createDataSource(databaseProductName, databaseProductVersion);
         when(result.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         return result;
     }

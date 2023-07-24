@@ -37,22 +37,21 @@ public final class StorageContainerFactory {
      *
      * @param databaseType database type
      * @param storageContainerImage storage container image
-     * @param scenario scenario
      * @param storageContainerConfiguration storage container configuration
      * @return created instance
      * @throws RuntimeException runtime exception
      */
-    public static StorageContainer newInstance(final DatabaseType databaseType, final String storageContainerImage, final String scenario,
+    public static StorageContainer newInstance(final DatabaseType databaseType, final String storageContainerImage,
                                                final StorageContainerConfiguration storageContainerConfiguration) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return new MySQLContainer(storageContainerImage, scenario, storageContainerConfiguration);
+                return new MySQLContainer(storageContainerImage, storageContainerConfiguration);
             case "PostgreSQL":
-                return new PostgreSQLContainer(storageContainerImage, scenario, storageContainerConfiguration);
+                return new PostgreSQLContainer(storageContainerImage, storageContainerConfiguration);
             case "openGauss":
-                return new OpenGaussContainer(storageContainerImage, scenario, storageContainerConfiguration);
+                return new OpenGaussContainer(storageContainerImage, storageContainerConfiguration);
             case "H2":
-                return new H2Container(scenario);
+                return new H2Container(storageContainerConfiguration);
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
