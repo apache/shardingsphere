@@ -53,15 +53,12 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
     
     private final TableNamesMapper logicalTableMapper;
     
-    private final TableNamesMapper actualTableMapper;
-    
     public BroadcastRule(final BroadcastRuleConfiguration configuration, final String databaseName, final Map<String, DataSource> dataSources) {
         this.configuration = configuration;
         this.databaseName = databaseName;
         dataSourceNames = getDataSourceNames(dataSources);
         tables = createBroadcastTables(configuration.getTables());
         logicalTableMapper = createTableMapper();
-        actualTableMapper = createTableMapper();
         tableDataNodes = createShardingTableDataNodes(dataSourceNames, tables);
     }
     
@@ -173,7 +170,7 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
     
     @Override
     public TableNamesMapper getActualTableMapper() {
-        return actualTableMapper;
+        return new TableNamesMapper();
     }
     
     @Override
@@ -183,6 +180,6 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
     
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
-        return getLogicTableMapper();
+        return new TableNamesMapper();
     }
 }

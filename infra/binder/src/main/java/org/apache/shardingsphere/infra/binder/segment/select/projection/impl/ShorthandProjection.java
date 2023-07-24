@@ -52,6 +52,11 @@ public final class ShorthandProjection implements Projection {
     }
     
     @Override
+    public String getExpression() {
+        return null == owner ? "*" : owner.getValue() + ".*";
+    }
+    
+    @Override
     public Optional<IdentifierValue> getAlias() {
         return Optional.empty();
     }
@@ -78,10 +83,5 @@ public final class ShorthandProjection implements Projection {
             }
         }
         return result;
-    }
-    
-    @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        return new ShorthandProjection(subqueryTableAlias, actualColumns);
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -66,6 +67,11 @@ class CreateEncryptRuleStatementUpdaterTest {
     }
     
     @Test
+    void assertCheckSQLStatementWithConflictColumnNames() {
+        assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, createConflictColumnNameSQLStatement(), getCurrentRuleConfig()));
+    }
+    
+    @Test
     void assertCreateEncryptRuleWithIfNotExists() {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateEncryptRuleStatement sqlStatement = createAESEncryptRuleSQLStatement(true);
@@ -101,6 +107,15 @@ class CreateEncryptRuleStatementUpdaterTest {
         rules.add(tUserRuleSegment);
         rules.add(tOrderRuleSegment);
         return new CreateEncryptRuleStatement(ifNotExists, rules);
+    }
+    
+    private CreateEncryptRuleStatement createConflictColumnNameSQLStatement() {
+        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id",
+                new EncryptColumnItemSegment("user_cipher", new AlgorithmSegment("MD5", new Properties())),
+                new EncryptColumnItemSegment("user_id", new AlgorithmSegment("test", new Properties())),
+                new EncryptColumnItemSegment("like_column", new AlgorithmSegment("test", new Properties())));
+        EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment));
+        return new CreateEncryptRuleStatement(false, Collections.singleton(ruleSegment));
     }
     
     private EncryptRuleConfiguration getCurrentRuleConfig() {

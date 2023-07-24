@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.infra.database.mariadb;
 
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -34,6 +35,11 @@ public final class MariaDBDatabaseType implements DatabaseType {
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.BACK_QUOTE;
+    }
+    
+    @Override
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.FIRST;
     }
     
     @Override
