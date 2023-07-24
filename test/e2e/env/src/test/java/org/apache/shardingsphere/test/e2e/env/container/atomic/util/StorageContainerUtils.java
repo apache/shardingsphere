@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.util;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import javax.sql.DataSource;
@@ -54,7 +54,7 @@ public final class StorageContainerUtils {
      * @return data source
      */
     public static DataSource generateDataSource(final String jdbcUrl, final String username, final String password, final int maximumPoolSize) {
-        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(jdbcUrl);
+        DatabaseType databaseType = DatabaseTypeFactory.get(jdbcUrl);
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(jdbcUrl);

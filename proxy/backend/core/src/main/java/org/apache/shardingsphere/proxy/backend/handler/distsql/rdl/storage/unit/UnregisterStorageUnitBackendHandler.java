@@ -17,22 +17,19 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.StorageUnitUtils;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import javax.sql.DataSource;
@@ -80,7 +77,8 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
     }
     
     private void checkInUsed(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
-        Multimap<String, String> inUsedStorageUnits = getInUsedResources(databaseName);
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
+        Map<String, Collection<String>> inUsedStorageUnits = StorageUnitUtils.getInUsedStorageUnits(database.getRuleMetaData(), database.getResourceMetaData().getDataSources().size());
         Collection<String> inUsedStorageUnitNames = inUsedStorageUnits.keySet();
         inUsedStorageUnitNames.retainAll(sqlStatement.getStorageUnitNames());
         if (!inUsedStorageUnitNames.isEmpty()) {
@@ -93,34 +91,7 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
         }
     }
     
-    private Multimap<String, String> getInUsedResources(final String databaseName) {
-        Multimap<String, String> result = LinkedListMultimap.create();
-        for (DataSourceContainedRule each : ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().findRules(DataSourceContainedRule.class)) {
-            getInUsedResourceNames(each).forEach(eachResource -> result.put(eachResource, each.getType()));
-        }
-        for (DataNodeContainedRule each : ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().findRules(DataNodeContainedRule.class)) {
-            getInUsedResourceNames(each).forEach(eachResource -> result.put(eachResource, each.getType()));
-        }
-        return result;
-    }
-    
-    private Collection<String> getInUsedResourceNames(final DataSourceContainedRule rule) {
-        Collection<String> result = new HashSet<>();
-        for (Collection<String> each : rule.getDataSourceMapper().values()) {
-            result.addAll(each);
-        }
-        return result;
-    }
-    
-    private Collection<String> getInUsedResourceNames(final DataNodeContainedRule rule) {
-        Collection<String> result = new HashSet<>();
-        for (Collection<DataNode> each : rule.getAllDataNodes().values()) {
-            result.addAll(each.stream().map(DataNode::getDataSourceName).collect(Collectors.toList()));
-        }
-        return result;
-    }
-    
-    private void checkInUsedIgnoreSingleTables(final Collection<String> inUsedResourceNames, final Multimap<String, String> inUsedStorageUnits) {
+    private void checkInUsedIgnoreSingleTables(final Collection<String> inUsedResourceNames, final Map<String, Collection<String>> inUsedStorageUnits) {
         for (String each : inUsedResourceNames) {
             Collection<String> inUsedRules = inUsedStorageUnits.get(each);
             inUsedRules.remove(SingleRule.class.getSimpleName());

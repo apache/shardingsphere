@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -36,8 +37,8 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     
     private final StorageContainerConfiguration storageContainerConfig;
     
-    public PostgreSQLContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage, scenario);
+    public PostgreSQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
+        super(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage);
         this.storageContainerConfig = storageContainerConfig;
     }
     
@@ -47,6 +48,16 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
         addEnvs(storageContainerConfig.getContainerEnvironments());
         mapResources(storageContainerConfig.getMountedResources());
         super.configure();
+    }
+    
+    @Override
+    protected Collection<String> getDatabaseNames() {
+        return storageContainerConfig.getDatabaseNames();
+    }
+    
+    @Override
+    protected Collection<String> getExpectedDatabaseNames() {
+        return storageContainerConfig.getExpectedDatabaseNames();
     }
     
     @Override

@@ -17,6 +17,92 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_position_function">
+        <projections start-index="7" stop-index="97">
+            <expression-projection text="position(&quot;0&quot; in &quot;baaa&quot; in (1))" start-index="7" stop-index="36">
+                <expr>
+                    <function start-index="7" stop-index="36" text="position(&quot;0&quot; in &quot;baaa&quot; in (1))" function-name="position">
+                        <parameter>
+                            <literal-expression start-index="16" stop-index="18" value="0" />
+                        </parameter>
+                        <parameter>
+                            <in-expression start-index="23" stop-index="35">
+                                <left>
+                                    <literal-expression start-index="23" stop-index="28" value="baaa" />
+                                </left>
+                                <right>
+                                    <list-expression start-index="33" stop-index="35">
+                                        <items>
+                                            <literal-expression start-index="34" stop-index="34" value="1" />
+                                        </items>
+                                    </list-expression>
+                                </right>
+                            </in-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="position(&quot;0&quot; in &quot;1&quot; in (1,2,3))" start-index="38" stop-index="68">
+                <expr>
+                    <function start-index="38" stop-index="68" text="position(&quot;0&quot; in &quot;1&quot; in (1,2,3))" function-name="position">
+                        <parameter>
+                            <literal-expression start-index="47" stop-index="49" value="0" />
+                        </parameter>
+                        <parameter>
+                            <in-expression start-index="54" stop-index="67">
+                                <left>
+                                    <literal-expression start-index="54" stop-index="56" value="1" />
+                                </left>
+                                <right>
+                                    <list-expression start-index="61" stop-index="67">
+                                        <items>
+                                            <literal-expression start-index="62" stop-index="62" value="1" />
+                                        </items>
+                                        <items>
+                                            <literal-expression start-index="64" stop-index="64" value="2" />
+                                        </items>
+                                        <items>
+                                            <literal-expression start-index="66" stop-index="66" value="3" />
+                                        </items>
+                                    </list-expression>
+                                </right>
+                            </in-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="position(&quot;sql&quot; in (&quot;mysql&quot;))" start-index="70" stop-index="97">
+                <expr>
+                    <function start-index="70" stop-index="97" text="position(&quot;sql&quot; in (&quot;mysql&quot;))" function-name="position">
+                        <parameter>
+                            <literal-expression start-index="79" stop-index="83" value="sql" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="89" stop-index="95" value="mysql" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_extract_function_with_day_hour">
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" start-index="7" stop-index="50">
+                <expr>
+                    <function start-index="7" stop-index="50" text="extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" function-name="extract">
+                        <parameter>
+                            <literal-expression start-index="15" stop-index="22" value="DAY_HOUR" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="29" stop-index="49" value="1999-01-02 10:11:12" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
     <select sql-case-id="select_with_latin1">
         <projections start-index="7" stop-index="62">
             <expression-projection text="_latin1'B' collate latin1_bin in (_latin1'a',_latin1'b')" start-index="7" stop-index="62">
@@ -1292,7 +1378,7 @@
             <simple-table name="t_order" start-index="21" stop-index="27" />
         </from>
         <projections start-index="7" stop-index="14">
-            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="29" stop-index="65" literal-stop-index="70">
             <expr>
@@ -1336,7 +1422,7 @@
             <simple-table name="t_order" start-index="21" stop-index="27" />
         </from>
         <projections start-index="7" stop-index="14">
-            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="29" stop-index="58" literal-stop-index="60">
             <expr>
@@ -1370,7 +1456,7 @@
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="count(0)" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="47" stop-index="142" literal-stop-index="148">
             <expr>
@@ -1460,7 +1546,7 @@
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="count(0)" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="47" stop-index="142" literal-stop-index="148">
             <expr>
@@ -1575,7 +1661,7 @@
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="count(0)" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="47" stop-index="140" literal-stop-index="146">
             <expr>
@@ -2982,7 +3068,7 @@
             <simple-table  name="t_order" start-index="37" stop-index="43" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-distinct-projection type="SUM" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="s" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id)" distinct-inner-expression="order_id" alias="s" start-index="7" stop-index="28" />
         </projections>
         <where start-index="45" stop-index="65">
             <expr>
@@ -3004,7 +3090,7 @@
             <simple-table name="t_order" start-index="39" stop-index="45" />
         </from>
         <projections start-index="7" stop-index="32">
-            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-inner-expression="order_id" alias="c" start-index="7" stop-index="30" />
         </projections>
         <where start-index="47" stop-index="67">
             <expr>
@@ -3026,7 +3112,7 @@
             <simple-table name="t_order" start-index="35" stop-index="41" />
         </from>
         <projections start-index="7" stop-index="28">
-            <aggregation-distinct-projection type="AVG" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="AVG" expression="AVG(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="7" stop-index="28" />
         </projections>
         <where start-index="43" stop-index="63">
             <expr>
@@ -3048,8 +3134,8 @@
             <simple-table name="t_order" start-index="61" stop-index="67" />
         </from>
         <projections start-index="7" stop-index="54">
-            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="30" />
-            <aggregation-distinct-projection type="SUM" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="33" stop-index="54" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="33" stop-index="54" />
         </projections>
         <where start-index="69" stop-index="89">
             <expr>
@@ -3072,7 +3158,7 @@
         </from>
         <projections start-index="7" stop-index="42">
             <column-projection name="order_id" start-index="7" stop-index="14" />
-            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="17" stop-index="40" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-inner-expression="order_id" alias="c" start-index="17" stop-index="40" />
         </projections>
         <where start-index="57" stop-index="77">
             <expr>
@@ -3100,7 +3186,7 @@
             <simple-table name="t_order" start-index="49" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="42">
-            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-inner-expression="order_id" alias="c" start-index="7" stop-index="30" />
             <column-projection name="order_id" start-index="35" stop-index="42" />
         </projections>
         <group-by>
@@ -3140,7 +3226,7 @@
             <simple-table name="t_order" start-index="49" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="42">
-            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT user_id + order_id)" distinct-expression="user_id+order_id" alias="c" start-index="7" stop-index="40" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT user_id + order_id)" distinct-inner-expression="user_id+order_id" alias="c" start-index="7" stop-index="40" />
         </projections>
         <where start-index="57" stop-index="77">
             <expr>
@@ -3162,9 +3248,9 @@
             <simple-table  name="t_order" start-index="77" stop-index="83" />
         </from>
         <projections start-index="7" stop-index="69">
-            <aggregation-distinct-projection type="SUM" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="28" />
-            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="30" stop-index="53" />
-            <aggregation-projection type="COUNT" inner-expression="(order_id)" start-index="55" stop-index="69" />
+            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="COUNT" expression="count(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="30" stop-index="53" />
+            <aggregation-projection type="COUNT" expression="count(order_id)" start-index="55" stop-index="69" />
         </projections>
         <where start-index="85" stop-index="105">
             <expr>
@@ -3341,7 +3427,7 @@
             <simple-table name="t_order" start-index="48" stop-index="54" />
         </from>
         <projections start-index="7" stop-index="41">
-            <aggregation-projection type="SUM" inner-expression="(if(status=0, 1, 0))" alias="func_status" start-index="7" stop-index="29" />
+            <aggregation-projection type="SUM" expression="sum(if(status=0, 1, 0))" alias="func_status" start-index="7" stop-index="29" />
         </projections>
         <where start-index="56" stop-index="89" literal-stop-index="93">
             <expr>
@@ -4045,8 +4131,8 @@
                             <select>
                                 <projections start-index="127" stop-index="178">
                                     <column-projection name="department_id" start-index="127" stop-index="139" />
-                                    <aggregation-projection type="COUNT" alias="num_emp" inner-expression="(*)" start-index="142" stop-index="149" />
-                                    <aggregation-projection type="SUM" alias="sal_sum" inner-expression="(salary)" start-index="160" stop-index="170" />
+                                    <aggregation-projection type="COUNT" alias="num_emp" expression="COUNT(*)" start-index="142" stop-index="149" />
+                                    <aggregation-projection type="SUM" alias="sal_sum" expression="SUM(salary)" start-index="160" stop-index="170" />
                                 </projections>
                                 <from>
                                     <simple-table name="employees" start-index="185" stop-index="193" />
@@ -4063,8 +4149,8 @@
                         <subquery>
                             <select>
                                 <projections start-index="230" stop-index="272">
-                                    <aggregation-projection type="COUNT" alias="total_count" inner-expression="(*)" start-index="230" stop-index="237" />
-                                    <aggregation-projection type="SUM" alias="total_sal" inner-expression="(salary)" start-index="252" stop-index="262" />
+                                    <aggregation-projection type="COUNT" alias="total_count" expression="COUNT(*)" start-index="230" stop-index="237" />
+                                    <aggregation-projection type="SUM" alias="total_sal" expression="SUM(salary)" start-index="252" stop-index="262" />
                                 </projections>
                                 <from>
                                     <simple-table name="employees" start-index="279" stop-index="287" />
@@ -4347,7 +4433,7 @@
                         <projections start-index="46" stop-index="74">
                             <column-projection name="country" start-index="46" stop-index="52" />
                             <column-projection name="year" start-index="55" stop-index="58" />
-                            <aggregation-projection type="SUM" alias="sale" inner-expression="(sale)" start-index="61" stop-index="69" />
+                            <aggregation-projection type="SUM" alias="sale" expression="SUM(sale)" start-index="61" stop-index="69" />
                         </projections>
                         <group-by>
                             <column-item name="country" start-index="105" stop-index="111" />
@@ -5555,5 +5641,89 @@
                 </expr>
             </expression-projection>
         </projections>
+    </select>
+
+    <select sql-case-id="select_with_xml_is_schema_valid_function">
+        <projections start-index="7" stop-index="86" literal-start-index="7" literal-stop-index="86">
+            <expression-projection text="x.xmlcol.isSchemaValid('http://www.example.com/schemas/ipo.xsd','purchaseOrder')" start-index="7" stop-index="86" literal-start-index="7" literal-stop-index="86">
+                <expr>
+                    <function function-name="isSchemaValid" text="x.xmlcol.isSchemaValid('http://www.example.com/schemas/ipo.xsd','purchaseOrder')" start-index="7" stop-index="86" literal-start-index="7" literal-stop-index="86">
+                        <parameter>
+                            <literal-expression value="http://www.example.com/schemas/ipo.xsd" start-index="30" stop-index="69" literal-start-index="30" literal-stop-index="69"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="purchaseOrder" start-index="71" stop-index="85" literal-start-index="71" literal-stop-index="85"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table alias="x" name="po_tab" start-index="93" stop-index="100" literal-start-index="93" literal-stop-index="100"/>
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_last_value_function">
+        <projections start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+            <expression-projection text="LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+                <expr>
+                    <function function-name="LAST_VALUE" text="LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="TEST" start-index="78" stop-index="81" literal-start-index="78" literal-stop-index="81"/>
+        </from>
+    </select>
+    <select sql-case-id="select_with_connect_by_root">
+        <projections start-index="7" stop-index="41" literal-start-index="7" literal-stop-index="41">
+            <column-projection alias="Manager" name="last_name" start-index="23" stop-index="41" literal-start-index="23" literal-stop-index="41"/>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="48" stop-index="56" literal-start-index="48" literal-stop-index="56"/>
+        </from>
+    </select>
+    
+    <select sql-case-id="select_with_ntile_function">
+        <projections start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
+            <expression-projection text="NTILE(4) OVER (ORDER BY salary DESC)" alias="quartile" start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
+                <expr>
+                    <function function-name="NTILE" text="NTILE(4) OVER (ORDER BY salary DESC)" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="61" stop-index="69" literal-start-index="61" literal-stop-index="69" />
+        </from>
+        <where start-index="71" stop-index="95" literal-start-index="71" literal-stop-index="95">
+            <expr>
+                <binary-operation-expression start-index="77" stop-index="95" literal-start-index="77" literal-stop-index="95">
+                    <left>
+                        <column name="department_id" start-index="77" stop-index="89" literal-start-index="77" literal-stop-index="89" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="100" start-index="93" stop-index="95" literal-start-index="93" literal-stop-index="95" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="last_name" order-direction="ASC" start-index="106" stop-index="114" literal-start-index="106" literal-stop-index="114" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_percentile_functions">
+        <projections start-index="7" stop-index="163" literal-start-index="7" literal-stop-index="163">
+            <column-projection name="department_id" start-index="7" stop-index="19" literal-start-index="7" literal-stop-index="19" />
+            <expression-projection text="PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC)" alias="Median cont" start-index="22" stop-index="91" literal-start-index="22" literal-stop-index="91" />
+            <expression-projection text="PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC)" alias="Median disc" start-index="94" stop-index="163" literal-start-index="94" literal-stop-index="163" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="170" stop-index="178" literal-start-index="170" literal-stop-index="178" />
+        </from>
+        <group-by>
+            <column-item name="department_id" order-direction="ASC" start-index="189" stop-index="201" literal-start-index="189" literal-stop-index="201" />
+        </group-by>
     </select>
 </sql-parser-test-cases>

@@ -23,7 +23,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.util.ProjectionUtils;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
@@ -42,9 +43,9 @@ public class AggregationProjection implements Projection {
     
     private final AggregationType type;
     
-    private final String innerExpression;
+    private final String expression;
     
-    private final String alias;
+    private final IdentifierValue alias;
     
     private final DatabaseType databaseType;
     
@@ -54,34 +55,22 @@ public class AggregationProjection implements Projection {
     private int index = -1;
     
     @Override
-    public final String getExpression() {
-        return type.name() + innerExpression;
+    public String getColumnName() {
+        return ProjectionUtils.getColumnNameFromFunction(type.name(), expression, databaseType);
     }
     
-    @Override
-    public final Optional<String> getAlias() {
-        return Optional.ofNullable(alias);
-    }
-    
-    /**
-     * Get column label.
-     *
-     * @return column label
-     */
     @Override
     public String getColumnLabel() {
-        return getAlias().orElseGet(() -> databaseType.getDefaultSchema().isPresent() ? type.name().toLowerCase() : getExpression());
+        return getAlias().isPresent() ? ProjectionUtils.getColumnLabelFromAlias(getAlias().get(), databaseType) : getColumnName();
     }
     
     @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        // TODO replace getAlias with aliasIdentifier
-        if (getAlias().isPresent()) {
-            return new ColumnProjection(subqueryTableAlias, new IdentifierValue(getAlias().get()), null);
-        }
-        AggregationProjection result = new AggregationProjection(type, innerExpression, alias, databaseType);
-        result.setIndex(index);
-        result.getDerivedAggregationProjections().addAll(derivedAggregationProjections);
-        return result;
+    public String getExpression() {
+        return expression;
+    }
+    
+    @Override
+    public final Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias);
     }
 }

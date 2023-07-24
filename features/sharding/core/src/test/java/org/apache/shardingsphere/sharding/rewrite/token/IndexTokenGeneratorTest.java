@@ -19,9 +19,10 @@ package org.apache.shardingsphere.sharding.rewrite.token;
 
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateDatabaseStatementContext;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.IndexTokenGenerator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
@@ -65,7 +66,7 @@ class IndexTokenGeneratorTest {
         when(indexSegment.getIndexName()).thenReturn(new IndexNameSegment(1, 3, mock(IdentifierValue.class)));
         AlterIndexStatementContext alterIndexStatementContext = mock(AlterIndexStatementContext.class, RETURNS_DEEP_STUBS);
         when(alterIndexStatementContext.getIndexes()).thenReturn(Collections.singleton(indexSegment));
-        when(alterIndexStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(alterIndexStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(alterIndexStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         IndexTokenGenerator generator = new IndexTokenGenerator();
         generator.setShardingRule(mock(ShardingRule.class));

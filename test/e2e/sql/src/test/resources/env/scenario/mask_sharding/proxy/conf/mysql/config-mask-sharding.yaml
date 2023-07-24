@@ -25,7 +25,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 10
     minPoolSize: 2
   mask_ds_1:
     url: jdbc:mysql://mysql.mask_sharding.host:3306/mask_ds_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8

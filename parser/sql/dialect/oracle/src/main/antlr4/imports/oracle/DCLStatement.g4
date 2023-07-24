@@ -303,7 +303,7 @@ createUser
     ;
 
 dropUser
-    : DROP USER
+    : DROP USER username CASCADE?
     ;
 
 alterUser
@@ -315,7 +315,7 @@ createRole
     ;
 
 dropRole
-    : DROP ROLE
+    : DROP ROLE roleName
     ;
 
 alterRole

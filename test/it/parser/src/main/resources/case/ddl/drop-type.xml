@@ -22,4 +22,6 @@
     <drop-type sql-case-id="drop_type_restrict" />
     <drop-type sql-case-id="drop_type_if_exists" />
     <drop-type sql-case-id="drop_type_namelist" />
+    <drop-type sql-case-id="drop_type_schema_force" />
+    <drop-type sql-case-id="drop_type_schema_validate" />
 </sql-parser-test-cases>

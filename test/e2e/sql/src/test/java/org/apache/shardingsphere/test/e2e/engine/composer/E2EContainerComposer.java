@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.engine.composer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposerRegistry;
 import org.apache.shardingsphere.test.e2e.engine.TotalSuitesCountCalculator;

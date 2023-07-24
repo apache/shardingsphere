@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;

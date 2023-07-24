@@ -972,7 +972,7 @@ jsonFunctionName
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG | BIT_XOR
+    : MAX | MIN | SUM | COUNT | AVG | BIT_XOR | GROUP_CONCAT
     ;
     
 distinct
@@ -1095,7 +1095,7 @@ substringFunction
     ;
     
 extractFunction
-    : EXTRACT LP_ identifier FROM expr RP_
+    : EXTRACT LP_ intervalUnit FROM expr RP_
     ;
     
 charFunction
@@ -1153,7 +1153,7 @@ matchSearchModifier
     ;
     
 caseExpression
-    : CASE simpleExpr? caseWhen+ caseElse? END
+    : CASE expr? caseWhen+ caseElse? END
     ;
     
 datetimeExpr
@@ -1201,7 +1201,7 @@ orderByItem
 dataType
     : dataTypeName = (INTEGER | INT | TINYINT | SMALLINT | MIDDLEINT | MEDIUMINT | BIGINT) fieldLength? fieldOptions?
     | (dataTypeName = REAL | dataTypeName = DOUBLE PRECISION?) precision? fieldOptions?
-    | dataTypeName = (FLOAT | DECIMAL | NUMERIC | FIXED) (fieldLength | precision)? fieldOptions?
+    | dataTypeName = (FLOAT | DECIMAL | DEC | NUMERIC | FIXED) (fieldLength | precision)? fieldOptions?
     | dataTypeName = BIT fieldLength?
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?

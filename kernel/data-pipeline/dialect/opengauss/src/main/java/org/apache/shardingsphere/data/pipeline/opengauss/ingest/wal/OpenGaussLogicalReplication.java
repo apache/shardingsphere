@@ -21,9 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.core.url.JdbcUrl;
+import org.apache.shardingsphere.infra.database.core.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.opengauss.PGProperty;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.LogSequenceNumber;
@@ -78,7 +79,7 @@ public final class OpenGaussLogicalReplication {
         PGProperty.PG_DBNAME.set(props, parseResult.getDatabase());
         int haPort = parseResult.getPort() + 1;
         PGProperty.PG_PORT.set(props, haPort);
-        return DriverManager.getConnection(new OpenGaussDatabaseType().getJdbcUrlPrefixes().iterator().next(), props);
+        return DriverManager.getConnection(TypedSPILoader.getService(DatabaseType.class, "openGauss").getJdbcUrlPrefixes().iterator().next(), props);
     }
     
     /**

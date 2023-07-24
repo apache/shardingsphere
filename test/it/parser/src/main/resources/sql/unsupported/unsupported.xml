@@ -17,7 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="assert_select_into_SQL" value="SELECT * INTO t_order_new FROM t_order" db-types="Oracle" />
     <sql-case id="assert_select_with_json_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt; ?" db-types="MySQL" />
     <sql-case id="assert_select_with_json_unquote_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; ?" db-types="MySQL" />
     <sql-case id="assert_insert_with_first" value="INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 
 /**
  * Data source environment.

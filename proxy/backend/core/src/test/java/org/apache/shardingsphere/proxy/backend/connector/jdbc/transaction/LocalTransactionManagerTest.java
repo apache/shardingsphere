@@ -82,7 +82,7 @@ class LocalTransactionManagerTest {
     @Test
     void assertCommit() throws SQLException {
         localTransactionManager.commit();
-        verify(transactionStatus).isRollbackOnly();
+        verify(transactionStatus).isExceptionOccur();
         verify(connection).commit();
     }
     

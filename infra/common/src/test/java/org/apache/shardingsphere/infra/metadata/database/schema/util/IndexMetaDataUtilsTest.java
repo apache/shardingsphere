@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -83,7 +83,7 @@ class IndexMetaDataUtilsTest {
     @Test
     void assertGetTableNames() {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue(INDEX_NAME)));
-        Collection<QualifiedTable> actual = IndexMetaDataUtils.getTableNames(buildDatabase(), new MySQLDatabaseType(), Collections.singleton(indexSegment));
+        Collection<QualifiedTable> actual = IndexMetaDataUtils.getTableNames(buildDatabase(), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.singleton(indexSegment));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getSchemaName(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.iterator().next().getTableName(), is(TABLE_NAME));

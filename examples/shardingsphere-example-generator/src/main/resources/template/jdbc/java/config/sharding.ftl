@@ -19,7 +19,6 @@
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(getOrderTableRuleConfiguration());
         result.getTables().add(getOrderItemTableRuleConfiguration());
-        result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "${r"ds_${user_id % 2}"}");
@@ -27,6 +26,10 @@
         result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
         result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
         return result;
+    }
+    
+    private BroadcastRuleConfiguration createBroadcastRuleConfiguration() {
+        return new BroadcastRuleConfiguration(Collections.singleton("t_address"));
     }
     
     private static ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {

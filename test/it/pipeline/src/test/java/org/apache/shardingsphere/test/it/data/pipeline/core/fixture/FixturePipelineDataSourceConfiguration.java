@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 
 @RequiredArgsConstructor
 public final class FixturePipelineDataSourceConfiguration implements PipelineDataSourceConfiguration {

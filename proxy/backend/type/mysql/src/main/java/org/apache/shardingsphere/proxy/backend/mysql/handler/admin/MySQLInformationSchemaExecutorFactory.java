@@ -19,15 +19,13 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.information.SelectInformationSchemataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,8 +37,6 @@ public final class MySQLInformationSchemaExecutorFactory {
     
     private static final String SCHEMATA_TABLE = "SCHEMATA";
     
-    private static final Collection<String> DEFAULT_EXECUTOR_TABLES = new HashSet<>(Arrays.asList("ENGINES", "FILES", "VIEWS", "TRIGGERS", "PARTITIONS"));
-    
     /**
      * Create executor.
      *
@@ -50,11 +46,14 @@ public final class MySQLInformationSchemaExecutorFactory {
      * @return executor
      */
     public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatement sqlStatement, final String sql, final List<Object> parameters) {
+        if (!(sqlStatement.getFrom() instanceof SimpleTableSegment)) {
+            return Optional.empty();
+        }
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom()).getTableName().getIdentifier().getValue();
         if (SCHEMATA_TABLE.equalsIgnoreCase(tableName)) {
             return Optional.of(new SelectInformationSchemataExecutor(sqlStatement, sql, parameters));
         }
-        if (DEFAULT_EXECUTOR_TABLES.contains(tableName.toUpperCase())) {
+        if (SystemSchemaBuilderRule.MYSQL_INFORMATION_SCHEMA.getTables().contains(tableName.toLowerCase())) {
             return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
         }
         return Optional.empty();

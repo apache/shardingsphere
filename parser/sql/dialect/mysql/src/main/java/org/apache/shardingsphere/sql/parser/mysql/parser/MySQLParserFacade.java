@@ -37,7 +37,7 @@ public final class MySQLParserFacade implements SQLDialectParserFacade {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }
