@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql;
+package org.apache.shardingsphere.data.pipeline.opengauss.ingest.dumper;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWALDumper;
+import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWALDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
 
 /**
- * PostgreSQL incremental dumper creator.
+ * OpenGauss incremental dumper creator.
  */
-public final class PostgreSQLIncrementalDumperCreator implements IncrementalDumperCreator {
+public final class OpenGaussIncrementalDumperCreator implements IncrementalDumperCreator {
     
     @Override
     public IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                                                      final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        return new PostgreSQLWALDumper(dumperConfig, position, channel, metaDataLoader);
+        return new OpenGaussWALDumper(dumperConfig, position, channel, metaDataLoader);
     }
     
     @Override
     public String getDatabaseType() {
-        return "PostgreSQL";
+        return "openGauss";
     }
 }

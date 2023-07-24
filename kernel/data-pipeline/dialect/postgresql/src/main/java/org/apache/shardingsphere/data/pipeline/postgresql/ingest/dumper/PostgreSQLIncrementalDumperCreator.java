@@ -15,33 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.h2;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.dumper;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWALDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
 
 /**
- * H2 incremental dumper creator.
+ * PostgreSQL incremental dumper creator.
  */
-public final class H2IncrementalDumperCreator implements IncrementalDumperCreator {
+public final class PostgreSQLIncrementalDumperCreator implements IncrementalDumperCreator {
     
     @Override
     public IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                                                      final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        throw new UnsupportedOperationException("H2 database can not support incremental dump.");
-    }
-    
-    @Override
-    public boolean isSupportIncrementalDump() {
-        return false;
+        return new PostgreSQLWALDumper(dumperConfig, position, channel, metaDataLoader);
     }
     
     @Override
     public String getDatabaseType() {
-        return "H2";
+        return "PostgreSQL";
     }
 }
