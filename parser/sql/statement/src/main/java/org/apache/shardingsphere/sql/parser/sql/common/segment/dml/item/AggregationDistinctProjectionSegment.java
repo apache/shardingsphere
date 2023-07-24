@@ -29,8 +29,8 @@ public final class AggregationDistinctProjectionSegment extends AggregationProje
     
     private final String distinctInnerExpression;
     
-    public AggregationDistinctProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String innerExpression, final String distinctExpression) {
-        super(startIndex, stopIndex, type, innerExpression);
+    public AggregationDistinctProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String expression, final String distinctExpression) {
+        super(startIndex, stopIndex, type, expression);
         this.distinctInnerExpression = SQLUtils.getExpressionWithoutOutsideParentheses(distinctExpression);
     }
 }

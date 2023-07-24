@@ -36,9 +36,9 @@ public final class AggregationDistinctProjection extends AggregationProjection {
     
     private final String distinctInnerExpression;
     
-    public AggregationDistinctProjection(final int startIndex, final int stopIndex, final AggregationType type, final String innerExpression,
+    public AggregationDistinctProjection(final int startIndex, final int stopIndex, final AggregationType type, final String expression,
                                          final IdentifierValue alias, final String distinctInnerExpression, final DatabaseType databaseType) {
-        super(type, innerExpression, alias, databaseType);
+        super(type, expression, alias, databaseType);
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.distinctInnerExpression = distinctInnerExpression;
