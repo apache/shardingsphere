@@ -30,15 +30,6 @@ env:
   REPOSITORY_NAME: shardingsphere
 
 jobs:
-  check-checkstyle-and-spotless:
-    name: Check - CheckStyle and Spotless
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run CheckStyle and Spotless
-        run: ./mvnw checkstyle:check spotless:check -T1C
-  
   check-checkstyle:
     name: Check - CheckStyle
     runs-on: ubuntu-latest
@@ -47,7 +38,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run CheckStyle
         run: ./mvnw checkstyle:check -T1C
-  
+
   check-spotless:
     name: Check - Spotless
     runs-on: ubuntu-latest
@@ -56,7 +47,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run Spotless
         run: ./mvnw spotless:check -T1C
-  
+
   check-license:
     name: Check - License
     runs-on: ubuntu-latest
