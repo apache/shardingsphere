@@ -685,7 +685,11 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? overClause? overClause?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? keepClause? overClause? overClause?
+    ;
+
+keepClause
+    : KEEP LP_ DENSE_RANK (FIRST | LAST) orderByClause RP_ overClause?
     ;
 
 aggregationFunctionName
