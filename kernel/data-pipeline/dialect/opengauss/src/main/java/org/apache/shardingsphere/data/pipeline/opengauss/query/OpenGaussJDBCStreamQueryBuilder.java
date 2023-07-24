@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.query.dialect;
+package org.apache.shardingsphere.data.pipeline.opengauss.query;
 
 import org.apache.shardingsphere.data.pipeline.common.query.DialectJDBCStreamQueryBuilder;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
