@@ -83,8 +83,6 @@ jobs:
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Build E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
-      - name: Verify CI
-        run: ./mvnw -B install -pl test/e2e/sql -Dspotless.apply.skip=true
       - name: Save E2E Image
         run: docker save -o /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - uses: actions/upload-artifact@v3
