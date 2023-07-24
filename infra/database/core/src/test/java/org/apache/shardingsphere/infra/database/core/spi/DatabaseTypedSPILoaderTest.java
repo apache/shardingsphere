@@ -29,16 +29,16 @@ class DatabaseTypedSPILoaderTest {
     
     @Test
     void assertFindServiceWithTrunkDatabaseType() {
-        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE")).isPresent());
+        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "TRUNK")).isPresent());
     }
     
     @Test
     void assertFindServiceWithBranchDatabaseType() {
-        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "INFRA.BRANCH.FIXTURE")).isPresent());
+        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "BRANCH")).isPresent());
     }
     
     @Test
     void assertGetServiceWithRegisteredDatabaseType() {
-        assertDoesNotThrow(() -> DatabaseTypedSPILoader.getService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE")));
+        assertDoesNotThrow(() -> DatabaseTypedSPILoader.getService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "TRUNK")));
     }
 }

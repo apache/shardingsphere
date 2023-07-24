@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -43,20 +42,5 @@ public final class AggregationDistinctProjection extends AggregationProjection {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.distinctInnerExpression = distinctInnerExpression;
-    }
-    
-    /**
-     * Get distinct column label.
-     *
-     * @return distinct column label
-     */
-    public String getDistinctColumnLabel() {
-        return getAlias().map(IdentifierValue::getValue).orElse(distinctInnerExpression);
-    }
-    
-    @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, getAlias().get(), null)
-                : new AggregationDistinctProjection(startIndex, stopIndex, getType(), getInnerExpression(), null, distinctInnerExpression, getDatabaseType());
     }
 }

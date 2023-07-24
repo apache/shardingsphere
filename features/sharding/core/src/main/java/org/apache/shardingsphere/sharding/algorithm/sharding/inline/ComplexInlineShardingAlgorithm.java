@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
+import com.google.common.base.Strings;
 import groovy.lang.Closure;
 import groovy.util.Expando;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
@@ -64,7 +65,8 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     
     private String getAlgorithmExpression(final Properties props) {
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
-        ShardingSpherePreconditions.checkNotNull(algorithmExpression, () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression can not be null."));
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(algorithmExpression),
+                () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression can not be null."));
         return InlineExpressionParserFactory.newInstance().handlePlaceHolder(algorithmExpression.trim());
     }
     

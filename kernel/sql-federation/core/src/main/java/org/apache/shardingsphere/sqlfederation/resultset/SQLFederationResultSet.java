@@ -98,7 +98,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     private String getColumnLabel(final Projection projection, final DatabaseType databaseType) {
         if (projection instanceof AggregationDistinctProjection) {
-            return databaseType.getDefaultSchema().isPresent() ? ((AggregationDistinctProjection) projection).getType().name().toLowerCase() : projection.getColumnName();
+            return databaseType.getDefaultSchema().isPresent() ? ((AggregationDistinctProjection) projection).getType().name().toLowerCase() : projection.getExpression();
         }
         return projection.getColumnLabel();
     }

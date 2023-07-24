@@ -47,8 +47,7 @@ public final class EncryptConvertRuleConfigurationProvider implements ConvertRul
         if (ruleConfig.getTables().isEmpty()) {
             return "";
         }
-        StringBuilder result = new StringBuilder();
-        result.append(DistSQLScriptConstants.CREATE_ENCRYPT);
+        StringBuilder result = new StringBuilder(DistSQLScriptConstants.CREATE_ENCRYPT);
         Iterator<EncryptTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
         while (iterator.hasNext()) {
             EncryptTableRuleConfiguration tableRuleConfig = iterator.next();

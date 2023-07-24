@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.mariadb;
 
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -31,26 +33,26 @@ class MariaDBDatabaseTypeTest {
     
     @Test
     void assertGetQuoteCharacter() {
-        assertThat(new MariaDBDatabaseType().getQuoteCharacter(), is(QuoteCharacter.BACK_QUOTE));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getQuoteCharacter(), is(QuoteCharacter.BACK_QUOTE));
     }
     
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(new MariaDBDatabaseType().getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:mariadb:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:mariadb:")));
     }
     
     @Test
     void assertGetDataSourceMetaData() {
-        assertThat(new MariaDBDatabaseType().getDataSourceMetaData("jdbc:mariadb://localhost:3306/foo_ds", "root"), instanceOf(MariaDBDataSourceMetaData.class));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getDataSourceMetaData("jdbc:mariadb://localhost:3306/foo_ds", "root"), instanceOf(MariaDBDataSourceMetaData.class));
     }
     
     @Test
     void assertGetSystemDatabaseSchemaMap() {
-        assertTrue(new MariaDBDatabaseType().getSystemDatabaseSchemaMap().isEmpty());
+        assertTrue(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getSystemDatabaseSchemaMap().isEmpty());
     }
     
     @Test
     void assertGetSystemSchemas() {
-        assertTrue(new MariaDBDatabaseType().getSystemSchemas().isEmpty());
+        assertTrue(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getSystemSchemas().isEmpty());
     }
 }

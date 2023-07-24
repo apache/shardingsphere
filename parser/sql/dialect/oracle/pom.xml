@@ -29,4 +29,12 @@
     <properties>
         <dialect.parser>oracle</dialect.parser>
     </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-database-oracle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

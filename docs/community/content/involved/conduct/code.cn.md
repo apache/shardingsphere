@@ -114,7 +114,7 @@ chapter = true
 - Workflow 文件名以 `.yml` 结尾。
 - Workflow 文件名由 `触发方式-执行操作` 的小写字母组成。例如：`nightly-check.yml`。pull_request 触发的任务省略触发方式，例如：`check.yml`。
 - 触发方式包括：pull_request（不加前缀）、nightly、schedule。
-- 执行操作包括：check、ci、e2e 、build。
+- 执行操作包括：check、ci、e2e 、build、report。
 - Workflow 文件内的 `name` 属性命名与文件名一致，单词以 `-` 作为分隔符，分隔符两侧要加空格，每个单词首字母大写。例如：`Nightly - Check`。
 - Step 下的 `name` 属性应该描述 step 的功能，每个单词首字母大写，介词小写。例如：`Build Project with Maven`。
 - Workflow 中的 `job` 属性命名，须在 Workflow 中保持唯一。
