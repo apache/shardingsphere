@@ -139,7 +139,7 @@ public final class ProjectionEngine {
         IdentifierValue alias =
                 projectionSegment.getAlias().orElseGet(() -> new IdentifierValue(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++)));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
-                projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), innerExpression, alias, projectionSegment.getDistinctExpression(), databaseType);
+                projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), innerExpression, alias, projectionSegment.getDistinctInnerExpression(), databaseType);
         if (AggregationType.AVG == result.getType()) {
             appendAverageDistinctDerivedProjection(result);
         }
