@@ -19,11 +19,11 @@ package org.apache.shardingsphere.infra.binder.segment.select.projection.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.oracle.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
@@ -40,16 +40,31 @@ public final class ProjectionUtils {
      * @return column label
      */
     public static String getColumnLabelFromAlias(final IdentifierValue alias, final DatabaseType databaseType) {
-        if (QuoteCharacter.NONE != alias.getQuoteCharacter()) {
-            return alias.getValue();
+        return getIdentifierValueByDatabaseType(alias, databaseType);
+    }
+    
+    private static String getIdentifierValueByDatabaseType(IdentifierValue identifierValue, DatabaseType databaseType) {
+        if (QuoteCharacter.NONE != identifierValue.getQuoteCharacter()) {
+            return identifierValue.getValue();
         }
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            return alias.getValue().toLowerCase();
+            return identifierValue.getValue().toLowerCase();
         }
         if (databaseType instanceof OracleDatabaseType) {
-            return alias.getValue().toUpperCase();
+            return identifierValue.getValue().toUpperCase();
         }
-        return alias.getValue();
+        return identifierValue.getValue();
+    }
+    
+    /**
+     * Get column name from column.
+     *
+     * @param columnName column name
+     * @param databaseType database type
+     * @return column name
+     */
+    public static String getColumnNameFromColumn(final IdentifierValue columnName, final DatabaseType databaseType) {
+        return getIdentifierValueByDatabaseType(columnName, databaseType);
     }
     
     /**

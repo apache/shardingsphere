@@ -25,10 +25,10 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Exp
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
@@ -106,8 +106,8 @@ class ProjectionEngineTest {
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getColumnProjections().size(), is(2));
         Collection<ColumnProjection> columnProjections = new LinkedList<>();
-        columnProjections.add(new ColumnProjection("t_order", "order_id", null));
-        columnProjections.add(new ColumnProjection("t_order", "content", null));
+        columnProjections.add(new ColumnProjection("t_order", "order_id", null, databaseType));
+        columnProjections.add(new ColumnProjection("t_order", "content", null, databaseType));
         assertThat(((ShorthandProjection) actual.get()).getColumnProjections(), is(columnProjections));
     }
     
@@ -196,9 +196,9 @@ class ProjectionEngineTest {
         Collection<ColumnProjection> columnProjections = ((ShorthandProjection) actual.get()).getColumnProjections();
         assertThat(columnProjections.size(), is(3));
         Iterator<ColumnProjection> iterator = columnProjections.iterator();
-        assertThat(iterator.next(), is(new ColumnProjection("t_order", "order_id", null)));
-        assertThat(iterator.next(), is(new ColumnProjection("t_order", "customer_id", null)));
-        assertThat(iterator.next(), is(new ColumnProjection("t_customer", "customer_id", null)));
+        assertThat(iterator.next(), is(new ColumnProjection("t_order", "order_id", null, databaseType)));
+        assertThat(iterator.next(), is(new ColumnProjection("t_order", "customer_id", null, databaseType)));
+        assertThat(iterator.next(), is(new ColumnProjection("t_customer", "customer_id", null, databaseType)));
     }
     
     @Test
@@ -281,41 +281,41 @@ class ProjectionEngineTest {
     private Collection<Projection> crateExpectedColumnsWithoutOwnerForPostgreSQL() {
         Collection<Projection> result = new LinkedHashSet<>();
         DatabaseType postgresDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id", postgresDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id", postgresDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("creation_date", postgresDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", postgresDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", postgresDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", postgresDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("item_id", postgresDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("product_id", postgresDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("quantity", postgresDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("creation_date", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("item_id", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("product_id", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("quantity", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
         return result;
     }
     
     private Collection<Projection> crateExpectedColumnsWithoutOwnerForMySQL() {
         Collection<Projection> result = new LinkedHashSet<>();
         DatabaseType mysqlDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("order_id", mysqlDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("user_id", mysqlDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("creation_date", mysqlDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("item_id", mysqlDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("product_id", mysqlDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("quantity", mysqlDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", mysqlDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", mysqlDatabaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", mysqlDatabaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("order_id", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("user_id", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("creation_date", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("item_id", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("product_id", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("quantity", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
         return result;
     }
     
     private Collection<Projection> crateExpectedColumnsWithOwner(final DatabaseType databaseType) {
         Collection<Projection> result = new LinkedHashSet<>();
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id", databaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id", databaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", databaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", databaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", databaseType.getQuoteCharacter()), null));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("creation_date", databaseType.getQuoteCharacter()), null));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id", databaseType.getQuoteCharacter()), null, databaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id", databaseType.getQuoteCharacter()), null, databaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", databaseType.getQuoteCharacter()), null, databaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", databaseType.getQuoteCharacter()), null, databaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", databaseType.getQuoteCharacter()), null, databaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("creation_date", databaseType.getQuoteCharacter()), null, databaseType));
         return result;
     }
     
