@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * Mask rule configuration checker.
  */
-public class MaskRuleConfigurationChecker implements RuleConfigurationChecker<MaskRuleConfiguration> {
+public final class MaskRuleConfigurationChecker implements RuleConfigurationChecker<MaskRuleConfiguration> {
     
     @Override
     public void check(final String databaseName, final MaskRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
