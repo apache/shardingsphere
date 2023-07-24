@@ -17,17 +17,68 @@
 
 package org.apache.shardingsphere.infra.database.h2;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.datasource.UnrecognizedDatabaseURLException;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Data source meta data builder of H2.
  */
 public final class H2DataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
     
+    private static final int DEFAULT_PORT = -1;
+    
+    private static final String DEFAULT_HOST_NAME = "";
+    
+    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:h2:((?<modelMem>mem|~)[:/](?<catalog>[\\w\\-]+)|"
+            + "(?<modelSslOrTcp>ssl:|tcp:)(//)?(?<hostname>[\\w\\-.]+)(:(?<port>\\d{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
+            + "(?<modelFile>file:)[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
+    
     @Override
     public DataSourceMetaData build(final String url, final String username, final String catalog) {
-        return new H2DataSourceMetaData(url);
+        Matcher matcher = URL_PATTERN.matcher(url);
+        if (!matcher.find()) {
+            throw new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern());
+        }
+        return new H2DataSourceMetaData(getHostname(matcher), getModel(matcher), getPort(matcher), getCatalog(matcher));
+    }
+    
+    private String getHostname(final Matcher matcher) {
+        String hostname = matcher.group("hostname");
+        return null == hostname ? DEFAULT_HOST_NAME : hostname;
+    }
+    
+    private static String getModel(final Matcher matcher) {
+        String modelMem = matcher.group("modelMem");
+        if (null != modelMem) {
+            return modelMem;
+        }
+        String modelSslOrTcp = matcher.group("modelSslOrTcp");
+        if (null != modelSslOrTcp) {
+            return modelSslOrTcp;
+        }
+        return matcher.group("modelFile");
+    }
+    
+    private int getPort(final Matcher matcher) {
+        String port = matcher.group("port");
+        return Strings.isNullOrEmpty(port) ? DEFAULT_PORT : Integer.parseInt(port);
+    }
+    
+    private static String getCatalog(final Matcher matcher) {
+        String name = matcher.group("name");
+        if (null != name) {
+            return name;
+        }
+        String fileName = matcher.group("fileName");
+        if (null != fileName) {
+            return fileName;
+        }
+        return matcher.group("catalog");
     }
     
     @Override
