@@ -5727,6 +5727,20 @@
         </group-by>
     </select>
 
+    <select sql-case-id="select_with_keep_clause">
+        <projections start-index="7" stop-index="215" literal-start-index="7" literal-stop-index="215">
+            <column-projection name="salary" start-index="7" stop-index="12" literal-start-index="7" literal-stop-index="12" />
+            <aggregation-projection type="MIN" expression="MIN(salary) KEEP (DENSE_RANK FIRST ORDER BY commission_pct) OVER (PARTITION BY department_id)" alias="Worst" start-index="14" stop-index="106" literal-start-index="14" literal-stop-index="106" />
+            <aggregation-projection type="MAX" expression="MAX(salary) KEEP (DENSE_RANK LAST ORDER BY commission_pct) OVER (PARTITION BY department_id)" alias="Best" start-index="117" stop-index="208" literal-start-index="117" literal-stop-index="208" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="222" stop-index="230" literal-start-index="222" literal-stop-index="230" />
+        </from>
+        <order-by>
+            <column-item name="department_id" order-direction="ASC" start-index="241" stop-index="253" literal-start-index="241" literal-stop-index="253" />
+        </order-by>
+    </select>
+
     <select sql-case-id="select_with_corr_function">
         <projections start-index="7" stop-index="52" literal-start-index="7" literal-stop-index="52">
             <column-projection name="employee_id" start-index="7" stop-index="17" literal-start-index="7" literal-stop-index="17" />
