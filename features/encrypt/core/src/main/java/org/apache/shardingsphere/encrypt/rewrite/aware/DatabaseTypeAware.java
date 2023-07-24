@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.aware;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
  * Database type aware.
