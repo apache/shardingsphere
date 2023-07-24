@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.enums;
+package org.apache.shardingsphere.infra.database.core.type.enums;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class NullsOrderTypeTest {
     
     @Test
     void assertGetReversedOrderType() {
-        assertThat(NullsOrderType.FIRST.getReversedOrderType(), is(NullsOrderType.LAST));
-        assertThat(NullsOrderType.LAST.getReversedOrderType(), is(NullsOrderType.FIRST));
+        assertThat(NullsOrderType.FIRST.getReversedOrderType(), CoreMatchers.is(NullsOrderType.LAST));
+        assertThat(NullsOrderType.LAST.getReversedOrderType(), CoreMatchers.is(NullsOrderType.FIRST));
     }
 }

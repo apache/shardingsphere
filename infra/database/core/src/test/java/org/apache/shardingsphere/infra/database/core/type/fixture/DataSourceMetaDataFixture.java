@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.database.core.type.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.url.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DataSourceMetaData;
 
 import java.util.Properties;
 import java.util.regex.Matcher;

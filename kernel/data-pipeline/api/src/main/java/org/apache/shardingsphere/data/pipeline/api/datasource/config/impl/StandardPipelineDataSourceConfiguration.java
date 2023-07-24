@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertie
 import org.apache.shardingsphere.infra.database.core.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.core.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;

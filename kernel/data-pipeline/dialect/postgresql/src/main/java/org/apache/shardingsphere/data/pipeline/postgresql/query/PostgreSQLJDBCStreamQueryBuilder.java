@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.query;
 
 import org.apache.shardingsphere.data.pipeline.common.query.DialectJDBCStreamQueryBuilder;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
