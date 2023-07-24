@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementParserEngineFactory {
     
-    private static final Map<String, SQLStatementParserEngine> ENGINES = new ConcurrentHashMap<>();
+    private static final Map<DatabaseType, SQLStatementParserEngine> ENGINES = new ConcurrentHashMap<>();
     
     /**
      * Get SQL statement parser engine.
@@ -44,13 +44,13 @@ public final class SQLStatementParserEngineFactory {
      */
     public static SQLStatementParserEngine getSQLStatementParserEngine(final DatabaseType databaseType,
                                                                        final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
-        SQLStatementParserEngine result = ENGINES.get(databaseType.getType());
+        SQLStatementParserEngine result = ENGINES.get(databaseType);
         if (null == result) {
-            result = ENGINES.computeIfAbsent(databaseType.getType(), key -> new SQLStatementParserEngine(key, sqlStatementCacheOption, parseTreeCacheOption, isParseComment));
+            result = ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlStatementCacheOption, parseTreeCacheOption, isParseComment));
         } else if (!result.getSqlStatementCacheOption().equals(sqlStatementCacheOption) || !result.getParseTreeCacheOption().equals(parseTreeCacheOption)
                 || result.isParseComment() != isParseComment) {
-            result = new SQLStatementParserEngine(databaseType.getType(), sqlStatementCacheOption, parseTreeCacheOption, isParseComment);
-            ENGINES.put(databaseType.getType(), result);
+            result = new SQLStatementParserEngine(databaseType, sqlStatementCacheOption, parseTreeCacheOption, isParseComment);
+            ENGINES.put(databaseType, result);
         }
         return result;
     }

@@ -28,4 +28,5 @@
     <sql-case id="select_into_with_lock_after_into" value="SELECT status FROM t_order WHERE order_id = ? INTO @var1 FOR UPDATE " db-types="MySQL" />
     <sql-case id="select_into_with_lock_before_into" value="SELECT status FROM t_order WHERE order_id = ? FOR UPDATE INTO @var1" db-types="MySQL" />
     <sql-case id="select_into_param_without_at" value="SELECT 1 INTO a" db-types="MySQL" />
+    <sql-case id="select_into_with_variable" value="SELECT select_list INTO record_variable_name FROM table_or_view_name" db-types="Oracle" />
 </sql-cases>

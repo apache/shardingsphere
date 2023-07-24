@@ -437,7 +437,7 @@ chapter = true
         </td>
        <td>
             <a href="https://github.com/taojintianxia" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/4112856?s=96&v=4" style="border-radius:50%; overflow:hidden">
+                <img src="https://avatars.githubusercontent.com/u/4112856?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
         <td>

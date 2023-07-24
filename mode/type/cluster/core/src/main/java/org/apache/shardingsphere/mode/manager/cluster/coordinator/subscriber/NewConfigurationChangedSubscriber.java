@@ -65,8 +65,8 @@ public final class NewConfigurationChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.getConfigurationContextManager().alterStorageUnit(event.getDatabaseName(), event.getStorageUnitName(),
-                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
+        contextManager.getConfigurationContextManager().alterStorageUnit(
+                event.getDatabaseName(), contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
     /**

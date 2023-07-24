@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.core.type.fixture.InfraTrunkDatabaseTypeFixture
-org.apache.shardingsphere.infra.database.core.type.fixture.InfraBranchDatabaseTypeFixture
+org.apache.shardingsphere.infra.database.core.type.fixture.TrunkDatabaseTypeFixture
+org.apache.shardingsphere.infra.database.core.type.fixture.BranchDatabaseTypeFixture

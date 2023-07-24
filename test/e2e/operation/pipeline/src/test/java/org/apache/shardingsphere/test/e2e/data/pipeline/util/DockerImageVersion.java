@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Docker image version.
  */
@@ -36,7 +38,7 @@ public final class DockerImageVersion {
      * @return major version
      */
     public int getMajorVersion() {
-        String[] split = version.split("\\.");
+        String[] split = StringUtils.substringBefore(version, "-").split("\\.");
         return Integer.parseInt(split[0]);
     }
 }
