@@ -190,4 +190,5 @@
     <sql-case id="select_with_xml_is_schema_valid_function" value="SELECT x.xmlcol.isSchemaValid('http://www.example.com/schemas/ipo.xsd','purchaseOrder') FROM po_tab x;" db-types="Oracle" />
     <sql-case id="select_with_last_value_function" value="SELECT LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE) from TEST;" db-types="Oracle" />
     <sql-case id="select_with_lead_and_lag_function" value="SELECT hire_date, LAG(hire_date, 1) OVER (ORDER BY hire_date) AS LAG1, LEAD(hire_date, 1) OVER (ORDER BY hire_date) AS LEAD1 FROM employees WHERE department_id = 30 ORDER BY hire_date;" db-types="Oracle" />
+    <sql-case id="select_with_connect_by_root" value="SELECT CONNECT_BY_ROOT last_name 'Manager' FROM employees CONNECT BY PRIOR employee_id = manager_id" db-types="Oracle" />
 </sql-cases>

@@ -5675,4 +5675,12 @@
             <simple-table name="TEST" start-index="78" stop-index="81" literal-start-index="78" literal-stop-index="81"/>
         </from>
     </select>
+    <select sql-case-id="select_with_connect_by_root">
+        <projections start-index="7" stop-index="41" literal-start-index="7" literal-stop-index="41">
+            <column-projection alias="Manager" name="last_name" start-index="23" stop-index="41" literal-start-index="23" literal-stop-index="41"/>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="48" stop-index="56" literal-start-index="48" literal-stop-index="56"/>
+        </from>
+    </select>
 </sql-parser-test-cases>
