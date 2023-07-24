@@ -38,8 +38,8 @@ public class ExpectedAggregationProjection extends AbstractExpectedSQLSegment im
     @XmlAttribute
     private String type;
     
-    @XmlAttribute(name = "inner-expression")
-    private String innerExpression;
+    @XmlAttribute
+    private String expression;
     
     @XmlAttribute
     private String alias;

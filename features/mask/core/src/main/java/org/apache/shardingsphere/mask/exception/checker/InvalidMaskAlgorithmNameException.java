@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item;
+package org.apache.shardingsphere.mask.exception.checker;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.mask.exception.MaskSQLException;
 
 /**
- * Aggregation distinct projection segment.
+ * Invalid mask algorithm name exception.
  */
-@Getter
-public final class AggregationDistinctProjectionSegment extends AggregationProjectionSegment {
+public final class InvalidMaskAlgorithmNameException extends MaskSQLException {
     
-    private final String distinctInnerExpression;
+    private static final long serialVersionUID = 1586639735142430235L;
     
-    public AggregationDistinctProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String expression, final String distinctExpression) {
-        super(startIndex, stopIndex, type, expression);
-        this.distinctInnerExpression = SQLUtils.getExpressionWithoutOutsideParentheses(distinctExpression);
+    public InvalidMaskAlgorithmNameException(final String databaseName, final String maskAlgorithmName) {
+        super(XOpenSQLState.NOT_FOUND, 90, "Invalid mask algorithm `%s` in database `%s`.", maskAlgorithmName, databaseName);
     }
 }

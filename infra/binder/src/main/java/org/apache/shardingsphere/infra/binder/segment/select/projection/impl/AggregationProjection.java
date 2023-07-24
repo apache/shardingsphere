@@ -43,7 +43,7 @@ public class AggregationProjection implements Projection {
     
     private final AggregationType type;
     
-    private final String innerExpression;
+    private final String expression;
     
     private final IdentifierValue alias;
     
@@ -56,7 +56,7 @@ public class AggregationProjection implements Projection {
     
     @Override
     public String getColumnName() {
-        return ProjectionUtils.getColumnNameFromFunction(type.name(), type.name() + innerExpression, databaseType);
+        return ProjectionUtils.getColumnNameFromFunction(type.name(), expression, databaseType);
     }
     
     @Override
@@ -66,7 +66,7 @@ public class AggregationProjection implements Projection {
     
     @Override
     public String getExpression() {
-        return type.name() + innerExpression;
+        return expression;
     }
     
     @Override
