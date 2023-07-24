@@ -19,15 +19,23 @@ package org.apache.shardingsphere.infra.database.opengauss;
 
 import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.datasource.JdbcUrl;
+import org.apache.shardingsphere.infra.database.core.datasource.StandardDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.StandardJdbcUrlParser;
+
+import java.util.Properties;
 
 /**
- * Data source meta data builder of oenGauss.
+ * Data source meta data builder of openGauss.
  */
 public final class OpenGaussDataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
     
+    private static final int DEFAULT_PORT = 5431;
+    
     @Override
     public DataSourceMetaData build(final String url, final String username, final String catalog) {
-        return new OpenGaussDataSourceMetaData(url);
+        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
+        return new StandardDataSourceMetaData(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT), jdbcUrl.getDatabase(), null, jdbcUrl.getQueryProperties(), new Properties());
     }
     
     @Override
