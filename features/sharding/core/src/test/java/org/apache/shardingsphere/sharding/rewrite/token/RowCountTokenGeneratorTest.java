@@ -61,11 +61,11 @@ class RowCountTokenGeneratorTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getPaginationContext()).thenReturn(paginationContext);
         when(selectStatementContext.getGroupByContext().getItems().isEmpty()).thenReturn(Boolean.FALSE);
-        when(selectStatementContext.isSameGroupByAndOrderByItems()).thenReturn(Boolean.FALSE);
+        when(selectStatementContext.isGroupByStartsWithOrderByItems()).thenReturn(Boolean.FALSE);
         RowCountTokenGenerator rowCountTokenGenerator = new RowCountTokenGenerator();
         RowCountToken rowCountToken = rowCountTokenGenerator.generateSQLToken(selectStatementContext);
         assertThat(rowCountToken.toString(), is(String.valueOf(Integer.MAX_VALUE)));
-        when(selectStatementContext.isSameGroupByAndOrderByItems()).thenReturn(Boolean.TRUE);
+        when(selectStatementContext.isGroupByStartsWithOrderByItems()).thenReturn(Boolean.TRUE);
         rowCountToken = rowCountTokenGenerator.generateSQLToken(selectStatementContext);
         assertThat(rowCountToken.toString(), is(String.valueOf(testOffsetSegmentValue + testRowCountSegmentValue)));
     }
