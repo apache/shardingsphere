@@ -68,7 +68,7 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
         }
         SqlLiteral functionQuantifier = segment instanceof AggregationDistinctProjectionSegment ? SqlLiteral.createSymbol(SqlSelectKeyword.DISTINCT, SqlParserPos.ZERO) : null;
         SqlAggFunction operator = convertOperator(segment.getType().name());
-        List<SqlNode> params = convertParameters(segment.getParameters(), segment.getInnerExpression());
+        List<SqlNode> params = convertParameters(segment.getParameters(), segment.getExpression());
         SqlBasicCall sqlBasicCall = new SqlBasicCall(operator, params, SqlParserPos.ZERO, functionQuantifier);
         if (segment.getAliasName().isPresent()) {
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(sqlBasicCall,
@@ -82,8 +82,8 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
         return REGISTRY.get(operator);
     }
     
-    private List<SqlNode> convertParameters(final Collection<ExpressionSegment> params, final String innerExpression) {
-        if (innerExpression.contains("*")) {
+    private List<SqlNode> convertParameters(final Collection<ExpressionSegment> params, final String expression) {
+        if (expression.contains("*")) {
             return Collections.singletonList(SqlIdentifier.star(SqlParserPos.ZERO));
         }
         List<SqlNode> result = new LinkedList<>();

@@ -22,7 +22,7 @@
             <simple-table name="t_order" start-index="33" stop-index="39" />
         </from>
         <projections start-index="7" stop-index="26">
-            <aggregation-projection type="GROUP_CONCAT" inner-expression="(status)" text="GROUP_CONCAT(status)" start-index="7" stop-index="26">
+            <aggregation-projection type="GROUP_CONCAT" expression="GROUP_CONCAT(status)" text="GROUP_CONCAT(status)" start-index="7" stop-index="26">
                 <expr>
                     <function function-name="GROUP_CONCAT" start-index="7" stop-index="26" text="GROUP_CONCAT(status)">
                         <parameter>
