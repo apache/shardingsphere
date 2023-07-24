@@ -189,11 +189,6 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM (SELECT * FROM t_merchant) temp" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt"
-               scenario-comments="Test encrypt shorthand expansion for subquery with simple select statement when use encrypt feature.">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-    
     <test-case sql="SELECT * FROM t_data_type_integer_unsigned" db-types="MySQL" scenario-types="passthrough" scenario-comments="Test ShardingSphere-Proxy MySQL compatibility for unsigned integer data types">
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>

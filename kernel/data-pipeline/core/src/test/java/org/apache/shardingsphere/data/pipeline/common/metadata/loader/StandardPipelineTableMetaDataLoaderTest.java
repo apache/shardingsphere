@@ -22,7 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumn
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.infra.database.h2.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,7 @@ class StandardPipelineTableMetaDataLoaderTest {
     
     @BeforeEach
     void setUp() throws SQLException {
-        dataSource = new PipelineDataSourceWrapper(new MockedDataSource(mockConnection()), new H2DatabaseType());
+        dataSource = new PipelineDataSourceWrapper(new MockedDataSource(mockConnection()), TypedSPILoader.getService(DatabaseType.class, "H2"));
     }
     
     private Connection mockConnection() throws SQLException {

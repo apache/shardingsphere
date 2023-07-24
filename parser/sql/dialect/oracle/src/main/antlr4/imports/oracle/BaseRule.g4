@@ -31,6 +31,19 @@ literals
     | bitValueLiterals
     | booleanLiterals
     | nullValueLiterals
+    | intervalLiterals
+    ;
+
+intervalLiterals
+    : INTERVAL stringLiterals intervalUnit (intervalPrecision)? (TO intervalUnit (intervalPrecision)?)?
+    ;
+
+intervalPrecision
+    : LP_ INTEGER_ RP_
+    ;
+
+intervalUnit
+    : SECOND | MINUTE | HOUR | DAY | MONTH | YEAR
     ;
 
 stringLiterals
@@ -100,7 +113,7 @@ unreservedWord1
     | BECOME | CHANGE | NOTIFICATION | PRIVILEGE | PURGE | RESUMABLE
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
-    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | INTERVAL | MINUTE | ANY 
+    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | MINUTE | ANY 
     | LENGTH | SINGLE_C | capacityUnit | TARGET | PUBLIC | ID | STATE | PRIORITY
     | CONSTRAINT | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
     | WHEN | CAST | TRIM | SUBSTRING | FULL | INNER | OUTER | LEFT | RIGHT | CROSS
@@ -665,7 +678,7 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | caseExpression
-    | columnName
+    | columnName joinOperator?
     | privateExprOfDb
     | PRIOR identifier
     ;
@@ -675,7 +688,7 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? (OVER LP_ analyticClause RP_)? (OVER LP_ analyticClause RP_)?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? overClause? overClause?
     ;
 
 aggregationFunctionName
@@ -701,7 +714,12 @@ windowingClause
     ;
 
 analyticFunction
-    : analyticFunctionName LP_ dataType* RP_ OVER LP_ analyticClause RP_
+    : specifiedAnalyticFunctionName = (LEAD | LAG) ((LP_ expr leadLagInfo? RP_ respectOrIgnoreNulls?) | (LP_ expr respectOrIgnoreNulls? leadLagInfo? RP_)) overClause
+    | analyticFunctionName LP_ dataType* RP_ overClause
+    ;
+
+leadLagInfo
+    : COMMA_ expr (COMMA_ expr)?
     ;
 
 specialFunction
@@ -742,6 +760,10 @@ regularFunction
 
 regularFunctionName
     : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL | DECODE
+    ;
+
+joinOperator
+    : LP_ PLUS_  RP_
     ;
 
 caseExpression

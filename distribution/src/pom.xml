@@ -33,6 +33,7 @@
             <properties>
                 <maven.javadoc.skip>false</maven.javadoc.skip>
                 <checkstyle.skip>false</checkstyle.skip>
+                <rat.skip>false</rat.skip>
             </properties>
             <build>
                 <finalName>apache-shardingsphere-${project.version}</finalName>

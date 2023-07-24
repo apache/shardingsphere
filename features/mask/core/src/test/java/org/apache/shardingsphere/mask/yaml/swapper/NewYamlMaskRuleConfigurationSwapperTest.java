@@ -51,7 +51,7 @@ class NewYamlMaskRuleConfigurationSwapperTest {
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(2));
         Iterator<YamlDataNode> iterator = result.iterator();
-        assertThat(iterator.next().getKey(), is("algorithms/FIXTURE"));
+        assertThat(iterator.next().getKey(), is("mask_algorithms/FIXTURE"));
         assertThat(iterator.next().getKey(), is("tables/foo"));
     }
     
@@ -75,7 +75,7 @@ class NewYamlMaskRuleConfigurationSwapperTest {
                 + "    logicColumn: foo_column\n"
                 + "    maskAlgorithm: FIXTURE\n"
                 + "name: foo\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/mask/algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
+        config.add(new YamlDataNode("/metadata/foo_db/rules/mask/mask_algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
         MaskRuleConfiguration result = swapper.swapToObject(config).get();
         assertThat(result.getTables().size(), is(1));
         assertThat(result.getTables().iterator().next().getName(), is("foo"));
