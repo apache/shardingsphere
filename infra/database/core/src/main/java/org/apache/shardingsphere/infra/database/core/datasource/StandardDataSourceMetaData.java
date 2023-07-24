@@ -23,27 +23,31 @@ import lombok.RequiredArgsConstructor;
 import java.util.Properties;
 
 /**
- * JDBC URL.
+ * Standard data source meta data.
  */
 @RequiredArgsConstructor
 @Getter
-public final class JdbcUrl {
+public final class StandardDataSourceMetaData implements DataSourceMetaData {
     
     private final String hostname;
     
     private final int port;
     
-    private final String database;
+    private final String catalog;
+    
+    private final String schema;
     
     private final Properties queryProperties;
     
+    private final Properties defaultQueryProperties;
+    
     /**
-     * Get port.
-     * 
-     * @param defaultPort default port if absent
-     * @return port
+     * Judge whether two of data sources are in the same database instance.
+     *
+     * @param dataSourceMetaData data source meta data
+     * @return data sources are in the same database instance or not
      */
-    public int getPort(final int defaultPort) {
-        return -1 == port ? defaultPort : port;
+    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        return hostname.equals(dataSourceMetaData.getHostname()) && port == dataSourceMetaData.getPort();
     }
 }
