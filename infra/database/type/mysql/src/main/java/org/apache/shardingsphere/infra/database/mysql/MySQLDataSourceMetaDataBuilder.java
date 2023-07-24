@@ -19,15 +19,43 @@ package org.apache.shardingsphere.infra.database.mysql;
 
 import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.datasource.JdbcUrl;
+import org.apache.shardingsphere.infra.database.core.datasource.StandardDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.StandardJdbcUrlParser;
+
+import java.util.Properties;
 
 /**
  * Data source meta data builder of MySQL.
  */
 public final class MySQLDataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
     
+    private static final int DEFAULT_PORT = 3306;
+    
     @Override
     public DataSourceMetaData build(final String url, final String username, final String catalog) {
-        return new MySQLDataSourceMetaData(url, catalog);
+        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
+        return new StandardDataSourceMetaData(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT),
+                null == catalog ? jdbcUrl.getDatabase() : catalog, null, jdbcUrl.getQueryProperties(), buildDefaultQueryProperties());
+    }
+    
+    private Properties buildDefaultQueryProperties() {
+        Properties result = new Properties();
+        result.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
+        result.setProperty("cachePrepStmts", Boolean.TRUE.toString());
+        result.setProperty("prepStmtCacheSize", "200000");
+        result.setProperty("prepStmtCacheSqlLimit", "2048");
+        result.setProperty("useLocalSessionState", Boolean.TRUE.toString());
+        result.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        result.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
+        result.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
+        result.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
+        result.setProperty("maintainTimeStats", Boolean.FALSE.toString());
+        result.setProperty("netTimeoutForStreamingResults", "0");
+        result.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
+        result.setProperty("useSSL", Boolean.FALSE.toString());
+        result.setProperty("serverTimezone", "UTC");
+        return result;
     }
     
     @Override

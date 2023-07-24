@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.infra.database.mysql;
 
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
 import org.apache.shardingsphere.infra.database.core.datasource.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -37,10 +41,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MySQLDataSourceMetaDataTest {
     
+    private final DataSourceMetaDataBuilder builder = DatabaseTypedSPILoader.getService(DataSourceMetaDataBuilder.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
     void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema, final Properties queryProps) {
-        DataSourceMetaData actual = new MySQLDataSourceMetaData(url);
+        DataSourceMetaData actual = builder.build(url, null, null);
         assertThat(actual.getHostname(), is(hostname));
         assertThat(actual.getPort(), is(port));
         assertThat(actual.getCatalog(), is(catalog));
@@ -50,7 +56,7 @@ class MySQLDataSourceMetaDataTest {
     
     @Test
     void assertNewConstructorFailure() {
-        assertThrows(UnrecognizedDatabaseURLException.class, () -> new MySQLDataSourceMetaData("jdbc:mysql:xxxxxxxx"));
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> builder.build("jdbc:mysql:xxxxxxxx", null, null));
     }
     
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {

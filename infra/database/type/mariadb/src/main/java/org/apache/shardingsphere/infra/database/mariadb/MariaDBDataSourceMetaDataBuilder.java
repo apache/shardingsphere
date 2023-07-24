@@ -35,7 +35,8 @@ public final class MariaDBDataSourceMetaDataBuilder implements DataSourceMetaDat
     @Override
     public DataSourceMetaData build(final String url, final String username, final String catalog) {
         JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new StandardDataSourceMetaData(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT), jdbcUrl.getDatabase(), null, jdbcUrl.getQueryProperties(), buildDefaultQueryProperties());
+        return new StandardDataSourceMetaData(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT),
+                null == catalog ? jdbcUrl.getDatabase() : catalog, null, jdbcUrl.getQueryProperties(), buildDefaultQueryProperties());
     }
     
     private Properties buildDefaultQueryProperties() {
