@@ -94,7 +94,7 @@ jobs:
           retention-days: 1
   
   e2e-sql:
-    name: ${{ matrix.adapter }} - ${{ matrix.scenario }} - ${{ matrix.mode }} on ${{ matrix.database }}
+    name: E2E - ${{ matrix.adapter }} - ${{ matrix.scenario }} - ${{ matrix.mode }} on ${{ matrix.database }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: build-e2e-image
