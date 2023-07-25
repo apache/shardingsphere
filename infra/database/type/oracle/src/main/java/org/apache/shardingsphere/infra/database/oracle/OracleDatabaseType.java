@@ -54,8 +54,8 @@ public final class OracleDatabaseType implements DatabaseType {
     }
     
     @Override
-    public boolean isReservedWord(final String item) {
-        return RESERVED_KEYWORDS.contains(item.toUpperCase());
+    public boolean isReservedWord(final String identifier) {
+        return RESERVED_KEYWORDS.contains(identifier.toUpperCase());
     }
     
     @Override

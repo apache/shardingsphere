@@ -55,11 +55,11 @@ public final class MySQLDatabaseType implements DatabaseType {
     private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
     
     static {
-        SYSTEM_DATABASE_SCHEMA_MAP.put("information_schema", Collections.singletonList("information_schema"));
-        SYSTEM_DATABASE_SCHEMA_MAP.put("performance_schema", Collections.singletonList("performance_schema"));
-        SYSTEM_DATABASE_SCHEMA_MAP.put("mysql", Collections.singletonList("mysql"));
-        SYSTEM_DATABASE_SCHEMA_MAP.put("sys", Collections.singletonList("sys"));
-        SYSTEM_DATABASE_SCHEMA_MAP.put("shardingsphere", Collections.singletonList("shardingsphere"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("information_schema", Collections.singleton("information_schema"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("performance_schema", Collections.singleton("performance_schema"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("mysql", Collections.singleton("mysql"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("sys", Collections.singleton("sys"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("shardingsphere", Collections.singleton("shardingsphere"));
     }
     
     @Override
@@ -73,8 +73,8 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public boolean isReservedWord(final String item) {
-        return RESERVED_WORDS.contains(item.toUpperCase());
+    public boolean isReservedWord(final String identifier) {
+        return RESERVED_WORDS.contains(identifier.toUpperCase());
     }
     
     @Override

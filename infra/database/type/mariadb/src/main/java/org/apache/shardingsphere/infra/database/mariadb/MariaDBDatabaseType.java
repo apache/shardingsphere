@@ -32,14 +32,21 @@ import java.util.Optional;
  */
 public final class MariaDBDatabaseType implements DatabaseType {
     
+    private final DatabaseType trunkDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
+        return trunkDatabaseType.getQuoteCharacter();
     }
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
+        return trunkDatabaseType.getDefaultNullsOrderType();
+    }
+    
+    @Override
+    public boolean isReservedWord(final String identifier) {
+        return trunkDatabaseType.isReservedWord(identifier);
     }
     
     @Override
@@ -49,17 +56,17 @@ public final class MariaDBDatabaseType implements DatabaseType {
     
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        return Optional.of(trunkDatabaseType);
     }
     
     @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
+        return trunkDatabaseType.getSystemDatabaseSchemaMap();
     }
     
     @Override
     public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
+        return trunkDatabaseType.getSystemSchemas();
     }
     
     @Override
