@@ -5877,4 +5877,78 @@
             </column-item>
         </group-by>
     </select>
+
+    <select sql-case-id="select_with_model_clause">
+        <projections start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+            <column-projection name="year" start-index="61" stop-index="64" literal-start-index="61" literal-stop-index="64" />
+            <column-projection name="sales" start-index="67" stop-index="71" literal-start-index="67" literal-stop-index="71" />
+            <expression-projection text="SUBSTR(country,1,20)" alias="country" start-index="7" stop-index="34" literal-start-index="7" literal-stop-index="34">
+                <literalText>SUBSTR(country,1,20)</literalText>
+                <expr>
+                    <function function-name="SUBSTR" text="SUBSTR(country,1,20)" start-index="7" stop-index="26" literal-start-index="7" literal-stop-index="26">
+                        <parameter>
+                            <column name="country" start-index="14" stop-index="20" literal-start-index="14" literal-stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="22" stop-index="22" literal-start-index="22" literal-stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="20" start-index="24" stop-index="25" literal-start-index="24" literal-stop-index="25" />
+                        </parameter>
+                        <literalText>SUBSTR(country,1,20)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="SUBSTR(prod,1,15)" alias="prod" start-index="37" stop-index="58" literal-start-index="37" literal-stop-index="58">
+                <literalText>SUBSTR(prod,1,15)</literalText>
+                <expr>
+                    <function function-name="SUBSTR" text="SUBSTR(prod,1,15)" start-index="37" stop-index="53" literal-start-index="37" literal-stop-index="53">
+                        <parameter>
+                            <column name="prod" start-index="44" stop-index="47" literal-start-index="44" literal-stop-index="47" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="49" stop-index="49" literal-start-index="49" literal-stop-index="49" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="15" start-index="51" stop-index="52" literal-start-index="51" literal-stop-index="52" />
+                        </parameter>
+                        <literalText>SUBSTR(prod,1,15)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="sales_view" start-index="78" stop-index="87" literal-start-index="78" literal-stop-index="87" />
+        </from>
+        <where start-index="89" stop-index="122" literal-start-index="89" literal-stop-index="122">
+            <expr>
+                <in-expression start-index="95" stop-index="122" literal-start-index="95" literal-stop-index="122">
+                    <not>false</not>
+                    <left>
+                        <column name="country" start-index="95" stop-index="101" literal-start-index="95" literal-stop-index="101" />
+                    </left>
+                    <right>
+                        <list-expression start-index="106" stop-index="122" literal-start-index="106" literal-stop-index="122">
+                            <items>
+                                <literal-expression value="Italy" start-index="107" stop-index="113" literal-start-index="107" literal-stop-index="113" />
+                            </items>
+                            <items>
+                                <literal-expression value="Japan" start-index="115" stop-index="121" literal-start-index="115" literal-stop-index="121" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="country" order-direction="ASC" start-index="427" stop-index="433" literal-start-index="427" literal-stop-index="433" />
+            <column-item name="prod" order-direction="ASC" start-index="436" stop-index="439" literal-start-index="436" literal-stop-index="439" />
+            <column-item name="year" order-direction="ASC" start-index="442" stop-index="445" literal-start-index="442" literal-stop-index="445" />
+        </order-by>
+        <model start-index="124" stop-index="416" literal-start-index="124" literal-stop-index="416">
+            <cell-assignment-column name="sales" start-index="228" stop-index="232" literal-start-index="228" literal-stop-index="232" />
+            <cell-assignment-column name="sales" start-index="299" stop-index="303" literal-start-index="299" literal-stop-index="303" />
+            <cell-assignment-column name="sales" start-index="344" stop-index="348" literal-start-index="344" literal-stop-index="348" />
+        </model>
+    </select>
 </sql-parser-test-cases>

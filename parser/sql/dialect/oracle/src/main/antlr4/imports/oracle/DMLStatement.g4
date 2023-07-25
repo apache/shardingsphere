@@ -637,7 +637,7 @@ modelClause
     ;
 
 cellReferenceOptions
-    : ((IGNORE | KEEP) NAV)? (UNIQUE (DIMENSION | SINGLE REFERENCE))?
+    : (IGNORE | KEEP) NAV | UNIQUE (DIMENSION | SINGLE REFERENCE)
     ;
 
 returnRowsClause
