@@ -19,7 +19,7 @@ name: E2E - Operation
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ dev ]
   pull_request:
   workflow_dispatch:
 

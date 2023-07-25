@@ -19,7 +19,7 @@ name: E2E - SQL
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ dev ]
     paths:
       - '.github/workflows/e2e-sql.yml'
       - '**/pom.xml'
