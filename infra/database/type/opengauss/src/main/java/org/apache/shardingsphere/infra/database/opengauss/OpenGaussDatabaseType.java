@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.opengauss;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -63,6 +64,11 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     }
     
     @Override
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.LAST;
+    }
+    
+    @Override
     public boolean isReservedWord(final String item) {
         return RESERVED_WORDS.contains(item.toUpperCase());
     }
@@ -70,11 +76,6 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
-    }
-    
-    @Override
-    public OpenGaussDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new OpenGaussDataSourceMetaData(url);
     }
     
     @Override

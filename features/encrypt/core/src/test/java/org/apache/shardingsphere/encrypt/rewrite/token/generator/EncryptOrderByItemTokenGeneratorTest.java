@@ -23,9 +23,10 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -84,7 +85,7 @@ class EncryptOrderByItemTokenGeneratorTest {
         when(result.getOrderByContext().getItems()).thenReturn(Collections.singletonList(orderByItem));
         when(result.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(result.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
-        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singletonList(simpleTableSegment), DatabaseTypeFactory.get("MySQL")));
+        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singletonList(simpleTableSegment), TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
         return result;
     }
 }

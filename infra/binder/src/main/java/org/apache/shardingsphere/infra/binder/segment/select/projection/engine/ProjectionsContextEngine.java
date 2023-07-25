@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -150,6 +150,6 @@ public final class ProjectionsContextEngine {
     }
     
     private boolean isSameQualifiedName(final Projection projection, final String text) {
-        return SQLUtils.getExactlyValue(text).equalsIgnoreCase(SQLUtils.getExactlyValue(projection.getColumnName()));
+        return SQLUtils.getExactlyValue(text).equalsIgnoreCase(SQLUtils.getExactlyValue(projection.getExpression()));
     }
 }

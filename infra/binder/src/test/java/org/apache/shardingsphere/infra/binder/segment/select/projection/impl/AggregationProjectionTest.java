@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -34,40 +35,63 @@ import static org.mockito.Mockito.mock;
 class AggregationProjectionTest {
     
     @Test
-    void assertGetExpression() {
-        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, mock(DatabaseType.class));
-        assertThat(projection.getColumnName(), is("COUNT( A.\"DIRECTION\" )"));
+    void assertGetColumnName() {
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null,
+                TypedSPILoader.getService(DatabaseType.class, "MySQL")).getColumnName(), is("COUNT( A.\"DIRECTION\" )"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "count( a.\"direction\" )", null,
+                TypedSPILoader.getService(DatabaseType.class, "MySQL")).getColumnName(), is("count( a.\"direction\" )"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null,
+                TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).getColumnName(), is("count"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null,
+                TypedSPILoader.getService(DatabaseType.class, "openGauss")).getColumnName(), is("count"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( a.\"direction\" )", null,
+                TypedSPILoader.getService(DatabaseType.class, "Oracle")).getColumnName(), is("COUNT(A.\"DIRECTION\")"));
     }
     
     @Test
-    void assertGetAlias() {
-        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", new IdentifierValue("AVG_DERIVED_COUNT_0"), mock(DatabaseType.class));
-        Optional<IdentifierValue> actual = projection.getAlias();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getValue(), is("AVG_DERIVED_COUNT_0"));
+    void assertGetColumnLabelWithAliasNoQuote() {
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", new IdentifierValue("DIRECTION_COUNT"),
+                TypedSPILoader.getService(DatabaseType.class, "MySQL")).getColumnLabel(), is("DIRECTION_COUNT"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", new IdentifierValue("DIRECTION_COUNT"),
+                TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).getColumnLabel(), is("direction_count"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", new IdentifierValue("DIRECTION_COUNT"),
+                TypedSPILoader.getService(DatabaseType.class, "openGauss")).getColumnLabel(), is("direction_count"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", new IdentifierValue("direction_count"),
+                TypedSPILoader.getService(DatabaseType.class, "Oracle")).getColumnLabel(), is("DIRECTION_COUNT"));
     }
     
     @Test
-    void assertGetColumnLabelWithAlias() {
-        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", new IdentifierValue("AVG_DERIVED_COUNT_0"), mock(DatabaseType.class));
-        assertThat(projection.getColumnLabel(), is("AVG_DERIVED_COUNT_0"));
+    void assertGetColumnLabelWithAliasAndQuote() {
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", new IdentifierValue("DIRECTION_COUNT", QuoteCharacter.BACK_QUOTE),
+                TypedSPILoader.getService(DatabaseType.class, "MySQL")).getColumnLabel(), is("DIRECTION_COUNT"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", new IdentifierValue("DIRECTION_COUNT", QuoteCharacter.QUOTE),
+                TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).getColumnLabel(), is("DIRECTION_COUNT"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", new IdentifierValue("DIRECTION_COUNT", QuoteCharacter.QUOTE),
+                TypedSPILoader.getService(DatabaseType.class, "openGauss")).getColumnLabel(), is("DIRECTION_COUNT"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", new IdentifierValue("direction_count", QuoteCharacter.QUOTE),
+                TypedSPILoader.getService(DatabaseType.class, "Oracle")).getColumnLabel(), is("direction_count"));
     }
     
     @Test
     void assertGetColumnLabelWithoutAlias() {
-        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, mock(DatabaseType.class));
-        assertThat(projection.getColumnLabel(), is("COUNT( A.\"DIRECTION\" )"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null,
+                TypedSPILoader.getService(DatabaseType.class, "MySQL")).getColumnLabel(), is("COUNT( A.\"DIRECTION\" )"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "count( a.\"direction\" )", null,
+                TypedSPILoader.getService(DatabaseType.class, "MySQL")).getColumnLabel(), is("count( a.\"direction\" )"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null,
+                TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).getColumnLabel(), is("count"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null,
+                TypedSPILoader.getService(DatabaseType.class, "openGauss")).getColumnLabel(), is("count"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( a.\"direction\" )", null,
+                TypedSPILoader.getService(DatabaseType.class, "Oracle")).getColumnLabel(), is("COUNT(A.\"DIRECTION\")"));
     }
     
     @Test
-    void assertGetColumnLabelWithoutAliasForPostgreSQL() {
-        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        assertThat(projection.getColumnLabel(), is("count"));
-    }
-    
-    @Test
-    void assertGetColumnLabelWithoutAliasForOpenGauss() {
-        Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, TypedSPILoader.getService(DatabaseType.class, "openGauss"));
-        assertThat(projection.getColumnLabel(), is("count"));
+    void assertGetAlias() {
+        Projection projection = new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", new IdentifierValue("AVG_DERIVED_COUNT_0"), mock(DatabaseType.class));
+        Optional<IdentifierValue> actual = projection.getAlias();
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getValue(), is("AVG_DERIVED_COUNT_0"));
+        assertThat(actual.get().getQuoteCharacter(), is(QuoteCharacter.NONE));
     }
 }

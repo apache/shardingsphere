@@ -9,7 +9,7 @@ chapter = true
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.infra.database.spi.DatabaseType`](https://github.com/apache/shardingsphere/blob/master/infra/database/spi/src/main/java/org/apache/shardingsphere/infra/database/spi/DatabaseType.java)
+[`org.apache.shardingsphere.infra.database.core.type.DatabaseType`](https://github.com/apache/shardingsphere/blob/master/infra/database/core/src/main/java/org/apache/shardingsphere/infra/database/core/type/DatabaseType.java)
 
 ### 定义
 

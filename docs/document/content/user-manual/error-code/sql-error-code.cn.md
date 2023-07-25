@@ -279,6 +279,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | SQL State | Vendor Code | 错误信息                                                        |
 |-----------|-------------|-------------------------------------------------------------|
 | HY000     | 20980       | Mask algorithm \`%s\` initialization failed, reason is: %s. |
+| 42S02     | 20990       | Invalid mask algorithm \`%s\` in database \`%s\`.           |
 
 ## 其他异常
 

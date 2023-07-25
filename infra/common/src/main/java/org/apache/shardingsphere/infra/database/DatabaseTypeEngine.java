@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
@@ -69,6 +69,11 @@ public final class DatabaseTypeEngine {
     public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
         return configuredDatabaseType.orElseGet(() -> getStorageType(getEnabledDataSources(databaseConfigs).values()));
+    }
+    
+    private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
+        DatabaseType configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
+        return null == configuredDatabaseType ? Optional.empty() : Optional.of(configuredDatabaseType.getTrunkDatabaseType().orElse(configuredDatabaseType));
     }
     
     private static Map<String, DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
@@ -125,32 +130,6 @@ public final class DatabaseTypeEngine {
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
-    }
-    
-    private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
-        String configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeEngine.getTrunkDatabaseType(configuredDatabaseType));
-    }
-    
-    /**
-     * Get trunk database type.
-     *
-     * @param name database name 
-     * @return trunk database type
-     */
-    public static DatabaseType getTrunkDatabaseType(final String name) {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, name);
-        return databaseType.getTrunkDatabaseType().orElse(databaseType);
-    }
-    
-    /**
-     * Get name of trunk database type.
-     *
-     * @param databaseType database type
-     * @return name of trunk database type
-     */
-    public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
-        return databaseType.getTrunkDatabaseType().map(DatabaseType::getType).orElse(databaseType.getType());
     }
     
     /**

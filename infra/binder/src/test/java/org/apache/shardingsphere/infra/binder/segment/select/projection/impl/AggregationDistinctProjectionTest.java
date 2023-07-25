@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -30,11 +30,6 @@ class AggregationDistinctProjectionTest {
     
     private final AggregationDistinctProjection aggregationDistinctProjection = new AggregationDistinctProjection(
             0, 0, AggregationType.COUNT, "(DISTINCT order_id)", new IdentifierValue("c"), "order_id", mock(DatabaseType.class));
-    
-    @Test
-    void assertGetDistinctColumnLabel() {
-        assertThat(aggregationDistinctProjection.getDistinctColumnLabel(), is("c"));
-    }
     
     @Test
     void assertGetDistinctColumnName() {

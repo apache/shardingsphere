@@ -22,6 +22,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.KillProcessExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLSetVariableAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLSystemVariableQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.NoResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowConnectionIdExecutor;
@@ -62,7 +63,11 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     
     private static final String INFORMATION_SCHEMA = "information_schema";
     
+    private static final String MYSQL_SCHEMA = "mysql";
+    
     private static final String PERFORMANCE_SCHEMA = "performance_schema";
+    
+    private static final String SYS_SCHEMA = "sys";
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
@@ -109,8 +114,13 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
                 return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
             }
             if (isQueryPerformanceSchema(databaseName)) {
-                // TODO
-                return Optional.empty();
+                return MySQLPerformanceSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
+            }
+            if (isQueryMySQLSchema(databaseName)) {
+                return MySQLMySQLSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
+            }
+            if (isQuerySysSchema(databaseName)) {
+                return MySQLSysSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
             }
         }
         return Optional.empty();
@@ -152,6 +162,14 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     
     private boolean isQueryPerformanceSchema(final String databaseName) {
         return PERFORMANCE_SCHEMA.equalsIgnoreCase(databaseName);
+    }
+    
+    private boolean isQueryMySQLSchema(final String databaseName) {
+        return MYSQL_SCHEMA.equalsIgnoreCase(databaseName);
+    }
+    
+    private boolean isQuerySysSchema(final String databaseName) {
+        return SYS_SCHEMA.equalsIgnoreCase(databaseName);
     }
     
     private Optional<DatabaseAdminExecutor> mockExecutor(final String databaseName, final SelectStatement sqlStatement, final String sql) {

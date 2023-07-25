@@ -53,12 +53,12 @@ public final class ParameterMarkerProjection implements Projection {
     }
     
     @Override
-    public Optional<IdentifierValue> getAlias() {
-        return Optional.ofNullable(alias);
+    public String getExpression() {
+        return String.valueOf(parameterMarkerIndex);
     }
     
     @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, getAlias().get(), null) : new ParameterMarkerProjection(parameterMarkerIndex, parameterMarkerType, alias);
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias);
     }
 }

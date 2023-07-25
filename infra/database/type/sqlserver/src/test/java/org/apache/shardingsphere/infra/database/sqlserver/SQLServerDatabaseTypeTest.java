@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.infra.database.sqlserver;
 
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,27 +32,21 @@ class SQLServerDatabaseTypeTest {
     
     @Test
     void assertGetQuoteCharacter() {
-        assertThat(new SQLServerDatabaseType().getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
     }
     
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(new SQLServerDatabaseType().getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:")));
-    }
-    
-    @Test
-    void assertGetDataSourceMetaData() {
-        assertThat(new SQLServerDatabaseType().getDataSourceMetaData("jdbc:sqlserver://127.0.0.1;DatabaseName=ds_0", "root"), instanceOf(SQLServerDataSourceMetaData.class));
-        assertThat(new SQLServerDatabaseType().getDataSourceMetaData("jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=ds_0", "sa"), instanceOf(SQLServerDataSourceMetaData.class));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:")));
     }
     
     @Test
     void assertGetSystemDatabases() {
-        assertTrue(new SQLServerDatabaseType().getSystemDatabaseSchemaMap().isEmpty());
+        assertTrue(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getSystemDatabaseSchemaMap().isEmpty());
     }
     
     @Test
     void assertGetSystemSchemas() {
-        assertTrue(new SQLServerDatabaseType().getSystemSchemas().isEmpty());
+        assertTrue(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getSystemSchemas().isEmpty());
     }
 }

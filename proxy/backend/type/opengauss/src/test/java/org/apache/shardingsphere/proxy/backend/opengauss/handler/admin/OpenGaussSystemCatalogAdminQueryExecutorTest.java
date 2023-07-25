@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -79,7 +80,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         ConfigurationProperties properties = new ConfigurationProperties(new Properties());
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(properties);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getProtocolType()).thenReturn(new OpenGaussDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "openGauss"));
         Map<String, ShardingSphereDatabase> databases = createShardingSphereDatabaseMap();
         SQLFederationRule sqlFederationRule = new SQLFederationRule(new SQLFederationRuleConfiguration(false, new CacheOption(1, 1)), databases, properties);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
@@ -132,8 +133,8 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
                 new ShardingSphereColumn("datminmxid", 1111, false, false, false, true, false));
         ShardingSphereSchema schema = new ShardingSphereSchema(
                 Collections.singletonMap("pg_database", new ShardingSphereTable("pg_database", columns, Collections.emptyList(), Collections.emptyList())), Collections.emptyMap());
-        result.put("sharding_db", new ShardingSphereDatabase("sharding_db", new OpenGaussDatabaseType(), mock(ShardingSphereResourceMetaData.class), mock(ShardingSphereRuleMetaData.class),
-                Collections.singletonMap("pg_catalog", schema)));
+        result.put("sharding_db", new ShardingSphereDatabase("sharding_db", TypedSPILoader.getService(DatabaseType.class, "openGauss"),
+                mock(ShardingSphereResourceMetaData.class), mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("pg_catalog", schema)));
         return result;
     }
     
@@ -154,7 +155,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         OpenGaussSystemCatalogAdminQueryExecutor executor =
                 new OpenGaussSystemCatalogAdminQueryExecutor(sqlStatementContext, "select VERSION()", "sharding_db", Collections.emptyList());
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getProtocolType()).thenReturn(new OpenGaussDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "openGauss"));
         executor.execute(connectionSession);
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(1));
@@ -188,7 +189,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         OpenGaussSystemCatalogAdminQueryExecutor executor =
                 new OpenGaussSystemCatalogAdminQueryExecutor(sqlStatementContext, "select intervaltonum(gs_password_deadline())", "sharding_db", Collections.emptyList());
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getProtocolType()).thenReturn(new OpenGaussDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "openGauss"));
         executor.execute(connectionSession);
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(1));
@@ -224,7 +225,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         OpenGaussSystemCatalogAdminQueryExecutor executor =
                 new OpenGaussSystemCatalogAdminQueryExecutor(sqlStatementContext, "select gs_password_notifytime()", "sharding_db", Collections.emptyList());
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getProtocolType()).thenReturn(new OpenGaussDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "openGauss"));
         executor.execute(connectionSession);
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(1));

@@ -77,9 +77,11 @@ import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigur
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -474,7 +476,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             String url = String.valueOf(value.getConnectionPropertySynonyms().getStandardProperties().get("url"));
             DatabaseType databaseType = DatabaseTypeFactory.get(url);
             props.add(databaseType.getType());
-            DataSourceMetaData metaData = databaseType.getDataSourceMetaData(url, "");
+            DataSourceMetaData metaData = DatabaseTypedSPILoader.getService(DataSourceMetaDataBuilder.class, databaseType).build(url, "", null);
             props.add(metaData.getHostname());
             props.add(metaData.getPort());
             props.add(metaData.getCatalog());

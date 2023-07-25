@@ -23,7 +23,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.util.ProjectionUtils;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -44,41 +47,30 @@ public final class ColumnProjection implements Projection {
     
     private final IdentifierValue alias;
     
+    private final DatabaseType databaseType;
+    
     private IdentifierValue originalOwner;
     
     private IdentifierValue originalName;
     
-    public ColumnProjection(final String owner, final String name, final String alias) {
+    public ColumnProjection(final String owner, final String name, final String alias, final DatabaseType databaseType) {
         this(null == owner ? null : new IdentifierValue(owner, QuoteCharacter.NONE), new IdentifierValue(name, QuoteCharacter.NONE),
-                null == alias ? null : new IdentifierValue(alias, QuoteCharacter.NONE));
-    }
-    
-    /**
-     * Get column name.
-     * 
-     * @return column name
-     */
-    public IdentifierValue getName() {
-        return name;
-    }
-    
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
-    public Optional<IdentifierValue> getOwner() {
-        return Optional.ofNullable(owner);
+                null == alias ? null : new IdentifierValue(alias, QuoteCharacter.NONE), databaseType);
     }
     
     @Override
     public String getColumnName() {
-        return null == owner ? name.getValue() : owner.getValue() + "." + name.getValue();
+        return databaseType instanceof MySQLDatabaseType ? ProjectionUtils.getColumnNameFromColumn(name, databaseType) : getColumnLabel();
     }
     
     @Override
     public String getColumnLabel() {
-        return getAlias().map(IdentifierValue::getValue).orElse(name.getValue());
+        return getAlias().isPresent() ? ProjectionUtils.getColumnLabelFromAlias(getAlias().get(), databaseType) : ProjectionUtils.getColumnNameFromColumn(name, databaseType);
+    }
+    
+    @Override
+    public String getExpression() {
+        return null == owner ? name.getValue() : owner.getValue() + "." + name.getValue();
     }
     
     @Override
@@ -86,12 +78,13 @@ public final class ColumnProjection implements Projection {
         return Optional.ofNullable(alias);
     }
     
-    @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        ColumnProjection result = null == alias ? new ColumnProjection(subqueryTableAlias, name, null) : new ColumnProjection(subqueryTableAlias, alias, null);
-        result.setOriginalOwner(originalOwner);
-        result.setOriginalName(originalName);
-        return result;
+    /**
+     * Get owner.
+     *
+     * @return owner
+     */
+    public Optional<IdentifierValue> getOwner() {
+        return Optional.ofNullable(owner);
     }
     
     /**

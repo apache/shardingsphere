@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.h2.H2IncrementalDumperCreator
+org.apache.shardingsphere.data.pipeline.h2.ingest.dumper.H2IncrementalDumperCreator

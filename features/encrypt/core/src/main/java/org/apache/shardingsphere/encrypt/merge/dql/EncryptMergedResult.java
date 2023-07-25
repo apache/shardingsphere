@@ -63,7 +63,7 @@ public final class EncryptMergedResult implements MergedResult {
         TablesContext tablesContext = selectStatementContext.getTablesContext();
         String schemaName = tablesContext.getSchemaName()
                 .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName()));
-        ColumnProjection originalColumn = new ColumnProjection(columnProjection.get().getOriginalOwner(), columnProjection.get().getOriginalName(), null);
+        ColumnProjection originalColumn = new ColumnProjection(columnProjection.get().getOriginalOwner(), columnProjection.get().getOriginalName(), null, selectStatementContext.getDatabaseType());
         Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(Collections.singletonList(originalColumn), database.getSchema(schemaName));
         Optional<String> tableName = findTableName(originalColumn, expressionTableNames);
         if (!tableName.isPresent()) {
@@ -78,7 +78,7 @@ public final class EncryptMergedResult implements MergedResult {
     }
     
     private Optional<String> findTableName(final ColumnProjection columnProjection, final Map<String, String> columnTableNames) {
-        String tableName = columnTableNames.get(columnProjection.getColumnName());
+        String tableName = columnTableNames.get(columnProjection.getExpression());
         if (null != tableName) {
             return Optional.of(tableName);
         }

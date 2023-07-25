@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.test.it.rewrite.engine;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -117,12 +117,12 @@ public abstract class SQLRewriterIT {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         mockDataSource(databaseConfig.getDataSources());
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
         Map<String, DatabaseType> storageTypes = createStorageTypes(databaseConfig, databaseType);
+        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         when(resourceMetaData.getStorageTypes()).thenReturn(storageTypes);
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, DefaultDatabase.LOGIC_NAME);
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(testParams.getDatabaseType(),
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(testParams.getInputSQL(), false);
         Collection<ShardingSphereRule> databaseRules = createDatabaseRules(databaseConfig, schemaName, sqlStatement);
@@ -133,7 +133,7 @@ public abstract class SQLRewriterIT {
         
         ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(createGlobalRules());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ShardingSphereResourceMetaData.class), globalRuleMetaData, mock(ConfigurationProperties.class));
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, sqlStatement, schemaName);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, schemaName).bind(sqlStatement, Collections.emptyList());
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(testParams.getInputParameters());
         }
@@ -178,8 +178,8 @@ public abstract class SQLRewriterIT {
     }
     
     private CursorStatementContext createCursorDefinition(final String schemaName, final ShardingSphereMetaData metaData, final SQLStatementParserEngine sqlStatementParserEngine) {
-        return (CursorStatementContext) SQLStatementContextFactory.newInstance(metaData,
-                sqlStatementParserEngine.parse("CURSOR t_account_cursor FOR SELECT * FROM t_account WHERE account_id = 100", false), schemaName);
+        SQLStatement sqlStatement = sqlStatementParserEngine.parse("CURSOR t_account_cursor FOR SELECT * FROM t_account WHERE account_id = 100", false);
+        return (CursorStatementContext) new SQLBindEngine(metaData, schemaName).bind(sqlStatement, Collections.emptyList());
     }
     
     protected abstract void mockDataSource(Map<String, DataSource> dataSources) throws SQLException;

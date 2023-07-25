@@ -27,7 +27,7 @@
                         </from>
                         <projections start-index="27" stop-index="65">
                             <column-projection name="department_name" start-index="27" stop-index="41" />
-                            <aggregation-projection type="SUM" alias="dept_total" inner-expression="(salary)" start-index="44" stop-index="54" />
+                            <aggregation-projection type="SUM" alias="dept_total" expression="SUM(salary)" start-index="44" stop-index="54" />
                         </projections>
                         <group-by>
                             <column-item name="department_name" start-index="95" stop-index="109" />
@@ -77,7 +77,7 @@
                         </from>
                         <projections start-index="27" stop-index="65">
                             <column-projection name="department_name" start-index="27" stop-index="41" />
-                            <aggregation-projection type="SUM" alias="dept_total" inner-expression="(salary)" start-index="44" stop-index="54" />
+                            <aggregation-projection type="SUM" alias="dept_total" expression="SUM(salary)" start-index="44" stop-index="54" />
                         </projections>
                         <where start-index="99" stop-index="137">
                             <expr>

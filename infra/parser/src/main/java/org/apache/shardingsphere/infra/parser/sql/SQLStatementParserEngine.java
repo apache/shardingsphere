@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.parser.sql;
 
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -41,7 +42,7 @@ public final class SQLStatementParserEngine {
     @Getter
     private final boolean isParseComment;
     
-    public SQLStatementParserEngine(final String databaseType, final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
+    public SQLStatementParserEngine(final DatabaseType databaseType, final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
         sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption, isParseComment);
         sqlStatementCache = SQLStatementCacheBuilder.build(databaseType, sqlStatementCacheOption, parseTreeCacheOption, isParseComment);
         this.sqlStatementCacheOption = sqlStatementCacheOption;
@@ -53,7 +54,7 @@ public final class SQLStatementParserEngine {
      * Parse to SQL statement.
      *
      * @param sql SQL to be parsed
-     * @param useCache whether use cache
+     * @param useCache whether to use cache
      * @return SQL statement
      */
     public SQLStatement parse(final String sql, final boolean useCache) {

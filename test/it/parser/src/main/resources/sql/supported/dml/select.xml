@@ -17,6 +17,8 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_position_function" value="select position(&quot;0&quot; in &quot;baaa&quot; in (1)),position(&quot;0&quot; in &quot;1&quot; in (1,2,3)),position(&quot;sql&quot; in (&quot;mysql&quot;))" db-types="MySQL" />
+    <sql-case id="select_extract_function_with_day_hour" value="select extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" db-types="MySQL" />
     <sql-case id="select_with_latin1" value="select _latin1'B' collate latin1_bin in (_latin1'a',_latin1'b')" db-types="MySQL" />
     <sql-case id="select_with_default_str" value="select * from t1 where str &lt;&gt; default(str)" db-types="MySQL" />
     <sql-case id="select_subquery_excpet" value="select * from (select * from t1 except all select * from t1 limit 2) a" db-types="MySQL" />
@@ -187,4 +189,12 @@
     <sql-case id="select_with_format_function" value="SELECT wi.code.format(null,'PURE_IDENTITY') as PURE_IDENTITY FROM warehouse_info wi;" db-types="Oracle" />
     <sql-case id="select_with_xml_is_schema_valid_function" value="SELECT x.xmlcol.isSchemaValid('http://www.example.com/schemas/ipo.xsd','purchaseOrder') FROM po_tab x;" db-types="Oracle" />
     <sql-case id="select_with_last_value_function" value="SELECT LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE) from TEST;" db-types="Oracle" />
+    <sql-case id="select_with_lead_and_lag_function" value="SELECT hire_date, LAG(hire_date, 1) OVER (ORDER BY hire_date) AS LAG1, LEAD(hire_date, 1) OVER (ORDER BY hire_date) AS LEAD1 FROM employees WHERE department_id = 30 ORDER BY hire_date;" db-types="Oracle" />
+    <sql-case id="select_with_connect_by_root" value="SELECT CONNECT_BY_ROOT last_name 'Manager' FROM employees CONNECT BY PRIOR employee_id = manager_id" db-types="Oracle" />
+    <sql-case id="select_with_ntile_function" value="SELECT NTILE(4) OVER (ORDER BY salary DESC) AS quartile FROM employees WHERE department_id = 100 ORDER BY last_name" db-types="Oracle" />
+    <sql-case id="select_with_percentile_functions" value="SELECT department_id, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median cont', PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median disc' FROM employees GROUP BY department_id" db-types="Oracle" />
+    <sql-case id="select_with_keep_clause" value="SELECT salary,MIN(salary) KEEP (DENSE_RANK FIRST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Worst', MAX(salary) KEEP (DENSE_RANK LAST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Best' FROM employees ORDER BY department_id" db-types="Oracle" />
+    <sql-case id="select_with_corr_function" value="SELECT employee_id, CORR(SYSDATE - hire_date, salary) FROM employees WHERE department_id in (50, 80) ORDER BY employee_id" db-types="Oracle" />
+    <sql-case id="select_with_trim_function" value="select TRIM('  derby '), TRIM(BOTH ' ' FROM '  derby '), TRIM(TRAILING ' ' FROM '  derby '), TRIM(cast (null as char(1)) FROM '  derby '), TRIM(' ' FROM cast(null as varchar(30))), TRIM('y' FROM ' derby') FROM employees" db-types="Oracle" />
+    <sql-case id="select_with_ratio_to_report_function" value="SELECT TO_CHAR(RATIO_TO_REPORT(amount_sold) OVER (), '9.999') AS RATIO_TO_REPORT FROM sales s GROUP BY s.channel_desc" db-types="Oracle" />
 </sql-cases>

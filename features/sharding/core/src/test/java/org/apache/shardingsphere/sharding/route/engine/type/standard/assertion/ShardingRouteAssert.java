@@ -19,14 +19,11 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard.assertion;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
@@ -37,6 +34,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.route.engine.fixture.ShardingRoutingEngineFixtureBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -70,20 +69,21 @@ public final class ShardingRouteAssert {
      * @return route context
      */
     public static RouteContext assertRoute(final String sql, final List<Object> params) {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         ShardingRule shardingRule = ShardingRoutingEngineFixtureBuilder.createAllShardingRule();
         SingleRule singleRule = ShardingRoutingEngineFixtureBuilder.createSingleRule(Collections.singletonList(shardingRule));
         TimestampServiceRule timestampServiceRule = ShardingRoutingEngineFixtureBuilder.createTimeServiceRule();
         Map<String, ShardingSphereSchema> schemas = buildSchemas();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL",
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType,
                 new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, singleRule, timestampServiceRule));
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(resourceMetaData.getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
+        when(resourceMetaData.getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", databaseType));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, ruleMetaData, schemas);
+                DefaultDatabase.LOGIC_NAME, databaseType, resourceMetaData, ruleMetaData, schemas);
         SQLStatementContext sqlStatementContext =
-                SQLStatementContextFactory.newInstance(createShardingSphereMetaData(database), params, sqlStatementParserEngine.parse(sql, false), DefaultDatabase.LOGIC_NAME);
+                new SQLBindEngine(createShardingSphereMetaData(database), DefaultDatabase.LOGIC_NAME).bind(sqlStatementParserEngine.parse(sql, false), params);
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, params);
         return new SQLRouteEngine(Arrays.asList(shardingRule, singleRule), props).route(new ConnectionContext(), queryContext, mock(ShardingSphereRuleMetaData.class), database);
     }

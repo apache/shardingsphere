@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.h2;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -37,13 +38,13 @@ public final class H2DatabaseType implements DatabaseType {
     }
     
     @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.FIRST;
     }
     
     @Override
-    public H2DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new H2DataSourceMetaData(url);
+    public Collection<String> getJdbcUrlPrefixes() {
+        return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
     }
     
     @Override

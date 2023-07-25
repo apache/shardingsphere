@@ -62,7 +62,7 @@ public final class ProjectionsContext {
         this.distinctRow = distinctRow;
         this.projections = projections;
         aggregationDistinctProjections = createAggregationDistinctProjections();
-        expandProjections = expandProjections();
+        expandProjections = createExpandProjections();
         containsLastInsertIdProjection = isContainsLastInsertIdProjection(projections);
     }
     
@@ -76,7 +76,7 @@ public final class ProjectionsContext {
         return result;
     }
     
-    private List<Projection> expandProjections() {
+    private List<Projection> createExpandProjections() {
         List<Projection> result = new ArrayList<>();
         for (Projection each : projections) {
             if (each instanceof ShorthandProjection) {
@@ -113,10 +113,10 @@ public final class ProjectionsContext {
                 Optional<Projection> projection =
                         ((ShorthandProjection) each).getActualColumns().stream().filter(optional -> projectionName.equalsIgnoreCase(getOriginalColumnName(optional))).findFirst();
                 if (projection.isPresent()) {
-                    return projection.map(Projection::getColumnName);
+                    return projection.map(Projection::getExpression);
                 }
             }
-            if (projectionName.equalsIgnoreCase(SQLUtils.getExactlyValue(each.getColumnName()))) {
+            if (projectionName.equalsIgnoreCase(SQLUtils.getExactlyValue(each.getExpression()))) {
                 return each.getAlias().map(IdentifierValue::getValue);
             }
         }
@@ -124,7 +124,7 @@ public final class ProjectionsContext {
     }
     
     private String getOriginalColumnName(final Projection projection) {
-        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getOriginalName().getValue() : projection.getColumnName();
+        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getOriginalName().getValue() : projection.getExpression();
     }
     
     /**
@@ -136,7 +136,7 @@ public final class ProjectionsContext {
     public Optional<Integer> findProjectionIndex(final String projectionName) {
         int result = 1;
         for (Projection each : projections) {
-            if (projectionName.equalsIgnoreCase(SQLUtils.getExactlyValue(each.getColumnName()))) {
+            if (projectionName.equalsIgnoreCase(SQLUtils.getExactlyValue(each.getExpression()))) {
                 return Optional.of(result);
             }
             result++;
@@ -163,7 +163,7 @@ public final class ProjectionsContext {
     
     private boolean isContainsLastInsertIdProjection(final Collection<Projection> projections) {
         for (Projection each : projections) {
-            if (LAST_INSERT_ID_FUNCTION_EXPRESSION.equalsIgnoreCase(SQLUtils.getExactlyExpression(each.getColumnName()))) {
+            if (LAST_INSERT_ID_FUNCTION_EXPRESSION.equalsIgnoreCase(SQLUtils.getExactlyExpression(each.getExpression()))) {
                 return true;
             }
         }

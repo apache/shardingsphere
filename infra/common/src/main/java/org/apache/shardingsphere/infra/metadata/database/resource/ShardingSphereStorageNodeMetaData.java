@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import javax.sql.DataSource;
 import java.util.Map;

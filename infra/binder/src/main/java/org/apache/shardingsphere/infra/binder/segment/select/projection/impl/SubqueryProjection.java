@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.database.oracle.OracleDatabaseType;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -46,13 +46,13 @@ public final class SubqueryProjection implements Projection {
     private final DatabaseType databaseType;
     
     @Override
-    public String getColumnLabel() {
-        return getAlias().map(IdentifierValue::getValue).orElse(expression);
+    public String getColumnName() {
+        return getColumnLabel();
     }
     
     @Override
-    public String getColumnName() {
-        return expression;
+    public String getColumnLabel() {
+        return getAlias().map(IdentifierValue::getValue).orElse(expression);
     }
     
     @Override
@@ -65,10 +65,5 @@ public final class SubqueryProjection implements Projection {
             return Optional.of(new IdentifierValue(expression.replace(" ", "").toUpperCase()));
         }
         return Optional.of(new IdentifierValue(expression));
-    }
-    
-    @Override
-    public Projection transformSubqueryProjection(final IdentifierValue subqueryTableAlias, final IdentifierValue originalOwner, final IdentifierValue originalName) {
-        return getAlias().isPresent() ? new ColumnProjection(subqueryTableAlias, getAlias().get(), null) : new SubqueryProjection(expression, projection, alias, databaseType);
     }
 }

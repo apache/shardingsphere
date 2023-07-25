@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rewrite;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -84,7 +84,7 @@ public final class SQLRewriteEntry {
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> params, final SQLStatementContext sqlStatementContext,
                                                       final RouteContext routeContext, final ConnectionContext connectionContext, final HintValueContext hintValueContext) {
-        SQLRewriteContext result = new SQLRewriteContext(database.getName(), database.getSchemas(), sqlStatementContext, sql, params, connectionContext, hintValueContext);
+        SQLRewriteContext result = new SQLRewriteContext(database, sqlStatementContext, sql, params, connectionContext, hintValueContext);
         decorate(decorators, result, routeContext, hintValueContext);
         result.generateSQLTokens();
         return result;

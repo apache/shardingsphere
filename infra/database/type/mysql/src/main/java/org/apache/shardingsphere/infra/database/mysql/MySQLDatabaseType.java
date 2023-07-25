@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.mysql;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,6 +68,11 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.FIRST;
+    }
+    
+    @Override
     public boolean isReservedWord(final String item) {
         return RESERVED_WORDS.contains(item.toUpperCase());
     }
@@ -74,16 +80,6 @@ public final class MySQLDatabaseType implements DatabaseType {
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:");
-    }
-    
-    @Override
-    public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new MySQLDataSourceMetaData(url);
-    }
-    
-    @Override
-    public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username, final String catalog) {
-        return new MySQLDataSourceMetaData(url, catalog);
     }
     
     @Override

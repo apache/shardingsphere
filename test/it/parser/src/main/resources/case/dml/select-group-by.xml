@@ -22,7 +22,7 @@
             <simple-table name="t_order" start-index="49" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection type="SUM" alias="orders_sum" inner-expression="(order_id)" start-index="7" stop-index="19" />
+            <aggregation-projection type="SUM" alias="orders_sum" expression="SUM(order_id)" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
         <group-by>
@@ -38,7 +38,7 @@
             <simple-table name="t_order" start-index="53" stop-index="59" />
         </from>
         <projections start-index="7" stop-index="46">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(order_id)" start-index="7" stop-index="21" />
+            <aggregation-projection type="COUNT" alias="orders_count" expression="COUNT(order_id)" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by>
@@ -54,7 +54,7 @@
             <simple-table name="t_order" start-index="51" stop-index="57" />
         </from>
         <projections start-index="7" stop-index="44">
-            <aggregation-projection type="MAX" alias="max_order_id" inner-expression="(order_id)" start-index="7" stop-index="19" />
+            <aggregation-projection type="MAX" alias="max_order_id" expression="MAX(order_id)" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="38" stop-index="44" />
         </projections>
         <group-by>
@@ -70,7 +70,7 @@
             <simple-table name="t_order" start-index="51" stop-index="57" />
         </from>
         <projections start-index="7" stop-index="44">
-            <aggregation-projection type="MIN" alias="min_order_id" inner-expression="(order_id)" start-index="7" stop-index="19" />
+            <aggregation-projection type="MIN" alias="min_order_id" expression="MIN(order_id)" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="38" stop-index="44" />
         </projections>
         <group-by>
@@ -86,7 +86,7 @@
             <simple-table name="t_order" start-index="49" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection type="AVG" alias="orders_avg" inner-expression="(order_id)" start-index="7" stop-index="19" />
+            <aggregation-projection type="AVG" alias="orders_avg" expression="AVG(order_id)" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
         <group-by>
@@ -102,7 +102,7 @@
             <simple-table name="t_order" start-index="49" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection type="SUM" inner-expression="(order_id)" alias="orders_sum" start-index="7" stop-index="19" />
+            <aggregation-projection type="SUM" expression="SUM(order_id)" alias="orders_sum" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
         <group-by>
@@ -160,7 +160,7 @@
             </join-table>
         </from>
         <projections start-index="7" stop-index="29">
-            <aggregation-projection type="COUNT" inner-expression="(*)" alias="items_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="count(*)" alias="items_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="119" stop-index="174" literal-stop-index="175">
             <expr>
@@ -240,7 +240,7 @@
         </from>
         <projections start-index="7" stop-index="42">
             <column-projection name="user_id" start-index="7" stop-index="13" />
-            <aggregation-projection type="SUM"  inner-expression="(order_id)" alias="orders_sum" start-index="16" stop-index="28" />
+            <aggregation-projection type="SUM"  expression="SUM(order_id)" alias="orders_sum" start-index="16" stop-index="28" />
         </projections>
         <group-by>
             <column-item name="user_id" start-index="66" stop-index="72" />
@@ -291,7 +291,7 @@
                     </function>
                 </expr>
             </expression-projection>
-            <aggregation-projection type="COUNT" inner-expression="(*)" alias="c_number" start-index="65" stop-index="72" />
+            <aggregation-projection type="COUNT" expression="count(*)" alias="c_number" start-index="65" stop-index="72" />
         </projections>
         <where start-index="106" stop-index="129" literal-stop-index="135">
             <expr>
@@ -325,7 +325,7 @@
             <simple-table name="t_order" start-index="58" stop-index="64" />
         </from>
         <projections start-index="7" stop-index="51">
-            <aggregation-projection type="SUM" inner-expression="(order_id)" alias="orders_sum" start-index="7" stop-index="19" />
+            <aggregation-projection type="SUM" expression="SUM(order_id)" alias="orders_sum" start-index="7" stop-index="19" />
             <column-projection name="user_id" alias="key" start-index="36" stop-index="51" />
         </projections>
         <group-by>
@@ -338,7 +338,7 @@
             <simple-table name="t_order" start-index="53" stop-index="59" />
         </from>
         <projections start-index="7" stop-index="46">
-            <aggregation-projection inner-expression="(order_id)" type="COUNT" alias="orders_count" start-index="7" stop-index="21" />
+            <aggregation-projection expression="COUNT(order_id)" type="COUNT" alias="orders_count" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by>
@@ -354,7 +354,7 @@
             <simple-table name="t_order" start-index="53" stop-index="59" />
         </from>
         <projections start-index="7" stop-index="46">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(order_id)" start-index="7" stop-index="21" />
+            <aggregation-projection type="COUNT" alias="orders_count" expression="COUNT(order_id)" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by>
@@ -380,7 +380,7 @@
             <simple-table name="t_order" start-index="37" stop-index="43" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" inner-expression="(order_id)" start-index="7" stop-index="21" />
+            <aggregation-projection type="COUNT" expression="COUNT(order_id)" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="24" stop-index="30" />
         </projections>
         <group-by>
@@ -390,7 +390,7 @@
             <expr>
                 <binary-operation-expression start-index="69" stop-index="87">
                     <left>
-                        <aggregation-projection type="COUNT" inner-expression="(order_id)" start-index="69" stop-index="83" />
+                        <aggregation-projection type="COUNT" expression="COUNT(order_id)" start-index="69" stop-index="83" />
                     </left>
                     <operator>&gt;</operator>
                     <right>
@@ -406,7 +406,7 @@
             <simple-table name="t_order" start-index="53" stop-index="59" />
         </from>
         <projections start-index="7" stop-index="46">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(order_id)" start-index="7" stop-index="21" />
+            <aggregation-projection type="COUNT" alias="orders_count" expression="COUNT(order_id)" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by>
@@ -442,7 +442,7 @@
         <projections start-index="7" stop-index="211">
             <expression-projection text="DECODE(GROUPING(department_name), 1, 'All Departments', department_name)" alias="department_name" start-index="7" stop-index="97" />
             <expression-projection text="DECODE(GROUPING(job_id), 1, 'All Jobs', job_id)" alias="job_id" start-index="100" stop-index="156" />
-            <aggregation-projection type="COUNT" alias="Total Empl" inner-expression="(*)" start-index="159" stop-index="166" />
+            <aggregation-projection type="COUNT" alias="Total Empl" expression="COUNT(*)" start-index="159" stop-index="166" />
             <expression-projection text="AVG(salary) * 12" alias="Average Sal" start-index="182" stop-index="211" />
         </projections>
         <where start-index="245" stop-index="283">
@@ -542,8 +542,8 @@
         </from>
         <projections start-index="7" stop-index="45">
             <column-projection name="department_id" start-index="7" stop-index="19" />
-            <aggregation-projection type="MIN" inner-expression="(salary)" start-index="22" stop-index="32" />
-            <aggregation-projection type="MAX" inner-expression="(salary)" start-index="35" stop-index="45" />
+            <aggregation-projection type="MIN" expression="MIN(salary)" start-index="22" stop-index="32" />
+            <aggregation-projection type="MAX" expression="MAX(salary)" start-index="35" stop-index="45" />
         </projections>
         <group-by>
             <column-item name="department_id" start-index="71" stop-index="83" />
@@ -552,7 +552,7 @@
             <expr>
                 <binary-operation-expression start-index="92" stop-index="109">
                     <left>
-                        <aggregation-projection type="MIN" inner-expression="(salary)" start-index="92" stop-index="102" />
+                        <aggregation-projection type="MIN" expression="MIN(salary)" start-index="92" stop-index="102" />
                     </left>
                     <operator>&lt;</operator>
                     <right>

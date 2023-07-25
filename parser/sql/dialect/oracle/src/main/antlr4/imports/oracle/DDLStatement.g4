@@ -2875,7 +2875,7 @@ diskOfflineClause
     ;
 
 timeoutClause
-    : DROP AFTER INTEGER_ (M | H)
+    : DROP AFTER INTEGER_ TIME_UNIT
     ;
 
 checkDiskgroupClause
@@ -3529,12 +3529,23 @@ dropMaterializedZonemap
     : DROP MATERIALIZED ZONEMAP zonemapName
     ;
 
+tablespaceEncryptionSpec
+    : USING encryptAlgorithmName
+    ;
+
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? permanentTablespaceClause
+    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
     ;
 
 permanentTablespaceClause
-    : TABLESPACE tablespaceName (ONLINE|OFFLINE)
+    : TABLESPACE tablespaceName (
+    (MINIMUM EXTEND sizeClause)
+    | (BLOCKSIZE INTEGER_ K?)
+    | loggingClause
+    | (FORCE LOGGING)
+    | ENCRYPTION tablespaceEncryptionSpec
+    | (ONLINE|OFFLINE)
+    )
     ;
 
 dropFunction

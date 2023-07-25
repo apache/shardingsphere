@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.sqlserver;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,13 +37,13 @@ public final class SQLServerDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:");
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.FIRST;
     }
     
     @Override
-    public SQLServerDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new SQLServerDataSourceMetaData(url);
+    public Collection<String> getJdbcUrlPrefixes() {
+        return Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:");
     }
     
     @Override

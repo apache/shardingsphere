@@ -116,11 +116,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
         if (expandProjections.size() < column) {
             return resultColumnType.getFieldList().get(column - 1).getName();
         }
-        Projection projection = expandProjections.get(column - 1);
-        if (projection instanceof ColumnProjection) {
-            return ((ColumnProjection) projection).getName().getValue();
-        }
-        return getColumnLabel(column);
+        return expandProjections.get(column - 1).getColumnName();
     }
     
     @Override
@@ -182,11 +178,13 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     private Optional<String> findTableName(final int column) {
         List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
-        Projection projection = expandProjections.size() < column ? new ColumnProjection(null, resultColumnType.getFieldList().get(column - 1).getName(), null) : expandProjections.get(column - 1);
+        Projection projection =
+                expandProjections.size() < column ? new ColumnProjection(null, resultColumnType.getFieldList().get(column - 1).getName(), null, selectStatementContext.getDatabaseType())
+                        : expandProjections.get(column - 1);
         if (projection instanceof ColumnProjection) {
             Map<String, String> tableNamesByColumnProjection =
                     selectStatementContext.getTablesContext().findTableNamesByColumnProjection(Collections.singletonList((ColumnProjection) projection), schema);
-            return Optional.of(tableNamesByColumnProjection.get(projection.getColumnName()));
+            return Optional.of(tableNamesByColumnProjection.get(projection.getExpression()));
         }
         return Optional.empty();
     }

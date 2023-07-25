@@ -62,7 +62,7 @@ class TableExtractorTest {
     
     @Test
     void assertExtractTablesFromSelectProjects() {
-        AggregationProjectionSegment aggregationProjection = new AggregationProjectionSegment(10, 20, AggregationType.SUM, "t_order.id");
+        AggregationProjectionSegment aggregationProjection = new AggregationProjectionSegment(10, 20, AggregationType.SUM, "SUM(t_order.id)");
         ColumnSegment columnSegment = new ColumnSegment(133, 136, new IdentifierValue("id"));
         columnSegment.setOwner(new OwnerSegment(130, 132, new IdentifierValue("t_order")));
         aggregationProjection.getParameters().add(columnSegment);
