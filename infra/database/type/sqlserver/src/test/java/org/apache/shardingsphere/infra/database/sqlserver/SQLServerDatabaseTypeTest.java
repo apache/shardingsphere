@@ -26,7 +26,6 @@ import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLServerDatabaseTypeTest {
     
@@ -38,15 +37,5 @@ class SQLServerDatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:")));
-    }
-    
-    @Test
-    void assertGetSystemDatabases() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getSystemDatabaseSchemaMap().isEmpty());
-    }
-    
-    @Test
-    void assertGetSystemSchemas() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getSystemSchemas().isEmpty());
     }
 }

@@ -21,9 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.system.DialectSystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.yaml.snakeyaml.Yaml;
@@ -51,10 +54,11 @@ public final class SystemSchemaBuilder {
      * @return ShardingSphere system schema map
      */
     public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType, final ConfigurationProperties props) {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(databaseType.getSystemSchemas().size(), 1F);
+        DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, databaseType));
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(systemDatabase.getSystemSchemas().size(), 1F);
         boolean isSystemSchemaMetaDataEnabled = isSystemSchemaMetaDataEnabled(props.getProps());
         YamlTableSwapper swapper = new YamlTableSwapper();
-        for (String each : getSystemSchemas(databaseName, databaseType)) {
+        for (String each : getSystemSchemas(databaseName, databaseType, systemDatabase)) {
             result.put(each.toLowerCase(), createSchema(each, getSchemaStreams(each, databaseType), swapper, isSystemSchemaMetaDataEnabled));
         }
         return result;
@@ -65,9 +69,9 @@ public final class SystemSchemaBuilder {
         return Boolean.parseBoolean(props.getOrDefault(configKey.getKey(), configKey.getDefaultValue()).toString());
     }
     
-    private static Collection<String> getSystemSchemas(final String originalDatabaseName, final DatabaseType databaseType) {
+    private static Collection<String> getSystemSchemas(final String originalDatabaseName, final DatabaseType databaseType, final DialectSystemDatabase systemDatabase) {
         String databaseName = databaseType.getDefaultSchema().isPresent() ? "postgres" : originalDatabaseName;
-        return databaseType.getSystemDatabaseSchemaMap().getOrDefault(databaseName, Collections.emptyList());
+        return systemDatabase.getSystemDatabaseSchemaMap().getOrDefault(databaseName, Collections.emptyList());
     }
     
     private static Collection<InputStream> getSchemaStreams(final String schemaName, final DatabaseType databaseType) {

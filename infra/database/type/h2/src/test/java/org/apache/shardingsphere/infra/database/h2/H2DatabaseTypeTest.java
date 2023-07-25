@@ -26,7 +26,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class H2DatabaseTypeTest {
     
@@ -38,15 +37,5 @@ class H2DatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "H2").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:h2:")));
-    }
-    
-    @Test
-    void assertGetSystemDatabaseSchemaMap() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "H2").getSystemDatabaseSchemaMap().isEmpty());
-    }
-    
-    @Test
-    void assertGetSystemSchemas() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "H2").getSystemSchemas().isEmpty());
     }
 }

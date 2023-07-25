@@ -19,8 +19,11 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.system.DialectSystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.adapter.MetaDataLoaderConnectionAdapter;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -84,10 +87,11 @@ public final class SchemaMetaDataLoader {
             return Collections.singletonList(connection.getSchema());
         }
         Collection<String> result = new LinkedList<>();
+        DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, databaseType));
         try (ResultSet resultSet = connection.getMetaData().getSchemas()) {
             while (resultSet.next()) {
                 String schema = resultSet.getString(TABLE_SCHEME);
-                if (!databaseType.getSystemSchemas().contains(schema)) {
+                if (!systemDatabase.getSystemSchemas().contains(schema)) {
                     result.add(schema);
                 }
             }
