@@ -46,13 +46,13 @@ public final class SubqueryProjection implements Projection {
     private final DatabaseType databaseType;
     
     @Override
-    public String getColumnLabel() {
-        return getAlias().map(IdentifierValue::getValue).orElse(expression);
+    public String getColumnName() {
+        return getColumnLabel();
     }
     
     @Override
-    public String getColumnName() {
-        return expression;
+    public String getColumnLabel() {
+        return getAlias().map(IdentifierValue::getValue).orElse(expression);
     }
     
     @Override
