@@ -19,15 +19,27 @@ package org.apache.shardingsphere.infra.database.sql92;
 
 import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.datasource.StandardDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Data source meta data builder of SQL92.
  */
 public final class SQL92DataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
     
+    private static final int DEFAULT_PORT = -1;
+    
+    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:.*", Pattern.CASE_INSENSITIVE);
+    
     @Override
     public DataSourceMetaData build(final String url, final String username, final String catalog) {
-        return new SQL92DataSourceMetaData(url);
+        Matcher matcher = URL_PATTERN.matcher(url);
+        ShardingSpherePreconditions.checkState(matcher.find(), () -> new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern()));
+        return new StandardDataSourceMetaData("", DEFAULT_PORT, "", null);
     }
     
     @Override
