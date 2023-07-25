@@ -5792,4 +5792,60 @@
             <column-item name="employee_id" order-direction="ASC" start-index="110" stop-index="120" literal-start-index="110" literal-stop-index="120" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_with_trim_function">
+        <projections start-index="7" stop-index="203" literal-start-index="7" literal-stop-index="203">
+            <expression-projection text="TRIM('  derby ')" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
+                <literalText>TRIM(' derby ')</literalText>
+                <expr>
+                    <function function-name="TRIM" text="TRIM('  derby ')" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
+                        <literalText>TRIM(' derby ')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRIM(BOTH ' ' FROM '  derby ')" start-index="25" stop-index="54" literal-start-index="25" literal-stop-index="54">
+                <literalText>TRIM(BOTH ' ' FROM ' derby ')</literalText>
+                <expr>
+                    <function function-name="TRIM" text="TRIM(BOTH ' ' FROM '  derby ')" start-index="25" stop-index="54" literal-start-index="25" literal-stop-index="54">
+                        <literalText>TRIM(BOTH ' ' FROM ' derby ')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRIM(TRAILING ' ' FROM '  derby ')" start-index="57" stop-index="90" literal-start-index="57" literal-stop-index="90">
+                <literalText>TRIM(TRAILING ' ' FROM ' derby ')</literalText>
+                <expr>
+                    <function function-name="TRIM" text="TRIM(TRAILING ' ' FROM '  derby ')" start-index="57" stop-index="90" literal-start-index="57" literal-stop-index="90">
+                        <literalText>TRIM(TRAILING ' ' FROM ' derby ')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRIM(cast (null as char(1)) FROM '  derby ')" start-index="93" stop-index="136" literal-start-index="93" literal-stop-index="136">
+                <literalText>TRIM(cast (null as char(1)) FROM ' derby ')</literalText>
+                <expr>
+                    <function function-name="TRIM" text="TRIM(cast (null as char(1)) FROM '  derby ')" start-index="93" stop-index="136" literal-start-index="93" literal-stop-index="136">
+                        <literalText>TRIM(cast (null as char(1)) FROM ' derby ')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRIM(' ' FROM cast(null as varchar(30)))" start-index="139" stop-index="178" literal-start-index="139" literal-stop-index="178">
+                <literalText>TRIM(' ' FROM cast(null as varchar(30)))</literalText>
+                <expr>
+                    <function function-name="TRIM" text="TRIM(' ' FROM cast(null as varchar(30)))" start-index="139" stop-index="178" literal-start-index="139" literal-stop-index="178">
+                        <literalText>TRIM(' ' FROM cast(null as varchar(30)))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRIM('y' FROM ' derby')" start-index="181" stop-index="203" literal-start-index="181" literal-stop-index="203">
+                <literalText>TRIM('y' FROM ' derby')</literalText>
+                <expr>
+                    <function function-name="TRIM" text="TRIM('y' FROM ' derby')" start-index="181" stop-index="203" literal-start-index="181" literal-stop-index="203">
+                        <literalText>TRIM('y' FROM ' derby')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="210" stop-index="218" literal-start-index="210" literal-stop-index="218" />
+        </from>
+    </select>
 </sql-parser-test-cases>

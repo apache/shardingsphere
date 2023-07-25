@@ -727,7 +727,21 @@ leadLagInfo
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction
+    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction
+    ;
+
+trimFunction
+    : TRIM LP_ trimOperands? expr RP_
+    ;
+
+trimOperands
+    : (trimType expr? FROM) | (expr FROM)
+    ;
+
+trimType
+    : LEADING
+    | TRAILING
+    | BOTH
     ;
 
 firstOrLastValueFunction
