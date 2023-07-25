@@ -3545,6 +3545,34 @@ compileTypeClause
     : COMPILE DEBUG? (SPECIFICATION|BODY)? compilerParametersClause? REUSE SETTINGS
     ;
 
+inheritanceClauses
+    : (NOT? (OVERRIDING | FINAL | INSTANTIABLE))+
+    ;
+
+procedureSpec
+    : PROCEDURE procedureName LP_ (parameterValue typeName (COMMA_ parameterValue typeName)*) RP_ ((IS | AS) callSpec)?
+    ;
+
+returnClause
+    : RETURN typeName ((IS | AS) callSpec)?
+    ;
+
+functionSpec
+    : FUNCTION name LP_ (parameterValue typeName (COMMA_ parameterValue typeName)*) RP_ returnClause
+    ;
+
+subprogramSpec
+    : (MEMEBER | STATIC) (procedureSpec | functionSpec)
+    ;
+
+elementSpecification
+    : inheritanceClauses? (subprogramSpec)+
+    ;
+
+replaceTypeClause
+    : REPLACE invokerRightsClause? AS OBJECT LP_ (attributeName typeName (COMMA_ attributeName typeName)* (COMMA_ elementSpecification)*) RP_
+    ;
+
 alterType
-    : ALTER TYPE typeName compileTypeClause
+    : ALTER TYPE typeName (compileTypeClause|replaceTypeClause)
     ;
