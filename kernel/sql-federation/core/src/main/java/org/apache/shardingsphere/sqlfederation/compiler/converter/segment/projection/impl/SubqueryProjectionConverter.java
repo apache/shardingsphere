@@ -43,8 +43,9 @@ public final class SubqueryProjectionConverter implements SQLSegmentConverter<Su
         if (segment.getAliasName().isPresent()) {
             sqlNode = convertToSQLStatement(sqlNode, segment.getAliasName().get()).get();
         }
-        return segment.getSubquery().getSubqueryType().equals(SubqueryType.EXISTS_SUBQUERY) ?
-                Optional.of(new SqlBasicCall(SqlStdOperatorTable.EXISTS, Collections.singletonList(sqlNode), SqlParserPos.ZERO)) : Optional.of(sqlNode);
+        return segment.getSubquery().getSubqueryType().equals(SubqueryType.EXISTS_SUBQUERY)
+                ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.EXISTS, Collections.singletonList(sqlNode), SqlParserPos.ZERO))
+                : Optional.of(sqlNode);
     }
     
     private Optional<SqlNode> convertToSQLStatement(final SqlNode sqlNode, final String alias) {
