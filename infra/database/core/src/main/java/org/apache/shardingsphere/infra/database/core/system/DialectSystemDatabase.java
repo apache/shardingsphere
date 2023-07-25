@@ -15,37 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.fixture.database;
+package org.apache.shardingsphere.infra.database.core.system;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Map;
 
 /**
- * Mocked database type.
+ * Dialect system database.
  */
-public final class MockedDatabaseType implements DatabaseType {
+@SingletonSPI
+public interface DialectSystemDatabase extends DatabaseTypedSPI {
     
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.NONE;
-    }
+    /**
+     * Get system database schema map.
+     *
+     * @return system database schema map
+     */
+    Map<String, Collection<String>> getSystemDatabaseSchemaMap();
     
-    @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:mock");
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
-    }
+    /**
+     * Get system schemas.
+     *
+     * @return system schemas
+     */
+    Collection<String> getSystemSchemas();
 }

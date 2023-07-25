@@ -15,39 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.opengauss;
+package org.apache.shardingsphere.infra.database.mysql;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.system.DialectSystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class OpenGaussDatabaseTypeTest {
+class MySQLSystemDatabaseTest {
+    
+    private final DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     
     @Test
-    void assertGetQuoteCharacter() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "openGauss").getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+    void assertGetSystemDatabases() {
+        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("information_schema"));
+        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("performance_schema"));
+        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("mysql"));
+        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("sys"));
+        assertTrue(systemDatabase.getSystemDatabaseSchemaMap().containsKey("shardingsphere"));
     }
     
     @Test
-    void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "openGauss").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:opengauss:")));
-    }
-    
-    @Test
-    void assertIsSchemaAvailable() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "openGauss").isSchemaAvailable());
-    }
-    
-    @Test
-    void assertGetDefaultSchema() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "openGauss").getDefaultSchema(), is(Optional.of("public")));
+    void assertGetSystemSchemas() {
+        assertThat(systemDatabase.getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "performance_schema", "mysql", "sys", "shardingsphere"))));
     }
 }

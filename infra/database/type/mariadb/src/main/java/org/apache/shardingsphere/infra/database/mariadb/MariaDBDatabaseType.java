@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -32,21 +31,22 @@ import java.util.Optional;
  */
 public final class MariaDBDatabaseType implements DatabaseType {
     
-    private final DatabaseType trunkDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-    
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return trunkDatabaseType.getQuoteCharacter();
+        return getTrunkDatabaseType().get().getQuoteCharacter();
     }
     
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return trunkDatabaseType.getDefaultNullsOrderType();
+        return getTrunkDatabaseType().get().getDefaultNullsOrderType();
     }
     
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public boolean isReservedWord(final String identifier) {
-        return trunkDatabaseType.isReservedWord(identifier);
+        return getTrunkDatabaseType().get().isReservedWord(identifier);
     }
     
     @Override
@@ -56,17 +56,7 @@ public final class MariaDBDatabaseType implements DatabaseType {
     
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(trunkDatabaseType);
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return trunkDatabaseType.getSystemDatabaseSchemaMap();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return trunkDatabaseType.getSystemSchemas();
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }
     
     @Override

@@ -29,7 +29,6 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -63,15 +62,5 @@ class OracleDatabaseTypeTest {
     @Test
     void assertFormatTableNamePattern() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "Oracle").formatTableNamePattern("tbl"), is("TBL"));
-    }
-    
-    @Test
-    void assertGetSystemDatabases() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "Oracle").getSystemDatabaseSchemaMap().isEmpty());
-    }
-    
-    @Test
-    void assertGetSystemSchemas() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "Oracle").getSystemSchemas().isEmpty());
     }
 }
