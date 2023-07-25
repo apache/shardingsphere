@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.h2;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -32,14 +32,16 @@ import java.util.Optional;
  */
 public final class H2DatabaseType implements DatabaseType {
     
+    private final DatabaseType trunkDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
+        return trunkDatabaseType.getQuoteCharacter();
     }
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
+        return trunkDatabaseType.getDefaultNullsOrderType();
     }
     
     @Override
@@ -48,13 +50,8 @@ public final class H2DatabaseType implements DatabaseType {
     }
     
     @Override
-    public H2DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new H2DataSourceMetaData(url);
-    }
-    
-    @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        return Optional.of(trunkDatabaseType);
     }
     
     @Override

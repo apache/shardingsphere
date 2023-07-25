@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run CheckStyle
-        run: ./mvnw checkstyle:check -T1C
+        run: ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
 
   check-spotless:
     name: Check - Spotless
@@ -55,4 +55,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run Apache Rat
-        run: ./mvnw apache-rat:check -T1C
+        run: ./mvnw apache-rat:check -Drat.skip=false -T1C

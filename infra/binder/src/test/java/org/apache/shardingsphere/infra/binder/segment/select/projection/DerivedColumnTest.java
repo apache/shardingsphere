@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection;
 
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

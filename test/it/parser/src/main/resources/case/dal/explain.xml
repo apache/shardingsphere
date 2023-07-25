@@ -481,4 +481,92 @@
             </set>
         </update>
     </describe>
+    <describe sql-case-id="explain_for_insert_without_parameters">
+        <insert>
+            <table name="t_order" start-index="29" stop-index="35" />
+            <columns start-index="37" stop-index="63">
+                <column name="order_id" start-index="38" stop-index="45" />
+                <column name="user_id" start-index="48" stop-index="54" />
+                <column name="status" start-index="57" stop-index="62" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <parameter-marker-expression parameter-index="0" />
+                        <literal-expression value="1" start-index="73" stop-index="73" />
+                    </assignment-value>
+                    <assignment-value>
+                        <parameter-marker-expression parameter-index="1" />
+                        <literal-expression value="1" start-index="76" stop-index="76" />
+                    </assignment-value>
+                    <assignment-value>
+                        <parameter-marker-expression parameter-index="2" />
+                        <literal-expression value="insert" start-index="79" stop-index="86" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </describe>
+    <describe sql-case-id="explain_for_with_analyze_insert">
+        <insert>
+            <table name="t_order" start-index="29" stop-index="35" />
+            <columns start-index="37" stop-index="46">
+                <column name="order_id" start-index="38" stop-index="45" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="55" stop-index="55" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </describe>
+    
+    <describe sql-case-id="explain_for_delete_without_sharding_value">
+        <delete>
+            <table name="t_order" start-index="29" stop-index="35" />
+            <where start-index="37" stop-index="50" literal-stop-index="55">
+                <expr>
+                    <binary-operation-expression start-index="43" stop-index="50" literal-stop-index="55">
+                        <left>
+                            <column name="status" start-index="43" stop-index="48" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="init" start-index="50" stop-index="55" />
+                            <parameter-marker-expression parameter-index="0" start-index="50" stop-index="50" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </describe>
+    
+    <describe sql-case-id="explain_for_with_analyze_delete">
+        <delete>
+            <table name="t_order" start-index="29" stop-index="35" />
+        </delete>
+    </describe>
+    
+    <describe sql-case-id="explain_for_delete_condition">
+        <delete>
+            <table name="t_order" start-index="29" stop-index="35" />
+            <where start-index="37" stop-index="55">
+                <expr>
+                    <binary-operation-expression start-index="43" stop-index="55">
+                        <left>
+                            <column name="x" start-index="43" stop-index="51">
+                                <owner name="t_order" start-index="43" stop-index="49" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="1" start-index="55" stop-index="55" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </describe>
 </sql-parser-test-cases>

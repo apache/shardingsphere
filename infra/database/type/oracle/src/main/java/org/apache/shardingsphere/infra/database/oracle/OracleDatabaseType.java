@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.oracle;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -54,18 +54,13 @@ public final class OracleDatabaseType implements DatabaseType {
     }
     
     @Override
-    public boolean isReservedWord(final String item) {
-        return RESERVED_KEYWORDS.contains(item.toUpperCase());
+    public boolean isReservedWord(final String identifier) {
+        return RESERVED_KEYWORDS.contains(identifier.toUpperCase());
     }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
-    }
-    
-    @Override
-    public OracleDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new OracleDataSourceMetaData(url, username);
     }
     
     @Override

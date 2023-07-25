@@ -25,4 +25,16 @@
     <alter-type sql-case-id="alter_type_rename_value" />
     <alter-type sql-case-id="alter_type_default" />
     <alter-type sql-case-id="alter_type_schema_name" />
+    <alter-type sql-case-id="alter_type_compile" />
+    <alter-type sql-case-id="alter_type_debug" />
+    <alter-type sql-case-id="alter_type_spec" />
+    <alter-type sql-case-id="alter_type_body" />
+    <alter-type sql-case-id="alter_type_compile_bool" />
+    <alter-type sql-case-id="alter_type_compile_bool_false" />
+    <alter-type sql-case-id="alter_type_compile_string" />
+    <alter-type sql-case-id="alter_type_compile_integer" />
+    <alter-type sql-case-id="alter_type_compile_minus_integer" />
+    <alter-type sql-case-id="alter_type_compile_float" />
+    <alter-type sql-case-id="alter_type_compile_minus_float" />
+    <alter-type sql-case-id="alter_type_compile_hex" />
 </sql-parser-test-cases>
