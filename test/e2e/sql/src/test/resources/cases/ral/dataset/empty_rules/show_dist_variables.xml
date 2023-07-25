@@ -23,7 +23,7 @@
     <row values="agent_plugins_enabled| true" />
     <row values="cached_connections| 0" />
     <row values="cdc_server_port| 33071" />
-    <row values="check_table_meta_data_enabled| false" />
+    <row values="check_table_metadata_enabled| false" />
     <row values="kernel_executor_size| 16" />
     <row values="max_connections_size_per_query| 1" />
     <row values="proxy_backend_executor_suitable| OLAP" />
