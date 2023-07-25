@@ -2875,7 +2875,7 @@ diskOfflineClause
     ;
 
 timeoutClause
-    : DROP AFTER INTEGER_ (M | H)
+    : DROP AFTER INTEGER_ TIME_UNIT
     ;
 
 checkDiskgroupClause
