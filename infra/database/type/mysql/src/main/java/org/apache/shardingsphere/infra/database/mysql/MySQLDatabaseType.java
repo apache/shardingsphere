@@ -23,10 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -52,16 +49,6 @@ public final class MySQLDatabaseType implements DatabaseType {
             "UNION", "UNIQUE", "UNLOCK", "UNSIGNED", "UPDATE", "USAGE", "USE", "USING", "UTC_DATE", "UTC_TIME", "UTC_TIMESTAMP", "VALUES", "VARBINARY", "VARCHAR", "VARCHARACTER", "VARYING", "VIRTUAL",
             "WHEN", "WHERE", "WHILE", "WINDOW", "WITH", "WRITE", "XOR", "YEAR_MONTH", "ZEROFILL"));
     
-    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
-    
-    static {
-        SYSTEM_DATABASE_SCHEMA_MAP.put("information_schema", Collections.singletonList("information_schema"));
-        SYSTEM_DATABASE_SCHEMA_MAP.put("performance_schema", Collections.singletonList("performance_schema"));
-        SYSTEM_DATABASE_SCHEMA_MAP.put("mysql", Collections.singletonList("mysql"));
-        SYSTEM_DATABASE_SCHEMA_MAP.put("sys", Collections.singletonList("sys"));
-        SYSTEM_DATABASE_SCHEMA_MAP.put("shardingsphere", Collections.singletonList("shardingsphere"));
-    }
-    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.BACK_QUOTE;
@@ -73,23 +60,13 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public boolean isReservedWord(final String item) {
-        return RESERVED_WORDS.contains(item.toUpperCase());
+    public boolean isReservedWord(final String identifier) {
+        return RESERVED_WORDS.contains(identifier.toUpperCase());
     }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:");
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return SYSTEM_DATABASE_SCHEMA_MAP;
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return SYSTEM_DATABASE_SCHEMA_MAP.keySet();
     }
     
     @Override

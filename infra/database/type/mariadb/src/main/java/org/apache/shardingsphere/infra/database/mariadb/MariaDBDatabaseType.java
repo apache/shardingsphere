@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -32,14 +31,22 @@ import java.util.Optional;
  */
 public final class MariaDBDatabaseType implements DatabaseType {
     
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
+        return getTrunkDatabaseType().get().getQuoteCharacter();
     }
     
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
+        return getTrunkDatabaseType().get().getDefaultNullsOrderType();
+    }
+    
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Override
+    public boolean isReservedWord(final String identifier) {
+        return getTrunkDatabaseType().get().isReservedWord(identifier);
     }
     
     @Override
@@ -50,16 +57,6 @@ public final class MariaDBDatabaseType implements DatabaseType {
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
         return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
     }
     
     @Override
