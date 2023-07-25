@@ -17,17 +17,30 @@
 
 package org.apache.shardingsphere.infra.database.sqlserver;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.datasource.StandardDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Data source meta data builder of SQLServer.
  */
 public final class SQLServerDataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
     
+    private static final int DEFAULT_PORT = 1433;
+    
+    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?(\\d*);\\S*(DatabaseName|database)=([\\w\\-\\.]+);?", Pattern.CASE_INSENSITIVE);
+    
     @Override
     public DataSourceMetaData build(final String url, final String username, final String catalog) {
-        return new SQLServerDataSourceMetaData(url);
+        Matcher matcher = URL_PATTERN.matcher(url);
+        ShardingSpherePreconditions.checkState(matcher.find(), () -> new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern()));
+        return new StandardDataSourceMetaData(matcher.group(2), Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3)), matcher.group(5), null);
     }
     
     @Override
