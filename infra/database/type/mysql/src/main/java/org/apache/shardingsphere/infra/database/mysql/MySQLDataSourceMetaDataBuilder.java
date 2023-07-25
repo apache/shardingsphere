@@ -55,6 +55,7 @@ public final class MySQLDataSourceMetaDataBuilder implements DataSourceMetaDataB
         result.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
         result.setProperty("useSSL", Boolean.FALSE.toString());
         result.setProperty("serverTimezone", "UTC");
+        result.setProperty("zeroDateTimeBehavior", "round");
         return result;
     }
     
