@@ -22,13 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.system.DialectSystemDatabase;
 import org.apache.shardingsphere.infra.database.core.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -70,16 +67,17 @@ public final class ExternalMetaDataFactory {
     public static Map<String, ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap,
                                                              final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
-        Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size() + new SystemDatabase(protocolType).getSystemDatabaseSchemaMap().size(), 1F);
-        result.putAll(createGenericDatabases(databaseConfigMap, protocolType, props, instanceContext));
-        result.putAll(createSystemDatabases(databaseConfigMap, protocolType, props));
+        SystemDatabase systemDatabase = new SystemDatabase(protocolType);
+        Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size() + systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
+        result.putAll(createGenericDatabases(databaseConfigMap, protocolType, systemDatabase, props, instanceContext));
+        result.putAll(createSystemDatabases(databaseConfigMap, protocolType, systemDatabase, props));
         return result;
     }
     
-    private static Map<String, ShardingSphereDatabase> createGenericDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType,
+    private static Map<String, ShardingSphereDatabase> createGenericDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap,
+                                                                              final DatabaseType protocolType, final SystemDatabase systemDatabase, 
                                                                               final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1F);
-        DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, protocolType));
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (!entry.getValue().getDataSources().isEmpty() || !systemDatabase.getSystemSchemas().contains(databaseName)) {
@@ -91,8 +89,7 @@ public final class ExternalMetaDataFactory {
     }
     
     private static Map<String, ShardingSphereDatabase> createSystemDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType,
-                                                                             final ConfigurationProperties props) {
-        SystemDatabase systemDatabase = new SystemDatabase(protocolType);
+                                                                             final SystemDatabase systemDatabase, final ConfigurationProperties props) {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
         for (String each : systemDatabase.getSystemDatabaseSchemaMap().keySet()) {
             if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getDataSources().isEmpty()) {

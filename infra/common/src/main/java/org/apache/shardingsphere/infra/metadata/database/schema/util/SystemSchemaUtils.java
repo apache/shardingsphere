@@ -19,12 +19,10 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.system.DialectSystemDatabase;
+import org.apache.shardingsphere.infra.database.core.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 
@@ -57,7 +55,7 @@ public final class SystemSchemaUtils {
         if (database.isComplete() && !databaseType.getDefaultSchema().isPresent()) {
             return false;
         }
-        DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, databaseType));
+        SystemDatabase systemDatabase = new SystemDatabase(databaseType);
         for (String each : schemaNames) {
             if (systemDatabase.getSystemSchemas().contains(each)) {
                 return true;
