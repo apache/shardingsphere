@@ -719,6 +719,7 @@ analyticFunction
     | specifiedAnalyticFunctionName = NTILE LP_ expr RP_ overClause
     | specifiedAnalyticFunctionName = (PERCENTILE_CONT | PERCENTILE_DISC) LP_ expr RP_ WITHIN GROUP LP_ orderByClause RP_ overClause
     | specifiedAnalyticFunctionName = CORR LP_ expr COMMA_ expr RP_ overClause
+    | specifiedAnalyticFunctionName = RATIO_TO_REPORT LP_ expr RP_ overClause
     | analyticFunctionName LP_ dataType* RP_ overClause
     ;
 
