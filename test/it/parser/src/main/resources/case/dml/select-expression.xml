@@ -2579,4 +2579,20 @@
             <simple-table name="t_order_item" start-index="51" stop-index="62" />
         </from>
     </select>
+    
+    <select sql-case-id="select_dbms_logmnr_mine_value_regular_function">
+        <projections start-index="7" stop-index="63">
+            <expression-projection text="DBMS_LOGMNR.MINE_VALUE(UNDO_VALUE, 'HR.EMPLOYEES.SALARY')" start-index="7" stop-index="63">
+                <function function-name="MINE_VALUE" text="DBMS_LOGMNR.MINE_VALUE(UNDO_VALUE, 'HR.EMPLOYEES.SALARY')" owner="DBMS_LOGMNR">
+                    <parameter>
+                        <column name="UNDO_VALUE" />
+                        <column name="HR.EMPLOYEES.SALARY" />
+                    </parameter>
+                </function>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="V$LOGMNR_CONTENTS" start-index="70" stop-index="86" />
+        </from>
+    </select>
 </sql-parser-test-cases>
