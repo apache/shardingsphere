@@ -3547,6 +3547,10 @@ dropFunction
     : DROP FUNCTION (schemaName DOT_)? function
     ;
 
+compileTypeClause
+    : COMPILE DEBUG? (SPECIFICATION|BODY)? compilerParametersClause? REUSE SETTINGS
+    ;
+
 alterType
-    : ALTER TYPE typeName
+    : ALTER TYPE typeName compileTypeClause
     ;

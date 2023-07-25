@@ -25,4 +25,16 @@
     <sql-case id="alter_type_rename_value" value="ALTER TYPE bugstatus RENAME VALUE 'create' TO 'new';" db-types="openGauss,PostgreSQL" />
     <sql-case id="alter_type_default" value="ALTER TYPE type_name" db-types="Oracle" />
     <sql-case id="alter_type_schema_name" value="ALTER TYPE schema_name.type_name" db-types="Oracle" />
+    <sql-case id="alter_type_compile" value="ALTER TYPE type_name COMPILE REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_debug" value="ALTER TYPE type_name COMPILE DEBUG REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_spec" value="ALTER TYPE type_name COMPILE SPECIFICATION REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_body" value="ALTER TYPE type_name COMPILE BODY REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_bool" value="ALTER TYPE type_name COMPILE bool_variable = TRUE REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_bool_false" value="ALTER TYPE type_name COMPILE bool_variable = FALSE REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_string" value="ALTER TYPE type_name COMPILE string_variable = 'String Value' REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_integer" value="ALTER TYPE type_name COMPILE number_variable = +5 REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_minus_integer" value="ALTER TYPE type_name COMPILE number_variable = -5 REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_float" value="ALTER TYPE type_name COMPILE number_variable = +5.0 REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_minus_float" value="ALTER TYPE type_name COMPILE number_variable = -5.0 REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_hex" value="ALTER TYPE type_name COMPILE hex_variable = X'11' REUSE SETTINGS" db-types="Oracle" />
 </sql-cases>
