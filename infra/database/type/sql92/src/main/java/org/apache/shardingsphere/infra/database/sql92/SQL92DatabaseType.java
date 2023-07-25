@@ -46,11 +46,6 @@ public final class SQL92DatabaseType implements DatabaseType {
     }
     
     @Override
-    public SQL92DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new SQL92DataSourceMetaData(url);
-    }
-    
-    @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
         return Collections.emptyMap();
     }

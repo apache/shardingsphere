@@ -64,11 +64,6 @@ public final class OracleDatabaseType implements DatabaseType {
     }
     
     @Override
-    public OracleDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new OracleDataSourceMetaData(url, username);
-    }
-    
-    @Override
     public boolean isSchemaAvailable() {
         return true;
     }

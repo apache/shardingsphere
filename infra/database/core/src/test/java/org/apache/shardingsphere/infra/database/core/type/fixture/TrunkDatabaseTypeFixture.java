@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.core.type.fixture;
 
-import org.apache.shardingsphere.infra.database.core.type.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
@@ -47,11 +46,6 @@ public final class TrunkDatabaseTypeFixture implements DatabaseType {
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton("jdbc:trunk:");
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new DataSourceMetaDataFixture(url);
     }
     
     @Override

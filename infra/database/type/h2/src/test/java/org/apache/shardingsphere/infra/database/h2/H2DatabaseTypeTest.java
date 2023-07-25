@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,12 +38,6 @@ class H2DatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "H2").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:h2:")));
-    }
-    
-    @Test
-    void assertGetDataSourceMetaData() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "H2").getDataSourceMetaData("jdbc:h2:~:foo_ds", "sa"), instanceOf(H2DataSourceMetaData.class));
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "H2").getDataSourceMetaData("jdbc:h2:mem:foo_ds", "sa"), instanceOf(H2DataSourceMetaData.class));
     }
     
     @Test

@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.postgresql;
+package org.apache.shardingsphere.infra.database.core.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.type.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.url.StandardJdbcUrlParser;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Properties;
 
 /**
- * Data source meta data for PostgreSQL.
+ * Standard data source meta data.
  */
+@RequiredArgsConstructor
 @Getter
-public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
-    
-    private static final int DEFAULT_PORT = 5432;
+public final class StandardDataSourceMetaData implements DataSourceMetaData {
     
     private final String hostname;
     
@@ -42,17 +39,19 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     
     private final Properties queryProperties;
     
-    public PostgreSQLDataSourceMetaData(final String url) {
-        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-        hostname = jdbcUrl.getHostname();
-        port = -1 == jdbcUrl.getPort() ? DEFAULT_PORT : jdbcUrl.getPort();
-        catalog = jdbcUrl.getDatabase();
-        schema = null;
-        queryProperties = jdbcUrl.getQueryProperties();
+    private final Properties defaultQueryProperties;
+    
+    public StandardDataSourceMetaData(final String hostname, final int port, final String catalog, final String schema) {
+        this(hostname, port, catalog, schema, new Properties(), new Properties());
     }
     
-    @Override
-    public Properties getDefaultQueryProperties() {
-        return new Properties();
+    /**
+     * Judge whether two of data sources are in the same database instance.
+     *
+     * @param dataSourceMetaData data source meta data
+     * @return data sources are in the same database instance or not
+     */
+    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        return hostname.equals(dataSourceMetaData.getHostname()) && port == dataSourceMetaData.getPort();
     }
 }

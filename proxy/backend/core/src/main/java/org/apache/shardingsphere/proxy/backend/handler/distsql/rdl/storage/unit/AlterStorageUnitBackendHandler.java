@@ -27,8 +27,8 @@ import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedData
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.converter.DataSourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
-import org.apache.shardingsphere.infra.database.core.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.core.datasource.JdbcUrl;
+import org.apache.shardingsphere.infra.database.core.datasource.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;

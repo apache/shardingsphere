@@ -75,11 +75,6 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public PostgreSQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new PostgreSQLDataSourceMetaData(url);
-    }
-    
-    @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
         return SYSTEM_DATABASE_SCHEMA_MAP;
     }
