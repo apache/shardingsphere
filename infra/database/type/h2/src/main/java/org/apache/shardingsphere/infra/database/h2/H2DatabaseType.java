@@ -48,11 +48,6 @@ public final class H2DatabaseType implements DatabaseType {
     }
     
     @Override
-    public H2DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new H2DataSourceMetaData(url);
-    }
-    
-    @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
         return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }

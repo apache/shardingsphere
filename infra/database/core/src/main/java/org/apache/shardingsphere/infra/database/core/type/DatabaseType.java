@@ -66,27 +66,6 @@ public interface DatabaseType extends TypedSPI {
     Collection<String> getJdbcUrlPrefixes();
     
     /**
-     * Get data source meta data.
-     * 
-     * @param url URL of data source
-     * @param username username of data source
-     * @return data source meta data
-     */
-    DataSourceMetaData getDataSourceMetaData(String url, String username);
-    
-    /**
-     * Get data source meta data.
-     *
-     * @param url URL of data source
-     * @param username username of data source
-     * @param catalog catalog of data source
-     * @return data source meta data
-     */
-    default DataSourceMetaData getDataSourceMetaData(String url, String username, String catalog) {
-        return getDataSourceMetaData(url, username);
-    }
-    
-    /**
      * Get system database schema map.
      * 
      * @return system database schema map

@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,12 +41,6 @@ class OpenGaussDatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "openGauss").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:opengauss:")));
-    }
-    
-    @Test
-    void assertGetDataSourceMetaData() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "openGauss").getDataSourceMetaData("jdbc:opengauss://localhost:5432/demo_ds_0", "postgres"),
-                instanceOf(OpenGaussDataSourceMetaData.class));
     }
     
     @Test

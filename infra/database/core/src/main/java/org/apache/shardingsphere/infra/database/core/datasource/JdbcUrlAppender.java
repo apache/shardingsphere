@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.url;
+package org.apache.shardingsphere.infra.database.core.datasource;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 
 import java.util.Map.Entry;
@@ -35,7 +36,7 @@ public final class JdbcUrlAppender {
      * @return appended JDBC URL
      */
     public String appendQueryProperties(final String jdbcUrl, final Properties queryProps) {
-        Properties currentQueryProps = DatabaseTypeFactory.get(jdbcUrl).getDataSourceMetaData(jdbcUrl, null).getQueryProperties();
+        Properties currentQueryProps = DatabaseTypedSPILoader.getService(DataSourceMetaDataBuilder.class, DatabaseTypeFactory.get(jdbcUrl)).build(jdbcUrl, null, null).getQueryProperties();
         return hasConflictedQueryProperties(currentQueryProps, queryProps)
                 ? concat(jdbcUrl.substring(0, jdbcUrl.indexOf('?') + 1), getMergedProperties(currentQueryProps, queryProps))
                 : concat(jdbcUrl + getURLDelimiter(currentQueryProps), queryProps);

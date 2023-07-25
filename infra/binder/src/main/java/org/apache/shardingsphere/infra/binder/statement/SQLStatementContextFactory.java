@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder;
+package org.apache.shardingsphere.infra.binder.statement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -113,7 +113,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -126,25 +125,12 @@ public final class SQLStatementContextFactory {
      * Create SQL statement context.
      *
      * @param metaData metadata
-     * @param sqlStatement SQL statement
-     * @param defaultDatabaseName default database name
-     * @return SQL statement context
-     */
-    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final String defaultDatabaseName) {
-        return newInstance(metaData, Collections.emptyList(), sqlStatement, defaultDatabaseName);
-    }
-    
-    /**
-     * Create SQL statement context.
-     *
-     * @param metaData metadata
      * @param params SQL parameters
      * @param sqlStatement SQL statement
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData,
-                                                  final List<Object> params, final SQLStatement sqlStatement, final String defaultDatabaseName) {
+    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final List<Object> params, final SQLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
             return getDMLStatementContext(metaData, params, (DMLStatement) sqlStatement, defaultDatabaseName);
         }

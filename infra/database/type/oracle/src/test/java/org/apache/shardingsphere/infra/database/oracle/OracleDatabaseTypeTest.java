@@ -26,7 +26,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -45,11 +44,6 @@ class OracleDatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "Oracle").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:oracle:")));
-    }
-    
-    @Test
-    void assertOracleDataSourceMetaData() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "Oracle").getDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/foo_ds", "scott"), instanceOf(OracleDataSourceMetaData.class));
     }
     
     @Test

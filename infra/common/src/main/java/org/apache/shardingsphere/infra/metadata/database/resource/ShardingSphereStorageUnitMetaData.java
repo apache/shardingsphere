@@ -19,8 +19,10 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.core.type.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
 import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
@@ -81,7 +83,8 @@ public final class ShardingSphereStorageUnitMetaData {
             if (enabledDataSources.containsKey(nodeName)) {
                 Map<String, Object> standardProps = DataSourcePropertiesCreator.create(enabledDataSources.get(nodeName)).getConnectionPropertySynonyms().getStandardProperties();
                 DatabaseType storageType = storageTypes.get(nodeName);
-                result.put(entry.getKey(), storageType.getDataSourceMetaData(standardProps.get("url").toString(), standardProps.get("username").toString(), entry.getValue().getCatalog()));
+                DataSourceMetaDataBuilder builder = DatabaseTypedSPILoader.getService(DataSourceMetaDataBuilder.class, storageType);
+                result.put(entry.getKey(), builder.build(standardProps.get("url").toString(), standardProps.get("username").toString(), entry.getValue().getCatalog()));
             }
         }
         return result;

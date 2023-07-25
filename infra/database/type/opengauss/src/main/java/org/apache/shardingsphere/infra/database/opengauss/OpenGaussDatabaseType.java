@@ -79,11 +79,6 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     }
     
     @Override
-    public OpenGaussDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new OpenGaussDataSourceMetaData(url);
-    }
-    
-    @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
         return SYSTEM_DATABASE_SCHEMA_MAP;
     }

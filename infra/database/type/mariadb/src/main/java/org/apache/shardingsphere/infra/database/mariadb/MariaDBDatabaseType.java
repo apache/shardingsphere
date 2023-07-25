@@ -48,11 +48,6 @@ public final class MariaDBDatabaseType implements DatabaseType {
     }
     
     @Override
-    public MariaDBDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new MariaDBDataSourceMetaData(url);
-    }
-    
-    @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
         return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }

@@ -41,7 +41,7 @@ public final class ExpressionProjection implements Projection {
     
     @Override
     public String getColumnName() {
-        return expression;
+        return getColumnLabel();
     }
     
     @Override

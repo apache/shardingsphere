@@ -17,42 +17,29 @@
 
 package org.apache.shardingsphere.infra.database.opengauss;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.type.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.datasource.JdbcUrl;
+import org.apache.shardingsphere.infra.database.core.datasource.StandardDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.StandardJdbcUrlParser;
 
 import java.util.Properties;
 
 /**
- * Data source meta data for openGauss.
+ * Data source meta data builder of openGauss.
  */
-@Getter
-public final class OpenGaussDataSourceMetaData implements DataSourceMetaData {
+public final class OpenGaussDataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
     
     private static final int DEFAULT_PORT = 5431;
     
-    private final String hostname;
-    
-    private final int port;
-    
-    private final String catalog;
-    
-    private final String schema;
-    
-    private final Properties queryProperties;
-    
-    public OpenGaussDataSourceMetaData(final String url) {
+    @Override
+    public DataSourceMetaData build(final String url, final String username, final String catalog) {
         JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-        hostname = jdbcUrl.getHostname();
-        port = -1 == jdbcUrl.getPort() ? DEFAULT_PORT : jdbcUrl.getPort();
-        catalog = jdbcUrl.getDatabase();
-        schema = null;
-        queryProperties = jdbcUrl.getQueryProperties();
+        return new StandardDataSourceMetaData(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT), jdbcUrl.getDatabase(), null, jdbcUrl.getQueryProperties(), new Properties());
     }
     
     @Override
-    public Properties getDefaultQueryProperties() {
-        return new Properties();
+    public String getDatabaseType() {
+        return "openGauss";
     }
 }

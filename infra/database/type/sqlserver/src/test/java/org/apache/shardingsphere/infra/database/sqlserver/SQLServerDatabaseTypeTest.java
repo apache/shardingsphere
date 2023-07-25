@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,14 +38,6 @@ class SQLServerDatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:")));
-    }
-    
-    @Test
-    void assertGetDataSourceMetaData() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getDataSourceMetaData(
-                "jdbc:sqlserver://127.0.0.1;DatabaseName=ds_0", "root"), instanceOf(SQLServerDataSourceMetaData.class));
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getDataSourceMetaData(
-                "jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=ds_0", "sa"), instanceOf(SQLServerDataSourceMetaData.class));
     }
     
     @Test

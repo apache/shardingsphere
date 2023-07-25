@@ -17,50 +17,33 @@
 
 package org.apache.shardingsphere.infra.database.sql92;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.type.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.url.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.datasource.StandardDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Data source meta data for SQL92.
+ * Data source meta data builder of SQL92.
  */
-@Getter
-public final class SQL92DataSourceMetaData implements DataSourceMetaData {
+public final class SQL92DataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
     
     private static final int DEFAULT_PORT = -1;
     
     private static final Pattern URL_PATTERN = Pattern.compile("jdbc:.*", Pattern.CASE_INSENSITIVE);
     
-    private final String hostname;
-    
-    private final int port;
-    
-    private final String catalog;
-    
-    private final String schema;
-    
-    public SQL92DataSourceMetaData(final String url) {
+    @Override
+    public DataSourceMetaData build(final String url, final String username, final String catalog) {
         Matcher matcher = URL_PATTERN.matcher(url);
-        if (!matcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern());
-        }
-        hostname = "";
-        port = DEFAULT_PORT;
-        catalog = "";
-        schema = null;
+        ShardingSpherePreconditions.checkState(matcher.find(), () -> new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern()));
+        return new StandardDataSourceMetaData("", DEFAULT_PORT, "", null);
     }
     
     @Override
-    public Properties getQueryProperties() {
-        return new Properties();
-    }
-    
-    @Override
-    public Properties getDefaultQueryProperties() {
-        return new Properties();
+    public String getDatabaseType() {
+        return "SQL92";
     }
 }

@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.infra.database.sqlserver;
 
-import org.apache.shardingsphere.infra.database.core.url.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.core.type.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.datasource.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,10 +39,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLServerDataSourceMetaDataTest {
     
+    private final DataSourceMetaDataBuilder builder = DatabaseTypedSPILoader.getService(DataSourceMetaDataBuilder.class, TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
+    
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
     void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema) {
-        DataSourceMetaData actual = new SQLServerDataSourceMetaData(url);
+        DataSourceMetaData actual = builder.build(url, null, null);
         assertThat(actual.getHostname(), is(hostname));
         assertThat(actual.getPort(), is(port));
         assertThat(actual.getCatalog(), is(catalog));
@@ -48,7 +54,7 @@ class SQLServerDataSourceMetaDataTest {
     
     @Test
     void assertNewConstructorFailure() {
-        assertThrows(UnrecognizedDatabaseURLException.class, () -> new SQLServerDataSourceMetaData("jdbc:sqlserver:xxxxxxxx"));
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> builder.build("jdbc:sqlserver:xxxxxxxx", null, null));
     }
     
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
