@@ -32,14 +32,16 @@ import java.util.Optional;
  */
 public final class H2DatabaseType implements DatabaseType {
     
+    private final DatabaseType trunkDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
+        return trunkDatabaseType.getQuoteCharacter();
     }
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
+        return trunkDatabaseType.getDefaultNullsOrderType();
     }
     
     @Override
@@ -49,7 +51,7 @@ public final class H2DatabaseType implements DatabaseType {
     
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        return Optional.of(trunkDatabaseType);
     }
     
     @Override
