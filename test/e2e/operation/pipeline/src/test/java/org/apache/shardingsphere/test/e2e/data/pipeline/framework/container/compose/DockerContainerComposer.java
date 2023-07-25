@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.config.proxy.PipelineProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;

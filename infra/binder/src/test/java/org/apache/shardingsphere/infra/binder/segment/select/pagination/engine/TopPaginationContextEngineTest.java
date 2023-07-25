@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.pagination.engine;
 
-import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.engine.TopPaginationContextEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;

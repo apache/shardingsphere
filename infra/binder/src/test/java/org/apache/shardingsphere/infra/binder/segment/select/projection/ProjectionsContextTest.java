@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection;
 
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -118,11 +120,11 @@ class ProjectionsContextTest {
     }
     
     private ColumnProjection getColumnProjection() {
-        return new ColumnProjection("table", "name", null);
+        return new ColumnProjection("table", "name", null, mock(DatabaseType.class));
     }
     
     private ColumnProjection getColumnProjectionWithAlias() {
-        return new ColumnProjection("table", "name", "n");
+        return new ColumnProjection("table", "name", "n", mock(DatabaseType.class));
     }
     
     private AggregationProjection getAggregationProjection() {
@@ -136,9 +138,9 @@ class ProjectionsContextTest {
     
     @Test
     void assertGetExpandProjections() {
-        ColumnProjection columnProjection1 = new ColumnProjection(null, "col1", null);
-        ColumnProjection columnProjection2 = new ColumnProjection(null, "col2", null);
-        ColumnProjection columnProjection3 = new ColumnProjection(null, "col3", null);
+        ColumnProjection columnProjection1 = new ColumnProjection(null, "col1", null, mock(DatabaseType.class));
+        ColumnProjection columnProjection2 = new ColumnProjection(null, "col2", null, mock(DatabaseType.class));
+        ColumnProjection columnProjection3 = new ColumnProjection(null, "col3", null, mock(DatabaseType.class));
         DerivedProjection derivedProjection = new DerivedProjection("col3", new IdentifierValue("a3"), null);
         ShorthandProjection shorthandProjection = new ShorthandProjection(null, Arrays.asList(columnProjection2, columnProjection3));
         ProjectionsContext actual = new ProjectionsContext(0, 0, false, Arrays.asList(columnProjection1, shorthandProjection, derivedProjection));

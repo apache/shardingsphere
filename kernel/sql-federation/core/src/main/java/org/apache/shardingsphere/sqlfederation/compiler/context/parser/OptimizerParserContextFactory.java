@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.compiler.context.parser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect.OptimizerSQLDialectBuilder;
 

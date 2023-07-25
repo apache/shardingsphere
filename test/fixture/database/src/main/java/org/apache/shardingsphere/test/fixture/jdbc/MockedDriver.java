@@ -54,7 +54,7 @@ public final class MockedDriver implements Driver {
     
     @Override
     public boolean acceptsURL(final String url) {
-        return url.startsWith("mock:jdbc");
+        return url.startsWith("jdbc:mock");
     }
     
     @Override

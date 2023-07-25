@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.postgresql;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -65,18 +65,13 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public boolean isReservedWord(final String item) {
-        return RESERVED_WORDS.contains(item.toUpperCase());
+    public boolean isReservedWord(final String identifier) {
+        return RESERVED_WORDS.contains(identifier.toUpperCase());
     }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
-    }
-    
-    @Override
-    public PostgreSQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new PostgreSQLDataSourceMetaData(url);
     }
     
     @Override

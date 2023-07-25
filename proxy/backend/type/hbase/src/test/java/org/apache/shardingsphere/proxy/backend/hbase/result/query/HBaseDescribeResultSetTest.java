@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.result.query;
 
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.dal.ShowCreateTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowCreateTableStatementContext;
 import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.junit.jupiter.api.Test;

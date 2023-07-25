@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.mysql;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,11 +55,11 @@ public final class MySQLDatabaseType implements DatabaseType {
     private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
     
     static {
-        SYSTEM_DATABASE_SCHEMA_MAP.put("information_schema", Collections.singletonList("information_schema"));
-        SYSTEM_DATABASE_SCHEMA_MAP.put("performance_schema", Collections.singletonList("performance_schema"));
-        SYSTEM_DATABASE_SCHEMA_MAP.put("mysql", Collections.singletonList("mysql"));
-        SYSTEM_DATABASE_SCHEMA_MAP.put("sys", Collections.singletonList("sys"));
-        SYSTEM_DATABASE_SCHEMA_MAP.put("shardingsphere", Collections.singletonList("shardingsphere"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("information_schema", Collections.singleton("information_schema"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("performance_schema", Collections.singleton("performance_schema"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("mysql", Collections.singleton("mysql"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("sys", Collections.singleton("sys"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("shardingsphere", Collections.singleton("shardingsphere"));
     }
     
     @Override
@@ -73,23 +73,13 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public boolean isReservedWord(final String item) {
-        return RESERVED_WORDS.contains(item.toUpperCase());
+    public boolean isReservedWord(final String identifier) {
+        return RESERVED_WORDS.contains(identifier.toUpperCase());
     }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:");
-    }
-    
-    @Override
-    public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new MySQLDataSourceMetaData(url);
-    }
-    
-    @Override
-    public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username, final String catalog) {
-        return new MySQLDataSourceMetaData(url, catalog);
     }
     
     @Override

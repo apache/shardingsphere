@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.mariadb;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -32,14 +32,21 @@ import java.util.Optional;
  */
 public final class MariaDBDatabaseType implements DatabaseType {
     
+    private final DatabaseType trunkDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
+        return trunkDatabaseType.getQuoteCharacter();
     }
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
+        return trunkDatabaseType.getDefaultNullsOrderType();
+    }
+    
+    @Override
+    public boolean isReservedWord(final String identifier) {
+        return trunkDatabaseType.isReservedWord(identifier);
     }
     
     @Override
@@ -48,23 +55,18 @@ public final class MariaDBDatabaseType implements DatabaseType {
     }
     
     @Override
-    public MariaDBDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new MariaDBDataSourceMetaData(url);
-    }
-    
-    @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        return Optional.of(trunkDatabaseType);
     }
     
     @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
+        return trunkDatabaseType.getSystemDatabaseSchemaMap();
     }
     
     @Override
     public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
+        return trunkDatabaseType.getSystemSchemas();
     }
     
     @Override

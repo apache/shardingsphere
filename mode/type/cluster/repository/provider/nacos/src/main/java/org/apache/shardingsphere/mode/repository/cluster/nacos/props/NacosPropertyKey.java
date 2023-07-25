@@ -46,7 +46,17 @@ public enum NacosPropertyKey implements TypedPropertyKey {
     /**
      * Time to live seconds.
      */
-    TIME_TO_LIVE_SECONDS("timeToLiveSeconds", String.valueOf(30), int.class);
+    TIME_TO_LIVE_SECONDS("timeToLiveSeconds", String.valueOf(30), int.class),
+    
+    /**
+     * Username.
+     */
+    USERNAME("username", "", String.class),
+    
+    /**
+     * Password.
+     */
+    PASSWORD("password", "", String.class);
     
     private final String key;
     

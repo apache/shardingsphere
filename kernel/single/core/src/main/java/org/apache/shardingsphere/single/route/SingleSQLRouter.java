@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.route;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.validator.ShardingSphereMetaDataValidateUtils;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -66,7 +66,7 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         }
     }
     
-    private Collection<QualifiedTable> getSingleTables(ShardingSphereDatabase database, SingleRule rule, RouteContext result, SQLStatementContext sqlStatementContext) {
+    private Collection<QualifiedTable> getSingleTables(final ShardingSphereDatabase database, final SingleRule rule, final RouteContext result, final SQLStatementContext sqlStatementContext) {
         Collection<QualifiedTable> qualifiedTables = rule.getQualifiedTables(sqlStatementContext, database);
         return result.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? qualifiedTables : rule.getSingleTables(qualifiedTables);
     }
