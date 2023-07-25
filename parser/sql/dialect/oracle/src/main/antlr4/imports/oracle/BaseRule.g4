@@ -759,7 +759,7 @@ extractFunction
     ;
 
 regularFunction
-    : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : (owner DOT_)? regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
 regularFunctionName
@@ -1907,3 +1907,7 @@ xmlTableOptions
 xmlTableColumn
     : columnName (FOR ORDINALITY | (dataType | XMLTYPE (LP_ SEQUENCE RP_ BY REF)?) (PATH STRING_)? (DEFAULT expr)?)
     ;
+
+//packageFunction
+//    : owner DOT_ functionName LP_ (expr (COMMA_ expr)*)? RP_
+//    ;
