@@ -22,14 +22,12 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.select.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Subquery projection converter. 
@@ -42,7 +40,11 @@ public final class SubqueryProjectionConverter implements SQLSegmentConverter<Su
             return Optional.empty();
         }
         SqlNode sqlNode = new SelectStatementConverter().convert(segment.getSubquery().getSelect());
-        return segment.getAliasName().isPresent() ? convertToSQLStatement(sqlNode, segment.getAliasName().get()) : Optional.of(sqlNode);
+        if (segment.getAliasName().isPresent()) {
+            sqlNode = convertToSQLStatement(sqlNode, segment.getAliasName().get()).get();
+        }
+        return segment.getSubquery().getSubqueryType().equals(SubqueryType.EXISTS_SUBQUERY) ?
+                Optional.of(new SqlBasicCall(SqlStdOperatorTable.EXISTS, Collections.singletonList(sqlNode), SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }
     
     private Optional<SqlNode> convertToSQLStatement(final SqlNode sqlNode, final String alias) {
