@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.sharding.cache.checker;
 
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -127,7 +128,8 @@ class ShardingRouteCacheableCheckerTest {
     }
     
     private QueryContext createQueryContext(final ShardingSphereDatabase database, final String sql, final List<Object> params) {
-        return new QueryContext(SQLStatementContextFactory.newInstance(createShardingSphereMetaData(database), params, parse(sql), DATABASE_NAME), sql, params);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(createShardingSphereMetaData(database), DATABASE_NAME).bind(parse(sql), params);
+        return new QueryContext(sqlStatementContext, sql, params);
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
