@@ -54,19 +54,32 @@ public final class InventoryRecordsCountCalculator {
     public static long getTableRecordsCount(final InventoryDumperConfiguration dumperConfig, final PipelineDataSourceWrapper dataSource) {
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
-        PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(dataSource.getDatabaseType());
-        Optional<String> sql = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);
         try {
-            if (sql.isPresent()) {
-                DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, dataSource.getDatabaseType().getType());
-                long result = getEstimatedCount(databaseType, dataSource, sql.get());
-                return result > 0 ? result : getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
-            }
-            return getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
+            return getTableRecordsCount(schemaName, actualTableName, dataSource);
         } catch (final SQLException ex) {
             String uniqueKey = dumperConfig.hasUniqueKey() ? dumperConfig.getUniqueKeyColumns().get(0).getName() : "";
             throw new SplitPipelineJobByUniqueKeyException(dumperConfig.getActualTableName(), uniqueKey, ex);
         }
+    }
+    
+    /**
+     * Get table records count.
+     *
+     * @param schemaName schema name
+     * @param actualTableName actual table name
+     * @param dataSource data source
+     * @return table records count
+     * @throws SQLException SQL exception
+     */
+    public static long getTableRecordsCount(final String schemaName, final String actualTableName, final PipelineDataSourceWrapper dataSource) throws SQLException {
+        PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(dataSource.getDatabaseType());
+        Optional<String> sql = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);
+        if (sql.isPresent()) {
+            DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, dataSource.getDatabaseType().getType());
+            long result = getEstimatedCount(databaseType, dataSource, sql.get());
+            return result > 0 ? result : getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
+        }
+        return getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
     }
     
     private static long getEstimatedCount(final DatabaseType databaseType, final DataSource dataSource, final String estimatedCountSQL) throws SQLException {
