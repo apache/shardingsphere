@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
+import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;

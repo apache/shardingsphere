@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.engine.decorator.impl.TransparentResultDecorator;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;

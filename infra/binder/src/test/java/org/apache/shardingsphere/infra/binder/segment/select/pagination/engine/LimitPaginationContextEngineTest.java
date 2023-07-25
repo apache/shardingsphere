@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.pagination.engine;
 
-import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.engine.LimitPaginationContextEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;

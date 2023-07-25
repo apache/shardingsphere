@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.session.connection.cursor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.aware.CursorDefinition;
+import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinition;
 
 import java.util.List;
 import java.util.Map;
