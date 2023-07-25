@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.sql.SQLException;
 
@@ -64,18 +65,19 @@ public final class QueryHeaderBuilderEngine {
      */
     public QueryHeader build(final ProjectionsContext projectionsContext,
                              final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
-        String columnName = getColumnName(projectionsContext, queryResultMetaData, columnIndex);
-        String columnLabel = getColumnLabel(projectionsContext, queryResultMetaData, columnIndex);
-        return DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
+        ShardingSpherePreconditions.checkState(columnIndex <= projectionsContext.getExpandProjections().size(),
+                () -> new IllegalArgumentException(String.format("Column index `%d` is out of range.", columnIndex)));
+        Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
+        return DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType).build(queryResultMetaData, database, projection.getColumnName(), projection.getColumnLabel(), columnIndex);
     }
     
-    private String getColumnLabel(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {
+    private String getColumnLabel(final ProjectionsContext projectionsContext, final int columnIndex) {
         Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : queryResultMetaData.getColumnLabel(columnIndex);
+        return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : projection.getColumnLabel();
     }
     
-    private String getColumnName(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {
+    private String getColumnName(final ProjectionsContext projectionsContext, final int columnIndex) {
         Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName().getValue() : queryResultMetaData.getColumnName(columnIndex);
+        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName().getValue() : projection.getColumnName();
     }
 }

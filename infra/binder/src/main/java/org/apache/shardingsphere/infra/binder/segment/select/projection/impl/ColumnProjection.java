@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.util.ProjectionUtils;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -59,12 +60,12 @@ public final class ColumnProjection implements Projection {
     
     @Override
     public String getColumnName() {
-        return ProjectionUtils.getColumnNameFromColumn(name, databaseType);
+        return databaseType instanceof MySQLDatabaseType ? ProjectionUtils.getColumnNameFromColumn(name, databaseType) : getColumnLabel();
     }
     
     @Override
     public String getColumnLabel() {
-        return getAlias().isPresent() ? ProjectionUtils.getColumnLabelFromAlias(getAlias().get(), databaseType) : getColumnName();
+        return getAlias().isPresent() ? ProjectionUtils.getColumnLabelFromAlias(getAlias().get(), databaseType) : ProjectionUtils.getColumnNameFromColumn(name, databaseType);
     }
     
     @Override

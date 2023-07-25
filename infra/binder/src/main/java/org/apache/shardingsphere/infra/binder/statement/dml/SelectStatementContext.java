@@ -254,11 +254,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private void setIndexForAggregationProjection(final Map<String, Integer> columnLabelIndexMap) {
         for (AggregationProjection each : projectionsContext.getAggregationProjections()) {
-            String columnLabel = SQLUtils.getExactlyValue(each.getColumnLabel());
+            String columnLabel = SQLUtils.getExactlyValue(each.getAlias().map(IdentifierValue::getValue).orElse(each.getColumnName()));
             Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s, please add alias for aggregate selections", each);
             each.setIndex(columnLabelIndexMap.get(columnLabel));
             for (AggregationProjection derived : each.getDerivedAggregationProjections()) {
-                String derivedColumnLabel = SQLUtils.getExactlyValue(derived.getColumnLabel());
+                String derivedColumnLabel = SQLUtils.getExactlyValue(derived.getAlias().map(IdentifierValue::getValue).orElse(each.getColumnName()));
                 Preconditions.checkState(columnLabelIndexMap.containsKey(derivedColumnLabel), "Can't find index: %s", derived);
                 derived.setIndex(columnLabelIndexMap.get(derivedColumnLabel));
             }
