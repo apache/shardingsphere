@@ -21,12 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.system.DialectSystemDatabase;
+import org.apache.shardingsphere.infra.database.core.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.yaml.snakeyaml.Yaml;
@@ -54,7 +52,7 @@ public final class SystemSchemaBuilder {
      * @return ShardingSphere system schema map
      */
     public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType, final ConfigurationProperties props) {
-        DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, databaseType));
+        SystemDatabase systemDatabase = new SystemDatabase(databaseType);
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(systemDatabase.getSystemSchemas().size(), 1F);
         boolean isSystemSchemaMetaDataEnabled = isSystemSchemaMetaDataEnabled(props.getProps());
         YamlTableSwapper swapper = new YamlTableSwapper();
@@ -69,7 +67,7 @@ public final class SystemSchemaBuilder {
         return Boolean.parseBoolean(props.getOrDefault(configKey.getKey(), configKey.getDefaultValue()).toString());
     }
     
-    private static Collection<String> getSystemSchemas(final String originalDatabaseName, final DatabaseType databaseType, final DialectSystemDatabase systemDatabase) {
+    private static Collection<String> getSystemSchemas(final String originalDatabaseName, final DatabaseType databaseType, final SystemDatabase systemDatabase) {
         String databaseName = databaseType.getDefaultSchema().isPresent() ? "postgres" : originalDatabaseName;
         return systemDatabase.getSystemDatabaseSchemaMap().getOrDefault(databaseName, Collections.emptyList());
     }

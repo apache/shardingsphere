@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.system.DialectSystemDatabase;
+import org.apache.shardingsphere.infra.database.core.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -69,8 +70,7 @@ public final class ExternalMetaDataFactory {
     public static Map<String, ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap,
                                                              final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
-        DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, protocolType));
-        Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size() + systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
+        Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size() + new SystemDatabase(protocolType).getSystemDatabaseSchemaMap().size(), 1F);
         result.putAll(createGenericDatabases(databaseConfigMap, protocolType, props, instanceContext));
         result.putAll(createSystemDatabases(databaseConfigMap, protocolType, props));
         return result;
@@ -92,9 +92,9 @@ public final class ExternalMetaDataFactory {
     
     private static Map<String, ShardingSphereDatabase> createSystemDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType,
                                                                              final ConfigurationProperties props) {
-        DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, protocolType));
+        SystemDatabase systemDatabase = new SystemDatabase(protocolType);
         Map<String, ShardingSphereDatabase> result = new HashMap<>(systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
-        for (String each : DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, protocolType)).getSystemDatabaseSchemaMap().keySet()) {
+        for (String each : systemDatabase.getSystemDatabaseSchemaMap().keySet()) {
             if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getDataSources().isEmpty()) {
                 result.put(each.toLowerCase(), ShardingSphereDatabase.create(each, protocolType, props));
             }
