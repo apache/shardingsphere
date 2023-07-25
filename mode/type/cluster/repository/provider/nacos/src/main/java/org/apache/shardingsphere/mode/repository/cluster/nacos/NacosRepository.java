@@ -81,6 +81,8 @@ public final class NacosRepository implements ClusterPersistRepository {
         Properties props = new Properties();
         props.setProperty("serverAddr", config.getServerLists());
         props.setProperty("namespace", config.getNamespace());
+        props.setProperty("username", nacosProps.getValue(NacosPropertyKey.USERNAME));
+        props.setProperty("password", nacosProps.getValue(NacosPropertyKey.PASSWORD));
         try {
             return NamingFactory.createNamingService(props);
         } catch (final NacosException ex) {

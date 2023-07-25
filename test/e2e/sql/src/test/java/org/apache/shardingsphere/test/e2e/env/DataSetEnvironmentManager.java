@@ -22,7 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;

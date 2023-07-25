@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.enums;
+package org.apache.shardingsphere.infra.database.core.type.enums;
 
 import com.google.common.base.Strings;
 import lombok.Getter;

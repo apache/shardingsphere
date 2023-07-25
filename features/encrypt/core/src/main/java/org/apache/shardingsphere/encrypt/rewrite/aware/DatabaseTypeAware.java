@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.enums;
+package org.apache.shardingsphere.encrypt.rewrite.aware;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class NullsOrderTypeTest {
+/**
+ * Database type aware.
+ */
+public interface DatabaseTypeAware {
     
-    @Test
-    void assertGetReversedOrderType() {
-        assertThat(NullsOrderType.FIRST.getReversedOrderType(), is(NullsOrderType.LAST));
-        assertThat(NullsOrderType.LAST.getReversedOrderType(), is(NullsOrderType.FIRST));
-    }
+    /**
+     * Set database type.
+     * 
+     * @param databaseType database type
+     */
+    void setDatabaseType(DatabaseType databaseType);
 }

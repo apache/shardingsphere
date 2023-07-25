@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.sqlserver;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;

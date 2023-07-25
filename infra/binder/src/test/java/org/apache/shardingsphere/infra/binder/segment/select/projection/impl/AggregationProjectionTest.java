@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -36,14 +36,14 @@ class AggregationProjectionTest {
     
     @Test
     void assertGetColumnName() {
-        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )",
-                null, TypedSPILoader.getService(DatabaseType.class, "MySQL")).getColumnName(), is("COUNT( A.\"DIRECTION\" )"));
-        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )",
-                null, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).getColumnName(), is("count"));
-        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null,
-                TypedSPILoader.getService(DatabaseType.class, "openGauss")).getColumnName(), is("count"));
-        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( a.\"direction\" )", null,
-                TypedSPILoader.getService(DatabaseType.class, "Oracle")).getColumnName(), is("COUNT(A.\"DIRECTION\")"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null, TypedSPILoader.getService(DatabaseType.class, "MySQL")).getColumnName(),
+                is("COUNT( A.\"DIRECTION\" )"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "count( a.\"direction\" )", null, TypedSPILoader.getService(DatabaseType.class, "MySQL")).getColumnName(),
+                is("count( a.\"direction\" )"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).getColumnName(), is("count"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null, TypedSPILoader.getService(DatabaseType.class, "openGauss")).getColumnName(), is("count"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( a.\"direction\" )", null, TypedSPILoader.getService(DatabaseType.class, "Oracle")).getColumnName(),
+                is("COUNT(A.\"DIRECTION\")"));
     }
     
     @Test
@@ -81,8 +81,9 @@ class AggregationProjectionTest {
     void assertGetColumnLabelWithoutAlias() {
         assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null, TypedSPILoader.getService(DatabaseType.class, "MySQL")).getColumnLabel(),
                 is("COUNT( A.\"DIRECTION\" )"));
-        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).getColumnLabel(),
-                is("count"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "count( a.\"direction\" )", null, TypedSPILoader.getService(DatabaseType.class, "MySQL")).getColumnLabel(),
+                is("count( a.\"direction\" )"));
+        assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).getColumnLabel(), is("count"));
         assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )", null, TypedSPILoader.getService(DatabaseType.class, "openGauss")).getColumnLabel(),
                 is("count"));
         assertThat(new AggregationProjection(AggregationType.COUNT, "COUNT( a.\"direction\" )", null, TypedSPILoader.getService(DatabaseType.class, "Oracle")).getColumnLabel(),

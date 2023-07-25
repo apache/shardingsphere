@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatement
 import org.apache.shardingsphere.infra.binder.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;

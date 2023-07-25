@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.parser.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.parser.SimpleSQLParserEngine;

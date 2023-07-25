@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSou
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.infra.database.core.url.JdbcUrlAppender;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
