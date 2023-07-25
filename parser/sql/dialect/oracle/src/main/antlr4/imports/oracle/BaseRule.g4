@@ -1907,7 +1907,3 @@ xmlTableOptions
 xmlTableColumn
     : columnName (FOR ORDINALITY | (dataType | XMLTYPE (LP_ SEQUENCE RP_ BY REF)?) (PATH STRING_)? (DEFAULT expr)?)
     ;
-
-//packageFunction
-//    : owner DOT_ functionName LP_ (expr (COMMA_ expr)*)? RP_
-//    ;
