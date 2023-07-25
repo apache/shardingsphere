@@ -42,6 +42,7 @@ public final class SQLBindEngine {
      * Bind SQL statement with metadata.
      *
      * @param sqlStatement SQL statement
+     * @param params parameters
      * @return SQL statement context
      */
     public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
