@@ -75,7 +75,7 @@ public final class ExternalMetaDataFactory {
     }
     
     private static Map<String, ShardingSphereDatabase> createGenericDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap,
-                                                                              final DatabaseType protocolType, final SystemDatabase systemDatabase, 
+                                                                              final DatabaseType protocolType, final SystemDatabase systemDatabase,
                                                                               final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1F);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
