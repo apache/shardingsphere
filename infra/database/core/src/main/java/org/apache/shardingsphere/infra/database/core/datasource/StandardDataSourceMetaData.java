@@ -41,6 +41,10 @@ public final class StandardDataSourceMetaData implements DataSourceMetaData {
     
     private final Properties defaultQueryProperties;
     
+    public StandardDataSourceMetaData(final String hostname, final int port, final String catalog, final String schema) {
+        this(hostname, port, catalog, schema, new Properties(), new Properties());
+    }
+    
     /**
      * Judge whether two of data sources are in the same database instance.
      *
