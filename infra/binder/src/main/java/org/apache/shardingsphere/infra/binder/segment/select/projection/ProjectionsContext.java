@@ -62,7 +62,7 @@ public final class ProjectionsContext {
         this.distinctRow = distinctRow;
         this.projections = projections;
         aggregationDistinctProjections = createAggregationDistinctProjections();
-        expandProjections = expandProjections();
+        expandProjections = createExpandProjections();
         containsLastInsertIdProjection = isContainsLastInsertIdProjection(projections);
     }
     
@@ -76,7 +76,7 @@ public final class ProjectionsContext {
         return result;
     }
     
-    private List<Projection> expandProjections() {
+    private List<Projection> createExpandProjections() {
         List<Projection> result = new ArrayList<>();
         for (Projection each : projections) {
             if (each instanceof ShorthandProjection) {
