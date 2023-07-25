@@ -66,7 +66,7 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         }
     }
     
-    private Collection<QualifiedTable> getSingleTables(ShardingSphereDatabase database, SingleRule rule, RouteContext result, SQLStatementContext sqlStatementContext) {
+    private Collection<QualifiedTable> getSingleTables(final ShardingSphereDatabase database, final SingleRule rule, final RouteContext result, final SQLStatementContext sqlStatementContext) {
         Collection<QualifiedTable> qualifiedTables = rule.getQualifiedTables(sqlStatementContext, database);
         return result.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? qualifiedTables : rule.getSingleTables(qualifiedTables);
     }

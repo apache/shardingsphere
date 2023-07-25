@@ -43,7 +43,7 @@ public final class ProjectionUtils {
         return getIdentifierValueByDatabaseType(alias, databaseType);
     }
     
-    private static String getIdentifierValueByDatabaseType(IdentifierValue identifierValue, DatabaseType databaseType) {
+    private static String getIdentifierValueByDatabaseType(final IdentifierValue identifierValue, final DatabaseType databaseType) {
         if (QuoteCharacter.NONE != identifierValue.getQuoteCharacter()) {
             return identifierValue.getValue();
         }
