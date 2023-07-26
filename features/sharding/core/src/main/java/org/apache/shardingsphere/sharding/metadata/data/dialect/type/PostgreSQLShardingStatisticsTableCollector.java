@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.metadata.data.dialect.type;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.metadata.data.dialect.DialectShardingStatisticsTableCollector;
 
-import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,13 +34,11 @@ public final class PostgreSQLShardingStatisticsTableCollector implements Dialect
     
     private static final String POSTGRESQL_TABLE_ROWS_LENGTH = "SELECT RELTUPLES FROM PG_CLASS WHERE RELNAMESPACE = (SELECT OID FROM PG_NAMESPACE WHERE NSPNAME='%s') AND RELNAME = '%s'";
     
-    private static final String POSTGRESQL_TABLE_DATA_LENGTH = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH  FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME='%s' AND RELNAME = '%s'";
+    private static final String POSTGRESQL_TABLE_DATA_LENGTH = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME='%s' AND RELNAME = '%s'";
     
     @Override
-    public boolean appendRow(final DataSource dataSource, final DataNode dataNode, final List<Object> row) throws SQLException {
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
+    public boolean appendRow(final Connection connection, final DataNode dataNode, final List<Object> row) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(String.format(POSTGRESQL_TABLE_ROWS_LENGTH, dataNode.getSchemaName(), dataNode.getTableName()))) {
                 row.add(resultSet.next() ? resultSet.getBigDecimal(TABLE_ROWS_COLUMN_NAME) : BigDecimal.ZERO);
             }

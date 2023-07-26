@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.metadata.data.dialect.type;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.metadata.data.dialect.DialectShardingStatisticsTableCollector;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,10 +34,8 @@ public final class MySQLShardingStatisticsTableCollector implements DialectShard
     private static final String MYSQL_TABLE_ROWS_AND_DATA_LENGTH = "SELECT TABLE_ROWS, DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'";
     
     @Override
-    public boolean appendRow(final DataSource dataSource, final DataNode dataNode, final List<Object> row) throws SQLException {
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
+    public boolean appendRow(final Connection connection, final DataNode dataNode, final List<Object> row) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(String.format(MYSQL_TABLE_ROWS_AND_DATA_LENGTH, connection.getCatalog(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
                     row.add(resultSet.getBigDecimal(TABLE_ROWS_COLUMN_NAME));

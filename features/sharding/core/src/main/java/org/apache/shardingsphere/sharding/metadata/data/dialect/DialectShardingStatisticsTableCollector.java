@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
-import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -38,11 +38,11 @@ public interface DialectShardingStatisticsTableCollector extends DatabaseTypedSP
     /**
      * Append dialect content into row.
      * 
-     * @param dataSource data source
+     * @param connection connection
      * @param dataNode data node
      * @param row row to be appended
      * @return is appended or not
      * @throws SQLException SQL exception
      */
-    boolean appendRow(DataSource dataSource, DataNode dataNode, List<Object> row) throws SQLException;
+    boolean appendRow(Connection connection, DataNode dataNode, List<Object> row) throws SQLException;
 }

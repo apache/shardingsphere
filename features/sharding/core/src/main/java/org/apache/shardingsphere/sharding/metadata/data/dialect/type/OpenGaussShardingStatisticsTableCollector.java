@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.metadata.data.dialect.type;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.metadata.data.dialect.DialectShardingStatisticsTableCollector;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,14 +34,12 @@ public final class OpenGaussShardingStatisticsTableCollector implements DialectS
     private static final String OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH = "SELECT RELTUPLES AS TABLE_ROWS, PG_TABLE_SIZE('%s') AS DATA_LENGTH FROM PG_CLASS WHERE RELNAME = '%s'";
     
     @Override
-    public boolean appendRow(final DataSource dataSource, final DataNode dataNode, final List<Object> row) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            if (!isTableExist(connection, dataNode.getTableName())) {
-                return false;
-            }
-            try (
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(String.format(OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH, dataNode.getTableName(), dataNode.getTableName()))) {
+    public boolean appendRow(final Connection connection, final DataNode dataNode, final List<Object> row) throws SQLException {
+        if (!isTableExist(connection, dataNode.getTableName())) {
+            return false;
+        }
+        try (Statement statement = connection.createStatement()) {
+            try (ResultSet resultSet = statement.executeQuery(String.format(OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH, dataNode.getTableName(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
                     row.add(resultSet.getBigDecimal(TABLE_ROWS_COLUMN_NAME));
                     row.add(resultSet.getBigDecimal(DATA_LENGTH_COLUMN_NAME));

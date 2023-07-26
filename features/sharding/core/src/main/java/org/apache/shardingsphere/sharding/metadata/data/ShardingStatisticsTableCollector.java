@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -89,7 +90,9 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
         Optional<DialectShardingStatisticsTableCollector> dialectCollector = DatabaseTypedSPILoader.findService(DialectShardingStatisticsTableCollector.class, databaseType);
         boolean isAppended = false;
         if (dialectCollector.isPresent()) {
-            isAppended = dialectCollector.get().appendRow(dataSources.get(dataNode.getDataSourceName()), dataNode, row);
+            try (Connection connection = dataSources.get(dataNode.getDataSourceName()).getConnection()) {
+                isAppended = dialectCollector.get().appendRow(connection, dataNode, row);
+            }
         }
         if (!isAppended) {
             row.add(BigDecimal.ZERO);
