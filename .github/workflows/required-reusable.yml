@@ -30,6 +30,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            .github/workflows/resources/variables/
       - name: Setup Environment
         id: import-variables
         run: |
