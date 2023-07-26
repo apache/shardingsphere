@@ -2451,7 +2451,7 @@ attribute
     ;
 
 attributeNameAndValue
-    : SQ_ attributeName SQ_ EQ_ SQ_ attributeValue SQ_
+    : attributeName EQ_ attributeValue
     ;
 
 dropDiskgroup
@@ -2968,7 +2968,7 @@ fileOwnerClause
     ;
 
 setOwnerClause
-    :OWNER EQ_ SQ_ username SQ_ | GROUP EQ_ SQ_ usergroupName SQ_
+    :OWNER EQ_ username | GROUP EQ_ usergroupName
     ;
 
 scrubClause
