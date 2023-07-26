@@ -28,8 +28,7 @@ on:
         description: 'Commit ID to build. Default is the latest commit on the default branch.'
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
-  REPOSITORY: apache/shardingsphere
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -DskipITs -DskipTests -Dspotless.apply.skip=true
   HUB: ghcr.io/apache/shardingsphere
   PROXY: ghcr.io/apache/shardingsphere-proxy
   PROXY_NATIVE: ghcr.io/apache/shardingsphere-proxy-native
@@ -158,7 +157,7 @@ jobs:
   generate-and-test-examples:
     if: github.repository == 'apache/shardingsphere'
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
-    needs: [ build-cache, global-env ]
+    needs: build-cache
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:

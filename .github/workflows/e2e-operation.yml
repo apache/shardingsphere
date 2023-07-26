@@ -24,7 +24,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: e2e-pipeline-${{ github.workflow }}-${{ github.ref }}
+  group: e2e-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -48,7 +48,7 @@ jobs:
     outputs:
       changed_operations: ${{ steps.filter.outputs.changes }}
 
-  e2e-operation-job:
+  e2e-operation:
     needs: [ detect-changed-files, global-env ]
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     runs-on: ubuntu-latest

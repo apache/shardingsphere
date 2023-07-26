@@ -59,7 +59,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
   SEGMENT_DOWNLOAD_TIMEOUT_MINS: 1
 
 jobs:
@@ -98,7 +98,7 @@ jobs:
     name: E2E - ${{ matrix.adapter }} - ${{ matrix.scenario }} - ${{ matrix.mode }} on ${{ matrix.database }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [ build-e2e-image, global-env ]
+    needs: build-e2e-image
     strategy:
       max-parallel: 20
       fail-fast: false
