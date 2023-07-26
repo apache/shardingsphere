@@ -67,11 +67,11 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SelectStatement) {
             Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);
-            if (KERNEL_SUPPORTED_TABLES.containsAll(selectedTableNames)) {
+            if (!selectedTableNames.isEmpty() && KERNEL_SUPPORTED_TABLES.containsAll(selectedTableNames)) {
                 return Optional.empty();
             }
-            if (SystemSchemaBuilderRule.POSTGRESQL_INFORMATION_SCHEMA.getTables().containsAll(selectedTableNames)
-                    || SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG.getTables().containsAll(selectedTableNames)) {
+            if (!selectedTableNames.isEmpty() && (SystemSchemaBuilderRule.POSTGRESQL_INFORMATION_SCHEMA.getTables().containsAll(selectedTableNames)
+                    || SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG.getTables().containsAll(selectedTableNames))) {
                 return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
             }
         }
