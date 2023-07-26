@@ -69,7 +69,7 @@ public final class ColumnSegmentBinder {
                 result = ((ColumnProjectionSegment) projectionSegment).getColumn().getOriginalTable();
             }
         }
-        ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalStateException(String.format("Can not find table name by column label %s.", columnName)));
+        ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalStateException(String.format("Unknown column '%s' in 'field list'.", columnName)));
         return result;
     }
 }
