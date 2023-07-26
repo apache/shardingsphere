@@ -661,12 +661,12 @@ bitExpr
     | bitExpr SIGNED_LEFT_SHIFT_ bitExpr
     | bitExpr SIGNED_RIGHT_SHIFT_ bitExpr
     | bitExpr PLUS_ bitExpr
+    | simpleExpr
     | bitExpr MINUS_ bitExpr
     | bitExpr ASTERISK_ bitExpr
     | bitExpr SLASH_ bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | simpleExpr
     ;
 
 simpleExpr
@@ -790,7 +790,7 @@ regularFunctionName
     ;
 
 joinOperator
-    : LP_ PLUS_  RP_
+    : LP_ PLUS_ RP_
     ;
 
 caseExpression
@@ -886,7 +886,23 @@ elseClause
     ;
 
 intervalExpression
-    : LP_ expr MINUS_ expr RP_ (DAY (LP_ NUMBER_ RP_)? TO SECOND (LP_ NUMBER_ RP_)? | YEAR (LP_ NUMBER_ RP_)? TO MONTH)
+    : LP_ expr MINUS_ expr RP_ (intervalDayToSecondExpression | intervalYearToMonthExpression)
+    ;
+
+intervalDayToSecondExpression
+    : DAY (LP_ leadingFieldPrecision RP_)? TO SECOND (LP_ fractionalSecondPrecision RP_)?
+    ;
+
+intervalYearToMonthExpression
+    : YEAR (LP_ leadingFieldPrecision RP_)? TO MONTH
+    ;
+
+leadingFieldPrecision
+    : INTEGER_
+    ;
+
+fractionalSecondPrecision
+    : INTEGER_
     ;
 
 objectAccessExpression
