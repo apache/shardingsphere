@@ -15,33 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype;
+package org.apache.shardingsphere.infra.database.core.datatype;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
- * Standard data type loader.
+ * Dialect data type loader.
  */
-public final class StandardDataTypeLoader {
+@SingletonSPI
+public interface DialectDataTypeLoader extends DatabaseTypedSPI {
     
     /**
      * Load data type.
      *
-     * @param databaseMetaData database meta data
      * @return data type map
      * @throws SQLException SQL exception
      */
-    public Map<String, Integer> load(final DatabaseMetaData databaseMetaData) throws SQLException {
-        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        try (ResultSet resultSet = databaseMetaData.getTypeInfo()) {
-            while (resultSet.next()) {
-                result.put(resultSet.getString("TYPE_NAME"), resultSet.getInt("DATA_TYPE"));
-            }
-        }
-        return result;
-    }
+    Map<String, Integer> load() throws SQLException;
 }

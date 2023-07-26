@@ -21,7 +21,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
+import org.apache.shardingsphere.infra.database.core.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
