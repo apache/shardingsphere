@@ -45,4 +45,4 @@ jobs:
           fi
     outputs:
       GLOBAL_REPOSITORY_NAME: ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY_NAME }}
-      GLOBAL_IS_JOB_EXECUTABLE: ${{ steps.import-variables.outputs.GLOBAL_IS_JOB_EXECUTABLE }}
+      GLOBAL_IS_JOB_EXECUTABLE: ${{ steps.check-job-executable.outputs.GLOBAL_IS_JOB_EXECUTABLE }}
