@@ -28,10 +28,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
-  REPOSITORY_NAME: shardingsphere
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
 jobs:
+  global-env:
+    uses: ./.github/workflows/required-reusable.yml
+
   detect-changed-files:
     name: Detect Changed Files
     runs-on: ubuntu-latest
@@ -47,9 +49,10 @@ jobs:
       changed_operations: ${{ steps.filter.outputs.changes }}
 
   e2e-operation-job:
-    needs: detect-changed-files
+    needs: [ detect-changed-files, global-env ]
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     strategy:
       max-parallel: 20
       fail-fast: false
@@ -61,7 +64,6 @@ jobs:
             image: { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }
           - operation: showprocesslist
             image: { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" }
-    timeout-minutes: 40
     steps:
       - env:
           changed_operations: ${{ needs.detect-changed-files.outputs.changed_operations }}
