@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
+package org.apache.shardingsphere.infra.binder.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Table name segment.
+ * SQL statement binder.
+ * 
+ * @param <T> type of SQL statement
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class TableNameSegment implements SQLSegment {
+public interface SQLStatementBinder<T extends SQLStatement> {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final IdentifierValue identifier;
-    
-    private IdentifierValue originalDatabase;
-    
-    private IdentifierValue originalSchema;
+    /**
+     * Bind SQL statement with metadata.
+     *
+     * @param sqlStatement sql statement
+     * @param metaData meta data
+     * @param defaultDatabaseName default database name
+     * @return bounded sql statement
+     */
+    T bind(T sqlStatement, ShardingSphereMetaData metaData, String defaultDatabaseName);
 }
