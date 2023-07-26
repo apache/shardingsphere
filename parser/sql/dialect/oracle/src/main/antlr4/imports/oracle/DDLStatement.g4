@@ -3575,8 +3575,15 @@ mapOrderFunctionSpec
     : (MAP | ORDER) MEMBER functionSpec
     ;
 
+restrictReferencesPragma
+    : PRAGMA RESTRICT_REFERENCES
+    LP_ (subprogramName | methodName | DEFAULT) COMMA_
+    (RNDS | WNDS | RNPS | WNPS | TRUST)
+    (COMMA_ (RNDS | WNDS | RNPS | WNPS | TRUST))* RP_
+    ;
+
 elementSpecification
-    : inheritanceClauses? (subprogramSpec | constructorSpec | mapOrderFunctionSpec)+
+    : inheritanceClauses? (subprogramSpec | constructorSpec | mapOrderFunctionSpec)+ (COMMA_ restrictReferencesPragma)?
     ;
 
 replaceTypeClause
@@ -3584,5 +3591,8 @@ replaceTypeClause
     ;
 
 alterType
-    : ALTER TYPE typeName (compileTypeClause|replaceTypeClause)
+    : ALTER TYPE typeName
+    (compileTypeClause|
+    RESET |
+    replaceTypeClause)
     ;

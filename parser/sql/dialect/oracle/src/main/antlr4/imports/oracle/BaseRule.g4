@@ -418,6 +418,14 @@ tablespaceName
     : identifier
     ;
 
+subprogramName
+    : identifier
+    ;
+
+methodName
+    : identifier
+    ;
+
 tablespaceSetName
     : identifier
     ;
