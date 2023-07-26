@@ -19,7 +19,7 @@ name: E2E - Agent
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ dev ]
     paths:
       - '.github/workflows/e2e-agent.yml'
       - '**/pom.xml'
