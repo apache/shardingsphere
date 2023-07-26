@@ -27,7 +27,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Sharding statistics table data collector of PostgreSQL.
@@ -39,8 +38,7 @@ public final class PostgreSQLShardingStatisticsTableCollector implements Dialect
     private static final String POSTGRESQL_TABLE_DATA_LENGTH = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH  FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME='%s' AND RELNAME = '%s'";
     
     @Override
-    public void appendRow(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row) throws SQLException {
-        DataSource dataSource = dataSources.get(dataNode.getDataSourceName());
+    public void appendRow(final DataSource dataSource, final DataNode dataNode, final List<Object> row) throws SQLException {
         BigDecimal tableRows = BigDecimal.ZERO;
         BigDecimal dataLength = BigDecimal.ZERO;
         try (

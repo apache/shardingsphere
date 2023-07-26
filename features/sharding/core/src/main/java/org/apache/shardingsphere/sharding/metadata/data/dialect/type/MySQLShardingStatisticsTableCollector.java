@@ -27,7 +27,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Sharding statistics table data collector of MySQL.
@@ -37,8 +36,7 @@ public final class MySQLShardingStatisticsTableCollector implements DialectShard
     private static final String MYSQL_TABLE_ROWS_AND_DATA_LENGTH = "SELECT TABLE_ROWS, DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'";
     
     @Override
-    public void appendRow(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row) throws SQLException {
-        DataSource dataSource = dataSources.get(dataNode.getDataSourceName());
+    public void appendRow(final DataSource dataSource, final DataNode dataNode, final List<Object> row) throws SQLException {
         BigDecimal tableRows = BigDecimal.ZERO;
         BigDecimal dataLength = BigDecimal.ZERO;
         try (

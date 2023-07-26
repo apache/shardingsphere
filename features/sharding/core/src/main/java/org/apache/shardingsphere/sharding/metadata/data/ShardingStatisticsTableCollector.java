@@ -88,7 +88,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
         DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());
         Optional<DialectShardingStatisticsTableCollector> dialectCollector = DatabaseTypedSPILoader.findService(DialectShardingStatisticsTableCollector.class, databaseType);
         if (dialectCollector.isPresent()) {
-            dialectCollector.get().appendRow(dataSources, dataNode, row);
+            dialectCollector.get().appendRow(dataSources.get(dataNode.getDataSourceName()), dataNode, row);
         } else {
             row.add(BigDecimal.ZERO);
             row.add(BigDecimal.ZERO);

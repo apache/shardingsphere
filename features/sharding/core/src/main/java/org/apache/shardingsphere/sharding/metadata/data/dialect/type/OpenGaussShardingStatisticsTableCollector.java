@@ -27,7 +27,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Sharding statistics table data collector of openGauss.
@@ -37,8 +36,8 @@ public final class OpenGaussShardingStatisticsTableCollector implements DialectS
     private static final String OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH = "SELECT RELTUPLES AS TABLE_ROWS, PG_TABLE_SIZE('%s') AS DATA_LENGTH FROM PG_CLASS WHERE RELNAME = '%s'";
     
     @Override
-    public void appendRow(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row) throws SQLException {
-        try (Connection connection = dataSources.get(dataNode.getDataSourceName()).getConnection()) {
+    public void appendRow(final DataSource dataSource, final DataNode dataNode, final List<Object> row) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
             if (isTableExist(connection, dataNode.getTableName())) {
                 appendRow(dataNode, row, connection);
             } else {
@@ -52,8 +51,7 @@ public final class OpenGaussShardingStatisticsTableCollector implements DialectS
         try (
                 Statement statement = connection.createStatement()) {
             try (
-                    ResultSet resultSet = statement
-                            .executeQuery(String.format(OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH, dataNode.getTableName(), dataNode.getTableName()))) {
+                    ResultSet resultSet = statement.executeQuery(String.format(OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH, dataNode.getTableName(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
                     row.add(resultSet.getBigDecimal(TABLE_ROWS_COLUMN_NAME));
                     row.add(resultSet.getBigDecimal(DATA_LENGTH_COLUMN_NAME));
