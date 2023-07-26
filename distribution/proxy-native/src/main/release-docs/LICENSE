@@ -368,4 +368,5 @@ UPL licenses
 The following components are provided under the UPL License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    truffle-api 22.3.1: http://www.graalvm.org/, UPL
+    graal-sdk 23.0.1: https://github.com/oracle/graal, UPL 1.0
+    truffle-api 23.0.1: https://github.com/oracle/graal/tree/master/truffle, UPL 1.0

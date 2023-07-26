@@ -22,18 +22,14 @@ ENV LOCAL_PATH /opt/shardingsphere-proxy-native
 ADD target/${APP_NAME}.tar.gz /opt
 RUN mv /opt/${APP_NAME} ${LOCAL_PATH}
 
-FROM oraclelinux:9-slim
+FROM ghcr.io/graalvm/graalvm-community:17.0.7-ol9
 MAINTAINER ShardingSphere "dev@shardingsphere.apache.org"
 
 ARG NATIVE_IMAGE_NAME
 ENV LOCAL_PATH /opt/shardingsphere-proxy-native
-ENV JAVA_HOME "/opt/graalvm-ce-java17-22.3.1"
-ENV PATH "$JAVA_HOME/bin:$PATH"
 
-RUN microdnf install gzip -y && \
-    bash <(curl -sL https://get.graalvm.org/jdk) --to "/opt" -c espresso graalvm-ce-java17-22.3.1 && \
-    $JAVA_HOME/bin/gu remove native-image && \
-    microdnf clean all
+RUN $JAVA_HOME/bin/gu install espresso && \
+    $JAVA_HOME/bin/gu remove native-image
 
 COPY --from=prepare ${LOCAL_PATH} ${LOCAL_PATH}
 ENTRYPOINT ${LOCAL_PATH}/${NATIVE_IMAGE_NAME} 3307 ${LOCAL_PATH}/conf "0.0.0.0" false

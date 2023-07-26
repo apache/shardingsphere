@@ -68,7 +68,7 @@
         <profile>
             <id>release.native</id>
             <properties>
-                <truffle-api.version>22.3.1</truffle-api.version>
+                <truffle-api.version>23.0.1</truffle-api.version>
                 <jacoco.skip>true</jacoco.skip>
                 <maven.javadoc.skip>true</maven.javadoc.skip>
                 <checkstyle.skip>true</checkstyle.skip>
@@ -85,7 +85,6 @@
                         <configuration>
                             <source>17</source>
                             <target>17</target>
-                            <compilerArgument>--enable-preview</compilerArgument>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -98,11 +97,9 @@
                             <verbose>true</verbose>
                             <buildArgs>
                                 <arg>--language:java</arg>
+                                <arg>-H:+AllowDeprecatedBuilderClassesOnImageClasspath</arg>
                                 <arg>--report-unsupported-elements-at-runtime</arg>
                             </buildArgs>
-                            <jvmArgs>
-                                <arg>--enable-preview</arg>
-                            </jvmArgs>
                             <metadataRepository>
                                 <enabled>true</enabled>
                             </metadataRepository>

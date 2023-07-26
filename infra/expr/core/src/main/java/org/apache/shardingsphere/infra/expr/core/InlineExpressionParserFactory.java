@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InlineExpressionParserFactory {
     
-    // workaround for https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/condition/EnabledInNativeImage.html
+    // workaround for https://junit.org/junit5/docs/5.10.0/api/org.junit.jupiter.api/org/junit/jupiter/api/condition/EnabledInNativeImage.html
     private static final boolean IS_SUBSTRATE_VM = "runtime".equals(System.getProperty("org.graalvm.nativeimage.imagecode"));
     
     /**
