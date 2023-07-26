@@ -3565,8 +3565,18 @@ subprogramSpec
     : (MEMEBER | STATIC) (procedureSpec | functionSpec)
     ;
 
+constructorSpec
+    : FINAL? INSTANTIABLE? CONSTRUCTOR FUNCTION typeName
+    (LP_ (SELF IN OUT typeName COMMA_)? parameterValue typeName (COMMA_ parameterValue typeName)* RP_)?
+    RETURN SELF AS RESULT ((AS | IS) callSpec)?
+    ;
+
+mapOrderFunctionSpec
+    : (MAP | ORDER) MEMBER functionSpec
+    ;
+
 elementSpecification
-    : inheritanceClauses? (subprogramSpec)+
+    : inheritanceClauses? (subprogramSpec | constructorSpec | mapOrderFunctionSpec)+
     ;
 
 replaceTypeClause
