@@ -23,9 +23,10 @@ import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.database.core.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -131,7 +132,7 @@ public final class EnumerableScanExecutor {
         String databaseName = executorContext.getDatabaseName().toLowerCase();
         String schemaName = executorContext.getSchemaName().toLowerCase();
         DatabaseType databaseType = optimizerContext.getParserContext(databaseName).getDatabaseType();
-        if (databaseType.getSystemSchemas().contains(schemaName)) {
+        if (new SystemDatabase(databaseType).getSystemSchemas().contains(schemaName)) {
             return executeByShardingSphereData(databaseName, schemaName, table, databaseType);
         }
         SQLFederationExecutorContext federationContext = executorContext.getFederationContext();

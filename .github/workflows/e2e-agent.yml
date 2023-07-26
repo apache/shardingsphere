@@ -19,7 +19,7 @@ name: E2E - Agent
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ dev ]
     paths:
       - '.github/workflows/e2e-agent.yml'
       - '**/pom.xml'
@@ -53,12 +53,16 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
-  REPOSITORY_NAME: shardingsphere
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
 
 jobs:
-  mysql:
+  global-env:
+    name: Import Global Env
+    uses: ./.github/workflows/required-reusable.yml
+
+  agent-mysql:
     name: E2E - Agent with MySQL
+    needs: global-env
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -100,9 +104,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Build Project
         run:
           ./mvnw -B clean install -DskipITs -DskipTests -Prelease

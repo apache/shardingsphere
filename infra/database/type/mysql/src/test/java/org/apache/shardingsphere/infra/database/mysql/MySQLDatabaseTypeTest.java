@@ -23,11 +23,9 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MySQLDatabaseTypeTest {
     
@@ -41,19 +39,5 @@ class MySQLDatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(databaseType.getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:")));
-    }
-    
-    @Test
-    void assertGetSystemDatabases() {
-        assertTrue(databaseType.getSystemDatabaseSchemaMap().containsKey("information_schema"));
-        assertTrue(databaseType.getSystemDatabaseSchemaMap().containsKey("performance_schema"));
-        assertTrue(databaseType.getSystemDatabaseSchemaMap().containsKey("mysql"));
-        assertTrue(databaseType.getSystemDatabaseSchemaMap().containsKey("sys"));
-        assertTrue(databaseType.getSystemDatabaseSchemaMap().containsKey("shardingsphere"));
-    }
-    
-    @Test
-    void assertGetSystemSchemas() {
-        assertThat(databaseType.getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "performance_schema", "mysql", "sys", "shardingsphere"))));
     }
 }

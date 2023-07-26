@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.connector;
 
 import lombok.Getter;
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;

@@ -115,6 +115,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.IntervalExpressionProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlSerializeFunctionSegment;
@@ -732,6 +733,17 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (projection instanceof AliasAvailable) {
             ((AliasAvailable) projection).setAlias(alias);
             return projection;
+        }
+        if (projection instanceof IntervalExpressionProjection) {
+            IntervalExpressionProjection intervalExpressionProjection = (IntervalExpressionProjection) projection;
+            IntervalExpressionProjection result = new IntervalExpressionProjection(intervalExpressionProjection.getStartIndex(), intervalExpressionProjection.getStopIndex(),
+                    intervalExpressionProjection.getLeft(), intervalExpressionProjection.getMinus(), intervalExpressionProjection.getRight());
+            if (null != intervalExpressionProjection.getDayToSecondExpression()) {
+                result.setDayToSecondExpression(intervalExpressionProjection.getDayToSecondExpression());
+            } else {
+                result.setYearToMonthExpression(intervalExpressionProjection.getYearToMonthExpression());
+            }
+            return result;
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias

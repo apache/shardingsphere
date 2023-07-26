@@ -60,4 +60,12 @@ public final class ColumnProjectionSegment implements ProjectionSegment, AliasAv
     public int getStopIndex() {
         return null == alias ? column.getStopIndex() : alias.getStopIndex();
     }
+    
+    /**
+     * Get alias segment.
+     * @return alias segment
+     */
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
+    }
 }

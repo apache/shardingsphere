@@ -18,16 +18,13 @@
 name: Required - Check
 
 on:
-  push:
   pull_request:
+    branches: [ master ]
   workflow_dispatch:
 
 concurrency:
-  group: check-${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
+  group: check-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  REPOSITORY_NAME: shardingsphere
 
 jobs:
   check-checkstyle:
@@ -37,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run CheckStyle
-        run: ./mvnw checkstyle:check -T1C
+        run: ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
 
   check-spotless:
     name: Check - Spotless
@@ -55,4 +52,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run Apache Rat
-        run: ./mvnw apache-rat:check -T1C
+        run: ./mvnw apache-rat:check -Drat.skip=false -T1C

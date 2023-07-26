@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 public final class BranchDatabaseTypeFixture implements DatabaseType {
@@ -43,16 +41,6 @@ public final class BranchDatabaseTypeFixture implements DatabaseType {
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton("jdbc:trunk:branch:");
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return new HashMap<>();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
     }
     
     @Override

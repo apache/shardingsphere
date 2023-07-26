@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * Database type of SQLServer.
@@ -44,16 +42,6 @@ public final class SQLServerDatabaseType implements DatabaseType {
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:");
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
     }
     
     @Override

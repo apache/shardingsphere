@@ -2595,4 +2595,28 @@
             <simple-table name="V$LOGMNR_CONTENTS" start-index="70" stop-index="86" />
         </from>
     </select>
+    
+    <select sql-case-id="select_interval_day_to_second_expression">
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="(SYSTIMESTAMP - order_date) DAY(9) TO SECOND" start-index="7" stop-index="50">
+                <function>
+                    <interval-expression>
+                        <left>
+                            <column name="SYSTIMESTAMP" start-index="" stop-index=""/>
+                        </left>
+                        <operator>-</operator>
+                        <right>
+                            <column name="order_date" start-index="" stop-index="" />
+                        </right>
+                        <interval-day-to-second-expr>
+                            <leading-field-precision>9</leading-field-precision>
+                        </interval-day-to-second-expr>
+                    </interval-expression>
+                </function>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="orders" start-index="57" stop-index="62" />
+        </from>
+    </select>
 </sql-parser-test-cases>

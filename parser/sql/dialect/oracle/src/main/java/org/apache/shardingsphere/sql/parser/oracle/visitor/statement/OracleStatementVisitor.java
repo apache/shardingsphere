@@ -48,6 +48,9 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Hexade
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexTypeNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntervalDayToSecondExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntervalExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntervalYearToMonthExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NumberLiteralsContext;
@@ -57,6 +60,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OwnerC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PackageNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PredicateContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PrivateExprOfDbContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SimpleExprContext;
@@ -99,6 +103,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Datetime
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.IntervalDayToSecondExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.IntervalExpressionProjection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.IntervalYearToMonthExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlNameSpaceStringAsIdentifierSegment;
@@ -507,7 +514,53 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return null == ctx.joinOperator() ? visit(ctx.columnName())
                     : new ColumnWithJoinOperatorSegment(startIndex, stopIndex, (ColumnSegment) visitColumnName(ctx.columnName()), ctx.joinOperator().getText());
         }
+        if (null != ctx.privateExprOfDb()) {
+            return visit(ctx.privateExprOfDb());
+        }
         return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitPrivateExprOfDb(final PrivateExprOfDbContext ctx) {
+        if (null != ctx.intervalExpression()) {
+            return visit(ctx.intervalExpression());
+        }
+        return super.visitPrivateExprOfDb(ctx);
+    }
+    
+    @Override
+    public ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
+        IntervalExpressionProjection result = new IntervalExpressionProjection(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)),
+                (ExpressionSegment) visit(ctx.MINUS_()), (ExpressionSegment) visit(ctx.expr(1)));
+        if (null != ctx.intervalDayToSecondExpression()) {
+            result.setDayToSecondExpression((IntervalDayToSecondExpression) visit(ctx.intervalDayToSecondExpression()));
+        } else {
+            result.setYearToMonthExpression((IntervalYearToMonthExpression) visit(ctx.intervalYearToMonthExpression()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitIntervalDayToSecondExpression(final IntervalDayToSecondExpressionContext ctx) {
+        IntervalDayToSecondExpression result = new IntervalDayToSecondExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ctx.DAY().getText(), ctx.TO().getText(), ctx.SECOND().getText());
+        if (null != ctx.leadingFieldPrecision()) {
+            result.setLeadingFieldPrecision(Integer.parseInt(ctx.leadingFieldPrecision().INTEGER_().getText()));
+        }
+        if (null != ctx.fractionalSecondPrecision()) {
+            result.setFractionalSecondPrecision(Integer.parseInt(ctx.fractionalSecondPrecision().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitIntervalYearToMonthExpression(final IntervalYearToMonthExpressionContext ctx) {
+        IntervalYearToMonthExpression result = new IntervalYearToMonthExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ctx.YEAR().getText(), ctx.TO().getText(), ctx.MONTH().getText());
+        if (null != ctx.leadingFieldPrecision()) {
+            result.setLeadingFieldPrecision(Integer.parseInt(ctx.leadingFieldPrecision().INTEGER_().getText()));
+        }
+        return result;
     }
     
     @Override
@@ -545,7 +598,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         String aggregationType = ctx.aggregationFunctionName().getText();
         return AggregationType.isAggregationType(aggregationType)
                 ? createAggregationSegment(ctx, aggregationType)
-                : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+                : new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), aggregationType, getOriginalText(ctx));
     }
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
@@ -593,7 +646,10 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.xmlIsSchemaValidFunction()) {
             return visit(ctx.xmlIsSchemaValidFunction());
         }
-        return visit(ctx.xmlTableFunction());
+        if (null != ctx.xmlTableFunction()) {
+            return visit(ctx.xmlTableFunction());
+        }
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.specifiedFunctionName.getText(), getOriginalText(ctx));
     }
     
     @Override

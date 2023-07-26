@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -54,8 +53,8 @@ public final class OracleDatabaseType implements DatabaseType {
     }
     
     @Override
-    public boolean isReservedWord(final String item) {
-        return RESERVED_KEYWORDS.contains(item.toUpperCase());
+    public boolean isReservedWord(final String identifier) {
+        return RESERVED_KEYWORDS.contains(identifier.toUpperCase());
     }
     
     @Override
@@ -80,16 +79,6 @@ public final class OracleDatabaseType implements DatabaseType {
     @Override
     public String formatTableNamePattern(final String tableNamePattern) {
         return tableNamePattern.toUpperCase();
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
     }
     
     @Override

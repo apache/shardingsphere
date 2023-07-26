@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.result.query;
 
-import org.apache.shardingsphere.infra.binder.statement.dal.ShowTablesStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowTablesStatementContext;
 import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;

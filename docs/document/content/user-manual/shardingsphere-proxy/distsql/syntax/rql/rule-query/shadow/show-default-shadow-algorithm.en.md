@@ -5,7 +5,7 @@ weight = 4
 
 ### Description
 
-The `SHOW DEFAULT SHADOW ALGORITHM` syntax is used to query default shadow algorithms for specified database.
+The `SHOW DEFAULT SHADOW ALGORITHM` syntax is used to query default shadow algorithm for specified database.
 
 ### Syntax
 
@@ -13,7 +13,7 @@ The `SHOW DEFAULT SHADOW ALGORITHM` syntax is used to query default shadow algor
 {{% tab name="Grammar" %}}
 ```sql
 ShowEncryptAlgorithm::=
-  'SHOW' 'SHADOW' 'ALGORITHMS' ('FROM' databaseName)?
+  'SHOW' 'SHADOW' 'ALGORITHM' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
@@ -38,14 +38,14 @@ databaseName ::=
 
 ### Example
 
-- Query shadow algorithms for specified database.
+- Query default shadow algorithm for specified database.
 
 ```sql
-SHOW DEFAULT SHADOW ALGORITHMS FROM shadow_db;
+SHOW DEFAULT SHADOW ALGORITHM FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW DEFAULT SHADOW ALGORITHMS FROM shadow_db;
+mysql> SHOW DEFAULT SHADOW ALGORITHM FROM shadow_db;
 +-------------------------+-------------+-----------------------------------------+
 | shadow_algorithm_name   | type        | props                                   |
 +-------------------------+-------------+-----------------------------------------+
@@ -54,14 +54,14 @@ mysql> SHOW DEFAULT SHADOW ALGORITHMS FROM shadow_db;
 1 row in set (0.00 sec)
 ```
 
-- Query shadow algorithms for current database.
+- Query default shadow algorithm for current database.
 
 ```sql
-SHOW SHADOW ALGORITHMS;
+SHOW SHADOW ALGORITHM;
 ```
 
 ```sql
-mysql> SHOW SHADOW ALGORITHMS;
+mysql> SHOW SHADOW ALGORITHM;
 +-------------------------+-------------+-----------------------------------------+
 | shadow_algorithm_name   | type        | props                                   |
 +-------------------------+-------------+-----------------------------------------+
@@ -72,7 +72,7 @@ mysql> SHOW SHADOW ALGORITHMS;
 
 ### Reserved word
 
-`SHOW`, `DEFAULT`,`SHADOW`, `ALGORITHMS`, `FROM`
+`SHOW`, `DEFAULT`,`SHADOW`, `ALGORITHM`, `FROM`
 
 ### Related links
 

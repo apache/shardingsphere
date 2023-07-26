@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.AlterViewStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateViewStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.DropViewStatementContext;
-import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterViewStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateViewStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropViewStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;

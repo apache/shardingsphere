@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;

@@ -22,9 +22,7 @@ import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,17 +39,6 @@ class OpenGaussDatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "openGauss").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:opengauss:")));
-    }
-    
-    @Test
-    void assertGetSystemDatabases() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "openGauss").getSystemDatabaseSchemaMap().containsKey("postgres"));
-    }
-    
-    @Test
-    void assertGetSystemSchemas() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "openGauss").getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "pg_catalog", "blockchain",
-                "cstore", "db4ai", "dbe_perf", "dbe_pldebugger", "gaussdb", "oracle", "pkg_service", "snapshot", "sqladvisor", "dbe_pldeveloper", "pg_toast", "pkg_util", "shardingsphere"))));
     }
     
     @Test
