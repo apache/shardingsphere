@@ -89,10 +89,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
+          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
           restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-e2e-cache-
+            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Setup JDK 11
         if: (env.skip_current_step == 'false')
         uses: actions/setup-java@v3
