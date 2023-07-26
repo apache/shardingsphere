@@ -61,6 +61,7 @@ jobs:
   ci:
     name: CI - Compile by JDK 11 and Run on JDK 8
     needs: global-env
+    if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
