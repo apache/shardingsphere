@@ -51,5 +51,5 @@
     <test-cases sql-case-id="select_where_with_simple_expr_with_odbc_escape_syntax" expected-sql="SELECT * FROM t_order WHERE {ts ?}" db-types="MySQL" />
     <test-cases sql-case-id="select_where_with_simple_expr_with_row" expected-sql="SELECT * FROM t_order WHERE ROW(?, now()) = (order_id, status)" db-types="MySQL" />
     <test-cases sql-case-id="select_where_with_simple_expr_with_tilde" expected-sql="SELECT * FROM t_order WHERE ~t_order.order_id" db-types="MySQL" />
-    <test-cases sql-case-id="select_where_with_simple_expr_with_variable" expected-sql="SELECT * FROM t_order WHERE @@max_connections &lt; order_id" db-types="MySQL" />
+    <test-cases sql-case-id="select_where_with_simple_expr_with_variable" expected-sql="SELECT * FROM `t_order` WHERE `@@max_connections` &lt; `order_id`" db-types="MySQL" />
 </sql-node-converter-test-cases>
