@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl;
-
-import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
-
-import java.util.Optional;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
 /**
- * Common expression converter.
+ * Variable type enum.
  */
-public final class CommonExpressionConverter implements SQLSegmentConverter<CommonExpressionSegment, SqlNode> {
+public enum VariableType {
     
-    @Override
-    public Optional<SqlNode> convert(final CommonExpressionSegment segment) {
-        return Optional.empty();
-    }
+    USER_VARIABLE, SYSTEM_VARIABLE
 }

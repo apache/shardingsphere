@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.VariableType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 import java.util.Optional;
@@ -39,6 +40,8 @@ public final class VariableSegment implements ExpressionSegment {
     private final String variable;
     
     private String scope;
+    
+    private VariableType variableType;
     
     /**
      * Get scope.
