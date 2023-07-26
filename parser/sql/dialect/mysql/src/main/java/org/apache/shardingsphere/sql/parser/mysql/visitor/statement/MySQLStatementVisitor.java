@@ -228,10 +228,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -1166,13 +1163,17 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return visit(ctx.simpleExpr(0));
         }
         if (null != ctx.TILDE_()) {
-            return new NotExpression(ctx.getStart().getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.simpleExpr(0)),false);
+            return new NotExpression(ctx.getStart().getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.simpleExpr(0)), false);
         }
         if (null != ctx.variable()) {
             return visit(ctx.variable());
         }
-        for (ExprContext each : ctx.expr()) {
-            visit(each);
+        if (null != ctx.LP_()) {
+            ListExpression listExpression = new ListExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+            for (ExprContext each : ctx.expr()) {
+                listExpression.getItems().add((ExpressionSegment) visit(each));
+            }
+            return listExpression;
         }
         for (SimpleExprContext each : ctx.simpleExpr()) {
             visit(each);
