@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.metadata.reviser.constraint;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviser;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.ConstraintMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.single.rule.SingleRule;
 

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.infra.database.sql92;
 
-import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
-import org.apache.shardingsphere.infra.database.core.datasource.StandardDataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.datasource.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connection.StandardDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connection.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.regex.Matcher;
