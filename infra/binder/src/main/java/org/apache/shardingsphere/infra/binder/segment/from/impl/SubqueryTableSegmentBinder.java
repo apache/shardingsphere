@@ -35,10 +35,11 @@ public final class SubqueryTableSegmentBinder {
      * Bind subquery table segment with metadata.
      *
      * @param segment join table segment
+     * @param metaData meta data
      * @param defaultDatabaseName default database name
      * @return bounded subquery table segment
      */
-    public static SubqueryTableSegment bind(final SubqueryTableSegment segment, ShardingSphereMetaData metaData, String defaultDatabaseName) {
+    public static SubqueryTableSegment bind(final SubqueryTableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
         SelectStatement boundedSelect = new SelectStatementBinder().bind(segment.getSubquery().getSelect(), metaData, defaultDatabaseName);
         SubquerySegment boundedSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundedSelect);
         boundedSubquerySegment.setSubqueryType(segment.getSubquery().getSubqueryType());

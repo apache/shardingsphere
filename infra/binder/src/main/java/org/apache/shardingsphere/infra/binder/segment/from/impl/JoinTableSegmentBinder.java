@@ -34,6 +34,7 @@ public final class JoinTableSegmentBinder {
      * Bind join table segment with metadata.
      *
      * @param segment join table segment
+     * @param metaData meta data
      * @param defaultDatabaseName default database name
      * @param databaseType database type
      * @return bounded join table segment
