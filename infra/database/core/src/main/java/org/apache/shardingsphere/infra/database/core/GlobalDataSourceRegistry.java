@@ -15,33 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.model;
+package org.apache.shardingsphere.infra.database.core;
 
-import lombok.EqualsAndHashCode;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
+
+import javax.sql.DataSource;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Column meta data.
+ * Global data source registry.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class ColumnMetaData {
+public final class GlobalDataSourceRegistry {
     
-    private final String name;
+    private static final GlobalDataSourceRegistry INSTANCE = new GlobalDataSourceRegistry();
     
-    private final int dataType;
+    private final Map<String, DataSource> cachedDataSourceDataSources = new ConcurrentHashMap<>();
     
-    private final boolean primaryKey;
+    private final Map<String, String> cachedDatabaseTables = new ConcurrentHashMap<>();
     
-    private final boolean generated;
-    
-    private final boolean caseSensitive;
-    
-    private final boolean visible;
-    
-    private final boolean unsigned;
+    /**
+     * Get global data source.
+     *
+     * @return instance of ShardingSphere global data source.
+     */
+    public static GlobalDataSourceRegistry getInstance() {
+        return INSTANCE;
+    }
 }

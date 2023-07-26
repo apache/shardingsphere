@@ -15,27 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.oracle;
+package org.apache.shardingsphere.infra.database.core.metadata.loader.model;
 
-import org.apache.shardingsphere.infra.database.core.datatype.DialectDataTypeLoader;
-
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collections;
-import java.util.Map;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Oracle data type loader.
+ * Column meta data.
  */
-public final class OracleDataTypeLoader implements DialectDataTypeLoader {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class ColumnMetaData {
     
-    @Override
-    public Map<String, Integer> load() throws SQLException {
-        return Collections.singletonMap("NUMBER", Types.NUMERIC);
-    }
+    private final String name;
     
-    @Override
-    public String getDatabaseType() {
-        return "Oracle";
-    }
+    private final int dataType;
+    
+    private final boolean primaryKey;
+    
+    private final boolean generated;
+    
+    private final boolean caseSensitive;
+    
+    private final boolean visible;
+    
+    private final boolean unsigned;
 }

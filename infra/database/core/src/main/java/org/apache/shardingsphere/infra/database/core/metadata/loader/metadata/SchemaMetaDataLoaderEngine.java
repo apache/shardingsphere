@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata;
+package org.apache.shardingsphere.infra.database.core.metadata.loader.metadata;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.TableMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.common.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
 

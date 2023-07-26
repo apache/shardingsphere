@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.adapter;
 
+import org.apache.shardingsphere.infra.database.core.metadata.loader.adapter.MetaDataLoaderConnectionAdapter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
