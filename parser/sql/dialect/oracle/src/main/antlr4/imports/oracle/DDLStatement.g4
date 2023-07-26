@@ -2968,7 +2968,7 @@ fileOwnerClause
     ;
 
 setOwnerClause
-    :OWNER EQ_ username | GROUP EQ_ usergroupName
+    : OWNER EQ_ username | GROUP EQ_ usergroupName
     ;
 
 scrubClause
