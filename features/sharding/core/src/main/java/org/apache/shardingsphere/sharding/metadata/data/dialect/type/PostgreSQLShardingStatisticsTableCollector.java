@@ -22,31 +22,36 @@ import org.apache.shardingsphere.sharding.metadata.data.dialect.DialectShardingS
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Sharding statistics table data collector of PostgreSQL.
  */
 public final class PostgreSQLShardingStatisticsTableCollector implements DialectShardingStatisticsTableCollector {
     
-    private static final String POSTGRESQL_TABLE_ROWS_LENGTH = "SELECT RELTUPLES FROM PG_CLASS WHERE RELNAMESPACE = (SELECT OID FROM PG_NAMESPACE WHERE NSPNAME='%s') AND RELNAME = '%s'";
+    private static final String POSTGRESQL_TABLE_ROWS_LENGTH = "SELECT RELTUPLES FROM PG_CLASS WHERE RELNAMESPACE = (SELECT OID FROM PG_NAMESPACE WHERE NSPNAME= ?) AND RELNAME = ?";
     
-    private static final String POSTGRESQL_TABLE_DATA_LENGTH = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME='%s' AND RELNAME = '%s'";
+    private static final String POSTGRESQL_TABLE_DATA_LENGTH = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME= ? AND RELNAME = ?";
     
     @Override
     public boolean appendRow(final Connection connection, final DataNode dataNode, final List<Object> row) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(String.format(POSTGRESQL_TABLE_ROWS_LENGTH, dataNode.getSchemaName(), dataNode.getTableName()))) {
-                row.add(resultSet.next() ? resultSet.getBigDecimal(TABLE_ROWS_COLUMN_NAME) : BigDecimal.ZERO);
-            }
-            try (ResultSet resultSet = statement.executeQuery(String.format(POSTGRESQL_TABLE_DATA_LENGTH, dataNode.getSchemaName(), dataNode.getTableName()))) {
-                row.add(resultSet.next() ? resultSet.getBigDecimal(DATA_LENGTH_COLUMN_NAME) : BigDecimal.ZERO);
+        row.add(getRowValue(connection, dataNode, POSTGRESQL_TABLE_ROWS_LENGTH, TABLE_ROWS_COLUMN_NAME).orElse(BigDecimal.ZERO));
+        row.add(getRowValue(connection, dataNode, POSTGRESQL_TABLE_DATA_LENGTH, DATA_LENGTH_COLUMN_NAME).orElse(BigDecimal.ZERO));
+        return true;
+    }
+    
+    private Optional<BigDecimal> getRowValue(final Connection connection, final DataNode dataNode, final String sql, final String columnName) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, dataNode.getSchemaName());
+            preparedStatement.setString(2, dataNode.getTableName());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return resultSet.next() ? Optional.of(resultSet.getBigDecimal(columnName)) : Optional.empty();
             }
         }
-        return true;
     }
     
     @Override
