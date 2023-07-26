@@ -19,7 +19,8 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.system.SystemDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.adapter.MetaDataLoaderConnectionAdapter;
 
 import javax.sql.DataSource;
@@ -84,10 +85,11 @@ public final class SchemaMetaDataLoader {
             return Collections.singletonList(connection.getSchema());
         }
         Collection<String> result = new LinkedList<>();
+        SystemDatabase systemDatabase = new SystemDatabase(databaseType);
         try (ResultSet resultSet = connection.getMetaData().getSchemas()) {
             while (resultSet.next()) {
                 String schema = resultSet.getString(TABLE_SCHEME);
-                if (!databaseType.getSystemSchemas().contains(schema)) {
+                if (!systemDatabase.getSystemSchemas().contains(schema)) {
                     result.add(schema);
                 }
             }

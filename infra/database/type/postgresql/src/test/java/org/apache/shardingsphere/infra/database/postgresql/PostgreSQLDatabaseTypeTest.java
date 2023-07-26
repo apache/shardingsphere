@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.infra.database.postgresql;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,22 +39,6 @@ class PostgreSQLDatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:postgresql:")));
-    }
-    
-    @Test
-    void assertGetDataSourceMetaData() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getDataSourceMetaData("jdbc:postgresql://localhost:5432/demo_ds_0", "postgres"),
-                instanceOf(PostgreSQLDataSourceMetaData.class));
-    }
-    
-    @Test
-    void assertGetSystemDatabases() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getSystemDatabaseSchemaMap().containsKey("postgres"));
-    }
-    
-    @Test
-    void assertGetSystemSchemas() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "pg_catalog", "shardingsphere"))));
     }
     
     @Test

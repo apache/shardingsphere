@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.infra.database.core.type.fixture;
 
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public final class TrunkDatabaseTypeFixture implements DatabaseType {
     
@@ -47,21 +44,6 @@ public final class TrunkDatabaseTypeFixture implements DatabaseType {
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton("jdbc:trunk:");
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new DataSourceMetaDataFixture(url);
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return new HashMap<>();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
     }
     
     @Override

@@ -31,4 +31,5 @@
     <sql-case id="alter_diskgroup_scrub" value="ALTER DISKGROUP dgroup_01 SCRUB REPAIR WAIT;" db-types="Oracle" />
     <sql-case id="alter_diskgroup_dismount" value="ALTER DISKGROUP dgroup_01 DISMOUNT FORCE;" db-types="Oracle" />
     <sql-case id="alter_diskgroup_mount" value="ALTER DISKGROUP dgroup_01 MOUNT;" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_offline_disk_drop_after_time_unit_m" value="ALTER DISKGROUP data OFFLINE DISK DATA_001 DROP AFTER 5m" db-types="Oracle" />
 </sql-cases>

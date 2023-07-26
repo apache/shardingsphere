@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dal.ShowColumnsStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dal.ShowTableStatusStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowColumnsStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowTableStatusStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.generic.RemoveTokenGenerator;
 import org.junit.jupiter.api.Test;

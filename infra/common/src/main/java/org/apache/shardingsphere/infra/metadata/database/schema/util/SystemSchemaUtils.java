@@ -19,7 +19,8 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.system.SystemDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
@@ -54,12 +55,13 @@ public final class SystemSchemaUtils {
         if (database.isComplete() && !databaseType.getDefaultSchema().isPresent()) {
             return false;
         }
+        SystemDatabase systemDatabase = new SystemDatabase(databaseType);
         for (String each : schemaNames) {
-            if (databaseType.getSystemSchemas().contains(each)) {
+            if (systemDatabase.getSystemSchemas().contains(each)) {
                 return true;
             }
         }
-        return !databaseType.getDefaultSchema().isPresent() && databaseType.getSystemSchemas().contains(database.getName());
+        return !databaseType.getDefaultSchema().isPresent() && systemDatabase.getSystemSchemas().contains(database.getName());
     }
     
     /**

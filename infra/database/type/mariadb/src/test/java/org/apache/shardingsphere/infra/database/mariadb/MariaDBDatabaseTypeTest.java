@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.infra.database.mariadb;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MariaDBDatabaseTypeTest {
     
@@ -39,20 +37,5 @@ class MariaDBDatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:mariadb:")));
-    }
-    
-    @Test
-    void assertGetDataSourceMetaData() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getDataSourceMetaData("jdbc:mariadb://localhost:3306/foo_ds", "root"), instanceOf(MariaDBDataSourceMetaData.class));
-    }
-    
-    @Test
-    void assertGetSystemDatabaseSchemaMap() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getSystemDatabaseSchemaMap().isEmpty());
-    }
-    
-    @Test
-    void assertGetSystemSchemas() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getSystemSchemas().isEmpty());
     }
 }

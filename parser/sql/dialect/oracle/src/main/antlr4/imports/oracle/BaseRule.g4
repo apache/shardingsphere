@@ -114,7 +114,7 @@ unreservedWord1
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
     | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | MINUTE | ANY 
-    | LENGTH | SINGLE_C | capacityUnit | TARGET | PUBLIC | ID | STATE | PRIORITY
+    | LENGTH | SINGLE_C | capacityUnit | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
     | CONSTRAINT | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
     | WHEN | CAST | TRIM | SUBSTRING | FULL | INNER | OUTER | LEFT | RIGHT | CROSS
     | USING | FALSE | SAVEPOINT | BODY | CHARACTER | ARRAY | TIME | TIMEOUT | TIMESTAMP | LOCALTIME
@@ -539,6 +539,10 @@ subpartitionKeyValue
     : INTEGER_ | dateTimeLiterals
     ;
 
+encryptAlgorithmName
+    : STRING_
+    ;
+
 zonemapName
     : identifier
     ;
@@ -718,6 +722,8 @@ analyticFunction
     : specifiedAnalyticFunctionName = (LEAD | LAG) ((LP_ expr leadLagInfo? RP_ respectOrIgnoreNulls?) | (LP_ expr respectOrIgnoreNulls? leadLagInfo? RP_)) overClause
     | specifiedAnalyticFunctionName = NTILE LP_ expr RP_ overClause
     | specifiedAnalyticFunctionName = (PERCENTILE_CONT | PERCENTILE_DISC) LP_ expr RP_ WITHIN GROUP LP_ orderByClause RP_ overClause
+    | specifiedAnalyticFunctionName = CORR LP_ expr COMMA_ expr RP_ overClause
+    | specifiedAnalyticFunctionName = RATIO_TO_REPORT LP_ expr RP_ overClause
     | analyticFunctionName LP_ dataType* RP_ overClause
     ;
 
@@ -726,7 +732,21 @@ leadLagInfo
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction
+    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction
+    ;
+
+trimFunction
+    : TRIM LP_ trimOperands? expr RP_
+    ;
+
+trimOperands
+    : (trimType expr? FROM) | (expr FROM)
+    ;
+
+trimType
+    : LEADING
+    | TRAILING
+    | BOTH
     ;
 
 firstOrLastValueFunction
@@ -758,7 +778,7 @@ extractFunction
     ;
 
 regularFunction
-    : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : (owner DOT_)? regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
 regularFunctionName
@@ -1837,6 +1857,7 @@ xmlFunction
     | xmlSerializeFunction
     | xmlTableFunction
     | xmlIsSchemaValidFunction
+    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG) LP_ expr (COMMA_ expr)? RP_
     ;
 
 xmlAggFunction
