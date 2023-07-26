@@ -40,9 +40,24 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Aggregat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.*;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.BetweenExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.BinaryOperationExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.CaseWhenExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ColumnConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ExistsSubqueryExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ExtractArgExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.FunctionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.InExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ListExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.LiteralExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ParameterMarkerExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.SubqueryExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.TypeCastExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl.AggregationProjectionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl.DataTypeConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.NotExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.MatchExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.VariableConverter;
 
 import java.util.Optional;
 
