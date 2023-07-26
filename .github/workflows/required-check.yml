@@ -23,11 +23,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: check-${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
+  group: check-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  REPOSITORY_NAME: shardingsphere
 
 jobs:
   check-checkstyle:

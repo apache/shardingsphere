@@ -5745,22 +5745,10 @@
         <projections start-index="7" stop-index="52" literal-start-index="7" literal-stop-index="52">
             <column-projection name="employee_id" start-index="7" stop-index="17" literal-start-index="7" literal-stop-index="17" />
             <expression-projection text="CORR(SYSDATE - hire_date, salary)" start-index="20" stop-index="52" literal-start-index="20" literal-stop-index="52">
+                <literalText>CORR(SYSDATE - hire_date, salary)</literalText>
                 <expr>
                     <function function-name="CORR" text="CORR(SYSDATE - hire_date, salary)" start-index="20" stop-index="52" literal-start-index="20" literal-stop-index="52">
-                        <parameter>
-                            <binary-operation-expression start-index="25" stop-index="43" literal-start-index="25" literal-stop-index="43">
-                                <left>
-                                    <column name="SYSDATE" start-index="25" stop-index="31" literal-start-index="25" literal-stop-index="31" />
-                                </left>
-                                <operator>-</operator>
-                                <right>
-                                    <column name="hire_date" start-index="35" stop-index="43" literal-start-index="35" literal-stop-index="43" />
-                                </right>
-                            </binary-operation-expression>
-                        </parameter>
-                        <parameter>
-                            <column name="salary" start-index="46" stop-index="51" literal-start-index="46" literal-stop-index="51" />
-                        </parameter>
+                        <literalText>CORR(SYSDATE - hire_date, salary)</literalText>
                     </function>
                 </expr>
             </expression-projection>
@@ -5920,5 +5908,125 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+
+    <select sql-case-id="select_with_cover_pop_and_covar_samp">
+        <projections start-index="7" stop-index="203" literal-start-index="7" literal-stop-index="203">
+            <column-projection name="product_id" start-index="7" stop-index="16" literal-start-index="7" literal-stop-index="16" />
+            <column-projection name="supplier_id" start-index="19" stop-index="29" literal-start-index="19" literal-stop-index="29" />
+            <expression-projection text="COVAR_POP(list_price, min_price)  OVER (ORDER BY product_id, supplier_id)" alias="CUM_COVP" start-index="32" stop-index="116" literal-start-index="32" literal-stop-index="116">
+                <literalText>COVAR_POP(list_price, min_price) OVER (ORDER BY product_id, supplier_id)</literalText>
+            </expression-projection>
+            <expression-projection text="COVAR_SAMP(list_price, min_price) OVER (ORDER BY product_id, supplier_id)" alias="CUM_COVS" start-index="119" stop-index="203" literal-start-index="119" literal-stop-index="203">
+                <literalText>COVAR_SAMP(list_price, min_price) OVER (ORDER BY product_id, supplier_id)</literalText>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table alias="p" name="product_information" start-index="211" stop-index="231" literal-start-index="211" literal-stop-index="231" />
+        </from>
+        <where start-index="233" stop-index="254" literal-start-index="233" literal-stop-index="254">
+            <expr>
+                <binary-operation-expression start-index="239" stop-index="254" literal-start-index="239" literal-stop-index="254">
+                    <left>
+                        <column name="category_id" start-index="239" stop-index="249" literal-start-index="239" literal-stop-index="249" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="29" start-index="253" stop-index="254" literal-start-index="253" literal-stop-index="254" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="product_id" order-direction="ASC" start-index="265" stop-index="274" literal-start-index="265" literal-stop-index="274" />
+            <column-item name="supplier_id" order-direction="ASC" start-index="277" stop-index="287" literal-start-index="277" literal-stop-index="287" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_percent_rank_function">
+        <projections start-index="7" stop-index="116" literal-start-index="7" literal-stop-index="116">
+            <column-projection name="department_id" start-index="7" stop-index="19" literal-start-index="7" literal-stop-index="19" />
+            <column-projection name="last_name" start-index="22" stop-index="30" literal-start-index="22" literal-stop-index="30" />
+            <column-projection name="salary" start-index="33" stop-index="38" literal-start-index="33" literal-stop-index="38" />
+            <expression-projection text="PERCENT_RANK()  OVER (PARTITION BY department_id ORDER BY salary DESC)" alias="pr" start-index="41" stop-index="116" literal-start-index="41" literal-stop-index="116">
+                <literalText>PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC)</literalText>
+                <expr>
+                    <function function-name="PERCENT_RANK" text="PERCENT_RANK()  OVER (PARTITION BY department_id ORDER BY salary DESC)" start-index="41" stop-index="110" literal-start-index="41" literal-stop-index="110">
+                        <literalText>PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="123" stop-index="131" literal-start-index="123" literal-stop-index="131" />
+        </from>
+        <order-by>
+            <column-item name="pr" order-direction="ASC" start-index="142" stop-index="143" literal-start-index="142" literal-stop-index="143" />
+            <column-item name="salary" order-direction="ASC" start-index="146" stop-index="151" literal-start-index="146" literal-stop-index="151" />
+            <column-item name="last_name" order-direction="ASC" start-index="154" stop-index="162" literal-start-index="154" literal-stop-index="162" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_rank_function">
+        <projections start-index="7" stop-index="76" literal-start-index="7" literal-stop-index="76">
+            <expression-projection text="RANK(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct)" alias="Rank" start-index="7" stop-index="76" literal-start-index="7" literal-stop-index="76">
+                <literalText>RANK(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct)</literalText>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="83" stop-index="91" literal-start-index="83" literal-stop-index="91" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_rownumber_function">
+        <projections start-index="7" stop-index="50" literal-start-index="7" literal-stop-index="50">
+            <column-projection name="department_id" start-index="7" stop-index="19" literal-start-index="7" literal-stop-index="19" />
+            <column-projection name="first_name" start-index="22" stop-index="31" literal-start-index="22" literal-stop-index="31" />
+            <column-projection name="last_name" start-index="34" stop-index="42" literal-start-index="34" literal-stop-index="42" />
+            <column-projection name="salary" start-index="45" stop-index="50" literal-start-index="45" literal-stop-index="50" />
+        </projections>
+        <from>
+            <subquery-table>
+                <subquery>
+                    <select>
+                        <projections start-index="65" stop-index="180" literal-start-index="65" literal-stop-index="180">
+                            <column-projection name="department_id" start-index="65" stop-index="77" literal-start-index="65" literal-stop-index="77" />
+                            <column-projection name="first_name" start-index="80" stop-index="89" literal-start-index="80" literal-stop-index="89" />
+                            <column-projection name="last_name" start-index="92" stop-index="100" literal-start-index="92" literal-stop-index="100" />
+                            <column-projection name="salary" start-index="103" stop-index="108" literal-start-index="103" literal-stop-index="108" />
+                            <expression-projection text="ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary desc)" alias="rn" start-index="111" stop-index="180" literal-start-index="111" literal-stop-index="180">
+                                <literalText>ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary desc)</literalText>
+                                <expr>
+                                    <function function-name="ROW_NUMBER" text="ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary desc)" start-index="111" stop-index="177" literal-start-index="111" literal-stop-index="177">
+                                        <literalText>ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary desc)</literalText>
+                                    </function>
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                        <from>
+                            <simple-table name="employees" start-index="188" stop-index="196" literal-start-index="188" literal-stop-index="196" />
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <where start-index="199" stop-index="210" literal-start-index="199" literal-stop-index="210">
+            <expr>
+                <binary-operation-expression start-index="205" stop-index="210" literal-start-index="205" literal-stop-index="210">
+                    <left>
+                        <column name="rn" start-index="205" stop-index="206" literal-start-index="205" literal-stop-index="206" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="3" start-index="210" stop-index="210" literal-start-index="210" literal-stop-index="210" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="department_id" order-direction="ASC" start-index="221" stop-index="233" literal-start-index="221" literal-stop-index="233" />
+            <column-item name="salary" order-direction="DESC" start-index="236" stop-index="241" literal-start-index="236" literal-stop-index="241" />
+            <column-item name="last_name" order-direction="ASC" start-index="249" stop-index="257" literal-start-index="249" literal-stop-index="257" />
+        </order-by>
     </select>
 </sql-parser-test-cases>

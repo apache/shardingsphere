@@ -661,12 +661,12 @@ bitExpr
     | bitExpr SIGNED_LEFT_SHIFT_ bitExpr
     | bitExpr SIGNED_RIGHT_SHIFT_ bitExpr
     | bitExpr PLUS_ bitExpr
+    | simpleExpr
     | bitExpr MINUS_ bitExpr
     | bitExpr ASTERISK_ bitExpr
     | bitExpr SLASH_ bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | simpleExpr
     ;
 
 simpleExpr
@@ -699,6 +699,10 @@ keepClause
 aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG | PERCENT_RANK | PERCENTILE_CONT | PERCENTILE_DISC | CUME_DIST | RANK
     | REGR_SLOPE | REGR_INTERCEPT | REGR_COUNT | REGR_R2 | REGR_AVGX | REGR_AVGY | REGR_SXX | REGR_SYY | REGR_SXY
+    | COLLECT | CORR | CORR_S | CORR_K | COVAR_POP | COVAR_SAMP | DENSE_RANK | FIRST 
+    | GROUP_ID | GROUPING_ID | LAST | MEDIAN | STATS_BINOMIAL_TEST | STATS_CROSSTAB | STATS_F_TEST | STATS_KS_TEST 
+    | STATS_MODE | STATS_MW_TEST | STATS_ONE_WAY_ANOVA | STATS_T_TEST_ONE | STATS_T_TEST_PAIRED | STATS_T_TEST_INDEP 
+    | STATS_T_TEST_INDEPU | STATS_WSR_TEST | STDDEV | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE
     ;
 
 listaggOverflowClause
@@ -720,11 +724,16 @@ windowingClause
 
 analyticFunction
     : specifiedAnalyticFunctionName = (LEAD | LAG) ((LP_ expr leadLagInfo? RP_ respectOrIgnoreNulls?) | (LP_ expr respectOrIgnoreNulls? leadLagInfo? RP_)) overClause
-    | specifiedAnalyticFunctionName = NTILE LP_ expr RP_ overClause
-    | specifiedAnalyticFunctionName = (PERCENTILE_CONT | PERCENTILE_DISC) LP_ expr RP_ WITHIN GROUP LP_ orderByClause RP_ overClause
-    | specifiedAnalyticFunctionName = CORR LP_ expr COMMA_ expr RP_ overClause
-    | specifiedAnalyticFunctionName = RATIO_TO_REPORT LP_ expr RP_ overClause
+    | specifiedAnalyticFunctionName = (NTILE | MEDIAN | RATIO_TO_REPORT) LP_ expr RP_ overClause?
+    | specifiedAnalyticFunctionName = NTH_VALUE LP_ expr COMMA_ expr RP_ fromFirstOrLast? respectOrIgnoreNulls? overClause
+    | specifiedAnalyticFunctionName = (PERCENTILE_CONT | PERCENTILE_DISC | LISTAGG) LP_ expr (COMMA_ expr)* RP_ WITHIN GROUP LP_ orderByClause RP_ overClause?
+    | specifiedAnalyticFunctionName = (CORR | COVAR_POP | COVAR_SAMP) LP_ expr COMMA_ expr RP_ overClause?
+    | specifiedAnalyticFunctionName = (PERCENT_RANK | RANK | ROW_NUMBER) LP_ RP_ overClause
     | analyticFunctionName LP_ dataType* RP_ overClause
+    ;
+
+fromFirstOrLast
+    : FROM FIRST | FROM LAST
     ;
 
 leadLagInfo
@@ -786,7 +795,7 @@ regularFunctionName
     ;
 
 joinOperator
-    : LP_ PLUS_  RP_
+    : LP_ PLUS_ RP_
     ;
 
 caseExpression
@@ -882,7 +891,23 @@ elseClause
     ;
 
 intervalExpression
-    : LP_ expr MINUS_ expr RP_ (DAY (LP_ NUMBER_ RP_)? TO SECOND (LP_ NUMBER_ RP_)? | YEAR (LP_ NUMBER_ RP_)? TO MONTH)
+    : LP_ expr MINUS_ expr RP_ (intervalDayToSecondExpression | intervalYearToMonthExpression)
+    ;
+
+intervalDayToSecondExpression
+    : DAY (LP_ leadingFieldPrecision RP_)? TO SECOND (LP_ fractionalSecondPrecision RP_)?
+    ;
+
+intervalYearToMonthExpression
+    : YEAR (LP_ leadingFieldPrecision RP_)? TO MONTH
+    ;
+
+leadingFieldPrecision
+    : INTEGER_
+    ;
+
+fractionalSecondPrecision
+    : INTEGER_
     ;
 
 objectAccessExpression
