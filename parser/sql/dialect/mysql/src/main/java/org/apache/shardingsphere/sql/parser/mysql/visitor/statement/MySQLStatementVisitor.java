@@ -1165,6 +1165,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.BINARY()) {
             return visit(ctx.simpleExpr(0));
         }
+        if (null != ctx.TILDE_()) {
+            return new NotExpression(ctx.getStart().getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.simpleExpr(0)),false);
+        }
         if (null != ctx.variable()) {
             return visit(ctx.variable());
         }
