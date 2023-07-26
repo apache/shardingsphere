@@ -20,8 +20,8 @@ name: Required - Reusable
 on:
   workflow_call:
     outputs:
-      REPOSITORY_NAME:
-        value: ${{ jobs.init-environment.outputs.REPOSITORY_NAME }}
+      GLOBAL_REPOSITORY_NAME:
+        value: ${{ jobs.init-environment.outputs.GLOBAL_REPOSITORY_NAME }}
 
 jobs:
   init-environment:
