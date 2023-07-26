@@ -1857,6 +1857,7 @@ xmlFunction
     | xmlSerializeFunction
     | xmlTableFunction
     | xmlIsSchemaValidFunction
+    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG) LP_ expr (COMMA_ expr)? RP_
     ;
 
 xmlAggFunction

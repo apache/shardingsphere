@@ -593,7 +593,10 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.xmlIsSchemaValidFunction()) {
             return visit(ctx.xmlIsSchemaValidFunction());
         }
-        return visit(ctx.xmlTableFunction());
+        if (null != ctx.xmlTableFunction()) {
+            return visit(ctx.xmlTableFunction());
+        }
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.specifiedFunctionName.getText(), getOriginalText(ctx));
     }
     
     @Override
