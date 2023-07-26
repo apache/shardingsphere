@@ -19,8 +19,10 @@ package org.apache.shardingsphere.infra.binder.engine;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.List;
 
@@ -46,7 +48,14 @@ public final class SQLBindEngine {
      * @return SQL statement context
      */
     public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
-        // TODO implement sql statement bind and validate logic
-        return SQLStatementContextFactory.newInstance(metaData, params, sqlStatement, defaultDatabaseName);
+        SQLStatement buoundedSQLStatement = bind(sqlStatement, metaData, defaultDatabaseName);
+        return SQLStatementContextFactory.newInstance(metaData, params, buoundedSQLStatement, defaultDatabaseName);
+    }
+    
+    private SQLStatement bind(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+        if (statement instanceof SelectStatement) {
+            return new SelectStatementBinder().bind((SelectStatement) statement, metaData, defaultDatabaseName);
+        }
+        return statement;
     }
 }
