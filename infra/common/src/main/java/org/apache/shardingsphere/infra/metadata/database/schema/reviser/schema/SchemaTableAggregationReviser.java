@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema;
 
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;

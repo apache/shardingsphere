@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.database.opengauss;
 
-import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
-import org.apache.shardingsphere.infra.database.core.datasource.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.datasource.StandardDataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.datasource.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connection.JdbcUrl;
+import org.apache.shardingsphere.infra.database.core.connection.StandardDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connection.StandardJdbcUrlParser;
 
 import java.util.Properties;
 

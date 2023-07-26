@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.reviser;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.SchemaMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 

@@ -22,9 +22,9 @@ import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.TableMetaData;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;

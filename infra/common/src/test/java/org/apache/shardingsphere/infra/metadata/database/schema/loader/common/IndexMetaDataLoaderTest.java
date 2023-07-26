@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
 
-import org.apache.shardingsphere.infra.database.core.metadata.loader.common.IndexMetaDataLoader;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.common.IndexMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.dict.model.IndexMetaData;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;

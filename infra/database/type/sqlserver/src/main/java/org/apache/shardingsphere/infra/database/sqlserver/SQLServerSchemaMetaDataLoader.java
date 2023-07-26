@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.database.sqlserver;
 
-import org.apache.shardingsphere.infra.database.core.datatype.DataTypeLoader;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.metadata.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.datatype.DataTypeLoader;
+import org.apache.shardingsphere.infra.database.core.dict.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.metadata.DialectSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.dict.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

@@ -19,15 +19,15 @@ package org.apache.shardingsphere.infra.database.postgresql;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.common.SchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.ConstraintMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.common.SchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.dict.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.datatype.DataTypeLoader;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.metadata.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.datatype.DataTypeLoader;
+import org.apache.shardingsphere.infra.database.core.dict.metadata.DialectSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.dict.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.TableMetaData;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
