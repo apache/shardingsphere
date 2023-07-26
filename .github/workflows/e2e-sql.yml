@@ -64,6 +64,7 @@ env:
 
 jobs:
   global-env:
+    name: Import Global Env
     uses: ./.github/workflows/required-reusable.yml
 
   build-e2e-image:
