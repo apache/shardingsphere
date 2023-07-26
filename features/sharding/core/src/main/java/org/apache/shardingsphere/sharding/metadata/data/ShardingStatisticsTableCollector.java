@@ -87,9 +87,11 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
                                            final DataNode dataNode, final List<Object> row) throws SQLException {
         DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());
         Optional<DialectShardingStatisticsTableCollector> dialectCollector = DatabaseTypedSPILoader.findService(DialectShardingStatisticsTableCollector.class, databaseType);
+        boolean isAppended = false;
         if (dialectCollector.isPresent()) {
-            dialectCollector.get().appendRow(dataSources.get(dataNode.getDataSourceName()), dataNode, row);
-        } else {
+            isAppended = dialectCollector.get().appendRow(dataSources.get(dataNode.getDataSourceName()), dataNode, row);
+        }
+        if (!isAppended) {
             row.add(BigDecimal.ZERO);
             row.add(BigDecimal.ZERO);
         }

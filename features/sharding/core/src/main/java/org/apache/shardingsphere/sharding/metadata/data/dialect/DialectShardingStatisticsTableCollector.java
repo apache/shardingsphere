@@ -41,7 +41,8 @@ public interface DialectShardingStatisticsTableCollector extends DatabaseTypedSP
      * @param dataSource data source
      * @param dataNode data node
      * @param row row to be appended
+     * @return is appended or not
      * @throws SQLException SQL exception
      */
-    void appendRow(DataSource dataSource, DataNode dataNode, List<Object> row) throws SQLException;
+    boolean appendRow(DataSource dataSource, DataNode dataNode, List<Object> row) throws SQLException;
 }

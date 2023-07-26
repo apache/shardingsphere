@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.metadata.data.dialect.DialectShardingStatisticsTableCollector;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,21 +35,19 @@ public final class MySQLShardingStatisticsTableCollector implements DialectShard
     private static final String MYSQL_TABLE_ROWS_AND_DATA_LENGTH = "SELECT TABLE_ROWS, DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'";
     
     @Override
-    public void appendRow(final DataSource dataSource, final DataNode dataNode, final List<Object> row) throws SQLException {
-        BigDecimal tableRows = BigDecimal.ZERO;
-        BigDecimal dataLength = BigDecimal.ZERO;
+    public boolean appendRow(final DataSource dataSource, final DataNode dataNode, final List<Object> row) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(String.format(MYSQL_TABLE_ROWS_AND_DATA_LENGTH, connection.getCatalog(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
-                    tableRows = resultSet.getBigDecimal(TABLE_ROWS_COLUMN_NAME);
-                    dataLength = resultSet.getBigDecimal(DATA_LENGTH_COLUMN_NAME);
+                    row.add(resultSet.getBigDecimal(TABLE_ROWS_COLUMN_NAME));
+                    row.add(resultSet.getBigDecimal(DATA_LENGTH_COLUMN_NAME));
+                    return true;
                 }
             }
         }
-        row.add(tableRows);
-        row.add(dataLength);
+        return false;
     }
     
     @Override
