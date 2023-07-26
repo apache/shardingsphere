@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype;
+package org.apache.shardingsphere.infra.database.core.datatype;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * Data type loader.
@@ -39,11 +42,28 @@ public final class DataTypeLoader {
      * @throws SQLException SQL exception
      */
     public Map<String, Integer> load(final DatabaseMetaData databaseMetaData, final DatabaseType databaseType) throws SQLException {
-        Map<String, Integer> result = new StandardDataTypeLoader().load(databaseMetaData);
-        Optional<DialectDataTypeLoader> loader = DatabaseTypedSPILoader.findService(DialectDataTypeLoader.class, databaseType);
-        if (loader.isPresent()) {
-            result.putAll(loader.get().load());
+        Map<String, Integer> result = loadStandardDataTypes(databaseMetaData);
+        result.putAll(loadDialectDataTypes(databaseType));
+        return result;
+    }
+    
+    private Map<String, Integer> loadStandardDataTypes(final DatabaseMetaData databaseMetaData) throws SQLException {
+        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        try (ResultSet resultSet = databaseMetaData.getTypeInfo()) {
+            while (resultSet.next()) {
+                result.put(resultSet.getString("TYPE_NAME"), resultSet.getInt("DATA_TYPE"));
+            }
         }
+        return result;
+    }
+    
+    private Map<String, Integer> loadDialectDataTypes(final DatabaseType databaseType) throws SQLException {
+        Optional<DialectDataTypeLoader> loader = DatabaseTypedSPILoader.findService(DialectDataTypeLoader.class, databaseType);
+        if (!loader.isPresent()) {
+            return Collections.emptyMap();
+        }
+        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        result.putAll(loader.get().load());
         return result;
     }
 }
