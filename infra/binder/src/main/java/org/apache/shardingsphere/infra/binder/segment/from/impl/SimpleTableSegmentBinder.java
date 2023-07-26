@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderCon
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -72,13 +71,13 @@ public final class SimpleTableSegmentBinder {
     }
     
     private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema) {
-        Collection<ShardingSphereColumn> columns = schema.getTable(segment.getTableName().getIdentifier().getValue()).getColumnValues();
-        Map<String, ProjectionSegment> projectionSegments = new CaseInsensitiveMap<>(columns.size(), 1L);
-        for (ShardingSphereColumn each : columns) {
-            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each.getName()));
-            columnSegment.setOriginalColumn(new IdentifierValue(each.getName()));
+        Collection<String> columnNames = schema.getAllColumnNames(segment.getTableName().getIdentifier().getValue());
+        Map<String, ProjectionSegment> projectionSegments = new CaseInsensitiveMap<>(columnNames.size(), 1L);
+        for (String each : columnNames) {
+            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each));
+            columnSegment.setOriginalColumn(new IdentifierValue(each));
             columnSegment.setOriginalTable(segment.getTableName().getIdentifier());
-            projectionSegments.put(each.getName(), new ColumnProjectionSegment(columnSegment));
+            projectionSegments.put(each, new ColumnProjectionSegment(columnSegment));
         }
         return new TableSegmentBinderContext(projectionSegments);
     }
