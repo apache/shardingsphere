@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.dialect;
+package org.apache.shardingsphere.infra.database.core.metadata.loader.metadata.dialect;
 
 import org.apache.shardingsphere.infra.database.core.datatype.DataTypeLoader;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.metadata.DialectSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.model.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

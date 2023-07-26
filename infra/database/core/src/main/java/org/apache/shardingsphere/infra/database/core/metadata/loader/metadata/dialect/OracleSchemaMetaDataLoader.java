@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.dialect;
+package org.apache.shardingsphere.infra.database.core.metadata.loader.metadata.dialect;
 
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.adapter.MetaDataLoaderConnectionAdapter;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.adapter.MetaDataLoaderConnectionAdapter;
 import org.apache.shardingsphere.infra.database.core.datatype.DataTypeLoader;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.metadata.DialectSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;

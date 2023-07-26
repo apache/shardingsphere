@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.model;
+package org.apache.shardingsphere.infra.database.core.metadata.loader.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
