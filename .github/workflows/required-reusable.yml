@@ -15,41 +15,25 @@
 # limitations under the License.
 #
 
-name: Required - Check
+name: Required - Reusable
 
 on:
-  pull_request:
-    branches: [ master ]
-  workflow_dispatch:
-
-concurrency:
-  group: check-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_call:
+    outputs:
+      GLOBAL_REPOSITORY_NAME:
+        value: ${{ jobs.init-environment.outputs.GLOBAL_REPOSITORY_NAME }}
 
 jobs:
-  check-checkstyle:
-    name: Check - CheckStyle
+  init-environment:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-      - name: Run CheckStyle
-        run: ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
-
-  check-spotless:
-    name: Check - Spotless
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run Spotless
-        run: ./mvnw spotless:check -T1C
-
-  check-license:
-    name: Check - License
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run Apache Rat
-        run: ./mvnw apache-rat:check -Drat.skip=false -T1C
+      - name: Setup Environment
+        id: import-variables
+        run: |
+          cat .github/workflows/resources/variables/env-variables.properties | while read line
+          do
+            echo ${line} >> $GITHUB_OUTPUT
+          done
+    outputs:
+      GLOBAL_REPOSITORY_NAME: ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY_NAME }}
