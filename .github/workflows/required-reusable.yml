@@ -36,4 +36,4 @@ jobs:
             echo ${line} >> $GITHUB_OUTPUT
           done
     outputs:
-      GLOBAL_REPOSITORY_NAME: ${{ steps.import-variables.outputs.REPOSITORY_NAME }}
+      GLOBAL_REPOSITORY_NAME: ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY_NAME }}
