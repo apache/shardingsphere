@@ -42,8 +42,6 @@ on:
       - '!test/e2e/**'
       - 'test/e2e/driver/**'
       - '!*.md'
-  repository_dispatch:
-    types: [ci-completed]
   workflow_dispatch:
 
 concurrency:
