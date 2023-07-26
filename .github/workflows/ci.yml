@@ -57,7 +57,7 @@ jobs:
 
   ci:
     name: CI - Compile by JDK 11 and Run on JDK 8
-    needs: init-environment
+    needs: global-env
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
