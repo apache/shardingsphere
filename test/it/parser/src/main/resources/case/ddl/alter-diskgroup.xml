@@ -36,4 +36,6 @@
     <alter-diskgroup sql-case-id="alter_diskgroup_set_attribute_time_m" />
     <alter-diskgroup sql-case-id="alter_diskgroup_set_permission_owner_group_other_for_file" />
     <alter-diskgroup sql-case-id="alter_diskgroup_set_ownership_owner_group_for_file" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_add_template_attribute_hot_hirrorhot" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_modify_drop_member" />
 </sql-parser-test-cases>

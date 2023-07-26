@@ -2948,7 +2948,7 @@ convertRedundancyClause
 
 usergroupClauses
     : (ADD USERGROUP SQ_ usergroupName SQ_ WITH MEMBER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
-    | MODIFY USERGROUP SQ_ usergroupName SQ_ (ADD | DROP) MEMBER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
+    | MODIFY USERGROUP usergroupName (ADD | DROP) MEMBER username (COMMA_ username)*
     | DROP USERGROUP SQ_ usergroupName SQ_)
     ;
 
