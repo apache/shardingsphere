@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.loader.metadata.dialect;
+package org.apache.shardingsphere.infra.database.mysql;
 
 import org.apache.shardingsphere.infra.database.core.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.database.core.datatype.DataTypeLoader;
