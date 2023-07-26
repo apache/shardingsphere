@@ -15,37 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.sqlserver;
+package org.apache.shardingsphere.infra.database.postgresql;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.system.DialectSystemDatabase;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
- * Database type of SQLServer.
+ * System database of PostgreSQL.
  */
-public final class SQLServerDatabaseType implements DatabaseType {
+public final class PostgreSQLSystemDatabase implements DialectSystemDatabase {
     
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BRACKETS;
+    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
+    
+    private static final Collection<String> SYSTEM_SCHEMAS = new HashSet<>(Arrays.asList("information_schema", "pg_catalog", "shardingsphere"));
+    
+    static {
+        SYSTEM_DATABASE_SCHEMA_MAP.put("postgres", SYSTEM_SCHEMAS);
     }
     
     @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return SYSTEM_DATABASE_SCHEMA_MAP;
     }
     
     @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:");
+    public Collection<String> getSystemSchemas() {
+        return SYSTEM_SCHEMAS;
     }
     
     @Override
-    public String getType() {
-        return "SQLServer";
+    public String getDatabaseType() {
+        return "PostgreSQL";
     }
 }

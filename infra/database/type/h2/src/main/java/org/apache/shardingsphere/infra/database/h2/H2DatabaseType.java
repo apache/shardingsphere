@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -32,16 +31,15 @@ import java.util.Optional;
  */
 public final class H2DatabaseType implements DatabaseType {
     
-    private final DatabaseType trunkDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-    
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return trunkDatabaseType.getQuoteCharacter();
+        return QuoteCharacter.QUOTE;
     }
     
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return trunkDatabaseType.getDefaultNullsOrderType();
+        return getTrunkDatabaseType().get().getDefaultNullsOrderType();
     }
     
     @Override
@@ -51,17 +49,7 @@ public final class H2DatabaseType implements DatabaseType {
     
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(trunkDatabaseType);
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }
     
     @Override

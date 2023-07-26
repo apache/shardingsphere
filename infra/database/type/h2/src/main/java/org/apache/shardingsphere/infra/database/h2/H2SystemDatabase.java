@@ -15,37 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.sqlserver;
+package org.apache.shardingsphere.infra.database.h2;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.system.DialectSystemDatabase;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * Database type of SQLServer.
+ * System database of H2.
  */
-public final class SQLServerDatabaseType implements DatabaseType {
+public final class H2SystemDatabase implements DialectSystemDatabase {
     
     @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BRACKETS;
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return Collections.emptyMap();
     }
     
     @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
     }
     
     @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:");
-    }
-    
-    @Override
-    public String getType() {
-        return "SQLServer";
+    public String getDatabaseType() {
+        return "H2";
     }
 }

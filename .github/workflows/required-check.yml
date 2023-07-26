@@ -18,8 +18,8 @@
 name: Required - Check
 
 on:
-  push:
   pull_request:
+    branches: [ master ]
   workflow_dispatch:
 
 concurrency:

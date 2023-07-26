@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -64,20 +63,6 @@ public interface DatabaseType extends TypedSPI {
      * @return prefixes of JDBC URL
      */
     Collection<String> getJdbcUrlPrefixes();
-    
-    /**
-     * Get system database schema map.
-     * 
-     * @return system database schema map
-     */
-    Map<String, Collection<String>> getSystemDatabaseSchemaMap();
-    
-    /**
-     * Get system schemas.
-     *
-     * @return system schemas
-     */
-    Collection<String> getSystemSchemas();
     
     /**
      * Is schema feature available.

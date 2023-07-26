@@ -26,7 +26,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MariaDBDatabaseTypeTest {
     
@@ -38,15 +37,5 @@ class MariaDBDatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:mariadb:")));
-    }
-    
-    @Test
-    void assertGetSystemDatabaseSchemaMap() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getSystemDatabaseSchemaMap().isEmpty());
-    }
-    
-    @Test
-    void assertGetSystemSchemas() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getSystemSchemas().isEmpty());
     }
 }
