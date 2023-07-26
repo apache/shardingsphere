@@ -19,7 +19,18 @@ package org.apache.shardingsphere.infra.binder.segment.expression;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
 /**
  * Column segment binder.
@@ -27,16 +38,38 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnSegmentBinder {
     
+    private static final Collection<String> EXCLUDE_BIND_COLUMNS = new LinkedHashSet<>(Arrays.asList("ROWNUM", "ROW_NUMBER"));
+    
     /**
      * Bind column segment with metadata.
      *
      * @param segment table segment
+     * @param tableBinderContexts table binder contexts
      * @return bounded column segment
      */
-    public static ColumnSegment bind(final ColumnSegment segment) {
+    public static ColumnSegment bind(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        if (EXCLUDE_BIND_COLUMNS.contains(segment.getIdentifier().getValue().toUpperCase())) {
+            return segment;
+        }
         ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
         segment.getOwner().ifPresent(result::setOwner);
-        // TODO get original column and original table by metadata and table context
+        result.setOriginalColumn(null == segment.getOriginalColumn() ? segment.getIdentifier() : segment.getOriginalColumn());
+        Collection<TableSegmentBinderContext> tableBinderContextValues =
+                segment.getOwner().isPresent() ? Collections.singleton(tableBinderContexts.get(segment.getOwner().get().getIdentifier().getValue())) : tableBinderContexts.values();
+        result.setOriginalTable(null == segment.getOriginalTable() ? findTableNameByColumnName(segment.getIdentifier().getValue(), tableBinderContextValues) : segment.getOriginalTable());
+        return result;
+    }
+    
+    private static IdentifierValue findTableNameByColumnName(final String columnName, final Collection<TableSegmentBinderContext> tableBinderContexts) {
+        IdentifierValue result = null;
+        for (TableSegmentBinderContext each : tableBinderContexts) {
+            ProjectionSegment projectionSegment = each.getColumnLabelProjectionSegments().get(columnName);
+            if (projectionSegment instanceof ColumnProjectionSegment) {
+                ShardingSpherePreconditions.checkState(null == result, () -> new IllegalStateException(String.format("Column '%s' in field list is ambiguous.", columnName)));
+                result = ((ColumnProjectionSegment) projectionSegment).getColumn().getOriginalTable();
+            }
+        }
+        ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalStateException(String.format("Can not find table name by column label %s.", columnName)));
         return result;
     }
 }

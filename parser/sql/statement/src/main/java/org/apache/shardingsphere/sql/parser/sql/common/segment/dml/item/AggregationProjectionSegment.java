@@ -56,6 +56,11 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     }
     
     @Override
+    public String getColumnLabel() {
+        return getAliasName().orElse(expression);
+    }
+    
+    @Override
     public final Optional<String> getAliasName() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }

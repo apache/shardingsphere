@@ -19,12 +19,22 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -37,19 +47,39 @@ public final class SimpleTableSegmentBinder {
      * Bind simple table segment with metadata.
      *
      * @param segment simple table segment
+     * @param metaData metaData
      * @param defaultDatabaseName default database name
      * @param databaseType database type
+     * @param tableBinderContexts table binder contexts
      * @return bounded simple table segment
      */
-    public static SimpleTableSegment bind(final SimpleTableSegment segment, final String defaultDatabaseName, final DatabaseType databaseType) {
-        segment.getTableName().setOriginalDatabase(getDatabaseName(segment, databaseType, defaultDatabaseName));
-        segment.getTableName().setOriginalSchema(segment.getOwner().map(OwnerSegment::getIdentifier)
-                .orElseGet(() -> new IdentifierValue(DatabaseTypeEngine.getDefaultSchemaName(databaseType, defaultDatabaseName))));
+    public static SimpleTableSegment bind(final SimpleTableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName, final DatabaseType databaseType,
+                                          final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        IdentifierValue originalDatabase = getDatabaseName(segment, databaseType, defaultDatabaseName);
+        IdentifierValue originalSchema =
+                segment.getOwner().map(OwnerSegment::getIdentifier).orElseGet(() -> new IdentifierValue(DatabaseTypeEngine.getDefaultSchemaName(databaseType, defaultDatabaseName)));
+        // TODO check database and schema
+        ShardingSphereSchema schema = metaData.getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
+        tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()), createSimpleTableBinderContext(segment, schema));
+        segment.getTableName().setOriginalDatabase(originalDatabase);
+        segment.getTableName().setOriginalSchema(originalSchema);
         return segment;
     }
     
     private static IdentifierValue getDatabaseName(final SimpleTableSegment tableSegment, final DatabaseType databaseType, final String defaultDatabaseName) {
         Optional<OwnerSegment> owner = databaseType.getDefaultSchema().isPresent() ? tableSegment.getOwner().flatMap(OwnerSegment::getOwner) : tableSegment.getOwner();
         return new IdentifierValue(owner.map(optional -> optional.getIdentifier().getValue()).orElse(defaultDatabaseName));
+    }
+    
+    private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema) {
+        Collection<ShardingSphereColumn> columns = schema.getTable(segment.getTableName().getIdentifier().getValue()).getColumnValues();
+        Map<String, ProjectionSegment> projectionSegments = new CaseInsensitiveMap<>(columns.size(), 1L);
+        for (ShardingSphereColumn each : columns) {
+            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each.getName()));
+            columnSegment.setOriginalColumn(new IdentifierValue(each.getName()));
+            columnSegment.setOriginalTable(segment.getTableName().getIdentifier());
+            projectionSegments.put(each.getName(), new ColumnProjectionSegment(columnSegment));
+        }
+        return new TableSegmentBinderContext(projectionSegments);
     }
 }
