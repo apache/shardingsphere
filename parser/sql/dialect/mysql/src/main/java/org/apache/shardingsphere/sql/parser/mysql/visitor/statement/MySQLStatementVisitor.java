@@ -1174,6 +1174,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 listExpression.getItems().add((ExpressionSegment) visit(each));
             }
             return listExpression;
+        } else {
+            for (ExprContext each : ctx.expr()) {
+                visit(each);
+            }
         }
         for (SimpleExprContext each : ctx.simpleExpr()) {
             visit(each);

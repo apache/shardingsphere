@@ -1780,7 +1780,13 @@
         </projections>
         <where start-index="22" stop-index="44">
             <expr>
-                <common-expression text="~t_order.order_id" start-index="28" stop-index="44" />
+                <not-expression start-index="28" stop-index="44">
+                    <expr>
+                        <column name="order_id" start-index="29" stop-index="44">
+                            <owner name="t_order" start-index="29" stop-index="35" />
+                        </column>
+                    </expr>
+                </not-expression>
             </expr>
         </where>
     </select>
@@ -1857,11 +1863,26 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="61" literal-stop-index="65">
                     <left>
-                        <common-expression text="ROW(?, now())" literal-text="ROW('abc', now())" start-index="28" stop-index="40" literal-stop-index="44" />
+                        <list-expression start-index="28" stop-index="40" literal-start-index="28" literal-stop-index="44">
+                            <items>
+                                <literal-expression value="abc" start-index="32" stop-index="36" />
+                                <parameter-marker-expression parameter-index="0" start-index="32" stop-index="32" />
+                            </items>
+                            <items>
+                                <function function-name="now" text="now()" start-index="35" stop-index="39" literal-text="now()" literal-start-index="39" literal-stop-index="43" />
+                            </items>
+                        </list-expression>
                     </left>
                     <operator>=</operator>
                     <right>
-                        <common-expression text="(order_id, status)" start-index="44" stop-index="61" literal-start-index="48" literal-stop-index="65" />
+                        <list-expression start-index="44" stop-index="61" literal-start-index="48" literal-stop-index="65">
+                            <items>
+                                <column name="order_id" start-index="45" stop-index="52" literal-start-index="49" literal-stop-index="56" />
+                            </items>
+                            <items>
+                                <column name="status" start-index="55" stop-index="60" literal-start-index="59" literal-stop-index="64" />
+                            </items>
+                        </list-expression>
                     </right>
                 </binary-operation-expression>
             </expr>
