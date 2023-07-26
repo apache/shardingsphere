@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.loader.metadata.dialect;
+package org.apache.shardingsphere.infra.database.h2;
 
 import org.apache.shardingsphere.infra.database.core.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.loader.metadata.DialectSchemaMetaDataLoader;
