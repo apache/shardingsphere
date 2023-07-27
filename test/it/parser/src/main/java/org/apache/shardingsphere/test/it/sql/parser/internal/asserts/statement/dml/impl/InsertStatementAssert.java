@@ -41,7 +41,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Insert statement assert.
