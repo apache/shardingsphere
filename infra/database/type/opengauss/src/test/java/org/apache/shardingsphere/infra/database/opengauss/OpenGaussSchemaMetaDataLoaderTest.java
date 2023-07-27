@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.postgresql;
+package org.apache.shardingsphere.infra.database.opengauss;
 
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.dict.loader.common.SchemaMetaDataLoader;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class PostgreSQLSchemaMetaDataLoaderTest {
+class OpenGaussSchemaMetaDataLoaderTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
@@ -77,7 +77,7 @@ class PostgreSQLSchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaTableNames() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), dataSource), is(createSchemaTableNames()));
+        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "openGauss"), dataSource), is(createSchemaTableNames()));
     }
     
     private Map<String, Collection<String>> createSchemaTableNames() {
@@ -90,6 +90,6 @@ class PostgreSQLSchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaNames() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), is(Arrays.asList("public", "schema_1", "schema_2")));
+        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), TypedSPILoader.getService(DatabaseType.class, "openGauss")), is(Arrays.asList("public", "schema_1", "schema_2")));
     }
 }

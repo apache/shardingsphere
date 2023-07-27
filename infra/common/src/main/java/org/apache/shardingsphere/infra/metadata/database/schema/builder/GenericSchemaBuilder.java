@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.core.dict.metadata.SchemaMetaDataLoaderEngine;
-import org.apache.shardingsphere.infra.database.core.dict.metadata.SchemaMetaDataLoaderMaterial;
+import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoaderEngine;
+import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.database.core.dict.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.dict.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.database.core.dict.model.IndexMetaData;
@@ -98,11 +98,11 @@ public final class GenericSchemaBuilder {
     
     private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
         boolean checkMetaDataEnable = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        Collection<SchemaMetaDataLoaderMaterial> schemaMetaDataLoaderMaterials = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(tableNames, material, checkMetaDataEnable);
-        if (schemaMetaDataLoaderMaterials.isEmpty()) {
+        Collection<MetaDataLoaderMaterial> metaDataLoaderMaterials = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(tableNames, material, checkMetaDataEnable);
+        if (metaDataLoaderMaterials.isEmpty()) {
             return Collections.emptyMap();
         }
-        return SchemaMetaDataLoaderEngine.load(schemaMetaDataLoaderMaterials);
+        return MetaDataLoaderEngine.load(metaDataLoaderMaterials);
     }
     
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
