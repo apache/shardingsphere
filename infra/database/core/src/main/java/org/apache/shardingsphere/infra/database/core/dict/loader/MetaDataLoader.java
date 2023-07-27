@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.dict.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.database.core.dict.loader.common.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.dict.loader.type.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.dict.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
@@ -42,11 +42,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Meta data loader engine.
+ * Meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class MetaDataLoaderEngine {
+public final class MetaDataLoader {
     
     private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
             0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaMetaDataLoaderEngine-%d").build());
@@ -54,7 +54,7 @@ public final class MetaDataLoaderEngine {
     /**
      * Load schema meta data.
      *
-     * @param materials schema meta data loader materials
+     * @param materials meta data loader materials
      * @return schema meta data map
      * @throws SQLException SQL exception
      */
@@ -80,10 +80,10 @@ public final class MetaDataLoaderEngine {
     }
     
     private static Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
-        Optional<DialectMetaDataLoader> dialectMetaDataLoader = DatabaseTypedSPILoader.findService(DialectMetaDataLoader.class, material.getStorageType());
-        if (dialectMetaDataLoader.isPresent()) {
+        Optional<DialectMetaDataLoader> dialectLoader = DatabaseTypedSPILoader.findService(DialectMetaDataLoader.class, material.getStorageType());
+        if (dialectLoader.isPresent()) {
             try {
-                return dialectMetaDataLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());
+                return dialectLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());
             } catch (final SQLException ex) {
                 log.debug("Dialect load schema meta data error.", ex);
             }

@@ -49,7 +49,7 @@ class SchemaMetaDataUtilsTest {
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
-        Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_order"), material, true);
+        Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, true);
         assertThat(actual.size(), is(2));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
         MetaDataLoaderMaterial firstMaterial = iterator.next();
@@ -66,7 +66,7 @@ class SchemaMetaDataUtilsTest {
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
-        Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_order"), material, false);
+        Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, false);
         assertThat(actual.size(), is(1));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
         MetaDataLoaderMaterial firstMaterial = iterator.next();
@@ -80,7 +80,7 @@ class SchemaMetaDataUtilsTest {
         when(dataNodeContainedRule.getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "public");
-        Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_single"), material, false);
+        Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_single"), material, false);
         assertThat(actual.size(), is(1));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
         MetaDataLoaderMaterial firstMaterial = iterator.next();

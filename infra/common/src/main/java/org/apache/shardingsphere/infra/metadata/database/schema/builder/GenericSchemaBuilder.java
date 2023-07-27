@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoaderEngine;
+import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.database.core.dict.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.dict.model.ConstraintMetaData;
@@ -98,11 +98,11 @@ public final class GenericSchemaBuilder {
     
     private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
         boolean checkMetaDataEnable = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        Collection<MetaDataLoaderMaterial> metaDataLoaderMaterials = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(tableNames, material, checkMetaDataEnable);
-        if (metaDataLoaderMaterials.isEmpty()) {
+        Collection<MetaDataLoaderMaterial> materials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, material, checkMetaDataEnable);
+        if (materials.isEmpty()) {
             return Collections.emptyMap();
         }
-        return MetaDataLoaderEngine.load(metaDataLoaderMaterials);
+        return MetaDataLoader.load(materials);
     }
     
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {

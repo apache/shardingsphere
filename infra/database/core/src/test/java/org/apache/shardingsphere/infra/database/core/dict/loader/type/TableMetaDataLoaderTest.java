@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.dict.loader.common;
+package org.apache.shardingsphere.infra.database.core.dict.loader.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoaderEngine;
+import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.database.core.dict.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.dict.model.IndexMetaData;
@@ -108,7 +108,7 @@ class TableMetaDataLoaderTest {
     void assertLoadWithExistedTable() throws SQLException {
         DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
         when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
-        Map<String, SchemaMetaData> actual = MetaDataLoaderEngine.load(Collections.singletonList(
+        Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singletonList(
                 new MetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, databaseType, "sharding_db")));
         TableMetaData tableMetaData = actual.get("sharding_db").getTables().iterator().next();
         Collection<ColumnMetaData> columns = tableMetaData.getColumns();
@@ -131,7 +131,7 @@ class TableMetaDataLoaderTest {
     
     @Test
     void assertLoadWithNotExistedTable() throws SQLException {
-        Map<String, SchemaMetaData> actual = MetaDataLoaderEngine.load(Collections.singletonList(
+        Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singletonList(
                 new MetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, mock(DatabaseType.class), "sharding_db")));
         assertFalse(actual.isEmpty());
         assertTrue(actual.containsKey("sharding_db"));

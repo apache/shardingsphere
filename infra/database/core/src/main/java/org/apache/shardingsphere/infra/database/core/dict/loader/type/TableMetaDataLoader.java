@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.dict.loader.common;
+package org.apache.shardingsphere.infra.database.core.dict.loader.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.dict.loader.adapter.MetaDataLoaderConnectionAdapter;
+import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.dict.model.TableMetaData;
 
@@ -46,11 +46,11 @@ public final class TableMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
-        try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
+        try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
             String formattedTableNamePattern = databaseType.formatTableNamePattern(tableNamePattern);
-            return isTableExist(connectionAdapter, formattedTableNamePattern)
+            return isTableExist(connection, formattedTableNamePattern)
                     ? Optional.of(new TableMetaData(tableNamePattern, ColumnMetaDataLoader.load(
-                            connectionAdapter, formattedTableNamePattern, databaseType), IndexMetaDataLoader.load(connectionAdapter, formattedTableNamePattern), Collections.emptyList()))
+                            connection, formattedTableNamePattern, databaseType), IndexMetaDataLoader.load(connection, formattedTableNamePattern), Collections.emptyList()))
                     : Optional.empty();
         }
     }
