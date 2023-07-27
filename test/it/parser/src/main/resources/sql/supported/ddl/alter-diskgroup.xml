@@ -42,4 +42,5 @@
     <sql-case id="alter_diskgroup_add_template_attribute_hot_hirrorhot" value="ALTER DISKGROUP data ADD TEMPLATE datafile_hot ATTRIBUTE (HOT MIRRORHOT)" db-types="Oracle" />
     <sql-case id="alter_diskgroup_modify_drop_member" value="ALTER DISKGROUP data MODIFY USERGROUP 'test_grp2' DROP MEMBER 'oracle2'" db-types="Oracle" />
     <sql-case id="alter_diskgroup_resize_disks_in_failgroup_size_g" value="ALTER DISKGROUP data1 RESIZE DISKS IN FAILGROUP failgrp1 SIZE 100G" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_add_template_attribute_unprotected_coarse" value="ALTER DISKGROUP dgroup_01 ADD TEMPLATE template_01 ATTRIBUTES (UNPROTECTED COARSE)" db-types="Oracle" />
 </sql-cases>

@@ -42,4 +42,5 @@
     <alter-diskgroup sql-case-id="alter_diskgroup_add_template_attribute_hot_hirrorhot" />
     <alter-diskgroup sql-case-id="alter_diskgroup_modify_drop_member" />
     <alter-diskgroup sql-case-id="alter_diskgroup_resize_disks_in_failgroup_size_g" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_add_template_attribute_unprotected_coarse" />
 </sql-parser-test-cases>
