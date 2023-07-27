@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.orderby;
 
-import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.junit.jupiter.api.Test;
 

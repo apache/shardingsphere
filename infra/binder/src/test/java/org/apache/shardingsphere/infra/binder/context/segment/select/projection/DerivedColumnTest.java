@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection;
 
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DerivedColumnTest {

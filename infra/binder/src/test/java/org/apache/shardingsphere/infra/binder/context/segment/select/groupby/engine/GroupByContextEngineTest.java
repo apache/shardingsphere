@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.segment.select.groupby.engine;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;

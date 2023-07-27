@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.insert.values.expression;
 
-import org.apache.shardingsphere.infra.binder.context.segment.insert.values.expression.DerivedParameterMarkerExpressionSegment;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

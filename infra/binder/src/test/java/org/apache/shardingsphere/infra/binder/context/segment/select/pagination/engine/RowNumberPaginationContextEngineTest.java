@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.segment.select.pagination.engine;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.engine.RowNumberPaginationContextEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
