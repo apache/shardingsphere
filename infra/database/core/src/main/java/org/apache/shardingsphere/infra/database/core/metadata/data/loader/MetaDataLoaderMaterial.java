@@ -15,31 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.system;
+package org.apache.shardingsphere.infra.database.core.metadata.data.loader;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
+import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
- * Dialect system database.
+ * Meta data loader material.
  */
-@SingletonSPI
-public interface DialectSystemDatabase extends DatabaseTypedSPI {
+@RequiredArgsConstructor
+@Getter
+public final class MetaDataLoaderMaterial {
     
-    /**
-     * Get system database schema map.
-     *
-     * @return system database schema map
-     */
-    Map<String, Collection<String>> getSystemDatabaseSchemaMap();
+    private final Collection<String> actualTableNames;
     
-    /**
-     * Get system schemas.
-     *
-     * @return system schemas
-     */
-    Collection<String> getSystemSchemas();
+    private final DataSource dataSource;
+    
+    private final DatabaseType storageType;
+    
+    private final String defaultSchemaName;
 }

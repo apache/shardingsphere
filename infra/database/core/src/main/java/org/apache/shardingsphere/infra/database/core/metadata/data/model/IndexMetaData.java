@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.dict.model;
+package org.apache.shardingsphere.infra.database.core.metadata.data.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.Collection;
-
 /**
- * Table meta data.
+ * Index meta data.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class TableMetaData {
+public final class IndexMetaData {
     
     private final String name;
-    
-    private final Collection<ColumnMetaData> columns;
-    
-    private final Collection<IndexMetaData> indexes;
-    
-    private final Collection<ConstraintMetaData> constraints;
 }

@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.dict.loader;
+package org.apache.shardingsphere.infra.database.core.metadata.data.loader;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.core.dict.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.database.core.dict.loader.type.TableMetaDataLoader;
-import org.apache.shardingsphere.infra.database.core.dict.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.data.loader.type.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
 
@@ -52,10 +52,10 @@ public final class MetaDataLoader {
             0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaMetaDataLoaderEngine-%d").build());
     
     /**
-     * Load schema meta data.
+     * Load meta data.
      *
      * @param materials meta data loader materials
-     * @return schema meta data map
+     * @return meta data map
      * @throws SQLException SQL exception
      */
     public static Map<String, SchemaMetaData> load(final Collection<MetaDataLoaderMaterial> materials) throws SQLException {
@@ -66,7 +66,7 @@ public final class MetaDataLoader {
         }
         try {
             for (Future<Collection<SchemaMetaData>> each : futures) {
-                mergeSchemaMetaDataMap(result, each.get());
+                merge(result, each.get());
             }
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
@@ -99,7 +99,7 @@ public final class MetaDataLoader {
         return Collections.singletonList(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
     }
     
-    private static void mergeSchemaMetaDataMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final Collection<SchemaMetaData> addedSchemaMetaDataList) {
+    private static void merge(final Map<String, SchemaMetaData> schemaMetaDataMap, final Collection<SchemaMetaData> addedSchemaMetaDataList) {
         for (SchemaMetaData each : addedSchemaMetaDataList) {
             SchemaMetaData schemaMetaData = schemaMetaDataMap.computeIfAbsent(each.getName(), key -> new SchemaMetaData(each.getName(), new LinkedList<>()));
             schemaMetaData.getTables().addAll(each.getTables());

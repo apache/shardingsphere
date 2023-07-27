@@ -15,33 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.dict.model;
+package org.apache.shardingsphere.infra.database.core.metadata.data.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.Collection;
+
 /**
- * Column meta data.
- */
+* Schema meta data.
+*/
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class ColumnMetaData {
+public final class SchemaMetaData {
     
     private final String name;
     
-    private final int dataType;
-    
-    private final boolean primaryKey;
-    
-    private final boolean generated;
-    
-    private final boolean caseSensitive;
-    
-    private final boolean visible;
-    
-    private final boolean unsigned;
+    private final Collection<TableMetaData> tables;
 }

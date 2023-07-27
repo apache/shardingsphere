@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.dict.loader.adapter;
+package org.apache.shardingsphere.infra.database.core.metadata.data.loader;
 
-import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;

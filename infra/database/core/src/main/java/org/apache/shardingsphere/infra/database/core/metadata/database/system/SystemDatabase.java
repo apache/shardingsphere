@@ -15,27 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.dict.loader;
+package org.apache.shardingsphere.infra.database.core.metadata.database.system;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
-import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * Meta data loader material.
+ * System database.
  */
 @RequiredArgsConstructor
-@Getter
-public final class MetaDataLoaderMaterial {
+public final class SystemDatabase {
     
-    private final Collection<String> actualTableNames;
+    private final DatabaseType databaseType;
     
-    private final DataSource dataSource;
+    /**
+     * Get system database schema map.
+     *
+     * @return system database schema map
+     */
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseType).map(DialectSystemDatabase::getSystemDatabaseSchemaMap).orElse(Collections.emptyMap());
+    }
     
-    private final DatabaseType storageType;
-    
-    private final String defaultSchemaName;
+    /**
+     * Get system schemas.
+     *
+     * @return system schemas
+     */
+    public Collection<String> getSystemSchemas() {
+        return DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseType).map(DialectSystemDatabase::getSystemSchemas).orElse(Collections.emptyList());
+    }
 }
