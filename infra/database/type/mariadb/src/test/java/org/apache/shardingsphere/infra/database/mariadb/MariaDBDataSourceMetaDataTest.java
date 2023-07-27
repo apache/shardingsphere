@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.mariadb;
 
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.connector.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -41,12 +41,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MariaDBDataSourceMetaDataTest {
     
-    private final DataSourceMetaDataBuilder builder = DatabaseTypedSPILoader.getService(DataSourceMetaDataBuilder.class, TypedSPILoader.getService(DatabaseType.class, "MariaDB"));
+    private final ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, TypedSPILoader.getService(DatabaseType.class, "MariaDB"));
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
     void assertNewConstructorWithSimpleJdbcUrl(final String name, final String url, final String hostname, final int port, final String catalog, final String schema, final Properties queryProps) {
-        DataSourceMetaData actual = builder.build(url, null, null);
+        ConnectionProperties actual = parser.parse(url, null, null);
         assertThat(actual.getHostname(), is(hostname));
         assertThat(actual.getPort(), is(port));
         assertThat(actual.getCatalog(), is(catalog));
@@ -56,7 +56,7 @@ class MariaDBDataSourceMetaDataTest {
     
     @Test
     void assertNewConstructorFailure() {
-        assertThrows(UnrecognizedDatabaseURLException.class, () -> builder.build("jdbc:mariadb:xxxxxxxx", null, null));
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> parser.parse("jdbc:mariadb:xxxxxxxx", null, null));
     }
     
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {

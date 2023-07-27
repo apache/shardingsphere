@@ -23,11 +23,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.Properties;
 
 /**
- * Standard data source meta data.
+ * Standard connection properties.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StandardDataSourceMetaData implements DataSourceMetaData {
+public final class StandardConnectionProperties implements ConnectionProperties {
     
     private final String hostname;
     
@@ -41,17 +41,12 @@ public final class StandardDataSourceMetaData implements DataSourceMetaData {
     
     private final Properties defaultQueryProperties;
     
-    public StandardDataSourceMetaData(final String hostname, final int port, final String catalog, final String schema) {
+    public StandardConnectionProperties(final String hostname, final int port, final String catalog, final String schema) {
         this(hostname, port, catalog, schema, new Properties(), new Properties());
     }
     
-    /**
-     * Judge whether two of data sources are in the same database instance.
-     *
-     * @param dataSourceMetaData data source meta data
-     * @return data sources are in the same database instance or not
-     */
-    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
-        return hostname.equals(dataSourceMetaData.getHostname()) && port == dataSourceMetaData.getPort();
+    @Override
+    public boolean isInSameDatabaseInstance(final ConnectionProperties connectionProps) {
+        return hostname.equals(connectionProps.getHostname()) && port == connectionProps.getPort();
     }
 }

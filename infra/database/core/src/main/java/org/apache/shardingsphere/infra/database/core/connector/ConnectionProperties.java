@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.database.core.connector;
 import java.util.Properties;
 
 /**
- * Data source meta data.
+ * Connection properties.
  */
-public interface DataSourceMetaData {
+public interface ConnectionProperties {
     
     /**
      * Get host name.
@@ -67,12 +67,12 @@ public interface DataSourceMetaData {
     Properties getDefaultQueryProperties();
     
     /**
-     * Judge whether two of data sources are in the same database instance.
+     * Judge whether two of connections are in the same database instance.
      *
-     * @param dataSourceMetaData data source meta data
-     * @return data sources are in the same database instance or not
+     * @param connectionProps connection properties
+     * @return connections are in the same database instance or not
      */
-    default boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
-        return getHostname().equals(dataSourceMetaData.getHostname()) && getPort() == dataSourceMetaData.getPort();
+    default boolean isInSameDatabaseInstance(final ConnectionProperties connectionProps) {
+        return getHostname().equals(connectionProps.getHostname()) && getPort() == connectionProps.getPort();
     }
 }

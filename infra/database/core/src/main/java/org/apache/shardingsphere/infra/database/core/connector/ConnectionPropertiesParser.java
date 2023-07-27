@@ -21,18 +21,18 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 /**
- * Data source meta data builder.
+ * Connection properties parser.
  */
 @SingletonSPI
-public interface DataSourceMetaDataBuilder extends DatabaseTypedSPI {
+public interface ConnectionPropertiesParser extends DatabaseTypedSPI {
     
     /**
-     * Build data source meta data.
+     * Parse connection properties.
      *
      * @param url URL of data source
      * @param username username of data source
      * @param catalog catalog of data source
-     * @return built meta data
+     * @return connection properties
      */
-    DataSourceMetaData build(String url, String username, String catalog);
+    ConnectionProperties parse(String url, String username, String catalog);
 }

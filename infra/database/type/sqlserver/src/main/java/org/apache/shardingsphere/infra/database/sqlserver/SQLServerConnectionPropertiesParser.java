@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.sql92;
+package org.apache.shardingsphere.infra.database.sqlserver;
 
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaDataBuilder;
-import org.apache.shardingsphere.infra.database.core.connector.StandardDataSourceMetaData;
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
+import org.apache.shardingsphere.infra.database.core.connector.StandardConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
@@ -27,23 +28,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Data source meta data builder of SQL92.
+ * Connection properties parser of SQLServer.
  */
-public final class SQL92DataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
+public final class SQLServerConnectionPropertiesParser implements ConnectionPropertiesParser {
     
-    private static final int DEFAULT_PORT = -1;
+    private static final int DEFAULT_PORT = 1433;
     
-    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:.*", Pattern.CASE_INSENSITIVE);
+    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?(\\d*);\\S*(DatabaseName|database)=([\\w\\-\\.]+);?", Pattern.CASE_INSENSITIVE);
     
     @Override
-    public DataSourceMetaData build(final String url, final String username, final String catalog) {
+    public ConnectionProperties parse(final String url, final String username, final String catalog) {
         Matcher matcher = URL_PATTERN.matcher(url);
         ShardingSpherePreconditions.checkState(matcher.find(), () -> new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern()));
-        return new StandardDataSourceMetaData("", DEFAULT_PORT, "", null);
+        return new StandardConnectionProperties(matcher.group(2), Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3)), matcher.group(5), null);
     }
     
     @Override
     public String getDatabaseType() {
-        return "SQL92";
+        return "SQLServer";
     }
 }

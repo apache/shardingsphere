@@ -19,16 +19,16 @@ package org.apache.shardingsphere.infra.database.h2;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 
 import java.util.Properties;
 
 /**
- * Data source meta data for H2.
+ * Connection properties for H2.
  */
 @RequiredArgsConstructor
 @Getter
-public final class H2DataSourceMetaData implements DataSourceMetaData {
+public final class H2ConnectionProperties implements ConnectionProperties {
     
     private static final String MODEL_MEM = "mem";
     
@@ -60,14 +60,14 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     }
     
     @Override
-    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
-        if (!(dataSourceMetaData instanceof H2DataSourceMetaData)) {
+    public boolean isInSameDatabaseInstance(final ConnectionProperties connectionProps) {
+        if (!(connectionProps instanceof H2ConnectionProperties)) {
             return false;
         }
-        if (!isSameModel(getModel(), ((H2DataSourceMetaData) dataSourceMetaData).getModel())) {
+        if (!isSameModel(getModel(), ((H2ConnectionProperties) connectionProps).getModel())) {
             return false;
         }
-        return hostname.equals(dataSourceMetaData.getHostname()) && port == dataSourceMetaData.getPort();
+        return hostname.equals(connectionProps.getHostname()) && port == connectionProps.getPort();
     }
     
     private boolean isSameModel(final String model1, final String model2) {

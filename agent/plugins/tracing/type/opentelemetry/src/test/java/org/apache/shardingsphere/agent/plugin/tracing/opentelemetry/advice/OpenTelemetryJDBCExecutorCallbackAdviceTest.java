@@ -33,7 +33,7 @@ import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.fixture.JDBCExecutorCallbackFixture;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -97,7 +97,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         executionUnit = new JDBCExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Collections.emptyList())), null, statement);
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         when(resourceMetaData.getStorageType(DATA_SOURCE_NAME)).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        when(resourceMetaData.getDataSourceMetaData(DATA_SOURCE_NAME)).thenReturn(mock(DataSourceMetaData.class));
+        when(resourceMetaData.getConnectionProperties(DATA_SOURCE_NAME)).thenReturn(mock(ConnectionProperties.class));
         JDBCExecutorCallback jdbcExecutorCallback = new JDBCExecutorCallbackFixture(TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, new MySQLSelectStatement(), true);
         Plugins.getMemberAccessor().set(JDBCExecutorCallback.class.getDeclaredField("resourceMetaData"), jdbcExecutorCallback, resourceMetaData);
         targetObject = (TargetAdviceObject) jdbcExecutorCallback;

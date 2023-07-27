@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.test.fixture.datasource;
 
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 /**
- * Mocked data source meta data builder.
+ * Mocked connection properties parser.
  */
-public final class MockedDataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
+public final class MockedConnectionPropertiesParser implements ConnectionPropertiesParser {
     
     @Override
-    public DataSourceMetaData build(final String url, final String username, final String catalog) {
-        return mock(DataSourceMetaData.class, RETURNS_DEEP_STUBS);
+    public ConnectionProperties parse(final String url, final String username, final String catalog) {
+        return mock(ConnectionProperties.class, RETURNS_DEEP_STUBS);
     }
     
     @Override

@@ -23,11 +23,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DataSourceMetaDataBuilderFixture implements DataSourceMetaDataBuilder {
+public final class ConnectionPropertiesParserFixture implements ConnectionPropertiesParser {
     
     @Override
-    public DataSourceMetaData build(final String url, final String username, final String catalog) {
-        DataSourceMetaData result = mock(DataSourceMetaData.class, RETURNS_DEEP_STUBS);
+    public ConnectionProperties parse(final String url, final String username, final String catalog) {
+        ConnectionProperties result = mock(ConnectionProperties.class, RETURNS_DEEP_STUBS);
         when(result.getQueryProperties()).thenReturn(new Properties());
         return result;
     }
