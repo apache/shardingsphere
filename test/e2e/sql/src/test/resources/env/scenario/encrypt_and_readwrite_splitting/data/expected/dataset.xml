@@ -33,11 +33,6 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="write_dataset.t_user_encrypt_federate_sharding,read_dataset.t_user_encrypt_federate_sharding">
-        <column name="user_id" type="numeric" />
-        <column name="pwd" type="varchar" />
-        <column name="username" type="varchar" />
-    </metadata>
     <metadata data-nodes="write_dataset.t_user_encrypt_federate,read_dataset.t_user_encrypt_federate">
         <column name="user_id" type="numeric" />
         <column name="pwd" type="varchar" />
@@ -255,12 +250,6 @@
     <row data-node="write_dataset.t_user_item" values="190007, 79, init, 2017-08-08" />
     <row data-node="write_dataset.t_user_item" values="190008, 89, init, 2017-08-08" />
     <row data-node="write_dataset.t_user_item" values="190009, 99, init, 2017-08-08" />
-    <row data-node="write_dataset.t_user_encrypt_federate_sharding" values="0, decryptValue, Rachel" />
-    <row data-node="write_dataset.t_user_encrypt_federate_sharding" values="1, decryptValue, Monica" />
-    <row data-node="write_dataset.t_user_encrypt_federate_sharding" values="2, decryptValue, Phoebe" />
-    <row data-node="write_dataset.t_user_encrypt_federate_sharding" values="3, decryptValue, Ross" />
-    <row data-node="write_dataset.t_user_encrypt_federate_sharding" values="4, decryptValue, Chandler" />
-    <row data-node="write_dataset.t_user_encrypt_federate_sharding" values="5, decryptValue, Joey" />
     <row data-node="write_dataset.t_user_info" values="0, description0" />
     <row data-node="write_dataset.t_user_info" values="1, description1" />
     <row data-node="write_dataset.t_user_info" values="2, description2" />
@@ -495,12 +484,6 @@
     <row data-node="read_dataset.t_user_item" values="190007, 79, init_read, 2017-08-08" />
     <row data-node="read_dataset.t_user_item" values="190008, 89, init_read, 2017-08-08" />
     <row data-node="read_dataset.t_user_item" values="190009, 99, init_read, 2017-08-08" />
-    <row data-node="read_dataset.t_user_encrypt_federate_sharding" values="0, decryptValue, Rachel" />
-    <row data-node="read_dataset.t_user_encrypt_federate_sharding" values="1, decryptValue, Monica" />
-    <row data-node="read_dataset.t_user_encrypt_federate_sharding" values="2, decryptValue, Phoebe" />
-    <row data-node="read_dataset.t_user_encrypt_federate_sharding" values="3, decryptValue, Ross" />
-    <row data-node="read_dataset.t_user_encrypt_federate_sharding" values="4, decryptValue, Chandler" />
-    <row data-node="read_dataset.t_user_encrypt_federate_sharding" values="5, decryptValue, Joey" />
     <row data-node="read_dataset.t_user_info" values="0, description0" />
     <row data-node="read_dataset.t_user_info" values="1, description1" />
     <row data-node="read_dataset.t_user_info" values="2, description2" />
