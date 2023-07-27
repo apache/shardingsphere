@@ -28,11 +28,11 @@ Supported database types definition
 | H2                   | H2 database         | [`org.apache.shardingsphere.infra.database.h2.H2DatabaseType`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/h2/src/main/java/org/apache/shardingsphere/infra/database/h2/H2DatabaseType.java)                                         |
 | openGauss            | OpenGauss database  | [`org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/opengauss/src/main/java/org/apache/shardingsphere/infra/database/opengauss/OpenGaussDatabaseType.java)      |
 
-## DialectSchemaMetaDataLoader
+## DialectMetaDataLoader
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.infra.database.core.dict.metadata.DialectSchemaMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/core/src/main/java/org/apache/shardingsphere/infra/database/core/dict/metadata/DialectSchemaMetaDataLoader.java)
+[`org.apache.shardingsphere.infra.database.core.dict.metadata.DialectMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/core/src/main/java/org/apache/shardingsphere/infra/database/core/dict/metadata/DialectMetaDataLoader.java)
 
 ### Definition
 
