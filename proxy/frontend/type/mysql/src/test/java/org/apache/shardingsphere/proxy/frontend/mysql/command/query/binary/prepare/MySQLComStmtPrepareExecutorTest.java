@@ -64,6 +64,7 @@ import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -199,10 +200,9 @@ class MySQLComStmtPrepareExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
                 .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
         when(result.getMetaDataContexts().getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        ShardingSphereTable table = new ShardingSphereTable();
-        table.putColumn(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));
-        table.putColumn(new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false));
-        table.putColumn(new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true));
+        ShardingSphereTable table = new ShardingSphereTable("user", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true),
+                new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false),
+                new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("user", table);
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"),

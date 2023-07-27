@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
@@ -393,7 +394,10 @@ class PostgreSQLComDescribeExecutorTest {
                 new ShardingSphereColumn("c", Types.CHAR, true, false, false, true, false),
                 new ShardingSphereColumn("pad", Types.CHAR, true, false, false, true, false));
         ShardingSphereTable table = new ShardingSphereTable(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public").getTable(TABLE_NAME)).thenReturn(table);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public")).thenReturn(schema);
+        when(schema.getTable(TABLE_NAME)).thenReturn(table);
+        when(schema.getAllColumnNames(TABLE_NAME)).thenReturn(Arrays.asList("id", "k", "c", "pad"));
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageTypes())
                 .thenReturn(Collections.singletonMap("ds_0", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
