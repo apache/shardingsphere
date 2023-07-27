@@ -33,7 +33,7 @@ import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.fixture.JDBCExecutorCallbackFixture;
-import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;

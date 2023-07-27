@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.database.mysql;
 
-import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaDataBuilder;
-import org.apache.shardingsphere.infra.database.core.connection.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.connection.StandardDataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.connection.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connector.JdbcUrl;
+import org.apache.shardingsphere.infra.database.core.connector.StandardDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.StandardJdbcUrlParser;
 
 import java.util.Properties;
 

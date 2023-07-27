@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.connection;
+package org.apache.shardingsphere.infra.database.core.connector;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 
 /**
- * Data source meta data builder.
+ * Unrecognized database URL exception.
  */
-@SingletonSPI
-public interface DataSourceMetaDataBuilder extends DatabaseTypedSPI {
+public final class UnrecognizedDatabaseURLException extends KernelSQLException {
     
-    /**
-     * Build data source meta data.
-     *
-     * @param url URL of data source
-     * @param username username of data source
-     * @param catalog catalog of data source
-     * @return built meta data
-     */
-    DataSourceMetaData build(String url, String username, String catalog);
+    private static final long serialVersionUID = -1551117178863766353L;
+    
+    public UnrecognizedDatabaseURLException(final String url, final String pattern) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 0, 1, "The URL `%s` is not recognized, please refer to the pattern `%s`.", url, pattern);
+    }
 }

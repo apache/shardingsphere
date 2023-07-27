@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.database.h2;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
 
 import java.util.Properties;
 
