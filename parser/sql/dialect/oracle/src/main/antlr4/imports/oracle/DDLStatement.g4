@@ -2829,7 +2829,7 @@ dropDiskClause
     ;
 
 resizeDiskClause
-    : RESIZE ALL (SIZE sizeClause)?
+    : RESIZE (ALL | DISKS IN FAILGROUP failgroupName) (SIZE sizeClause)?
     ;
 
 rebalanceDiskgroupClause
