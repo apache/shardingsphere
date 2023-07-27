@@ -68,7 +68,6 @@
         <profile>
             <id>release.native</id>
             <properties>
-                <truffle-api.version>23.0.1</truffle-api.version>
                 <jacoco.skip>true</jacoco.skip>
                 <maven.javadoc.skip>true</maven.javadoc.skip>
                 <checkstyle.skip>true</checkstyle.skip>
@@ -96,8 +95,6 @@
                             <fallback>false</fallback>
                             <verbose>true</verbose>
                             <buildArgs>
-                                <arg>--language:java</arg>
-                                <arg>-H:+AllowDeprecatedBuilderClassesOnImageClasspath</arg>
                                 <arg>--report-unsupported-elements-at-runtime</arg>
                             </buildArgs>
                             <metadataRepository>

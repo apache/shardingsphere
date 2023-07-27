@@ -5,8 +5,7 @@ weight = 2
 
 ## 背景信息
 
-本节主要介绍如何通过 `GraalVM` 的 `native-image` 组件构建 ShardingSphere-Proxy 的 `Native Image` 和对应的 `Docker Image`
-。
+本节主要介绍如何通过 `GraalVM` 的 `native-image` 组件构建 ShardingSphere-Proxy 的 `Native Image` 和对应的 `Docker Image`。
 
 ## 注意事项
 
@@ -30,20 +29,17 @@ services:
   应当在 https://github.com/oracle/graalvm-reachability-metadata 打开新的 issue ，
   并提交包含 ShardingSphere 自身或依赖的第三方库缺失的 GraalVM Reachability Metadata 的 PR。
 
-- ShardingSphere 的 master 分支尚未准备好处理 Native Image 中的单元测试, 你总是需要在构建 GraalVM Native Image 的过程中，
+- ShardingSphere 的 master 分支尚未准备好处理 Native Image 中的单元测试 ， 你总是需要在构建 GraalVM Native Image 的过程中，
   加上特定于 `GraalVM Native Build Tools` 的 `-DskipNativeTests` 或 `-DskipTests` 参数跳过 Native Image 中的单元测试。
 
-- 如下 3 个算法类由于涉及到 GraalVM Truffle Espresso 不方便在 host JVM 和 guest JVM 之间交互的 `groovy.lang.Closure`
-  类，暂未可在 GraalVM Native Image 下使用。
+- 如下的算法类由于涉及到 https://github.com/oracle/graal/issues/5522 ， 暂未可在 GraalVM Native Image 下使用。
     - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`
     - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm`
     - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
 
-- 当前阶段，GraalVM Native Image 形态的 ShardingSphere Proxy 处于混合 AOT ( GraalVM Native Image ) 和 JIT ( GraalVM
-  Truffle Espresso ) 运行的阶段。由于 https://github.com/oracle/graal/issues/4555 尚未关闭，GraalVM Truffle Espresso
-  运行需要的 `.so` 文件并不会进入 GraalVM Native Image 内。因此如果你需要在 Docker Image 外运行 ShardingSphere Proxy
-  Native 的二进制文件，你需要确保系统环境变量 `JAVA_HOME` 指向 GraalVM 的目录，并且此 GraalVM
-  实例已经通过 `GraalVM Updater` 安装了 `espresso` 组件。
+- 当前阶段，GraalVM Native Image 形态的 ShardingSphere Proxy 不支持使用带 Groovy
+  语法的 `行表达式`， 这首先导致 `数据分片` 功能的`actualDataNodes`属性只能使用纯列表来配置， 例如 `ds_0.t_order_0, ds_0.t_order_1`
+  或 `ds_0.t_user_0, ds_15.t_user_1023`。此问题在 https://github.com/oracle/graal/issues/5522 追踪。
 
 - 本节假定处于 Linux（amd64，aarch64）， MacOS（amd64）或 Windows（amd64）环境。
   如果你位于 MacOS（aarch64/M1） 环境，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/2666 。
@@ -53,20 +49,14 @@ services:
 1. 根据 https://www.graalvm.org/downloads/ 要求安装和配置 JDK 17 对应的 `GraalVM Community Edition` 或 `Oracle GraalVM`。或者使用 `SDKMAN!`。
 
 ```shell
-sdk install java 17.0.7-graalce
+sdk install java 17.0.8-graalce
 ```
 
-2. 通过 `GraalVM Updater` 工具安装 `espresso` 组件。
+2. 根据 https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites 的要求安装本地工具链。
 
-```shell
-gu install espresso
-```
+3. 如果需要构建 Docker Image， 确保 `docker-ce` 已安装。
 
-3. 根据 https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites 的要求安装本地工具链。
-
-4. 如果需要构建 Docker Image， 确保 `docker-ce` 已安装。
-
-5. 首先需要在项目的根目录下，执行如下命令以为所有子模块采集 Standard 形态的 GraalVM 可达性元数据。
+4. 首先需要在项目的根目录下，执行如下命令以为所有子模块采集 Standard 形态的 GraalVM 可达性元数据。
 
 ```shell
 ./mvnw -PgenerateStandardMetadata -DskipNativeTests -B -T1C clean test
@@ -146,7 +136,7 @@ services:
       - "3307:3307"
 ```
 
-- 如果你不对 Git Source 做任何更改， 上文提及的命令将使用 `ghcr.io/graalvm/graalvm-community:17.0.7-ol9` 作为 Base Docker Image。
+- 如果你不对 Git Source 做任何更改， 上文提及的命令将使用 `oraclelinux:9-slim` 作为 Base Docker Image。
   但如果你希望使用 `busybox:glic`，`gcr.io/distroless/base` 或 `scratch` 等更小体积的 Docker Image 作为 Base Docker
   Image，你需要根据 https://www.graalvm.org/latest/reference-manual/native-image/guides/build-static-executables/ 的要求，
   做为 `pom.xml`的 `native profile` 添加 `-H:+StaticExecutableWithDynamicLibC` 的 `jvmArgs` 等操作。

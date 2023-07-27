@@ -119,7 +119,7 @@ jobs:
           ref: ${{ inputs.commit-id }}
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '17.0.7'
+          java-version: '17.0.8'
           distribution: 'graalvm-community'
           components: 'espresso,native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}

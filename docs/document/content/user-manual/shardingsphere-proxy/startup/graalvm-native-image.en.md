@@ -36,19 +36,15 @@ services:
   Plus `-DskipNativeTests` or `-DskipTests` parameter specific to `GraalVM Native Build Tools` to skip unit tests in
   Native Image.
 
-- The following three algorithm classes are not available under GraalVM Native Image because they involve
-  the `groovy.lang.Closure` class that is inconvenient for GraalVM Truffle Espresso to interact between the host JVM and
-  the guest JVM.
+- The following algorithm classes are not available under GraalVM Native Image due to https://github.com/oracle/graal/issues/5522 involved.
     - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`
     - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm`
     - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
 
-- At the current stage, ShardingSphere Proxy in GraalVM Native Image is in the stage of mixed AOT ( GraalVM
-  Native Image ) and JIT ( GraalVM Truffle Espresso ) operation. Since https://github.com/oracle/graal/issues/4555 has
-  not been closed, the `.so` file required for GraalVM Truffle Espresso to run does not enter the GraalVM Native Image.
-  So if you need to run ShardingSphere Proxy outside of Docker Image For Native binaries, 
-  you need to make sure that the system environment variable `JAVA_HOME` points to GraalVM's
-  directory and this GraalVM instance already has the `espresso` component installed via `GraalVM Updater`.
+- At this stage, ShardingSphere Proxy in the form of GraalVM Native Image does not support the use of `Row Value Expressions`
+  with Groovy syntax, which first results in the `actualDataNodes` property of the `Sharding` feature being only
+  configurable using a pure list, such as `ds_0.t_order_0, ds_0.t_order_1` or `ds_0.t_user_0, ds_15.t_user_1023`. This
+  issue is tracked in https://github.com/oracle/graal/issues/5522 .
 
 - This section assumes a Linux (amd64, aarch64), MacOS (amd64) or Windows (amd64) environment.
   If you are on MacOS (aarch64/M1) environment, you need to follow https://github.com/oracle/graal/issues/2666 which is
@@ -59,20 +55,14 @@ services:
 1. Install and configure `GraalVM Community Edition` or `Oracle GraalVM` for JDK 17 according to https://www.graalvm.org/downloads/. Or use `SDKMAN!`.
 
 ```shell
-sdk install java 17.0.7-graalce
+sdk install java 17.0.8-graalce
 ```
 
-2. Install the `espresso` component via the `GraalVM Updater` tool.
+2. Install the local toolchain as required by https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites.
 
-```shell
-gu install espresso
-```
+3. If you need to build a Docker Image, make sure `docker-ce` is installed.
 
-3. Install the local toolchain as required by https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites.
-
-4. If you need to build a Docker Image, make sure `docker-ce` is installed.
-
-5. First, you need to execute the following command in the root directory of the project to collect the GraalVM
+4. First, you need to execute the following command in the root directory of the project to collect the GraalVM
    Reachability Metadata of the Standard form for all submodules.
 
 ```shell
@@ -158,8 +148,7 @@ services:
       - "3307:3307"
 ```
 
-- If you don't make any changes to the Git Source, the commands mentioned above will use `ghcr.io/graalvm/graalvm-community:17.0.7-ol9` as the
-  Base Docker Image.
+- If you don't make any changes to the Git Source, the commands mentioned above will use `oraclelinux:9-slim` as the Base Docker Image.
   But if you want to use a smaller Docker Image like `busybox:glic`, `gcr.io/distroless/base` or `scratch` as the Base Docker Image, you need according
   to https://www.graalvm.org/latest/reference-manual/native-image/guides/build-static-executables/,
   add operations such as `-H:+StaticExecutableWithDynamicLibC` to `jvmArgs` as the `native profile` of `pom.xml`.

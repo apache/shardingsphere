@@ -372,13 +372,3 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     jul-to-slf4j 1.7.36: https://www.slf4j.org, MIT
     slf4j-api 1.7.36: https://www.slf4j.org, MIT
     jnanoid 2.0.0: https://github.com/aventrix/jnanoid, MIT
-
-========================================================================
-UPL licenses
-========================================================================
-
-The following components are provided under the UPL License. See project link for details.
-The text of each license is also included at licenses/LICENSE-[project].txt.
-
-    graal-sdk 21.2.0: https://github.com/oracle/graal, UPL 1.0
-    truffle-api 21.2.0: https://github.com/oracle/graal/tree/master/truffle, UPL 1.0

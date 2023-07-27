@@ -37,6 +37,6 @@ public final class InlineExpressionParserFactory {
      * @return created instance
      */
     public static InlineExpressionParser newInstance() {
-        return TypedSPILoader.getService(InlineExpressionParser.class, IS_SUBSTRATE_VM ? "ESPRESSO" : "HOTSPOT");
+        return TypedSPILoader.getService(InlineExpressionParser.class, IS_SUBSTRATE_VM ? "PURELIST" : "HOTSPOT");
     }
 }
