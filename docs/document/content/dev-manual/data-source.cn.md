@@ -53,7 +53,7 @@ chapter = true
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DialectDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/common/src/main/java/org/apache/shardingsphere/infra/metadata/database/schema/loader/datatype/DialectDataTypeLoader.java)
+[`org.apache.shardingsphere.infra.database.core.metadata.datatype.DialectDataTypeLoader`](https://github.com/apache/shardingsphere/blob//master/infra/database/core/src/main/java/org/apache/shardingsphere/infra/database/core/metadata/datatype/DialectDataTypeLoader.java)
 
 ### 定义
 
