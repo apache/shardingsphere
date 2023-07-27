@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.connection;
+package org.apache.shardingsphere.infra.database.core.connector;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

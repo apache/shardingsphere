@@ -15,35 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.connection;
+package org.apache.shardingsphere.infra.database.core.connector;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 /**
- * JDBC URL.
+ * Data source meta data builder.
  */
-@RequiredArgsConstructor
-@Getter
-public final class JdbcUrl {
-    
-    private final String hostname;
-    
-    private final int port;
-    
-    private final String database;
-    
-    private final Properties queryProperties;
+@SingletonSPI
+public interface DataSourceMetaDataBuilder extends DatabaseTypedSPI {
     
     /**
-     * Get port.
-     * 
-     * @param defaultPort default port if absent
-     * @return port
+     * Build data source meta data.
+     *
+     * @param url URL of data source
+     * @param username username of data source
+     * @param catalog catalog of data source
+     * @return built meta data
      */
-    public int getPort(final int defaultPort) {
-        return -1 == port ? defaultPort : port;
-    }
+    DataSourceMetaData build(String url, String username, String catalog);
 }
