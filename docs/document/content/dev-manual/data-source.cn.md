@@ -62,9 +62,9 @@ chapter = true
 ### 已知实现
 
 | *配置标识* | *详细说明*         | *全限定类名*                                                                                                                                                                                                                                                                                                     |
-|--------|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| MySQL  | MySQL 数据类型加载器  | [`org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.dialect.MySQLDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/common/src/main/java/org/apache/shardingsphere/infra/metadata/database/schema/loader/metadata/dialect/MySQLSchemaMetaDataLoader.java)   |
-| Oracle | Oracle 数据类型加载器 | [`org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.dialect.OracleDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/common/src/main/java/org/apache/shardingsphere/infra/metadata/database/schema/loader/metadata/dialect/OracleSchemaMetaDataLoader.java) |
+|--------|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MySQL  | MySQL 数据类型加载器  | [`org.apache.shardingsphere.infra.database.mysql.MySQLDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/mysql/src/main/java/org/apache/shardingsphere/infra/database/mysql/MySQLSchemaMetaDataLoader.java)      |
+| Oracle | Oracle 数据类型加载器 | [`org.apache.shardingsphere.infra.database.oracle.OracleDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/oracle/src/main/java/org/apache/shardingsphere/infra/database/oracle/OracleSchemaMetaDataLoader.java) |
 
 ## DataSourcePoolMetaData
 
