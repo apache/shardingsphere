@@ -451,6 +451,10 @@ functionName
     : identifier
     ;
 
+featureId
+    : numberLiterals
+    ;
+
 dbLink
     : identifier (DOT_ identifier)*
     ;
@@ -741,7 +745,20 @@ leadLagInfo
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction
+    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
+    ;
+
+featureFunction
+    : featureFunctionName LP_ (schemaName DOT_)? modelName (COMMA_ featureId)? (COMMA_ numberLiterals (COMMA_ numberLiterals)?)?
+    (DESC | ASC | ABS)? miningAttributeClause (AND miningAttributeClause)? RP_
+    ;
+
+featureFunctionName
+    : FEATURE_COMPARE | FEATURE_DETAILS | FEATURE_SET | FEATURE_ID | FEATURE_VALUE
+    ;
+
+miningAttributeClause
+    : USING (ASTERISK_ | (schemaName DOT_)? tableName DOT_ ASTERISK_ | expr (AS? alias)?)
     ;
 
 trimFunction

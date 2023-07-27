@@ -2619,4 +2619,15 @@
             <simple-table name="orders" start-index="57" stop-index="62" />
         </from>
     </select>
+    
+    <select sql-case-id="select_feature_function">
+        <projections start-index="7" stop-index="45">
+            <expression-projection text="FEATURE_VALUE(nmf_sh_sample, 3 USING *)" start-index="7" stop-index="45">
+                <function function-name="FEATURE_VALUE" text="FEATURE_VALUE(nmf_sh_sample, 3 USING *)" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="nmf_sh_sample_apply_prepared" start-index="52" stop-index="79" />
+        </from>
+    </select>
 </sql-parser-test-cases>
