@@ -15,40 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.infra.binder.segment.from;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 
+import java.util.Map;
+
 /**
- * Xml serialize function segment.
+ * Table segment binder context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class XmlSerializeFunctionSegment implements ComplexExpressionSegment, ProjectionSegment {
+public final class TableSegmentBinderContext {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final String functionName;
-    
-    private final ExpressionSegment parameter;
-    
-    private final String dataType;
-    
-    private final String encoding;
-    
-    private final String version;
-    
-    private final String identSize;
-    
-    private final String text;
-    
-    @Override
-    public String getColumnLabel() {
-        return text;
-    }
+    private final Map<String, ProjectionSegment> columnLabelProjectionSegments;
 }

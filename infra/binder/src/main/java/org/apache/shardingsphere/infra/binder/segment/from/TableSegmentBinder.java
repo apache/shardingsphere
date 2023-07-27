@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
+import java.util.Map;
+
 /**
  * Table segment binder.
  */
@@ -42,17 +44,19 @@ public final class TableSegmentBinder {
      * @param metaData meta data
      * @param defaultDatabaseName default database name
      * @param databaseType database type
+     * @param tableBinderContexts table binder contexts
      * @return bounded table segment
      */
-    public static TableSegment bind(final TableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName, final DatabaseType databaseType) {
+    public static TableSegment bind(final TableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName, final DatabaseType databaseType,
+                                    final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         if (segment instanceof SimpleTableSegment) {
-            return SimpleTableSegmentBinder.bind((SimpleTableSegment) segment, defaultDatabaseName, databaseType);
+            return SimpleTableSegmentBinder.bind((SimpleTableSegment) segment, metaData, defaultDatabaseName, databaseType, tableBinderContexts);
         }
         if (segment instanceof JoinTableSegment) {
-            return JoinTableSegmentBinder.bind((JoinTableSegment) segment, metaData, defaultDatabaseName, databaseType);
+            return JoinTableSegmentBinder.bind((JoinTableSegment) segment, metaData, defaultDatabaseName, databaseType, tableBinderContexts);
         }
         if (segment instanceof SubqueryTableSegment) {
-            return SubqueryTableSegmentBinder.bind((SubqueryTableSegment) segment, metaData, defaultDatabaseName);
+            return SubqueryTableSegmentBinder.bind((SubqueryTableSegment) segment, metaData, defaultDatabaseName, tableBinderContexts);
         }
         return segment;
     }
