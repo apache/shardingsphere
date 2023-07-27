@@ -15,19 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.connector;
+package org.apache.shardingsphere.infra.database.core.connector.url;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Properties;
 
 /**
- * Unrecognized database URL exception.
+ * JDBC URL.
  */
-public final class UnrecognizedDatabaseURLException extends KernelSQLException {
+@RequiredArgsConstructor
+@Getter
+public final class JdbcUrl {
     
-    private static final long serialVersionUID = -1551117178863766353L;
+    private final String hostname;
     
-    public UnrecognizedDatabaseURLException(final String url, final String pattern) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 0, 1, "The URL `%s` is not recognized, please refer to the pattern `%s`.", url, pattern);
+    private final int port;
+    
+    private final String database;
+    
+    private final Properties queryProperties;
+    
+    /**
+     * Get port.
+     * 
+     * @param defaultPort default port if absent
+     * @return port
+     */
+    public int getPort(final int defaultPort) {
+        return -1 == port ? defaultPort : port;
     }
 }

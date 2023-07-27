@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.database.sql92;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.connector.StandardConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.regex.Matcher;

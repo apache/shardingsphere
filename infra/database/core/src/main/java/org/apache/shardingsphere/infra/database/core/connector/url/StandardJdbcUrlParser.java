@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.connector;
+package org.apache.shardingsphere.infra.database.core.connector.url;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -55,19 +55,14 @@ public final class StandardJdbcUrlParser {
      */
     public JdbcUrl parse(final String jdbcUrl) {
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);
-        if (matcher.matches()) {
-            String authority = matcher.group(AUTHORITY_GROUP_KEY);
-            ShardingSpherePreconditions.checkNotNull(authority, () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
-            return new JdbcUrl(parseHostname(authority), parsePort(authority), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
-        }
-        throw new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
+        ShardingSpherePreconditions.checkState(matcher.matches(), () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
+        String authority = matcher.group(AUTHORITY_GROUP_KEY);
+        ShardingSpherePreconditions.checkNotNull(authority, () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
+        return new JdbcUrl(parseHostname(authority), parsePort(authority), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
     }
     
     private String parseHostname(final String authority) {
-        if (!authority.contains(":")) {
-            return authority;
-        }
-        return authority.split(":")[0];
+        return authority.contains(":") ? authority.split(":")[0] : authority;
     }
     
     private int parsePort(final String authority) {

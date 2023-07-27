@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.database.mariadb;
 
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.infra.database.core.connector.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;

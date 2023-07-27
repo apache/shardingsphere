@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParserFixture
+org.apache.shardingsphere.infra.database.core.connector.fixture.ConnectionPropertiesParserFixture

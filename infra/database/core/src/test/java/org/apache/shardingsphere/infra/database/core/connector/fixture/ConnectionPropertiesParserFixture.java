@@ -15,31 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.postgresql;
+package org.apache.shardingsphere.infra.database.core.connector.fixture;
 
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.connector.StandardConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 
 import java.util.Properties;
 
-/**
- * Connection properties parser of PostgreSQL.
- */
-public final class PostgreSQLConnectionPropertiesParser implements ConnectionPropertiesParser {
-    
-    private static final int DEFAULT_PORT = 5432;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public final class ConnectionPropertiesParserFixture implements ConnectionPropertiesParser {
     
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new StandardConnectionProperties(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT), jdbcUrl.getDatabase(), null, jdbcUrl.getQueryProperties(), new Properties());
+        ConnectionProperties result = mock(ConnectionProperties.class, RETURNS_DEEP_STUBS);
+        when(result.getQueryProperties()).thenReturn(new Properties());
+        return result;
     }
     
     @Override
     public String getDatabaseType() {
-        return "PostgreSQL";
+        return "FIXTURE";
     }
 }
