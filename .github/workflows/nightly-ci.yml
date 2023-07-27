@@ -61,7 +61,7 @@ jobs:
       - name: Build Project with Maven
         run: ./mvnw clean install -B -ntp -T1C
       - name: Build Examples with Maven
-        run: ./mvnw clean package -B -f -T1C examples/pom.xml
+        run: ./mvnw clean package -B -f examples/pom.xml -T1C
   
   ci-jdk8:
     if: github.repository == 'apache/shardingsphere'
