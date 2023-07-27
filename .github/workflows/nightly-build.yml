@@ -39,10 +39,10 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   upload-to-nightlies:
-    if: github.repository == 'apache/shardingsphere'
     name: Upload to Nightly Builds
     needs: global-env
-    runs-on: ubuntu-latest
+    if: github.repository == 'apache/shardingsphere'
+    runs-on: ${{ needs.global-env.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
     steps:
       - uses: actions/cache@v3
@@ -74,7 +74,7 @@ jobs:
     if: github.repository == 'apache/shardingsphere'
     name: Build Proxy Image
     needs: global-env
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-env.outputs.GLOBAL_RUNS_ON }}
     permissions:
       contents: read
       packages: write
@@ -138,7 +138,7 @@ jobs:
     if: github.repository == 'apache/shardingsphere'
     name: Build Project
     needs: global-env
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-env.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v3
@@ -156,8 +156,8 @@ jobs:
         run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
 
   generate-and-test-examples:
-    if: github.repository == 'apache/shardingsphere'
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
+    if: github.repository == 'apache/shardingsphere'
     needs: build-cache
     runs-on: ubuntu-latest
     timeout-minutes: 90

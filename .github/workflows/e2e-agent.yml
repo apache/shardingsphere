@@ -61,9 +61,9 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   agent-mysql:
+    if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
     name: E2E - Agent with MySQL
     needs: global-env
-    if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:

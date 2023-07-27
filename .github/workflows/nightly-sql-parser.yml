@@ -35,7 +35,7 @@ jobs:
     if: github.repository == 'apache/shardingsphere'
     name: CI - JDK ${{ matrix.java-version }} for ${{ matrix.database }}
     needs: global-env
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-env.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 90
     strategy:
       max-parallel: 20

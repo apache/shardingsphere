@@ -22,6 +22,8 @@ on:
     outputs:
       GLOBAL_REPOSITORY_NAME:
         value: ${{ jobs.init-environment.outputs.GLOBAL_REPOSITORY_NAME }}
+      GLOBAL_RUNS_ON:
+        value: ${{ jobs.init-environment.outputs.GLOBAL_RUNS_ON }}
       GLOBAL_IS_JOB_EXECUTABLE:
         value: ${{ jobs.init-environment.outputs.GLOBAL_IS_JOB_EXECUTABLE }}
 
@@ -44,8 +46,9 @@ jobs:
         id: check-job-executable
         run: |
           if [ ${{ toJSON(github.repository) }} = ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }} ]; then
-              echo "GLOBAL_IS_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
+            echo "GLOBAL_IS_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
           fi
     outputs:
       GLOBAL_REPOSITORY_NAME: ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY_NAME }}
+      GLOBAL_RUNS_ON: ${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}
       GLOBAL_IS_JOB_EXECUTABLE: ${{ steps.check-job-executable.outputs.GLOBAL_IS_JOB_EXECUTABLE }}

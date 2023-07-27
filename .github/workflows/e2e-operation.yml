@@ -50,9 +50,9 @@ jobs:
       changed_operations: ${{ steps.filter.outputs.changes }}
 
   e2e-operation:
+    if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     needs: [ detect-changed-files, global-env ]
-    if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:
