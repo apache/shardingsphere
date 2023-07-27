@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.connector.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,9 +42,7 @@ public final class H2ConnectionPropertiesParser implements ConnectionPropertiesP
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         Matcher matcher = URL_PATTERN.matcher(url);
-        if (!matcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern());
-        }
+        ShardingSpherePreconditions.checkState(matcher.find(), () -> new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern()));
         return new H2ConnectionProperties(getHostname(matcher), getModel(matcher), getPort(matcher), getCatalog(matcher));
     }
     
