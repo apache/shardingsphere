@@ -289,6 +289,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
             result.setSelectSubquery(subquerySegment);
+            result.setInsertSelect(subquerySegment);
         }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
@@ -309,6 +310,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
         result.setSelectSubquery(subquerySegment);
+        result.setInsertSelect(subquerySegment);
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -472,6 +474,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
