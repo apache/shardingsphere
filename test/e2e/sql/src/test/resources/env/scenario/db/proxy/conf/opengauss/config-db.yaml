@@ -145,14 +145,6 @@ rules:
   shardingAlgorithms:
     it_standard_fixture:
       type: IT.STANDARD.FIXTURE
-    db_inline_order_id:
-      type: INLINE
-      props:
-        algorithm-expression: ds_${order_id_sharding % 2}
-    db_inline_item_id:
-      type: INLINE
-      props:
-        algorithm-expression: ds_${db_inline_item_id % 2}
 
   keyGenerators:
       auto_increment:
