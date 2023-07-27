@@ -26,7 +26,6 @@ CREATE TABLE encrypt_write_ds.t_user_item (item_id INT NOT NULL, user_id INT NOT
 CREATE TABLE encrypt_write_ds.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
 CREATE TABLE encrypt_write_ds.t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE encrypt_write_ds.t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE encrypt_write_ds.t_order_item_federate_sharding (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE TABLE encrypt_write_ds.t_order_federate_sharding (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 CREATE TABLE encrypt_write_ds.t_user_encrypt_federate_sharding (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE encrypt_write_ds.t_user_encrypt_federate (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
@@ -39,7 +38,6 @@ CREATE TABLE encrypt_read_ds.t_user_item (item_id INT NOT NULL, user_id INT NOT 
 CREATE TABLE encrypt_read_ds.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
 CREATE TABLE encrypt_read_ds.t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE encrypt_read_ds.t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE encrypt_read_ds.t_order_item_federate_sharding (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE TABLE encrypt_read_ds.t_order_federate_sharding (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 CREATE TABLE encrypt_read_ds.t_user_encrypt_federate_sharding (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE encrypt_read_ds.t_user_encrypt_federate (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));

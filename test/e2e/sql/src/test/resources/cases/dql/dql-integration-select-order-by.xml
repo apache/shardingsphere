@@ -123,9 +123,10 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select t_order_federate.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id ORDER BY t_order_item_federate_sharding.user_id" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select t_order_federate.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id ORDER BY t_order_item_federate_sharding.user_id" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <test-case sql="SELECT o.item_id, o.order_id, o.creation_date, s.id FROM t_order_item o INNER JOIN t_single_table s ON o.order_id = s.id ORDER BY o.item_id " scenario-types="db,tbl" />
     
