@@ -33,61 +33,6 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="encrypt_write_ds.t_order_federate,encrypt_read_ds.t_order_federate">
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="encrypt_write_ds.t_order_item_federate,encrypt_read_ds.t_order_item_federate">
-        <column name="item_id" type="numeric" />
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="encrypt_write_ds.t_user_encrypt_federate_sharding,encrypt_read_ds.t_user_encrypt_federate_sharding">
-        <column name="user_id" type="numeric" />
-        <column name="plain_pwd" type="varchar" />
-        <column name="cipher_pwd" type="varchar" />
-        <column name="username" type="varchar" />
-    </metadata>
-    <metadata data-nodes="encrypt_write_ds.t_user_encrypt_federate,encrypt_read_ds.t_user_encrypt_federate">
-        <column name="user_id" type="numeric" />
-        <column name="plain_pwd" type="varchar" />
-        <column name="cipher_pwd" type="varchar" />
-        <column name="username" type="varchar" />
-    </metadata>
-    <metadata data-nodes="encrypt_write_ds.t_user_info,encrypt_read_ds.t_user_info">
-        <column name="user_id" type="numeric" />
-        <column name="information" type="varchar" />
-    </metadata>
-    <metadata data-nodes="encrypt_write_ds.t_merchant,encrypt_read_ds.t_merchant">
-        <column name="merchant_id" type="numeric" />
-        <column name="country_id" type="numeric" />
-        <column name="merchant_name" type="varchar" />
-        <column name="business_code" type="varchar" />
-        <column name="telephone" type="varchar" />
-        <column name="creation_date" type="datetime" />
-    </metadata>
-    <row data-node="encrypt_write_ds.t_single_table" values="1, 0, init" />
-    <row data-node="encrypt_write_ds.t_single_table" values="2, 11, init" />
-    <row data-node="encrypt_write_ds.t_single_table" values="3, 22, init" />
-    <row data-node="encrypt_write_ds.t_single_table" values="4, 33, init" />
-    <row data-node="encrypt_write_ds.t_user" values="0, 10000, dL/JAiR/3cVG8lt6DMDa/A==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="1, 11000, wPc6WYJBzQIt4i4T0KhqXA==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="2, 12000, HbV7OHLF4nBuOMVCLV5Cbg==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="3, 13000, avls/J9bHV4A8V4VdPjfig==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="4, 14000, EPMV29wqL8k6Uow+Xrx3tg==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="5, 15000, GxjyN54a5qsP5UDx7z98jw==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="6, 16000, myfeu/O6o4D9RqILA5c2xA==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="7, 17000, bnHlhR5STgfqDncGsILMMQ==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="8, 18000, Rlu0LF0Cud3Fdu+ZL7Uq7A==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="9, 19000, mOF/2EcSlRCZ0VQeZHlAhQ==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="10, 10001, yK+tn8E43EyCEgbqNOrJ4w==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="11, 11001, CIbxTwI742pGwxb18lQLkQ==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="12, 12001, VCHpNlwod9AiuS1V+7DSLw==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="13, 13001, 8uxRFhW4c2rtSOoesudk/A==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="14, 14001, 6dL4zoSI6hLaOqPg3VCiWQ==, init" />
-    <row data-node="encrypt_write_ds.t_user" values="15, 15001, sqE82LdK1u2e43ZtMl/JNw==, init" />
     <row data-node="encrypt_write_ds.t_user" values="16, 16001, j9uwIi056TLTk+X70X/Pmw==, init" />
     <row data-node="encrypt_write_ds.t_user" values="17, 17001, 4EHWjOuIzrK7eGNbCqjfWg==, init" />
     <row data-node="encrypt_write_ds.t_user" values="18, 18001, uqt780pm9cFOZA030qN6QQ==, init" />
@@ -272,8 +217,6 @@
     <row data-node="encrypt_write_ds.t_user_item" values="190007, 79, init, 2017-08-08" />
     <row data-node="encrypt_write_ds.t_user_item" values="190008, 89, init, 2017-08-08" />
     <row data-node="encrypt_write_ds.t_user_item" values="190009, 99, init, 2017-08-08" />
-    <row data-node="encrypt_write_ds.t_order_federate" values="1000, 10, init" />
-    <row data-node="encrypt_write_ds.t_order_federate" values="1001, 11, init" />
     <row data-node="encrypt_write_ds.t_order_item_federate" values="100000, 1000, 10, init" />
     <row data-node="encrypt_write_ds.t_order_item_federate" values="100001, 1000, 10, init" />
     <row data-node="encrypt_write_ds.t_order_item_federate" values="100100, 1001, 10, init" />
@@ -518,8 +461,6 @@
     <row data-node="encrypt_read_ds.t_user_item" values="190007, 79, init_read, 2017-08-08" />
     <row data-node="encrypt_read_ds.t_user_item" values="190008, 89, init_read, 2017-08-08" />
     <row data-node="encrypt_read_ds.t_user_item" values="190009, 99, init_read, 2017-08-08" />
-    <row data-node="encrypt_read_ds.t_order_federate" values="1000, 10, init_read" />
-    <row data-node="encrypt_read_ds.t_order_federate" values="1001, 11, init_read" />
     <row data-node="encrypt_read_ds.t_order_item_federate" values="100000, 1000, 10, init_read" />
     <row data-node="encrypt_read_ds.t_order_item_federate" values="100001, 1000, 10, init_read" />
     <row data-node="encrypt_read_ds.t_order_item_federate" values="100100, 1001, 10, init_read" />

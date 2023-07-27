@@ -28,7 +28,6 @@
     <row values="public | t_merchant | table | mock user |" />
     <row values="public | t_order | table | mock user |" />
     <row values="public | t_order_aggregation_view | view | mock user |" mayNotExist="true" />
-    <row values="public | t_order_federate | table | mock user |" />
     <row values="public | t_order_item | table | mock user |" />
     <row values="public | t_order_item_federate | table | mock user |" />
     <row values="public | t_order_item_join_view | view | mock user |" mayNotExist="true" />
