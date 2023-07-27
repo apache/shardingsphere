@@ -54,7 +54,7 @@ public final class MetaDataLoader {
     /**
      * Load schema meta data.
      *
-     * @param materials schema meta data loader materials
+     * @param materials meta data loader materials
      * @return schema meta data map
      * @throws SQLException SQL exception
      */

@@ -98,11 +98,11 @@ public final class GenericSchemaBuilder {
     
     private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
         boolean checkMetaDataEnable = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        Collection<MetaDataLoaderMaterial> metaDataLoaderMaterials = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(tableNames, material, checkMetaDataEnable);
-        if (metaDataLoaderMaterials.isEmpty()) {
+        Collection<MetaDataLoaderMaterial> materials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, material, checkMetaDataEnable);
+        if (materials.isEmpty()) {
             return Collections.emptyMap();
         }
-        return MetaDataLoader.load(metaDataLoaderMaterials);
+        return MetaDataLoader.load(materials);
     }
     
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {

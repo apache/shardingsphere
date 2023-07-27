@@ -40,14 +40,31 @@ Use SQL dialect to load meta data rapidly
 
 ### Implementation classes
 
-| *Configuration Type* | *Description*                            | *Fully-qualified class name*                                                                                                                                                                                                                                                      |
-|----------------------|------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| MySQL                | Use MySQL dialect to load meta data      | [`org.apache.shardingsphere.infra.database.mysql.MySQLMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/mysql/src/main/java/org/apache/shardingsphere/infra/database/mysql/MySQLSchemaMetaDataLoader.java)                          |
-| Oracle               | Use Oracle dialect to load meta data     | [`org.apache.shardingsphere.infra.database.oracle.OracleMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/oracle/src/main/java/org/apache/shardingsphere/infra/database/oracle/OracleSchemaMetaDataLoader.java)                     |
-| PostgreSQL           | Use PostgreSQL dialect to load meta data | [`org.apache.shardingsphere.infra.database.postgresql.PostgreSQLMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/postgresql/src/main/java/org/apache/shardingsphere/infra/database/postgresql/PostgreSQLSchemaMetaDataLoader.java) |
-| SQLServer            | Use SQLServer dialect to load meta data  | [`org.apache.shardingsphere.infra.database.sqlserver.SQLServerMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/sqlserver/src/main/java/org/apache/shardingsphere/infra/database/sqlserver/SQLServerSchemaMetaDataLoader.java)      |
-| H2                   | Use H2 dialect to load meta data         | [`org.apache.shardingsphere.infra.database.h2.H2MetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/h2/src/main/java/org/apache/shardingsphere/infra/database/h2/H2SchemaMetaDataLoader.java)                                         |
-| openGauss            | Use OpenGauss dialect to load meta data  | [`org.apache.shardingsphere.infra.database.opengauss.OpenGaussMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/opengauss/src/main/java/org/apache/shardingsphere/infra/database/opengauss/OpenGaussSchemaMetaDataLoader.java)      |
+| *Configuration Type* | *Description*                            | *Fully-qualified class name*                                                                                                                                                                                                                                          |
+|----------------------|------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MySQL                | Use MySQL dialect to load meta data      | [`org.apache.shardingsphere.infra.database.mysql.MySQLMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/mysql/src/main/java/org/apache/shardingsphere/infra/database/mysql/MySQLMetaDataLoader.java)                          |
+| Oracle               | Use Oracle dialect to load meta data     | [`org.apache.shardingsphere.infra.database.oracle.OracleMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/oracle/src/main/java/org/apache/shardingsphere/infra/database/oracle/OracleMetaDataLoader.java)                     |
+| PostgreSQL           | Use PostgreSQL dialect to load meta data | [`org.apache.shardingsphere.infra.database.postgresql.PostgreSQLMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/postgresql/src/main/java/org/apache/shardingsphere/infra/database/postgresql/PostgreSQLMetaDataLoader.java) |
+| SQLServer            | Use SQLServer dialect to load meta data  | [`org.apache.shardingsphere.infra.database.sqlserver.SQLServerMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/sqlserver/src/main/java/org/apache/shardingsphere/infra/database/sqlserver/SQLServerMetaDataLoader.java)      |
+| H2                   | Use H2 dialect to load meta data         | [`org.apache.shardingsphere.infra.database.h2.H2MetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/h2/src/main/java/org/apache/shardingsphere/infra/database/h2/H2MetaDataLoader.java)                                         |
+| openGauss            | Use OpenGauss dialect to load meta data  | [`org.apache.shardingsphere.infra.database.opengauss.OpenGaussMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/opengauss/src/main/java/org/apache/shardingsphere/infra/database/opengauss/OpenGaussMetaDataLoader.java)      |
+
+## DialectDataTypeLoader
+
+### Fully-qualified class name
+
+[`org.apache.shardingsphere.infra.database.core.metadata.datatype.DialectDataTypeLoader`](https://github.com/apache/shardingsphere/blob//master/infra/database/core/src/main/java/org/apache/shardingsphere/infra/database/core/metadata/datatype/DialectDataTypeLoader.java)
+
+### Definition
+
+Data type loader
+
+### Implementation classes
+
+| *Configuration Type* | *Description*           | *Fully-qualified class name*                                                                                                                                                                                                                      |
+|----------------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MySQL                | MySQL data type loader  | [`org.apache.shardingsphere.infra.database.mysql.MySQLDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/mysql/src/main/java/org/apache/shardingsphere/infra/database/mysql/MySQLDataTypeLoader.java)      |
+| Oracle               | Oracle data type loader | [`org.apache.shardingsphere.infra.database.oracle.OracleDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/oracle/src/main/java/org/apache/shardingsphere/infra/database/oracle/OracleDataTypeLoader.java) |
 
 ## DataSourcePoolMetaData 
 
