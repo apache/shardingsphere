@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.dict.loader.common;
+package org.apache.shardingsphere.infra.database.core.dict.loader.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

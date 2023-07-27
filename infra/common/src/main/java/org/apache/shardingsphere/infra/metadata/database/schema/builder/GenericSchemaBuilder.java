@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoaderEngine;
+import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.database.core.dict.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.dict.model.ConstraintMetaData;
@@ -102,7 +102,7 @@ public final class GenericSchemaBuilder {
         if (metaDataLoaderMaterials.isEmpty()) {
             return Collections.emptyMap();
         }
-        return MetaDataLoaderEngine.load(metaDataLoaderMaterials);
+        return MetaDataLoader.load(metaDataLoaderMaterials);
     }
     
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {

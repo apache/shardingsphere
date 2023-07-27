@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.dict.loader.common;
+package org.apache.shardingsphere.infra.database.core.dict.loader.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.dict.loader.adapter.MetaDataLoaderConnectionAdapter;
+import org.apache.shardingsphere.infra.database.core.dict.loader.MetaDataLoaderConnection;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -61,12 +61,12 @@ public final class SchemaMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource) throws SQLException {
-        try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
-            Collection<String> schemaNames = loadSchemaNames(connectionAdapter, databaseType);
+        try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
+            Collection<String> schemaNames = loadSchemaNames(connection, databaseType);
             Map<String, Collection<String>> result = new HashMap<>(schemaNames.size(), 1F);
             for (String each : schemaNames) {
                 String schemaName = databaseType.getDefaultSchema().isPresent() ? each : databaseName;
-                result.put(schemaName, loadTableNames(connectionAdapter, each));
+                result.put(schemaName, loadTableNames(connection, each));
             }
             return result;
         }

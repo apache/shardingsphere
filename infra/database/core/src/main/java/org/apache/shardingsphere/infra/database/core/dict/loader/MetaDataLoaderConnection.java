@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.dict.loader.adapter;
+package org.apache.shardingsphere.infra.database.core.dict.loader;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -40,10 +40,10 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 /**
- * Meta data loader connection adapter.
+ * Meta data loader connection.
  */
 @RequiredArgsConstructor
-public final class MetaDataLoaderConnectionAdapter implements Connection {
+public final class MetaDataLoaderConnection implements Connection {
     
     private final DatabaseType databaseType;
     

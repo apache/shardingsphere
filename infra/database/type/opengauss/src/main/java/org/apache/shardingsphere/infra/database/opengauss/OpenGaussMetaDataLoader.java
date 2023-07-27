@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.database.opengauss;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.dict.loader.common.SchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.dict.loader.type.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.database.core.dict.loader.DialectMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.dict.model.ColumnMetaData;
