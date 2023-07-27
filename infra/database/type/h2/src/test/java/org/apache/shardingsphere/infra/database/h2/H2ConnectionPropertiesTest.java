@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.h2;
 
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -34,14 +34,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class H2DataSourceMetaDataTest {
+class H2ConnectionPropertiesTest {
     
-    private final DataSourceMetaDataBuilder builder = DatabaseTypedSPILoader.getService(DataSourceMetaDataBuilder.class, TypedSPILoader.getService(DatabaseType.class, "H2"));
+    private final ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, TypedSPILoader.getService(DatabaseType.class, "H2"));
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
     void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema) {
-        DataSourceMetaData actual = builder.build(url, null, null);
+        ConnectionProperties actual = parser.parse(url, null, null);
         assertThat(actual.getHostname(), is(hostname));
         assertThat(actual.getPort(), is(port));
         assertThat(actual.getCatalog(), is(catalog));
@@ -52,8 +52,8 @@ class H2DataSourceMetaDataTest {
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(IsInSameDatabaseInstanceTestCaseArgumentsProvider.class)
     void assertIsInSameDatabaseInstance(final String name, final String url1, final String url2, final boolean isSame) {
-        DataSourceMetaData actual1 = builder.build(url1, null, null);
-        DataSourceMetaData actual2 = builder.build(url2, null, null);
+        ConnectionProperties actual1 = parser.parse(url1, null, null);
+        ConnectionProperties actual2 = parser.parse(url2, null, null);
         assertThat(actual1.isInSameDatabaseInstance(actual2), is(isSame));
     }
     

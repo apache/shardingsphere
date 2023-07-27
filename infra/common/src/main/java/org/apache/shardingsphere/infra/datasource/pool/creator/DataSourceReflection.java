@@ -21,8 +21,8 @@ import com.google.common.base.CaseFormat;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.type.DefaultDataSourcePoolFieldMetaData;
@@ -168,9 +168,9 @@ public final class DataSourceReflection {
         if (!jdbcUrl.isPresent() || !jdbcConnectionProps.isPresent()) {
             return;
         }
-        DataSourceMetaData dataSourceMetaData = DatabaseTypedSPILoader.getService(DataSourceMetaDataBuilder.class, DatabaseTypeFactory.get(jdbcUrl.get())).build(jdbcUrl.get(), null, null);
-        Properties queryProps = dataSourceMetaData.getQueryProperties();
-        for (Entry<Object, Object> entry : dataSourceMetaData.getDefaultQueryProperties().entrySet()) {
+        ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(jdbcUrl.get())).parse(jdbcUrl.get(), null, null);
+        Properties queryProps = connectionProps.getQueryProperties();
+        for (Entry<Object, Object> entry : connectionProps.getDefaultQueryProperties().entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
             if (!containsDefaultProperty(defaultPropertyKey, jdbcConnectionProps.get(), queryProps)) {

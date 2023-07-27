@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.opengauss;
+package org.apache.shardingsphere.infra.database.postgresql;
 
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.connector.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.connector.StandardDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.StandardConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.StandardJdbcUrlParser;
 
 import java.util.Properties;
 
 /**
- * Data source meta data builder of openGauss.
+ * Connection properties parser of PostgreSQL.
  */
-public final class OpenGaussDataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
+public final class PostgreSQLConnectionPropertiesParser implements ConnectionPropertiesParser {
     
-    private static final int DEFAULT_PORT = 5431;
+    private static final int DEFAULT_PORT = 5432;
     
     @Override
-    public DataSourceMetaData build(final String url, final String username, final String catalog) {
+    public ConnectionProperties parse(final String url, final String username, final String catalog) {
         JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new StandardDataSourceMetaData(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT), jdbcUrl.getDatabase(), null, jdbcUrl.getQueryProperties(), new Properties());
+        return new StandardConnectionProperties(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT), jdbcUrl.getDatabase(), null, jdbcUrl.getQueryProperties(), new Properties());
     }
     
     @Override
     public String getDatabaseType() {
-        return "openGauss";
+        return "PostgreSQL";
     }
 }

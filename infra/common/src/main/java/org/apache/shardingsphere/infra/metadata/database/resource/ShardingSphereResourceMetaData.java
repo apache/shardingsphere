@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
@@ -105,7 +105,7 @@ public final class ShardingSphereResourceMetaData {
      */
     public Collection<String> getAllInstanceDataSourceNames() {
         Collection<String> result = new LinkedList<>();
-        for (Entry<String, DataSourceMetaData> entry : storageUnitMetaData.getDataSourceMetaDataMap().entrySet()) {
+        for (Entry<String, ConnectionProperties> entry : storageUnitMetaData.getConnectionPropsMap().entrySet()) {
             if (!isExisted(entry.getKey(), result)) {
                 result.add(entry.getKey());
             }
@@ -114,18 +114,18 @@ public final class ShardingSphereResourceMetaData {
     }
     
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
-        return existedDataSourceNames.stream().anyMatch(each -> storageUnitMetaData.getDataSourceMetaDataMap().get(dataSourceName)
-                .isInSameDatabaseInstance(storageUnitMetaData.getDataSourceMetaDataMap().get(each)));
+        return existedDataSourceNames.stream().anyMatch(each -> storageUnitMetaData.getConnectionPropsMap().get(dataSourceName)
+                .isInSameDatabaseInstance(storageUnitMetaData.getConnectionPropsMap().get(each)));
     }
     
     /**
-     * Get data source meta data.
+     * Get connection properties.
      *
      * @param dataSourceName data source name
-     * @return data source meta data
+     * @return connection properties
      */
-    public DataSourceMetaData getDataSourceMetaData(final String dataSourceName) {
-        return storageUnitMetaData.getDataSourceMetaDataMap().get(dataSourceName);
+    public ConnectionProperties getConnectionProperties(final String dataSourceName) {
+        return storageUnitMetaData.getConnectionPropsMap().get(dataSourceName);
     }
     
     /**

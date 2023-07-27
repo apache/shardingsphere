@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.infra.database.h2;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.connector.UnrecognizedDatabaseURLException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Data source meta data builder of H2.
+ * Connection properties parser of H2.
  */
-public final class H2DataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
+public final class H2ConnectionPropertiesParser implements ConnectionPropertiesParser {
     
     private static final int DEFAULT_PORT = -1;
     
@@ -39,12 +39,12 @@ public final class H2DataSourceMetaDataBuilder implements DataSourceMetaDataBuil
             + "(?<modelFile>file:)[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
     
     @Override
-    public DataSourceMetaData build(final String url, final String username, final String catalog) {
+    public ConnectionProperties parse(final String url, final String username, final String catalog) {
         Matcher matcher = URL_PATTERN.matcher(url);
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern());
         }
-        return new H2DataSourceMetaData(getHostname(matcher), getModel(matcher), getPort(matcher), getCatalog(matcher));
+        return new H2ConnectionProperties(getHostname(matcher), getModel(matcher), getPort(matcher), getCatalog(matcher));
     }
     
     private String getHostname(final Matcher matcher) {

@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
@@ -45,14 +45,14 @@ public final class ShardingSphereStorageUnitMetaData {
     
     private final Map<String, StorageUnit> storageUnits;
     
-    private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
+    private final Map<String, ConnectionProperties> connectionPropsMap;
     
     public ShardingSphereStorageUnitMetaData(final Map<String, DataSource> dataSources, final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnit> storageUnits,
                                              final Map<String, DataSource> enabledDataSources) {
         this.storageUnits = storageUnits;
         this.dataSources = getStorageUnitDataSources(dataSources, storageUnits);
         this.storageTypes = getStorageUnitTypes(storageTypes);
-        this.dataSourceMetaDataMap = createDataSourceMetaDataMap(enabledDataSources, storageTypes, storageUnits);
+        this.connectionPropsMap = createConnectionPropertiesMap(enabledDataSources, storageTypes, storageUnits);
     }
     
     private Map<String, DataSource> getStorageUnitDataSources(final Map<String, DataSource> storageNodes, final Map<String, StorageUnit> storageUnits) {
@@ -75,16 +75,16 @@ public final class ShardingSphereStorageUnitMetaData {
         return result;
     }
     
-    private Map<String, DataSourceMetaData> createDataSourceMetaDataMap(final Map<String, DataSource> enabledDataSources, final Map<String, DatabaseType> storageTypes,
-                                                                        final Map<String, StorageUnit> storageUnits) {
-        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(storageUnits.size(), 1F);
+    private Map<String, ConnectionProperties> createConnectionPropertiesMap(final Map<String, DataSource> enabledDataSources,
+                                                                            final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnit> storageUnits) {
+        Map<String, ConnectionProperties> result = new LinkedHashMap<>(storageUnits.size(), 1F);
         for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
             String nodeName = entry.getValue().getNodeName();
             if (enabledDataSources.containsKey(nodeName)) {
                 Map<String, Object> standardProps = DataSourcePropertiesCreator.create(enabledDataSources.get(nodeName)).getConnectionPropertySynonyms().getStandardProperties();
                 DatabaseType storageType = storageTypes.get(nodeName);
-                DataSourceMetaDataBuilder builder = DatabaseTypedSPILoader.getService(DataSourceMetaDataBuilder.class, storageType);
-                result.put(entry.getKey(), builder.build(standardProps.get("url").toString(), standardProps.get("username").toString(), entry.getValue().getCatalog()));
+                ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
+                result.put(entry.getKey(), parser.parse(standardProps.get("url").toString(), standardProps.get("username").toString(), entry.getValue().getCatalog()));
             }
         }
         return result;

@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.infra.database.mysql;
 
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.connector.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.connector.StandardDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.StandardConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.StandardJdbcUrlParser;
 
 import java.util.Properties;
 
 /**
- * Data source meta data builder of MySQL.
+ * Connection properties parser of MySQL.
  */
-public final class MySQLDataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
+public final class MySQLConnectionPropertiesParser implements ConnectionPropertiesParser {
     
     private static final int DEFAULT_PORT = 3306;
     
     @Override
-    public DataSourceMetaData build(final String url, final String username, final String catalog) {
+    public ConnectionProperties parse(final String url, final String username, final String catalog) {
         JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new StandardDataSourceMetaData(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT),
+        return new StandardConnectionProperties(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT),
                 null == catalog ? jdbcUrl.getDatabase() : catalog, null, jdbcUrl.getQueryProperties(), buildDefaultQueryProperties());
     }
     
