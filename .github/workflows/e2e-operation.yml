@@ -70,6 +70,7 @@ jobs:
       - env:
           changed_operations: ${{ needs.detect-changed-files.outputs.changed_operations }}
           current_operation: ${{ matrix.operation }}
+        name: Check if ${{ matrix.operation }} is Changed
         run: |
           echo "skip_current_step=false" >> $GITHUB_ENV
           if [[ ${changed_operations} == '["ignore"]' ]]; then
