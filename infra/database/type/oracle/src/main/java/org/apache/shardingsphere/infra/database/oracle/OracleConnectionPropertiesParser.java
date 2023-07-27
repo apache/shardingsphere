@@ -47,9 +47,15 @@ public final class OracleConnectionPropertiesParser implements ConnectionPropert
         List<Matcher> matchers = Arrays.asList(THIN_URL_PATTERN.matcher(url), CONNECT_DESCRIPTOR_URL_PATTERN.matcher(url));
         Matcher matcher = matchers.stream().filter(Matcher::find).findAny().orElseThrow(() -> new UnrecognizedDatabaseURLException(url, THIN_URL_PATTERN.pattern()));
         int groupCount = matcher.groupCount();
-        return THIN_MATCH_GROUP_COUNT == groupCount
-                ? new StandardConnectionProperties(matcher.group(3), Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4)), matcher.group(5), username)
-                : new StandardConnectionProperties(matcher.group(2), Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3)), matcher.group(4), username);
+        return THIN_MATCH_GROUP_COUNT == groupCount ? getThinConnectionProperties(username, matcher) : getStandardConnectionProperties(username, matcher);
+    }
+    
+    private StandardConnectionProperties getThinConnectionProperties(final String username, final Matcher matcher) {
+        return new StandardConnectionProperties(matcher.group(3), Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4)), matcher.group(5), username);
+    }
+    
+    private StandardConnectionProperties getStandardConnectionProperties(final String username, final Matcher matcher) {
+        return new StandardConnectionProperties(matcher.group(2), Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3)), matcher.group(4), username);
     }
     
     @Override
