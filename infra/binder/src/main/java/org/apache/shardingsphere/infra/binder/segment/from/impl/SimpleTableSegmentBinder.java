@@ -71,7 +71,8 @@ public final class SimpleTableSegmentBinder {
         IdentifierValue originalSchema = getSchemaName(segment, defaultDatabaseName, databaseType);
         // TODO check database and schema
         ShardingSphereSchema schema = metaData.getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
-        tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()), createSimpleTableBinderContext(segment, schema));
+        tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()),
+                createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema));
         segment.getTableName().setOriginalDatabase(originalDatabase);
         segment.getTableName().setOriginalSchema(originalSchema);
         return segment;
@@ -94,13 +95,16 @@ public final class SimpleTableSegmentBinder {
         return new IdentifierValue(DatabaseTypeEngine.getDefaultSchemaName(databaseType, defaultDatabaseName));
     }
     
-    private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema) {
+    private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue originalDatabase,
+                                                                            final IdentifierValue originalSchema) {
         Collection<String> columnNames = schema.getAllColumnNames(segment.getTableName().getIdentifier().getValue());
         Map<String, ProjectionSegment> projectionSegments = new CaseInsensitiveMap<>(columnNames.size(), 1L);
         for (String each : columnNames) {
             ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each));
-            columnSegment.setOriginalColumn(new IdentifierValue(each));
+            columnSegment.setOriginalDatabase(originalDatabase);
+            columnSegment.setOriginalSchema(originalSchema);
             columnSegment.setOriginalTable(segment.getTableName().getIdentifier());
+            columnSegment.setOriginalColumn(new IdentifierValue(each));
             projectionSegments.put(each, new ColumnProjectionSegment(columnSegment));
         }
         return new TableSegmentBinderContext(projectionSegments);
