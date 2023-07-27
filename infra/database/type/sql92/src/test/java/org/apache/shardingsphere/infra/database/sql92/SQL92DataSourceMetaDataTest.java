@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.sql92;
 
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.connector.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.core.connector.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -39,12 +39,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQL92DataSourceMetaDataTest {
     
-    private final DataSourceMetaDataBuilder builder = DatabaseTypedSPILoader.getService(DataSourceMetaDataBuilder.class, TypedSPILoader.getService(DatabaseType.class, "SQL92"));
+    private final ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, TypedSPILoader.getService(DatabaseType.class, "SQL92"));
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
     void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema) {
-        DataSourceMetaData actual = builder.build(url, null, null);
+        ConnectionProperties actual = parser.parse(url, null, null);
         assertThat(actual.getHostname(), is(hostname));
         assertThat(actual.getPort(), is(port));
         assertThat(actual.getCatalog(), is(catalog));
@@ -54,7 +54,7 @@ class SQL92DataSourceMetaDataTest {
     
     @Test
     void assertNewConstructorFailure() {
-        assertThrows(UnrecognizedDatabaseURLException.class, () -> builder.build("xxx:xxxx:xxxxxxxx", null, null));
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> parser.parse("xxx:xxxx:xxxxxxxx", null, null));
     }
     
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
