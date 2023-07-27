@@ -31,7 +31,7 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   check-spotbugs:
-    if: (github.repository == 'apache/shardingsphere')
+    if: github.repository == 'apache/shardingsphere'
     name: Check - SpotBugs
     needs: global-env
     runs-on: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
         run: ./mvnw clean install spotbugs:check -T1C
 
   check-and-report-sonarcloud:
-    if: (github.repository == 'apache/shardingsphere')
+    if: github.repository == 'apache/shardingsphere'
     name: Check - SonarCloud
     needs: global-env
     runs-on: ubuntu-latest
@@ -78,7 +78,7 @@ jobs:
         run: ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -DskipTests
 
   checkstyle-report-sonarcloud:
-    if: (github.repository == 'apache/shardingsphere')
+    if: github.repository == 'apache/shardingsphere'
     name: Checkstyle - SonarCloud
     needs: global-env
     runs-on: ubuntu-latest
@@ -110,7 +110,7 @@ jobs:
         run: ./mvnw -B sonar:sonar -Dsonar.projectKey=apache_shardingsphere -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
 
   check-dead-links:
-    if: (github.repository == 'apache/shardingsphere')
+    if: github.repository == 'apache/shardingsphere'
     name: Check - Dead Links
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -139,7 +139,7 @@ jobs:
           done
 
   check-codeql:
-    if: (github.repository == 'apache/shardingsphere')
+    if: github.repository == 'apache/shardingsphere'
     name: Check - CodeQL
     needs: global-env
     runs-on: ubuntu-latest
@@ -172,7 +172,7 @@ jobs:
           category: "/language:java"
 
   check-stale:
-    if: (github.repository == 'apache/shardingsphere')
+    if: github.repository == 'apache/shardingsphere'
     name: Check - Stale Issues
     runs-on: ubuntu-latest
     timeout-minutes: 10
