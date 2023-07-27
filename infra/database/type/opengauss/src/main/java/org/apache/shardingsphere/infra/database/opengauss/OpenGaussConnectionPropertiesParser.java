@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.database.opengauss;
 
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.infra.database.core.connector.JdbcUrl;
+import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.connector.StandardConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 
 import java.util.Properties;
 

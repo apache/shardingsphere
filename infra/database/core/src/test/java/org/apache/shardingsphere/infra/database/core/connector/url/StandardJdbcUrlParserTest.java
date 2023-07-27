@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.connector;
+package org.apache.shardingsphere.infra.database.core.connector.url;
 
 import org.junit.jupiter.api.Test;
 
