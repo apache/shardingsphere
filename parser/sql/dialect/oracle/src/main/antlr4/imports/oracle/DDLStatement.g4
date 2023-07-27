@@ -2420,7 +2420,7 @@ alterFlashbackArchive
     ( SET DEFAULT
     | (ADD | MODIFY) TABLESPACE tablespaceName flashbackArchiveQuota?
     | REMOVE TABLESPACE tablespaceName
-    | MODIFY RETENTION flashbackArchiveRetention
+    | MODIFY RETENTION? flashbackArchiveRetention
     | PURGE purgeClause
     | NO? OPTIMIZE DATA)
     ;
@@ -2888,7 +2888,7 @@ diskgroupTemplateClauses
     ;
 
 qualifiedTemplateClause
-    : ATTRIBUTE LP_ redundancyClause stripingClause diskRegionClause RP_
+    : (ATTRIBUTE | ATTRIBUTES) LP_ redundancyClause stripingClause diskRegionClause RP_
     ;
 
 redundancyClause
