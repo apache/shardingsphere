@@ -140,12 +140,6 @@ rules:
         standard:
           shardingColumn: user_id
           shardingAlgorithmName: it_standard_fixture
-    t_order_federate_sharding:
-      actualDataNodes: ds_${0..1}.t_order_federate_sharding
-      databaseStrategy:
-        standard:
-          shardingColumn: order_id_sharding
-          shardingAlgorithmName: db_inline_order_id
   bindingTables:
     - ref_0:t_order,t_order_item,t_order_details
   shardingAlgorithms:

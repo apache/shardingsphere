@@ -35,7 +35,6 @@ DROP TABLE IF EXISTS t_single_table;
 DROP TABLE IF EXISTS t_broadcast_table;
 DROP TABLE IF EXISTS t_order_federate;
 DROP TABLE IF EXISTS t_order_item_federate;
-DROP TABLE IF EXISTS t_order_federate_sharding;
 
 CREATE TABLE t_order(order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item(item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -50,7 +49,6 @@ CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VAR
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE t_order_federate_sharding (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 
 CREATE INDEX order_index_t_order ON t_order (order_id);
 
@@ -75,7 +73,6 @@ DROP TABLE IF EXISTS t_single_table;
 DROP TABLE IF EXISTS t_broadcast_table;
 DROP TABLE IF EXISTS t_order_federate;
 DROP TABLE IF EXISTS t_order_item_federate;
-DROP TABLE IF EXISTS t_order_federate_sharding;
 
 CREATE TABLE t_order(order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item(item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -90,6 +87,5 @@ CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VAR
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE t_order_federate_sharding (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 
 CREATE INDEX order_index_t_order ON t_order (order_id);

@@ -88,12 +88,6 @@ rules:
         standard:
           shardingColumn: user_id
           shardingAlgorithmName: it_standard_fixture
-    t_order_federate_sharding:
-      actualDataNodes: readwrite_ds_1.t_order_federate_sharding_${0..1}
-      tableStrategy:
-        standard:
-          shardingColumn: order_id_sharding
-          shardingAlgorithmName: table_inline_order_id
     t_user_encrypt_federate_sharding:
       actualDataNodes: readwrite_ds_1.t_user_encrypt_federate_sharding_${0..1}
       tableStrategy:
@@ -106,10 +100,6 @@ rules:
   shardingAlgorithms:
     it_standard_fixture:
       type: IT.STANDARD.FIXTURE
-    table_inline_order_id:
-      type: INLINE
-      props:
-        algorithm-expression: t_order_federate_sharding_${order_id_sharding % 2}
     table_inline_user_id:
       type: INLINE
       props:
