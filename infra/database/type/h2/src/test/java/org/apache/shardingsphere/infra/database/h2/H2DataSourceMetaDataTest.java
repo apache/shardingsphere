@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.h2;
 
-import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaDataBuilder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;

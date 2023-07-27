@@ -98,12 +98,12 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         ExecuteEngine.trigger(futures, new InventoryTaskExecuteCallback());
     }
     
-    protected void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
+    private void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
         jobItemContext.setStatus(jobStatus);
         jobAPI.updateJobItemStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
     
-    protected synchronized void executeIncrementalTask() {
+    private synchronized void executeIncrementalTask() {
         if (incrementalTasks.isEmpty()) {
             log.info("incrementalTasks empty, ignore");
             return;
@@ -132,6 +132,13 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         }
     }
     
+    protected void inventoryFailureCallback(final Throwable throwable) {
+        log.error("onFailure, inventory task execute failed.", throwable);
+        String jobId = jobItemContext.getJobId();
+        jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+        jobAPI.stop(jobId);
+    }
+    
     private final class InventoryTaskExecuteCallback implements ExecuteCallback {
         
         @Override
@@ -141,10 +148,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         
         @Override
         public void onFailure(final Throwable throwable) {
-            log.error("onFailure, inventory task execute failed.", throwable);
-            String jobId = jobItemContext.getJobId();
-            jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
-            jobAPI.stop(jobId);
+            inventoryFailureCallback(throwable);
         }
     }
     

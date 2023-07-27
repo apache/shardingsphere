@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
+import org.apache.shardingsphere.infra.database.core.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.proxy.backend.connector.BackendDataSource;

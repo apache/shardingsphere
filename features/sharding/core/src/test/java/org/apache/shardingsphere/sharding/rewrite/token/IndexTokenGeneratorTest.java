@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token;
 
-import org.apache.shardingsphere.infra.binder.statement.ddl.AlterIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateDatabaseStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateDatabaseStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
