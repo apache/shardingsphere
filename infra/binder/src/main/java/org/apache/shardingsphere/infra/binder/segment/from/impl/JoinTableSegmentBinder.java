@@ -20,9 +20,12 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
+
+import java.util.Map;
 
 /**
  * Join table segment binder.
@@ -37,11 +40,13 @@ public final class JoinTableSegmentBinder {
      * @param metaData meta data
      * @param defaultDatabaseName default database name
      * @param databaseType database type
+     * @param tableBinderContexts table binder contexts
      * @return bounded join table segment
      */
-    public static JoinTableSegment bind(final JoinTableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName, final DatabaseType databaseType) {
-        segment.setLeft(TableSegmentBinder.bind(segment.getLeft(), metaData, defaultDatabaseName, databaseType));
-        segment.setRight(TableSegmentBinder.bind(segment.getRight(), metaData, defaultDatabaseName, databaseType));
+    public static JoinTableSegment bind(final JoinTableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName, final DatabaseType databaseType,
+                                        final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        segment.setLeft(TableSegmentBinder.bind(segment.getLeft(), metaData, defaultDatabaseName, databaseType, tableBinderContexts));
+        segment.setRight(TableSegmentBinder.bind(segment.getRight(), metaData, defaultDatabaseName, databaseType, tableBinderContexts));
         // TODO bind condition and using column in join table segment
         return segment;
     }

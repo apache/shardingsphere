@@ -81,6 +81,8 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
         when(result.getAllColumnNames("t_account")).thenReturn(new ArrayList<>(Arrays.asList("account_id", "amount", "status")));
         when(result.getAllColumnNames("t_user")).thenReturn(new ArrayList<>(Arrays.asList("id", "content")));
         when(result.getAllColumnNames("t_user_extend")).thenReturn(new ArrayList<>(Arrays.asList("user_id", "content")));
+        when(result.getAllColumnNames("t_single")).thenReturn(new ArrayList<>(Collections.singletonList("id")));
+        when(result.getAllColumnNames("t_single_extend")).thenReturn(new ArrayList<>(Collections.singletonList("id")));
         when(result.getVisibleColumnNames("t_account")).thenReturn(new ArrayList<>(Arrays.asList("account_id", "amount")));
         when(result.getVisibleColumnNames("t_user")).thenReturn(new ArrayList<>(Arrays.asList("id", "content")));
         when(result.getVisibleColumnNames("t_user_extend")).thenReturn(new ArrayList<>(Arrays.asList("user_id", "content")));

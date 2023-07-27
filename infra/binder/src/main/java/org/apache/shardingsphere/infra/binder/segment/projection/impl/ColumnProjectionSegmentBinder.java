@@ -20,9 +20,11 @@ package org.apache.shardingsphere.infra.binder.segment.projection.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.expression.ColumnSegmentBinder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+
+import java.util.Map;
 
 /**
  * Column projection segment binder.
@@ -34,12 +36,11 @@ public final class ColumnProjectionSegmentBinder {
      * Bind column projection segment with metadata.
      *
      * @param segment table segment
-     * @param metaData meta data
-     * @param defaultDatabaseName default database name
+     * @param tableBinderContexts table binder contexts
      * @return bounded column projection segment
      */
-    public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn());
+    public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn(), tableBinderContexts);
         ColumnProjectionSegment result = new ColumnProjectionSegment(boundedColumn);
         segment.getAliasSegment().ifPresent(result::setAlias);
         return result;

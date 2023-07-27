@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.SchemaMetaDataLoaderEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.SchemaMetaDataLoaderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.metadata.SchemaMetaDataLoaderEngine;
+import org.apache.shardingsphere.infra.database.core.dict.metadata.SchemaMetaDataLoaderMaterial;
+import org.apache.shardingsphere.infra.database.core.dict.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.TableMetaData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

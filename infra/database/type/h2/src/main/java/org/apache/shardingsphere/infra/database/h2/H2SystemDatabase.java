@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.h2;
 
-import org.apache.shardingsphere.infra.database.core.system.DialectSystemDatabase;
+import org.apache.shardingsphere.infra.database.core.metadata.system.DialectSystemDatabase;
 
 import java.util.Collection;
 import java.util.Collections;

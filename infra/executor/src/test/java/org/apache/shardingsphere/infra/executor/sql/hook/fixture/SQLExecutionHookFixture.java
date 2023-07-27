@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.hook.fixture;
 
-import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 
 import java.util.Collection;

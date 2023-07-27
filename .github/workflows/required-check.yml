@@ -23,15 +23,18 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: check-${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
+  group: check-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  REPOSITORY_NAME: shardingsphere
-
 jobs:
+  global-env:
+    name: Import Global Env
+    uses: ./.github/workflows/required-reusable.yml
+
   check-checkstyle:
     name: Check - CheckStyle
+    needs: global-env
+    if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -41,6 +44,8 @@ jobs:
 
   check-spotless:
     name: Check - Spotless
+    needs: global-env
+    if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -50,6 +55,8 @@ jobs:
 
   check-license:
     name: Check - License
+    needs: global-env
+    if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

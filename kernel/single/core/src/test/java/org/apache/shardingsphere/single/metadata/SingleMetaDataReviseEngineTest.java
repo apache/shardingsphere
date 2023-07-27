@@ -19,10 +19,10 @@ package org.apache.shardingsphere.single.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.database.core.dict.model.TableMetaData;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
 

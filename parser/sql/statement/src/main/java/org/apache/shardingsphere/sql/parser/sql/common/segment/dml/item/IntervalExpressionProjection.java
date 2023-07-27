@@ -52,4 +52,9 @@ public final class IntervalExpressionProjection implements ExpressionSegment, Pr
     public String getText() {
         return minus.getText();
     }
+    
+    @Override
+    public String getColumnLabel() {
+        return getText();
+    }
 }

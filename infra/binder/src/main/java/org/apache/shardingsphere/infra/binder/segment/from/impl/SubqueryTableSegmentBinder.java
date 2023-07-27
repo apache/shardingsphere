@@ -19,11 +19,20 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Subquery table segment binder.
@@ -37,14 +46,30 @@ public final class SubqueryTableSegmentBinder {
      * @param segment join table segment
      * @param metaData meta data
      * @param defaultDatabaseName default database name
+     * @param tableBinderContexts table binder contexts
      * @return bounded subquery table segment
      */
-    public static SubqueryTableSegment bind(final SubqueryTableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+    public static SubqueryTableSegment bind(final SubqueryTableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                            final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         SelectStatement boundedSelect = new SelectStatementBinder().bind(segment.getSubquery().getSelect(), metaData, defaultDatabaseName);
         SubquerySegment boundedSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundedSelect);
         boundedSubquerySegment.setSubqueryType(segment.getSubquery().getSubqueryType());
         SubqueryTableSegment result = new SubqueryTableSegment(boundedSubquerySegment);
         segment.getAliasSegment().ifPresent(result::setAlias);
+        IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
+        tableBinderContexts.put(subqueryTableName.getValue(), createSubqueryTableBinderContext(boundedSelect.getProjections().getProjections()));
         return result;
+    }
+    
+    private static TableSegmentBinderContext createSubqueryTableBinderContext(final Collection<ProjectionSegment> projectionSegments) {
+        Map<String, ProjectionSegment> columnLabelProjectionSegments = new CaseInsensitiveMap<>(projectionSegments.size(), 1F);
+        for (ProjectionSegment each : projectionSegments) {
+            if (each instanceof ShorthandProjectionSegment) {
+                ((ShorthandProjectionSegment) each).getActualProjectionSegments().forEach(actualProjection -> columnLabelProjectionSegments.put(actualProjection.getColumnLabel(), actualProjection));
+            } else {
+                columnLabelProjectionSegments.put(each.getColumnLabel(), each);
+            }
+        }
+        return new TableSegmentBinderContext(columnLabelProjectionSegments);
     }
 }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.database.h2;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.core.datasource.DataSourceMetaDataBuilder;
-import org.apache.shardingsphere.infra.database.core.datasource.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.connection.UnrecognizedDatabaseURLException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -27,15 +27,19 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
-  REPOSITORY_NAME: shardingsphere
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
 jobs:
+  global-env:
+    name: Import Global Env
+    uses: ./.github/workflows/required-reusable.yml
+
   e2e-operation-job:
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
+    needs: global-env
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 5
+      max-parallel: 20
       fail-fast: false
       matrix:
         operation: [ transaction, pipeline, showprocesslist ]
@@ -53,10 +57,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
+          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
           restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-e2e-cache-
+            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Setup JDK 11
         uses: actions/setup-java@v3
         with:

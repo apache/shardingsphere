@@ -32,4 +32,10 @@
     <alter-diskgroup sql-case-id="alter_diskgroup_dismount" />
     <alter-diskgroup sql-case-id="alter_diskgroup_mount" />
     <alter-diskgroup sql-case-id="alter_diskgroup_offline_disk_drop_after_time_unit_m" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_set_attribute_time_h" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_set_attribute_time_m" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_set_permission_owner_group_other_for_file" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_set_ownership_owner_group_for_file" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_add_template_attribute_hot_hirrorhot" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_modify_drop_member" />
 </sql-parser-test-cases>
