@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.metadata.data.dialect.DialectShardingStatisticsTableCollector;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -31,12 +31,14 @@ import java.util.List;
  */
 public final class MySQLShardingStatisticsTableCollector implements DialectShardingStatisticsTableCollector {
     
-    private static final String MYSQL_TABLE_ROWS_AND_DATA_LENGTH = "SELECT TABLE_ROWS, DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'";
+    private static final String MYSQL_TABLE_ROWS_AND_DATA_LENGTH = "SELECT TABLE_ROWS, DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?";
     
     @Override
     public boolean appendRow(final Connection connection, final DataNode dataNode, final List<Object> row) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(String.format(MYSQL_TABLE_ROWS_AND_DATA_LENGTH, connection.getCatalog(), dataNode.getTableName()))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(MYSQL_TABLE_ROWS_AND_DATA_LENGTH)) {
+            preparedStatement.setString(1, connection.getCatalog());
+            preparedStatement.setString(2, dataNode.getTableName());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     row.add(resultSet.getBigDecimal(TABLE_ROWS_COLUMN_NAME));
                     row.add(resultSet.getBigDecimal(DATA_LENGTH_COLUMN_NAME));
