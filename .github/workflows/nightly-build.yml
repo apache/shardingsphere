@@ -39,10 +39,10 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   upload-to-nightlies:
+    if: github.repository == 'apache/shardingsphere'
     name: Upload to Nightly Builds
     needs: global-env
-    if: github.repository == 'apache/shardingsphere'
-    runs-on: ${{ needs.global-env.outputs.GLOBAL_RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: actions/cache@v3
@@ -71,7 +71,7 @@ jobs:
           remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
 
   build-proxy-image:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-env.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
     name: Build Proxy Image
     needs: global-env
     runs-on: ${{ needs.global-env.outputs.GLOBAL_RUNS_ON }}
@@ -135,11 +135,11 @@ jobs:
           ./mvnw -am -pl distribution/proxy-native -Prelease.native,docker.buildx.push.native -B -T1C -DskipTests -Dproxy.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.image.tag=${{ github.sha }} clean package
 
   build-cache:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-env.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
     name: Build Project
     needs: global-env
     runs-on: ${{ needs.global-env.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 90
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
