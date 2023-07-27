@@ -51,7 +51,7 @@ jobs:
 
   e2e-operation:
     if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
-    name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
+    name: E2E - Operation
     needs: [ detect-changed-files, global-env ]
     runs-on: ubuntu-latest
     timeout-minutes: 40
