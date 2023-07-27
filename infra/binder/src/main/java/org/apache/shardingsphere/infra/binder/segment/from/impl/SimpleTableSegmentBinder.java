@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -97,15 +98,17 @@ public final class SimpleTableSegmentBinder {
     
     private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue originalDatabase,
                                                                             final IdentifierValue originalSchema) {
-        Collection<String> columnNames = schema.getAllColumnNames(segment.getTableName().getIdentifier().getValue());
+        Collection<ShardingSphereColumn> columnNames = schema.getTable(segment.getTableName().getIdentifier().getValue()).getColumnValues();
         Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
-        for (String each : columnNames) {
-            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each));
+        for (ShardingSphereColumn each : columnNames) {
+            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each.getName()));
             columnSegment.setOriginalDatabase(originalDatabase);
             columnSegment.setOriginalSchema(originalSchema);
             columnSegment.setOriginalTable(segment.getTableName().getIdentifier());
-            columnSegment.setOriginalColumn(new IdentifierValue(each));
-            projectionSegments.add(new ColumnProjectionSegment(columnSegment));
+            columnSegment.setOriginalColumn(new IdentifierValue(each.getName()));
+            ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment);
+            columnProjectionSegment.setVisible(each.isVisible());
+            projectionSegments.add(columnProjectionSegment);
         }
         return new TableSegmentBinderContext(projectionSegments);
     }

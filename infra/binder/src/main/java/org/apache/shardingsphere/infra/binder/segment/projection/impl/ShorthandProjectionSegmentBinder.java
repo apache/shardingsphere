@@ -20,8 +20,10 @@ package org.apache.shardingsphere.infra.binder.segment.projection.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -40,11 +42,19 @@ public final class ShorthandProjectionSegmentBinder {
     public static ShorthandProjectionSegment bind(final ShorthandProjectionSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         if (segment.getOwner().isPresent()) {
             TableSegmentBinderContext tableBinderContext = tableBinderContexts.get(segment.getOwner().get().getIdentifier().getValue());
-            segment.getActualProjectionSegments().addAll(tableBinderContext.getProjectionSegments());
+            expandVisibleColumn(tableBinderContext.getProjectionSegments(), segment);
         } else {
             // TODO expand according to different database with multi tables
-            tableBinderContexts.values().forEach(each -> segment.getActualProjectionSegments().addAll(each.getProjectionSegments()));
+            tableBinderContexts.values().forEach(each -> expandVisibleColumn(each.getProjectionSegments(), segment));
         }
         return segment;
+    }
+    
+    private static void expandVisibleColumn(final Collection<ProjectionSegment> projectionSegments, final ShorthandProjectionSegment shorthandProjectionSegment) {
+        for (ProjectionSegment each : projectionSegments) {
+            if (each.isVisible()) {
+                shorthandProjectionSegment.getActualProjectionSegments().add(each);
+            }
+        }
     }
 }
