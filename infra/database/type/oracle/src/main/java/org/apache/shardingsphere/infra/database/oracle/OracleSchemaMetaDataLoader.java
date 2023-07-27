@@ -97,6 +97,9 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                // SPEX CHANGED: BEGIN
+                resultSet.setFetchSize(1000);
+                // SPEX CHANGED: END
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
                     ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, resultSet, tablePrimaryKeys.getOrDefault(tableName, Collections.emptyList()), connection.getMetaData());
@@ -117,10 +120,10 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         boolean primaryKey = primaryKeys.contains(columnName);
         boolean generated = versionContainsIdentityColumn(databaseMetaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
         // TODO need to support caseSensitive when version < 12.2.
-        String collation = resultSet.getString("COLLATION");
-        boolean caseSensitive = versionContainsCollation(databaseMetaData) && null != collation && collation.endsWith("_CS");
+        String collation = versionContainsCollation(databaseMetaData) ? resultSet.getString("COLLATION") : null;
+        boolean caseSensitive = null != collation && collation.endsWith("_CS");
         boolean isVisible = "NO".equals(resultSet.getString("HIDDEN_COLUMN"));
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible, false);
+        return new ColumnMetaData(columnName, dataTypeMap.getOrDefault(dataType, -1), primaryKey, generated, caseSensitive, isVisible, false);
     }
     
     private String getOriginalDataType(final String dataType) {

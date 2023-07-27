@@ -65,8 +65,8 @@ public final class SimpleTableSegmentBinder {
      * @param tableBinderContexts table binder contexts
      * @return bounded simple table segment
      */
-    public static SimpleTableSegment bind(final SimpleTableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName, final DatabaseType databaseType,
-                                          final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static SimpleTableSegment bind(final SimpleTableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                          final DatabaseType databaseType, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         IdentifierValue originalDatabase = getDatabaseName(segment, defaultDatabaseName, databaseType);
         IdentifierValue originalSchema = getSchemaName(segment, defaultDatabaseName, databaseType);
         // TODO check database and schema
