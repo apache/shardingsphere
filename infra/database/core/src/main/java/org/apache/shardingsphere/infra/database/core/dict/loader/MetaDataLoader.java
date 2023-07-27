@@ -80,10 +80,10 @@ public final class MetaDataLoader {
     }
     
     private static Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
-        Optional<DialectMetaDataLoader> dialectMetaDataLoader = DatabaseTypedSPILoader.findService(DialectMetaDataLoader.class, material.getStorageType());
-        if (dialectMetaDataLoader.isPresent()) {
+        Optional<DialectMetaDataLoader> dialectLoader = DatabaseTypedSPILoader.findService(DialectMetaDataLoader.class, material.getStorageType());
+        if (dialectLoader.isPresent()) {
             try {
-                return dialectMetaDataLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());
+                return dialectLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());
             } catch (final SQLException ex) {
                 log.debug("Dialect load schema meta data error.", ex);
             }
