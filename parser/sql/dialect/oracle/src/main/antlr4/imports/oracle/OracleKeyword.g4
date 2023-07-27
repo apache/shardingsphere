@@ -7655,3 +7655,11 @@ XS_SYS_CONTEXT
 X_DYN_PRUNE
     :X UL_ D Y N UL_ P R U N E
     ;
+
+FEATURE_COMPARE
+    : F E A T U R E UL_ C O M P A R E
+    ;
+
+FEATURE_DETAILS
+    : F E A T U R E UL_ D E T A I L S
+    ;
