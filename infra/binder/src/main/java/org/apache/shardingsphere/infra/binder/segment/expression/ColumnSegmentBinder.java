@@ -65,7 +65,7 @@ public final class ColumnSegmentBinder {
     private static ColumnSegment findInputColumnSegment(final String columnName, final Collection<TableSegmentBinderContext> tableBinderContexts) {
         ColumnSegment result = null;
         for (TableSegmentBinderContext each : tableBinderContexts) {
-            ProjectionSegment projectionSegment = each.getColumnLabelProjectionSegments().get(columnName);
+            ProjectionSegment projectionSegment = each.getProjectionSegmentByColumnLabel(columnName);
             if (projectionSegment instanceof ColumnProjectionSegment) {
                 ShardingSpherePreconditions.checkState(null == result, () -> new IllegalStateException(String.format("Column '%s' in field list is ambiguous.", columnName)));
                 result = ((ColumnProjectionSegment) projectionSegment).getColumn();

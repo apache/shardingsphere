@@ -19,19 +19,15 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -57,19 +53,7 @@ public final class SubqueryTableSegmentBinder {
         SubqueryTableSegment result = new SubqueryTableSegment(boundedSubquerySegment);
         segment.getAliasSegment().ifPresent(result::setAlias);
         IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
-        tableBinderContexts.put(subqueryTableName.getValue(), createSubqueryTableBinderContext(boundedSelect.getProjections().getProjections()));
+        tableBinderContexts.put(subqueryTableName.getValue(), new TableSegmentBinderContext(boundedSelect.getProjections().getProjections()));
         return result;
-    }
-    
-    private static TableSegmentBinderContext createSubqueryTableBinderContext(final Collection<ProjectionSegment> projectionSegments) {
-        Map<String, ProjectionSegment> columnLabelProjectionSegments = new CaseInsensitiveMap<>(projectionSegments.size(), 1F);
-        for (ProjectionSegment each : projectionSegments) {
-            if (each instanceof ShorthandProjectionSegment) {
-                ((ShorthandProjectionSegment) each).getActualProjectionSegments().forEach(actualProjection -> columnLabelProjectionSegments.put(actualProjection.getColumnLabel(), actualProjection));
-            } else {
-                columnLabelProjectionSegments.put(each.getColumnLabel(), each);
-            }
-        }
-        return new TableSegmentBinderContext(columnLabelProjectionSegments);
     }
 }

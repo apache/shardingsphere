@@ -40,9 +40,10 @@ public final class ShorthandProjectionSegmentBinder {
     public static ShorthandProjectionSegment bind(final ShorthandProjectionSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         if (segment.getOwner().isPresent()) {
             TableSegmentBinderContext tableBinderContext = tableBinderContexts.get(segment.getOwner().get().getIdentifier().getValue());
-            segment.getActualProjectionSegments().addAll(tableBinderContext.getColumnLabelProjectionSegments().values());
+            segment.getActualProjectionSegments().addAll(tableBinderContext.getProjectionSegments());
         } else {
-            tableBinderContexts.values().forEach(each -> segment.getActualProjectionSegments().addAll(each.getColumnLabelProjectionSegments().values()));
+            // TODO expand according to different database with multi tables
+            tableBinderContexts.values().forEach(each -> segment.getActualProjectionSegments().addAll(each.getProjectionSegments()));
         }
         return segment;
     }

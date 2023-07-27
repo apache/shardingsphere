@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -98,14 +98,14 @@ public final class SimpleTableSegmentBinder {
     private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue originalDatabase,
                                                                             final IdentifierValue originalSchema) {
         Collection<String> columnNames = schema.getAllColumnNames(segment.getTableName().getIdentifier().getValue());
-        Map<String, ProjectionSegment> projectionSegments = new CaseInsensitiveMap<>(columnNames.size(), 1L);
+        Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
         for (String each : columnNames) {
             ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each));
             columnSegment.setOriginalDatabase(originalDatabase);
             columnSegment.setOriginalSchema(originalSchema);
             columnSegment.setOriginalTable(segment.getTableName().getIdentifier());
             columnSegment.setOriginalColumn(new IdentifierValue(each));
-            projectionSegments.put(each, new ColumnProjectionSegment(columnSegment));
+            projectionSegments.add(new ColumnProjectionSegment(columnSegment));
         }
         return new TableSegmentBinderContext(projectionSegments);
     }
