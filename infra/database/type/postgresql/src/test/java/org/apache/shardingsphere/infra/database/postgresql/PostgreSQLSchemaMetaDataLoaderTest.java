@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.dict.loader.common;
+package org.apache.shardingsphere.infra.database.postgresql;
 
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.dict.loader.common.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +46,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class SchemaMetaDataLoaderTest {
+class PostgreSQLSchemaMetaDataLoaderTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
@@ -75,19 +76,8 @@ class SchemaMetaDataLoaderTest {
     }
     
     @Test
-    void assertLoadSchemaTableNamesForPostgreSQL() throws SQLException {
+    void assertLoadSchemaTableNames() throws SQLException {
         assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), dataSource), is(createSchemaTableNames()));
-    }
-    
-    @Test
-    void assertLoadSchemaTableNamesForOpenGauss() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "openGauss"), dataSource), is(createSchemaTableNames()));
-    }
-    
-    @Test
-    void assertLoadSchemaTableNamesForMySQL() throws SQLException {
-        Map<String, Collection<String>> schemaTableNames = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, Collections.singletonList("tbl"));
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), dataSource), is(schemaTableNames));
     }
     
     private Map<String, Collection<String>> createSchemaTableNames() {
@@ -99,17 +89,7 @@ class SchemaMetaDataLoaderTest {
     }
     
     @Test
-    void assertLoadSchemaNamesForPostgreSQL() throws SQLException {
+    void assertLoadSchemaNames() throws SQLException {
         assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), is(Arrays.asList("public", "schema_1", "schema_2")));
-    }
-    
-    @Test
-    void assertLoadSchemaNamesForOpenGauss() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), TypedSPILoader.getService(DatabaseType.class, "openGauss")), is(Arrays.asList("public", "schema_1", "schema_2")));
-    }
-    
-    @Test
-    void assertLoadSchemaNamesForMySQL() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), TypedSPILoader.getService(DatabaseType.class, "MySQL")), is(Collections.singletonList("public")));
     }
 }
