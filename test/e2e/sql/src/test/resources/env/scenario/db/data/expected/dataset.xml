@@ -84,12 +84,6 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="expected_dataset.t_order_item_federate">
-        <column name="item_id" type="numeric" />
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
     <row data-node="expected_dataset.t_order" values="1000, 10, init, null, test, 2017-08-08" />
     <row data-node="expected_dataset.t_order" values="1001, 10, init, 2, test, 2017-08-08" />
     <row data-node="expected_dataset.t_order" values="2000, 20, init, null, test, 2017-08-08" />
@@ -321,8 +315,4 @@
     <row data-node="expected_dataset.t_single_table" values="3, 2300, init" />
     <row data-node="expected_dataset.t_single_table" values="4, 2401, init" />
     <row data-node="expected_dataset.t_broadcast_table" values="1, init" />
-    <row data-node="expected_dataset.t_order_item_federate" values="100000, 1000, 10, init" />
-    <row data-node="expected_dataset.t_order_item_federate" values="100001, 1000, 10, init" />
-    <row data-node="expected_dataset.t_order_item_federate" values="100100, 1001, 10, init" />
-    <row data-node="expected_dataset.t_order_item_federate" values="100101, 1001, 10, init" />
 </dataset>

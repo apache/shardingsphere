@@ -217,10 +217,6 @@
     <row data-node="encrypt_write_ds.t_user_item" values="190007, 79, init, 2017-08-08" />
     <row data-node="encrypt_write_ds.t_user_item" values="190008, 89, init, 2017-08-08" />
     <row data-node="encrypt_write_ds.t_user_item" values="190009, 99, init, 2017-08-08" />
-    <row data-node="encrypt_write_ds.t_order_item_federate" values="100000, 1000, 10, init" />
-    <row data-node="encrypt_write_ds.t_order_item_federate" values="100001, 1000, 10, init" />
-    <row data-node="encrypt_write_ds.t_order_item_federate" values="100100, 1001, 10, init" />
-    <row data-node="encrypt_write_ds.t_order_item_federate" values="100101, 1001, 10, init" />
     <row data-node="encrypt_write_ds.t_user_encrypt_federate_sharding" values="0, plain passwordA, uqObdVp9XTGZ4Mnw0LolHg==, Rachel" />
     <row data-node="encrypt_write_ds.t_user_encrypt_federate_sharding" values="1, plain passwordB, uqObdVp9XTGZ4Mnw0LolHg==, Monica" />
     <row data-node="encrypt_write_ds.t_user_encrypt_federate_sharding" values="2, plain passwordC, uqObdVp9XTGZ4Mnw0LolHg==, Phoebe" />
@@ -461,10 +457,6 @@
     <row data-node="encrypt_read_ds.t_user_item" values="190007, 79, init_read, 2017-08-08" />
     <row data-node="encrypt_read_ds.t_user_item" values="190008, 89, init_read, 2017-08-08" />
     <row data-node="encrypt_read_ds.t_user_item" values="190009, 99, init_read, 2017-08-08" />
-    <row data-node="encrypt_read_ds.t_order_item_federate" values="100000, 1000, 10, init_read" />
-    <row data-node="encrypt_read_ds.t_order_item_federate" values="100001, 1000, 10, init_read" />
-    <row data-node="encrypt_read_ds.t_order_item_federate" values="100100, 1001, 10, init_read" />
-    <row data-node="encrypt_read_ds.t_order_item_federate" values="100101, 1001, 10, init_read" />
     <row data-node="encrypt_read_ds.t_user_encrypt_federate_sharding" values="0, plain passwordA, uqObdVp9XTGZ4Mnw0LolHg==, Rachel" />
     <row data-node="encrypt_read_ds.t_user_encrypt_federate_sharding" values="1, plain passwordB, uqObdVp9XTGZ4Mnw0LolHg==, Monica" />
     <row data-node="encrypt_read_ds.t_user_encrypt_federate_sharding" values="2, plain passwordC, uqObdVp9XTGZ4Mnw0LolHg==, Phoebe" />

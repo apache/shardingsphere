@@ -36,6 +36,5 @@ CREATE VIEW expected_dataset.t_order_union_view AS SELECT * FROM expected_datase
 -- TODO replace these tables with standard tables
 CREATE TABLE expected_dataset.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
 CREATE TABLE expected_dataset.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE expected_dataset.t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
 
 CREATE INDEX order_index_t_order ON expected_dataset.t_order (order_id);
