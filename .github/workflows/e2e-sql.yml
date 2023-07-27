@@ -96,7 +96,7 @@ jobs:
           retention-days: 1
   
   e2e-sql:
-    name: E2E - ${{ matrix.adapter }} - ${{ matrix.scenario }} - ${{ matrix.mode }} on ${{ matrix.database }}
+    name: E2E - SQL
     needs: [ build-e2e-image, global-env ]
     if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
     runs-on: ubuntu-latest
