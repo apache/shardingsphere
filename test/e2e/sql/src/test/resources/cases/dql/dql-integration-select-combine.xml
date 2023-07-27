@@ -186,9 +186,10 @@
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id and t_user_encrypt_federate.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id and t_user_encrypt_federate.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <!-- TODO support MySQL EXCEPT clause -->
     <test-case sql="SELECT * FROM t_order EXCEPT ALL SELECT * FROM t_order ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">

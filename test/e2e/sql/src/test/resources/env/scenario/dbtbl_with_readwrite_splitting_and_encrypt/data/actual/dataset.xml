@@ -84,12 +84,6 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="encrypt_write_ds_1.t_user_encrypt_federate,encrypt_read_ds_1.t_user_encrypt_federate">
-        <column name="user_id" type="numeric" />
-        <column name="plain_pwd" type="varchar" />
-        <column name="cipher_pwd" type="varchar" />
-        <column name="username" type="varchar" />
-    </metadata>
     <metadata data-nodes="encrypt_write_ds_1.t_user_info,encrypt_read_ds_1.t_user_info">
         <column name="user_id" type="numeric" />
         <column name="information" type="varchar" />
@@ -822,12 +816,6 @@
     <row data-node="encrypt_write_ds_1.t_user_info" values="1, description1" />
     <row data-node="encrypt_write_ds_1.t_user_info" values="2, description2" />
     <row data-node="encrypt_write_ds_1.t_user_info" values="3, description3" />
-    <row data-node="encrypt_write_ds_1.t_user_encrypt_federate" values="0, plain password1, uqObdVp9XTGZ4Mnw0LolHg==, Rachel" />
-    <row data-node="encrypt_write_ds_1.t_user_encrypt_federate" values="1, plain password2, uqObdVp9XTGZ4Mnw0LolHg==, Monica" />
-    <row data-node="encrypt_write_ds_1.t_user_encrypt_federate" values="2, plain password3, uqObdVp9XTGZ4Mnw0LolHg==, Phoebe" />
-    <row data-node="encrypt_write_ds_1.t_user_encrypt_federate" values="3, plain password4, uqObdVp9XTGZ4Mnw0LolHg==, Ross" />
-    <row data-node="encrypt_write_ds_1.t_user_encrypt_federate" values="4, plain password5, uqObdVp9XTGZ4Mnw0LolHg==, Chandler" />
-    <row data-node="encrypt_write_ds_1.t_user_encrypt_federate" values="5, plain password6, uqObdVp9XTGZ4Mnw0LolHg==, Joey" />
     <row data-node="encrypt_read_ds_0.t_order_0" values="1000, 10, init_read, 1, test, 2017-08-08" />
     <row data-node="encrypt_read_ds_0.t_order_1" values="1001, 10, init_read, 2, test, 2017-08-08" />
     <row data-node="encrypt_read_ds_0.t_order_2" values="1002, 10, init_read, 3, test, 2017-08-08" />
@@ -1556,10 +1544,4 @@
     <row data-node="encrypt_read_ds_1.t_user_info" values="1, description1" />
     <row data-node="encrypt_read_ds_1.t_user_info" values="2, description2" />
     <row data-node="encrypt_read_ds_1.t_user_info" values="3, description3" />
-    <row data-node="encrypt_read_ds_1.t_user_encrypt_federate" values="0, plain password1, uqObdVp9XTGZ4Mnw0LolHg==, Rachel" />
-    <row data-node="encrypt_read_ds_1.t_user_encrypt_federate" values="1, plain password2, uqObdVp9XTGZ4Mnw0LolHg==, Monica" />
-    <row data-node="encrypt_read_ds_1.t_user_encrypt_federate" values="2, plain password3, uqObdVp9XTGZ4Mnw0LolHg==, Phoebe" />
-    <row data-node="encrypt_read_ds_1.t_user_encrypt_federate" values="3, plain password4, uqObdVp9XTGZ4Mnw0LolHg==, Ross" />
-    <row data-node="encrypt_read_ds_1.t_user_encrypt_federate" values="4, plain password5, uqObdVp9XTGZ4Mnw0LolHg==, Chandler" />
-    <row data-node="encrypt_read_ds_1.t_user_encrypt_federate" values="5, plain password6, uqObdVp9XTGZ4Mnw0LolHg==, Joey" />
 </dataset>

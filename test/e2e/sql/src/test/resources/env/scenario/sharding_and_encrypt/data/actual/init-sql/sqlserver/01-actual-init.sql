@@ -134,7 +134,6 @@ CREATE TABLE encrypt_ds_1.t_user_8 (user_id INT NOT NULL, address_id INT NOT NUL
 CREATE TABLE encrypt_ds_1.t_user_item_8 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE encrypt_ds_1.t_user_9 (user_id INT NOT NULL, address_id INT NOT NULL, pwd_cipher VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE encrypt_ds_1.t_user_item_9 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE encrypt_ds_1.t_user_encrypt_federate (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE encrypt_ds_1.t_user_info (user_id INT NOT NULL, information VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE INDEX user_index_t_user_0 ON encrypt_ds_1.t_user_0 (user_id);
 CREATE INDEX user_index_t_user_1 ON encrypt_ds_1.t_user_1 (user_id);

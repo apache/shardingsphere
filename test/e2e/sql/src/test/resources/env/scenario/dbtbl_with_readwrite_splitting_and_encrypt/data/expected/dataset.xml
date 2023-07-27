@@ -84,11 +84,6 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="write_dataset.t_user_encrypt_federate,read_dataset.t_user_encrypt_federate">
-        <column name="user_id" type="numeric" />
-        <column name="pwd" type="varchar" />
-        <column name="username" type="varchar" />
-    </metadata>
     <metadata data-nodes="write_dataset.t_user_info,read_dataset.t_user_info">
         <column name="user_id" type="numeric" />
         <column name="information" type="varchar" />
@@ -674,12 +669,6 @@
     <row data-node="write_dataset.t_user_info" values="1, description1" />
     <row data-node="write_dataset.t_user_info" values="2, description2" />
     <row data-node="write_dataset.t_user_info" values="3, description3" />
-    <row data-node="write_dataset.t_user_encrypt_federate" values="0, decryptValue, Rachel" />
-    <row data-node="write_dataset.t_user_encrypt_federate" values="1, decryptValue, Monica" />
-    <row data-node="write_dataset.t_user_encrypt_federate" values="2, decryptValue, Phoebe" />
-    <row data-node="write_dataset.t_user_encrypt_federate" values="3, decryptValue, Ross" />
-    <row data-node="write_dataset.t_user_encrypt_federate" values="4, decryptValue, Chandler" />
-    <row data-node="write_dataset.t_user_encrypt_federate" values="5, decryptValue, Joey" />
     <row data-node="read_dataset.t_single_table" values="1, 0, init_read" />
     <row data-node="read_dataset.t_single_table" values="2, 11, init_read" />
     <row data-node="read_dataset.t_single_table" values="3, 22, init_read" />
@@ -1264,10 +1253,4 @@
     <row data-node="read_dataset.t_user_info" values="1, description1" />
     <row data-node="read_dataset.t_user_info" values="2, description2" />
     <row data-node="read_dataset.t_user_info" values="3, description3" />
-    <row data-node="read_dataset.t_user_encrypt_federate" values="0, decryptValue, Rachel" />
-    <row data-node="read_dataset.t_user_encrypt_federate" values="1, decryptValue, Monica" />
-    <row data-node="read_dataset.t_user_encrypt_federate" values="2, decryptValue, Phoebe" />
-    <row data-node="read_dataset.t_user_encrypt_federate" values="3, decryptValue, Ross" />
-    <row data-node="read_dataset.t_user_encrypt_federate" values="4, decryptValue, Chandler" />
-    <row data-node="read_dataset.t_user_encrypt_federate" values="5, decryptValue, Joey" />
 </dataset>

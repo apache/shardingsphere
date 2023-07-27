@@ -23,7 +23,6 @@
     <row values="t_merchant| readwrite_ds" />
     <row values="t_single_table| readwrite_ds" />
     <row values="t_user| readwrite_ds" />
-    <row values="t_user_encrypt_federate| readwrite_ds" />
     <row values="t_user_info| readwrite_ds" />
     <row values="t_user_item| readwrite_ds" />
 </dataset>

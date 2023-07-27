@@ -221,12 +221,6 @@
     <row data-node="encrypt_write_ds.t_user_info" values="1, description1" />
     <row data-node="encrypt_write_ds.t_user_info" values="2, description2" />
     <row data-node="encrypt_write_ds.t_user_info" values="3, description3" />
-    <row data-node="encrypt_write_ds.t_user_encrypt_federate" values="0, plain password1, uqObdVp9XTGZ4Mnw0LolHg==, Rachel" />
-    <row data-node="encrypt_write_ds.t_user_encrypt_federate" values="1, plain password2, uqObdVp9XTGZ4Mnw0LolHg==, Monica" />
-    <row data-node="encrypt_write_ds.t_user_encrypt_federate" values="2, plain password3, uqObdVp9XTGZ4Mnw0LolHg==, Phoebe" />
-    <row data-node="encrypt_write_ds.t_user_encrypt_federate" values="3, plain password4, uqObdVp9XTGZ4Mnw0LolHg==, Ross" />
-    <row data-node="encrypt_write_ds.t_user_encrypt_federate" values="4, plain password5, uqObdVp9XTGZ4Mnw0LolHg==, Chandler" />
-    <row data-node="encrypt_write_ds.t_user_encrypt_federate" values="5, plain password6, uqObdVp9XTGZ4Mnw0LolHg==, Joey" />
     <row data-node="encrypt_write_ds.t_merchant" values="1, 86, tencent, 86000001, 86100000001, 2017-08-08" />
     <row data-node="encrypt_write_ds.t_merchant" values="2, 86, haier, 86000002, 86100000002, 2017-08-08" />
     <row data-node="encrypt_write_ds.t_merchant" values="3, 86, huawei, 86000003, 86100000003, 2017-08-08" />
@@ -455,12 +449,6 @@
     <row data-node="encrypt_read_ds.t_user_info" values="1, description1" />
     <row data-node="encrypt_read_ds.t_user_info" values="2, description2" />
     <row data-node="encrypt_read_ds.t_user_info" values="3, description3" />
-    <row data-node="encrypt_read_ds.t_user_encrypt_federate" values="0, plain password1, uqObdVp9XTGZ4Mnw0LolHg==, Rachel" />
-    <row data-node="encrypt_read_ds.t_user_encrypt_federate" values="1, plain password2, uqObdVp9XTGZ4Mnw0LolHg==, Monica" />
-    <row data-node="encrypt_read_ds.t_user_encrypt_federate" values="2, plain password3, uqObdVp9XTGZ4Mnw0LolHg==, Phoebe" />
-    <row data-node="encrypt_read_ds.t_user_encrypt_federate" values="3, plain password4, uqObdVp9XTGZ4Mnw0LolHg==, Ross" />
-    <row data-node="encrypt_read_ds.t_user_encrypt_federate" values="4, plain password5, uqObdVp9XTGZ4Mnw0LolHg==, Chandler" />
-    <row data-node="encrypt_read_ds.t_user_encrypt_federate" values="5, plain password6, uqObdVp9XTGZ4Mnw0LolHg==, Joey" />
     <row data-node="encrypt_read_ds.t_merchant" values="1, 86, tencent, 86000001, 86100000001, 2017-08-08" />
     <row data-node="encrypt_read_ds.t_merchant" values="2, 86, haier, 86000002, 86100000002, 2017-08-08" />
     <row data-node="encrypt_read_ds.t_merchant" values="3, 86, huawei, 86000003, 86100000003, 2017-08-08" />
