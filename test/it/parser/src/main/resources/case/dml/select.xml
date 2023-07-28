@@ -5755,6 +5755,20 @@
                 <literalText>CORR(SYSDATE - hire_date, salary)</literalText>
                 <expr>
                     <function function-name="CORR" text="CORR(SYSDATE - hire_date, salary)" start-index="20" stop-index="52" literal-start-index="20" literal-stop-index="52">
+                        <parameter>
+                            <binary-operation-expression start-index="25" stop-index="43" literal-start-index="25" literal-stop-index="43">
+                                <left>
+                                    <column name="SYSDATE" start-index="25" stop-index="31" literal-start-index="25" literal-stop-index="31" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="35" stop-index="43" literal-start-index="35" literal-stop-index="43" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="46" stop-index="51" literal-start-index="46" literal-stop-index="51" />
+                        </parameter>
                         <literalText>CORR(SYSDATE - hire_date, salary)</literalText>
                     </function>
                 </expr>

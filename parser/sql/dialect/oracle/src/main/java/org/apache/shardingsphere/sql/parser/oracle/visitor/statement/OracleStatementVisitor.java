@@ -886,7 +886,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public ASTNode visitFirstOrLastValueFunction(FirstOrLastValueFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                null == ctx.FIRST_VALUE() ? ctx.FIRST_VALUE().getText() : ctx.LAST_VALUE().getText(), getOriginalText(ctx));
+                null == ctx.FIRST_VALUE() ? ctx.LAST_VALUE().getText() : ctx.FIRST_VALUE().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
