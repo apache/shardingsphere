@@ -30,4 +30,13 @@ public interface ProjectionSegment extends SQLSegment {
      * @return column label
      */
     String getColumnLabel();
+    
+    /**
+     * Judge whether column is visible or not.
+     * 
+     * @return whether column is visible or not
+     */
+    default boolean isVisible() {
+        return true;
+    }
 }
