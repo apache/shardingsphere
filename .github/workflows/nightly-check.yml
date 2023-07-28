@@ -33,7 +33,7 @@ jobs:
   check-spotbugs:
     if: github.repository == 'apache/shardingsphere'
     name: Check - SpotBugs
-    needs: global-env
+    needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -41,16 +41,16 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Run SpotBugs
         run: ./mvnw clean install spotbugs:check -T1C
 
   check-and-report-sonarcloud:
     if: github.repository == 'apache/shardingsphere'
     name: Check - SonarCloud
-    needs: global-env
+    needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -67,9 +67,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Analyze with SonarCloud
         env:
           MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
@@ -80,7 +80,7 @@ jobs:
   checkstyle-report-sonarcloud:
     if: github.repository == 'apache/shardingsphere'
     name: Checkstyle - SonarCloud
-    needs: global-env
+    needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -97,9 +97,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Aggregate checkstyle report
         run:
           ./mvnw clean verify checkstyle:checkstyle-aggregate
@@ -141,7 +141,7 @@ jobs:
   check-codeql:
     if: github.repository == 'apache/shardingsphere'
     name: Check - CodeQL
-    needs: global-env
+    needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -161,9 +161,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Install Project
         run: ./mvnw clean install -DskipTests
       - name: Perform CodeQL Analysis
