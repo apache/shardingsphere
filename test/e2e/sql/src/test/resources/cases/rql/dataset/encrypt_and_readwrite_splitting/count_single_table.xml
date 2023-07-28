@@ -20,5 +20,5 @@
         <column name="database" />
         <column name="count" />
     </metadata>
-    <row values="encrypt_and_readwrite_splitting| 11" />
+    <row values="encrypt_and_readwrite_splitting| 5" />
 </dataset>

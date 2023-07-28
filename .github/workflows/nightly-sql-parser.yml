@@ -33,7 +33,7 @@ jobs:
 
   database-parse:
     if: github.repository == 'apache/shardingsphere'
-    name: CI - JDK ${{ matrix.java-version }} for ${{ matrix.database }}
+    name: CI - SQL Parser
     needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -41,21 +41,20 @@ jobs:
       max-parallel: 20
       fail-fast: false
       matrix:
-        java-version: [ 11 ]
         database: [ mysql, postgresql ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.java-version }}
+          java-version: 11
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-${{ github.sha }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Build Project with Maven
         run: ./mvnw -T1C -B -ntp clean install
       - name: Run SQL Parser

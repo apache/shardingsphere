@@ -86,7 +86,6 @@ CREATE TABLE write_ds_0.t_product_category( category_id INT PRIMARY KEY, categor
 CREATE TABLE write_ds_0.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
 CREATE TABLE write_ds_0.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE TABLE write_ds_0.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
-CREATE TABLE write_ds_0.t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order_0 ON write_ds_0.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_0.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_0.t_order_2 (order_id);
@@ -123,11 +122,6 @@ CREATE TABLE write_ds_1.t_product_detail (detail_id INT PRIMARY KEY, product_id 
 CREATE TABLE write_ds_1.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_1.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
 CREATE TABLE write_ds_1.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE write_ds_1.t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE write_ds_1.t_order_item_federate_sharding_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE write_ds_1.t_order_item_federate_sharding_1 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE write_ds_1.t_order_federate_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
-CREATE TABLE write_ds_1.t_order_federate_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 CREATE INDEX order_index_t_order_0 ON write_ds_1.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_1.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_1.t_order_2 (order_id);
@@ -437,7 +431,6 @@ CREATE TABLE read_ds_0.t_product_category( category_id INT PRIMARY KEY, category
 CREATE TABLE read_ds_0.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
 CREATE TABLE read_ds_0.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE TABLE read_ds_0.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
-CREATE TABLE read_ds_0.t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order_0 ON read_ds_0.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_0.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_0.t_order_2 (order_id);
@@ -474,11 +467,6 @@ CREATE TABLE read_ds_1.t_product_detail (detail_id INT PRIMARY KEY, product_id I
 CREATE TABLE read_ds_1.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_1.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
 CREATE TABLE read_ds_1.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE read_ds_1.t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE read_ds_1.t_order_item_federate_sharding_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE read_ds_1.t_order_item_federate_sharding_1 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE read_ds_1.t_order_federate_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
-CREATE TABLE read_ds_1.t_order_federate_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 CREATE INDEX order_index_t_order_0 ON read_ds_1.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_1.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_1.t_order_2 (order_id);

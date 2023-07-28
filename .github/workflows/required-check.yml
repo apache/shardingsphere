@@ -32,7 +32,7 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   check-checkstyle:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - CheckStyle
     needs: global-environment
     runs-on: ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
         run: ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
 
   check-spotless:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - Spotless
     needs: global-environment
     runs-on: ubuntu-latest
@@ -54,7 +54,7 @@ jobs:
         run: ./mvnw spotless:check -T1C
 
   check-license:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - License
     needs: global-environment
     runs-on: ubuntu-latest
