@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderCon
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -85,9 +87,16 @@ class JoinTableSegmentBinderTest {
     }
     
     private ShardingSphereMetaData createMetaData() {
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status"));
-        when(schema.getAllColumnNames("t_order_item")).thenReturn(Arrays.asList("item_id", "order_id", "user_id", "status"));
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        when(schema.getTable("t_order").getColumnValues()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false)));
+        when(schema.getTable("t_order_item").getColumnValues()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false)));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         return result;

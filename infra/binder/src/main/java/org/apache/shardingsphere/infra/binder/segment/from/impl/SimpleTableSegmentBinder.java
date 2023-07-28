@@ -96,8 +96,8 @@ public final class SimpleTableSegmentBinder {
         return new IdentifierValue(DatabaseTypeEngine.getDefaultSchemaName(databaseType, defaultDatabaseName));
     }
     
-    private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue originalDatabase,
-                                                                            final IdentifierValue originalSchema) {
+    private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema,
+                                                                            final IdentifierValue originalDatabase, final IdentifierValue originalSchema) {
         Collection<ShardingSphereColumn> columnNames = schema.getTable(segment.getTableName().getIdentifier().getValue()).getColumnValues();
         Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
         for (ShardingSphereColumn each : columnNames) {
