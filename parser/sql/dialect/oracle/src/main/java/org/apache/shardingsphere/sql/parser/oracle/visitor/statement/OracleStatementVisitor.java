@@ -607,7 +607,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
                 : createAggregationFunctionSegment(ctx, aggregationType);
     }
     
-    private FunctionSegment createAggregationFunctionSegment(AggregationFunctionContext ctx, String aggregationType) {
+    private FunctionSegment createAggregationFunctionSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), aggregationType, getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
@@ -869,21 +869,21 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     @Override
-    public ASTNode visitExtractFunction(ExtractFunctionContext ctx) {
+    public ASTNode visitExtractFunction(final ExtractFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.EXTRACT().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
     
     @Override
-    public ASTNode visitFormatFunction(FormatFunctionContext ctx) {
+    public ASTNode visitFormatFunction(final FormatFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.FORMAT().getText(), getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }
     
     @Override
-    public ASTNode visitFirstOrLastValueFunction(FirstOrLastValueFunctionContext ctx) {
+    public ASTNode visitFirstOrLastValueFunction(final FirstOrLastValueFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
                 null == ctx.FIRST_VALUE() ? ctx.LAST_VALUE().getText() : ctx.FIRST_VALUE().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
@@ -891,7 +891,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     @Override
-    public ASTNode visitTrimFunction(TrimFunctionContext ctx) {
+    public ASTNode visitTrimFunction(final TrimFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
