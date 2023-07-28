@@ -6385,6 +6385,17 @@
                 <literalText>XMLSEQUENCE(EXTRACT(warehouse_spec, '/Warehouse/*'))</literalText>
                 <expr>
                     <function function-name="XMLSEQUENCE" text="XMLSEQUENCE(EXTRACT(warehouse_spec, '/Warehouse/*'))" start-index="297" stop-index="348" literal-start-index="297" literal-stop-index="348">
+                        <parameter>
+                            <function function-name="EXTRACT" text="EXTRACT(warehouse_spec, '/Warehouse/*')" start-index="309" stop-index="347" literal-start-index="309" literal-stop-index="347">
+                                <parameter>
+                                    <column name="warehouse_spec" start-index="317" stop-index="330" literal-start-index="317" literal-stop-index="330" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="/Warehouse/*" start-index="333" stop-index="346" literal-start-index="333" literal-stop-index="346" />
+                                </parameter>
+                                <literalText>EXTRACT(warehouse_spec, '/Warehouse/*')</literalText>
+                            </function>
+                        </parameter>
                         <literalText>XMLSEQUENCE(EXTRACT(warehouse_spec, '/Warehouse/*'))</literalText>
                     </function>
                 </expr>
