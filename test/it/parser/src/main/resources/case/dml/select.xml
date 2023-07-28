@@ -5879,6 +5879,9 @@
                 <literalText>SYS_XMLAGG(last_name)</literalText>
                 <expr>
                     <function function-name="SYS_XMLAGG" text="SYS_XMLAGG(last_name)" start-index="7" stop-index="27" literal-start-index="7" literal-stop-index="27">
+                        <parameter>
+                            <column name="last_name" start-index="18" stop-index="26" literal-start-index="18" literal-stop-index="26" />
+                        </parameter>
                         <literalText>SYS_XMLAGG(last_name)</literalText>
                     </function>
                 </expr>
