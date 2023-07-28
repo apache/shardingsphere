@@ -49,6 +49,7 @@ jobs:
         id: check-job-executable
         env:
           JSON_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        shell: bash
         run: |
           GLOBAL_CACHE_PREFIX=$(echo '${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }}' | sed 's/\//-/g')
           echo "GLOBAL_CACHE_PREFIX=${GLOBAL_CACHE_PREFIX}" >> $GITHUB_OUTPUT
