@@ -475,11 +475,11 @@ objectProperties
     ;
 
 alterIndexInformationClause
-    : rebuildClause ((DEFERRED|IMMEDIATE) | INVALIDATION)?
+    : rebuildClause ((DEFERRED | IMMEDIATE) | INVALIDATION)?
     | parallelClause
     | COMPILE
     | (ENABLE | DISABLE)
-    | UNUSABLE ONLINE? ((DEFERRED|IMMEDIATE)|INVALIDATION)?
+    | UNUSABLE ONLINE? ((DEFERRED | IMMEDIATE) | INVALIDATION)?
     | (VISIBLE | INVISIBLE)
     | renameIndexClause
     | COALESCE CLEANUP? ONLY? parallelClause?
