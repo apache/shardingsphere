@@ -39,6 +39,7 @@ public final class XmlTableSegment implements TableSegment {
     private final int stopIndex;
     
     private final XmlTableFunctionSegment xmlTableFunction;
+    
     @Setter
     private String xmlTableFunctionAlias;
     
