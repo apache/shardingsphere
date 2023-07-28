@@ -64,7 +64,6 @@ Data type loader
 | *Configuration Type* | *Description*           | *Fully-qualified class name*                                                                                                                                                                                                                      |
 |----------------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | MySQL                | MySQL data type loader  | [`org.apache.shardingsphere.infra.database.mysql.MySQLDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/mysql/src/main/java/org/apache/shardingsphere/infra/database/mysql/MySQLDataTypeLoader.java)      |
-| Oracle               | Oracle data type loader | [`org.apache.shardingsphere.infra.database.oracle.OracleDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/oracle/src/main/java/org/apache/shardingsphere/infra/database/oracle/OracleDataTypeLoader.java) |
 
 ## DataSourcePoolMetaData 
 
