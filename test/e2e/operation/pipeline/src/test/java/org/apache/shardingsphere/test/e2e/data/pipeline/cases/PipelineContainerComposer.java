@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrlAppend
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.oracle.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -267,7 +268,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
                     ? DataSourceEnvironment.getURL(databaseType, storageContainer.getNetworkAliases().get(0), storageContainer.getExposedPort(), databaseName)
                     : storageContainer.getJdbcUrl(databaseName);
         }
-        return DataSourceEnvironment.getURL(databaseType, "127.0.0.1", PipelineE2EEnvironment.getInstance().getActualDataSourceDefaultPort(databaseType), databaseName);
+        return DataSourceEnvironment.getURL(databaseType, "127.0.0.1", PipelineE2EEnvironment.getInstance().getActualDatabasePort(databaseType), databaseName);
     }
     
     /**
@@ -278,6 +279,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @return actual JDBC URL template
      */
     public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
+        if (databaseType instanceof OracleDatabaseType) {
+            return getActualJdbcUrlTemplate(databaseName, isInContainer, 0);
+        }
         return appendExtraParameter(getActualJdbcUrlTemplate(databaseName, isInContainer, 0));
     }
     

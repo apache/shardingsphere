@@ -18,7 +18,11 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.oracle.OracleDatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.config.proxy.PipelineProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
@@ -42,6 +46,7 @@ import java.util.List;
 /**
  * Composed container, include governance container and database container.
  */
+@Slf4j
 public final class DockerContainerComposer extends BaseContainerComposer {
     
     private final DatabaseType databaseType;
@@ -62,7 +67,14 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         }
         for (int i = 0; i < storageContainerCount; i++) {
             StorageContainerConfiguration storageContainerConfig;
-            int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
+            int majorVersion = 0;
+            try {
+                majorVersion = databaseType instanceof MySQLDatabaseType ? new DockerImageVersion(storageContainerImage).getMajorVersion() : 0;
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ignored) {
+                log.warn("Get major version failed from {}, ignored", storageContainerImage);
+                // CHECKSTYLE:ON
+            }
             storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType, majorVersion);
             DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage,
                     storageContainerConfig));
@@ -80,6 +92,9 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
+        if (databaseType instanceof OracleDatabaseType) {
+            return DataSourceEnvironment.getURL(TypedSPILoader.getService(DatabaseType.class, "MySQL"), proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName);
+        }
         return DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName);
     }
     
