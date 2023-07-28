@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -62,6 +64,7 @@ class JoinTableSegmentBinderTest {
         assertTrue(actual.getRight() instanceof SimpleTableSegment);
         assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getJoinTableProjectionSegments().size(), is(7));
         assertTrue(tableBinderContexts.containsKey("o"));
         assertTrue(tableBinderContexts.containsKey("i"));
     }
@@ -82,8 +85,59 @@ class JoinTableSegmentBinderTest {
         assertTrue(actual.getRight() instanceof SimpleTableSegment);
         assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getJoinTableProjectionSegments().size(), is(7));
         assertTrue(tableBinderContexts.containsKey("t_order"));
         assertTrue(tableBinderContexts.containsKey("t_order_item"));
+    }
+    
+    @Test
+    void assertBindWithNaturalJoin() {
+        JoinTableSegment joinTableSegment = mock(JoinTableSegment.class);
+        SimpleTableSegment leftTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        leftTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        SimpleTableSegment rightTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item")));
+        rightTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("i")));
+        when(joinTableSegment.getLeft()).thenReturn(leftTable);
+        when(joinTableSegment.getRight()).thenReturn(rightTable);
+        when(joinTableSegment.isNatural()).thenReturn(true);
+        when(joinTableSegment.getJoinType()).thenReturn(JoinType.RIGHT.name());
+        ShardingSphereMetaData metaData = createMetaData();
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), tableBinderContexts);
+        assertTrue(actual.getLeft() instanceof SimpleTableSegment);
+        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertTrue(actual.getRight() instanceof SimpleTableSegment);
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getJoinTableProjectionSegments().size(), is(4));
+        assertTrue(tableBinderContexts.containsKey("o"));
+        assertTrue(tableBinderContexts.containsKey("i"));
+    }
+    
+    @Test
+    void assertBindWithJoinUsing() {
+        JoinTableSegment joinTableSegment = mock(JoinTableSegment.class);
+        SimpleTableSegment leftTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        leftTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        SimpleTableSegment rightTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item")));
+        rightTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("i")));
+        when(joinTableSegment.getLeft()).thenReturn(leftTable);
+        when(joinTableSegment.getRight()).thenReturn(rightTable);
+        when(joinTableSegment.getJoinType()).thenReturn(JoinType.RIGHT.name());
+        when(joinTableSegment.getUsing()).thenReturn(Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("status")), new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        ShardingSphereMetaData metaData = createMetaData();
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), tableBinderContexts);
+        assertTrue(actual.getLeft() instanceof SimpleTableSegment);
+        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertTrue(actual.getRight() instanceof SimpleTableSegment);
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getJoinTableProjectionSegments().size(), is(5));
+        assertTrue(tableBinderContexts.containsKey("o"));
+        assertTrue(tableBinderContexts.containsKey("i"));
     }
     
     private ShardingSphereMetaData createMetaData() {
