@@ -55,11 +55,13 @@ jobs:
           echo "GLOBAL_CACHE_PREFIX=${GLOBAL_CACHE_PREFIX}" >> $GITHUB_OUTPUT
           if [ ${{ toJSON(github.repository) }} = ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }} ]; then
             echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
+            echo "GLOBAL_JOB_ENABLED=false" >> $GITHUB_OUTPUT
             echo '${{ env.JSON_LABELS }}' | while read line
             do
-              echo "GLOBAL_JOB_ENABLED=false" >> $GITHUB_OUTPUT
-              echo "RUNNABLE_CI_LABEL : ${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}"
-              if [ ${line} == *"${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}"* || -z ${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }} ]; then
+              if [ -z ${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }} ]
+                echo "empty label"
+              fi
+              if [ ${line} = "type: ${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}" || -z ${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }} ]; then
                 echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
                 break
               fi
