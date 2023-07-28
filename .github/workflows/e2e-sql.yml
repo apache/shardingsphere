@@ -93,7 +93,7 @@ jobs:
         with:
           name: e2e-image
           path: /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-test.tar
-          retention-days: 1
+          retention-days: 10
   
   e2e-sql:
     name: E2E - SQL
