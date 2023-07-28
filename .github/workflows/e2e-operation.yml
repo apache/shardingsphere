@@ -96,8 +96,7 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
-      - name: Setup JDK 11
-        if: (env.skip_current_step == 'false')
+      - if: (env.skip_current_step == 'false')
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -105,12 +104,6 @@ jobs:
       - name: Build ${{ matrix.operation }} E2E Image
         if: (env.skip_current_step == 'false')
         run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pit.env.docker -DskipTests
-      - name: Setup JDK 8 for Test
-        if: (env.skip_current_step == 'false')
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 8
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
         if: (env.skip_current_step == 'false')
         run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.${{ matrix.image.type }}=${{ matrix.image.version }}

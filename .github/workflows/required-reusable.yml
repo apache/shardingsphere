@@ -45,12 +45,14 @@ jobs:
       - name: Check If Job is Executable
         id: check-job-executable
         run: |
+          GLOBAL_CACHE_PREFIX=$(echo '${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }}' | sed 's/\//-/g')
+          echo "GLOBAL_CACHE_PREFIX=${GLOBAL_CACHE_PREFIX}" >> $GITHUB_OUTPUT
           if [ ${{ toJSON(github.repository) }} = ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }} ]; then
             echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
             echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
           fi
     outputs:
-      GLOBAL_CACHE_PREFIX: ${{ steps.import-variables.outputs.GLOBAL_CACHE_PREFIX }}
       GLOBAL_RUNS_ON: ${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}
       GLOBAL_JOB_ENABLED: ${{ steps.check-job-executable.outputs.GLOBAL_JOB_ENABLED }}
+      GLOBAL_CACHE_PREFIX: ${{ steps.check-job-executable.outputs.GLOBAL_CACHE_PREFIX }}
       GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE: ${{ steps.check-job-executable.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE }}

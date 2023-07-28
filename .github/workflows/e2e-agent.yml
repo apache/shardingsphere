@@ -97,11 +97,10 @@ jobs:
             plugin: zipkin
     steps:
       - uses: actions/checkout@v3
-      - name: Setup JDK 11 for Build
-        uses: actions/setup-java@v3
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: 11
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -111,11 +110,6 @@ jobs:
       - name: Build Project
         run:
           ./mvnw -B clean install -DskipITs -DskipTests -Prelease
-      - name: Setup JDK 8 for Test
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '8'
       - name: Run E2E Test
         run:
           ./mvnw -B clean install -f test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }}/pom.xml -Dspotless.apply.skip=true -Dit.env.adapter=${{ matrix.adapter }} -Dit.env.type=${{ matrix.plugin }} -Pit.env.${{ matrix.adapter }}.${{ matrix.plugin }}
