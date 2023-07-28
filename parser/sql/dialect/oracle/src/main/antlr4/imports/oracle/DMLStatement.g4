@@ -447,7 +447,7 @@ fromClauseOption
     ;
 
 xmlTable
-    : tableName alias? COMMA_ xmlTableFunction xmlTableFunctionAlias
+    : xmlTableFunction xmlTableFunctionAlias?
     ;
 
 xmlTableFunctionAlias
