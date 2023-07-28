@@ -7648,6 +7648,10 @@ XPATHTABLE
     :X P A T H T A B L E
     ;
 
+XMLSEQUENCE
+    :X M L S E Q U E N C E
+    ;
+
 XS_SYS_CONTEXT
     :X S UL_ S Y S UL_ C O N T E X T
     ;

@@ -23,8 +23,6 @@
     <alter-type sql-case-id="alter_type_add_attribute" />
     <alter-type sql-case-id="alter_type_add_value" />
     <alter-type sql-case-id="alter_type_rename_value" />
-    <alter-type sql-case-id="alter_type_default" />
-    <alter-type sql-case-id="alter_type_schema_name" />
     <alter-type sql-case-id="alter_type_compile" />
     <alter-type sql-case-id="alter_type_debug" />
     <alter-type sql-case-id="alter_type_spec" />

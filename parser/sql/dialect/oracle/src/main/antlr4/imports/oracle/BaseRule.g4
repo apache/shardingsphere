@@ -1899,8 +1899,11 @@ xmlFunction
     | xmlSerializeFunction
     | xmlTableFunction
     | xmlIsSchemaValidFunction
-    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG | APPENDCHILDXML | DELETEXML | EXISTSNODE | EXTRACT | EXTRACTVALUE | INSERTCHILDXML | INSERTCHILDXMLAFTER | INSERTCHILDXMLBEFORE | INSERTXMLAFTER | INSERTXMLBEFORE) exprList
+    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG | APPENDCHILDXML | DELETEXML | EXISTSNODE | EXTRACT | EXTRACTVALUE 
+        | INSERTCHILDXML | INSERTCHILDXMLAFTER | INSERTCHILDXMLBEFORE | INSERTXMLAFTER | INSERTXMLBEFORE
+        | SYS_DBURIGEN | UPDATEXML | XMLCONCAT | XMLDIFF | XMLEXISTS | XMLISVALID | XMLPATCH | XMLSEQUENCE | XMLTRANSFORM) exprList
     | specifiedFunctionName = (DEPTH | PATH) LP_ correlationInteger RP_
+    | specifiedFunctionName = XMLCOMMENT LP_ stringLiterals RP_
     ;
 
 xmlAggFunction
@@ -1908,7 +1911,11 @@ xmlAggFunction
     ;
 
 xmlColattvalFunction
-    : XMLCOLATTVAL LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+    : XMLCOLATTVAL LP_ expr (xmlAsAliasOrEvalnameExpr)? (COMMA_ expr (xmlAsAliasOrEvalnameExpr)?)* RP_
+    ;
+
+xmlAsAliasOrEvalnameExpr
+    :AS (alias | EVALNAME expr)
     ;
 
 xmlExistsFunction
@@ -1916,7 +1923,7 @@ xmlExistsFunction
     ;
 
 xmlForestFunction
-   : XMLFOREST LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+   : XMLFOREST LP_ expr (xmlAsAliasOrEvalnameExpr)? (COMMA_ expr (xmlAsAliasOrEvalnameExpr)?)* RP_
    ;
 
 xmlParseFunction
