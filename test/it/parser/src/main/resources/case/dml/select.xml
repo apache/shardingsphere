@@ -6029,4 +6029,235 @@
             <column-item name="last_name" order-direction="ASC" start-index="249" stop-index="257" literal-start-index="249" literal-stop-index="257" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_with_xml_functions">
+        <projections start-index="7" stop-index="830" literal-start-index="7" literal-stop-index="830">
+            <expression-projection text="INSERTCHILDXML(warehouse_spec, '/Warehouse/Building', 'Owner', XMLType('&lt;Owner&gt;LesserCo&lt;/Owner&gt;'))" start-index="7" stop-index="104" literal-start-index="7" literal-stop-index="104">
+                <literalText>INSERTCHILDXML(warehouse_spec, '/Warehouse/Building', 'Owner', XMLType('&lt;Owner&gt;LesserCo&lt;/Owner&gt;'))</literalText>
+                <expr>
+                    <function function-name="INSERTCHILDXML" text="INSERTCHILDXML(warehouse_spec, '/Warehouse/Building', 'Owner', XMLType('&lt;Owner&gt;LesserCo&lt;/Owner&gt;'))" start-index="7" stop-index="104" literal-start-index="7" literal-stop-index="104">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="22" stop-index="35" literal-start-index="22" literal-stop-index="35" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Building" start-index="38" stop-index="58" literal-start-index="38" literal-stop-index="58" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Owner" start-index="61" stop-index="67" literal-start-index="61" literal-stop-index="67" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLType" text="XMLType('&lt;Owner&gt;LesserCo&lt;/Owner&gt;')" start-index="70" stop-index="103" literal-start-index="70" literal-stop-index="103">
+                                <parameter>
+                                    <literal-expression value="&lt;Owner&gt;LesserCo&lt;/Owner&gt;" start-index="78" stop-index="102" literal-start-index="78" literal-stop-index="102" />
+                                </parameter>
+                                <literalText>XMLType('&lt;Owner&gt;LesserCo&lt;/Owner&gt;')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>INSERTCHILDXML(warehouse_spec, '/Warehouse/Building', 'Owner', XMLType('&lt;Owner&gt;LesserCo&lt;/Owner&gt;'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="SYS_DBURIGEN(employee_id, email)" start-index="107" stop-index="138" literal-start-index="107" literal-stop-index="138">
+                <literalText>SYS_DBURIGEN(employee_id, email)</literalText>
+                <expr>
+                    <function function-name="SYS_DBURIGEN" text="SYS_DBURIGEN(employee_id, email)" start-index="107" stop-index="138" literal-start-index="107" literal-stop-index="138">
+                        <parameter>
+                            <column name="employee_id" start-index="120" stop-index="130" literal-start-index="120" literal-stop-index="130" />
+                        </parameter>
+                        <parameter>
+                            <column name="email" start-index="133" stop-index="137" literal-start-index="133" literal-stop-index="137" />
+                        </parameter>
+                        <literalText>SYS_DBURIGEN(employee_id, email)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="INSERTCHILDXMLAFTER(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))" start-index="141" stop-index="247" literal-start-index="141" literal-stop-index="247">
+                <literalText>INSERTCHILDXMLAFTER(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))</literalText>
+                <expr>
+                    <function function-name="INSERTCHILDXMLAFTER" text="INSERTCHILDXMLAFTER(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))" start-index="141" stop-index="247" literal-start-index="141" literal-stop-index="247">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="161" stop-index="174" literal-start-index="161" literal-stop-index="174" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Building" start-index="177" stop-index="197" literal-start-index="177" literal-stop-index="197" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Owner[2]" start-index="199" stop-index="208" literal-start-index="199" literal-stop-index="208" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLType" text="XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;')" start-index="211" stop-index="246" literal-start-index="211" literal-stop-index="246">
+                                <parameter>
+                                    <literal-expression value="&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;" start-index="219" stop-index="245" literal-start-index="219" literal-stop-index="245" />
+                                </parameter>
+                                <literalText>XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>INSERTCHILDXMLAFTER(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="INSERTCHILDXMLBEFORE(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))" start-index="250" stop-index="357" literal-start-index="250" literal-stop-index="357">
+                <literalText>INSERTCHILDXMLBEFORE(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))</literalText>
+                <expr>
+                    <function function-name="INSERTCHILDXMLBEFORE" text="INSERTCHILDXMLBEFORE(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))" start-index="250" stop-index="357" literal-start-index="250" literal-stop-index="357">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="271" stop-index="284" literal-start-index="271" literal-stop-index="284" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Building" start-index="287" stop-index="307" literal-start-index="287" literal-stop-index="307" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Owner[2]" start-index="309" stop-index="318" literal-start-index="309" literal-stop-index="318" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLType" text="XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;')" start-index="321" stop-index="356" literal-start-index="321" literal-stop-index="356">
+                                <parameter>
+                                    <literal-expression value="&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;" start-index="329" stop-index="355" literal-start-index="329" literal-stop-index="355" />
+                                </parameter>
+                                <literalText>XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>INSERTCHILDXMLBEFORE(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="INSERTXMLAFTER(warehouse_spec,'/Warehouse/Building/Owner[1]', XMLType('&lt;Owner&gt;SecondOwner&lt;/Owner&gt;'))" start-index="360" stop-index="459" literal-start-index="360" literal-stop-index="459">
+                <literalText>INSERTXMLAFTER(warehouse_spec,'/Warehouse/Building/Owner[1]', XMLType('&lt;Owner&gt;SecondOwner&lt;/Owner&gt;'))</literalText>
+                <expr>
+                    <function function-name="INSERTXMLAFTER" text="INSERTXMLAFTER(warehouse_spec,'/Warehouse/Building/Owner[1]', XMLType('&lt;Owner&gt;SecondOwner&lt;/Owner&gt;'))" start-index="360" stop-index="459" literal-start-index="360" literal-stop-index="459">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="375" stop-index="388" literal-start-index="375" literal-stop-index="388" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Building/Owner[1]" start-index="390" stop-index="419" literal-start-index="390" literal-stop-index="419" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLType" text="XMLType('&lt;Owner&gt;SecondOwner&lt;/Owner&gt;')" start-index="422" stop-index="458" literal-start-index="422" literal-stop-index="458">
+                                <parameter>
+                                    <literal-expression value="&lt;Owner&gt;SecondOwner&lt;/Owner&gt;" start-index="430" stop-index="457" literal-start-index="430" literal-stop-index="457" />
+                                </parameter>
+                                <literalText>XMLType('&lt;Owner&gt;SecondOwner&lt;/Owner&gt;')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>INSERTXMLAFTER(warehouse_spec,'/Warehouse/Building/Owner[1]', XMLType('&lt;Owner&gt;SecondOwner&lt;/Owner&gt;'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="INSERTXMLBEFORE(warehouse_spec, '/Warehouse/Building/Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))" start-index="462" stop-index="562" literal-start-index="462" literal-stop-index="562">
+                <literalText>INSERTXMLBEFORE(warehouse_spec, '/Warehouse/Building/Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))</literalText>
+                <expr>
+                    <function function-name="INSERTXMLBEFORE" text="INSERTXMLBEFORE(warehouse_spec, '/Warehouse/Building/Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))" start-index="462" stop-index="562" literal-start-index="462" literal-stop-index="562">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="478" stop-index="491" literal-start-index="478" literal-stop-index="491" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Building/Owner[2]" start-index="494" stop-index="523" literal-start-index="494" literal-stop-index="523" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLType" text="XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;')" start-index="526" stop-index="561" literal-start-index="526" literal-stop-index="561">
+                                <parameter>
+                                    <literal-expression value="&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;" start-index="534" stop-index="560" literal-start-index="534" literal-stop-index="560" />
+                                </parameter>
+                                <literalText>XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>INSERTXMLBEFORE(warehouse_spec, '/Warehouse/Building/Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="EXTRACT(warehouse_spec, '/Warehouse/Docks')" alias="Number of Docks" start-index="565" stop-index="625" literal-start-index="565" literal-stop-index="625">
+                <literalText>EXTRACT(warehouse_spec, '/Warehouse/Docks')</literalText>
+                <expr>
+                    <function function-name="EXTRACT" text="EXTRACT(warehouse_spec, '/Warehouse/Docks')" start-index="565" stop-index="607" literal-start-index="565" literal-stop-index="607">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="573" stop-index="586" literal-start-index="573" literal-stop-index="586" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Docks" start-index="589" stop-index="606" literal-start-index="589" literal-stop-index="606" />
+                        </parameter>
+                        <literalText>EXTRACT(warehouse_spec, '/Warehouse/Docks')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="EXTRACTVALUE(e.warehouse_spec, '/Warehouse/Docks')" alias="Docks" start-index="628" stop-index="685" literal-start-index="628" literal-stop-index="685">
+                <literalText>EXTRACTVALUE(e.warehouse_spec, '/Warehouse/Docks')</literalText>
+                <expr>
+                    <function function-name="EXTRACTVALUE" text="EXTRACTVALUE(e.warehouse_spec, '/Warehouse/Docks')" start-index="628" stop-index="677" literal-start-index="628" literal-stop-index="677">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="641" stop-index="656" literal-start-index="641" literal-stop-index="656">
+                                <owner name="e" start-index="641" stop-index="641" literal-start-index="641" literal-stop-index="641" />
+                            </column>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Docks" start-index="659" stop-index="676" literal-start-index="659" literal-stop-index="676" />
+                        </parameter>
+                        <literalText>EXTRACTVALUE(e.warehouse_spec, '/Warehouse/Docks')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="APPENDCHILDXML(warehouse_spec, 'Warehouse/Building', XMLType('&lt;Owner&gt;Grandco&lt;/Owner&gt;'))" start-index="688" stop-index="774" literal-start-index="688" literal-stop-index="774">
+                <literalText>APPENDCHILDXML(warehouse_spec, 'Warehouse/Building', XMLType('&lt;Owner&gt;Grandco&lt;/Owner&gt;'))</literalText>
+                <expr>
+                    <function function-name="APPENDCHILDXML" text="APPENDCHILDXML(warehouse_spec, 'Warehouse/Building', XMLType('&lt;Owner&gt;Grandco&lt;/Owner&gt;'))" start-index="688" stop-index="774" literal-start-index="688" literal-stop-index="774">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="703" stop-index="716" literal-start-index="703" literal-stop-index="716" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Warehouse/Building" start-index="719" stop-index="738" literal-start-index="719" literal-stop-index="738" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLType" text="XMLType('&lt;Owner&gt;Grandco&lt;/Owner&gt;')" start-index="741" stop-index="773" literal-start-index="741" literal-stop-index="773">
+                                <parameter>
+                                    <literal-expression value="&lt;Owner&gt;Grandco&lt;/Owner&gt;" start-index="749" stop-index="772" literal-start-index="749" literal-stop-index="772" />
+                                </parameter>
+                                <literalText>XMLType('&lt;Owner&gt;Grandco&lt;/Owner&gt;')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>APPENDCHILDXML(warehouse_spec, 'Warehouse/Building', XMLType('&lt;Owner&gt;Grandco&lt;/Owner&gt;'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="DELETEXML(warehouse_spec, '/Warehouse/Building/Owner')" start-index="777" stop-index="830" literal-start-index="777" literal-stop-index="830">
+                <literalText>DELETEXML(warehouse_spec, '/Warehouse/Building/Owner')</literalText>
+                <expr>
+                    <function function-name="DELETEXML" text="DELETEXML(warehouse_spec, '/Warehouse/Building/Owner')" start-index="777" stop-index="830" literal-start-index="777" literal-stop-index="830">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="787" stop-index="800" literal-start-index="787" literal-stop-index="800" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Building/Owner" start-index="803" stop-index="829" literal-start-index="803" literal-stop-index="829" />
+                        </parameter>
+                        <literalText>DELETEXML(warehouse_spec, '/Warehouse/Building/Owner')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="warehouses" start-index="839" stop-index="848" literal-start-index="839" literal-stop-index="848" />
+        </from>
+        <where start-index="852" stop-index="907" literal-start-index="852" literal-stop-index="907">
+            <expr>
+                <binary-operation-expression start-index="858" stop-index="907" literal-start-index="858" literal-stop-index="907">
+                    <left>
+                        <function function-name="EXISTSNODE" text="EXISTSNODE(warehouse_spec, '/Warehouse/Docks')" start-index="858" stop-index="903" literal-start-index="858" literal-stop-index="903">
+                            <parameter>
+                                <column name="warehouse_spec" start-index="869" stop-index="882" literal-start-index="869" literal-stop-index="882" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="/Warehouse/Docks" start-index="885" stop-index="902" literal-start-index="885" literal-stop-index="902" />
+                            </parameter>
+                            <literalText>EXISTSNODE(warehouse_spec, '/Warehouse/Docks')</literalText>
+                        </function>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="907" stop-index="907" literal-start-index="907" literal-stop-index="907" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="warehouse_id" order-direction="ASC" start-index="920" stop-index="931" literal-start-index="920" literal-stop-index="931" />
+        </order-by>
+    </select>
 </sql-parser-test-cases>
