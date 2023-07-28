@@ -34,8 +34,8 @@ env:
   PROXY_NATIVE: ghcr.io/apache/shardingsphere-proxy-native
 
 jobs:
-  global-env:
-    name: Import Global Env
+  global-environment:
+    name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
   upload-to-nightlies:

@@ -31,8 +31,8 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
 jobs:
-  global-env:
-    name: Import Global Env
+  global-environment:
+    name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
   detect-changed-files:
@@ -50,9 +50,9 @@ jobs:
       changed_operations: ${{ steps.filter.outputs.changes }}
 
   e2e-operation:
-    if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
     name: E2E - Operation
-    needs: [ detect-changed-files, global-env ]
+    needs: [ detect-changed-files, global-environment ]
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:
@@ -92,10 +92,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
           restore-keys: |
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-e2e-cache-
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-e2e-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Setup JDK 11
         if: (env.skip_current_step == 'false')
         uses: actions/setup-java@v3

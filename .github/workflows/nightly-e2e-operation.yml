@@ -30,8 +30,8 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
 jobs:
-  global-env:
-    name: Import Global Env
+  global-environment:
+    name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
   e2e-operation-job:

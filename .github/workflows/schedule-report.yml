@@ -26,8 +26,8 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
 
 jobs:
-  global-env:
-    name: Import Global Env
+  global-environment:
+    name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
   check-and-report-sonarcloud:

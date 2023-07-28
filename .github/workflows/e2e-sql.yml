@@ -63,8 +63,8 @@ env:
   SEGMENT_DOWNLOAD_TIMEOUT_MINS: 1
 
 jobs:
-  global-env:
-    name: Import Global Env
+  global-environment:
+    name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
   build-e2e-image:

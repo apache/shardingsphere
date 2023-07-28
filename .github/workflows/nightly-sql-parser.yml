@@ -27,8 +27,8 @@ env:
   RUNS_ON: ubuntu-latest
 
 jobs:
-  global-env:
-    name: Import Global Env
+  global-environment:
+    name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
   database-parse:
