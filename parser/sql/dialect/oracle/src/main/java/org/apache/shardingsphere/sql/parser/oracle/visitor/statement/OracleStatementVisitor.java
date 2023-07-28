@@ -602,13 +602,13 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
                 ? createAggregationSegment(ctx, aggregationType)
                 : createAggregationFunctionSegment(ctx, aggregationType);
     }
-
+    
     private FunctionSegment createAggregationFunctionSegment(AggregationFunctionContext ctx, String aggregationType) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), aggregationType, getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }
-
+    
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         if (null != ctx.DISTINCT()) {
@@ -791,7 +791,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         }
         return result;
     }
-
+    
     private Collection<ExpressionSegment> getExpressions(final List<ExprContext> exprList) {
         if (null == exprList) {
             return Collections.emptyList();
@@ -863,21 +863,21 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitExtractFunction(OracleStatementParser.ExtractFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.EXTRACT().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
-        return result;  
+        return result;
     }
-
+    
     @Override
     public ASTNode visitFormatFunction(OracleStatementParser.FormatFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.FORMAT().getText(), getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitFirstOrLastValueFunction(OracleStatementParser.FirstOrLastValueFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
@@ -885,14 +885,14 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitTrimFunction(OracleStatementParser.TrimFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitFeatureFunction(final FeatureFunctionContext ctx) {
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.featureFunctionName().getText(), getOriginalText(ctx));
