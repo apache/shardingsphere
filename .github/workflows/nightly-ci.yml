@@ -54,10 +54,10 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-${{ github.sha }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Build Project with Maven
         run: ./mvnw clean install -B -ntp -T1C
       - name: Build Examples with Maven
@@ -86,10 +86,10 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-${{ github.sha }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Build prod with Maven
         run: ./mvnw clean install -DskipTests -B -ntp -T1C
       - name: Setup JDK 8 for Test

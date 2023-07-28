@@ -59,7 +59,7 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   ci:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: CI - Compile by JDK 11 and Run on JDK 8
     needs: global-environment
     runs-on: ubuntu-latest
@@ -74,9 +74,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Build Project with Maven
         run: ./mvnw clean install -B -ntp -DskipTests -T1C
       - name: Setup JDK 8 for Test

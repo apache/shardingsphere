@@ -41,9 +41,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Run SpotBugs
         run: ./mvnw clean install spotbugs:check -T1C
 
@@ -67,9 +67,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Analyze with SonarCloud
         env:
           MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
@@ -97,9 +97,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Aggregate checkstyle report
         run:
           ./mvnw clean verify checkstyle:checkstyle-aggregate
@@ -161,9 +161,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Install Project
         run: ./mvnw clean install -DskipTests
       - name: Perform CodeQL Analysis
