@@ -7663,3 +7663,11 @@ FEATURE_COMPARE
 FEATURE_DETAILS
     : F E A T U R E UL_ D E T A I L S
     ;
+
+CLUSTER_DETAILS
+    : C L U S T E R UL_ D E T A I L S
+    ;
+
+CLUSTER_DISTANCE
+    : C L U S T E R UL_ D I S T A N C E
+    ;

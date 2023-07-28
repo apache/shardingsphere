@@ -29,13 +29,15 @@ import java.util.Optional;
 /**
  * Column projection segment.
  */
+@Setter
+@Getter
 public final class ColumnProjectionSegment implements ProjectionSegment, AliasAvailable {
     
-    @Getter
     private final ColumnSegment column;
     
-    @Setter
     private AliasSegment alias;
+    
+    private boolean visible = true;
     
     public ColumnProjectionSegment(final ColumnSegment columnSegment) {
         column = columnSegment;

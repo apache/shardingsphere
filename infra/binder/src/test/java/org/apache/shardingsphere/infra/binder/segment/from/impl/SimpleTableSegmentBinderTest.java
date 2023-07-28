@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -131,9 +133,14 @@ class SimpleTableSegmentBinderTest {
     }
     
     private ShardingSphereMetaData createMetaData() {
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status"));
-        when(schema.getAllColumnNames("pg_database")).thenReturn(Arrays.asList("datname", "datdba"));
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        when(schema.getTable("t_order").getColumnValues()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false)));
+        when(schema.getTable("pg_database").getColumnValues()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("datname", Types.VARCHAR, false, false, false, true, false),
+                new ShardingSphereColumn("datdba", Types.VARCHAR, false, false, false, true, false)));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         when(result.getDatabase("sharding_db").getSchema("sharding_db")).thenReturn(schema);
