@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.datasource.config;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
  * Pipeline data source configuration.

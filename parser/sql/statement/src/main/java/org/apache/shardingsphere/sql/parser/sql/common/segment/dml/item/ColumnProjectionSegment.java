@@ -42,6 +42,11 @@ public final class ColumnProjectionSegment implements ProjectionSegment, AliasAv
     }
     
     @Override
+    public String getColumnLabel() {
+        return getAliasName().orElse(column.getIdentifier().getValue());
+    }
+    
+    @Override
     public Optional<String> getAliasName() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
@@ -59,5 +64,13 @@ public final class ColumnProjectionSegment implements ProjectionSegment, AliasAv
     @Override
     public int getStopIndex() {
         return null == alias ? column.getStopIndex() : alias.getStopIndex();
+    }
+    
+    /**
+     * Get alias segment.
+     * @return alias segment
+     */
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
     }
 }

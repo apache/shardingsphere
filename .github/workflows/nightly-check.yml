@@ -23,13 +23,17 @@ on:
   workflow_dispatch:
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true
-  CACHE_PREFIX: shardingsphere
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
 
 jobs:
+  global-env:
+    name: Import Global Env
+    uses: ./.github/workflows/required-reusable.yml
+
   check-spotbugs:
     if: (github.repository == 'apache/shardingsphere')
     name: Check - SpotBugs
+    needs: global-env
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -37,15 +41,16 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ env.CACHE_PREFIX }}-maven-third-party-
+            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Run SpotBugs
         run: ./mvnw clean install spotbugs:check -T1C
 
   check-and-report-sonarcloud:
     if: (github.repository == 'apache/shardingsphere')
     name: Check - SonarCloud
+    needs: global-env
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -62,19 +67,20 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ env.CACHE_PREFIX }}-maven-third-party-
+            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Analyze with SonarCloud
         env:
           MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-        run: ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipTests
+        run: ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -DskipTests
 
   checkstyle-report-sonarcloud:
     if: (github.repository == 'apache/shardingsphere')
     name: Checkstyle - SonarCloud
+    needs: global-env
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -91,9 +97,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ env.CACHE_PREFIX }}-maven-third-party-
+            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Aggregate checkstyle report
         run:
           ./mvnw clean verify checkstyle:checkstyle-aggregate
@@ -135,6 +141,7 @@ jobs:
   check-codeql:
     if: (github.repository == 'apache/shardingsphere')
     name: Check - CodeQL
+    needs: global-env
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -154,11 +161,11 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ env.CACHE_PREFIX }}-maven-third-party-
+            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Install Project
-        run: ./mvnw clean install -DskipTests -Dmaven.javadoc.skip=true -Drat.skip=true
+        run: ./mvnw clean install -DskipTests
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
         with:
@@ -183,3 +190,9 @@ jobs:
           stale-pr-label: "stale"
           operations-per-run: 1000
           remove-stale-when-updated: true
+          stale-issue-message: >
+            There hasn't been any activity on this issue recently, and in order to prioritize active issues, it will be
+            marked as stale.
+          stale-pr-message: >
+            There hasn't been any activity on this pull request recently, and in order to prioritize active work, it has
+            been marked as stale.

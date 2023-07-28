@@ -2451,7 +2451,7 @@ attribute
     ;
 
 attributeNameAndValue
-    : SQ_ attributeName SQ_ EQ_ SQ_ attributeValue SQ_
+    : attributeName EQ_ attributeValue
     ;
 
 dropDiskgroup
@@ -2875,7 +2875,7 @@ diskOfflineClause
     ;
 
 timeoutClause
-    : DROP AFTER INTEGER_ (M | H)
+    : DROP AFTER INTEGER_ TIME_UNIT
     ;
 
 checkDiskgroupClause
@@ -2948,7 +2948,7 @@ convertRedundancyClause
 
 usergroupClauses
     : (ADD USERGROUP SQ_ usergroupName SQ_ WITH MEMBER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
-    | MODIFY USERGROUP SQ_ usergroupName SQ_ (ADD | DROP) MEMBER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
+    | MODIFY USERGROUP usergroupName (ADD | DROP) MEMBER username (COMMA_ username)*
     | DROP USERGROUP SQ_ usergroupName SQ_)
     ;
 
@@ -2968,7 +2968,7 @@ fileOwnerClause
     ;
 
 setOwnerClause
-    :OWNER EQ_ SQ_ username SQ_ | GROUP EQ_ SQ_ usergroupName SQ_
+    : OWNER EQ_ username | GROUP EQ_ usergroupName
     ;
 
 scrubClause
@@ -3529,12 +3529,23 @@ dropMaterializedZonemap
     : DROP MATERIALIZED ZONEMAP zonemapName
     ;
 
+tablespaceEncryptionSpec
+    : USING encryptAlgorithmName
+    ;
+
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? permanentTablespaceClause
+    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
     ;
 
 permanentTablespaceClause
-    : TABLESPACE tablespaceName (ONLINE|OFFLINE)
+    : TABLESPACE tablespaceName (
+    (MINIMUM EXTEND sizeClause)
+    | (BLOCKSIZE INTEGER_ K?)
+    | loggingClause
+    | (FORCE LOGGING)
+    | ENCRYPTION tablespaceEncryptionSpec
+    | (ONLINE|OFFLINE)
+    )
     ;
 
 dropFunction

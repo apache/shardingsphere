@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.database.mariadb;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -31,9 +31,22 @@ import java.util.Optional;
  */
 public final class MariaDBDatabaseType implements DatabaseType {
     
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
+        return getTrunkDatabaseType().get().getQuoteCharacter();
+    }
+    
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Override
+    public NullsOrderType getDefaultNullsOrderType() {
+        return getTrunkDatabaseType().get().getDefaultNullsOrderType();
+    }
+    
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Override
+    public boolean isReservedWord(final String identifier) {
+        return getTrunkDatabaseType().get().isReservedWord(identifier);
     }
     
     @Override
@@ -42,23 +55,8 @@ public final class MariaDBDatabaseType implements DatabaseType {
     }
     
     @Override
-    public MariaDBDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new MariaDBDataSourceMetaData(url);
-    }
-    
-    @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
         return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
     }
     
     @Override

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.parser.cache;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -31,7 +32,7 @@ public final class SQLStatementCacheLoader implements CacheLoader<String, SQLSta
     
     private final SQLStatementParserExecutor sqlStatementParserExecutor;
     
-    public SQLStatementCacheLoader(final String databaseType, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
+    public SQLStatementCacheLoader(final DatabaseType databaseType, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
         sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption, isParseComment);
     }
     

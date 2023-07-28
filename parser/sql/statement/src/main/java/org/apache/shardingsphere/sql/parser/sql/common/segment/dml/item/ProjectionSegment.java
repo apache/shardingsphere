@@ -23,4 +23,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
  * Projection segment.
  */
 public interface ProjectionSegment extends SQLSegment {
+    
+    /**
+     * Get column label.
+     *
+     * @return column label
+     */
+    String getColumnLabel();
 }

@@ -6663,6 +6663,10 @@ SYS_XMLEXNSURI
 SYS_XMLGEN
     :S Y S UL_ X M L G E N
     ;
+    
+SYS_XMLAGG
+    :S Y S UL_ X M L A G G
+    ;
 
 SYS_XMLI_LOC_ISNODE
     :S Y S UL_ X M L I UL_ L O C UL_ I S N O D E

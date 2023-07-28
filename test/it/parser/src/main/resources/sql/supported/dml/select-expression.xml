@@ -17,6 +17,12 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_with_performance_schema_global_status" value="SELECT 1 AS STATUS FROM performance_schema.global_status WHERE VARIABLE_NAME= 'MAX_EXECUTION_TIME_SET_FAILED' AND CONVERT(VARIABLE_VALUE, UNSIGNED) > @time_set_failed" db-types="MySQL" />
+    <sql-case id="select_udf_function_mysqltest1_f1" value="select mysqltest1.f1()" db-types="MySQL" />
+    <sql-case id="select_case_when_with_mul_condition" value="select case 1*0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_case_when_with_sub_condition" value="select case 1-0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_case_when_with_add_condition" value="select case 1+0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_case_when_with_div_condition" value="select case 1/0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
     <sql-case id="select_with_expression" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="MySQL, H2, SQL92, SQLServer" />
     <sql-case id="select_with_expression_for_postgresql" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_date_function" value="SELECT DATE(i.creation_date) AS creation_date FROM `t_order_item` AS i ORDER BY DATE(i.creation_date) DESC" db-types="MySQL" />
@@ -99,4 +105,6 @@
     <sql-case id="select_age_for_postgres" value="SELECT * FROM cypher('sharding_test_1', $$ CREATE (n) $$) as (a agtype)" db-types="PostgreSQL" />
     <sql-case id="select_datetime_expression" value="SELECT SYSTIMESTAMP AT TIME ZONE 'UTC' FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_between_expression" value="SELECT item_id BETWEEN 1 AND order_id, status FROM t_order_item;" db-types="MySQL" />
+    <sql-case id="select_dbms_logmnr_mine_value_regular_function" value="SELECT DBMS_LOGMNR.MINE_VALUE(UNDO_VALUE, 'HR.EMPLOYEES.SALARY') FROM V$LOGMNR_CONTENTS;" db-types="Oracle" />
+    <sql-case id="select_interval_day_to_second_expression" value="SELECT (SYSTIMESTAMP - order_date) DAY(9) TO SECOND FROM orders" db-types="Oracle" />
 </sql-cases>

@@ -32,9 +32,9 @@ public final class MaskRuleNodePathProvider implements RuleNodePathProvider {
     
     public static final String TABLES = "tables";
     
-    public static final String ALGORITHMS = "algorithms";
+    public static final String MASK_ALGORITHMS = "mask_algorithms";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(TABLES, ALGORITHMS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(TABLES, MASK_ALGORITHMS), Collections.emptyList());
     
     @Override
     public RuleNodePath getRuleNodePath() {

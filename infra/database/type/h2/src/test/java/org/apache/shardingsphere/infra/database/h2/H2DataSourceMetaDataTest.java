@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.infra.database.h2;
 
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaDataBuilder;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -32,10 +36,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class H2DataSourceMetaDataTest {
     
+    private final DataSourceMetaDataBuilder builder = DatabaseTypedSPILoader.getService(DataSourceMetaDataBuilder.class, TypedSPILoader.getService(DatabaseType.class, "H2"));
+    
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
     void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema) {
-        DataSourceMetaData actual = new H2DataSourceMetaData(url);
+        DataSourceMetaData actual = builder.build(url, null, null);
         assertThat(actual.getHostname(), is(hostname));
         assertThat(actual.getPort(), is(port));
         assertThat(actual.getCatalog(), is(catalog));
@@ -46,8 +52,8 @@ class H2DataSourceMetaDataTest {
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(IsInSameDatabaseInstanceTestCaseArgumentsProvider.class)
     void assertIsInSameDatabaseInstance(final String name, final String url1, final String url2, final boolean isSame) {
-        H2DataSourceMetaData actual1 = new H2DataSourceMetaData(url1);
-        H2DataSourceMetaData actual2 = new H2DataSourceMetaData(url2);
+        DataSourceMetaData actual1 = builder.build(url1, null, null);
+        DataSourceMetaData actual2 = builder.build(url2, null, null);
         assertThat(actual1.isInSameDatabaseInstance(actual2), is(isSame));
     }
     

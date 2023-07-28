@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
@@ -55,7 +55,7 @@ public final class GroupByRowComparator implements Comparator<MemoryQueryResultR
             Object orderValue2 = o2.getCell(each.getIndex());
             ShardingSpherePreconditions.checkState(null == orderValue2 || orderValue2 instanceof Comparable, () -> new NotImplementComparableValueException("Order by", orderValue2));
             int result = CompareUtils.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getSegment().getOrderDirection(),
-                    each.getSegment().getNullsOrderType(selectStatementContext.getDatabaseType().getType()), valueCaseSensitive.get(each.getIndex()));
+                    each.getSegment().getNullsOrderType(selectStatementContext.getDatabaseType()), valueCaseSensitive.get(each.getIndex()));
             if (0 != result) {
                 return result;
             }

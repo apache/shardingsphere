@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.oracle;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -26,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -48,18 +48,18 @@ public final class OracleDatabaseType implements DatabaseType {
     }
     
     @Override
-    public boolean isReservedWord(final String item) {
-        return RESERVED_KEYWORDS.contains(item.toUpperCase());
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.LAST;
+    }
+    
+    @Override
+    public boolean isReservedWord(final String identifier) {
+        return RESERVED_KEYWORDS.contains(identifier.toUpperCase());
     }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
-    }
-    
-    @Override
-    public OracleDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new OracleDataSourceMetaData(url, username);
     }
     
     @Override
@@ -79,16 +79,6 @@ public final class OracleDatabaseType implements DatabaseType {
     @Override
     public String formatTableNamePattern(final String tableNamePattern) {
         return tableNamePattern.toUpperCase();
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
     }
     
     @Override

@@ -416,7 +416,6 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
                 assertThat(resultSet.getString(3), is(status));
             }
         }
-        
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);

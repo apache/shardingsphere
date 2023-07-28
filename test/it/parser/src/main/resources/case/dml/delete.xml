@@ -140,7 +140,7 @@
                                 <projections start-index="98" stop-index="148">
                                     <column-projection name="product_id" start-index="98" stop-index="107" />
                                     <column-projection name="currency_code" start-index="110" stop-index="122" />
-                                    <aggregation-projection type="MAX" inner-expression="(effective_from_date)" start-index="125" stop-index="148" />
+                                    <aggregation-projection type="MAX" expression="MAX(effective_from_date)" start-index="125" stop-index="148" />
                                 </projections>
                                 <group-by>
                                     <column-item name="product_id" start-index="186" stop-index="195" />

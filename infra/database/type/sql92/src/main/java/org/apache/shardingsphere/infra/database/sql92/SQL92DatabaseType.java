@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.database.sql92;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Database type of SQL92.
@@ -35,22 +35,12 @@ public final class SQL92DatabaseType implements DatabaseType {
     }
     
     @Override
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.FIRST;
+    }
+    
+    @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public SQL92DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new SQL92DataSourceMetaData(url);
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
         return Collections.emptyList();
     }
     

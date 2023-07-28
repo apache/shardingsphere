@@ -31,6 +31,19 @@ literals
     | bitValueLiterals
     | booleanLiterals
     | nullValueLiterals
+    | intervalLiterals
+    ;
+
+intervalLiterals
+    : INTERVAL stringLiterals intervalUnit (intervalPrecision)? (TO intervalUnit (intervalPrecision)?)?
+    ;
+
+intervalPrecision
+    : LP_ INTEGER_ RP_
+    ;
+
+intervalUnit
+    : SECOND | MINUTE | HOUR | DAY | MONTH | YEAR
     ;
 
 stringLiterals
@@ -100,8 +113,8 @@ unreservedWord1
     | BECOME | CHANGE | NOTIFICATION | PRIVILEGE | PURGE | RESUMABLE
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
-    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | INTERVAL | MINUTE | ANY 
-    | LENGTH | SINGLE_C | capacityUnit | TARGET | PUBLIC | ID | STATE | PRIORITY
+    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | MINUTE | ANY 
+    | LENGTH | SINGLE_C | capacityUnit | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
     | CONSTRAINT | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
     | WHEN | CAST | TRIM | SUBSTRING | FULL | INNER | OUTER | LEFT | RIGHT | CROSS
     | USING | FALSE | SAVEPOINT | BODY | CHARACTER | ARRAY | TIME | TIMEOUT | TIMESTAMP | LOCALTIME
@@ -526,6 +539,10 @@ subpartitionKeyValue
     : INTEGER_ | dateTimeLiterals
     ;
 
+encryptAlgorithmName
+    : STRING_
+    ;
+
 zonemapName
     : identifier
     ;
@@ -617,6 +634,7 @@ notOperator
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
     | PRIOR predicate
+    | CONNECT_BY_ROOT predicate
     | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
@@ -643,12 +661,12 @@ bitExpr
     | bitExpr SIGNED_LEFT_SHIFT_ bitExpr
     | bitExpr SIGNED_RIGHT_SHIFT_ bitExpr
     | bitExpr PLUS_ bitExpr
+    | simpleExpr
     | bitExpr MINUS_ bitExpr
     | bitExpr ASTERISK_ bitExpr
     | bitExpr SLASH_ bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | simpleExpr
     ;
 
 simpleExpr
@@ -661,7 +679,7 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | caseExpression
-    | columnName
+    | columnName joinOperator?
     | privateExprOfDb
     | PRIOR identifier
     ;
@@ -671,12 +689,20 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? (OVER LP_ analyticClause RP_)? (OVER LP_ analyticClause RP_)?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? keepClause? overClause? overClause?
+    ;
+
+keepClause
+    : KEEP LP_ DENSE_RANK (FIRST | LAST) orderByClause RP_ overClause?
     ;
 
 aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG | PERCENT_RANK | PERCENTILE_CONT | PERCENTILE_DISC | CUME_DIST | RANK
     | REGR_SLOPE | REGR_INTERCEPT | REGR_COUNT | REGR_R2 | REGR_AVGX | REGR_AVGY | REGR_SXX | REGR_SYY | REGR_SXY
+    | COLLECT | CORR | CORR_S | CORR_K | COVAR_POP | COVAR_SAMP | DENSE_RANK | FIRST 
+    | GROUP_ID | GROUPING_ID | LAST | MEDIAN | STATS_BINOMIAL_TEST | STATS_CROSSTAB | STATS_F_TEST | STATS_KS_TEST 
+    | STATS_MODE | STATS_MW_TEST | STATS_ONE_WAY_ANOVA | STATS_T_TEST_ONE | STATS_T_TEST_PAIRED | STATS_T_TEST_INDEP 
+    | STATS_T_TEST_INDEPU | STATS_WSR_TEST | STDDEV | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE
     ;
 
 listaggOverflowClause
@@ -697,11 +723,39 @@ windowingClause
     ;
 
 analyticFunction
-    : analyticFunctionName LP_ dataType* RP_ OVER LP_ analyticClause RP_
+    : specifiedAnalyticFunctionName = (LEAD | LAG) ((LP_ expr leadLagInfo? RP_ respectOrIgnoreNulls?) | (LP_ expr respectOrIgnoreNulls? leadLagInfo? RP_)) overClause
+    | specifiedAnalyticFunctionName = (NTILE | MEDIAN | RATIO_TO_REPORT) LP_ expr RP_ overClause?
+    | specifiedAnalyticFunctionName = NTH_VALUE LP_ expr COMMA_ expr RP_ fromFirstOrLast? respectOrIgnoreNulls? overClause
+    | specifiedAnalyticFunctionName = (PERCENTILE_CONT | PERCENTILE_DISC | LISTAGG) LP_ expr (COMMA_ expr)* RP_ WITHIN GROUP LP_ orderByClause RP_ overClause?
+    | specifiedAnalyticFunctionName = (CORR | COVAR_POP | COVAR_SAMP) LP_ expr COMMA_ expr RP_ overClause?
+    | specifiedAnalyticFunctionName = (PERCENT_RANK | RANK | ROW_NUMBER) LP_ RP_ overClause
+    | analyticFunctionName LP_ dataType* RP_ overClause
+    ;
+
+fromFirstOrLast
+    : FROM FIRST | FROM LAST
+    ;
+
+leadLagInfo
+    : COMMA_ expr (COMMA_ expr)?
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction
+    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction
+    ;
+
+trimFunction
+    : TRIM LP_ trimOperands? expr RP_
+    ;
+
+trimOperands
+    : (trimType expr? FROM) | (expr FROM)
+    ;
+
+trimType
+    : LEADING
+    | TRAILING
+    | BOTH
     ;
 
 firstOrLastValueFunction
@@ -733,11 +787,15 @@ extractFunction
     ;
 
 regularFunction
-    : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : (owner DOT_)? regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
 regularFunctionName
     : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL | DECODE
+    ;
+
+joinOperator
+    : LP_ PLUS_ RP_
     ;
 
 caseExpression
@@ -833,7 +891,23 @@ elseClause
     ;
 
 intervalExpression
-    : LP_ expr MINUS_ expr RP_ (DAY (LP_ NUMBER_ RP_)? TO SECOND (LP_ NUMBER_ RP_)? | YEAR (LP_ NUMBER_ RP_)? TO MONTH)
+    : LP_ expr MINUS_ expr RP_ (intervalDayToSecondExpression | intervalYearToMonthExpression)
+    ;
+
+intervalDayToSecondExpression
+    : DAY (LP_ leadingFieldPrecision RP_)? TO SECOND (LP_ fractionalSecondPrecision RP_)?
+    ;
+
+intervalYearToMonthExpression
+    : YEAR (LP_ leadingFieldPrecision RP_)? TO MONTH
+    ;
+
+leadingFieldPrecision
+    : INTEGER_
+    ;
+
+fractionalSecondPrecision
+    : INTEGER_
     ;
 
 objectAccessExpression
@@ -1808,6 +1882,7 @@ xmlFunction
     | xmlSerializeFunction
     | xmlTableFunction
     | xmlIsSchemaValidFunction
+    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG) LP_ expr (COMMA_ expr)? RP_
     ;
 
 xmlAggFunction
