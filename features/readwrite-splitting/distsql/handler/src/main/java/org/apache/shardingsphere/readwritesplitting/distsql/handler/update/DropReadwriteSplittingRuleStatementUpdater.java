@@ -111,7 +111,7 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
             dropRule(currentRuleConfig, each);
         }
         dropUnusedLoadBalancer(currentRuleConfig);
-        return currentRuleConfig.getDataSources().isEmpty();
+        return currentRuleConfig.isEmpty();
     }
     
     private void dropRule(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String ruleName) {

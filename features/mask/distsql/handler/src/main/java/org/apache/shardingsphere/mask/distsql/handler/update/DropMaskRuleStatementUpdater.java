@@ -77,7 +77,7 @@ public final class DropMaskRuleStatementUpdater implements RuleDefinitionDropUpd
     public boolean updateCurrentRuleConfiguration(final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
         sqlStatement.getTables().forEach(each -> dropRule(currentRuleConfig, each));
         dropUnusedAlgorithm(currentRuleConfig);
-        return currentRuleConfig.getTables().isEmpty();
+        return currentRuleConfig.isEmpty();
     }
     
     private void dropRule(final MaskRuleConfiguration currentRuleConfig, final String ruleName) {

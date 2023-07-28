@@ -94,15 +94,7 @@ public final class DropDefaultShardingStrategyStatementUpdater implements RuleDe
             currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
         }
         UnusedAlgorithmFinder.find(currentRuleConfig).forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
-        return isEmptyShardingTables(currentRuleConfig) && isEmptyShardingStrategy(currentRuleConfig);
-    }
-    
-    private boolean isEmptyShardingTables(final ShardingRuleConfiguration currentRuleConfig) {
-        return currentRuleConfig.getTables().isEmpty() && currentRuleConfig.getAutoTables().isEmpty();
-    }
-    
-    private boolean isEmptyShardingStrategy(final ShardingRuleConfiguration currentRuleConfig) {
-        return null == currentRuleConfig.getDefaultDatabaseShardingStrategy() && null == currentRuleConfig.getDefaultTableShardingStrategy();
+        return currentRuleConfig.isEmpty();
     }
     
     @Override
