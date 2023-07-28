@@ -61,9 +61,9 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   agent-mysql:
-    if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
     name: E2E - Agent with MySQL
-    needs: global-env
+    needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -105,9 +105,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Build Project
         run:
           ./mvnw -B clean install -DskipITs -DskipTests -Prelease
