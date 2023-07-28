@@ -25,7 +25,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyticFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitExprContext;
@@ -42,7 +41,10 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTy
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DatetimeExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExtractFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FeatureFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FirstOrLastValueFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FormatFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.HexadecimalLiteralsContext;
@@ -70,6 +72,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.String
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SynonymNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TrimFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ViewNameContext;
@@ -78,6 +81,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlCol
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlExistsFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlForestFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlIsSchemaValidFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlNameSpaceStringAsIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlNameSpacesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlParseFunctionContext;
@@ -88,11 +92,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlSer
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableOptionsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlIsSchemaValidFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExtractFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FormatFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FirstOrLastValueFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TrimFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
