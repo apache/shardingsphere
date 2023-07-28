@@ -92,10 +92,12 @@ class JDBCBackendDataSourceTest {
     }
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getProtocolType()).thenReturn(databaseType);
         Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(2, 1F);
-        storageTypes.put("ds_0", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        storageTypes.put("ds_1", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        storageTypes.put("ds_0", databaseType);
+        storageTypes.put("ds_1", databaseType);
         when(database.getResourceMetaData().getStorageTypes()).thenReturn(storageTypes);
         when(database.getResourceMetaData().getDataSources()).thenReturn(mockDataSources(2));
         return Collections.singletonMap("schema", database);
