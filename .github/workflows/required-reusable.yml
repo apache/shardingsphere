@@ -41,12 +41,13 @@ jobs:
           cat .github/workflows/resources/variables/env-variables.properties | while read line
           do
             echo ${line} >> $GITHUB_OUTPUT
-            echo ${line} >> $GITHUB_ENV
           done
       - name: Check If Job is Executable
         id: check-job-executable
         run: |
           GLOBAL_CACHE_PREFIX=$(echo '${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }}' | sed 's/\//_/g')
+          echo "GLOBAL_REPOSITORY:${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }}"
+          echo "GLOBAL_CACHE_PREFIX:${GLOBAL_CACHE_PREFIX}"
           echo "GLOBAL_CACHE_PREFIX=${GLOBAL_CACHE_PREFIX}" >> $GITHUB_OUTPUT
           if [ ${{ toJSON(github.repository) }} = ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }} ]; then
             echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
