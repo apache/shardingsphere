@@ -47,12 +47,22 @@ jobs:
           echo "GLOBAL_CACHE_PREFIX=${GLOBAL_CACHE_PREFIX}" >> $GITHUB_OUTPUT
       - name: Check If Job is Executable
         id: check-job-executable
+        env:
+          JSON_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
         run: |
           GLOBAL_CACHE_PREFIX=$(echo '${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }}' | sed 's/\//-/g')
           echo "GLOBAL_CACHE_PREFIX=${GLOBAL_CACHE_PREFIX}" >> $GITHUB_OUTPUT
           if [ ${{ toJSON(github.repository) }} = ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }} ]; then
-            echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
+            echo "GLOBAL_IS_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
             echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
+            echo '${{ env.JSON_LABELS }}' | while read line
+            do
+              echo "GLOBAL_IS_JOB_EXECUTABLE=false" >> $GITHUB_OUTPUT
+              if [[ ${line} == *"${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}"* || '' = ${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }} ]]; then
+                echo "GLOBAL_IS_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
+                break
+              fi
+            done
           fi
     outputs:
       GLOBAL_RUNS_ON: ${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}
