@@ -20,10 +20,11 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
@@ -47,10 +48,12 @@ import static org.mockito.Mockito.when;
 
 class SubqueryTableSegmentBinderTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertBindWithAlias() {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
         when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
@@ -67,7 +70,7 @@ class SubqueryTableSegmentBinderTest {
     @Test
     void assertBindWithoutAlias() {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
         when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));

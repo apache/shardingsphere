@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.database.sqlserver;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,16 +26,6 @@ import java.util.Collection;
  * Database type of SQLServer.
  */
 public final class SQLServerDatabaseType implements DatabaseType {
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BRACKETS;
-    }
-    
-    @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
-    }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

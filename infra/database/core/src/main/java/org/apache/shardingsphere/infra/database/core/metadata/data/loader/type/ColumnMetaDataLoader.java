@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.database.core.metadata.data.loader.type;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.sql.Connection;
@@ -84,8 +86,9 @@ public final class ColumnMetaDataLoader {
     }
     
     private static String generateEmptyResultSQL(final String table, final List<String> columnNames, final DatabaseType databaseType) {
-        String wrappedColumnNames = columnNames.stream().map(each -> databaseType.getQuoteCharacter().wrap(each)).collect(Collectors.joining(","));
-        return String.format("SELECT %s FROM %s WHERE 1 != 1", wrappedColumnNames, databaseType.getQuoteCharacter().wrap(table));
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
+        String wrappedColumnNames = columnNames.stream().map(each -> dialectDatabaseMetaData.getQuoteCharacter().wrap(each)).collect(Collectors.joining(","));
+        return String.format("SELECT %s FROM %s WHERE 1 != 1", wrappedColumnNames, dialectDatabaseMetaData.getQuoteCharacter().wrap(table));
     }
     
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {

@@ -26,9 +26,11 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowCreateTableStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -49,6 +51,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EncryptDALResultDecoratorTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Mock
     private EncryptRule rule;
@@ -106,9 +110,10 @@ class EncryptDALResultDecoratorTest {
     
     private SQLStatementContext getShowCreateTableStatementContext() {
         ShowCreateTableStatementContext result = mock(ShowCreateTableStatementContext.class);
+        when(result.getDatabaseType()).thenReturn(databaseType);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
         when(result.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
-        when(result.getSqlStatement()).thenReturn(mock(MySQLShowCreateTableStatement.class));
+        when(result.getSqlStatement()).thenReturn(new MySQLShowCreateTableStatement());
         return result;
     }
     

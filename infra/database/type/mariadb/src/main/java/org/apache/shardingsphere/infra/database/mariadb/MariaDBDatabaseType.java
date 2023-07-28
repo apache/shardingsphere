@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.database.mariadb;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -30,24 +28,6 @@ import java.util.Optional;
  * Database type of MariaDB.
  */
 public final class MariaDBDatabaseType implements DatabaseType {
-    
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return getTrunkDatabaseType().get().getQuoteCharacter();
-    }
-    
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
-    @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return getTrunkDatabaseType().get().getDefaultNullsOrderType();
-    }
-    
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
-    @Override
-    public boolean isReservedWord(final String identifier) {
-        return getTrunkDatabaseType().get().isReservedWord(identifier);
-    }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

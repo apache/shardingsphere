@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -50,6 +50,8 @@ import static org.mockito.Mockito.when;
 class EncryptOrderByItemTokenGeneratorTest {
     
     private final EncryptOrderByItemTokenGenerator generator = new EncryptOrderByItemTokenGenerator();
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @BeforeEach
     void setup() {
@@ -80,12 +82,13 @@ class EncryptOrderByItemTokenGeneratorTest {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("certificate_number"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabaseType()).thenReturn(databaseType);
         ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST);
         OrderByItem orderByItem = new OrderByItem(columnOrderByItemSegment);
-        when(result.getOrderByContext().getItems()).thenReturn(Collections.singletonList(orderByItem));
+        when(result.getOrderByContext().getItems()).thenReturn(Collections.singleton(orderByItem));
         when(result.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(result.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
-        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singletonList(simpleTableSegment), TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
+        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singleton(simpleTableSegment), databaseType));
         return result;
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.projection
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.oracle.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;

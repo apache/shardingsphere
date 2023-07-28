@@ -21,6 +21,8 @@ import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -113,9 +115,10 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     private DataSourceProperties getDataSourceProperties(final Map<String, DataSourceProperties> dataSourcePropsMap, final String storageUnitName,
                                                          final DatabaseType databaseType, final DataSource dataSource) {
         DataSourceProperties result = getDataSourceProperties(dataSource);
-        if (databaseType.isInstanceConnectionAvailable() && dataSourcePropsMap.containsKey(storageUnitName)) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
+        if (dialectDatabaseMetaData.isInstanceConnectionAvailable() && dataSourcePropsMap.containsKey(storageUnitName)) {
             DataSourceProperties unitDataSourceProperties = dataSourcePropsMap.get(storageUnitName);
-            for (final Entry<String, Object> entry : unitDataSourceProperties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
+            for (Entry<String, Object> entry : unitDataSourceProperties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
                 if (null != entry.getValue()) {
                     result.getPoolPropertySynonyms().getStandardProperties().put(entry.getKey(), entry.getValue());
                 }

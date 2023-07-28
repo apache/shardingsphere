@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.database.core.type.fixture;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -27,16 +25,6 @@ import java.util.Collections;
 import java.util.Optional;
 
 public final class BranchDatabaseTypeFixture implements DatabaseType {
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
-    }
-    
-    @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
-    }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

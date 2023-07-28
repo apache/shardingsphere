@@ -21,6 +21,8 @@ import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsExcep
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
@@ -57,7 +59,8 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     
     private void checkDuplicatedTables(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final String defaultSchemaName) {
         Collection<SingleTableSegment> tableSegments = sqlStatement.getTables();
-        boolean isSchemaSupportedDatabaseType = database.getProtocolType().getDefaultSchema().isPresent();
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, database.getProtocolType());
+        boolean isSchemaSupportedDatabaseType = dialectDatabaseMetaData.getDefaultSchema().isPresent();
         ShardingSphereSchema schema = database.getSchema(defaultSchemaName);
         for (SingleTableSegment each : tableSegments) {
             checkDatabaseTypeAndTableNodeStyle(isSchemaSupportedDatabaseType, each);

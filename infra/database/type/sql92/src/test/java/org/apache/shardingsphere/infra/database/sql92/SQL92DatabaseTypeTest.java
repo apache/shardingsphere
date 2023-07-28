@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.database.sql92;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -28,11 +27,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class SQL92DatabaseTypeTest {
-    
-    @Test
-    void assertGetQuoteCharacter() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "SQL92").getQuoteCharacter(), is(QuoteCharacter.QUOTE));
-    }
     
     @Test
     void assertGetJdbcUrlPrefixes() {

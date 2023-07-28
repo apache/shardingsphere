@@ -77,6 +77,7 @@ import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigur
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
@@ -156,7 +157,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             Map<String, Object> sourceDataSourceProps = dataSourceConfigSwapper.swapToMap(metaDataDataSource.get(dataSourceName));
             StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
             configSources.put(dataSourceName, buildYamlPipelineDataSourceConfiguration(sourceDataSourceConfig.getType(), sourceDataSourceConfig.getParameter()));
-            if (null == each.getSource().getSchemaName() && sourceDataSourceConfig.getDatabaseType().isSchemaAvailable()) {
+            DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, sourceDataSourceConfig.getDatabaseType());
+            if (null == each.getSource().getSchemaName() && dialectDatabaseMetaData.isSchemaAvailable()) {
                 each.getSource().setSchemaName(PipelineSchemaUtils.getDefaultSchema(sourceDataSourceConfig));
             }
             DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
@@ -289,11 +291,13 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         return result;
     }
     
-    private CreateTableConfiguration buildCreateTableConfiguration(final MigrationJobConfiguration jobConfig, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
+    private CreateTableConfiguration buildCreateTableConfiguration(final MigrationJobConfiguration jobConfig,
+                                                                   final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
         Collection<CreateTableEntry> createTableEntries = new LinkedList<>();
         for (JobDataNodeEntry each : jobConfig.getTablesFirstDataNodes().getEntries()) {
             String sourceSchemaName = tableNameSchemaNameMapping.getSchemaName(each.getLogicTableName());
-            String targetSchemaName = jobConfig.getTargetDatabaseType().isSchemaAvailable() ? sourceSchemaName : null;
+            DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, jobConfig.getTargetDatabaseType());
+            String targetSchemaName = dialectDatabaseMetaData.isSchemaAvailable() ? sourceSchemaName : null;
             DataNode dataNode = each.getDataNodes().get(0);
             PipelineDataSourceConfiguration sourceDataSourceConfig = jobConfig.getSources().get(dataNode.getDataSourceName());
             CreateTableEntry createTableEntry = new CreateTableEntry(
