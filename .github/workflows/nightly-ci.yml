@@ -26,14 +26,14 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
 
 jobs:
-  global-env:
-    name: Import Global Env
+  global-environment:
+    name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
   ci:
     if: github.repository == 'apache/shardingsphere'
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
-    needs: global-env
+    needs: global-environment
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
@@ -54,10 +54,10 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-${{ github.sha }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Build Project with Maven
         run: ./mvnw clean install -B -ntp -T1C
       - name: Build Examples with Maven
@@ -66,7 +66,7 @@ jobs:
   ci-jdk8:
     if: github.repository == 'apache/shardingsphere'
     name: CI - JDK 8 on ${{ matrix.os }}
-    needs: global-env
+    needs: global-environment
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
@@ -86,10 +86,10 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-${{ github.sha }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
       - name: Build prod with Maven
         run: ./mvnw clean install -DskipTests -B -ntp -T1C
       - name: Setup JDK 8 for Test

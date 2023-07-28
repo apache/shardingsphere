@@ -15,8 +15,6 @@
 # limitations under the License.
 #
 
-name: Required - Reusable
-
 on:
   workflow_call:
     outputs:
