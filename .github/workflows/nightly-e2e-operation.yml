@@ -69,10 +69,5 @@ jobs:
           java-version: 11
       - name: Build ${{ matrix.operation }} E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pit.env.docker -DskipTests
-      - name: Setup JDK 8 for Test
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 8
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
         run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.${{ matrix.image.type }}=${{ matrix.image.version }}
