@@ -5638,16 +5638,25 @@
     </select>
     
     <select sql-case-id="select_with_format_function">
-        <from>
-            <simple-table alias="wi" name="warehouse_info" start-index="66" stop-index="82" literal-start-index="66" literal-stop-index="82"/>
-        </from>
-        <projections distinct-row="false" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
-            <expression-projection text="wi.code.format(null,'PURE_IDENTITY')" literal-text="wi.code.format(null,'PURE_IDENTITY')" alias="PURE_IDENTITY" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
-                <expr >
-                    <function function-name="wi" text="wi.code.format(null,'PURE_IDENTITY')" literal-text="wi.code.format(null,'PURE_IDENTITY')" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42"/>
+        <projections start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
+            <expression-projection text="wi.code.format(null,'PURE_IDENTITY')" alias="PURE_IDENTITY" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
+                <literalText>wi.code.format(null,'PURE_IDENTITY')</literalText>
+                <expr>
+                    <function function-name="format" text="wi.code.format(null,'PURE_IDENTITY')" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42">
+                        <parameter>
+                            <literal-expression value="null" start-index="22" stop-index="25" literal-start-index="22" literal-stop-index="25" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="PURE_IDENTITY" start-index="27" stop-index="41" literal-start-index="27" literal-stop-index="41" />
+                        </parameter>
+                        <literalText>wi.code.format(null,'PURE_IDENTITY')</literalText>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
+        <from>
+            <simple-table alias="wi" name="warehouse_info" start-index="66" stop-index="82" literal-start-index="66" literal-stop-index="82" />
+        </from>
     </select>
 
     <select sql-case-id="select_with_xml_is_schema_valid_function">
