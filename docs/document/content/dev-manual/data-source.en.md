@@ -53,7 +53,7 @@ Use SQL dialect to load meta data rapidly
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.infra.database.core.metadata.datatype.DialectDataTypeLoader`](https://github.com/apache/shardingsphere/blob//master/infra/database/core/src/main/java/org/apache/shardingsphere/infra/database/core/metadata/datatype/DialectDataTypeLoader.java)
+[`org.apache.shardingsphere.infra.database.core.metadata.database.DialectDataTypeLoader`](https://github.com/apache/shardingsphere/blob//master/infra/database/core/src/main/java/org/apache/shardingsphere/infra/database/core/metadata/database/datatype/DialectDataTypeLoader.java)
 
 ### Definition
 
