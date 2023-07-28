@@ -5808,6 +5808,9 @@
                 <literalText>TRIM(' derby ')</literalText>
                 <expr>
                     <function function-name="TRIM" text="TRIM('  derby ')" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
+                        <parameter>
+                            <literal-expression value="  derby " start-index="12" stop-index="21" literal-start-index="12" literal-stop-index="21" />
+                        </parameter>
                         <literalText>TRIM(' derby ')</literalText>
                     </function>
                 </expr>
@@ -5816,6 +5819,9 @@
                 <literalText>TRIM(BOTH ' ' FROM ' derby ')</literalText>
                 <expr>
                     <function function-name="TRIM" text="TRIM(BOTH ' ' FROM '  derby ')" start-index="25" stop-index="54" literal-start-index="25" literal-stop-index="54">
+                        <parameter>
+                            <literal-expression value="  derby " start-index="44" stop-index="53" literal-start-index="44" literal-stop-index="53" />
+                        </parameter>
                         <literalText>TRIM(BOTH ' ' FROM ' derby ')</literalText>
                     </function>
                 </expr>
@@ -5824,6 +5830,9 @@
                 <literalText>TRIM(TRAILING ' ' FROM ' derby ')</literalText>
                 <expr>
                     <function function-name="TRIM" text="TRIM(TRAILING ' ' FROM '  derby ')" start-index="57" stop-index="90" literal-start-index="57" literal-stop-index="90">
+                        <parameter>
+                            <literal-expression value="  derby " start-index="80" stop-index="89" literal-start-index="80" literal-stop-index="89" />
+                        </parameter>
                         <literalText>TRIM(TRAILING ' ' FROM ' derby ')</literalText>
                     </function>
                 </expr>
@@ -5832,6 +5841,9 @@
                 <literalText>TRIM(cast (null as char(1)) FROM ' derby ')</literalText>
                 <expr>
                     <function function-name="TRIM" text="TRIM(cast (null as char(1)) FROM '  derby ')" start-index="93" stop-index="136" literal-start-index="93" literal-stop-index="136">
+                        <parameter>
+                            <literal-expression value="  derby " start-index="126" stop-index="135" literal-start-index="126" literal-stop-index="135" />
+                        </parameter>
                         <literalText>TRIM(cast (null as char(1)) FROM ' derby ')</literalText>
                     </function>
                 </expr>
@@ -5840,6 +5852,17 @@
                 <literalText>TRIM(' ' FROM cast(null as varchar(30)))</literalText>
                 <expr>
                     <function function-name="TRIM" text="TRIM(' ' FROM cast(null as varchar(30)))" start-index="139" stop-index="178" literal-start-index="139" literal-stop-index="178">
+                        <parameter>
+                            <function function-name="cast" text="cast(null as varchar(30))" start-index="153" stop-index="177" literal-start-index="153" literal-stop-index="177">
+                                <parameter>
+                                    <literal-expression value="null" start-index="158" stop-index="161" literal-start-index="158" literal-stop-index="161" />
+                                </parameter>
+                                <parameter>
+                                    <data-type value="varchar" start-index="166" stop-index="176" />
+                                </parameter>
+                                <literalText>cast(null as varchar(30))</literalText>
+                            </function>
+                        </parameter>
                         <literalText>TRIM(' ' FROM cast(null as varchar(30)))</literalText>
                     </function>
                 </expr>
@@ -5848,6 +5871,9 @@
                 <literalText>TRIM('y' FROM ' derby')</literalText>
                 <expr>
                     <function function-name="TRIM" text="TRIM('y' FROM ' derby')" start-index="181" stop-index="203" literal-start-index="181" literal-stop-index="203">
+                        <parameter>
+                            <literal-expression value=" derby" start-index="195" stop-index="202" literal-start-index="195" literal-stop-index="202" />
+                        </parameter>
                         <literalText>TRIM('y' FROM ' derby')</literalText>
                     </function>
                 </expr>
