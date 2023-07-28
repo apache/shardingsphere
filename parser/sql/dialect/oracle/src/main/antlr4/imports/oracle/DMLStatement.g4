@@ -52,7 +52,7 @@ insertIntoClause
     ;
 
 insertValuesClause
-    : VALUES assignmentValues (COMMA_ assignmentValues)*
+    : VALUES assignmentValues
     ;
 
 returningClause
