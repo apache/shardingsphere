@@ -5360,6 +5360,10 @@ PARITY
     :P A R I T Y
     ;
 
+PARTIAL
+    : P A R T I A L
+    ;
+
 PARTIALLY
     :P A R T I A L L Y
     ;

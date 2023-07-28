@@ -475,7 +475,13 @@ objectProperties
     ;
 
 alterIndexInformationClause
-    : rebuildClause ((DEFERRED | IMMEDIATE) | INVALIDATION)?
+    : (deallocateUnusedClause
+    | allocateExtentClause
+    | shrinkClause
+    | parallelClause
+    | loggingClause
+    | partialIndexClause)+
+    | rebuildClause ((DEFERRED | IMMEDIATE) | INVALIDATION)?
     | parallelClause
     | PARAMETERS LP_ odciParameters RP_
     | COMPILE
@@ -486,12 +492,66 @@ alterIndexInformationClause
     | COALESCE CLEANUP? ONLY? parallelClause?
     | ((MONITORING | NOMONITORING) USAGE)
     | UPDATE BLOCK REFERENCES
+    | alterIndexPartitioning
     ;
 
 renameIndexClause
     : (RENAME TO indexName)?
     ;
-    
+
+alterIndexPartitioning
+    : modifyIndexDefaultAttrs
+    | addHashIndexPartition
+    | modifyIndexPartition
+    | renameIndexPartition
+    | dropIndexPartition
+    | splitIndexPartition
+    | coalesceIndexPartition
+    | modifyIndexsubPartition
+    ;
+
+modifyIndexDefaultAttrs
+    : MODIFY DEFAULT ATTRIBUTES (FOR PARTITION partitionName)? (physicalAttributesClause | TABLESPACE (tablespaceName | DEFAULT) | loggingClause)+
+    ;
+
+addHashIndexPartition
+    : ADD PARTITION partitionName? (TABLESPACE tablespaceName)? indexCompression? parallelClause?
+    ;
+
+modifyIndexPartition
+    : MODIFY PARTITION partitionName
+    ( (deallocateUnusedClause | allocateExtentClause | physicalAttributesClause | loggingClause | indexCompression)+ 
+    | PARAMETERS LP_ odciParameters RP_
+    | COALESCE (CLEANUP | ONLY | parallelClause)?
+    | UPDATE BLOCK REFERENCES
+    | UNUSABLE
+    )
+    ;
+
+renameIndexPartition
+    : RENAME (PARTITION partitionName | SUBPARTITION subpartitionName) TO newName
+    ;
+
+dropIndexPartition
+    : DROP PARTITION partitionName
+    ;
+
+splitIndexPartition
+    : SPLIT PARTITION partitionName AT LP_ literals (COMMA_ literals)* RP_ (INTO LP_ indexPartitionDescription COMMA_ indexPartitionDescription RP_)? (parallelClause)?
+    ;
+
+indexPartitionDescription
+    : PARTITION (partitionName ((segmentAttributesClause | indexCompression)+ | PARAMETERS LP_ odciParameters RP_)? (USABLE | UNUSABLE)?)?
+    ;
+
+coalesceIndexPartition
+    : COALESCE PARTITION parallelClause?
+    ;
+
+modifyIndexsubPartition
+    : MODIFY SUBPARTITION subpartitionName (UNUSABLE | allocateExtentClause | deallocateUnusedClause)
+    ;
+
 objectTableSubstitution
     : NOT? SUBSTITUTABLE AT ALL LEVELS
     ;
@@ -578,6 +638,10 @@ physicalAttributesClause
 
 loggingClause
     : LOGGING | NOLOGGING |  FILESYSTEM_LIKE_LOGGING
+    ;
+
+partialIndexClause
+    : INDEXING (PARTIAL | FULL)
     ;
 
 storageClause
