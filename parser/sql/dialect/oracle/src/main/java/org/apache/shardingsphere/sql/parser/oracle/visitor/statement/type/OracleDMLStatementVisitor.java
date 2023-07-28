@@ -793,7 +793,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitXmlTable(final XmlTableContext ctx) {
-        XmlTableSegment result =  new XmlTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
+        XmlTableSegment result = new XmlTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
                 (XmlTableFunctionSegment) visit(ctx.xmlTableFunction()));
         if (null != ctx.xmlTableFunctionAlias()) {
             result.setXmlTableFunctionAlias(ctx.xmlTableFunctionAlias().alias().getText());
